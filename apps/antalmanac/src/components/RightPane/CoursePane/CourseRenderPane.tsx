@@ -15,7 +15,7 @@ import { getTermLongName } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { CoursePaneWarningType, useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -34,6 +34,7 @@ import {
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
+import { useShallow } from 'zustand/react/shallow';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -273,6 +274,13 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
+    const { warningMessages, removeWarningMessage } = useCoursePaneStore(
+        useShallow((state) => ({
+            warningMessages: state.warningMessages,
+            removeWarningMessage: state.removeWarningMessage,
+        }))
+    );
+
     const getQueryParams = useCallback((searchData: CourseSearchParams) => {
         const websocQueryParams = {
             department: searchData.deptValue,
@@ -409,6 +417,17 @@ export default function CourseRenderPane(props: { id?: number }) {
         <>
             <Box sx={{ height: '56px' }} />
 
+            {Object.entries(warningMessages).map(([warningType, messages]) => {
+                return messages.map((message) => (
+                    <WarningAlert
+                        closable
+                        key={`${warningType}${message}`}
+                        onClose={() => removeWarningMessage(warningType as CoursePaneWarningType, message)}
+                    >
+                        {message}
+                    </WarningAlert>
+                ));
+            })}
             {unofferedCourses.map((course) => {
                 return (
                     <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>

@@ -126,4 +126,8 @@ function isTermEnrollmentOpen(term: Term): boolean {
     return new Date() <= dropDeadline;
 }
 
+export function isTermAvailable(termShortName: string) {
+    return termData.find((term) => term.shortName === termShortName) !== undefined;
+}
+
 export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm, getCurrentTerm };

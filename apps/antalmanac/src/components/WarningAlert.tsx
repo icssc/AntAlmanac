@@ -4,12 +4,14 @@ import { ReactNode, useState } from 'react';
 interface Props {
     children: ReactNode;
     closable?: boolean;
+    onClose?: () => void;
 }
 
-const WarningAlert = ({ children, closable = false }: Props) => {
+const WarningAlert = ({ children, closable = false, onClose }: Props) => {
     const [doShow, setDoShow] = useState(true);
 
     const handleClose = () => {
+        onClose?.();
         setDoShow(false);
     };
 
