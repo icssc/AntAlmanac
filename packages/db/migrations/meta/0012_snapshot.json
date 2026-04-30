@@ -1,6 +1,6 @@
 {
-  "id": "1c3f607e-65c1-4650-ac50-589bb9ce20d8",
-  "prevId": "4723ce3a-d3e8-40d2-b094-4e10e6554106",
+  "id": "31939cbe-d197-44c7-b08f-74a1fec63af1",
+  "prevId": "1c3f607e-65c1-4650-ac50-589bb9ce20d8",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -373,7 +373,7 @@
         "id": {
           "name": "id",
           "type": "text",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
         },
         "scheduleId": {
@@ -449,7 +449,15 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "customEvents_scheduleId_id_pk": {
+          "name": "customEvents_scheduleId_id_pk",
+          "columns": [
+            "scheduleId",
+            "id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
