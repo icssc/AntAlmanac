@@ -31,6 +31,9 @@ type Step = 'enrollment-confirm' | 'review' | 'hidden';
 
 const PAST_TERMS_WINDOW = 4;
 
+/** Min time (7 days) between review prompts after the user last dismissed one. */
+const REVIEW_PROMPT_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+
 const initialState = {
     candidate: null as ReviewCandidate | null,
     step: 'hidden' as Step,
@@ -89,14 +92,22 @@ export const useReviewPromptStore = create(
             let dismissedSet = new Set<string>();
             let reviewedSet = new Set<string>();
             try {
-                const [dismissed, reviewed] = await Promise.all([
+                const [dismissed, reviewed, cooldown] = await Promise.all([
                     trpc.review.getDismissedCombos.query(),
                     trpc.review.getReviewedCombos.query(),
+                    trpc.review.getLastReviewDismissalAt.query(),
                 ]);
                 dismissedSet = new Set(dismissed.map((d) => `${d.courseId}::${d.professorId}`));
                 reviewedSet = new Set(reviewed.map((r) => `${r.courseId}::${r.professorId}`));
+
+                if (cooldown.lastDismissedAt) {
+                    const elapsed = Date.now() - new Date(cooldown.lastDismissedAt).getTime();
+                    if (elapsed < REVIEW_PROMPT_COOLDOWN_MS) {
+                        return;
+                    }
+                }
             } catch {
-                // Non-fatal — proceed without DB filter.
+                // Non-fatal — proceed without DB filter and cooldown.
             }
 
             const eligible = candidates.filter((c) => {

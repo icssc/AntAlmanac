@@ -1,7 +1,7 @@
 import { db } from '@packages/db';
 import { instructorReviews, reviewDismissals } from '@packages/db/src/schema';
 import { TRPCError } from '@trpc/server';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, max } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { protectedProcedure, router } from '../trpc';
@@ -107,6 +107,17 @@ const reviewRouter = router({
             })
             .from(reviewDismissals)
             .where(eq(reviewDismissals.userId, ctx.userId));
+    }),
+
+    /**
+     * Latest review-prompt dismissal time for cooldown.
+     */
+    getLastReviewDismissalAt: protectedProcedure.query(async ({ ctx }) => {
+        const [row] = await db
+            .select({ lastDismissedAt: max(reviewDismissals.createdAt) })
+            .from(reviewDismissals)
+            .where(eq(reviewDismissals.userId, ctx.userId));
+        return { lastDismissedAt: row?.lastDismissedAt ?? null };
     }),
 });
 
