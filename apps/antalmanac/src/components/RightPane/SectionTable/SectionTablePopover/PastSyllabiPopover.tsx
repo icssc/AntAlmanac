@@ -37,11 +37,9 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
             (acc, entry) => {
                 const term = `${entry.year} ${entry.quarter}`;
 
-                if (!acc[term]) {
-                    acc[term] = [];
-                }
-
+                acc[term] ??= [];
                 acc[term].push(entry);
+
                 return acc;
             },
             {} as Record<string, WebsocSyllabiResponse[number][]>
