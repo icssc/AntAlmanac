@@ -7,7 +7,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { Paper, Snackbar } from '@mui/material';
 import { useEffect, useRef } from 'react';
 
-const PROMPT_DELAY_MS = 1_000;
+const PROMPT_DELAY_MS = 15_000;
 
 export function ReviewPrompt() {
     const userId = useSessionStore((s) => s.userId);
@@ -38,13 +38,7 @@ export function ReviewPrompt() {
     const open = step !== 'hidden' && !!candidate;
 
     return (
-        <Snackbar
-            open={open}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            onClose={() => {
-                useReviewPromptStore.getState().dismiss();
-            }}
-        >
+        <Snackbar open={open} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
             <Paper>
                 {step === 'enrollment-confirm' && candidate && <EnrollmentConfirmStep />}
                 {step === 'review' && candidate && <ReviewStep />}
