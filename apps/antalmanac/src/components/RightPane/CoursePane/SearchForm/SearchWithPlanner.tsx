@@ -94,9 +94,10 @@ const SearchWithPlanner = ({ labelProps }: Props) => {
         }
         try {
             setIsLoadingSearch(true);
-            const courses = await trpc.course.getMultiple.query({
-                courseIds: quarterPlan.courses.map((coursePlan) => coursePlan.courseId),
-            });
+            const courseIds = quarterPlan.courses
+                .filter((coursePlan) => !coursePlan.courseId.startsWith('CUSTOM#'))
+                .map((coursePlan) => coursePlan.courseId);
+            const courses = await trpc.course.getMultiple.query({ courseIds });
             const searchData = courses.map(({ department, courseNumber }) => ({ deptValue: department, courseNumber }));
 
             RightPaneStore.setMultiSearchData(searchData);
