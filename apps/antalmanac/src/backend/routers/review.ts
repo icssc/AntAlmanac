@@ -1,5 +1,5 @@
 import { db } from '@packages/db';
-import { instructorReviews } from '@packages/db/src/schema';
+import { instructorReviews, reviewDismissals } from '@packages/db/src/schema';
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -82,6 +82,31 @@ const reviewRouter = router({
             })
             .from(instructorReviews)
             .where(eq(instructorReviews.userId, ctx.userId));
+    }),
+
+    /**
+     * Dismiss a review prompt for a course/professor.
+     */
+    dismissReview: protectedProcedure
+        .input(z.object({ professorId: z.string(), courseId: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            await db
+                .insert(reviewDismissals)
+                .values({ userId: ctx.userId, professorId: input.professorId, courseId: input.courseId })
+                .onConflictDoNothing();
+        }),
+
+    /**
+     * Returns all (professorId, courseId) combos dismissed by this user.
+     */
+    getDismissedCombos: protectedProcedure.query(async ({ ctx }) => {
+        return db
+            .select({
+                professorId: reviewDismissals.professorId,
+                courseId: reviewDismissals.courseId,
+            })
+            .from(reviewDismissals)
+            .where(eq(reviewDismissals.userId, ctx.userId));
     }),
 });
 

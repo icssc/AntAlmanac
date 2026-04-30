@@ -29,40 +29,7 @@ export type ReviewCandidate = {
 
 type Step = 'enrollment-confirm' | 'review' | 'hidden';
 
-const DISMISSED_KEY = 'aa_review_dismissed';
-const MAX_DISMISSED = 100;
 const PAST_TERMS_WINDOW = 4;
-
-type DismissedEntry = { courseId: string; professorId: string };
-
-function loadDismissed(): DismissedEntry[] {
-    try {
-        const parsed: unknown = JSON.parse(localStorage.getItem(DISMISSED_KEY) ?? '[]');
-        if (!Array.isArray(parsed)) return [];
-        return parsed.filter(
-            (item): item is DismissedEntry =>
-                typeof item === 'object' &&
-                item !== null &&
-                typeof item.courseId === 'string' &&
-                typeof item.professorId === 'string'
-        );
-    } catch {
-        return [];
-    }
-}
-
-function persistDismissed(candidate: ReviewCandidate) {
-    const dismissed = loadDismissed();
-    const alreadyPresent = dismissed.some(
-        (d) => d.courseId === candidate.courseId && d.professorId === candidate.professorId
-    );
-    if (!alreadyPresent) {
-        const updated = [...dismissed, { courseId: candidate.courseId, professorId: candidate.professorId }].slice(
-            -MAX_DISMISSED
-        );
-        localStorage.setItem(DISMISSED_KEY, JSON.stringify(updated));
-    }
-}
 
 const initialState = {
     candidate: null as ReviewCandidate | null,
@@ -119,12 +86,14 @@ export const useReviewPromptStore = create(
 
             if (candidates.length === 0) return;
 
-            const dismissed = loadDismissed();
-            const dismissedSet = new Set(dismissed.map((d) => `${d.courseId}::${d.professorId}`));
-
+            let dismissedSet = new Set<string>();
             let reviewedSet = new Set<string>();
             try {
-                const reviewed = await trpc.review.getReviewedCombos.query();
+                const [dismissed, reviewed] = await Promise.all([
+                    trpc.review.getDismissedCombos.query(),
+                    trpc.review.getReviewedCombos.query(),
+                ]);
+                dismissedSet = new Set(dismissed.map((d) => `${d.courseId}::${d.professorId}`));
                 reviewedSet = new Set(reviewed.map((r) => `${r.courseId}::${r.professorId}`));
             } catch {
                 // Non-fatal — proceed without DB filter.
@@ -145,12 +114,18 @@ export const useReviewPromptStore = create(
 
         /**
          * User dismissed the prompt (either "No" or closed the card).
-         * Persists the combo to localStorage so it won't be shown again.
+         * Persists the combo to the DB so it won't be shown again.
          */
         dismiss: () => {
             const { candidate } = get();
-            if (candidate) persistDismissed(candidate);
             set({ step: 'hidden', candidate: null, rating: 0, selectedTags: [] });
+            if (candidate) {
+                trpc.review.dismissReview
+                    .mutate({ professorId: candidate.professorId, courseId: candidate.courseId })
+                    .catch(() => {
+                        // Non-fatal — worst case the user is prompted again on the next session.
+                    });
+            }
         },
 
         setRating: (rating: number) => set({ rating }),

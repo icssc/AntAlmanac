@@ -64,7 +64,9 @@ export const instructorReviews = pgTable(
 
         createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 
-        updatedAt: timestamp('updated_at', { withTimezone: true }),
+        updatedAt: timestamp('updated_at', { withTimezone: true })
+            .notNull()
+            .$onUpdate(() => new Date()),
 
         /**
          * Whether the course was taken for credit.
