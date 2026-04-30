@@ -199,7 +199,7 @@ const SearchWithPlanner = ({ labelProps }: Props) => {
     const searchComponent = (
         <LabeledAutocomplete
             label="Roadmap"
-            disabled={!sessionIsValid}
+            disabled={!sessionIsValid || isLoadingSearch}
             autocompleteProps={{
                 options: sortedRoadmaps,
                 getOptionLabel: (roadmap) => roadmap.name.toString(),

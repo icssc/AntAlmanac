@@ -27,7 +27,7 @@ const QuickSearch = ({ toggleSearch, labelProps }: Props) => {
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
             {fuzzySearch}
             <Typography>or</Typography>
-            <Box sx={{ minWidth: '37%' }}>{plannerSearch}</Box>
+            <Box sx={{ width: '37%' }}>{plannerSearch}</Box>
         </Stack>
     );
 };
