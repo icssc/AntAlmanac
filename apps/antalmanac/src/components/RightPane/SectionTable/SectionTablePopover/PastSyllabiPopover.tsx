@@ -89,7 +89,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                 ) : (
                     <List disablePadding sx={{ maxHeight: height, overflow: 'auto' }}>
                         {Object.entries(syllabiByTerm).map(([term, entries]) => (
-                            <ListSubheader key={term} disableGutters>
+                            <ListSubheader key={term} disableGutters disableSticky>
                                 <Typography variant="body1" color="text.primary">
                                     {term}
                                 </Typography>
@@ -101,7 +101,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                                         rel="noopener noreferrer"
                                         key={entry.url}
                                     >
-                                        <ListItemText primary={entry.instructorNames.at(0)} />
+                                        <ListItemText primary={entry.instructorNames.at(0) ?? 'Unknown Instructor'} />
                                         <OpenInNew />
                                     </ListItemButton>
                                 ))}
