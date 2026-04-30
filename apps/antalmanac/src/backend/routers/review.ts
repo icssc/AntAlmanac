@@ -1,6 +1,7 @@
 import { db } from '@packages/db';
 import { instructorReviews, reviewDismissals } from '@packages/db/src/schema';
 import { TRPCError } from '@trpc/server';
+import { max as maxDate } from 'date-fns';
 import { and, eq, max } from 'drizzle-orm';
 import { z } from 'zod';
 
@@ -110,14 +111,29 @@ const reviewRouter = router({
     }),
 
     /**
-     * Latest review-prompt dismissal time for cooldown.
+     * Latest time the user dismissed a review prompt or submitted a quick review.
      */
-    getLastReviewDismissalAt: protectedProcedure.query(async ({ ctx }) => {
-        const [row] = await db
-            .select({ lastDismissedAt: max(reviewDismissals.createdAt) })
+    getReviewPromptLastInteractionAt: protectedProcedure.query(async ({ ctx }) => {
+        const [dismissRow] = await db
+            .select({ createdAt: max(reviewDismissals.createdAt) })
             .from(reviewDismissals)
             .where(eq(reviewDismissals.userId, ctx.userId));
-        return { lastDismissedAt: row?.lastDismissedAt ?? null };
+
+        const [reviewRow] = await db
+            .select({ createdAt: max(instructorReviews.createdAt) })
+            .from(instructorReviews)
+            .where(eq(instructorReviews.userId, ctx.userId));
+
+        const dismissedAt = dismissRow?.createdAt;
+        const reviewedAt = reviewRow?.createdAt;
+
+        const dates = [dismissedAt, reviewedAt]
+            .filter((d): d is NonNullable<typeof d> => d != null)
+            .map((d) => new Date(d));
+
+        const lastInteractionAt = dates.length === 0 ? null : maxDate(dates);
+
+        return { lastInteractionAt };
     }),
 });
 

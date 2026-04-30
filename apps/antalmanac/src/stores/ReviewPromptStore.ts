@@ -31,7 +31,7 @@ type Step = 'enrollment-confirm' | 'review' | 'hidden';
 
 const PAST_TERMS_WINDOW = 4;
 
-/** Min time (7 days) between review prompts after the user last dismissed one. */
+/** Min time between review prompts after the user last dismissed, skipped, or submitted. */
 const REVIEW_PROMPT_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 
 const initialState = {
@@ -95,13 +95,13 @@ export const useReviewPromptStore = create(
                 const [dismissed, reviewed, cooldown] = await Promise.all([
                     trpc.review.getDismissedCombos.query(),
                     trpc.review.getReviewedCombos.query(),
-                    trpc.review.getLastReviewDismissalAt.query(),
+                    trpc.review.getReviewPromptLastInteractionAt.query(),
                 ]);
                 dismissedSet = new Set(dismissed.map((d) => `${d.courseId}::${d.professorId}`));
                 reviewedSet = new Set(reviewed.map((r) => `${r.courseId}::${r.professorId}`));
 
-                if (cooldown.lastDismissedAt) {
-                    const elapsed = Date.now() - new Date(cooldown.lastDismissedAt).getTime();
+                if (cooldown.lastInteractionAt) {
+                    const elapsed = Date.now() - new Date(cooldown.lastInteractionAt).getTime();
                     if (elapsed < REVIEW_PROMPT_COOLDOWN_MS) {
                         return;
                     }
@@ -124,8 +124,8 @@ export const useReviewPromptStore = create(
         confirm: () => set({ step: 'review' }),
 
         /**
-         * User dismissed the prompt (either "No" or closed the card).
-         * Persists the combo to the DB so it won't be shown again.
+         * User closed the prompt without submitting (X, Skip, "I did not", snackbar click-away, Escape).
+         * Persists the course+professor combo so it is not suggested again and starts the cooldown window.
          */
         dismiss: () => {
             const { candidate } = get();
