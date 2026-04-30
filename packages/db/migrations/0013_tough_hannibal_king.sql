@@ -1,4 +1,8 @@
-CREATE TYPE "public"."friendship_status" AS ENUM('PENDING', 'ACCEPTED', 'DECLINED', 'BLOCKED');--> statement-breakpoint
+DO $$ BEGIN
+  CREATE TYPE "public"."friendship_status" AS ENUM('PENDING', 'ACCEPTED', 'DECLINED', 'BLOCKED');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "friendships" (
 	"requester_id" text NOT NULL,
 	"addressee_id" text NOT NULL,
@@ -9,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "friendships" (
 	CONSTRAINT "friendships_no_self_friend" CHECK ("friendships"."requester_id" <> "friendships"."addressee_id")
 );
 --> statement-breakpoint
-ALTER TABLE "schedules" ADD COLUMN "shared_with_friends" boolean DEFAULT true NOT NULL;--> statement-breakpoint
+ALTER TABLE "schedules" ADD COLUMN IF NOT EXISTS "shared_with_friends" boolean DEFAULT true NOT NULL;--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "friendships" ADD CONSTRAINT "friendships_requester_id_users_id_fk" FOREIGN KEY ("requester_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
