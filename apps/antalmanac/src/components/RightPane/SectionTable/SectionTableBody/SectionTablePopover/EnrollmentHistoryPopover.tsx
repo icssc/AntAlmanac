@@ -24,10 +24,6 @@ interface EnrollmentHistoryPopoverProps {
     loading?: boolean;
 }
 
-function graphKey(enrollment: EnrollmentHistory) {
-    return `${enrollment.year}-${enrollment.quarter}-${enrollment.instructors.join('|')}`;
-}
-
 export function EnrollmentHistoryPopover({
     sectionType,
     department,
@@ -35,30 +31,26 @@ export function EnrollmentHistoryPopover({
     enrollmentHistory,
     loading = false,
 }: EnrollmentHistoryPopoverProps) {
-    const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
+    const [selectedGraphIndex, setSelectedGraphIndex] = useState<number>();
 
     const theme = useTheme();
     const isMobile = useIsMobile();
 
     const width = isMobile ? 250 : 450;
     const height = isMobile ? 175 : 250;
+    const enrollmentHistoryCount = enrollmentHistory?.length ?? 0;
 
     const activeGraphIndex = useMemo(() => {
-        if (!enrollmentHistory?.length) {
+        if (!enrollmentHistoryCount) {
             return 0;
         }
 
-        if (selectedGraphKey) {
-            const selectedIndex = enrollmentHistory.findIndex(
-                (enrollment) => graphKey(enrollment) === selectedGraphKey
-            );
-
-            if (selectedIndex >= 0) {
-                return selectedIndex;
-            }
+        if (selectedGraphIndex == null) {
+            return enrollmentHistoryCount - 1;
         }
-        return enrollmentHistory.length - 1;
-    }, [enrollmentHistory, selectedGraphKey]);
+
+        return Math.min(Math.max(selectedGraphIndex, 0), enrollmentHistoryCount - 1);
+    }, [enrollmentHistoryCount, selectedGraphIndex]);
 
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
@@ -72,21 +64,28 @@ export function EnrollmentHistoryPopover({
     const chartColors = theme.palette.enrollmentStatus;
 
     const handleBack = useCallback(() => {
-        if (!enrollmentHistory?.length || activeGraphIndex === 0) {
+        if (!enrollmentHistoryCount) {
             return;
         }
-        setSelectedGraphKey(graphKey(enrollmentHistory[activeGraphIndex - 1]));
-    }, [activeGraphIndex, enrollmentHistory]);
+
+        setSelectedGraphIndex((currentIndex) => {
+            const resolvedIndex = currentIndex ?? enrollmentHistoryCount - 1;
+            return Math.max(resolvedIndex - 1, 0);
+        });
+    }, [enrollmentHistoryCount]);
 
     const handleForward = useCallback(() => {
-        if (!enrollmentHistory?.length || activeGraphIndex === enrollmentHistory.length - 1) {
+        if (!enrollmentHistoryCount) {
             return;
         }
-        setSelectedGraphKey(graphKey(enrollmentHistory[activeGraphIndex + 1]));
-    }, [activeGraphIndex, enrollmentHistory]);
 
-    const historyCount = enrollmentHistory?.length ?? 0;
-    const navDisabled = loading || historyCount === 0;
+        setSelectedGraphIndex((currentIndex) => {
+            const resolvedIndex = currentIndex ?? enrollmentHistoryCount - 1;
+            return Math.min(resolvedIndex + 1, enrollmentHistoryCount - 1);
+        });
+    }, [enrollmentHistoryCount]);
+
+    const navDisabled = loading || enrollmentHistoryCount === 0;
 
     const headerAction = (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -102,7 +101,7 @@ export function EnrollmentHistoryPopover({
                     <IconButton
                         size="small"
                         onClick={handleForward}
-                        disabled={navDisabled || activeGraphIndex >= historyCount - 1}
+                        disabled={navDisabled || activeGraphIndex >= enrollmentHistoryCount - 1}
                     >
                         <ArrowForward />
                     </IconButton>
