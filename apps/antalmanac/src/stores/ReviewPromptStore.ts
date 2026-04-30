@@ -38,6 +38,7 @@ const initialState = {
     candidate: null as ReviewCandidate | null,
     step: 'hidden' as Step,
     rating: 0,
+    difficulty: 0,
     selectedTags: [] as ReviewTag[],
 };
 
@@ -127,10 +128,10 @@ export const useReviewPromptStore = create(
             }
 
             const candidate = eligible[Math.floor(Math.random() * eligible.length)];
-            set({ step: 'enrollment-confirm', candidate, rating: 0, selectedTags: [] });
+            set({ step: 'enrollment-confirm', candidate, rating: 0, difficulty: 0, selectedTags: [] });
         },
 
-        confirm: () => set({ step: 'review' }),
+        confirm: () => set({ step: 'review', difficulty: 3 }),
 
         /**
          * User closed the prompt without submitting (X, Skip, "I did not", snackbar click-away, Escape).
@@ -138,7 +139,7 @@ export const useReviewPromptStore = create(
          */
         dismiss: () => {
             const { candidate } = get();
-            set({ step: 'hidden', candidate: null, rating: 0, selectedTags: [] });
+            set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [] });
             if (candidate) {
                 trpc.review.dismissReview
                     .mutate({ professorId: candidate.professorId, courseId: candidate.courseId })
@@ -150,6 +151,8 @@ export const useReviewPromptStore = create(
 
         setRating: (rating: number) => set({ rating }),
 
+        setDifficulty: (difficulty: number) => set({ difficulty }),
+
         toggleTag: (tag: ReviewTag) => {
             const { selectedTags } = get();
             set({
@@ -160,8 +163,8 @@ export const useReviewPromptStore = create(
         },
 
         submitReview: async () => {
-            const { candidate, rating, selectedTags } = get();
-            if (!candidate || rating === 0) return;
+            const { candidate, rating, difficulty, selectedTags } = get();
+            if (!candidate || rating === 0 || difficulty < 1) return;
 
             try {
                 await trpc.review.submitReview.mutate({
@@ -169,9 +172,10 @@ export const useReviewPromptStore = create(
                     courseId: candidate.courseId,
                     quarter: candidate.term,
                     rating,
+                    difficulty,
                     tags: selectedTags,
                 });
-                set({ step: 'hidden', candidate: null, rating: 0, selectedTags: [] });
+                set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [] });
                 openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
             } catch {
                 openSnackbar('error', 'Failed to submit review. Please try again.');
