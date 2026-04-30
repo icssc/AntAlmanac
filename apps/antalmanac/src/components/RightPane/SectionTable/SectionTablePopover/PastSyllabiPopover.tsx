@@ -101,7 +101,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                                         rel="noopener noreferrer"
                                         key={entry.url}
                                     >
-                                        <ListItemText primary={entry.instructorNames.at(0) ?? 'Unknown Instructor'} />
+                                        <ListItemText primary={entry.instructorNames.at(0) ?? 'N/A'} />
                                         <OpenInNew />
                                     </ListItemButton>
                                 ))}
