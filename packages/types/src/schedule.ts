@@ -38,7 +38,7 @@ export const ShortCourseScheduleSchema = z
         scheduleName: z.string(),
         courses: z.array(ShortCourseSchema),
         customEvents: z.array(RepeatingCustomEventSchema),
-        scheduleNote: z.string().optional(),
+        scheduleNote: z.string().max(SCHEDULE_NOTE_MAX_LENGTH).optional(),
         id: z.string().optional(),
     })
     .transform((schedule) => ({ scheduleNote: '', ...schedule }));
