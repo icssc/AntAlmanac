@@ -1,8 +1,7 @@
+import { loginUser } from '$actions/AppStoreActions';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-
-import { loginUser } from '$actions/AppStoreActions';
 
 interface SignInDialogProps {
     open: boolean;
@@ -18,7 +17,7 @@ export function SignInDialog(props: SignInDialogProps) {
     const handleClose = () => {
         onClose();
     };
-    
+
     const getTitle = () => {
         switch (props.feature) {
             case 'Notification':
