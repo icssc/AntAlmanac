@@ -30,7 +30,8 @@ export const CourseInfoButton = ({
 
     const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
     const compact =
-        isMobile || (scheduleManagementWidth !== undefined && scheduleManagementWidth < theme.breakpoints.values.xs);
+        isMobile ||
+        (scheduleManagementWidth != null && scheduleManagementWidth < theme.breakpoints.values.xs);
     const showLabel = !compact || isMobile;
 
     const handleClick = useCallback(
