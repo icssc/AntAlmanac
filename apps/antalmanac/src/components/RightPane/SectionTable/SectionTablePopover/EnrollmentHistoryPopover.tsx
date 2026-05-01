@@ -1,14 +1,10 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import {
-    findDefaultEnrollmentHistoryIndex,
-    type EnrollmentHistory,
-    type EnrollmentHistoryPopoverContext,
-} from '$lib/enrollmentHistory';
+import type { EnrollmentHistory } from '$lib/enrollmentHistory';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import type { WebsocSectionType } from '@packages/antalmanac-types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
     CartesianGrid,
     Legend,
@@ -20,19 +16,37 @@ import {
     YAxis,
 } from 'recharts';
 
+export interface EnrollmentHistoryPopoverRowMatch {
+    term: string;
+    sectionCode: string;
+    instructors: string[];
+}
+
 interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
     enrollmentHistory: EnrollmentHistory[] | undefined;
     loading?: boolean;
-    /** When true and history has loaded, the graph defaults to the row's term / section / instructors. */
-    popoverOpen?: boolean;
-    defaultContext?: EnrollmentHistoryPopoverContext;
+    rowMatch?: EnrollmentHistoryPopoverRowMatch;
 }
 
 function graphKey(enrollment: EnrollmentHistory) {
     return `${enrollment.year}-${enrollment.quarter}-${enrollment.instructors.join('|')}`;
+}
+
+function normalizeDept(s: string) {
+    return s.replaceAll(' ', '');
+}
+
+function normalizeInstructorList(names: string[]) {
+    return [...names].map((n) => n.trim()).filter(Boolean).sort();
+}
+
+function sameInstructors(a: string[], b: string[]) {
+    const x = normalizeInstructorList(a);
+    const y = normalizeInstructorList(b);
+    return x.length === y.length && x.every((v, i) => v === y[i]);
 }
 
 export function EnrollmentHistoryPopover({
@@ -41,18 +55,9 @@ export function EnrollmentHistoryPopover({
     courseNumber,
     enrollmentHistory,
     loading = false,
-    popoverOpen = false,
-    defaultContext,
+    rowMatch,
 }: EnrollmentHistoryPopoverProps) {
     const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
-
-    useEffect(() => {
-        if (!popoverOpen || loading || !enrollmentHistory?.length || !defaultContext) {
-            return;
-        }
-        const idx = findDefaultEnrollmentHistoryIndex(enrollmentHistory, defaultContext);
-        setSelectedGraphKey(graphKey(enrollmentHistory[idx]));
-    }, [popoverOpen, loading, enrollmentHistory, defaultContext]);
 
     const theme = useTheme();
     const isMobile = useIsMobile();
@@ -60,22 +65,39 @@ export function EnrollmentHistoryPopover({
     const width = isMobile ? 250 : 450;
     const height = isMobile ? 175 : 250;
 
+    const defaultGraphKey = useMemo(() => {
+        if (!enrollmentHistory?.length || !rowMatch) {
+            return undefined;
+        }
+        const term = rowMatch.term.trim();
+        const section = rowMatch.sectionCode.trim().toUpperCase();
+        const dept = normalizeDept(department);
+        const matched = enrollmentHistory.find(
+            (h) =>
+                `${h.year} ${h.quarter}` === term &&
+                h.sectionCode.trim().toUpperCase() === section &&
+                normalizeDept(h.department) === dept &&
+                h.courseNumber === courseNumber &&
+                sameInstructors(h.instructors, rowMatch.instructors)
+        );
+        const row = matched ?? enrollmentHistory[enrollmentHistory.length - 1];
+        return graphKey(row);
+    }, [courseNumber, department, enrollmentHistory, rowMatch]);
+
     const activeGraphIndex = useMemo(() => {
         if (!enrollmentHistory?.length) {
             return 0;
         }
 
-        if (selectedGraphKey) {
-            const selectedIndex = enrollmentHistory.findIndex(
-                (enrollment) => graphKey(enrollment) === selectedGraphKey
-            );
-
+        const key = selectedGraphKey ?? defaultGraphKey;
+        if (key) {
+            const selectedIndex = enrollmentHistory.findIndex((enrollment) => graphKey(enrollment) === key);
             if (selectedIndex >= 0) {
                 return selectedIndex;
             }
         }
         return enrollmentHistory.length - 1;
-    }, [enrollmentHistory, selectedGraphKey]);
+    }, [defaultGraphKey, enrollmentHistory, selectedGraphKey]);
 
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);

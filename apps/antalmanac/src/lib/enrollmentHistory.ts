@@ -46,33 +46,6 @@ export interface EnrollmentHistoryDay {
     waitlist: number | null;
 }
 
-export interface EnrollmentHistoryPopoverContext {
-    /** Same shape as schedule `term` / `termData` shortName, e.g. `2025 Fall`. */
-    termShortName: string;
-    sectionCode: string;
-}
-
-/** Same term + section as the row, else most recent history index. */
-export function findDefaultEnrollmentHistoryIndex(
-    history: EnrollmentHistory[],
-    context: EnrollmentHistoryPopoverContext
-): number {
-    if (!history.length) {
-        return 0;
-    }
-    const newest = history.length - 1;
-    const term = context.termShortName.trim();
-    const section = context.sectionCode.trim().toUpperCase();
-
-    for (let i = newest; i >= 0; i--) {
-        const h = history[i];
-        if (`${h.year} ${h.quarter}` === term && h.sectionCode.trim().toUpperCase() === section) {
-            return i;
-        }
-    }
-    return newest;
-}
-
 export class DepartmentEnrollmentHistory {
     static enrollmentHistoryCache: Record<string, EnrollmentHistory[]> = {};
     static termShortNames: string[] = termData.map((term) => term.shortName);

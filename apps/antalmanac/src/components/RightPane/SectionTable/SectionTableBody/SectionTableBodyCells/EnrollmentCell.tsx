@@ -54,9 +54,9 @@ export const EnrollmentCell = ({
 
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(deptCode), [deptCode]);
 
-    const enrollmentPopoverDefaultContext = useMemo(
-        () => ({ termShortName: term, sectionCode }),
-        [term, sectionCode]
+    const enrollmentPopoverRowMatch = useMemo(
+        () => ({ term, sectionCode, instructors }),
+        [term, sectionCode, instructors]
     );
 
     const handleClick = useCallback(
@@ -133,13 +133,13 @@ export const EnrollmentCell = ({
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 <EnrollmentHistoryPopover
+                    key={anchorEl ? 'open' : 'closed'}
                     sectionType={sectionType}
                     department={deptCode}
                     courseNumber={courseNumber}
                     enrollmentHistory={enrollmentHistory}
                     loading={loadingEnrollmentHistory}
-                    popoverOpen={Boolean(anchorEl)}
-                    defaultContext={enrollmentPopoverDefaultContext}
+                    rowMatch={anchorEl ? enrollmentPopoverRowMatch : undefined}
                 />
             </Popover>
         </TableBodyCellContainer>
