@@ -1,10 +1,14 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import type { EnrollmentHistory } from '$lib/enrollmentHistory';
+import {
+    findDefaultEnrollmentHistoryIndex,
+    type EnrollmentHistory,
+    type EnrollmentHistoryPopoverContext,
+} from '$lib/enrollmentHistory';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import type { WebsocSectionType } from '@packages/antalmanac-types';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CartesianGrid,
     Legend,
@@ -22,6 +26,9 @@ interface EnrollmentHistoryPopoverProps {
     courseNumber: string;
     enrollmentHistory: EnrollmentHistory[] | undefined;
     loading?: boolean;
+    /** When true and history has loaded, the graph defaults to the row's term / section / instructors. */
+    popoverOpen?: boolean;
+    defaultContext?: EnrollmentHistoryPopoverContext;
 }
 
 function graphKey(enrollment: EnrollmentHistory) {
@@ -34,8 +41,18 @@ export function EnrollmentHistoryPopover({
     courseNumber,
     enrollmentHistory,
     loading = false,
+    popoverOpen = false,
+    defaultContext,
 }: EnrollmentHistoryPopoverProps) {
     const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
+
+    useEffect(() => {
+        if (!popoverOpen || loading || !enrollmentHistory?.length || !defaultContext) {
+            return;
+        }
+        const idx = findDefaultEnrollmentHistoryIndex(enrollmentHistory, defaultContext);
+        setSelectedGraphKey(graphKey(enrollmentHistory[idx]));
+    }, [popoverOpen, loading, enrollmentHistory, defaultContext]);
 
     const theme = useTheme();
     const isMobile = useIsMobile();
