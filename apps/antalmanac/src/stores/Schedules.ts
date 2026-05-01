@@ -55,7 +55,7 @@ export class Schedules {
         this.skeletonSchedules = [];
     }
 
-    getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
+    getNonConflictingName(scheduleIndex: number, newScheduleName: string) {
         const scheduleNames = this.getScheduleNames();
         scheduleNames.splice(scheduleIndex, 1);
         return getNextScheduleName(newScheduleName, new Set(scheduleNames));
@@ -110,7 +110,7 @@ export class Schedules {
         this.addUndoState();
         const scheduleNoteId = Math.random();
         this.schedules.push({
-            scheduleName: this.getNextScheduleName(this.getNumberOfSchedules(), newScheduleName),
+            scheduleName: this.getNonConflictingName(this.getNumberOfSchedules(), newScheduleName),
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
@@ -127,7 +127,7 @@ export class Schedules {
      */
     renameSchedule(scheduleIndex: number, newScheduleName: string) {
         this.addUndoState();
-        this.schedules[scheduleIndex].scheduleName = this.getNextScheduleName(scheduleIndex, newScheduleName);
+        this.schedules[scheduleIndex].scheduleName = this.getNonConflictingName(scheduleIndex, newScheduleName);
     }
 
     /**
