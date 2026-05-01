@@ -24,6 +24,10 @@ interface EnrollmentHistoryPopoverProps {
     loading?: boolean;
 }
 
+function graphKey(enrollment: EnrollmentHistory) {
+    return `${enrollment.year}-${enrollment.quarter}-${enrollment.instructors.join('|')}`;
+}
+
 export function EnrollmentHistoryPopover({
     sectionType,
     department,
@@ -31,32 +35,36 @@ export function EnrollmentHistoryPopover({
     enrollmentHistory,
     loading = false,
 }: EnrollmentHistoryPopoverProps) {
-    const [selectedGraphIndex, setSelectedGraphIndex] = useState<number>();
+    const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
 
     const theme = useTheme();
     const isMobile = useIsMobile();
 
-    const width = isMobile ? 300 : 450;
+    const width = isMobile ? 250 : 450;
     const height = isMobile ? 175 : 250;
-    const enrollmentHistoryCount = enrollmentHistory?.length ?? 0;
 
     const activeGraphIndex = useMemo(() => {
-        if (!enrollmentHistoryCount) {
+        if (!enrollmentHistory?.length) {
             return 0;
         }
 
-        if (selectedGraphIndex == null) {
-            return enrollmentHistoryCount - 1;
-        }
+        if (selectedGraphKey) {
+            const selectedIndex = enrollmentHistory.findIndex(
+                (enrollment) => graphKey(enrollment) === selectedGraphKey
+            );
 
-        return Math.min(Math.max(selectedGraphIndex, 0), enrollmentHistoryCount - 1);
-    }, [enrollmentHistoryCount, selectedGraphIndex]);
+            if (selectedIndex >= 0) {
+                return selectedIndex;
+            }
+        }
+        return enrollmentHistory.length - 1;
+    }, [enrollmentHistory, selectedGraphKey]);
 
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
         currEnrollmentHistory != null ? (
-            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType} | ${currEnrollmentHistory.sectionCode ?? ''}`
+            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType}`
         ) : (
             <>&nbsp;</>
         );
@@ -64,28 +72,21 @@ export function EnrollmentHistoryPopover({
     const chartColors = theme.palette.enrollmentStatus;
 
     const handleBack = useCallback(() => {
-        if (!enrollmentHistoryCount) {
+        if (!enrollmentHistory?.length || activeGraphIndex === 0) {
             return;
         }
-
-        setSelectedGraphIndex((currentIndex) => {
-            const resolvedIndex = currentIndex ?? enrollmentHistoryCount - 1;
-            return Math.max(resolvedIndex - 1, 0);
-        });
-    }, [enrollmentHistoryCount]);
+        setSelectedGraphKey(graphKey(enrollmentHistory[activeGraphIndex - 1]));
+    }, [activeGraphIndex, enrollmentHistory]);
 
     const handleForward = useCallback(() => {
-        if (!enrollmentHistoryCount) {
+        if (!enrollmentHistory?.length || activeGraphIndex === enrollmentHistory.length - 1) {
             return;
         }
+        setSelectedGraphKey(graphKey(enrollmentHistory[activeGraphIndex + 1]));
+    }, [activeGraphIndex, enrollmentHistory]);
 
-        setSelectedGraphIndex((currentIndex) => {
-            const resolvedIndex = currentIndex ?? enrollmentHistoryCount - 1;
-            return Math.min(resolvedIndex + 1, enrollmentHistoryCount - 1);
-        });
-    }, [enrollmentHistoryCount]);
-
-    const navDisabled = loading || enrollmentHistoryCount === 0;
+    const historyCount = enrollmentHistory?.length ?? 0;
+    const navDisabled = loading || historyCount === 0;
 
     const headerAction = (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -101,7 +102,7 @@ export function EnrollmentHistoryPopover({
                     <IconButton
                         size="small"
                         onClick={handleForward}
-                        disabled={navDisabled || activeGraphIndex >= enrollmentHistoryCount - 1}
+                        disabled={navDisabled || activeGraphIndex >= historyCount - 1}
                     >
                         <ArrowForward />
                     </IconButton>

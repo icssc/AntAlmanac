@@ -3,12 +3,13 @@ import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
-import { Route } from '@mui/icons-material';
+import { HistoryEdu, Route } from '@mui/icons-material';
 import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useMemo } from 'react';
@@ -113,6 +114,20 @@ function SectionTable(props: SectionTableProps) {
                     text="Planner"
                     icon={<Route />}
                     redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
+                />
+
+                <CourseInfoButton
+                    analyticsCategory={analyticsCategory}
+                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
+                    text="Past Syllabi"
+                    icon={<HistoryEdu />}
+                    popupContent={
+                        <PastSyllabiPopover
+                            courseId={courseId}
+                            deptCode={courseDetails.deptCode}
+                            courseNumber={courseDetails.courseNumber}
+                        />
+                    }
                 />
             </Box>
 

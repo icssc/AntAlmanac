@@ -187,7 +187,7 @@ export function GradesPopover(props: GradesPopoverProps) {
                         </ResponsiveContainer>
                     </Box>
                 ) : (
-                    <Typography variant="body1" align="center" color="text.secondary">
+                    <Typography variant="body1" color="text.secondary">
                         {view === 'instructor'
                             ? "This instructor doesn't have a specific GPA for this course."
                             : 'No data available.'}
