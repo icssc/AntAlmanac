@@ -1,0 +1,23 @@
+packages/db/src/schema/friendship.ts
+  315e0765055f8fe9 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "991e968d6b87e00f5c414ccb43393ad7e6ff9d45",
+  "prompts": {
+    "315e0765055f8fe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c684b7d5-7428-4dc6-97e4-da8fd38ac87a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
