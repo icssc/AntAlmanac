@@ -53,17 +53,14 @@ export interface EnrollmentHistoryPopoverContext {
     instructors: string[];
 }
 
-function instructorOverlap(historyInstructors: string[], currentNames: Set<string>): boolean {
-    if (currentNames.size === 0) {
-        return true;
-    }
-    return historyInstructors.some((name) => {
-        const t = name.trim();
-        return t.length > 0 && t !== 'STAFF' && currentNames.has(t);
-    });
+function sortedInstructorKeys(names: string[]): string[] {
+    return [...names]
+        .map((n) => n.trim())
+        .filter((n) => n.length > 0)
+        .sort();
 }
 
-/** Newest-first among rows matching the schedule term; prefers same section code, then instructor overlap. */
+/** Perfect match on term + section + instructors (order-independent), else most recent index. */
 export function findDefaultEnrollmentHistoryIndex(
     history: EnrollmentHistory[],
     context: EnrollmentHistoryPopoverContext
@@ -71,35 +68,26 @@ export function findDefaultEnrollmentHistoryIndex(
     if (!history.length) {
         return 0;
     }
+    const newest = history.length - 1;
     const termParts = context.termShortName.trim().split(/\s+/);
     const year = termParts[0];
     const quarter = termParts.slice(1).join(' ');
     const sectionNorm = context.sectionCode.trim().toUpperCase();
-    const currentInstructors = new Set(
-        context.instructors.map((n) => n.trim()).filter((n) => n.length > 0 && n !== 'STAFF')
-    );
+    const wantInstructors = sortedInstructorKeys(context.instructors);
 
-    const newest = history.length - 1;
     for (let i = newest; i >= 0; i--) {
         const h = history[i];
         if (h.year !== year || h.quarter !== quarter) {
             continue;
         }
-        if (h.sectionCode.trim().toUpperCase() === sectionNorm) {
-            return i;
-        }
-    }
-    for (let i = newest; i >= 0; i--) {
-        const h = history[i];
-        if (h.year !== year || h.quarter !== quarter) {
+        if (h.sectionCode.trim().toUpperCase() !== sectionNorm) {
             continue;
         }
-        if (instructorOverlap(h.instructors, currentInstructors)) {
-            return i;
-        }
-    }
-    for (let i = newest; i >= 0; i--) {
-        if (history[i].year === year && history[i].quarter === quarter) {
+        const got = sortedInstructorKeys(h.instructors);
+        if (
+            got.length === wantInstructors.length &&
+            got.every((name, j) => name === wantInstructors[j])
+        ) {
             return i;
         }
     }
