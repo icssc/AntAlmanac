@@ -16,6 +16,8 @@ enum LocalStorageKeys {
     /** @deprecated Removed along with the HelpBox component in PR #1473. */
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
+    /** @deprecated Removed along with the PWA install banner. */
+    pwaDismissalTime = 'pwaDismissalTime',
     /** @deprecated Session token is now stored in an HttpOnly cookie (aa_session). */
     sessionId = 'sessionId',
     wasLoggedIn = 'wasLoggedIn',
