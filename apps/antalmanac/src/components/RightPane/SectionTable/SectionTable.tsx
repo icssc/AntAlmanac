@@ -93,42 +93,47 @@ function SectionTable(props: SectionTableProps) {
             <Box
                 sx={{
                     display: 'flex',
+                    flexDirection: 'column',
                     gap: '4px',
                     marginBottom: '8px',
                     marginTop: '4px',
                 }}
             >
-                <CourseInfoBar
-                    deptCode={courseDetails.deptCode}
-                    courseTitle={courseDetails.courseTitle}
-                    courseNumber={courseDetails.courseNumber}
-                    prerequisiteLink={courseDetails.prerequisiteLink}
-                    analyticsCategory={analyticsCategory}
-                />
+                <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <CourseInfoBar
+                        deptCode={courseDetails.deptCode}
+                        courseTitle={courseDetails.courseTitle}
+                        courseNumber={courseDetails.courseNumber}
+                        prerequisiteLink={courseDetails.prerequisiteLink}
+                        analyticsCategory={analyticsCategory}
+                    />
+                </Box>
 
-                {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
+                <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
 
-                <CourseInfoButton
-                    analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
-                    text="Planner"
-                    icon={<Route />}
-                    redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
-                />
+                    <CourseInfoButton
+                        analyticsCategory={analyticsCategory}
+                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
+                        text="Planner"
+                        icon={<Route />}
+                        redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
+                    />
 
-                <CourseInfoButton
-                    analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
-                    text="Past Syllabi"
-                    icon={<HistoryEdu />}
-                    popupContent={
-                        <PastSyllabiPopover
-                            courseId={courseId}
-                            deptCode={courseDetails.deptCode}
-                            courseNumber={courseDetails.courseNumber}
-                        />
-                    }
-                />
+                    <CourseInfoButton
+                        analyticsCategory={analyticsCategory}
+                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
+                        text="Past Syllabi"
+                        icon={<HistoryEdu />}
+                        popupContent={
+                            <PastSyllabiPopover
+                                courseId={courseId}
+                                deptCode={courseDetails.deptCode}
+                                courseNumber={courseDetails.courseNumber}
+                            />
+                        }
+                    />
+                </Box>
             </Box>
 
             {missingSections?.length > 0 && (
