@@ -14,4 +14,5 @@ export interface SectionTableProps {
     analyticsCategory: AnalyticsCategory;
     updatedAt?: string;
     missingSections?: string[];
+    sortable?: boolean;
 }

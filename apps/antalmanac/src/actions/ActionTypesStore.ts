@@ -82,6 +82,13 @@ export interface ReorderScheduleAction {
     to: number;
 }
 
+export interface ReorderAddedCoursesAction {
+    type: 'reorderAddedCourses';
+    scheduleIndex: number;
+    movedCourseId: string;
+    nextCourseId: string | null;
+}
+
 export interface ChangeCourseColorAction {
     type: 'changeCourseColor';
     sectionCode: string;
@@ -102,6 +109,7 @@ export type ActionType =
     | DeleteScheduleAction
     | CopyScheduleAction
     | ReorderScheduleAction
+    | ReorderAddedCoursesAction
     | ChangeCourseColorAction
     | UndoRedoAction;
 
