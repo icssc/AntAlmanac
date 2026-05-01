@@ -29,6 +29,7 @@ const submitReviewInput = z.object({
     difficulty: z.number().int().min(1).max(5),
     tags: z.array(reviewTagsEnum).default([]),
     anonymous: z.boolean().default(true),
+    content: z.string().optional(),
 });
 
 const reviewRouter = router({
@@ -67,6 +68,7 @@ const reviewRouter = router({
                 difficulty: input.difficulty,
                 tags: input.tags,
                 anonymous: input.anonymous,
+                content: input.content,
             })
             .returning({ id: instructorReviews.id });
 
