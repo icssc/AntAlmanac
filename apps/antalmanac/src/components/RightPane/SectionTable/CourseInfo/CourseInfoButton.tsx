@@ -1,5 +1,7 @@
+import { useIsMobile } from '$hooks/useIsMobile';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { Box, Button, Paper, Popover } from '@mui/material';
+import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
+import { Box, Button, Paper, Popover, useTheme } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
@@ -21,8 +23,15 @@ export const CourseInfoButton = ({
     analyticsCategory,
 }: CourseInfoButtonProps) => {
     const postHog = usePostHog();
+    const theme = useTheme();
+    const isMobile = useIsMobile();
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+    const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
+    const compact =
+        isMobile || (scheduleManagementWidth !== undefined && scheduleManagementWidth < theme.breakpoints.values.xs);
+    const showLabel = !compact || isMobile;
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
@@ -52,15 +61,17 @@ export const CourseInfoButton = ({
             <Button variant="contained" size="small" color="primary" onClick={handleClick}>
                 <span style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                     {icon}
-                    <span
-                        style={{
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                        }}
-                    >
-                        {text}
-                    </span>
+                    {showLabel ? (
+                        <span
+                            style={{
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}
+                        >
+                            {text}
+                        </span>
+                    ) : null}
                 </span>
             </Button>
 

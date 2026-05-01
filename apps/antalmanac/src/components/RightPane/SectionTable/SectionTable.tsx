@@ -88,52 +88,70 @@ function SectionTable(props: SectionTableProps) {
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [activeColumns]);
 
+    const courseInfoBar = (
+        <CourseInfoBar
+            deptCode={courseDetails.deptCode}
+            courseTitle={courseDetails.courseTitle}
+            courseNumber={courseDetails.courseNumber}
+            prerequisiteLink={courseDetails.prerequisiteLink}
+            analyticsCategory={analyticsCategory}
+        />
+    );
+
+    const courseActionButtons = (
+        <>
+            {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
+
+            <CourseInfoButton
+                analyticsCategory={analyticsCategory}
+                analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
+                text="Planner"
+                icon={<Route />}
+                redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
+            />
+
+            <CourseInfoButton
+                analyticsCategory={analyticsCategory}
+                analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
+                text="Past Syllabi"
+                icon={<HistoryEdu />}
+                popupContent={
+                    <PastSyllabiPopover
+                        courseId={courseId}
+                        deptCode={courseDetails.deptCode}
+                        courseNumber={courseDetails.courseNumber}
+                    />
+                }
+            />
+        </>
+    );
+
     return (
         <>
             <Box
                 sx={{
                     display: 'flex',
-                    flexDirection: 'column',
+                    flexDirection: isMobile ? 'column' : 'row',
                     gap: '4px',
                     marginBottom: '8px',
                     marginTop: '4px',
                 }}
             >
-                <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <CourseInfoBar
-                        deptCode={courseDetails.deptCode}
-                        courseTitle={courseDetails.courseTitle}
-                        courseNumber={courseDetails.courseNumber}
-                        prerequisiteLink={courseDetails.prerequisiteLink}
-                        analyticsCategory={analyticsCategory}
-                    />
-                </Box>
-
-                <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
-
-                    <CourseInfoButton
-                        analyticsCategory={analyticsCategory}
-                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
-                        text="Planner"
-                        icon={<Route />}
-                        redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
-                    />
-
-                    <CourseInfoButton
-                        analyticsCategory={analyticsCategory}
-                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
-                        text="Past Syllabi"
-                        icon={<HistoryEdu />}
-                        popupContent={
-                            <PastSyllabiPopover
-                                courseId={courseId}
-                                deptCode={courseDetails.deptCode}
-                                courseNumber={courseDetails.courseNumber}
-                            />
-                        }
-                    />
-                </Box>
+                {isMobile ? (
+                    <>
+                        <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                            {courseInfoBar}
+                        </Box>
+                        <Box sx={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                            {courseActionButtons}
+                        </Box>
+                    </>
+                ) : (
+                    <>
+                        {courseInfoBar}
+                        {courseActionButtons}
+                    </>
+                )}
             </Box>
 
             {missingSections?.length > 0 && (
