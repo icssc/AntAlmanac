@@ -50,17 +50,9 @@ export interface EnrollmentHistoryPopoverContext {
     /** Same shape as schedule `term` / `termData` shortName, e.g. `2025 Fall`. */
     termShortName: string;
     sectionCode: string;
-    instructors: string[];
 }
 
-function sortedInstructorKeys(names: string[]): string[] {
-    return [...names]
-        .map((n) => n.trim())
-        .filter((n) => n.length > 0)
-        .sort();
-}
-
-/** Perfect match on term + section + instructors (order-independent), else most recent index. */
+/** Same term + section as the row, else most recent history index. */
 export function findDefaultEnrollmentHistoryIndex(
     history: EnrollmentHistory[],
     context: EnrollmentHistoryPopoverContext
@@ -69,25 +61,12 @@ export function findDefaultEnrollmentHistoryIndex(
         return 0;
     }
     const newest = history.length - 1;
-    const termParts = context.termShortName.trim().split(/\s+/);
-    const year = termParts[0];
-    const quarter = termParts.slice(1).join(' ');
-    const sectionNorm = context.sectionCode.trim().toUpperCase();
-    const wantInstructors = sortedInstructorKeys(context.instructors);
+    const term = context.termShortName.trim();
+    const section = context.sectionCode.trim().toUpperCase();
 
     for (let i = newest; i >= 0; i--) {
         const h = history[i];
-        if (h.year !== year || h.quarter !== quarter) {
-            continue;
-        }
-        if (h.sectionCode.trim().toUpperCase() !== sectionNorm) {
-            continue;
-        }
-        const got = sortedInstructorKeys(h.instructors);
-        if (
-            got.length === wantInstructors.length &&
-            got.every((name, j) => name === wantInstructors[j])
-        ) {
+        if (`${h.year} ${h.quarter}` === term && h.sectionCode.trim().toUpperCase() === section) {
             return i;
         }
     }

@@ -55,8 +55,8 @@ export const EnrollmentCell = ({
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(deptCode), [deptCode]);
 
     const enrollmentPopoverDefaultContext = useMemo(
-        () => ({ termShortName: term, sectionCode, instructors }),
-        [term, sectionCode, instructors]
+        () => ({ termShortName: term, sectionCode }),
+        [term, sectionCode]
     );
 
     const handleClick = useCallback(
