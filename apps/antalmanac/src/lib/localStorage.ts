@@ -26,6 +26,7 @@ enum LocalStorageKeys {
     fromLoading = 'fromLoading',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
+    hiddenCourses = 'hiddenCourses',
 }
 
 const LSK = LocalStorageKeys;
@@ -311,4 +312,12 @@ export function getLocalStorageSkeletonBlueprint() {
 
 export function removeLocalStorageSkeletonBlueprint() {
     window.localStorage.removeItem(LSK.skeletonBlueprint);
+}
+
+export function setLocalStorageHiddenCourses(value: string) {
+    window.localStorage.setItem(LSK.hiddenCourses, value);
+}
+
+export function getLocalStorageHiddenCourses() {
+    return window.localStorage.getItem(LSK.hiddenCourses);
 }

@@ -83,6 +83,10 @@ export class Schedules {
         return this.schedules[this.currentScheduleIndex].scheduleName;
     }
 
+    getCurrentScheduleId() {
+        return this.schedules[this.currentScheduleIndex].scheduleId;
+    }
+
     /**
      * Get the name of schedule.
      */
