@@ -9,6 +9,8 @@ import { useCallback, useMemo, useState } from 'react';
 
 interface EnrollmentCellProps {
     sectionType: WebsocSectionType;
+    term: string;
+    sectionCode: string;
     deptCode: string;
     courseNumber: string;
     instructors: string[];
@@ -31,6 +33,8 @@ interface EnrollmentCellProps {
 
 export const EnrollmentCell = ({
     sectionType,
+    term,
+    sectionCode,
     deptCode,
     courseNumber,
     numCurrentlyEnrolled,
@@ -49,6 +53,11 @@ export const EnrollmentCell = ({
     const [loadingEnrollmentHistory, setLoadingEnrollmentHistory] = useState(false);
 
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(deptCode), [deptCode]);
+
+    const enrollmentPopoverRowMatch = useMemo(
+        () => ({ term, sectionCode, instructors }),
+        [term, sectionCode, instructors]
+    );
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
@@ -124,11 +133,13 @@ export const EnrollmentCell = ({
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 <EnrollmentHistoryPopover
+                    key={anchorEl ? 'open' : 'closed'}
                     sectionType={sectionType}
                     department={deptCode}
                     courseNumber={courseNumber}
                     enrollmentHistory={enrollmentHistory}
                     loading={loadingEnrollmentHistory}
+                    rowMatch={anchorEl ? enrollmentPopoverRowMatch : undefined}
                 />
             </Popover>
         </TableBodyCellContainer>
