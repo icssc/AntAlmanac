@@ -46,6 +46,66 @@ export interface EnrollmentHistoryDay {
     waitlist: number | null;
 }
 
+export interface EnrollmentHistoryPopoverContext {
+    /** Same shape as schedule `term` / `termData` shortName, e.g. `2025 Fall`. */
+    termShortName: string;
+    sectionCode: string;
+    instructors: string[];
+}
+
+function instructorOverlap(historyInstructors: string[], currentNames: Set<string>): boolean {
+    if (currentNames.size === 0) {
+        return true;
+    }
+    return historyInstructors.some((name) => {
+        const t = name.trim();
+        return t.length > 0 && t !== 'STAFF' && currentNames.has(t);
+    });
+}
+
+/** Newest-first among rows matching the schedule term; prefers same section code, then instructor overlap. */
+export function findDefaultEnrollmentHistoryIndex(
+    history: EnrollmentHistory[],
+    context: EnrollmentHistoryPopoverContext
+): number {
+    if (!history.length) {
+        return 0;
+    }
+    const termParts = context.termShortName.trim().split(/\s+/);
+    const year = termParts[0];
+    const quarter = termParts.slice(1).join(' ');
+    const sectionNorm = context.sectionCode.trim().toUpperCase();
+    const currentInstructors = new Set(
+        context.instructors.map((n) => n.trim()).filter((n) => n.length > 0 && n !== 'STAFF')
+    );
+
+    const newest = history.length - 1;
+    for (let i = newest; i >= 0; i--) {
+        const h = history[i];
+        if (h.year !== year || h.quarter !== quarter) {
+            continue;
+        }
+        if (h.sectionCode.trim().toUpperCase() === sectionNorm) {
+            return i;
+        }
+    }
+    for (let i = newest; i >= 0; i--) {
+        const h = history[i];
+        if (h.year !== year || h.quarter !== quarter) {
+            continue;
+        }
+        if (instructorOverlap(h.instructors, currentInstructors)) {
+            return i;
+        }
+    }
+    for (let i = newest; i >= 0; i--) {
+        if (history[i].year === year && history[i].quarter === quarter) {
+            return i;
+        }
+    }
+    return newest;
+}
+
 export class DepartmentEnrollmentHistory {
     static enrollmentHistoryCache: Record<string, EnrollmentHistory[]> = {};
     static termShortNames: string[] = termData.map((term) => term.shortName);
