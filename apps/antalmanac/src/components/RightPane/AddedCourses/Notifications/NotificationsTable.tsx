@@ -1,3 +1,4 @@
+import { NotificationTableRow } from '$components/RightPane/AddedCourses/Notifications/NotificationsTableRow';
 import {
     TableContainer,
     Paper,
@@ -10,8 +11,6 @@ import {
     useTheme,
 } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
-
-import { NotificationTableRow } from '$components/RightPane/AddedCourses/Notifications/NotificationsTableRow';
 
 interface NotificationsTableProps {
     keys: string[];
