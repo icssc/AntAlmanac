@@ -1,9 +1,9 @@
 import { useIsMobile } from '$hooks/useIsMobile';
+import type { EnrollmentHistory } from '$lib/enrollmentHistory';
 import {
     findDefaultEnrollmentHistoryIndex,
-    type EnrollmentHistory,
     type EnrollmentHistoryPopoverContext,
-} from '$lib/enrollmentHistory';
+} from '$lib/enrollmentHistoryPopoverMatch';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';

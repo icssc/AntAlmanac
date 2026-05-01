@@ -1,29 +1,27 @@
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
-vi.mock('$lib/api/trpc', () => ({ default: {} }));
-
-import { findDefaultEnrollmentHistoryIndex, type EnrollmentHistory } from '$lib/enrollmentHistory';
+import {
+    findDefaultEnrollmentHistoryIndex,
+    type EnrollmentHistoryPopoverRow,
+} from '$lib/enrollmentHistoryPopoverMatch';
 
 function entry(
     year: string,
     quarter: string,
     sectionCode: string,
     instructors: string[]
-): EnrollmentHistory {
+): EnrollmentHistoryPopoverRow {
     return {
         year,
         quarter,
-        department: 'I&C SCI',
-        courseNumber: '45C',
         sectionCode,
-        days: [],
         instructors,
     };
 }
 
 describe('findDefaultEnrollmentHistoryIndex', () => {
     test('prefers same term, section, and instructor overlap', () => {
-        const history: EnrollmentHistory[] = [
+        const history: EnrollmentHistoryPopoverRow[] = [
             entry('2024', 'Fall', 'A', ['SMITH, J.']),
             entry('2025', 'Winter', 'B', ['DOE, J.']),
             entry('2025', 'Fall', 'A', ['DOE, J.', 'LEE, K.']),
@@ -37,7 +35,7 @@ describe('findDefaultEnrollmentHistoryIndex', () => {
     });
 
     test('falls back to newest when term does not match any row', () => {
-        const history: EnrollmentHistory[] = [
+        const history: EnrollmentHistoryPopoverRow[] = [
             entry('2024', 'Fall', 'A', ['SMITH, J.']),
             entry('2025', 'Winter', 'B', ['DOE, J.']),
         ];
@@ -50,7 +48,7 @@ describe('findDefaultEnrollmentHistoryIndex', () => {
     });
 
     test('uses instructor overlap when section code differs across terms', () => {
-        const history: EnrollmentHistory[] = [
+        const history: EnrollmentHistoryPopoverRow[] = [
             entry('2025', 'Fall', 'A', ['LEE, K.']),
             entry('2025', 'Fall', 'B', ['DOE, J.']),
         ];
