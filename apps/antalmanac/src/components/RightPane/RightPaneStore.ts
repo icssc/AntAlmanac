@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { normalizeGeSelection } from '$lib/multiGeSearch';
 import { getDefaultTerm } from '$lib/termData';
 
 const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
@@ -40,11 +41,39 @@ class RightPaneStore extends EventEmitter {
     private urlCourseNumValue: string;
     private urlDeptValue: string;
 
+    private normalizeGeQueryParam = (search: URLSearchParams) => {
+        const rawGeValue = search.get('ge') ?? search.get('GE');
+        if (rawGeValue == null) {
+            return;
+        }
+
+        const normalizedGe = normalizeGeSelection(rawGeValue);
+        const currentGe = search.get('ge');
+        const hadUppercaseGeParam = search.has('GE');
+
+        search.delete('GE');
+        if (normalizedGe === 'ANY') {
+            search.delete('ge');
+        } else {
+            search.set('ge', normalizedGe);
+        }
+
+        const wasChanged = (currentGe ?? '') !== (normalizedGe === 'ANY' ? '' : normalizedGe) || hadUppercaseGeParam;
+        if (!wasChanged) {
+            return;
+        }
+
+        const nextQuery = search.toString();
+        const nextURL = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
+        history.replaceState({ url: 'url' }, 'url', nextURL);
+    };
+
     constructor() {
         super();
         this.setMaxListeners(15);
         this.formData = structuredClone(defaultFormValues);
         const search = new URLSearchParams(window.location.search);
+        this.normalizeGeQueryParam(search);
         this.urlSectionCodeValue = search.get('sectionCode') || '';
         this.urlTermValue = search.get('term') || '';
         this.urlGEValue = search.get('ge') || '';
@@ -61,7 +90,7 @@ class RightPaneStore extends EventEmitter {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
 
             if (paramValue !== null) {
-                this.formData[field] = paramValue;
+                this.formData[field] = field === 'ge' ? normalizeGeSelection(paramValue) : paramValue;
             }
         });
 
