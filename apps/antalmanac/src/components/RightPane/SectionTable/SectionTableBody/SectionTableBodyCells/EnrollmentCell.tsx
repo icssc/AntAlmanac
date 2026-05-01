@@ -1,5 +1,5 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTablePopover/EnrollmentHistoryPopover';
+import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTableBody/SectionTablePopover/EnrollmentHistoryPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { DepartmentEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
