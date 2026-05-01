@@ -53,7 +53,7 @@ function SectionTable(props: SectionTableProps) {
     const [activeTab] = useTabStore((store) => [store.activeTab]);
     const isMobile = useIsMobile();
 
-    const actionColumnWidth = isMobile ? 54 : 85;
+    const actionColumnWidth = isMobile ? 54 : 77;
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
