@@ -7,6 +7,7 @@ import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTa
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
+import { useEnrollmentAnchorStore } from '$stores/EnrollmentAnchorStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { HistoryEdu, Route } from '@mui/icons-material';
@@ -58,6 +59,24 @@ function SectionTable(props: SectionTableProps) {
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
+
+    const enrollmentAnchor = useEnrollmentAnchorStore((s) => s.anchor);
+
+    const { anchorYearQuarter, anchorPrimaryInstructor } = useMemo(() => {
+        const firstSectionInstructor = courseDetails.sections[0]?.instructors?.[0];
+
+        if (enrollmentAnchor?.courseId === courseId) {
+            return {
+                anchorYearQuarter: `${enrollmentAnchor.year} ${enrollmentAnchor.quarter}`,
+                anchorPrimaryInstructor: enrollmentAnchor.primaryInstructor ?? firstSectionInstructor,
+            };
+        }
+
+        return {
+            anchorYearQuarter: term,
+            anchorPrimaryInstructor: firstSectionInstructor,
+        };
+    }, [courseDetails.sections, courseId, enrollmentAnchor, term]);
 
     const formattedTime = useMemo(() => {
         if (!courseDetails.updatedAt) {
@@ -126,6 +145,8 @@ function SectionTable(props: SectionTableProps) {
                             courseId={courseId}
                             deptCode={courseDetails.deptCode}
                             courseNumber={courseDetails.courseNumber}
+                            anchorYearQuarter={anchorYearQuarter}
+                            anchorPrimaryInstructor={anchorPrimaryInstructor}
                         />
                     }
                 />

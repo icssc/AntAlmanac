@@ -4,7 +4,8 @@ import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import type { WebsocSectionType } from '@packages/antalmanac-types';
-import { useCallback, useMemo, useState } from 'react';
+import { useEnrollmentAnchorStore } from '$stores/EnrollmentAnchorStore';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CartesianGrid,
     Legend,
@@ -20,6 +21,8 @@ interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
+    /** Dept + course number without spaces; used to align Past Syllabi with this enrollment graph. */
+    courseId: string;
     enrollmentHistory: EnrollmentHistory[] | undefined;
     loading?: boolean;
 }
@@ -32,10 +35,12 @@ export function EnrollmentHistoryPopover({
     sectionType,
     department,
     courseNumber,
+    courseId,
     enrollmentHistory,
     loading = false,
 }: EnrollmentHistoryPopoverProps) {
     const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
+    const setEnrollmentAnchor = useEnrollmentAnchorStore((s) => s.setAnchor);
 
     const theme = useTheme();
     const isMobile = useIsMobile();
@@ -59,6 +64,20 @@ export function EnrollmentHistoryPopover({
         }
         return enrollmentHistory.length - 1;
     }, [enrollmentHistory, selectedGraphKey]);
+
+    useEffect(() => {
+        const curr = enrollmentHistory?.at(activeGraphIndex);
+        if (curr == null) {
+            return;
+        }
+
+        setEnrollmentAnchor({
+            courseId,
+            year: curr.year,
+            quarter: curr.quarter,
+            primaryInstructor: curr.instructors.at(0),
+        });
+    }, [activeGraphIndex, courseId, enrollmentHistory, setEnrollmentAnchor]);
 
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);

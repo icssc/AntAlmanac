@@ -7,6 +7,10 @@ import { Box, ButtonBase, Popover, Tooltip, Typography } from '@mui/material';
 import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
 
+function courseIdFromDeptAndNumber(deptCode: string, courseNumber: string) {
+    return deptCode.replaceAll(' ', '') + courseNumber;
+}
+
 interface EnrollmentCellProps {
     sectionType: WebsocSectionType;
     deptCode: string;
@@ -49,6 +53,8 @@ export const EnrollmentCell = ({
     const [loadingEnrollmentHistory, setLoadingEnrollmentHistory] = useState(false);
 
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(deptCode), [deptCode]);
+
+    const courseId = useMemo(() => courseIdFromDeptAndNumber(deptCode, courseNumber), [deptCode, courseNumber]);
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
@@ -127,6 +133,7 @@ export const EnrollmentCell = ({
                     sectionType={sectionType}
                     department={deptCode}
                     courseNumber={courseNumber}
+                    courseId={courseId}
                     enrollmentHistory={enrollmentHistory}
                     loading={loadingEnrollmentHistory}
                 />
