@@ -436,13 +436,13 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndice
 };
 
 export const undoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && !event.shiftKey)) {
+    if (event == null || (event.key === 'z' && (event.ctrlKey || event.metaKey) && !event.shiftKey)) {
         AppStore.undoAction();
     }
 };
 
 export const redoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
+    if (event == null || (event.key === 'z' && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
         AppStore.redoAction();
     }
 };
