@@ -78,7 +78,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
             {!skeletonMode && (
                 <CardActions disableSpacing={true}>
                     <ColorPicker
-                        color={customEvent.color}
+                        color={customEvent.color ?? '#551a8b'}
                         isCustomEvent={true}
                         customEventID={customEvent.customEventID}
                         analyticsCategory={analyticsEnum.addedClasses}

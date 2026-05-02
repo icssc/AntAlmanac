@@ -1,5 +1,5 @@
 import { ScheduleSaveStateSchema } from './schedule';
-import { type } from 'arktype';
+import { z } from 'zod';
 
 /**
  * Users are stored in one shared table.
@@ -7,20 +7,20 @@ import { type } from 'arktype';
  * All users can be queried by their `id`.
  * Google users can be queried via the `googleId` column.
  */
-export const UserSchema = type({
+export const UserSchema = z.object({
     /**
      * All users have a unique ID.
      * Users logging in with Google will have their ID default to their Google ID.
      *
      * TODO: Handle case where existing ID conflicts with the Google ID.
      */
-    id: 'string',
+    id: z.string(),
 
     /**
      * Some users will have a Google ID from logging in via Google OAuth.
      * They can still use their ID to log in.
      */
-    'googleId?': 'string',
+    googleId: z.string().optional(),
 
     /**
      * Users can view other users' schedules, even anonymously.
@@ -31,7 +31,7 @@ export const UserSchema = type({
      * - public: Other users can view, but can't edit, i.e. "read-only".
      * - open: Anybody can view and edit.
      */
-    'visibility?': 'string',
+    visibility: z.string().optional(),
 
     /**
      * User data is stored in a JSON.
@@ -40,10 +40,10 @@ export const UserSchema = type({
 
     // Additional fields. Can be provided by Google OAuth.
 
-    'name?': 'string',
-    'email?': 'string',
-    'avatar?': 'string',
-    'imported?': 'boolean',
+    name: z.string().optional(),
+    email: z.string().optional(),
+    avatar: z.string().optional(),
+    imported: z.boolean().optional(),
 });
 
-export type User = typeof UserSchema.infer;
+export type User = z.infer<typeof UserSchema>;

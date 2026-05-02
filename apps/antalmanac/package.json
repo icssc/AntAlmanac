@@ -44,7 +44,6 @@
         "@trpc/server": "^10.30.0",
         "archiver": "^6.0.2",
         "arctic": "^3.7.0",
-        "arktype": "1.0.14-alpha",
         "date-fns": "^2.29.3",
         "drizzle-orm": "^0.45.1",
         "events": "^3.3.0",
