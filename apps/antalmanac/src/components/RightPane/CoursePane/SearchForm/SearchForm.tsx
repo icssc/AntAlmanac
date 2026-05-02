@@ -8,17 +8,13 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { alpha, Box, Stack, SxProps, Theme, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
 interface SearchFormProps {
     toggleSearch: () => void;
 }
-
-const QUICKSEARCH_LABEL_SX: SxProps<Theme> = {
-    minWidth: '6.5rem',
-};
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
@@ -69,11 +65,11 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         <ToggleButton value="manual">Manual Search</ToggleButton>
                     </ToggleButtonGroup>
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TermSelector labelProps={!manualSearchEnabled ? { sx: QUICKSEARCH_LABEL_SX } : undefined} />
+                        <TermSelector labelProps={!manualSearchEnabled ? { shortenLabel: true } : undefined} />
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <QuickSearch toggleSearch={toggleSearch} labelProps={{ sx: QUICKSEARCH_LABEL_SX }} />
+                        <QuickSearch toggleSearch={toggleSearch} labelProps={{ shortenLabel: true }} />
                     ) : (
                         <ManualSearch
                             onSubmit={() => {
