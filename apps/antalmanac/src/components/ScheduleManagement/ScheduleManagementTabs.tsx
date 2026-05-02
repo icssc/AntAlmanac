@@ -1,5 +1,4 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { useTabStore } from '$stores/TabStore';
 import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
 import { Paper, Tabs } from '@mui/material';
@@ -64,7 +63,6 @@ const scheduleManagementTabs: Array<ScheduleManagementTabInfo> = [
 
 export function ScheduleManagementTabs() {
     const { activeTab } = useTabStore();
-    const visibleActiveTab = useIsMobile() || activeTab !== 0 ? activeTab : false;
 
     return (
         <Paper
@@ -77,13 +75,7 @@ export function ScheduleManagementTabs() {
                 borderWidth: '1px 0px 1px 0px',
             }}
         >
-            <Tabs
-                value={visibleActiveTab}
-                indicatorColor="secondary"
-                textColor="secondary"
-                variant="fullWidth"
-                centered
-            >
+            <Tabs value={activeTab} indicatorColor="secondary" textColor="secondary" variant="fullWidth" centered>
                 {scheduleManagementTabs.map((tab, index) => (
                     <ScheduleManagementTab key={tab.label} tab={tab} value={index} />
                 ))}
