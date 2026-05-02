@@ -103,7 +103,7 @@ class RightPaneStore extends EventEmitter {
     };
 
     setMultiSearchData = (data: Partial<(typeof this.multiSearchData)[number]>[]) => {
-        this.multiSearchData = data.map((params) => ({ ...defaultFormValues, ...params }));
+        this.multiSearchData = data.map((params) => ({ ...defaultFormValues, ...params, term: this.formData.term }));
     };
 
     clearMultiSearchData = () => {
