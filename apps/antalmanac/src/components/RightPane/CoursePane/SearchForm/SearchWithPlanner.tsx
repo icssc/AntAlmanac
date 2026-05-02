@@ -146,7 +146,7 @@ const SearchWithPlanner = ({ labelProps }: Props) => {
         );
         if (termRoadmapGrouping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
             return (
-                <Tooltip title="This roadmap has no courses for this term">
+                <Tooltip key={roadmap.id} title="This roadmap has no courses for this term">
                     <span>{menuItem}</span>
                 </Tooltip>
             );
