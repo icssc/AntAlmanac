@@ -14,7 +14,8 @@ import { PLANNER_LINK } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { MenuItem, Tooltip, Typography } from '@mui/material';
+import { OpenInBrowser } from '@mui/icons-material';
+import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useSearchParams } from 'next/navigation';
 import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
@@ -119,7 +120,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     const renderGroup: AutocompleteProps['renderGroup'] = (params) => {
         const term = RightPaneStore.getFormData().term;
         const includesTerm = params.group === RoadmapTermRelation.IncludesTerm;
-        const keyword = includesTerm ? 'Includes' : 'Excludes';
+        const keyword = includesTerm ? 'Includes' : "Doesn't include";
 
         return (
             <li key={params.key}>
@@ -135,14 +136,20 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
         const menuItem = (
-            <MenuItem
-                {...props}
-                key={roadmap.id}
-                onClick={() => search(roadmap.id)}
-                disabled={!doesRoadmapIncludeTerm(roadmap.id)}
-            >
-                <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
-            </MenuItem>
+            <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ paddingRight: 1 }}>
+                <MenuItem
+                    {...props}
+                    key={roadmap.id}
+                    onClick={() => search(roadmap.id)}
+                    disabled={!doesRoadmapIncludeTerm(roadmap.id)}
+                >
+                    <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
+                </MenuItem>
+
+                <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
+                    <OpenInBrowser fontSize="small" />
+                </IconButton>
+            </Box>
         );
         if (termRoadmapGrouping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
             return (
@@ -215,7 +222,6 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                         <MenuItem
                             component="a"
                             href={PLANNER_LINK}
-                            target="_blank"
                             sx={(theme) => ({ color: theme.palette.text.primary, paddingTop: 1.5, paddingBottom: 1.5 })}
                         >
                             Create a roadmap!
