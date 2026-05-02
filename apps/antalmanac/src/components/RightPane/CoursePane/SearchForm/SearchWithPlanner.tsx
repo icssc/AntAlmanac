@@ -147,9 +147,11 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                     <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
                 </MenuItem>
 
-                <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
-                    <OpenInBrowser fontSize="small" />
-                </IconButton>
+                <Tooltip title="Open Planner">
+                    <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
+                        <OpenInBrowser fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             </Box>
         );
         if (termRoadmapGrouping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
