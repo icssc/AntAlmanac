@@ -3,7 +3,7 @@ import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
 import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
-import RightPaneStore, { CourseSearchParams } from '$components/RightPane/RightPaneStore';
+import RightPaneStore, { CourseSearchParams, CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
@@ -15,7 +15,7 @@ import { getTermLongName } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { CoursePaneWarningType, useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -34,7 +34,6 @@ import {
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
-import { useShallow } from 'zustand/react/shallow';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -275,13 +274,6 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
-    const { warningMessages, removeWarningMessage } = useCoursePaneStore(
-        useShallow((state) => ({
-            warningMessages: state.warningMessages,
-            removeWarningMessage: state.removeWarningMessage,
-        }))
-    );
-
     const getQueryParams = useCallback((searchData: CourseSearchParams) => {
         const websocQueryParams = {
             department: searchData.deptValue,
@@ -417,12 +409,14 @@ export default function CourseRenderPane(props: { id?: number }) {
         <>
             <Box sx={{ height: '56px' }} />
 
-            {Object.entries(warningMessages).map(([warningType, messages]) => {
+            {Object.entries(RightPaneStore.getWarningMessages()).map(([warningType, messages]) => {
                 return messages.map((message) => (
                     <WarningAlert
                         closable
                         key={`${warningType}${message}`}
-                        onClose={() => removeWarningMessage(warningType as CoursePaneWarningType, message)}
+                        onClose={() =>
+                            RightPaneStore.removeWarningMessage(warningType as CourseSearchWarningType, message)
+                        }
                     >
                         {message}
                     </WarningAlert>

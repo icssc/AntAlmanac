@@ -1,10 +1,7 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { getDefaultTerm, getTermLongName, isTermAvailable, termData } from '$lib/termData';
-import { CoursePaneWarningType, useCoursePaneStore } from '$stores/CoursePaneStore';
-import { openSnackbar } from '$stores/SnackbarStore';
+import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
+import { getTermLongName, termData } from '$lib/termData';
 import { ComponentProps, useCallback, useEffect, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 type Props = Omit<
     ComponentProps<typeof LabeledAutocomplete>,
@@ -13,13 +10,6 @@ type Props = Omit<
 
 export function TermSelector(props: Props) {
     const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
-
-    const { setWarningMessages, clearWarningMessages } = useCoursePaneStore(
-        useShallow((state) => ({
-            setWarningMessages: state.setWarningMessages,
-            clearWarningMessages: state.clearWarningMessages,
-        }))
-    );
 
     const handleChange = (_: unknown, option: string | null) => {
         const value = option ?? termData.at(0)?.shortName ?? '';
@@ -32,7 +22,7 @@ export function TermSelector(props: Props) {
 
         RightPaneStore.updateFormValue('term', value);
 
-        clearWarningMessages(CoursePaneWarningType.TermUnavailable);
+        RightPaneStore.clearWarningMessages(CourseSearchWarningType.TermUnavailable);
     };
 
     const resetField = useCallback(() => {
@@ -46,19 +36,6 @@ export function TermSelector(props: Props) {
             RightPaneStore.off('formReset', resetField);
         };
     }, [resetField]);
-
-    useEffect(() => {
-        if (term !== null && !isTermAvailable(term)) {
-            const fallbackTerm = getDefaultTerm().shortName;
-            const message = `${term} is currently unavailable, falling back to ${fallbackTerm}`;
-            openSnackbar('error', message);
-            console.error('Error setting term from URL:', message);
-
-            handleChange(null, fallbackTerm);
-
-            setWarningMessages(CoursePaneWarningType.TermUnavailable, [message]);
-        }
-    }, [term]);
 
     return (
         <LabeledAutocomplete

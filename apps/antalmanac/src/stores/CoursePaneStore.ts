@@ -3,10 +3,6 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import { create } from 'zustand';
 
-export enum CoursePaneWarningType {
-    TermUnavailable = 'termUnavailable',
-}
-
 interface CoursePaneStore {
     /** Whether the search form is displayed (or the classes view) */
     searchFormIsDisplayed: boolean;
@@ -28,11 +24,6 @@ interface CoursePaneStore {
     hasSearchedWithUrlParams: boolean;
     setHasSearchedWithUrlParams: (hasSearchedWithUrlParams: boolean) => void;
 
-    warningMessages: Record<CoursePaneWarningType, string[]>;
-    setWarningMessages: (warningType: CoursePaneWarningType, warningMessages: string[]) => void;
-    removeWarningMessage: (warningType: CoursePaneWarningType, messageToRemove: string) => void;
-    clearWarningMessages: (warningType: CoursePaneWarningType) => void;
-
     key: number;
     forceUpdate: () => void;
 }
@@ -50,7 +41,7 @@ function requiredParamsAreInURL() {
     return searchParams.some((param) => search.get(param) !== null);
 }
 
-export const useCoursePaneStore = create<CoursePaneStore>((set, get) => {
+export const useCoursePaneStore = create<CoursePaneStore>((set) => {
     return {
         searchFormIsDisplayed: !requiredParamsAreInURL() || !RightPaneStore.formDataIsValid(),
 
@@ -75,19 +66,6 @@ export const useCoursePaneStore = create<CoursePaneStore>((set, get) => {
         displaySections: () => {
             set({ searchFormIsDisplayed: false });
         },
-
-        warningMessages: { [CoursePaneWarningType.TermUnavailable]: [] },
-        setWarningMessages: (warningType, messages) => {
-            set({ warningMessages: { ...get().warningMessages, [warningType]: messages } });
-        },
-        removeWarningMessage: (warningType, messageToRemove) => {
-            const currentState = get();
-            const messages = currentState.warningMessages[warningType];
-            messages.splice(messages.indexOf(messageToRemove), 1);
-            set({ warningMessages: { ...get().warningMessages, [warningType]: messages } });
-        },
-        clearWarningMessages: (warningType) =>
-            set({ warningMessages: { ...get().warningMessages, [warningType]: [] } }),
 
         key: 0,
         forceUpdate: () => set((state) => ({ key: (state.key += 1) })),
