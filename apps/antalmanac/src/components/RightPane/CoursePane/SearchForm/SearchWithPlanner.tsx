@@ -136,7 +136,13 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
         const menuItem = (
-            <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ paddingRight: 1 }}>
+            <Box
+                key={roadmap.id}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ paddingRight: 1 }}
+            >
                 <MenuItem
                     {...props}
                     key={roadmap.id}
