@@ -1,5 +1,5 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import RightDivider from '$components/RightDivider';
+import { RightDivider } from '$components/RightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
