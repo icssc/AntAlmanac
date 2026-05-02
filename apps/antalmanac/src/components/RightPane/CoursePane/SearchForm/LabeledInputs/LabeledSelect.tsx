@@ -1,7 +1,6 @@
+import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';
 import { Select, SelectProps } from '@mui/material';
 import { ReactNode, useId } from 'react';
-
-import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';
 
 interface LabeledSelectProps<T = string | string[]> {
     label: ReactNode;
@@ -19,7 +18,7 @@ export function LabeledSelect<T = string | string[]>({
     const id = useId();
 
     return (
-        <LabeledInput label={label} isAligned={isAligned} id={id}>
+        <LabeledInput labelProps={{ id, label, isAligned }}>
             <Select
                 size="small"
                 variant="outlined"

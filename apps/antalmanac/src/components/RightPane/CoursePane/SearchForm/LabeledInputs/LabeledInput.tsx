@@ -1,19 +1,17 @@
-import { Box } from '@mui/material';
-
 import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputBox';
 import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputLabel';
+import { Box } from '@mui/material';
+import { ComponentProps } from 'react';
 
 interface LabeledInputProps {
-    label: React.ReactNode;
     children: React.ReactNode;
-    id: string;
-    isAligned?: boolean;
+    labelProps: ComponentProps<typeof CustomInputLabel>;
 }
 
-export const LabeledInput = ({ label, children, id, isAligned }: LabeledInputProps) => {
+export const LabeledInput = ({ children, labelProps }: LabeledInputProps) => {
     return (
         <Box sx={{ display: 'flex', width: '100%', flex: 1 }}>
-            <CustomInputLabel label={label} id={id} isAligned={isAligned} />
+            <CustomInputLabel {...labelProps} />
             <CustomInputBox>{children}</CustomInputBox>
         </Box>
     );
