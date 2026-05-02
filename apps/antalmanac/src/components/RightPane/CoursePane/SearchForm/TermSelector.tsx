@@ -3,12 +3,12 @@ import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/R
 import { getTermLongName, termData } from '$lib/termData';
 import { ComponentProps, useCallback, useEffect, useState } from 'react';
 
-type Props = Omit<
+type TermSelectorProps = Omit<
     ComponentProps<typeof LabeledAutocomplete>,
     'label' | 'autocompleteProps' | 'textFieldProps' | 'isAligned'
 >;
 
-export function TermSelector(props: Props) {
+export function TermSelector(props: TermSelectorProps) {
     const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
 
     const handleChange = (_: unknown, option: string | null) => {
