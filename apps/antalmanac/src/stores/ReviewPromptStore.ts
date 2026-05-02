@@ -69,8 +69,19 @@ export const useReviewPromptStore = create(
 
             for (const course of allCourses) {
                 const term = course.term;
+                const sectionType = course.section.sectionType;
 
                 if (!pastTermNames.has(term)) {
+                    continue;
+                }
+
+                if (
+                    sectionType === 'Act' ||
+                    sectionType === 'Col' ||
+                    sectionType === 'Dis' ||
+                    sectionType === 'Qiz' ||
+                    sectionType === 'Tap'
+                ) {
                     continue;
                 }
 
