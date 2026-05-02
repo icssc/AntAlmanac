@@ -1,0 +1,23 @@
+apps/antalmanac/src/components/RightPane/SectionTable/SectionTable.tsx
+  74e2b79b2d9ade93 8,55,111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "8402a56a1c7638badf6b19dc5c50a4abd51e4862",
+  "prompts": {
+    "74e2b79b2d9ade93": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd23932c-e676-42a5-8b2a-d8b1c3fb2113",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 4,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  }
+}
