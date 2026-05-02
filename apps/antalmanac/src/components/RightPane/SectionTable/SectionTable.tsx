@@ -2,14 +2,14 @@ import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/Cou
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
-import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
-import { Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { HistoryEdu, Route } from '@mui/icons-material';
 import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useMemo } from 'react';
@@ -56,7 +56,7 @@ function SectionTable(props: SectionTableProps) {
     const sharedSchedulePage = location.pathname.startsWith('/share/');
     const isMobile = useIsMobile();
 
-    const actionColumnWidth = isMobile ? 54 : 85;
+    const actionColumnWidth = isMobile ? 54 : 77;
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
@@ -123,12 +123,13 @@ function SectionTable(props: SectionTableProps) {
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
-                    text="Past Enrollment"
-                    icon={<ShowChartIcon />}
+                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
+                    text="Past Syllabi"
+                    icon={<HistoryEdu />}
                     popupContent={
-                        <EnrollmentHistoryPopup
-                            department={courseDetails.deptCode}
+                        <PastSyllabiPopover
+                            courseId={courseId}
+                            deptCode={courseDetails.deptCode}
                             courseNumber={courseDetails.courseNumber}
                         />
                     }
