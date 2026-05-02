@@ -306,24 +306,6 @@ const userDataRouter = router({
     }),
 
     /**
-     * Gets the schedule ID for a schedule by userId and schedule name.
-     * @param input - An object containing the userId and scheduleName.
-     * @returns The schedule ID, or throws NOT_FOUND if not found.
-     */
-    getScheduleIdByName: procedure
-        .input(z.object({ userId: z.string(), scheduleName: z.string() }))
-        .query(async ({ input }) => {
-            const scheduleId = await RDS.getScheduleIdByName(db, input.userId, input.scheduleName);
-            if (!scheduleId) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'Schedule not found',
-                });
-            }
-            return scheduleId;
-        }),
-
-    /**
      * Logs out a user by invalidating their session and redirecting to OIDC logout
      */
     logout: procedure.input(z.object({ redirectUrl: z.string().optional() })).mutation(async ({ input, ctx }) => {
