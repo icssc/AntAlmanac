@@ -530,25 +530,6 @@ export class RDS {
         });
     }
 
-    private static async getUserAndAccount(
-        db: DatabaseOrTransaction,
-        accountType: Account['accountType'],
-        providerAccountId: string
-    ) {
-        const res = await db
-            .select()
-            .from(accounts)
-            .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerAccountId)))
-            .leftJoin(users, eq(accounts.userId, users.id))
-            .limit(1);
-
-        if (res.length === 0 || res[0].users === null || res[0].accounts === null) {
-            return null;
-        }
-
-        return { user: res[0].users, account: res[0].accounts };
-    }
-
     /**
      * Aggregates the user's schedule data from the results of two queries.
      */
