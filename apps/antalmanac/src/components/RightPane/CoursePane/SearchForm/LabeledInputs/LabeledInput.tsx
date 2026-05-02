@@ -1,7 +1,6 @@
-import { Box } from '@mui/material';
-
 import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputBox';
 import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputLabel';
+import { Box } from '@mui/material';
 
 interface LabeledInputProps {
     label: React.ReactNode;

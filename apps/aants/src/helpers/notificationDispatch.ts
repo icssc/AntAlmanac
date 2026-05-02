@@ -3,7 +3,6 @@ import { render, toPlainText } from '@react-email/render';
 
 import { CourseNotificationEmail } from '../emails/CourseNotificationEmail';
 import { aantsEnvSchema } from '../env';
-
 import { queueEmail } from './emailQueue';
 import { User } from './subscriptionData';
 

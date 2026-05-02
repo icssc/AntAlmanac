@@ -1,14 +1,13 @@
-import type { HourMinute } from '@packages/antalmanac-types';
-import { saveAs } from 'file-saver';
-import { createEvents, type EventAttributes } from 'ics';
-
-import { notNull } from './utils';
-
 import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import type { HourMinute } from '@packages/antalmanac-types';
+import { saveAs } from 'file-saver';
+import { createEvents, type EventAttributes } from 'ics';
+
+import { notNull } from './utils';
 
 export const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
 

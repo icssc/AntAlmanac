@@ -1,8 +1,7 @@
-import { Box, BoxProps } from '@mui/material';
-import { grey } from '@mui/material/colors';
-
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { useThemeStore } from '$stores/SettingsStore';
+import { Box, BoxProps } from '@mui/material';
+import { grey } from '@mui/material/colors';
 
 interface CustomInputBoxProps {
     children: React.ReactNode;

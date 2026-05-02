@@ -1,7 +1,6 @@
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-
-import { useTimeFormatStore } from '$stores/SettingsStore';
 
 export function TimeSelector() {
     const theme = useTheme();

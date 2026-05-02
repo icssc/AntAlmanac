@@ -1,3 +1,5 @@
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { DONATION_LINK, LIGHT_BLUE } from '$src/globals';
 import { Info } from '@mui/icons-material';
 import {
     Button,
@@ -11,9 +13,6 @@ import {
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
-
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { DONATION_LINK, LIGHT_BLUE } from '$src/globals';
 
 export const AboutButton = () => {
     const theme = useTheme();

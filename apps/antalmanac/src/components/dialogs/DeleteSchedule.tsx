@@ -1,3 +1,5 @@
+import { deleteSchedule } from '$actions/AppStoreActions';
+import AppStore from '$stores/AppStore';
 import {
     Button,
     Dialog,
@@ -8,9 +10,6 @@ import {
     type DialogProps,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-
-import { deleteSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
 
 interface ScheduleNameDialogProps extends DialogProps {
     /**

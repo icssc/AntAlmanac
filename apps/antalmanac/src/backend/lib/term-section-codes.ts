@@ -1,3 +1,4 @@
+import { terms } from '$generated/termData';
 import {
     SectionSearchResult,
     WebsocCourse,
@@ -5,8 +6,6 @@ import {
     WebsocSchool,
     WebsocSection,
 } from '@packages/antalmanac-types';
-
-import { terms } from '$generated/termData';
 export interface SectionCodesGraphQLResponse {
     data: {
         websoc: {

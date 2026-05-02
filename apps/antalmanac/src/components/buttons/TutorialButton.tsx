@@ -1,12 +1,11 @@
+import { removeSampleClasses } from '$lib/tourExampleGeneration';
+import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
 import { useCallback, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-
-import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
-import { removeSampleClasses } from '$lib/tourExampleGeneration';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 interface TutorialButtonProps {
     onMenuClose?: () => void;

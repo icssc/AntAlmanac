@@ -1,11 +1,10 @@
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { Button, Collapse, Typography } from '@mui/material';
-import { useCallback, useEffect } from 'react';
-
 import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Button, Collapse, Typography } from '@mui/material';
+import { useCallback, useEffect } from 'react';
 
 export function AdvancedSearch() {
     const { advancedSearchEnabled, toggleAdvancedSearch } = useCoursePaneStore();
