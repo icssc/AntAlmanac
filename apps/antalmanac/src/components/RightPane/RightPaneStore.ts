@@ -115,12 +115,12 @@ class RightPaneStore extends EventEmitter {
     };
 
     restorePrevFormData = () => {
+        this.clearMultiSearchData();
         if (!this.prevFormData) {
             return;
         }
         this.formData = this.prevFormData;
         this.prevFormData = undefined;
-        this.clearMultiSearchData();
         this.emit('formDataChange');
     };
 
