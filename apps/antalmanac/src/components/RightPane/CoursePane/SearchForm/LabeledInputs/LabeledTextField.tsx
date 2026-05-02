@@ -39,7 +39,7 @@ export const LabeledTextField = ({
                                   ...textFieldProps?.slotProps?.input,
                                   endAdornment: loading ? (
                                       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                          <CircularProgress size="1.5em" />
+                                          <CircularProgress size={18} />
                                       </Box>
                                   ) : null,
                               },
