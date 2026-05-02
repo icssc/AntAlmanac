@@ -2,12 +2,12 @@ import { Divider, SxProps, Theme } from '@mui/material';
 import { mergeSx } from '@mui/x-date-pickers/internals';
 import { ReactNode } from 'react';
 
-interface RightDividerProps {
+interface HorizontalRightDividerProps {
     children: ReactNode;
     sx?: SxProps<Theme>;
 }
 
-export const RightDivider = ({ children, sx }: RightDividerProps) => {
+export const HorizontalRightDivider = ({ children, sx }: HorizontalRightDividerProps) => {
     return (
         <Divider
             textAlign="left"

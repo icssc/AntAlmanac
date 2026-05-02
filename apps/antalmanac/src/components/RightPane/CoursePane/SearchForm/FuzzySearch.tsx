@@ -1,4 +1,4 @@
-import { RightDivider } from '$components/RightDivider';
+import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -260,9 +260,9 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
 
         return (
             <Box key={params.key}>
-                <RightDivider sx={{ mt: 1, mb: 1, ml: 0.5, '&::after': { opacity: 0.45 } }}>
+                <HorizontalRightDivider sx={{ mt: 1, mb: 1, ml: 0.5, '&::after': { opacity: 0.45 } }}>
                     <Typography variant="subtitle1">{label}</Typography>
-                </RightDivider>
+                </HorizontalRightDivider>
                 {params.children}
             </Box>
         );

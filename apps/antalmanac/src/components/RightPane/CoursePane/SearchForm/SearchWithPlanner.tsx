@@ -1,5 +1,5 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { RightDivider } from '$components/RightDivider';
+import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
@@ -123,11 +123,11 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
         return (
             <li key={params.key}>
-                <RightDivider>
+                <HorizontalRightDivider>
                     <Typography>
                         {keyword} {term}
                     </Typography>
-                </RightDivider>
+                </HorizontalRightDivider>
                 <ul style={{ padding: 0 }}>{params.children}</ul>
             </li>
         );
