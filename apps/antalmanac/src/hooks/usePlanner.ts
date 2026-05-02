@@ -4,7 +4,6 @@ import { getCurrentTerm } from '$lib/termData';
 import { useSessionStore } from '$stores/SessionStore';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 const QUARTER_ORDER: Record<string, number> = {
     Winter: 0,
@@ -54,9 +53,7 @@ export function usePlannerRoadmaps() {
     const setFilterTakenCourses = useSessionStore((s) => s.setFilterTakenCourses);
     const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
     const setPlannerRoadmaps = useSessionStore((s) => s.setPlannerRoadmaps);
-    const { isPlannerLoading, setIsPlannerLoading } = useSessionStore(
-        useShallow((s) => ({ setIsPlannerLoading: s.setIsPlannerLoading, isPlannerLoading: s.isPlannerLoading }))
-    );
+    const { setIsPlannerLoading } = useSessionStore((s) => ({ setIsPlannerLoading: s.setIsPlannerLoading }));
     const [selectedRoadmapId, setSelectedRoadmapId] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
@@ -73,29 +70,28 @@ export function usePlannerRoadmaps() {
     }, []);
 
     useEffect(() => {
-        if (isPlannerLoading) {
-            return;
-        }
         let active = true;
         async function loadRoadmaps() {
             if (!googleId) {
                 setPlannerRoadmaps([]);
                 return;
             }
+            setIsPlannerLoading(true);
             try {
-                setIsPlannerLoading(true);
                 const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query();
                 if (active) setPlannerRoadmaps(data ?? []);
             } catch (e) {
                 console.error('Failed to fetch Planner roadmaps:', e);
             }
-            setIsPlannerLoading(false);
+            if (active) {
+                setIsPlannerLoading(false);
+            }
         }
         loadRoadmaps();
         return () => {
             active = false;
         };
-    }, [googleId, setPlannerRoadmaps]);
+    }, [googleId, setPlannerRoadmaps, setIsPlannerLoading]);
 
     useEffect(() => {
         function flattenCourses() {
