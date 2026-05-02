@@ -213,6 +213,7 @@ const ErrorMessage = () => {
     const { isDark } = useThemeStore();
 
     const formData = RightPaneStore.getFormData();
+    const multiSearchData = RightPaneStore.getMultiSearchData();
     const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
     const courseNumber = formData.courseNumber.replace(/\s+/g, '').toUpperCase() || null;
     const courseId = deptValue && courseNumber ? `${deptValue}${courseNumber}` : null;
@@ -226,7 +227,7 @@ const ErrorMessage = () => {
                 flexDirection: 'column',
             }}
         >
-            {courseId ? (
+            {courseId && multiSearchData.length === 0 ? (
                 <Link
                     href={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
                     target="_blank"
