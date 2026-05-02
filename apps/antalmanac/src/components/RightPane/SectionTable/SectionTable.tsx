@@ -5,6 +5,7 @@ import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/Enrol
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
@@ -13,7 +14,6 @@ import { HistoryEdu, Route } from '@mui/icons-material';
 import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -52,8 +52,7 @@ function SectionTable(props: SectionTableProps) {
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
-    const location = useLocation();
-    const sharedSchedulePage = location.pathname.startsWith('/share/');
+    const isReadonlyView = useIsReadonlyView();
     const isMobile = useIsMobile();
 
     const actionColumnWidth = isMobile ? 54 : 77;
@@ -109,7 +108,7 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                 />
 
-                {activeTab !== 2 || sharedSchedulePage ? null : (
+                {activeTab !== 2 || isReadonlyView ? null : (
                     <CourseInfoSearchButton courseDetails={courseDetails} term={term} />
                 )}
 
