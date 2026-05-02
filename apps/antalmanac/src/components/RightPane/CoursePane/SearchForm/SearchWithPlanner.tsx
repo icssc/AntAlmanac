@@ -142,6 +142,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                     key={roadmap.id}
                     onClick={() => search(roadmap.id)}
                     disabled={!doesRoadmapIncludeTerm(roadmap.id)}
+                    sx={{ width: '100%' }}
                 >
                     <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
                 </MenuItem>
