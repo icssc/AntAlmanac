@@ -32,7 +32,7 @@ import {
     GE,
 } from '@packages/antalmanac-types';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
 function getColors() {
@@ -95,6 +95,24 @@ function getFilteredCourses(
         });
     }
     return allCourses;
+}
+
+function searchResultsRowKey(
+    item: WebsocSchool | WebsocDepartment | AACourse,
+    formData: CourseSearchParams,
+    index: number
+): string {
+    if ('departments' in item && item.departments !== undefined) {
+        return `school-${item.schoolName}-${index}`;
+    }
+    if ('courses' in item && item.courses !== undefined) {
+        return `dept-${item.deptCode}-${item.deptName}-${index}`;
+    }
+    const course = item as AACourse;
+    if (formData.ge !== 'ANY') {
+        return `ge-course-${course.deptCode}-${course.courseNumber}-${index}`;
+    }
+    return `course-${course.deptCode}-${course.courseNumber}-${index}`;
 }
 
 const RecruitmentBanner = () => {
@@ -274,6 +292,8 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
+    const searchFormForRowKeys = useMemo(() => RightPaneStore.getFormData(), [courseData]);
+
     const getQueryParams = useCallback((searchData: CourseSearchParams) => {
         const websocQueryParams = {
             department: searchData.deptValue,
@@ -437,12 +457,13 @@ export default function CourseRenderPane(props: { id?: number }) {
                 <>
                     <RecruitmentBanner />
                     <Box>
-                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                        {courseData.map((item, index) => {
                             let heightEstimate = 200;
                             if ((courseData[index] as AACourse).sections !== undefined)
                                 heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            const rowKey = searchResultsRowKey(item, searchFormForRowKeys, index);
                             return (
-                                <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
+                                <LazyLoad once key={rowKey} overflow height={heightEstimate} offset={1000}>
                                     {SectionTableWrapped(index, {
                                         courseData: courseData,
                                         scheduleNames: scheduleNames,

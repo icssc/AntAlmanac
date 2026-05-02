@@ -316,6 +316,12 @@ export default function CourseMap() {
         );
     }, [markersToDisplay, customEventMarkersToDisplay]);
 
+    const routeSegmentKey = (pair: (typeof markersToDisplay)[number][], segmentIndex: number) => {
+        const latLngTuples = pair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
+        const coords = latLngTuples.map(([lat, lng]) => `${lat},${lng}`).join('|');
+        return `route-${today}-${segmentIndex}-${coords}`;
+    };
+
     return (
         <Box
             sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}
@@ -359,14 +365,16 @@ export default function CourseMap() {
 
                 {/* Draw out routes if the user is viewing a specific day. */}
                 {today !== 'All' &&
-                    startDestPairs.map((startDestPair) => {
+                    startDestPairs.map((startDestPair, segmentIndex) => {
                         const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
                         const color = startDestPair[0]?.color;
-                        /**
-                         * Previous renders of the routes will be left behind if the keys aren't unique.
-                         */
-                        const key = Math.random().toString(36).substring(7);
-                        return <Routes key={key} latLngTuples={latLngTuples} color={color} />;
+                        return (
+                            <Routes
+                                key={routeSegmentKey(startDestPair, segmentIndex)}
+                                latLngTuples={latLngTuples}
+                                color={color}
+                            />
+                        );
                     })}
 
                 {/* Draw a marker for each class that occurs today. */}
@@ -383,8 +391,10 @@ export default function CourseMap() {
                         .filter((location) => location.building == marker.locations[0].building)
                         .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
 
+                    const markerListKey = `course-${marker.term}-${marker.sectionCode}-${marker.start.getTime()}-${marker.locations[0]?.building ?? ''}-${index}`;
+
                     return (
-                        <Fragment key={Object.values(marker).join('')}>
+                        <Fragment key={markerListKey}>
                             <LocationMarker
                                 {...marker}
                                 key={marker.key}
@@ -413,7 +423,7 @@ export default function CourseMap() {
                     const customEventSameBuildingPrior = customEventMarkersToDisplay.slice(0, index);
 
                     return (
-                        <Fragment key={Object.values(customEventMarkers).join('')}>
+                        <Fragment key={`custom-${customEventMarkers.customEventID}-${index}`}>
                             <LocationMarker
                                 {...customEventMarkers}
                                 label={'E'}
