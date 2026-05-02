@@ -29,8 +29,8 @@ export const LabeledTextField = ({
                 size="small"
                 variant="outlined"
                 id={textFieldId}
-                disabled={disabled}
                 {...textFieldProps}
+                disabled={disabled ?? textFieldProps?.disabled}
                 {...(loading
                     ? {
                           slotProps: {
