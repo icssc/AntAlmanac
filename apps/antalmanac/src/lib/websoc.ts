@@ -1,6 +1,5 @@
-import { WebsocAPIResponse } from '@packages/antalmanac-types';
-
 import trpc from '$lib/api/trpc';
+import { WebsocAPIResponse, WebsocSyllabiQueryParams } from '@packages/antalmanac-types';
 
 type CacheEntry = WebsocAPIResponse & {
     timestamp: number;
@@ -43,6 +42,10 @@ class _WebSOC {
 
     async getDepartments() {
         return await trpc.websoc.getDepartments.query();
+    }
+
+    async getSyllabi(params: WebsocSyllabiQueryParams) {
+        return await trpc.websoc.getSyllabi.query({ ...params });
     }
 }
 
