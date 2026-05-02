@@ -5,12 +5,12 @@ import { Box, Stack, useTheme } from '@mui/system';
 import { usePostHog } from 'posthog-js/react';
 import { ComponentProps } from 'react';
 
-interface Props {
+interface QuickSearchProps {
     toggleSearch: ComponentProps<typeof FuzzySearch>['toggleSearch'];
     labelProps?: ComponentProps<typeof FuzzySearch>['labelProps'];
 }
 
-const QuickSearch = ({ toggleSearch, labelProps }: Props) => {
+export const QuickSearch = ({ toggleSearch, labelProps }: QuickSearchProps) => {
     const postHog = usePostHog();
     const theme = useTheme();
     const doSplitSearch = useMediaQuery(theme.breakpoints.down('md'));
@@ -31,4 +31,3 @@ const QuickSearch = ({ toggleSearch, labelProps }: Props) => {
         </Stack>
     );
 };
-export default QuickSearch;
