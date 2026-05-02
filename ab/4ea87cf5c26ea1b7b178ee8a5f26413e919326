@@ -1,0 +1,23 @@
+apps/antalmanac/src/components/dialogs/AddSchedule.tsx
+  74e2b79b2d9ade93 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "ab4ea87cf5c26ea1b7b178ee8a5f26413e919326",
+  "prompts": {
+    "74e2b79b2d9ade93": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd23932c-e676-42a5-8b2a-d8b1c3fb2113",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
