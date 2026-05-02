@@ -65,11 +65,11 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         <ToggleButton value="manual">Manual Search</ToggleButton>
                     </ToggleButtonGroup>
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TermSelector labelProps={!manualSearchEnabled ? { shortenLabel: true } : undefined} />
+                        <TermSelector />
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <QuickSearch toggleSearch={toggleSearch} labelProps={{ shortenLabel: true }} />
+                        <QuickSearch toggleSearch={toggleSearch} />
                     ) : (
                         <ManualSearch
                             onSubmit={() => {

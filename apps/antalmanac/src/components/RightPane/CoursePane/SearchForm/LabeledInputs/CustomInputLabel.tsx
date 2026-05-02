@@ -6,12 +6,11 @@ import { mergeSx } from '@mui/x-date-pickers/internals';
 interface CustomInputLabelProps {
     label: React.ReactNode;
     id: string;
-    shortenLabel?: boolean;
     isAligned?: boolean;
     sx?: SxProps<Theme>;
 }
 
-export const CustomInputLabel = ({ label, id, shortenLabel, isAligned, sx }: CustomInputLabelProps) => {
+export const CustomInputLabel = ({ label, id, isAligned, sx }: CustomInputLabelProps) => {
     const isDark = useThemeStore((store) => store.isDark);
 
     return (
@@ -24,7 +23,7 @@ export const CustomInputLabel = ({ label, id, shortenLabel, isAligned, sx }: Cus
                     alignItems: 'center',
                     height: '100%',
                     px: 1.5,
-                    minWidth: shortenLabel ? '6.5rem' : isAligned ? '10.5rem' : '7rem',
+                    minWidth: isAligned ? '10.5rem' : '7rem',
                     bgcolor: isDark ? grey[800] : grey[200],
                     whiteSpace: 'nowrap',
                     border: '1px solid',
