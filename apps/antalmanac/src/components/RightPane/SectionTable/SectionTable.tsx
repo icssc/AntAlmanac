@@ -4,7 +4,7 @@ import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/Cours
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
-import WarningAlert from '$components/WarningAlert';
+import { WarningAlert } from '$components/WarningAlert';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';

@@ -1,13 +1,13 @@
 import { Alert } from '@mui/material';
 import { ReactNode, useState } from 'react';
 
-interface Props {
+interface WarningAlertProps {
     children: ReactNode;
     closable?: boolean;
     onClose?: () => void;
 }
 
-const WarningAlert = ({ children, closable = false, onClose }: Props) => {
+export const WarningAlert = ({ children, closable = false, onClose }: WarningAlertProps) => {
     const [doShow, setDoShow] = useState(true);
 
     const handleClose = () => {
@@ -31,4 +31,3 @@ const WarningAlert = ({ children, closable = false, onClose }: Props) => {
         </Alert>
     ) : null;
 };
-export default WarningAlert;

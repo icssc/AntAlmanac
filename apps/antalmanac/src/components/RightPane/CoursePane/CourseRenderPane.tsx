@@ -6,7 +6,7 @@ import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
 import RightPaneStore, { CourseSearchParams } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
-import WarningAlert from '$components/WarningAlert';
+import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { Grades } from '$lib/grades';
