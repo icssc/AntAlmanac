@@ -278,6 +278,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         isLoading,
         isError,
     } = useQuery({
+        staleTime: 5 * 60 * 1000,
         queryKey: ['searchResults', RightPaneStore.getFormData(), RightPaneStore.getMultiSearchData()],
         queryFn: async (): Promise<WebsocAPIResponse | null> => {
             try {
