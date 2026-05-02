@@ -1,8 +1,7 @@
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import SearchWithPlanner from '$components/RightPane/CoursePane/SearchForm/SearchWithPlanner';
-import { useIsMobile } from '$hooks/useIsMobile';
-import { Typography } from '@mui/material';
-import { Box, Stack } from '@mui/system';
+import { Typography, useMediaQuery } from '@mui/material';
+import { Box, Stack, useTheme } from '@mui/system';
 import { usePostHog } from 'posthog-js/react';
 import { ComponentProps } from 'react';
 
@@ -13,12 +12,13 @@ interface Props {
 
 const QuickSearch = ({ toggleSearch, labelProps }: Props) => {
     const postHog = usePostHog();
-    const isMobile = useIsMobile();
+    const theme = useTheme();
+    const doSplitSearch = useMediaQuery(theme.breakpoints.down('md'));
 
     const fuzzySearch = <FuzzySearch toggleSearch={toggleSearch} postHog={postHog} labelProps={labelProps} />;
     const plannerSearch = <SearchWithPlanner labelProps={labelProps} />;
 
-    return isMobile ? (
+    return doSplitSearch ? (
         <>
             {fuzzySearch}
             {plannerSearch}
