@@ -378,8 +378,8 @@ export default function CourseRenderPane(props: { id?: number }) {
             setCourseColors(getColors());
         };
 
-        AppStore.on('currentScheduleIndexChange', changeColors);
         AppStore.on('scheduleNamesChange', updateScheduleNames);
+        AppStore.on('currentScheduleIndexChange', changeColors);
 
         return () => {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
