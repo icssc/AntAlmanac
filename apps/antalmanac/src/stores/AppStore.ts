@@ -1,12 +1,5 @@
 import { EventEmitter } from 'events';
 
-import type {
-    ScheduleCourse,
-    ScheduleSaveState,
-    RepeatingCustomEvent,
-    CustomEventId,
-} from '@packages/antalmanac-types';
-
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
     AddCourseAction,
@@ -25,9 +18,15 @@ import type {
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
-import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
+import type {
+    ScheduleCourse,
+    ScheduleSaveState,
+    RepeatingCustomEvent,
+    CustomEventId,
+} from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -70,17 +69,6 @@ class AppStore extends EventEmitter {
 
     getSchedules() {
         return this.schedule.getSchedules();
-    }
-
-    setSchedules(scheduleIds: (string | undefined)[] | undefined) {
-        if (Array.isArray(scheduleIds)) {
-            const schedules = this.getSchedules();
-            const numSchedules = Math.min(schedules.length, scheduleIds.length);
-            for (let i = 0; i < numSchedules; i++) {
-                schedules[i].id = scheduleIds[i];
-            }
-            this.emit('scheduleNamesChange');
-        }
     }
 
     getScheduleId(scheduleIndex: number) {
