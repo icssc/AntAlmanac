@@ -1,7 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
-
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
@@ -16,8 +15,8 @@ import LocationMarker from './Marker';
 const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { UserLocator } from '$components/Map/UserLocator';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { UserLocator } from '$components/Map/UserLocator';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
@@ -164,7 +163,6 @@ export default function CourseMap() {
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
-
     const postHog = usePostHog();
 
     useEffect(() => {
@@ -332,7 +330,14 @@ export default function CourseMap() {
             >
                 {/* Menu floats above the map. */}
                 <Paper sx={{ position: 'relative', mx: 'auto', my: 2, width: '70%', zIndex: 400 }}>
-                    <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
+                    <Tabs
+                        value={selectedDayIndex}
+                        onChange={handleChange}
+                        variant="fullWidth"
+                        sx={{ minHeight: 0 }}
+                        textColor="secondary"
+                        indicatorColor="secondary"
+                    >
                         {days.map((day) => (
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}

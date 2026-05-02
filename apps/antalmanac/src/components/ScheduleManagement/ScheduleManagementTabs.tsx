@@ -1,8 +1,7 @@
-import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
-import { Paper, Tabs } from '@mui/material';
-
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
 import { useTabStore } from '$stores/TabStore';
+import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
+import { Paper, Tabs } from '@mui/material';
 
 /**
  * Information about the tab navigation buttons.
@@ -76,7 +75,7 @@ export function ScheduleManagementTabs() {
                 borderWidth: '1px 0px 1px 0px',
             }}
         >
-            <Tabs value={activeTab} indicatorColor="primary" variant="fullWidth" centered>
+            <Tabs value={activeTab} indicatorColor="secondary" textColor="secondary" variant="fullWidth" centered>
                 {scheduleManagementTabs.map((tab, index) => (
                     <ScheduleManagementTab key={tab.label} tab={tab} value={index} />
                 ))}

@@ -1,6 +1,5 @@
+import type { NotifyOn } from '$stores/NotificationStore';
 import { PostHog } from 'posthog-js/react';
-
-import { NotifyOn } from '$stores/NotificationStore';
 /**
  * This is an enum that stores all the
  * possible category names and associated actions
@@ -79,6 +78,7 @@ const analyticsEnum: AnalyticsEnum = {
             CLICK_ZOTISTICS: 'Click "Zotistics"',
             CLICK_REVIEWS: 'Click "Reviews"',
             CLICK_PAST_ENROLLMENT: 'Click "Past Enrollment"',
+            CLICK_PAST_SYLLABI: 'Click Past Syllabi',
             ADD_SPECIFIC: 'Add Course to Specific Schedule',
             COPY_COURSE_CODE: 'Copy Section Code',
             REFRESH: 'Refresh Results',
@@ -120,16 +120,16 @@ const analyticsEnum: AnalyticsEnum = {
 
 export default analyticsEnum;
 
+// There is no explicit type for what PostHog accepts as a property value
+// A list of accepted types: https://posthog.com/docs/data/events#event-properties
+export type PostHogPropertyValue = string | number | boolean | Date | PostHogPropertyValue[];
+
 export const AANTS_ANALYTICS_ACTIONS: Record<keyof NotifyOn, string> = {
     notifyOnOpen: analyticsEnum.aants.actions.TOGGLE_NOTIFY_OPEN,
     notifyOnWaitlist: analyticsEnum.aants.actions.TOGGLE_NOTIFY_WAITLIST,
     notifyOnFull: analyticsEnum.aants.actions.TOGGLE_NOTIFY_FULL,
     notifyOnRestriction: analyticsEnum.aants.actions.TOGGLE_NOTIFY_RESTRICTION,
 };
-
-// There is no explicit type for what PostHog accepts as a property value
-// A list of accepted types: https://posthog.com/docs/data/events#event-properties
-export type PostHogPropertyValue = string | number | boolean | Date | PostHogPropertyValue[];
 
 interface AnalyticsProps {
     category: AnalyticsCategory;

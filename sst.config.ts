@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./.sst/platform/config.d.ts" />
 
 function getDomain() {
@@ -14,7 +15,7 @@ function getDomain() {
 }
 
 const isPermanentStage = ['production', 'scheduler', 'staging-shared'];
-const AANTS_STAGES = ['production', 'staging-1521'];
+const AANTS_STAGES = ['production', 'staging-1521', 'staging-1542'];
 
 export default $config({
     app(input) {
@@ -43,6 +44,8 @@ export default $config({
 
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',
+            // TODO (@KevinWu098): Unpin once https://github.com/opennextjs/opennextjs-aws/issues/1133 is fixed
+            openNextVersion: '3.6.6',
             router: {
                 instance: router,
                 path: '/',
@@ -58,6 +61,7 @@ export default $config({
                 GOOGLE_REDIRECT_URI: `https://${domain}/auth`,
                 NEXT_PUBLIC_BASE_URL: domain,
                 NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
+                PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
                 STAGE: $app.stage,
             },
         });

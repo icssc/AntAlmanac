@@ -7,6 +7,7 @@ export const ADVANCED_SEARCH_PARAMS = [
     'building',
     'room',
     'division',
+    'excludeRoadmapCourses',
     'excludeRestrictionCodes',
     'days',
 ] as const;

@@ -1,11 +1,10 @@
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { DirectionsWalk as DirectionsWalkIcon, Info } from '@mui/icons-material';
 import { Box, Button, IconButton, Typography } from '@mui/material';
 import { type Marker, divIcon } from 'leaflet';
 import { usePostHog } from 'posthog-js/react';
 import { forwardRef, type Ref } from 'react';
 import { Marker as ReactLeafletMarker, Popup } from 'react-leaflet';
-
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
@@ -138,16 +137,22 @@ const LocationMarker = forwardRef(
                             <Button
                                 variant="contained"
                                 color="primary"
-                                startIcon={<DirectionsWalkIcon color="secondary" />}
+                                startIcon={<DirectionsWalkIcon sx={{ color: 'common.white' }} />}
                                 href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
                                 target="_blank"
-                                sx={{ alignSelf: 'center', width: '100%', borderRadius: '0.75rem' }}
+                                sx={{
+                                    alignSelf: 'center',
+                                    width: '100%',
+                                    borderRadius: '0.75rem',
+                                }}
                             >
                                 <Typography
-                                    color="secondary"
-                                    fontSize={'1.25rem'}
-                                    letterSpacing={1.25}
-                                    fontWeight={500}
+                                    sx={{
+                                        fontSize: '1.25rem',
+                                        letterSpacing: 1.25,
+                                        fontWeight: 500,
+                                        color: 'common.white',
+                                    }}
                                 >
                                     Directions
                                 </Typography>

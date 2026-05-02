@@ -7,10 +7,21 @@ const sqsClient = new SQSClient({});
 
 export interface EmailRequest {
     FromEmailAddress: string;
-    TemplateName: string;
-    TemplateData: string;
     Destination: {
         ToAddresses: string[];
+    };
+    /** Email content from React Email */
+    Content: {
+        Subject: string;
+        Html: string;
+        Text: string;
+    };
+    /** Context for logging */
+    LogContext?: {
+        deptCode: string;
+        courseNumber: string;
+        sectionCode: string;
+        courseTitle: string;
     };
 }
 

@@ -1,14 +1,13 @@
+import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
+import buildingCatalogue from '$lib/locations/buildingCatalogue';
+import { getDefaultTerm, termData } from '$lib/termData';
+import AppStore from '$stores/AppStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import type { HourMinute } from '@packages/antalmanac-types';
 import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
 
 import { notNull } from './utils';
-
-import { openSnackbar } from '$actions/AppStoreActions';
-import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
-import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import { getDefaultTerm, termData } from '$lib/termData';
-import AppStore from '$stores/AppStore';
 
 export const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
 
@@ -345,7 +344,7 @@ export function exportCalendar() {
     // Callback function triggers a download of the .ics file
     createEvents(events, (error, value) => {
         if (error) {
-            openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
+            openSnackbar('error', 'Something went wrong! Unable to download schedule.', { durationSeconds: 5 });
             console.log(error);
             return;
         }
@@ -362,6 +361,6 @@ export function exportCalendar() {
 
         // Download the .ics file
         saveAs(data, 'schedule.ics');
-        openSnackbar('success', 'Schedule downloaded!', 5);
+        openSnackbar('success', 'Schedule downloaded!', { durationSeconds: 5 });
     });
 }

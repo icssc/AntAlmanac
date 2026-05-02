@@ -1,22 +1,21 @@
-import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { useEffect, useRef } from 'react';
-import { Event } from 'react-big-calendar';
-
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
+import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '$components/ColorPicker';
-import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
+import { useTimeFormatStore } from '$stores/SettingsStore';
+import { Delete, Search } from '@mui/icons-material';
+import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
+import { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
+import { useEffect, useRef } from 'react';
+import { Event } from 'react-big-calendar';
 
 interface CommonCalendarEvent extends Event {
     color: string;
@@ -146,8 +145,8 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         marginBottom: '0.25rem',
                     }}
                 >
-                    <Tooltip title="Quick Search">
-                        <Button size="small" onClick={handleQuickSearch}>
+                    <Tooltip title="Quick Search (or CMD/CTRL + Click event)">
+                        <Button size="small" color="secondary" onClick={handleQuickSearch}>
                             <Search fontSize="small" style={{ marginRight: 5 }} />
                             <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
                         </Button>
@@ -256,6 +255,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
 
                     <Tooltip title="Delete">
                         <IconButton
+                            sx={{ padding: 0.5 }}
                             onClick={() => {
                                 closePopover();
                                 deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);

@@ -8,7 +8,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { CalendarTerm } from '@packages/antalmanac-types';
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
+import type { CalendarTerm, CalendarAllAPIResult } from '@packages/antalmanac-types';
 
 const PUBLIC_ANTEATER_API_KEY = 'INSqn9qP1pXlEwihpQa_GtrJhGOxQyjE5zcAKYLptLg.pk.prj9hlf3sf7q638jkq61u282';
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -33,18 +34,16 @@ function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${s
 }
 
 async function fetchCalendarTerms(): Promise<CalendarTerm[]> {
-    const res = await fetch(API_URL, {
+    const { data } = await fetchAnteaterAPI<CalendarAllAPIResult>(API_URL, {
         headers: {
             Authorization: `Bearer ${PUBLIC_ANTEATER_API_KEY}`,
             Origin: ORIGIN,
         },
+        invalidResponseCallback: (res) => {
+            throw new Error(`Failed to fetch terms: ${res.statusText}`);
+        },
     });
 
-    if (!res.ok) {
-        throw new Error(`Failed to fetch terms: ${res.statusText}`);
-    }
-
-    const { data } = await res.json();
     return data;
 }
 

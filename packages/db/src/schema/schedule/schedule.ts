@@ -1,37 +1,48 @@
 import { createId } from '@paralleldrive/cuid2';
-import { pgTable, unique, text, timestamp, integer } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer } from 'drizzle-orm/pg-core';
+
 import { users } from '../auth/user';
 
-export const schedules = pgTable(
-    'schedules',
-    {
-        id: text('id').primaryKey().$defaultFn(createId),
+// NOTE: unique constraints on (userId, name) and (userId, index) are intentionally
+// not declared here. They are managed manually in migration 0009 as DEFERRABLE INITIALLY DEFERRED
+// to allow index/name swaps within a transaction. Do not let drizzle-kit regenerate them.
+export const schedules = pgTable('schedules', {
+    id: text('id').primaryKey().$defaultFn(createId),
 
-        /**
-         * A schedule is owned by a user.
-         */
-        userId: text('user_id')
-            .references(() => users.id, { onDelete: 'cascade' })
-            .notNull(),
+    /**
+     * A schedule is owned by a user.
+     */
+    userId: text('user_id')
+        .references(() => users.id, { onDelete: 'cascade' })
+        .notNull(),
 
-        /**
-         * Name of the schedule.
-         */
-        name: text('name'),
+    /**
+     * Name of the schedule.
+     */
+    name: text('name'),
 
-        /**
-         * Any custom notes.
-         */
-        notes: text('notes'),
+    /**
+     * Any custom notes.
+     */
+    notes: text('notes'),
 
-        /**
-         * Index of the schedule in the user's list of schedules.
-         */
-        index: integer('index').notNull(),
+    /**
+     * Index of the schedule in the user's list of schedules.
+     */
+    index: integer('index').notNull(),
 
-        lastUpdated: timestamp('last_updated', { withTimezone: true }).notNull(),
-    },
-    (table) => [unique().on(table.userId, table.name), unique().on(table.userId, table.index)]
-);
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+    /**
+     * Updates to content in schedule will not bump this column.
+     * Only direct updates to the schedule table will bump this column (e.g. name, notes, index).
+     *
+     * {@see} backend/lib/rds.ts, `upsertSchedulesAndContents`
+     */
+    lastUpdated: timestamp('last_updated', { withTimezone: true })
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
+});
 
 export type Schedule = typeof schedules.$inferSelect;

@@ -1,3 +1,9 @@
+import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
+import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
+import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import AppStore from '$stores/AppStore';
 import { Add, Edit } from '@mui/icons-material';
 import {
     Button,
@@ -11,16 +17,9 @@ import {
     Tooltip,
 } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
-
-import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
-import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
-import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
@@ -28,12 +27,12 @@ interface CustomEventDialogProps {
     scheduleNames: string[];
 }
 
-const defaultCustomEventValues: RepeatingCustomEvent = {
+const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
     start: '10:30',
     end: '15:30',
     title: '',
+    color: '#551a8b',
     days: [false, false, false, false, false, false, false],
-    customEventID: 0,
     building: undefined,
 };
 
@@ -52,15 +51,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const postHog = usePostHog();
 
-    const resetForm = () => {
-        setStart(defaultCustomEventValues.start);
-        setEnd(defaultCustomEventValues.end);
-        setTitle(defaultCustomEventValues.title);
-        setDays(defaultCustomEventValues.days);
-        setBuilding(undefined);
-        setScheduleIndices([]);
-    };
-
     const disabled = !(scheduleIndices.length && days.includes(true));
 
     const handleSubmit = () => {
@@ -74,13 +64,22 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     };
 
     const handleOpen = useCallback(() => {
-        setOpen(true);
         if (props.customEvent) {
-            const customEventId = Number(props.customEvent.customEventID);
-            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEventId));
+            setStart(props.customEvent.start);
+            setEnd(props.customEvent.end);
+            setTitle(props.customEvent.title);
+            setDays(props.customEvent.days);
+            setBuilding(props.customEvent.building);
+            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent.customEventID));
         } else {
+            setStart(defaultCustomEventValues.start);
+            setEnd(defaultCustomEventValues.end);
+            setTitle(defaultCustomEventValues.title);
+            setDays(defaultCustomEventValues.days);
+            setBuilding(defaultCustomEventValues.building);
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
         }
+        setOpen(true);
 
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
@@ -125,15 +124,15 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             days: days,
             start: start,
             end: end,
-            customEventID: props.customEvent?.customEventID ?? Date.now(),
+            customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
         };
 
-        resetForm();
-
-        props.customEvent
-            ? editCustomEvent(newCustomEvent, scheduleIndices)
-            : addCustomEvent(newCustomEvent, scheduleIndices);
+        if (props.customEvent) {
+            editCustomEvent(newCustomEvent, scheduleIndices);
+        } else {
+            addCustomEvent(newCustomEvent, scheduleIndices);
+        }
     };
 
     useEffect(() => {
@@ -148,13 +147,11 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         };
     }, []);
 
-    const isDark = useThemeStore.getState().isDark;
-
     return (
         <>
             {props.customEvent ? (
                 <Tooltip title="Edit">
-                    <IconButton onClick={handleOpen}>
+                    <IconButton sx={{ padding: 0.5 }} onClick={handleOpen}>
                         <Edit fontSize="small" />
                     </IconButton>
                 </Tooltip>
@@ -186,6 +183,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             margin="dense"
                             onChange={handleEventNameChange}
                             variant="outlined"
+                            color="secondary"
                             InputLabelProps={{ variant: 'outlined' }}
                         />
                     </FormControl>
@@ -198,6 +196,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             fullWidth
                             variant="outlined"
                             InputLabelProps={{ variant: 'outlined' }}
+                            color="secondary"
                         />
                         <TextField
                             onChange={handleEndTimeChange}
@@ -207,6 +206,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             fullWidth
                             variant="outlined"
                             InputLabelProps={{ variant: 'outlined' }}
+                            color="secondary"
                         />
                     </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={days} />
@@ -219,7 +219,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color="inherit">
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>

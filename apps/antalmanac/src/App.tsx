@@ -1,13 +1,6 @@
 import './App.css';
-
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { TourProvider } from '@reactour/tour';
-import { SnackbarProvider } from 'notistack';
-import { useEffect } from 'react';
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
-
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
-// import { AutoSignIn } from '$components/AutoSignIn';
+import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';
@@ -18,6 +11,10 @@ import Home from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
 import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { TourProvider } from '@reactour/tour';
+import { useEffect } from 'react';
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
 /**
  * Do not edit this unless you know what you're doing.
@@ -26,7 +23,7 @@ function RouteLayout() {
     return (
         <>
             <PosthogPageviewTracker />
-            {/* <AutoSignIn /> */}
+            <AutoSignIn />
             <Outlet />
         </>
     );
@@ -34,13 +31,15 @@ function RouteLayout() {
 
 const OUTAGE = false;
 
+const HOME_PAGE = <Home />;
+
 const BROWSER_ROUTER = createBrowserRouter([
     {
         element: <RouteLayout />,
         children: [
             {
                 path: '/',
-                element: <Home />,
+                element: HOME_PAGE,
                 errorElement: <ErrorPage />,
             },
             {
@@ -50,7 +49,7 @@ const BROWSER_ROUTER = createBrowserRouter([
             },
             {
                 path: '/:tab',
-                element: <Home />,
+                element: HOME_PAGE,
                 errorElement: <ErrorPage />,
             },
             {
@@ -60,6 +59,19 @@ const BROWSER_ROUTER = createBrowserRouter([
             },
             {
                 path: '/auth',
+                element: <AuthPage />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                // OAuth callback sink for the native iOS wrapper. In the happy
+                // path ASWebAuthenticationSession intercepts this URL via the
+                // AASA association and never actually loads it in any web view.
+                // This route exists as defense-in-depth: if the URL is ever
+                // navigated to directly (e.g. Universal Link delivered to the
+                // WKWebView via SceneDelegate, or a browser that hits this URL
+                // outside any native flow), AuthPage still completes the PKCE
+                // exchange using the cookies set on antalmanac.com.
+                path: '/auth/native',
                 element: <AuthPage />,
                 errorElement: <ErrorPage />,
             },
@@ -132,9 +144,7 @@ export default function App() {
                                 }),
                             }}
                         >
-                            <SnackbarProvider classes={{ containerRoot: 'notification-snackbar-container' }}>
-                                <RouterProvider router={ROUTER} />
-                            </SnackbarProvider>
+                            <RouterProvider router={ROUTER} />
                         </TourProvider>
                     </AppQueryProvider>
                 </AppPostHogProvider>

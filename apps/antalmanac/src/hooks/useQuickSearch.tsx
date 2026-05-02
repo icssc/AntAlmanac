@@ -1,13 +1,13 @@
-import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function useQuickSearch() {
-    const { displaySections, forceUpdate } = useCoursePaneStore();
-    const { setActiveTab } = useTabStore();
+    const displaySections = useCoursePaneStore((s) => s.displaySections);
+    const forceUpdate = useCoursePaneStore((s) => s.forceUpdate);
+    const setActiveTab = useTabStore((s) => s.setActiveTab);
     const navigate = useNavigate();
 
     return useCallback(

@@ -9,6 +9,7 @@
         "baseUrl": ".",
         "outDir": "dist",
         "resolveJsonModule": true,
+        "jsx": "react-jsx",
     },
     "include": ["src/**/*", "drizzle.config.ts", "scripts"],
     "exclude": ["node_modules", "dist"]

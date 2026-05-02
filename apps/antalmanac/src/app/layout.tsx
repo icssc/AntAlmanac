@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 
 import './globals.css';
 
@@ -21,14 +22,14 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'AntAlmanac',
         description: ANTALMANAC_DESCRIPTION,
-        images: '/logo.png',
+        images: '/og-image.png',
     },
     openGraph: {
         title: 'AntAlmanac',
         description: ANTALMANAC_DESCRIPTION,
         url: 'https://antalmanac.com',
         siteName: 'AntAlmanac',
-        images: '/logo.png',
+        images: '/og-image.png',
     },
     appleWebApp: {
         title: 'AntAlmanac',
@@ -61,19 +62,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
-            <head>
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                    console.log(
-                        '%cInterested in improving AntAlmanac?\n - Checkout the project on GitHub: https://github.com/icssc/antalmanac\n - Join our Discord: https://discord.gg/GzF76D7UhY\n - Leave feedback: https://antalmanac.com/feedback',
-                        'color: #305db7; font-size: 15px'
-                    );
-                `,
-                    }}
-                />
-            </head>
             <body>
+                <Script>
+                    {`console.log(
+                        '%cInterested in improving AntAlmanac?\\n - Check out the project on GitHub: https://github.com/icssc/antalmanac\\n - Join our Discord: https://discord.gg/GzF76D7UhY\\n - Leave feedback: https://antalmanac.com/feedback',
+                        'color: #305db7; font-size: 15px'
+                    );`}
+                </Script>
                 <noscript>You need to enable JavaScript to run this app.</noscript>
                 {children}
             </body>

@@ -2,20 +2,14 @@
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
-
-import { Box, Backdrop, useTheme } from '@mui/material';
-import moment from 'moment';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
-import { useShallow } from 'zustand/react/shallow';
-import { shallow } from 'zustand/shallow';
-
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
+import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
+import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
     getLocalStorageSkeletonBlueprint,
@@ -27,31 +21,29 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
+import { CalendarMonth } from '@mui/icons-material';
+import { Box, Backdrop, useTheme } from '@mui/material';
+import { differenceInCalendarDays, format, getDay, startOfWeek, type Locale } from 'date-fns';
+import { enUS } from 'date-fns/locale';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Calendar, Components, DateLocalizer, dateFnsLocalizer, Views, ViewsProps } from 'react-big-calendar';
+import { useShallow } from 'zustand/react/shallow';
 
 /*
-//  * Always start week on Saturday for finals potentially on weekends.
-//  * CALENDAR_VIEWS will set the correct day range
  * Start week on Sunday so Saturday appears after Friday.
  * This ensures the standard week layout: Su, M, Tu, W, Th, F, Sa
  * Normal schedules: Su ... Sa (Sa rightmost)
+ *
+ * Finals locale: week starts Saturday (Sa ... Fr)
  */
-// eslint-disable-next-line import/no-named-as-default-member
-moment.defineLocale('en-us', {
-    parentLocale: 'en',
-    week: {
-        dow: 0, // Sunday = 0, Monday = 1, ..., Saturday = 6
-    },
-});
+const enUSSunday: Locale = { ...enUS, options: { ...enUS.options, weekStartsOn: 0 } };
+const enUSFinals: Locale = { ...enUS, options: { ...enUS.options, weekStartsOn: 6 } };
 
-// Finals locale: week starts Saturday (Sa ... Fr)
-// eslint-disable-next-line import/no-named-as-default-member
-moment.defineLocale('en-us-finals', {
-    parentLocale: 'en-us',
-    week: { dow: 6 },
-});
-
-// eslint-disable-next-line import/no-named-as-default-member
-moment.locale('en-us');
+const locales: Record<string, Locale> = {
+    'en-us': enUSSunday,
+    'en-us-finals': enUSFinals,
+};
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
@@ -59,6 +51,53 @@ const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
 };
 const BASE_DATE = new Date(2018, 0, 1);
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
+
+interface SkeletonBlueprint {
+    dayOffset: number;
+    startHour: number;
+    startMinute: number;
+    endHour: number;
+    endMinute: number;
+}
+
+function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
+    const start = new Date(BASE_DATE);
+    start.setDate(start.getDate() + blueprint.dayOffset);
+    start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
+
+    const end = new Date(start);
+    end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
+
+    return {
+        color: '#6d6d6d',
+        start,
+        end,
+        title: '',
+        isSkeletonEvent: true,
+    } as SkeletonEvent;
+}
+
+function createSkeletonEvents(): SkeletonEvent[] {
+    const savedDataString = getLocalStorageSkeletonBlueprint();
+
+    let skeletonBlueprints: SkeletonBlueprint[] | null = null;
+
+    if (savedDataString) {
+        const parsedData = JSON.parse(savedDataString);
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+            skeletonBlueprints = parsedData;
+        }
+    }
+
+    if (skeletonBlueprints) {
+        return skeletonBlueprints.map(blueprintToSkeletonEvent);
+    }
+
+    const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
+    const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
+
+    return fallbackBlueprints.map(blueprintToSkeletonEvent);
+}
 
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
@@ -70,8 +109,7 @@ export const ScheduleCalendar = memo(() => {
     const theme = useTheme();
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
-        (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
-        shallow
+        useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
@@ -107,7 +145,7 @@ export const ScheduleCalendar = memo(() => {
                 hasHadEventsRef.current = true;
                 const skeletonBlueprint = eventsInCalendar
                     .map((event) => {
-                        const dayOffset = event.start.getDate() - BASE_DATE.getDate();
+                        const dayOffset = differenceInCalendarDays(event.start, BASE_DATE);
                         return {
                             dayOffset,
                             startHour: event.start.getHours(),
@@ -116,7 +154,7 @@ export const ScheduleCalendar = memo(() => {
                             endMinute: event.end.getMinutes(),
                         };
                     })
-                    .filter((blueprint) => blueprint.dayOffset >= 0 && blueprint.dayOffset <= 6);
+                    .filter((blueprint) => blueprint.dayOffset >= -1 && blueprint.dayOffset <= 5);
 
                 if (skeletonBlueprint.length > 0) {
                     setLocalStorageSkeletonBlueprint(JSON.stringify(skeletonBlueprint));
@@ -128,61 +166,10 @@ export const ScheduleCalendar = memo(() => {
         }
     }, [eventsInCalendar, loadingSchedule]);
 
-    const blueprintToSkeletonEvent = useCallback(
-        (blueprint: {
-            dayOffset: number;
-            startHour: number;
-            startMinute: number;
-            endHour: number;
-            endMinute: number;
-        }): SkeletonEvent => {
-            const start = new Date(BASE_DATE);
-            start.setDate(start.getDate() + blueprint.dayOffset);
-            start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
-
-            const end = new Date(start);
-            end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
-
-            return {
-                color: '#6d6d6d',
-                start,
-                end,
-                title: '',
-                isSkeletonEvent: true,
-            } as SkeletonEvent;
-        },
-        []
+    const events = useMemo(
+        () => (loadingSchedule ? createSkeletonEvents() : getEventsForCalendar()),
+        [loadingSchedule, getEventsForCalendar]
     );
-
-    const createSkeletonEvents = useCallback((): SkeletonEvent[] => {
-        const savedDataString = getLocalStorageSkeletonBlueprint();
-
-        let skeletonBlueprints: Array<{
-            dayOffset: number;
-            startHour: number;
-            startMinute: number;
-            endHour: number;
-            endMinute: number;
-        }> | null = null;
-
-        if (savedDataString) {
-            const parsedData = JSON.parse(savedDataString);
-            if (Array.isArray(parsedData) && parsedData.length > 0) {
-                skeletonBlueprints = parsedData;
-            }
-        }
-
-        if (skeletonBlueprints) {
-            return skeletonBlueprints.map(blueprintToSkeletonEvent);
-        }
-
-        const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
-        const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
-
-        return fallbackBlueprints.map(blueprintToSkeletonEvent);
-    }, [blueprintToSkeletonEvent]);
-
-    const events = loadingSchedule ? createSkeletonEvents() : getEventsForCalendar();
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
         setShowFinalsSchedule((prevState) => !prevState);
@@ -190,9 +177,8 @@ export const ScheduleCalendar = memo(() => {
 
     /**
      * Finds the earliest start time and returns that or 7AM, whichever is earlier
-     * @returns A date with the earliest time or 7AM
      */
-    const getStartTime = useCallback(() => {
+    const startTime = useMemo(() => {
         const eventStartHours = events.map((event) => event.start.getHours());
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
     }, [events]);
@@ -252,9 +238,14 @@ export const ScheduleCalendar = memo(() => {
         return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
     };
 
+    const showEmptyState = useMemo(
+        () => !loadingSchedule && !showFinalsSchedule && eventsInCalendar.length === 0 && !hoveredCalendarizedCourses,
+        [loadingSchedule, showFinalsSchedule, eventsInCalendar.length, hoveredCalendarizedCourses]
+    );
+
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
-    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
-    const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
+    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
+    const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h a';
 
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
@@ -266,11 +257,7 @@ export const ScheduleCalendar = memo(() => {
 
     const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
 
-    const calendarLocalizer = useMemo(() => {
-        // eslint-disable-next-line import/no-named-as-default-member
-        moment.locale(culture);
-        return momentLocalizer(moment);
-    }, [culture]);
+    const calendarLocalizer = useMemo(() => dateFnsLocalizer({ format, getDay, startOfWeek, locales }), []);
 
     // Check if there are any finals on weekends (else only display M-F)
     const hasWeekendFinals =
@@ -282,14 +269,14 @@ export const ScheduleCalendar = memo(() => {
     const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
     const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
-    const finalsDateFormat = isMobile ? 'M/DD' : 'ddd M/DD';
+    const finalsDateFormat = isMobile ? 'M/dd' : 'eee M/dd';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
         () => ({
             timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
                 date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, calendarGutterTimeFormat, culture),
-            dayFormat: showFinalsSchedule ? finalsDateFormat : 'ddd',
+            dayFormat: showFinalsSchedule ? finalsDateFormat : 'eee',
             eventTimeRangeFormat: (range: { start: Date; end: Date }, culture?: string, localizer?: DateLocalizer) =>
                 localizer
                     ? `${localizer.format(range.start, calendarTimeFormat, culture)} - ${localizer.format(
@@ -354,8 +341,38 @@ export const ScheduleCalendar = memo(() => {
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
-            <Box id="screenshot" height="0" flexGrow={1}>
+            <Box id="screenshot" height="0" flexGrow={1} position="relative">
+                <TbaCalendarCard />
                 <CalendarEventPopover />
+
+                {showEmptyState && (
+                    <Box
+                        data-html2canvas-ignore
+                        position="absolute"
+                        top={0}
+                        left={0}
+                        right={0}
+                        bottom={0}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        zIndex={1}
+                        sx={{
+                            backgroundColor: (theme) =>
+                                theme.palette.mode === 'dark' ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
+                        }}
+                    >
+                        <EmptyState
+                            Icon={CalendarMonth}
+                            title="Your schedule is empty"
+                            description="Search for courses to start building your schedule."
+                            primaryAction={{
+                                label: 'Search for Courses',
+                                onClick: () => useTabStore.getState().setActiveTab('search'),
+                            }}
+                        />
+                    </Box>
+                )}
 
                 <Calendar<CalendarEvent, object>
                     key={`${culture}-${calendarView}`}
@@ -375,8 +392,9 @@ export const ScheduleCalendar = memo(() => {
                     onNavigate={() => {
                         return;
                     }}
-                    min={getStartTime()}
+                    min={startTime}
                     max={CALENDAR_MAX_DATE}
+                    scrollToTime={startTime}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     dayPropGetter={dayStyleGetter}

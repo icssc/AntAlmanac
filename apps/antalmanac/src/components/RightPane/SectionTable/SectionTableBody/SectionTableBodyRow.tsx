@@ -1,9 +1,3 @@
-import { TableRow, useTheme } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-
-import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
-
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { EnrollmentCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell';
@@ -19,6 +13,11 @@ import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
+import { TableRow, useTheme } from '@mui/material';
+import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+
+import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 interface SectionTableBodyRowProps {
     section: AASection;
@@ -42,8 +41,8 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     dayAndTime: DayAndTimeCell,
     location: LocationsCell,
     sectionEnrollment: EnrollmentCell,
-    restrictions: RestrictionsCell,
     status: StatusCell,
+    restrictions: RestrictionsCell,
     syllabus: SyllabusCell,
 };
 
@@ -103,7 +102,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
             const computedAddedCourseStyle = allowHighlight
                 ? isDark
-                    ? { backgroundColor: '#b0b04f' }
+                    ? { backgroundColor: '#b0b04fa0' }
                     : { backgroundColor: '#fcfc97' }
                 : {};
 
@@ -111,17 +110,15 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         }
 
         if (scheduleConflict) {
-            const computedScheduleConflictStyle = scheduleConflict
-                ? isDark
-                    ? { backgroundColor: '#121212', opacity: '0.6' }
-                    : { backgroundColor: '#a0a0a0', opacity: '1' }
-                : {};
+            const computedScheduleConflictStyle = isDark
+                ? { backgroundColor: '#121212', opacity: '0.6' }
+                : { backgroundColor: '#a0a0a0', opacity: '1' };
 
             return computedScheduleConflictStyle;
         }
 
         return {};
-    }, [allowHighlight, isDark, scheduleConflict, addedCourse]);
+    }, [addedCourse, allowHighlight, isDark, scheduleConflict]);
 
     return (
         <TableRow

@@ -1,7 +1,7 @@
+import { useSecondaryColor } from '$hooks/useSecondaryColor';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Box, BoxProps } from '@mui/material';
 import { grey } from '@mui/material/colors';
-
-import { useThemeStore } from '$stores/SettingsStore';
 
 interface CustomInputBoxProps {
     children: React.ReactNode;
@@ -10,6 +10,7 @@ interface CustomInputBoxProps {
 
 export const CustomInputBox = ({ children, boxProps }: CustomInputBoxProps) => {
     const isDark = useThemeStore((store) => store.isDark);
+    const secondaryColor = useSecondaryColor();
     return (
         <Box
             {...boxProps}
@@ -24,6 +25,7 @@ export const CustomInputBox = ({ children, boxProps }: CustomInputBoxProps) => {
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                         borderWidth: 1,
+                        borderColor: secondaryColor,
                     },
                 },
             }}

@@ -12,6 +12,7 @@ const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
     building: '',
     room: '',
     division: '',
+    excludeRoadmapCourses: '',
     excludeRestrictionCodes: '',
     days: '',
 };

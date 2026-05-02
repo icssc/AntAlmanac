@@ -1,13 +1,12 @@
-import { render, screen, act } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
-
 import PatchNotes, { closeButtonTestId, dialogTestId, backdropTestId } from '$components/PatchNotes';
 import {
     getLocalStoragePatchNotesKey,
     setLocalStoragePatchNotesKey,
     setLocalStorageTourHasRun,
 } from '$lib/localStorage';
-import { LATEST_PATCH_NOTES_UPDATE, shouldShowPatchNotes, useHelpMenuStore } from '$stores/HelpMenuStore';
+import { LATEST_PATCH_NOTES_UPDATE, shouldShowPatchNotes, usePatchNotesStore } from '$stores/PatchNotesStore';
+import { render, screen, act } from '@testing-library/react';
+import { describe, expect, test } from 'vitest';
 
 describe('patch notes', () => {
     /**
@@ -19,7 +18,7 @@ describe('patch notes', () => {
         test('displays when latest patch notes is outdated ', () => {
             setLocalStoragePatchNotesKey(outdatedPatchNotes);
             setLocalStorageTourHasRun('true');
-            useHelpMenuStore.setState({ showPatchNotes: shouldShowPatchNotes() });
+            usePatchNotesStore.setState({ showPatchNotes: shouldShowPatchNotes() });
 
             render(<PatchNotes />);
 
@@ -28,7 +27,7 @@ describe('patch notes', () => {
 
         test('no display when latest patch notes is up to date', () => {
             setLocalStoragePatchNotesKey(LATEST_PATCH_NOTES_UPDATE);
-            useHelpMenuStore.setState({ showPatchNotes: shouldShowPatchNotes() });
+            usePatchNotesStore.setState({ showPatchNotes: shouldShowPatchNotes() });
 
             render(<PatchNotes />);
 
@@ -38,7 +37,7 @@ describe('patch notes', () => {
 
     describe('close patch notes with button', () => {
         test('clicking the button closes the dialog', () => {
-            useHelpMenuStore.setState({ showPatchNotes: true });
+            usePatchNotesStore.setState({ showPatchNotes: true });
 
             render(<PatchNotes />);
 
@@ -51,7 +50,7 @@ describe('patch notes', () => {
 
         test('the latest patch notes is saved to local storage', () => {
             setLocalStoragePatchNotesKey(outdatedPatchNotes);
-            useHelpMenuStore.setState({ showPatchNotes: true });
+            usePatchNotesStore.setState({ showPatchNotes: true });
 
             render(<PatchNotes />);
 
@@ -65,7 +64,7 @@ describe('patch notes', () => {
 
     describe('closing the dialog by clicking the backdrop ', () => {
         test('clicking the backdrop closes the dialog', () => {
-            useHelpMenuStore.setState({ showPatchNotes: true });
+            usePatchNotesStore.setState({ showPatchNotes: true });
 
             render(<PatchNotes />);
 
@@ -80,7 +79,7 @@ describe('patch notes', () => {
 
         test('the latest patch notes is saved to local storage', () => {
             setLocalStoragePatchNotesKey(outdatedPatchNotes);
-            useHelpMenuStore.setState({ showPatchNotes: true });
+            usePatchNotesStore.setState({ showPatchNotes: true });
 
             render(<PatchNotes />);
 

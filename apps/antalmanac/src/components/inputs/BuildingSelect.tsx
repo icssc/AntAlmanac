@@ -1,7 +1,6 @@
+import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import { Autocomplete, TextField, type TextFieldProps } from '@mui/material';
 import { useCallback, useMemo } from 'react';
-
-import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 
 export interface ExtendedBuilding extends Building {
     id: string;
@@ -26,7 +25,6 @@ export type BuildingSelectProps = {
 
 export function BuildingSelect(props: BuildingSelectProps) {
     const { onChange, variant = 'standard' } = props;
-
     const handleChange = useCallback(
         async (_event: React.SyntheticEvent, value: ExtendedBuilding | null) => {
             await onChange?.(value);
@@ -60,6 +58,7 @@ export function BuildingSelect(props: BuildingSelectProps) {
                     label="Search for a place"
                     variant={variant}
                     InputLabelProps={{ variant: variant }}
+                    color="secondary"
                 />
             )}
         />

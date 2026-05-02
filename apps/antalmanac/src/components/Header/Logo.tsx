@@ -1,6 +1,5 @@
-import Image from 'next/image';
-
 import { useIsMobile } from '$hooks/useIsMobile';
+import Image from 'next/image';
 
 type Logo = {
     name: string;
@@ -81,6 +80,7 @@ export function Logo() {
             height={32}
             width={isMobile ? 48 : 78}
             title={currentLogo?.attribution}
+            loading="eager"
             alt="logo"
         />
     );

@@ -1,12 +1,12 @@
-import type { MetadataRoute } from 'next';
-
 import { BLUE } from '$src/globals';
+import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
         id: 'https://antalmanac.com',
         scope: 'https://antalmanac.com',
         name: 'AntAlmanac',
+        short_name: 'AntAlmanac',
         description: 'A course exploration and scheduling tool for UCI Anteaters',
         lang: 'en',
         dir: 'ltr',
