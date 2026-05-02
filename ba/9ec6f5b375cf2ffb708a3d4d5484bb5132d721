@@ -1,0 +1,23 @@
+apps/antalmanac/src/components/HomeLayout.tsx
+  74e2b79b2d9ade93 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "ba9ec6f5b375cf2ffb708a3d4d5484bb5132d721",
+  "prompts": {
+    "74e2b79b2d9ade93": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd23932c-e676-42a5-8b2a-d8b1c3fb2113",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
