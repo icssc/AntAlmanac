@@ -64,7 +64,7 @@ class AppStore extends EventEmitter {
     }
 
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
-        return this.schedule.getNextScheduleName(scheduleIndex, newScheduleName);
+        return this.schedule.getNonConflictingName(scheduleIndex, newScheduleName);
     }
 
     getSchedules() {
