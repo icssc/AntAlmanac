@@ -20,7 +20,7 @@ import { useSearchParams } from 'next/navigation';
 import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-interface Props {
+interface SearchWithPlannerProps {
     labelProps?: ComponentProps<typeof LabeledAutocomplete>['labelProps'];
 }
 
@@ -37,7 +37,7 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
     };
 }
 
-const SearchWithPlanner = ({ labelProps }: Props) => {
+export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     const [termRoadmapGrouping, setTermRoadmapGrouping] = useState<TermRoadmapGrouping>(getDefaultTermRoadmapGrouping);
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
@@ -250,4 +250,3 @@ const SearchWithPlanner = ({ labelProps }: Props) => {
 
     return searchComponent;
 };
-export default SearchWithPlanner;

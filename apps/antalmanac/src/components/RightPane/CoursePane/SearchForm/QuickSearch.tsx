@@ -1,5 +1,5 @@
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
-import SearchWithPlanner from '$components/RightPane/CoursePane/SearchForm/SearchWithPlanner';
+import { SearchWithPlanner } from '$components/RightPane/CoursePane/SearchForm/SearchWithPlanner';
 import { Typography, useMediaQuery } from '@mui/material';
 import { Box, Stack, useTheme } from '@mui/system';
 import { usePostHog } from 'posthog-js/react';
