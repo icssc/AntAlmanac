@@ -24,7 +24,7 @@ export function SignInDialog(props: SignInDialogProps) {
         setIsLoggingIn(true);
         try {
             await loginUser(postHog);
-        } catch {
+        } finally {
             setIsLoggingIn(false);
         }
     };
