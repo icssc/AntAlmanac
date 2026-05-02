@@ -347,7 +347,6 @@ export default function CourseRenderPane(props: { id?: number }) {
                 }
                 setUnofferedCourses(unofferedCourses);
                 websocJsonResp = await WebSOC.queryMultiple(offeredCourses);
-                RightPaneStore.clearMultiSearchData();
                 await Promise.all(gradeQueries);
             } else {
                 const formData = RightPaneStore.getFormData();
