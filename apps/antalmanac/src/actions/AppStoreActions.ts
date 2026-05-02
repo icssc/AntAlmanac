@@ -442,7 +442,7 @@ export const undoDelete = (event: KeyboardEvent | null) => {
 };
 
 export const redoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.key === 'z' && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
+    if (event == null || (event.key.toLowerCase() === 'z' && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
         AppStore.redoAction();
     }
 };
