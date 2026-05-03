@@ -281,6 +281,8 @@ export default function CourseRenderPane(props: { id?: number }) {
         staleTime: 5 * 60 * 1000,
         queryKey: ['searchResults', RightPaneStore.getFormData(), RightPaneStore.getMultiSearchData()],
         queryFn: async (): Promise<WebsocAPIResponse | null> => {
+            setUnofferedCourses([]);
+
             try {
                 const multiSearchData = RightPaneStore.getMultiSearchData();
                 let websocJsonResp;
