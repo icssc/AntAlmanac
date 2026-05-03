@@ -2,6 +2,14 @@ import { WebsocSectionType } from '@packages/antalmanac-types';
 
 import { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCoursePane';
 
+/**
+ * Returns human-readable labels for section types the user has not added yet.
+ *
+ * Product assumption: every modality listed in `course.sectionTypes` (the union of
+ * types WebSOC lists for that offering) is treated as required—the schedule should
+ * include at least one section per type. When `sectionTypes` is empty we cannot
+ * infer requirements and return no missing labels.
+ */
 export const getMissingSections = (userCourses: CourseWithTerm): string[] => {
     const requiredTypes = new Set<WebsocSectionType>(userCourses.sectionTypes ?? []);
 
