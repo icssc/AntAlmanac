@@ -33,7 +33,7 @@ const ALIASES: Record<string, string | undefined> = {
 };
 
 function catalogCourseKey(department: string, courseNumber: string) {
-    return `${department.trim()}\0${courseNumber.trim()}`;
+    return `${department.trim()}::${courseNumber.trim()}`;
 }
 
 function indexWebsocCoursesByCatalogKey(data: WebsocAPIResponse) {
