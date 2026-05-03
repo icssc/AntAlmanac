@@ -36,20 +36,20 @@ function catalogCourseKey(department: string, courseNumber: string) {
     return `${department.trim()}::${courseNumber.trim()}`;
 }
 
-function indexWebsocCoursesByCatalogKey(data: WebsocAPIResponse) {
+function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
     const out = new Map<
         string,
         Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
     >();
     for (const school of data.schools) {
         for (const dept of school.departments) {
-            for (const course of dept.courses) {
-                const key = catalogCourseKey(dept.deptCode, course.courseNumber);
+            for (const wsCourse of dept.courses) {
+                const key = catalogCourseKey(dept.deptCode, wsCourse.courseNumber);
                 out.set(key, {
                     deptCode: dept.deptCode,
                     deptName: dept.deptName,
-                    courseNumber: course.courseNumber,
-                    courseTitle: course.courseTitle,
+                    courseNumber: wsCourse.courseNumber,
+                    courseTitle: wsCourse.courseTitle,
                 });
             }
         }
@@ -113,32 +113,32 @@ async function main() {
         }).toString()}`,
         { isApiKeyRequired: true }
     );
-    const fromWebsoc = indexWebsocCoursesByCatalogKey(websocRest.data);
+    const fromWebsoc = getWebsocCoursesFromResponse(websocRest.data);
 
     let addedFromWebsoc = 0;
-    for (const [key, row] of fromWebsoc) {
+    for (const [key, course] of fromWebsoc) {
         if (catalogueKeys.has(key)) {
             continue;
         }
         addedFromWebsoc += 1;
-        const id = `ws:${row.deptCode}:${row.courseNumber}`;
-        const name = (row.courseTitle ?? '').trim() || `${row.deptCode} ${row.courseNumber}`;
+        const id = `ws:${course.deptCode}:${course.courseNumber}`;
+        const name = (course.courseTitle ?? '').trim() || `${course.deptCode} ${course.courseNumber}`;
         courseMap.set(id, {
             id,
             type: 'COURSE',
             name,
-            alias: ALIASES[row.deptCode],
+            alias: ALIASES[course.deptCode],
             metadata: {
-                department: row.deptCode,
-                number: row.courseNumber,
+                department: course.deptCode,
+                number: course.courseNumber,
             },
         });
-        if (!deptMap.has(row.deptCode)) {
-            deptMap.set(row.deptCode, {
-                id: row.deptCode,
+        if (!deptMap.has(course.deptCode)) {
+            deptMap.set(course.deptCode, {
+                id: course.deptCode,
                 type: 'DEPARTMENT',
-                name: (row.deptName ?? '').trim() || row.deptCode,
-                alias: ALIASES[row.deptCode],
+                name: (course.deptName ?? '').trim() || course.deptCode,
+                alias: ALIASES[course.deptCode],
             });
         }
     }
