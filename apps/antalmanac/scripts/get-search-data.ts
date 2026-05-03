@@ -98,6 +98,11 @@ async function main() {
     await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
     await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
 
+    /*
+     * WebSOC may receive updates sooner than the course catalogue updates, notably for a
+     * new academic year (i.e. Fall term). Querying Websoc to build course data ensures all
+     * available courses are represented.
+     */
     const latestTerm = termData[0];
     const [latestYear, latestQuarter] = latestTerm.shortName.split(' ');
     console.log(`Fetching WebSoc REST for ${latestTerm.shortName} (union with catalogue)...`);
