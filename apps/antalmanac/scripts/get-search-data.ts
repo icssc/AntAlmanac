@@ -27,6 +27,7 @@ const ALIASES: Record<string, string | undefined> = {
 };
 
 async function main() {
+    // Staging/preview: merge or deploy from a feature branch to exercise the full pipeline.
     console.log('Generating cache for fuzzy search.');
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];
