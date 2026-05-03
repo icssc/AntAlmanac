@@ -8,6 +8,12 @@ import type {
     DepartmentSearchResult,
     CoursesFilteredAPIResult,
 } from '@packages/antalmanac-types';
+import type {
+    WebsocAPIResponse,
+    WebsocAPIResult,
+    WebsocCourse,
+    WebsocDepartment,
+} from '@packages/anteater-api-types';
 
 import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
@@ -26,8 +32,32 @@ const ALIASES: Record<string, string | undefined> = {
     IN4MATX: 'INF',
 };
 
+function catalogCourseKey(department: string, courseNumber: string) {
+    return `${department.trim()}\0${courseNumber.trim()}`;
+}
+
+function indexWebsocCoursesByCatalogKey(data: WebsocAPIResponse) {
+    const out = new Map<
+        string,
+        Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
+    >();
+    for (const school of data.schools) {
+        for (const dept of school.departments) {
+            for (const course of dept.courses) {
+                const key = catalogCourseKey(dept.deptCode, course.courseNumber);
+                out.set(key, {
+                    deptCode: dept.deptCode,
+                    deptName: dept.deptName,
+                    courseNumber: course.courseNumber,
+                    courseTitle: course.courseTitle,
+                });
+            }
+        }
+    }
+    return out;
+}
+
 async function main() {
-    // Staging/preview: merge or deploy from a feature branch to exercise the full pipeline.
     console.log('Generating cache for fuzzy search.');
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];
@@ -41,6 +71,7 @@ async function main() {
     console.log(`Fetched ${courses.length} courses.`);
     const courseMap = new Map<string, CourseSearchResult & { id: string }>();
     const deptMap = new Map<string, DepartmentSearchResult & { id: string }>();
+    const catalogueKeys = new Set<string>();
     for (const course of courses) {
         courseMap.set(course.id, {
             id: course.id,
@@ -52,6 +83,7 @@ async function main() {
                 number: course.courseNumber,
             },
         });
+        catalogueKeys.add(catalogCourseKey(course.department, course.courseNumber));
         deptMap.set(course.department, {
             id: course.department,
             type: 'DEPARTMENT',
@@ -65,16 +97,58 @@ async function main() {
 
     await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
     await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
+
+    const latestTerm = termData[0];
+    const [latestYear, latestQuarter] = latestTerm.shortName.split(' ');
+    console.log(`Fetching WebSoc REST for ${latestTerm.shortName} (union with catalogue)...`);
+    const websocRest = await fetchAnteaterAPI<WebsocAPIResult>(
+        `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams({
+            year: latestYear,
+            quarter: latestQuarter,
+        }).toString()}`,
+        { isApiKeyRequired: true }
+    );
+    const fromWebsoc = indexWebsocCoursesByCatalogKey(websocRest.data);
+
+    let addedFromWebsoc = 0;
+    for (const [key, row] of fromWebsoc) {
+        if (catalogueKeys.has(key)) {
+            continue;
+        }
+        addedFromWebsoc += 1;
+        const id = `ws:${row.deptCode}:${row.courseNumber}`;
+        const name = (row.courseTitle ?? '').trim() || `${row.deptCode} ${row.courseNumber}`;
+        courseMap.set(id, {
+            id,
+            type: 'COURSE',
+            name,
+            alias: ALIASES[row.deptCode],
+            metadata: {
+                department: row.deptCode,
+                number: row.courseNumber,
+            },
+        });
+        if (!deptMap.has(row.deptCode)) {
+            deptMap.set(row.deptCode, {
+                id: row.deptCode,
+                type: 'DEPARTMENT',
+                name: (row.deptName ?? '').trim() || row.deptCode,
+                alias: ALIASES[row.deptCode],
+            });
+        }
+    }
+    console.log(`WebSoc union: ${fromWebsoc.size} courses in schedule, ${addedFromWebsoc} not in catalogue.`);
+
     await writeFile(
         join(__dirname, '../src/generated/searchData.ts'),
         `
     import type { CourseSearchResult, DepartmentSearchResult } from "@packages/antalmanac-types";
     export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSON.stringify(
-        Array.from(deptMap.values())
-    )};
+            Array.from(deptMap.values())
+        )};
     export const courses: Array<CourseSearchResult & { id: string }> = ${JSON.stringify(
-        Array.from(courseMap.values())
-    )};
+            Array.from(courseMap.values())
+        )};
     `
     );
 
