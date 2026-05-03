@@ -1,6 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { sql } from 'drizzle-orm';
-import { pgTable, text, pgEnum, timestamp, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, text, pgEnum, primaryKey, timestamp } from 'drizzle-orm/pg-core';
 
 import { users } from './user';
 
@@ -27,10 +26,11 @@ export const accounts = pgTable(
         refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
         idToken: text('id_token'),
         scope: text('scope'),
-        createdAt: timestamp('created_at').defaultNow().notNull(),
-        updatedAt: timestamp('updated_at')
-            .default(sql`(CURRENT_TIMESTAMP)`)
-            .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+        createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+        updatedAt: timestamp('updated_at', { withTimezone: true })
+            .defaultNow()
+            .notNull()
+            .$onUpdate(() => new Date()),
         accountType: accountTypeEnum('account_type')
             .notNull()
             .$default(() => 'GUEST'),

@@ -1,5 +1,4 @@
 import { createId } from '@paralleldrive/cuid2';
-import { sql } from 'drizzle-orm';
 import { timestamp, pgTable, text, index } from 'drizzle-orm/pg-core';
 
 import { users } from './user';
@@ -17,10 +16,13 @@ export const sessions = pgTable(
 
         refreshToken: text('refresh_token').$defaultFn(createId),
 
-        createdAt: timestamp('created_at').defaultNow().notNull(),
-        updatedAt: timestamp('updated_at')
-            .default(sql`(CURRENT_TIMESTAMP)`)
-            .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+        createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+        updatedAt: timestamp('updated_at', { withTimezone: true })
+            .defaultNow()
+            .notNull()
+            .$onUpdate(() => new Date()),
+
         ipAddress: text('ip_address'),
         userAgent: text('user_agent'),
     },
