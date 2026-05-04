@@ -34,7 +34,7 @@ const submitReviewInput = z.object({
 const reviewRouter = router({
     /**
      * Submit a quick review for a course/professor from a user's schedule.
-     * Enforces one review per (userId, professorId, courseId) combination.
+     * Enforces one review per (userId, professorId, courseId, term) combination.
      */
     submitReview: protectedProcedure.input(submitReviewInput).mutation(async ({ ctx, input }) => {
         const existing = await db
@@ -44,7 +44,8 @@ const reviewRouter = router({
                 and(
                     eq(instructorReviews.userId, ctx.userId),
                     eq(instructorReviews.professorId, input.professorId),
-                    eq(instructorReviews.courseId, input.courseId)
+                    eq(instructorReviews.courseId, input.courseId),
+                    eq(instructorReviews.quarter, input.quarter)
                 )
             )
             .limit(1);
@@ -74,7 +75,7 @@ const reviewRouter = router({
     }),
 
     /**
-     * Returns all (professorId, courseId) combos already reviewed by this user.
+     * Returns all (professorId, courseId, term) combos already reviewed by this user.
      * Used on the client to filter out candidates that don't need a prompt.
      */
     getReviewedCombos: protectedProcedure.query(async ({ ctx }) => {
@@ -82,6 +83,7 @@ const reviewRouter = router({
             .select({
                 professorId: instructorReviews.professorId,
                 courseId: instructorReviews.courseId,
+                term: instructorReviews.quarter,
             })
             .from(instructorReviews)
             .where(eq(instructorReviews.userId, ctx.userId));
@@ -91,22 +93,28 @@ const reviewRouter = router({
      * Dismiss a review prompt for a course/professor.
      */
     dismissReview: protectedProcedure
-        .input(z.object({ professorId: z.string(), courseId: z.string() }))
+        .input(z.object({ professorId: z.string(), courseId: z.string(), term: z.string() }))
         .mutation(async ({ ctx, input }) => {
             await db
                 .insert(reviewDismissals)
-                .values({ userId: ctx.userId, professorId: input.professorId, courseId: input.courseId })
+                .values({
+                    userId: ctx.userId,
+                    professorId: input.professorId,
+                    courseId: input.courseId,
+                    term: input.term,
+                })
                 .onConflictDoNothing();
         }),
 
     /**
-     * Returns all (professorId, courseId) combos dismissed by this user.
+     * Returns all (professorId, courseId, term) combos dismissed by this user.
      */
     getDismissedCombos: protectedProcedure.query(async ({ ctx }) => {
         return db
             .select({
                 professorId: reviewDismissals.professorId,
                 courseId: reviewDismissals.courseId,
+                term: reviewDismissals.term,
             })
             .from(reviewDismissals)
             .where(eq(reviewDismissals.userId, ctx.userId));

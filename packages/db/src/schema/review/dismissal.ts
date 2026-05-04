@@ -23,10 +23,12 @@ export const reviewDismissals = pgTable(
         /** Course identifier string, e.g. "ICS 31". */
         courseId: text('course_id').notNull(),
 
+        term: text('term').notNull(),
+
         createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     },
     (table) => [
-        unique('unique_dismissal').on(table.userId, table.professorId, table.courseId),
+        unique('unique_dismissal').on(table.userId, table.professorId, table.courseId, table.term),
         index('dismissals_user_id_idx').on(table.userId),
     ]
 );
