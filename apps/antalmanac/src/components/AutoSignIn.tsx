@@ -3,6 +3,7 @@ import { getSignInUrl } from '$lib/auth/authActions';
 import { authClient } from '$lib/auth/authClient';
 import { getAuthReturnUrl } from '$lib/auth/authUtils';
 import { hasSsoCookie } from '$lib/ssoCookie';
+import { useSessionStore } from '$stores/SessionStore';
 import { useEffect, useRef } from 'react';
 
 /**
@@ -17,9 +18,10 @@ import { useEffect, useRef } from 'react';
 export function AutoSignIn() {
     const hasChecked = useRef(false);
     const { data, isPending } = authClient.useSession();
+    const hasCheckedAuth = useSessionStore((state) => state.hasCheckedAuth);
 
     useEffect(() => {
-        if (hasChecked.current || isPending) {
+        if (hasChecked.current || isPending || !hasCheckedAuth) {
             return;
         }
         hasChecked.current = true;
