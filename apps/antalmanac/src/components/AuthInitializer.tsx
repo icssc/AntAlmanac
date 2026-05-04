@@ -30,11 +30,12 @@ const AuthInitializer = () => {
     const hasInitializedRef = useRef(false);
 
     const setOpenLoadingSchedule = useScheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
-    const { updateSession, setAreSchedulesLoaded, googleId } = useSessionStore(
+    const { updateSession, setAreSchedulesLoaded, googleId, setHasCheckedAuth } = useSessionStore(
         useShallow((state) => ({
             updateSession: state.updateSession,
             setAreSchedulesLoaded: state.setAreSchedulesLoaded,
             googleId: state.googleId,
+            setHasCheckedAuth: state.setHasCheckedAuth,
         }))
     );
 
@@ -93,7 +94,7 @@ const AuthInitializer = () => {
     });
 
     useEffect(() => {
-        if (isInitializingRef.current || hasInitializedRef.current) {
+        if (isInitializingRef.current || hasInitializedRef.current || isSessionPending) {
             return;
         }
 
@@ -104,6 +105,7 @@ const AuthInitializer = () => {
             (async () => {
                 if (sessionData.session.expiresAt < new Date()) {
                     setOpenAlert(true);
+                    setHasCheckedAuth(true);
                     return;
                 }
                 isInitializingRef.current = true;
@@ -112,9 +114,12 @@ const AuthInitializer = () => {
                     const isSessionValid = await updateSession(sessionData);
                     if (!isSessionValid) {
                         setOpenAlert(true);
+                        setHasCheckedAuth(true);
                         return;
                     }
                     setSsoCookie();
+
+                    setHasCheckedAuth(true);
 
                     analyticsIdentifyUser(postHog, sessionData.user.id);
 
@@ -127,8 +132,6 @@ const AuthInitializer = () => {
 
                     setWasLoggedIn(true);
 
-                    loadNotifications();
-
                     hasInitializedRef.current = true;
                 } catch (error) {
                     console.error('Error during authentication:', error);
@@ -137,14 +140,17 @@ const AuthInitializer = () => {
 
                 isInitializingRef.current = false;
                 setOpenLoadingSchedule(false);
+
+                loadNotifications();
             })();
-        } else if (!isSessionPending) {
+        } else {
             if (getWasLoggedIn()) {
                 setOpenAlert(true);
             }
+            setHasCheckedAuth(true);
             loadNotifications();
         }
-    }, [sessionData, isSessionPending, updateSession, setAreSchedulesLoaded, postHog]);
+    }, [sessionData, isSessionPending, updateSession, setAreSchedulesLoaded, postHog, setHasCheckedAuth]);
 
     return (
         <SignInAlertDialog

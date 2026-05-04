@@ -17,6 +17,7 @@ interface SessionState {
     clearSession: () => Promise<void>;
 
     hasCheckedAuth: boolean;
+    setHasCheckedAuth: (hasCheckedAuth: boolean) => void;
 
     googleId: string | null;
 
@@ -106,6 +107,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 plannerRoadmaps: [],
             });
         },
+        setHasCheckedAuth: (hasCheckedAuth) => set({ hasCheckedAuth }),
         setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
         setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),
         setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
