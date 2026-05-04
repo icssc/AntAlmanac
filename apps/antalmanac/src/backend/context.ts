@@ -13,7 +13,7 @@ export const createContext = async (opts: FetchCreateContextFnOptions) => {
         resHeaders: opts.resHeaders,
         userId: sessionData?.user.id,
         sessionToken: sessionData?.session?.token,
-        googleId: googleAccount?.userId,
+        googleId: googleAccount?.accountId,
     };
 };
 

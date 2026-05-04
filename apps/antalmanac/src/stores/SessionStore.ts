@@ -77,7 +77,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 user: sessionData.user,
                 userId: sessionData.user.id,
                 isGoogleUser: true,
-                googleId: accountInfo.userId,
+                googleId: accountInfo.accountId,
                 email: sessionData.user.email,
                 name: sessionData.user.name,
                 avatar: sessionData.user.avatar,
