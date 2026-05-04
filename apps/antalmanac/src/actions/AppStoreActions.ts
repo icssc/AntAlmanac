@@ -1,12 +1,14 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { getSignInUrl } from '$lib/auth/authActions';
+import { getAuthReturnUrl } from '$lib/auth/authUtils';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
@@ -20,12 +22,25 @@ import type {
 import { TRPCClientError } from '@trpc/client';
 import type { PostHog } from 'posthog-js/react';
 
+export type UserData = Awaited<ReturnType<typeof trpc.userData.getUserData.query>>;
+
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
 }
 
 interface AutoSaveScheduleOptions {
+    postHog?: PostHog;
+}
+
+interface LoadScheduleOptions {
+    prefetched: UserData | null;
+    postHog?: PostHog;
+}
+
+interface LoginUserOptions {
+    silent?: boolean;
+    signInUrl?: string;
     postHog?: PostHog;
 }
 
@@ -130,9 +145,7 @@ export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
     }
 };
 
-export async function autoSaveSchedule(options: AutoSaveScheduleOptions) {
-    const { postHog } = options;
-
+export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
         const result = await trpc.userData.saveUserData.mutate({
@@ -189,8 +202,8 @@ export const mergeShortCourseSchedules = (
 };
 
 const handleScheduleImport = async (username: string, skipImportedCheck = false, postHog?: PostHog) => {
-    const session = useSessionStore.getState();
-    if (!session.sessionIsValid) {
+    const sessionStore = useSessionStore.getState();
+    if (!sessionStore.sessionIsValid) {
         throw new Error("Invalid session: User isn't logged in.");
     }
 
@@ -210,7 +223,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
-        scheduleComponentsToggleStore.setState({
+        useScheduleComponentsToggleStore.setState({
             openImportDialog: false,
             openLoadingSchedule: true,
         });
@@ -224,7 +237,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
 
             openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
-            scheduleComponentsToggleStore.setState({
+            useScheduleComponentsToggleStore.setState({
                 openScheduleSelect: true,
                 openLoadingSchedule: false,
             });
@@ -388,21 +401,28 @@ const cacheSchedule = () => {
     }
 };
 
-export const loginUser = async (postHog?: PostHog) => {
+/**
+ * If `signInUrl` is not provided, {@link getSignInUrl} with default params will be used.
+ */
+export const loginUser = async ({ silent = false, signInUrl = '', postHog }: LoginUserOptions = {}) => {
     try {
-        const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
-        const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query({
-            ...(redirectUri ? { redirectUri } : {}),
-            returnTo,
-        });
-        if (authUrl) {
+        const url =
+            signInUrl !== ''
+                ? signInUrl
+                : (
+                      await getSignInUrl({
+                          redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined,
+                          returnUrl: getAuthReturnUrl(),
+                      })
+                  ).url;
+
+        if (url) {
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
                 action: analyticsEnum.auth.actions.SIGN_IN,
             });
             cacheSchedule();
-            window.location.href = authUrl.toString();
+            window.location.href = url.toString();
         }
     } catch (error) {
         logAnalytics(postHog, {
@@ -410,8 +430,10 @@ export const loginUser = async (postHog?: PostHog) => {
             action: analyticsEnum.auth.actions.SIGN_IN_FAIL,
             error: getErrorMessage(error),
         });
-        console.error('Error during login initiation', error);
-        openSnackbar('error', 'Error during login initiation. Please Try Again.');
+        if (!silent) {
+            console.error('Error during login initiation', error);
+            openSnackbar('error', 'Error during login initiation. Please Try Again.');
+        }
     }
 };
 

@@ -1,127 +1,98 @@
-import trpc from '$lib/api/trpc';
-import { setWasLoggedIn } from '$lib/localStorage';
+import { getGoogleAccount, SessionData } from '$lib/auth/authClient';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import type { Roadmap } from '@packages/antalmanac-types';
-import { TRPCClientError } from '@trpc/client';
 import { create } from 'zustand';
 
 interface SessionState {
+    session: SessionData['session'] | null;
+    sessionId: string | null;
+    user: SessionData['user'] | null;
     userId: string | null;
     isGoogleUser: boolean;
     email: string | null;
     name: string | null;
     avatar: string | null;
     sessionIsValid: boolean;
-    loadSession: () => Promise<boolean>;
-    clearSession: () => Promise<string | null>;
+    updateSession: (session: SessionData) => Promise<boolean>;
+    clearSession: () => void;
 
     hasCheckedAuth: boolean;
+    setHasCheckedAuth: (hasCheckedAuth: boolean) => void;
 
     googleId: string | null;
+
+    isNewUser: boolean;
+    setIsNewUser: (isNewUser: boolean) => void;
+
+    areSchedulesLoaded: boolean;
+    setAreSchedulesLoaded: (areSchedulesLoaded: boolean) => void;
+
     filterTakenCourses: boolean;
     userTakenCourses: Set<string>;
 
     plannerRoadmaps: Roadmap[];
     isPlannerLoading: boolean;
 
-    setGoogleId: (id: string) => void;
     setFilterTakenCourses: (value: boolean) => void;
     setUserTakenCourses: (courses: Set<string>) => void;
     setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
     setIsPlannerLoading: (isPlannerLoading: boolean) => void;
 }
 
+const initState: Pick<
+    SessionState,
+    { [K in keyof SessionState]: SessionState[K] extends Function ? never : K }[keyof SessionState]
+> = {
+    session: null,
+    sessionId: null,
+    user: null,
+    userId: null,
+    isGoogleUser: false,
+    email: null,
+    name: null,
+    avatar: null,
+    sessionIsValid: false,
+    hasCheckedAuth: false,
+    googleId: null,
+    isNewUser: false,
+    areSchedulesLoaded: false,
+    filterTakenCourses: false,
+    userTakenCourses: new Set(),
+    plannerRoadmaps: [],
+    isPlannerLoading: false,
+};
+
 export const useSessionStore = create<SessionState>((set) => {
-    // Clean up stale localStorage token from before the cookie migration
-    window.localStorage.removeItem('sessionId');
-
     return {
-        userId: null,
-        isGoogleUser: false,
-        email: null,
-        name: null,
-        avatar: null,
-        sessionIsValid: false,
-        hasCheckedAuth: false,
-        googleId: null,
-        filterTakenCourses: false,
-        userTakenCourses: new Set(),
-        plannerRoadmaps: [],
-        isPlannerLoading: false,
-
-        loadSession: async () => {
-            try {
-                const { users, accounts } = await trpc.userData.getUserAndAccount.query();
-
-                let googleId = accounts?.providerAccountId ?? null;
-                if (googleId?.startsWith('google_')) {
-                    googleId = googleId.slice('google_'.length);
-                }
-
-                set({
-                    sessionIsValid: true,
-                    hasCheckedAuth: true,
-                    userId: users.id,
-                    isGoogleUser: Boolean(users.email),
-                    email: users.email ?? null,
-                    name: users.name ?? null,
-                    avatar: users.avatar ?? null,
-                    googleId,
-                });
-
-                setWasLoggedIn(true);
-                return true;
-            } catch (error) {
-                const isUnauthorized = error instanceof TRPCClientError && error.data?.code === 'UNAUTHORIZED';
-
-                if (!isUnauthorized) {
-                    console.error('Failed to load session:', error);
-                }
-
-                set({
-                    sessionIsValid: false,
-                    hasCheckedAuth: true,
-                    userId: null,
-                    isGoogleUser: false,
-                    email: null,
-                    name: null,
-                    avatar: null,
-                    googleId: null,
-                });
+        ...initState,
+        updateSession: async (sessionData: SessionData) => {
+            const accountInfo = await getGoogleAccount();
+            if (!accountInfo) {
                 return false;
             }
-        },
 
-        clearSession: async () => {
-            let logoutUrl: string | null = null;
-            try {
-                const result = await trpc.userData.logout.mutate({
-                    redirectUrl: window.location.origin,
-                });
-                logoutUrl = result.logoutUrl;
-            } catch (error) {
-                console.error('Error during logout:', error);
-            }
-
-            setWasLoggedIn(false);
-            clearSsoCookie();
             set({
-                userId: null,
-                sessionIsValid: false,
-                isGoogleUser: false,
-                email: null,
-                name: null,
-                avatar: null,
-                googleId: null,
-                filterTakenCourses: false,
-                userTakenCourses: new Set(),
-                plannerRoadmaps: [],
+                session: sessionData.session,
+                sessionId: sessionData.session.id,
+                sessionIsValid: true,
+                user: sessionData.user,
+                userId: sessionData.user.id,
+                isGoogleUser: true,
+                googleId: accountInfo.accountId,
+                email: sessionData.user.email,
+                name: sessionData.user.name,
+                avatar: sessionData.user.avatar,
             });
-
-            return logoutUrl;
+            return true;
         },
 
-        setGoogleId: (id) => set({ googleId: id }),
+        clearSession: () => {
+            clearSsoCookie();
+            set({ ...initState });
+        },
+        setHasCheckedAuth: (hasCheckedAuth) => set({ hasCheckedAuth }),
+        setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
+        setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),
         setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
         setUserTakenCourses: (courses) => set({ userTakenCourses: courses }),
         setPlannerRoadmaps: (roadmaps) => set({ plannerRoadmaps: roadmaps }),

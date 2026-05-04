@@ -1,7 +1,7 @@
 // NB: This store composes the state of dialogs, popovers, etc related to loading, importing, and managing schedules. This is most valuable for managing our auth and migration flows.
 import { create } from 'zustand';
 
-interface scheduleComponentsToggleState {
+interface ScheduleComponentsToggleState {
     openScheduleSelect: boolean;
     openLoadingSchedule: boolean;
     openImportDialog: boolean;
@@ -12,7 +12,7 @@ interface scheduleComponentsToggleState {
     setOpenAutoSaveWarning: (open: boolean) => void;
 }
 
-export const scheduleComponentsToggleStore = create<scheduleComponentsToggleState>((set) => ({
+export const useScheduleComponentsToggleStore = create<ScheduleComponentsToggleState>((set) => ({
     openScheduleSelect: false,
     openLoadingSchedule: false,
     openImportDialog: false,

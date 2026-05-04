@@ -32,6 +32,8 @@ export const users = pgTable('users', {
      */
     email: text('email'),
 
+    emailVerified: boolean('email_verified').default(false).notNull(),
+
     /**
      * Imported User Flag.
      *

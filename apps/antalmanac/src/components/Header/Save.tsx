@@ -3,19 +3,26 @@ import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
     const { sessionIsValid } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const { openAutoSaveWarning, setOpenAutoSaveWarning } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openAutoSaveWarning: state.openAutoSaveWarning,
+            setOpenAutoSaveWarning: state.setOpenAutoSaveWarning,
+        }))
+    );
+
     const postHog = usePostHog();
 
     const handleClickSignIn = () => {

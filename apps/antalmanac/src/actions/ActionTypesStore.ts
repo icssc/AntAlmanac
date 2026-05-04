@@ -4,7 +4,7 @@ import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
 import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import type { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
@@ -112,7 +112,7 @@ class ActionTypesStore extends EventEmitter {
 
         if (!sessionStore.sessionIsValid || !sessionStore.userId) {
             if (autoSave) {
-                scheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
+                useScheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }
             return;
         }

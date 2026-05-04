@@ -1,8 +1,7 @@
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { getErrorMessage } from '$lib/utils';
+import { signOut } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -17,7 +16,7 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore();
+    const { sessionIsValid, name, avatar, email } = useSessionStore();
     const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
 
@@ -41,29 +40,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const handleLogout = async () => {
         setAnchorEl(null);
 
-        try {
-            const logoutUrl = await clearSession();
-            onLogoutComplete?.();
-
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SIGN_OUT,
-            });
-
-            if (logoutUrl) {
-                window.location.href = logoutUrl;
-            }
-        } catch (error) {
-            console.error('Error during logout', error);
-            onLogoutComplete?.();
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SIGN_OUT_FAIL,
-                error: getErrorMessage(error),
-            });
-        } finally {
-            postHog?.reset();
-        }
+        signOut({ onLogoutComplete, postHog });
     };
 
     return (

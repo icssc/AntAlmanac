@@ -1,18 +1,16 @@
-import { loadGuestSchedule, loadSchedule, loginUser } from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
+import { loadGuestSchedule } from '$actions/AppStoreActions';
+import SignInButton from '$components/buttons/SignInButton';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import SignInAlertDialog from '$components/SignInAlertDialog';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageUserId, getWasLoggedIn, setLocalStorageFromLoading } from '$lib/localStorage';
-import { useNotificationStore } from '$stores/NotificationStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
+import { getLocalStorageUserId } from '$lib/localStorage';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { AccountCircle, ExpandMore, Google } from '@mui/icons-material';
+import { AccountCircle, ExpandMore } from '@mui/icons-material';
 import {
     Alert,
-    type AlertColor,
     AlertTitle,
     Box,
     Button,
@@ -31,34 +29,26 @@ import {
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
-
-const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
-    SESSION_EXPIRED: {
-        title: 'Your session has expired. Please sign in again.',
-        severity: 'info',
-    },
-    SCHEDULE_IMPORTED: {
-        title: 'This schedule was previously imported to a Google account. Did you want to sign in with Google?',
-        severity: 'info',
-    },
-};
+import { useShallow } from 'zustand/react/shallow';
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { loadSession } = useSessionStore();
-    const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
-    const [openAlert, setOpenalert] = useState(false);
-    const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
-    const [alertMessage, setAlertMessage] = useState<{ title: string; severity: AlertColor }>(
-        ALERT_MESSAGES.SCHEDULE_IMPORTED
+    const { openLoadingSchedule, setOpenLoadingSchedule } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openLoadingSchedule: state.openLoadingSchedule,
+            setOpenLoadingSchedule: state.setOpenLoadingSchedule,
+        }))
     );
 
-    const postHog = usePostHog();
+    const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [userID, setUserID] = useState('');
     const [rememberMe] = useState(true);
     const [showLegacyLogin, setShowLegacyLogin] = useState(false);
+    const [openAlert, setOpenalert] = useState(false);
+
+    const postHog = usePostHog();
 
     const handleOpen = useCallback(() => {
         setIsOpen(true);
@@ -79,7 +69,6 @@ export const Signin = () => {
         try {
             const res = await trpc.userData.getGuestScheduleByUsername.query({ username: userID });
             if (res.user.imported) {
-                setAlertMessage(ALERT_MESSAGES.SCHEDULE_IMPORTED);
                 setOpenalert(true);
             }
             return res;
@@ -98,37 +87,6 @@ export const Signin = () => {
         },
         [setOpenLoadingSchedule, validateImportedUser, postHog]
     );
-
-    const loadScheduleAndSetLoadingAuth = useCallback(
-        async (userID: string, rememberMe: boolean) => {
-            setOpenLoadingSchedule(true);
-
-            const [validSession, prefetchedUserData] = await Promise.all([
-                loadSession(),
-                trpc.userData.getUserData.query().catch(() => null),
-            ]);
-
-            if (validSession) {
-                await loadSchedule({ prefetched: prefetchedUserData, postHog });
-            } else if (getWasLoggedIn()) {
-                setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-                setOpenalert(true);
-            } else if (userID && userID !== '') {
-                await validateImportedUser(userID);
-                await loadGuestSchedule(userID, rememberMe, postHog);
-            }
-
-            setOpenLoadingSchedule(false);
-
-            void useNotificationStore.getState().loadNotifications();
-        },
-        [setOpenLoadingSchedule, loadSession, validateImportedUser, postHog]
-    );
-
-    const handleLogin = () => {
-        loginUser(postHog);
-        setLocalStorageFromLoading('true');
-    };
 
     const enterEvent = useCallback(
         (event: KeyboardEvent) => {
@@ -174,33 +132,19 @@ export const Signin = () => {
         };
     }, [isOpen, enterEvent]);
 
-    useEffect(() => {
-        const savedUserID = getLocalStorageUserId();
-        void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
-    }, [loadScheduleAndSetLoadingAuth]);
-
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
             <ProfileMenuButtons
                 user={null}
                 handleOpen={handleOpen}
                 handleSettingsOpen={handleSettingsOpen}
-                loading={loadingSchedule}
+                loading={openLoadingSchedule}
             />
 
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
                     <Stack spacing={1}>
-                        <Button
-                            onClick={handleLogin}
-                            color="primary"
-                            variant="contained"
-                            startIcon={<Google />}
-                            size="large"
-                            fullWidth
-                        >
-                            Sign in with Google
-                        </Button>
+                        <SignInButton fullWidth />
 
                         <Box
                             onClick={() => setShowLegacyLogin(!showLegacyLogin)}
@@ -282,9 +226,7 @@ export const Signin = () => {
                 }}
             >
                 <SettingsMenu user={null} onClose={() => setSettingsAnchorEl(null)} />
-
                 <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
-
                 <MenuItem onClick={handleOpen} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
                         <AccountCircle />
@@ -301,25 +243,11 @@ export const Signin = () => {
                     />
                 </MenuItem>
             </Popover>
-
-            <AlertDialog
+            <SignInAlertDialog
                 open={openAlert}
+                title="This schedule was previously imported to a Google account. Did you want to sign in with Google?"
                 onClose={() => setOpenalert(false)}
-                title={alertMessage.title}
-                severity={alertMessage.severity}
-            >
-                <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
-                <Button
-                    color="primary"
-                    variant="contained"
-                    startIcon={<Google />}
-                    fullWidth
-                    onClick={handleLogin}
-                    size="large"
-                >
-                    Sign in with Google
-                </Button>
-            </AlertDialog>
+            />
         </div>
     );
 };

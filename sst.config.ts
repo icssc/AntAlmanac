@@ -59,6 +59,8 @@ export default $config({
                 OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID,
                 OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
                 GOOGLE_REDIRECT_URI: `https://${domain}/auth`,
+                BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+                BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
                 NEXT_PUBLIC_BASE_URL: domain,
                 NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
                 PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,

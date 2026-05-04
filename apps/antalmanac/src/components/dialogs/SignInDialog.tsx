@@ -1,8 +1,6 @@
-import { loginUser } from '$actions/AppStoreActions';
+import SignInButton from '$components/buttons/SignInButton';
 import { useThemeStore } from '$stores/SettingsStore';
-import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
+import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 
 interface SignInDialogProps {
     open: boolean;
@@ -13,7 +11,6 @@ interface SignInDialogProps {
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, open } = props;
     const isDark = useThemeStore((store) => store.isDark);
-    const postHog = usePostHog();
 
     const handleClose = () => {
         onClose();
@@ -56,15 +53,7 @@ export function SignInDialog(props: SignInDialogProps) {
                             All changes made will be saved to your Google account
                         </Alert>
                     )}
-                    <Button
-                        onClick={() => loginUser(postHog)}
-                        startIcon={<GoogleIcon />}
-                        color="primary"
-                        variant="contained"
-                        size="large"
-                    >
-                        Sign in with Google
-                    </Button>
+                    <SignInButton />
                 </Stack>
             </DialogContent>
         </Dialog>

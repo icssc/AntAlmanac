@@ -11,7 +11,7 @@ const isAuthed = t.middleware(async ({ ctx, next }) => {
         throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
     return next({
-        ctx: { ...ctx, userId: ctx.userId, sessionToken: ctx.sessionToken },
+        ctx: { ...ctx, userId: ctx.userId, sessionToken: ctx.sessionToken, googleId: ctx.googleId },
     });
 });
 

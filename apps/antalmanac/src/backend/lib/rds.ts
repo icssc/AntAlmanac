@@ -19,7 +19,6 @@ import {
     type CustomEvent,
     sessions,
     type Account,
-    type Session,
     subscriptions,
 } from '@packages/db/src/schema';
 import {
@@ -43,15 +42,15 @@ export class RDS {
      * @param userId - The ID of the user whose account is to be retrieved.
      * @returns A promise that resolves to the account object if found, otherwise null.
      */
-    static async getAccountByProviderId(
+    static async getAccountByProviderAccountId(
         db: DatabaseOrTransaction,
         accountType: Account['accountType'],
-        providerId: string
+        providerAccountId: string
     ): Promise<Account | null> {
         return db
             .select()
             .from(accounts)
-            .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
+            .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerAccountId)))
             .limit(1)
             .then((res) => res[0] ?? null);
     }
@@ -93,69 +92,6 @@ export class RDS {
             .where(eq(accounts.userId, userId))
             .limit(1)
             .then((res) => (res.length > 0 ? res[0].providerAccountId : null));
-    }
-
-    static async registerUserAccount(
-        db: DatabaseOrTransaction,
-        accountType: Account['accountType'],
-        providerId: string,
-        name?: string,
-        email?: string,
-        avatar?: string
-    ) {
-        if (accountType !== 'OIDC') {
-            throw new Error('Invalid account type. Must be OIDC.');
-        }
-
-        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
-
-        return db.transaction(async (tx) => {
-            const existingAccount = await this.getAccountByProviderId(tx, accountType, oidcProviderId);
-
-            if (existingAccount) {
-                return { ...existingAccount, newUser: false };
-            }
-
-            const existingUser = email ? await this.getUserByEmail(tx, email) : null;
-
-            let userId: string;
-            let newUser: boolean;
-
-            if (existingUser) {
-                await tx
-                    .update(users)
-                    .set({ name, email: email ?? '', avatar: avatar ?? existingUser.avatar })
-                    .where(eq(users.id, existingUser.id));
-                userId = existingUser.id;
-                newUser = false;
-            } else {
-                const inserted = await tx
-                    .insert(users)
-                    .values({ name, email: email ?? '', avatar: avatar ?? '' })
-                    .returning({ id: users.id })
-                    .then((res) => res[0]);
-                userId = inserted.id;
-                newUser = true;
-            }
-
-            const account = await tx
-                .insert(accounts)
-                .values({ userId, accountType, providerAccountId: oidcProviderId })
-                .onConflictDoUpdate({
-                    target: [accounts.userId, accounts.accountType],
-                    set: buildConflictUpdateSet(accounts, {
-                        userId: 'keep',
-                        accountType: 'keep',
-                        providerAccountId: 'update',
-                        createdAt: 'keep',
-                        updatedAt: 'update',
-                    }),
-                })
-                .returning()
-                .then((res) => res[0]);
-
-            return { ...account, newUser };
-        });
     }
 
     /**
@@ -471,79 +407,6 @@ export class RDS {
 
         // Sort schedules by index
         return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
-    }
-
-    /**
-     * Retrieves the current session from the database using the provided refresh token.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param refreshToken - The refresh token to search for in the sessions table.
-     * @returns A promise that resolves to the current session object if found, or null if not found.
-     */
-    static async getCurrentSession(db: DatabaseOrTransaction, refreshToken: string) {
-        return db
-            .select()
-            .from(sessions)
-            .where(eq(sessions.refreshToken, refreshToken))
-            .then((res) => res[0] ?? null);
-    }
-
-    /**
-     * Creates a new session for a user in the database.
-     *
-     * @param db - The database or transaction object to use for the operation.
-     * @param userID - The ID of the user for whom the session is being created.
-     * @returns A promise that resolves to the created session object or null if the creation failed.
-     */
-    static async createSession(tx: Transaction, userID: string): Promise<Session | null> {
-        return tx
-            .insert(sessions)
-            .values({
-                userId: userID,
-                expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-            })
-            .returning()
-            .then((res) => res[0] ?? null);
-    }
-
-    /**
-     * Removes a session from the database for a given user and refresh token.
-     *
-     * @param db - The database or transaction object to perform the operation.
-     * @param userId - The ID of the user whose session is to be removed.
-     * @param refreshToken - The refresh token of the session to be removed. If null, no action is taken.
-     * @returns A promise that resolves when the session is removed.
-     */
-    static async removeSession(db: DatabaseOrTransaction, userId: string, refreshToken: string | null) {
-        if (refreshToken) {
-            await db.delete(sessions).where(and(eq(sessions.userId, userId), eq(sessions.refreshToken, refreshToken)));
-        }
-    }
-
-    /**
-     * Upserts a session for a user. If a session with the given refresh token already exists,
-     * it returns the current session. Otherwise, it creates a new session for the user.
-     *
-     * @param db - The database or transaction object to use for the operation.
-     * @param userId - The ID of the user for whom the session is being upserted.
-     * @param refreshToken - The refresh token to check for an existing session.
-     * @returns A promise that resolves to the current session if it exists, or a new session if it was created, or null if the operation fails.
-     */
-    static async upsertSession(
-        db: DatabaseOrTransaction,
-        userId: string,
-        refreshToken?: string
-    ): Promise<Session | null> {
-        return db.transaction(async (tx) => {
-            const currentSession = await tx
-                .select()
-                .from(sessions)
-                .where(eq(sessions.refreshToken, refreshToken ?? ''))
-                .then((res) => res[0] ?? null);
-
-            if (currentSession) return currentSession;
-            return await RDS.createSession(tx, userId);
-        });
     }
 
     private static async getUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {

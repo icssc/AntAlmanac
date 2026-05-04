@@ -1,3 +1,4 @@
+import AuthInitializer from '$components/AuthInitializer';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import InstallPWABanner from '$components/InstallPWABanner';
@@ -83,6 +84,7 @@ export default function Home() {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <PatchNotes />
             <InstallPWABanner />
+            <AuthInitializer />
 
             <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
                 <Header />

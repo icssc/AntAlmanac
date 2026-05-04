@@ -1,3 +1,4 @@
+import { createId } from '@paralleldrive/cuid2';
 import { pgTable, text, pgEnum, primaryKey, timestamp } from 'drizzle-orm/pg-core';
 
 import { users } from './user';
@@ -13,22 +14,26 @@ export type AccountType = (typeof accountTypes)[number];
 export const accounts = pgTable(
     'accounts',
     {
+        id: text('id').$defaultFn(createId),
         userId: text('user_id')
             .references(() => users.id, { onDelete: 'cascade' })
             .notNull(),
-
-        accountType: accountTypeEnum('account_type')
-            .notNull()
-            .$default(() => 'GUEST'),
-
         providerAccountId: text('provider_account_id').notNull(),
-
+        providerId: text('provider_id'),
+        accessToken: text('access_token'),
+        refreshToken: text('refresh_token'),
+        accessTokenExpiresAt: timestamp('access_token_expires_at'),
+        refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
+        idToken: text('id_token'),
+        scope: text('scope'),
         createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-
         updatedAt: timestamp('updated_at', { withTimezone: true })
             .defaultNow()
             .notNull()
             .$onUpdate(() => new Date()),
+        accountType: accountTypeEnum('account_type')
+            .notNull()
+            .$default(() => 'GUEST'),
     },
     (table) => [primaryKey({ columns: [table.userId, table.accountType] })]
 );

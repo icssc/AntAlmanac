@@ -1,17 +1,17 @@
-import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
-import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
+import { CopyScheduleButton } from '$components/buttons/Copy';
 import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList';
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
-import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
+import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 type EventContext = {
     triggeredBy?: string;
@@ -51,7 +51,12 @@ function createScheduleSelector(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
-    const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
+    const { openScheduleSelect, setOpenScheduleSelect } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openScheduleSelect: state.openScheduleSelect,
+            setOpenScheduleSelect: state.setOpenScheduleSelect,
+        }))
+    );
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
