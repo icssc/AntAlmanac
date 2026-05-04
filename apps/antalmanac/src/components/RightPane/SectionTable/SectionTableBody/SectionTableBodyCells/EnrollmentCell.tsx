@@ -11,7 +11,8 @@ interface EnrollmentCellProps {
     sectionType: WebsocSectionType;
     deptCode: string;
     courseNumber: string;
-    instructors: string[];
+    term: string;
+    sectionCode: string;
     numCurrentlyEnrolled: WebsocSectionEnrollment;
     maxCapacity: number;
 
@@ -33,6 +34,8 @@ export const EnrollmentCell = ({
     sectionType,
     deptCode,
     courseNumber,
+    term,
+    sectionCode,
     numCurrentlyEnrolled,
     maxCapacity,
     numOnWaitlist,
@@ -127,6 +130,8 @@ export const EnrollmentCell = ({
                     sectionType={sectionType}
                     department={deptCode}
                     courseNumber={courseNumber}
+                    term={term}
+                    sectionCode={sectionCode}
                     enrollmentHistory={enrollmentHistory}
                     loading={loadingEnrollmentHistory}
                 />

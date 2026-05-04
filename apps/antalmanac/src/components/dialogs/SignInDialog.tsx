@@ -1,4 +1,5 @@
 import { loginUser } from '$actions/AppStoreActions';
+import { useThemeStore } from '$stores/SettingsStore';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Alert, Button, CircularProgress, Dialog, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
@@ -6,13 +7,13 @@ import { useState } from 'react';
 
 interface SignInDialogProps {
     open: boolean;
-    isDark: boolean;
-    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'Friends';
+    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'Friends' | 'PlannerSearch';
     onClose: () => void;
 }
 
 export function SignInDialog(props: SignInDialogProps) {
-    const { onClose, open, isDark, feature } = props;
+    const { onClose, open, feature } = props;
+    const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
     const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -35,6 +36,8 @@ export function SignInDialog(props: SignInDialogProps) {
                 return 'Sign in to Use Notifications';
             case 'Planner':
                 return 'Sign in to Use Filter by Planner';
+            case 'PlannerSearch':
+                return 'Sign in to search with Planner';
             case 'Save':
             default:
                 return 'Save';

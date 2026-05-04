@@ -442,8 +442,11 @@ const cacheSchedule = () => {
 export const loginUser = async (postHog?: PostHog) => {
     try {
         const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
-
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query(redirectUri ? { redirectUri } : undefined);
+        const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        const authUrl = await trpc.userData.getGoogleAuthUrl.query({
+            ...(redirectUri ? { redirectUri } : {}),
+            returnTo,
+        });
         if (authUrl) {
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
@@ -484,13 +487,13 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndice
 };
 
 export const undoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && !event.shiftKey)) {
+    if (event == null || (event.key === 'z' && (event.ctrlKey || event.metaKey) && !event.shiftKey)) {
         AppStore.undoAction();
     }
 };
 
 export const redoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
+    if (event == null || (event.key.toLowerCase() === 'z' && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
         AppStore.redoAction();
     }
 };

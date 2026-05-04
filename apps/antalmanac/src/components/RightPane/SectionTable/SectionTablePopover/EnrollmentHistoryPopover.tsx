@@ -20,18 +20,22 @@ interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
+    term: string;
+    sectionCode: string;
     enrollmentHistory: EnrollmentHistory[] | undefined;
     loading?: boolean;
 }
 
 function graphKey(enrollment: EnrollmentHistory) {
-    return `${enrollment.year}-${enrollment.quarter}-${enrollment.instructors.join('|')}`;
+    return `${enrollment.year}-${enrollment.quarter}-${enrollment.sectionCode}`;
 }
 
 export function EnrollmentHistoryPopover({
     sectionType,
     department,
     courseNumber,
+    term,
+    sectionCode,
     enrollmentHistory,
     loading = false,
 }: EnrollmentHistoryPopoverProps) {
@@ -57,14 +61,17 @@ export function EnrollmentHistoryPopover({
                 return selectedIndex;
             }
         }
-        return enrollmentHistory.length - 1;
-    }, [enrollmentHistory, selectedGraphKey]);
+        const matchIndex = enrollmentHistory.findIndex(
+            (e) => `${e.year} ${e.quarter}` === term && e.sectionCode === sectionCode
+        );
+        return matchIndex >= 0 ? matchIndex : enrollmentHistory.length - 1;
+    }, [enrollmentHistory, sectionCode, selectedGraphKey, term]);
 
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
         currEnrollmentHistory != null ? (
-            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType}`
+            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
         ) : (
             <>&nbsp;</>
         );

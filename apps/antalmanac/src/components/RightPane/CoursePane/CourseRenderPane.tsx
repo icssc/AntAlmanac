@@ -3,12 +3,15 @@ import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
 import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import RightPaneStore, { CourseSearchParams, CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
+import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
+import { getTermLongName } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -209,6 +212,7 @@ const ErrorMessage = () => {
     const { isDark } = useThemeStore();
 
     const formData = RightPaneStore.getFormData();
+    const multiSearchData = RightPaneStore.getMultiSearchData();
     const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
     const courseNumber = formData.courseNumber.replace(/\s+/g, '').toUpperCase() || null;
     const courseId = deptValue && courseNumber ? `${deptValue}${courseNumber}` : null;
@@ -222,7 +226,7 @@ const ErrorMessage = () => {
                 flexDirection: 'column',
             }}
         >
-            {courseId ? (
+            {courseId && multiSearchData.length === 0 ? (
                 <Link
                     href={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
                     target="_blank"
@@ -265,63 +269,100 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
+    const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
-    const loadCourses = useCallback(async () => {
-        setLoading(true);
-
-        const formData = RightPaneStore.getFormData();
-
+    const getQueryParams = useCallback((searchData: CourseSearchParams) => {
         const websocQueryParams = {
-            department: formData.deptValue,
-            term: formData.term,
-            ge: formData.ge,
-            courseNumber: formData.courseNumber,
-            sectionCodes: formData.sectionCode,
-            instructorName: formData.instructor,
-            units: formData.units,
-            endTime: formData.endTime,
-            startTime: formData.startTime,
-            fullCourses: formData.coursesFull,
-            building: formData.building,
-            room: formData.room,
-            division: formData.division,
-            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
-            days: formData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
+            department: searchData.deptValue,
+            term: searchData.term,
+            ge: searchData.ge,
+            courseNumber: searchData.courseNumber,
+            sectionCodes: searchData.sectionCode,
+            instructorName: searchData.instructor,
+            units: searchData.units,
+            endTime: searchData.endTime,
+            startTime: searchData.startTime,
+            fullCourses: searchData.coursesFull,
+            building: searchData.building,
+            room: searchData.room,
+            division: searchData.division,
+            excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
+            days: searchData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
         };
 
         const gradesQueryParams = {
-            department: formData.deptValue,
-            ge: formData.ge as GE,
-            instructor: formData.instructor,
-            sectionCode: formData.sectionCode,
+            department: searchData.deptValue,
+            ge: searchData.ge as GE,
+            instructor: searchData.instructor,
+            sectionCode: searchData.sectionCode,
         };
 
-        try {
-            // Query websoc for course information and populate gradescache
-            const [websocJsonResp, _] = await Promise.all([
-                websocQueryParams.units.includes(',')
-                    ? WebSOC.queryMultiple(websocQueryParams, 'units')
-                    : WebSOC.query(websocQueryParams),
-                // Catch the error here so that the course pane still loads even if the grades cache fails to populate
-                Grades.populateGradesCache(gradesQueryParams).catch((error) => {
-                    console.error(error);
-                    openSnackbar('error', 'Error loading grades information');
-                }),
-            ]);
+        return { websocQueryParams, gradesQueryParams };
+    }, []);
 
-            setError(false);
+    const queryGrades = useCallback(async (gradesQueryParams: Parameters<typeof Grades.populateGradesCache>[0]) => {
+        // Catch the error here so that the course pane still loads even if the grades cache fails to populate
+        await Grades.populateGradesCache(gradesQueryParams).catch((error) => {
+            console.error(error);
+            openSnackbar('error', 'Error loading grades information');
+        });
+    }, []);
+
+    const loadCourses = useCallback(async () => {
+        setLoading(true);
+        setError(false);
+        setUnofferedCourses([]);
+
+        try {
+            const multiSearchData = RightPaneStore.getMultiSearchData();
+            let websocJsonResp;
+            if (multiSearchData.length > 0) {
+                const { year, quarter } = RightPaneStore.getTermParts();
+                const offeredCourses: Record<string, string>[] = [];
+                const unofferedCourses: CourseSearchParams[] = [];
+                const gradeQueries: Promise<unknown>[] = [];
+                const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
+                    year: year,
+                    quarter: quarter,
+                    courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
+                });
+                for (const course of multiSearchData) {
+                    if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
+                        const { websocQueryParams, gradesQueryParams } = getQueryParams(course);
+                        offeredCourses.push(websocQueryParams);
+                        gradeQueries.push(queryGrades(gradesQueryParams));
+                    } else {
+                        unofferedCourses.push(course);
+                    }
+                }
+                setUnofferedCourses(unofferedCourses);
+                websocJsonResp = await WebSOC.queryMultiple(offeredCourses);
+                await Promise.all(gradeQueries);
+            } else {
+                const formData = RightPaneStore.getFormData();
+                const { websocQueryParams, gradesQueryParams } = getQueryParams(formData);
+                const [websocJsonResponse, _] = await Promise.all([
+                    websocQueryParams.units.includes(',')
+                        ? WebSOC.queryMultipleOfField(websocQueryParams, 'units')
+                        : WebSOC.query(websocQueryParams),
+                    queryGrades(gradesQueryParams),
+                ]);
+                websocJsonResp = websocJsonResponse;
+            }
             setWebsocResp(websocJsonResp);
             const allCourses = flattenSOCObject(websocJsonResp);
             setCourseData(getFilteredCourses(allCourses));
+            setSearchedTerm(getTermLongName(RightPaneStore.getFormData().term));
         } catch (error) {
             console.error(error);
             setError(true);
             openSnackbar('error', 'We ran into an error while looking up class info');
-        } finally {
-            setLoading(false);
         }
+
+        setLoading(false);
     }, []);
 
     const updateScheduleNames = () => {
@@ -368,6 +409,26 @@ export default function CourseRenderPane(props: { id?: number }) {
         <>
             <Box sx={{ height: '56px' }} />
 
+            {Object.entries(RightPaneStore.getWarningMessages()).map(([warningType, messages]) => {
+                return messages.map((message) => (
+                    <WarningAlert
+                        closable
+                        key={`${warningType}${message}`}
+                        onClose={() =>
+                            RightPaneStore.removeWarningMessage(warningType as CourseSearchWarningType, message)
+                        }
+                    >
+                        {message}
+                    </WarningAlert>
+                ));
+            })}
+            {unofferedCourses.map((course) => {
+                return (
+                    <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
+                        {course.deptValue} {course.courseNumber} is not offered in {searchedTerm}.
+                    </WarningAlert>
+                );
+            })}
             {loading ? (
                 <LoadingMessage />
             ) : error || courseData.length === 0 ? (

@@ -16,6 +16,7 @@ export interface AnalyticsEnum {
     addedClasses: AnalyticsCategory;
     map: AnalyticsCategory;
     sharedSchedule: AnalyticsCategory;
+    review: AnalyticsCategory;
 }
 
 const analyticsEnum: AnalyticsEnum = {
@@ -108,6 +109,15 @@ const analyticsEnum: AnalyticsEnum = {
             OPEN: 'Open Shared Schedule',
             COPY_SCHEDULE: 'Copy Schedule',
             IMPORT_SCHEDULE: 'Import Schedule',
+        },
+    },
+    review: {
+        title: 'Review Prompt',
+        actions: {
+            PROMPT_SHOWN: 'Review Prompt Shown',
+            ENROLLMENT_CONFIRMED: 'Review Enrollment Confirmed',
+            DISMISSED: 'Review Prompt Dismissed',
+            SUBMITTED: 'Review Submitted',
         },
     },
 };

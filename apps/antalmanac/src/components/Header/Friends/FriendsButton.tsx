@@ -171,12 +171,7 @@ export function FriendsButton() {
                 />
             </Popover>
 
-            <SignInDialog
-                feature="Friends"
-                isDark={isDark}
-                open={openSignInDialog}
-                onClose={() => setOpenSignInDialog(false)}
-            />
+            <SignInDialog feature="Friends" open={openSignInDialog} onClose={() => setOpenSignInDialog(false)} />
         </>
     );
 }

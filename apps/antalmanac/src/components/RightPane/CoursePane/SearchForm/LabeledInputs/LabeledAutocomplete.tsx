@@ -1,18 +1,20 @@
-import { Autocomplete, type AutocompleteProps, Popper, type PopperProps, type TextFieldProps } from '@mui/material';
-import { useEffect, useId, useState } from 'react';
-
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
+import { Autocomplete, type AutocompleteProps, Popper, type PopperProps, type TextFieldProps } from '@mui/material';
+import { ComponentProps, useEffect, useId, useState } from 'react';
 
 interface LabeledAutocompleteProps<
     T,
     Multiple extends boolean = false,
     DisableClearable extends boolean = false,
-    FreeSolo extends boolean = false
+    FreeSolo extends boolean = false,
 > {
     label: string;
     autocompleteProps: Omit<AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>, 'renderInput'>;
     textFieldProps?: TextFieldProps;
     isAligned?: boolean;
+    labelProps?: ComponentProps<typeof LabeledTextField>['labelProps'];
+    loading?: boolean;
+    disabled?: boolean;
 }
 
 const ResponsivePopper = (props: PopperProps) => {
@@ -56,6 +58,9 @@ export const LabeledAutocomplete = <T,>({
     autocompleteProps,
     textFieldProps,
     isAligned,
+    labelProps,
+    loading,
+    disabled,
 }: LabeledAutocompleteProps<T>) => {
     const id = useId();
 
@@ -68,6 +73,7 @@ export const LabeledAutocomplete = <T,>({
                 flex: 1,
                 width: '100%',
             }}
+            disabled={disabled}
             {...autocompleteProps}
             PopperComponent={ResponsivePopper}
             renderInput={(params) => (
@@ -75,6 +81,9 @@ export const LabeledAutocomplete = <T,>({
                     label={label}
                     isAligned={isAligned}
                     id={id}
+                    loading={loading}
+                    disabled={disabled}
+                    labelProps={labelProps}
                     textFieldProps={{
                         ...textFieldProps,
                         InputProps: {
