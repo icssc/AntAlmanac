@@ -31,7 +31,18 @@ export const schedules = pgTable('schedules', {
      */
     index: integer('index').notNull(),
 
-    lastUpdated: timestamp('last_updated', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+    /**
+     * Updates to content in schedule will not bump this column.
+     * Only direct updates to the schedule table will bump this column (e.g. name, notes, index).
+     *
+     * {@see} backend/lib/rds.ts, `upsertSchedulesAndContents`
+     */
+    lastUpdated: timestamp('last_updated', { withTimezone: true })
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
 });
 
 export type Schedule = typeof schedules.$inferSelect;

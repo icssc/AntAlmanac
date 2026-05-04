@@ -1,6 +1,11 @@
+interface Course {
+    courseId: string;
+    userChosenUnits?: number;
+}
+
 export interface Quarter {
     name: string;
-    courses: string[];
+    courses: Course[];
 }
 
 export interface RoadmapContent {
