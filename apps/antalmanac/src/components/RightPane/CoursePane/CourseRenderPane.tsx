@@ -31,8 +31,9 @@ import {
     WebsocSectionType,
     GE,
 } from '@packages/antalmanac-types';
+import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
 function getColors() {
@@ -48,9 +49,10 @@ function getColors() {
     return courseColors;
 }
 
-const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] => {
-    const courseColors = getColors();
-
+const flattenSOCObject = (
+    SOCObject: WebsocAPIResponse,
+    courseColors: ReturnType<typeof getColors>
+): (WebsocSchool | WebsocDepartment | AACourse)[] => {
     return SOCObject.schools.reduce((accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
         accumulator.push(school);
 
@@ -264,15 +266,73 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
-    const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
-    const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const [courseColors, setCourseColors] = useState(getColors);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
+
+    const {
+        data: websocResp,
+        isLoading,
+        isError,
+    } = useQuery({
+        staleTime: 5 * 60 * 1000,
+        queryKey: ['searchResults', RightPaneStore.getFormData(), RightPaneStore.getMultiSearchData()],
+        queryFn: async (): Promise<WebsocAPIResponse | null> => {
+            setUnofferedCourses([]);
+
+            try {
+                const multiSearchData = RightPaneStore.getMultiSearchData();
+                let websocJsonResp;
+                if (multiSearchData.length > 0) {
+                    const { year, quarter } = RightPaneStore.getTermParts();
+                    const offeredCourses: Record<string, string>[] = [];
+                    const unofferedCourses: CourseSearchParams[] = [];
+                    const gradeQueries: Promise<unknown>[] = [];
+                    const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
+                        year: year,
+                        quarter: quarter,
+                        courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
+                    });
+                    for (const course of multiSearchData) {
+                        if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
+                            const { websocQueryParams, gradesQueryParams } = getQueryParams(course);
+                            offeredCourses.push(websocQueryParams);
+                            gradeQueries.push(queryGrades(gradesQueryParams));
+                        } else {
+                            unofferedCourses.push(course);
+                        }
+                    }
+                    setUnofferedCourses(unofferedCourses);
+                    websocJsonResp = await WebSOC.queryMultiple(offeredCourses);
+                    await Promise.all(gradeQueries);
+                } else {
+                    const formData = RightPaneStore.getFormData();
+                    const { websocQueryParams, gradesQueryParams } = getQueryParams(formData);
+                    const [websocJsonResponse, _] = await Promise.all([
+                        websocQueryParams.units.includes(',')
+                            ? WebSOC.queryMultipleOfField(websocQueryParams, 'units')
+                            : WebSOC.query(websocQueryParams),
+                        queryGrades(gradesQueryParams),
+                    ]);
+                    websocJsonResp = websocJsonResponse;
+                }
+                setSearchedTerm(getTermLongName(RightPaneStore.getFormData().term));
+                return websocJsonResp;
+            } catch (error) {
+                console.error(error);
+                openSnackbar('error', 'We ran into an error while looking up class info');
+                return null;
+            }
+        },
+    });
+
+    const courseData = useMemo(
+        () => (websocResp ? getFilteredCourses(flattenSOCObject(websocResp, courseColors)) : []),
+        [websocResp, courseColors]
+    );
 
     const getQueryParams = useCallback((searchData: CourseSearchParams) => {
         const websocQueryParams = {
@@ -311,88 +371,23 @@ export default function CourseRenderPane(props: { id?: number }) {
         });
     }, []);
 
-    const loadCourses = useCallback(async () => {
-        setLoading(true);
-        setError(false);
-        setUnofferedCourses([]);
-
-        try {
-            const multiSearchData = RightPaneStore.getMultiSearchData();
-            let websocJsonResp;
-            if (multiSearchData.length > 0) {
-                const { year, quarter } = RightPaneStore.getTermParts();
-                const offeredCourses: Record<string, string>[] = [];
-                const unofferedCourses: CourseSearchParams[] = [];
-                const gradeQueries: Promise<unknown>[] = [];
-                const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
-                    year: year,
-                    quarter: quarter,
-                    courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
-                });
-                for (const course of multiSearchData) {
-                    if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
-                        const { websocQueryParams, gradesQueryParams } = getQueryParams(course);
-                        offeredCourses.push(websocQueryParams);
-                        gradeQueries.push(queryGrades(gradesQueryParams));
-                    } else {
-                        unofferedCourses.push(course);
-                    }
-                }
-                setUnofferedCourses(unofferedCourses);
-                websocJsonResp = await WebSOC.queryMultiple(offeredCourses);
-                await Promise.all(gradeQueries);
-            } else {
-                const formData = RightPaneStore.getFormData();
-                const { websocQueryParams, gradesQueryParams } = getQueryParams(formData);
-                const [websocJsonResponse, _] = await Promise.all([
-                    websocQueryParams.units.includes(',')
-                        ? WebSOC.queryMultipleOfField(websocQueryParams, 'units')
-                        : WebSOC.query(websocQueryParams),
-                    queryGrades(gradesQueryParams),
-                ]);
-                websocJsonResp = websocJsonResponse;
-            }
-            setWebsocResp(websocJsonResp);
-            const allCourses = flattenSOCObject(websocJsonResp);
-            setCourseData(getFilteredCourses(allCourses));
-            setSearchedTerm(getTermLongName(RightPaneStore.getFormData().term));
-        } catch (error) {
-            console.error(error);
-            setError(true);
-            openSnackbar('error', 'We ran into an error while looking up class info');
-        }
-
-        setLoading(false);
-    }, []);
-
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
     };
 
     useEffect(() => {
         const changeColors = () => {
-            if (websocResp == null) {
-                return;
-            }
-            const flattened = flattenSOCObject(websocResp);
-            setCourseData(getFilteredCourses(flattened));
+            setCourseColors(getColors());
         };
 
+        AppStore.on('scheduleNamesChange', updateScheduleNames);
         AppStore.on('currentScheduleIndexChange', changeColors);
 
         return () => {
+            AppStore.off('scheduleNamesChange', updateScheduleNames);
             AppStore.off('currentScheduleIndexChange', changeColors);
         };
-    }, [websocResp]);
-
-    useEffect(() => {
-        loadCourses();
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
-        };
-    }, [loadCourses, props.id]);
+    }, [props.id]);
 
     /**
      * Removes hovered course when component unmounts
@@ -429,9 +424,9 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </WarningAlert>
                 );
             })}
-            {loading ? (
+            {isLoading ? (
                 <LoadingMessage />
-            ) : error || courseData.length === 0 ? (
+            ) : isError || courseData.length === 0 ? (
                 <ErrorMessage />
             ) : (
                 <>

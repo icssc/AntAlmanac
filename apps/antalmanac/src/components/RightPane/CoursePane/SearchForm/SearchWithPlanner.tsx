@@ -136,19 +136,28 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
         const menuItem = (
-            <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ paddingRight: 1 }}>
+            <Box
+                key={roadmap.id}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ paddingRight: 1 }}
+            >
                 <MenuItem
                     {...props}
                     key={roadmap.id}
                     onClick={() => search(roadmap.id)}
                     disabled={!doesRoadmapIncludeTerm(roadmap.id)}
+                    sx={{ width: '100%' }}
                 >
                     <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
                 </MenuItem>
 
-                <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
-                    <OpenInBrowser fontSize="small" />
-                </IconButton>
+                <Tooltip title="Open Planner">
+                    <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
+                        <OpenInBrowser fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             </Box>
         );
         if (termRoadmapGrouping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
