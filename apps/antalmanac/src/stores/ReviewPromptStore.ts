@@ -216,6 +216,8 @@ export const useReviewPromptStore = create(
             const { candidate, rating, difficulty, selectedTags, textReview } = get();
             if (!candidate || rating === 0 || difficulty === 0) return;
 
+            const trimmedReview = textReview.trim();
+
             try {
                 await trpc.review.submitReview.mutate({
                     professorId: candidate.professorId,
@@ -224,7 +226,7 @@ export const useReviewPromptStore = create(
                     rating,
                     difficulty,
                     tags: selectedTags,
-                    content: textReview || undefined,
+                    content: trimmedReview || undefined,
                 });
                 set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
                 logAnalytics(postHog, {

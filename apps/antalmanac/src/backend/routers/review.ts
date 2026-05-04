@@ -29,7 +29,7 @@ const submitReviewInput = z.object({
     difficulty: z.number().int().min(1).max(5),
     tags: z.array(reviewTagsEnum).default([]),
     anonymous: z.boolean().default(true),
-    content: z.string().optional(),
+    content: z.string().max(500).optional(),
 });
 
 const reviewRouter = router({
