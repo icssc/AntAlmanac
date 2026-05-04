@@ -9,12 +9,14 @@ import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/La
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { safeUnreachableCase } from '$lib/utils';
+import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 type InputEvent =
     | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -73,7 +75,9 @@ export function AdvancedSearchTextFields() {
     const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
-    const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
+    const { plannerRoadmaps, updateTakenCourses } = usePlannerStore(
+        useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, updateTakenCourses: s.updateTakenCourses }))
+    );
     const isLoggedIn = useSessionStore((s) => s.googleId !== null);
     const [signInOpen, setSignInOpen] = useState(false);
 
@@ -202,10 +206,12 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        if (!excludeRoadmapCourses) return;
-        if (!roadmaps || roadmaps.length === 0) return;
+        updateTakenCourses(excludeRoadmapCourses);
 
-        const exists = roadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
+        if (!excludeRoadmapCourses) return;
+        if (!plannerRoadmaps || plannerRoadmaps.length === 0) return;
+
+        const exists = plannerRoadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
 
         if (!exists) {
             openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
@@ -218,7 +224,7 @@ export function AdvancedSearchTextFields() {
             const newUrl = params.toString() ? `${url.pathname}?${params.toString()}` : url.pathname;
             history.replaceState({}, '', newUrl);
         }
-    }, [roadmaps, excludeRoadmapCourses]);
+    }, [plannerRoadmaps, excludeRoadmapCourses]);
 
     return (
         <>
@@ -424,7 +430,7 @@ export function AdvancedSearchTextFields() {
                             open: !isLoggedIn ? false : undefined,
                         }}
                     >
-                        {getRoadmapMenuItems({ isLoggedIn, roadmaps })}
+                        {getRoadmapMenuItems({ isLoggedIn, roadmaps: plannerRoadmaps })}
                     </LabeledSelect>
 
                     <LabeledSelect
