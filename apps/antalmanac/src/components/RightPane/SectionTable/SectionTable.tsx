@@ -6,6 +6,7 @@ import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTabl
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { WarningAlert } from '$components/WarningAlert';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
@@ -55,6 +56,7 @@ function SectionTable(props: SectionTableProps) {
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const isReadonlyView = useIsReadonlyView();
     const isMobile = useIsMobile();
 
     const handleToggleExpand = () => {
@@ -118,7 +120,9 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                 />
 
-                {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
+                {activeTab !== 2 || isReadonlyView ? null : (
+                    <CourseInfoSearchButton courseDetails={courseDetails} term={term} />
+                )}
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}

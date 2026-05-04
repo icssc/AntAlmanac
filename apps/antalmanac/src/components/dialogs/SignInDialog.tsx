@@ -1,26 +1,37 @@
 import { loginUser } from '$actions/AppStoreActions';
 import { useThemeStore } from '$stores/SettingsStore';
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
+import { Alert, Button, CircularProgress, Dialog, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
+import { useState } from 'react';
 
 interface SignInDialogProps {
     open: boolean;
-    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'PlannerSearch';
+    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'Friends' | 'PlannerSearch';
     onClose: () => void;
 }
 
 export function SignInDialog(props: SignInDialogProps) {
-    const { onClose, open } = props;
+    const { onClose, open, feature } = props;
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
+    const [isLoggingIn, setIsLoggingIn] = useState(false);
 
     const handleClose = () => {
         onClose();
     };
 
+    const handleSignIn = async () => {
+        setIsLoggingIn(true);
+        try {
+            await loginUser(postHog);
+        } finally {
+            setIsLoggingIn(false);
+        }
+    };
+
     const getTitle = () => {
-        switch (props.feature) {
+        switch (feature) {
             case 'Notification':
                 return 'Sign in to Use Notifications';
             case 'Planner':
@@ -32,7 +43,6 @@ export function SignInDialog(props: SignInDialogProps) {
                 return 'Save';
         }
     };
-
     return (
         <Dialog
             open={open}
@@ -50,22 +60,37 @@ export function SignInDialog(props: SignInDialogProps) {
         >
             <DialogTitle>{getTitle()}</DialogTitle>
             <DialogContent>
-                <Stack spacing={1}>
-                    {props.feature === 'Save' && (
-                        <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
-                            All changes made will be saved to your Google account
-                        </Alert>
-                    )}
-                    <Button
-                        onClick={() => loginUser(postHog)}
-                        startIcon={<GoogleIcon />}
-                        color="primary"
-                        variant="contained"
-                        size="large"
-                    >
-                        Sign in with Google
-                    </Button>
-                </Stack>
+                {isLoggingIn ? (
+                    <Stack alignItems="center" justifyContent="center" spacing={2} sx={{ py: 3, minWidth: 280 }}>
+                        <CircularProgress />
+                        <Typography variant="body2" color="text.secondary">
+                            Redirecting to sign in…
+                        </Typography>
+                    </Stack>
+                ) : (
+                    <Stack spacing={1}>
+                        {(feature === 'Save' || feature === 'Friends') && (
+                            <Alert
+                                severity="info"
+                                variant={isDark ? 'outlined' : 'standard'}
+                                sx={{ fontSize: 'small' }}
+                            >
+                                {feature === 'Save'
+                                    ? 'All changes made will be saved to your Google account'
+                                    : 'Sign in to add friends and share your schedule'}
+                            </Alert>
+                        )}
+                        <Button
+                            onClick={handleSignIn}
+                            startIcon={<GoogleIcon />}
+                            color="primary"
+                            variant="contained"
+                            size="large"
+                        >
+                            Sign in with Google
+                        </Button>
+                    </Stack>
+                )}
             </DialogContent>
         </Dialog>
     );

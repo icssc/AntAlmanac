@@ -8,6 +8,7 @@ import {
 import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
@@ -21,6 +22,7 @@ import {
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
+import { useIsMobile } from '$src/hooks/useIsMobile';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -32,6 +34,7 @@ import {
     Box,
     Button,
     Checkbox,
+    IconButton,
     Dialog,
     DialogActions,
     DialogContent,
@@ -82,6 +85,9 @@ export function Import() {
     const devMode = useDevModeStore((store) => store.devMode);
 
     const theme = useTheme();
+
+    const isReadonlyView = useIsReadonlyView();
+    const isMobile = useIsMobile();
 
     const postHog = usePostHog();
 
@@ -673,16 +679,28 @@ export function Import() {
     return (
         <>
             <Tooltip title={devMode ? 'Import or export schedule data' : 'Import a schedule from your Study List'}>
-                <Button
-                    onClick={handleOpen}
-                    color="inherit"
-                    sx={{ fontSize: 'inherit' }}
-                    startIcon={<ContentPasteGo />}
-                    disabled={skeletonMode}
-                    id="import-button"
-                >
-                    {devMode ? 'Import/Export' : 'Import'}
-                </Button>
+                {isMobile ? (
+                    <IconButton
+                        color="inherit"
+                        onClick={handleOpen}
+                        disabled={skeletonMode || isReadonlyView}
+                        id="import-button"
+                        sx={{ '&.Mui-disabled': { color: 'rgba(255,255,255,0.3)' } }}
+                    >
+                        <ContentPasteGo />
+                    </IconButton>
+                ) : (
+                    <Button
+                        onClick={handleOpen}
+                        color="inherit"
+                        sx={{ fontSize: 'inherit', '&.Mui-disabled': { color: 'rgba(255,255,255,0.3)' } }}
+                        startIcon={<ContentPasteGo />}
+                        disabled={skeletonMode || isReadonlyView}
+                        id="import-button"
+                    >
+                        {devMode ? 'Import/Export' : 'Import'}
+                    </Button>
+                )}
             </Tooltip>
             <Dialog open={openImportDialog} onClose={handleClose}>
                 {devMode && (

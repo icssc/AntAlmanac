@@ -18,8 +18,9 @@ import {
     type CourseInSchedule,
     type CustomEvent,
     sessions,
-    type Account,
-    type Session,
+    Account,
+    Session,
+    friendships,
     subscriptions,
 } from '@packages/db/src/schema';
 import {
@@ -28,7 +29,7 @@ import {
     type ConflictUpdatePolicy,
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
-import { and, eq, ExtractTablesWithRelations, gt, not, notInArray, or } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray } from 'drizzle-orm';
 import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -124,14 +125,14 @@ export class RDS {
             if (existingUser) {
                 await tx
                     .update(users)
-                    .set({ name, email: email ?? '', avatar: avatar ?? existingUser.avatar })
+                    .set({ name, email: email ?? '', avatar: avatar || existingUser.avatar })
                     .where(eq(users.id, existingUser.id));
                 userId = existingUser.id;
                 newUser = false;
             } else {
                 const inserted = await tx
                     .insert(users)
-                    .values({ name, email: email ?? '', avatar: avatar ?? '' })
+                    .values({ name, email: email ?? '', avatar: avatar || '' })
                     .returning({ id: users.id })
                     .then((res) => res[0]);
                 userId = inserted.id;
@@ -193,8 +194,12 @@ export class RDS {
         userId: string,
         scheduleArray: ShortCourseSchedule[]
     ): Promise<Record<string, string>> {
-        const existingRows = await tx.select({ id: schedules.id }).from(schedules).where(eq(schedules.userId, userId));
+        const existingRows = await tx
+            .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
+            .from(schedules)
+            .where(eq(schedules.userId, userId));
         const existingIds = new Set(existingRows.map((s) => s.id));
+        const existingSharingStatuses = new Map(existingRows.map((s) => [s.id, s.sharedWithFriends]));
 
         const prepared = scheduleArray.map((schedule, index) => ({
             schedule,
@@ -220,6 +225,7 @@ export class RDS {
                 index: 'update',
                 createdAt: 'keep',
                 lastUpdated: 'update',
+                sharedWithFriends: 'keep', // sharedWithFriends is not updated by upsertCourses or upsertCustomEvents
             } satisfies ConflictUpdatePolicy<typeof schedules>;
 
             await tx
@@ -231,6 +237,7 @@ export class RDS {
                         name: schedule.scheduleName,
                         notes: schedule.scheduleNote,
                         index,
+                        sharedWithFriends: existingSharingStatuses.get(dbId) ?? true,
                     }))
                 )
                 .onConflictDoUpdate({
@@ -361,6 +368,47 @@ export class RDS {
     }
 
     /**
+     * Retrieves a schedule by its ID. All schedules are publicly accessible via their ID.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param scheduleId - The unique identifier of the schedule.
+     * @returns A promise that resolves to a ShortCourseSchedule object, or null if the schedule is not found.
+     */
+    static async getScheduleById(
+        db: DatabaseOrTransaction,
+        scheduleId: string
+    ): Promise<(ShortCourseSchedule & { id: string; index: number; userId: string }) | null> {
+        return db.transaction(async (tx) => {
+            const schedule = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .then((res) => res[0]);
+
+            if (!schedule) {
+                return null;
+            }
+
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+            const scheduleArray = RDS.aggregateUserData(sectionResults, customEventResults);
+            const result = scheduleArray[0];
+            if (!result) return null;
+            return { ...result, userId: schedule.userId };
+        });
+    }
+
+    /**
      * Retrieves a guest user's publicly-shareable schedule data by their
      * guest username.
      */
@@ -408,6 +456,54 @@ export class RDS {
                 scheduleIndex,
             },
         };
+    }
+
+    /**
+     * Retrieves a friend's user data, filtered to only schedules they have chosen to share with friends.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The unique identifier of the friend.
+     * @returns A promise that resolves to a User object containing only the shared schedules, or null if not found.
+     */
+    static async getUserFriendDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+        return db.transaction(async (tx) => {
+            const user = await tx
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .then((res) => res[0]);
+
+            if (!user) {
+                return null;
+            }
+
+            const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
+
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(sharedCondition)
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(sharedCondition)
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+
+            return {
+                id: userId,
+                name: user.name ?? undefined,
+                email: user.email ?? undefined,
+                avatar: user.avatar ?? undefined,
+                userData: {
+                    schedules: userSchedules,
+                    scheduleIndex: 0,
+                },
+            };
+        });
     }
 
     /**
@@ -612,6 +708,279 @@ export class RDS {
             .then((res) => {
                 return { users: res[0].users, accounts: res[0].accounts };
             });
+    }
+
+    /**
+     * Resolves a session token to a userId, verifying the session is valid and not expired.
+     * Returns null if the session is invalid or expired.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param sessionToken - The refresh token identifying the session.
+     * @returns A promise that resolves to the userId string, or null if the session is not found or expired.
+     */
+    static async getUserIdBySessionToken(db: DatabaseOrTransaction, sessionToken: string): Promise<string | null> {
+        const session = await this.getCurrentSession(db, sessionToken);
+        if (!session || session.expires <= new Date()) return null;
+        return session.userId;
+    }
+
+    /**
+     * Returns all friendship rows between two users regardless of direction.
+     * There can be up to two rows (e.g. DECLINED + BLOCKED after a block).
+     */
+    static async getFriendshipsBetween(db: DatabaseOrTransaction, userIdA: string, userIdB: string) {
+        return db
+            .select()
+            .from(friendships)
+            .where(
+                or(
+                    and(eq(friendships.requesterId, userIdA), eq(friendships.addresseeId, userIdB)),
+                    and(eq(friendships.requesterId, userIdB), eq(friendships.addresseeId, userIdA))
+                )
+            );
+    }
+
+    /**
+     * Inserts a PENDING friend request from requesterId to addresseeId.
+     * Does nothing on conflict — a DECLINED row (blocked sender's preserved card) must not be
+     * overwritten back to PENDING by the sender re-requesting.
+     */
+    static async insertFriendRequest(db: DatabaseOrTransaction, requesterId: string, addresseeId: string) {
+        return db
+            .insert(friendships)
+            .values({ requesterId, addresseeId, status: 'PENDING' })
+            .onConflictDoNothing()
+            .returning();
+    }
+
+    /**
+     * Updates a PENDING friendship to ACCEPTED.
+     */
+    static async acceptFriendRequest(db: DatabaseOrTransaction, requesterId: string, addresseeId: string) {
+        return db
+            .update(friendships)
+            .set({ status: 'ACCEPTED', updatedAt: new Date() })
+            .where(
+                and(
+                    eq(friendships.requesterId, requesterId),
+                    eq(friendships.addresseeId, addresseeId),
+                    eq(friendships.status, 'PENDING')
+                )
+            )
+            .returning();
+    }
+
+    /**
+     * Returns accepted friends where the given user sent the request.
+     */
+    static async getFriendshipsSent(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.addresseeId, users.id))
+            .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'ACCEPTED')));
+    }
+
+    /**
+     * Returns accepted friends where the given user received the request.
+     */
+    static async getFriendshipsReceived(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.requesterId, users.id))
+            .where(and(eq(friendships.addresseeId, userId), eq(friendships.status, 'ACCEPTED')));
+    }
+
+    /**
+     * Returns all accepted friends for the given user as an array of user objects (id, name, email).
+     */
+    static async getFriends(db: DatabaseOrTransaction, userId: string) {
+        const [sent, received] = await Promise.all([
+            this.getFriendshipsSent(db, userId),
+            this.getFriendshipsReceived(db, userId),
+        ]);
+        return [...sent, ...received];
+    }
+
+    /**
+     * Returns true if an ACCEPTED friendship exists between the two users in either direction.
+     */
+    static async areFriends(db: DatabaseOrTransaction, viewerId: string, targetUserId: string): Promise<boolean> {
+        const [row] = await db
+            .select({ id: friendships.requesterId })
+            .from(friendships)
+            .where(
+                and(
+                    eq(friendships.status, 'ACCEPTED'),
+                    or(
+                        and(eq(friendships.requesterId, viewerId), eq(friendships.addresseeId, targetUserId)),
+                        and(eq(friendships.requesterId, targetUserId), eq(friendships.addresseeId, viewerId))
+                    )
+                )
+            )
+            .limit(1);
+        return Boolean(row);
+    }
+
+    /**
+     * Returns all pending friend requests received by the given user (id, name, email of requester).
+     */
+    static async getPendingFriendRequests(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.requesterId, users.id))
+            .where(and(eq(friendships.addresseeId, userId), eq(friendships.status, 'PENDING')));
+    }
+
+    /**
+     * Returns all pending or declined (blocked) friend requests sent by the given user.
+     * DECLINED means the addressee blocked the requester — we still show the card to the sender.
+     */
+    static async getSentPendingRequests(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.addresseeId, users.id))
+            .where(
+                and(
+                    eq(friendships.requesterId, userId),
+                    or(eq(friendships.status, 'PENDING'), eq(friendships.status, 'DECLINED'))
+                )
+            );
+    }
+
+    /**
+     * Deletes the friendship row between two users regardless of direction.
+     */
+    static async deleteFriendship(db: DatabaseOrTransaction, userIdA: string, userIdB: string) {
+        return db
+            .delete(friendships)
+            .where(
+                or(
+                    and(eq(friendships.requesterId, userIdA), eq(friendships.addresseeId, userIdB)),
+                    and(eq(friendships.requesterId, userIdB), eq(friendships.addresseeId, userIdA))
+                )
+            );
+    }
+
+    /**
+     * Blocks a user. If the blockId had sent a PENDING request to userId, that row is updated to
+     * DECLINED (so the sender's card stays visible). All other rows between the pair are deleted,
+     * then the (userId→blockId, BLOCKED) row is inserted.
+     */
+    static async blockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
+        return db.transaction(async (tx) => {
+            // Preserve the incoming request row as DECLINED so the sender can still see it
+            await tx
+                .update(friendships)
+                .set({ status: 'DECLINED', updatedAt: new Date() })
+                .where(
+                    and(
+                        eq(friendships.requesterId, blockId),
+                        eq(friendships.addresseeId, userId),
+                        eq(friendships.status, 'PENDING')
+                    )
+                );
+
+            // Delete everything else between the pair except the row we just updated
+            await tx
+                .delete(friendships)
+                .where(
+                    or(
+                        and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, blockId)),
+                        and(
+                            eq(friendships.requesterId, blockId),
+                            eq(friendships.addresseeId, userId),
+                            ne(friendships.status, 'DECLINED')
+                        )
+                    )
+                );
+
+            return tx
+                .insert(friendships)
+                .values({ requesterId: userId, addresseeId: blockId, status: 'BLOCKED', updatedAt: new Date() })
+                .returning();
+        });
+    }
+
+    /**
+     * Returns all users blocked by the given user (id, name, email).
+     */
+    static async getBlockedUsers(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.addresseeId, users.id))
+            .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'BLOCKED')));
+    }
+
+    /**
+     * Removes a block placed by userId on blockId.
+     */
+    static async unblockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
+        return db.transaction(async (tx) => {
+            await tx
+                .delete(friendships)
+                .where(
+                    and(
+                        eq(friendships.requesterId, userId),
+                        eq(friendships.addresseeId, blockId),
+                        eq(friendships.status, 'BLOCKED')
+                    )
+                );
+
+            // Restore the original request so it reappears in the blocker's received-requests tab
+            await tx
+                .update(friendships)
+                .set({ status: 'PENDING', updatedAt: new Date() })
+                .where(
+                    and(
+                        eq(friendships.requesterId, blockId),
+                        eq(friendships.addresseeId, userId),
+                        eq(friendships.status, 'DECLINED')
+                    )
+                );
+        });
+    }
+
+    /**
+     * Returns the sharedWithFriends status for all schedules owned by the given user.
+     */
+    static async getScheduleSharingStatuses(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
+            .from(schedules)
+            .where(eq(schedules.userId, userId));
+    }
+
+    /**
+     * Toggles the sharedWithFriends flag on a schedule owned by the given user.
+     * Returns the updated value, or null if the schedule was not found.
+     */
+    static async toggleScheduleSharing(
+        db: DatabaseOrTransaction,
+        userId: string,
+        scheduleId: string
+    ): Promise<{ sharedWithFriends: boolean } | null> {
+        return db.transaction(async (tx) => {
+            const [schedule] = await tx
+                .select({ sharedWithFriends: schedules.sharedWithFriends })
+                .from(schedules)
+                .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+                .limit(1);
+
+            if (!schedule) return null;
+
+            const [updated] = await tx
+                .update(schedules)
+                .set({ sharedWithFriends: !schedule.sharedWithFriends })
+                .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+                .returning({ sharedWithFriends: schedules.sharedWithFriends });
+
+            return { sharedWithFriends: updated.sharedWithFriends };
+        });
     }
 
     /**

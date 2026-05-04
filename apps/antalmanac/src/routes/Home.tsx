@@ -16,11 +16,11 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
-function MobileHome() {
+export function MobileHome() {
     return <ScheduleManagement />;
 }
 
-function DesktopHome() {
+export function DesktopHome() {
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
     const scheduleManagementRef = useRef<HTMLDivElement>(null);

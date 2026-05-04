@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useTabStore } from '$stores/TabStore';
 
@@ -10,6 +10,10 @@ interface MapLinkProps {
 
 export const MapLink = ({ buildingId, room }: MapLinkProps) => {
     const { setActiveTab } = useTabStore();
+    const { pathname } = useLocation();
+
+    const isHomePage = pathname === '/' || pathname == '/added' || pathname == '/map';
+    const toLocation = isHomePage ? `/map?location=${buildingId}` : `${pathname}?location=${buildingId}`;
 
     const focusMap = useCallback(() => {
         setActiveTab('map');
@@ -17,7 +21,7 @@ export const MapLink = ({ buildingId, room }: MapLinkProps) => {
 
     return (
         <Link
-            to={`/map?location=${buildingId}`}
+            to={toLocation}
             onClick={focusMap}
             style={{
                 textDecoration: 'none',

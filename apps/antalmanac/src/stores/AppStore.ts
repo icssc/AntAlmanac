@@ -1,12 +1,5 @@
 import { EventEmitter } from 'events';
 
-import type {
-    ScheduleCourse,
-    ScheduleSaveState,
-    RepeatingCustomEvent,
-    CustomEventId,
-} from '@packages/antalmanac-types';
-
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
     AddCourseAction,
@@ -25,9 +18,15 @@ import type {
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
-import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
+import type {
+    ScheduleCourse,
+    ScheduleSaveState,
+    RepeatingCustomEvent,
+    CustomEventId,
+} from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -65,11 +64,15 @@ class AppStore extends EventEmitter {
     }
 
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
-        return this.schedule.getNextScheduleName(scheduleIndex, newScheduleName);
+        return this.schedule.getNonConflictingName(scheduleIndex, newScheduleName);
     }
 
-    getDefaultScheduleName() {
-        return this.schedule.getDefaultScheduleName();
+    getSchedules() {
+        return this.schedule.getSchedules();
+    }
+
+    getScheduleId(scheduleIndex: number) {
+        return this.schedule.getScheduleId(scheduleIndex);
     }
 
     getCurrentScheduleIndex() {
@@ -145,6 +148,12 @@ class AppStore extends EventEmitter {
 
     getSkeletonMode() {
         return this.skeletonMode;
+    }
+
+    exitSkeletonMode() {
+        this.schedule.setSkeletonSchedules([]);
+        this.skeletonMode = false;
+        this.emit('skeletonModeChange');
     }
 
     hasUnsavedChanges() {
@@ -374,6 +383,7 @@ class AppStore extends EventEmitter {
 
     loadSkeletonSchedule(savedSchedule: ScheduleSaveState) {
         this.schedule.setSkeletonSchedules(savedSchedule.schedules);
+        this.schedule.setCurrentScheduleIndex(savedSchedule.scheduleIndex);
         this.skeletonMode = true;
 
         this.emit('addedCoursesChange');

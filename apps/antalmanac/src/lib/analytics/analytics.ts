@@ -15,6 +15,7 @@ export interface AnalyticsEnum {
     classSearch: AnalyticsCategory;
     addedClasses: AnalyticsCategory;
     map: AnalyticsCategory;
+    sharedSchedule: AnalyticsCategory;
     review: AnalyticsCategory;
 }
 
@@ -100,6 +101,14 @@ const analyticsEnum: AnalyticsEnum = {
         actions: {
             OPEN: 'Open Map',
             CLICK_PIN: 'Click on Pin',
+        },
+    },
+    sharedSchedule: {
+        title: 'Shared Schedule',
+        actions: {
+            OPEN: 'Open Shared Schedule',
+            COPY_SCHEDULE: 'Copy Schedule',
+            IMPORT_SCHEDULE: 'Import Schedule',
         },
     },
     review: {

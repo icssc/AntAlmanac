@@ -2,6 +2,7 @@ import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '$components/ColorPicker';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
@@ -92,6 +93,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
+    const isReadonlyView = useIsReadonlyView();
 
     const postHog = usePostHog();
 
@@ -145,27 +147,36 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         marginBottom: '0.25rem',
                     }}
                 >
-                    <Tooltip title="Quick Search (or CMD/CTRL + Click event)">
-                        <Button size="small" color="secondary" onClick={handleQuickSearch}>
-                            <Search fontSize="small" style={{ marginRight: 5 }} />
-                            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
-                        </Button>
-                    </Tooltip>
+                    {isReadonlyView ? (
+                        <span
+                            style={{ fontSize: '0.9rem', fontWeight: 500, padding: '4px 5px' }}
+                        >{`${title} ${sectionType}`}</span>
+                    ) : (
+                        <Tooltip title="Quick Search (or CMD/CTRL + Click event)">
+                            <Button size="small" color="secondary" onClick={handleQuickSearch}>
+                                <Search fontSize="small" style={{ marginRight: 5 }} />
+                                <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
+                            </Button>
+                        </Tooltip>
+                    )}
                     <Tooltip title="Delete">
-                        <IconButton
-                            size="small"
-                            style={{ textDecoration: 'underline' }}
-                            onClick={() => {
-                                closePopover();
-                                deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
-                                logAnalytics(postHog, {
-                                    category: analyticsEnum.calendar,
-                                    action: analyticsEnum.calendar.actions.DELETE_COURSE,
-                                });
-                            }}
-                        >
-                            <Delete fontSize="inherit" />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                size="small"
+                                style={{ textDecoration: 'underline' }}
+                                onClick={() => {
+                                    closePopover();
+                                    deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
+                                    logAnalytics(postHog, {
+                                        category: analyticsEnum.calendar,
+                                        action: analyticsEnum.calendar.actions.DELETE_COURSE,
+                                    });
+                                }}
+                                disabled={isReadonlyView}
+                            >
+                                <Delete fontSize="inherit" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Box>
                 <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
@@ -264,6 +275,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
+                            disabled={isReadonlyView}
                         >
                             <Delete fontSize="small" />
                         </IconButton>

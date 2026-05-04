@@ -1,4 +1,5 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
@@ -34,6 +35,8 @@ const ColorPicker = memo(function ColorPicker({
     const [currColor, setCurrColor] = useState(color);
 
     const postHog = usePostHog();
+
+    const isReadonlyView = useIsReadonlyView();
 
     const updateColor = useCallback(
         (newColor: string) => {
@@ -86,6 +89,7 @@ const ColorPicker = memo(function ColorPicker({
                     onClick={(e) => {
                         handleClick(e, postHog);
                     }}
+                    disabled={isReadonlyView}
                 >
                     <ColorLens fontSize="small" />
                 </IconButton>

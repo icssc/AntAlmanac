@@ -2,6 +2,7 @@ import { deleteCustomEvent } from '$actions/AppStoreActions';
 import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '$components/ColorPicker';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';
@@ -20,6 +21,7 @@ interface CustomEventDetailViewProps {
 export function CustomEventDetailView(props: CustomEventDetailViewProps) {
     const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
+    const isReadonlyView = useIsReadonlyView();
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
@@ -92,6 +94,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
                             onClick={() => {
                                 deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
                             }}
+                            disabled={isReadonlyView}
                         >
                             <Delete fontSize="small" />
                         </IconButton>

@@ -1,6 +1,7 @@
 import { router } from '../trpc';
 import courseRouter from './course';
 import enrollHistRouter from './enrollHist';
+import friendsRouter from './friends';
 import gradesRouter from './grades';
 import notificationsRouter from './notifications';
 import reviewRouter from './review';
@@ -13,6 +14,7 @@ import zotcourseRouter from './zotcourse';
 const appRouter = router({
     course: courseRouter,
     enrollHist: enrollHistRouter,
+    friends: friendsRouter,
     grades: gradesRouter,
     notifications: notificationsRouter,
     review: reviewRouter,

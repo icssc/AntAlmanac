@@ -1,7 +1,7 @@
 import {
     amber,
-    brown,
     blue,
+    brown,
     cyan,
     deepOrange,
     deepPurple,
@@ -15,7 +15,10 @@ import {
     teal,
     yellow,
 } from '@mui/material/colors';
-import { ScheduleCourse } from '@packages/antalmanac-types';
+import { Schedule, ScheduleCourse, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { createId } from '@paralleldrive/cuid2';
+
+import { getDefaultTerm } from '$lib/termData';
 
 const colorVariants: Record<string, string[]> = {
     blue: [blue[300], blue[200], blue[100], blue[400], blue[500]],
@@ -114,6 +117,31 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
         defaultColors.find((materialColor) => !usedColors.includes(materialColor)) ||
         defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length]
     );
+}
+
+export function getDefaultScheduleName() {
+    return getDefaultTerm().shortName.replaceAll(' ', '-');
+}
+
+export function createEmptySchedule(scheduleNoteId: number): Schedule {
+    return {
+        scheduleName: getDefaultScheduleName(),
+        courses: [],
+        customEvents: [],
+        scheduleNoteId: scheduleNoteId,
+        scheduleId: createId(),
+        id: undefined,
+    };
+}
+
+export function createEmptyShortCourseSchedule(): ShortCourseSchedule {
+    return {
+        scheduleName: getDefaultScheduleName(),
+        courses: [],
+        customEvents: [],
+        scheduleNote: '',
+        id: undefined,
+    };
 }
 
 /**

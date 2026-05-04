@@ -8,12 +8,7 @@ import type {
     DepartmentSearchResult,
     CoursesFilteredAPIResult,
 } from '@packages/antalmanac-types';
-import type {
-    WebsocAPIResponse,
-    WebsocAPIResult,
-    WebsocCourse,
-    WebsocDepartment,
-} from '@packages/anteater-api-types';
+import type { WebsocAPIResponse, WebsocAPIResult, WebsocCourse, WebsocDepartment } from '@packages/anteater-api-types';
 
 import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
@@ -149,11 +144,11 @@ async function main() {
         `
     import type { CourseSearchResult, DepartmentSearchResult } from "@packages/antalmanac-types";
     export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSON.stringify(
-            Array.from(deptMap.values())
-        )};
+        Array.from(deptMap.values())
+    )};
     export const courses: Array<CourseSearchResult & { id: string }> = ${JSON.stringify(
-            Array.from(courseMap.values())
-        )};
+        Array.from(courseMap.values())
+    )};
     `
     );
 

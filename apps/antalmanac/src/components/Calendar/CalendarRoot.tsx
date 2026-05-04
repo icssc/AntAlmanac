@@ -11,6 +11,7 @@ import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import {
     getLocalStorageSkeletonBlueprint,
     removeLocalStorageSkeletonBlueprint,
@@ -117,6 +118,7 @@ export const ScheduleCalendar = memo(() => {
     const hasHadEventsRef = useRef(false);
 
     const isMobile = useIsMobile();
+    const isReadonlyView = useIsReadonlyView();
 
     const onlyCourseEvents = useMemo(
         () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
@@ -364,12 +366,20 @@ export const ScheduleCalendar = memo(() => {
                     >
                         <EmptyState
                             Icon={CalendarMonth}
-                            title="Your schedule is empty"
-                            description="Search for courses to start building your schedule."
-                            primaryAction={{
-                                label: 'Search for Courses',
-                                onClick: () => useTabStore.getState().setActiveTab('search'),
-                            }}
+                            title={isReadonlyView ? 'This schedule is empty' : 'Your schedule is empty'}
+                            description={
+                                isReadonlyView
+                                    ? 'No courses have been added to this schedule.'
+                                    : 'Search for courses to start building your schedule.'
+                            }
+                            primaryAction={
+                                isReadonlyView
+                                    ? undefined
+                                    : {
+                                          label: 'Search for Courses',
+                                          onClick: () => useTabStore.getState().setActiveTab('search'),
+                                      }
+                            }
                         />
                     </Box>
                 )}
