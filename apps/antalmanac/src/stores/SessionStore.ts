@@ -88,18 +88,7 @@ export const useSessionStore = create<SessionState>((set) => {
 
         clearSession: async () => {
             clearSsoCookie();
-            set({
-                userId: null,
-                sessionIsValid: false,
-                isGoogleUser: false,
-                email: null,
-                name: null,
-                avatar: null,
-                googleId: null,
-                filterTakenCourses: false,
-                userTakenCourses: new Set(),
-                plannerRoadmaps: [],
-            });
+            set({ ...initState });
         },
         setHasCheckedAuth: (hasCheckedAuth) => set({ hasCheckedAuth }),
         setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
