@@ -1,11 +1,12 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { SETTINGS_POPOVER_BG } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
+import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { People } from '@mui/icons-material';
-import { Button, Popover } from '@mui/material';
+import { Button, IconButton, Popover } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
 import { FriendsMenu, type Friend, type FriendRequest } from './FriendsMenu';
@@ -110,19 +111,26 @@ export function FriendsButton() {
         setAnchorEl(null);
     };
 
+    const isMobile = useIsMobile();
     const showLoadingSkeleton = Boolean(open && sessionIsValid && userId && isLoading);
 
     return (
         <>
-            <Button
-                variant="text"
-                startIcon={<People />}
-                color="inherit"
-                onClick={handleClick}
-                sx={{ fontSize: 'inherit' }}
-            >
-                Friends
-            </Button>
+            {isMobile ? (
+                <IconButton color="inherit" onClick={handleClick}>
+                    <People />
+                </IconButton>
+            ) : (
+                <Button
+                    variant="text"
+                    startIcon={<People />}
+                    color="inherit"
+                    onClick={handleClick}
+                    sx={{ fontSize: 'inherit' }}
+                >
+                    Friends
+                </Button>
+            )}
 
             <Popover
                 open={open}
