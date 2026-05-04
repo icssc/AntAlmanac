@@ -1,0 +1,25 @@
+apps/antalmanac/src/components/Header/Friends/FriendsButton.tsx
+  96334d0d0446c9d5 4,9,114,119-133
+apps/antalmanac/src/components/Header/Import.tsx
+  96334d0d0446c9d5 37,90,682-703
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "5edff7dd08435fe210f78db787baf93ada7e0e13",
+  "prompts": {
+    "96334d0d0446c9d5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a47a496c-c7c8-4a45-9ab7-3796fe23335f",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 73,
+      "total_deletions": 50,
+      "accepted_lines": 42,
+      "overriden_lines": 0
+    }
+  }
+}
