@@ -13,6 +13,7 @@ import {
     IconButton,
     Rating,
     Stack,
+    TextField,
     Typography,
 } from '@mui/material';
 
@@ -59,6 +60,8 @@ export function ReviewStep() {
     const selectedTags = useReviewPromptStore((s) => s.selectedTags);
     const setRating = useReviewPromptStore((s) => s.setRating);
     const setDifficulty = useReviewPromptStore((s) => s.setDifficulty);
+    const textReview = useReviewPromptStore((s) => s.textReview);
+    const setTextReview = useReviewPromptStore((s) => s.setTextReview);
     const toggleTag = useReviewPromptStore((s) => s.toggleTag);
     const submitReview = useReviewPromptStore((s) => s.submitReview);
     const dismiss = useReviewPromptStore((s) => s.dismiss);
@@ -106,6 +109,17 @@ export function ReviewStep() {
                             </Box>
                         </Box>
                     </Box>
+
+                    <TextField
+                        label="Write a review (optional)"
+                        multiline
+                        minRows={1}
+                        maxRows={5}
+                        fullWidth
+                        value={textReview}
+                        onChange={(e) => setTextReview(e.target.value)}
+                        slotProps={{ htmlInput: { maxLength: 1000 } }}
+                    />
 
                     <Box display="flex" flexDirection="column" gap={0.5}>
                         <Typography color="text.secondary">Tags</Typography>
