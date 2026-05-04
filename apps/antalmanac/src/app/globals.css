@@ -1,9 +1,16 @@
 html {
     font-size: 12px;
+    background-color: #f5f6fc;
 }
 
 body {
+    background-color: #f5f6fc;
     overflow: hidden;
+}
+
+html[data-app-theme='dark'],
+html[data-app-theme='dark'] body {
+    background-color: #1e1e1e;
 }
 
 .sr-only {
