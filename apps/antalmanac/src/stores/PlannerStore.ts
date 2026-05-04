@@ -33,7 +33,7 @@ function roadmapQuarterToYearAndQuarter(startYear: number, quarterName: string):
     return { year, quarter };
 }
 
-function getTakenRoadmapCourses(roadmap: Roadmap): string[] {
+function getTakenRoadmapCourses(roadmap: Roadmap): Set<string> {
     const current = getCurrentTerm();
     const courses = new Set<string>();
     for (const year of roadmap.content ?? []) {
@@ -48,7 +48,7 @@ function getTakenRoadmapCourses(roadmap: Roadmap): string[] {
             }
         }
     }
-    return Array.from(courses);
+    return courses;
 }
 
 export const usePlannerStore = create<PlannerStore>((set, get) => {
@@ -89,10 +89,10 @@ export const usePlannerStore = create<PlannerStore>((set, get) => {
 
             try {
                 const flatCourses = getTakenRoadmapCourses(roadmap);
-                const courseSet = new Set<string>(flatCourses);
-                set({ userTakenCourses: courseSet, filterTakenCourses: true });
+                set({ userTakenCourses: flatCourses, filterTakenCourses: true });
             } catch (e) {
                 console.error('Failed to flatten roadmap courses:', e);
+                set({ userTakenCourses: new Set(), filterTakenCourses: false });
             }
         },
     };
