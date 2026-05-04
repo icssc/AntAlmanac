@@ -64,10 +64,9 @@ const userDataRouter = router({
     }),
 
     /**
-     * Logs out a user by invalidating their session and redirecting to OIDC logout
+     * Gets URL to invalidate user session on auth.icssc side
      */
     getLogoutUrl: procedure.input(z.object({ redirectUrl: z.string().optional() })).query(async ({ input }) => {
-        // Build OIDC logout URL
         const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
         const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
         oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
