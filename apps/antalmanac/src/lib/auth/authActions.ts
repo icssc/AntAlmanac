@@ -1,15 +1,16 @@
 'use server';
 
-import { auth, AuthorizationUrlParams } from '$lib/auth/auth';
+import { auth, AuthAdditionalData, AuthorizationUrlParams } from '$lib/auth/auth';
 import { AUTH_PROVIDER_ID } from '$lib/constants';
 import { headers } from 'next/headers';
 
 interface GetSignInUrlOptions {
     authorizationUrlParams?: AuthorizationUrlParams;
     redirectUrl?: string;
+    returnUrl?: string;
 }
 
-export async function getSignInUrl({ authorizationUrlParams, redirectUrl }: GetSignInUrlOptions = {}) {
+export async function getSignInUrl({ authorizationUrlParams, redirectUrl, returnUrl }: GetSignInUrlOptions = {}) {
     // TODO: Remove this hack once better-auth supports dynamic prompts/config
     auth.options.plugins[0].options.config[0].authorizationUrlParams = authorizationUrlParams;
 
@@ -18,6 +19,9 @@ export async function getSignInUrl({ authorizationUrlParams, redirectUrl }: GetS
             providerId: AUTH_PROVIDER_ID,
             newUserCallbackURL: '/welcome',
             callbackURL: redirectUrl,
+            additionalData: {
+                returnUrl,
+            } satisfies AuthAdditionalData,
         },
     });
 }

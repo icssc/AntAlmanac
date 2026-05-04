@@ -1,6 +1,7 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
+import { getAuthReturnUrl } from '$lib/auth/authUtils';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
@@ -408,7 +409,12 @@ export const loginUser = async ({ silent = false, signInUrl = '', postHog }: Log
         const url =
             signInUrl !== ''
                 ? signInUrl
-                : (await getSignInUrl({ redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined })).url;
+                : (
+                      await getSignInUrl({
+                          redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined,
+                          returnUrl: getAuthReturnUrl(),
+                      })
+                  ).url;
 
         if (url) {
             logAnalytics(postHog, {

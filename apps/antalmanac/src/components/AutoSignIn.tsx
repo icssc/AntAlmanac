@@ -1,6 +1,7 @@
 import { loginUser } from '$actions/AppStoreActions';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { authClient } from '$lib/auth/authClient';
+import { getAuthReturnUrl } from '$lib/auth/authUtils';
 import { hasSsoCookie } from '$lib/ssoCookie';
 import { useEffect, useRef } from 'react';
 
@@ -29,7 +30,10 @@ export function AutoSignIn() {
             }
 
             try {
-                const { url } = await getSignInUrl({ authorizationUrlParams: { prompt: 'none' } });
+                const { url } = await getSignInUrl({
+                    authorizationUrlParams: { prompt: 'none' },
+                    returnUrl: getAuthReturnUrl(),
+                });
                 loginUser({ silent: true, signInUrl: url });
             } catch {
                 // Silent SSO failed (e.g. backend unavailable). Don't retry.
