@@ -182,7 +182,6 @@ export function AdvancedSearchTextFields() {
                 break;
             case 'excludeRoadmapCourses':
                 setExcludeRoadmapCourses(stringValue);
-                updateTakenCourses(stringValue);
                 break;
             case 'excludeRestrictionCodes':
                 setExcludeRestrictionCodes(stringValue);
@@ -207,6 +206,8 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
+        updateTakenCourses(excludeRoadmapCourses);
+
         if (!excludeRoadmapCourses) return;
         if (!plannerRoadmaps || plannerRoadmaps.length === 0) return;
 
