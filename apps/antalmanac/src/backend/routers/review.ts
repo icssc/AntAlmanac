@@ -26,6 +26,7 @@ const submitReviewInput = z.object({
     quarter: z.string(),
     /** 1–5 star rating */
     rating: z.number().int().min(1).max(5),
+    difficulty: z.number().int().min(1).max(5),
     tags: z.array(reviewTagsEnum).default([]),
     anonymous: z.boolean().default(true),
 });
@@ -63,6 +64,7 @@ const reviewRouter = router({
                 courseId: input.courseId,
                 quarter: input.quarter,
                 rating: input.rating,
+                difficulty: input.difficulty,
                 tags: input.tags,
                 anonymous: input.anonymous,
             })

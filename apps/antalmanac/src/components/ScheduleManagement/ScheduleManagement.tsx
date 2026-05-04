@@ -2,6 +2,7 @@ import { ScheduleManagementContent } from '$components/ScheduleManagement/Schedu
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { getWasLoggedIn } from '$lib/localStorage';
+import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -47,6 +48,11 @@ export function ScheduleManagement() {
                     break;
             }
 
+            return;
+        }
+
+        if (shouldSearchPlannerFromParams()) {
+            setActiveTab('search');
             return;
         }
 

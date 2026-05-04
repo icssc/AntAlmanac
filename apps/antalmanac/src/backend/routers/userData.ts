@@ -1,5 +1,6 @@
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
+import { getCookiesFromHeader, getSafeAuthRedirectPath } from '$src/backend/lib/helpers';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
 import { type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
@@ -58,6 +59,12 @@ const userDataRouter = router({
                 });
             }
         }),
+
+    getAuthReturnUrl: procedure.query(async ({ ctx }) => {
+        const cookies = getCookiesFromHeader(ctx.req.headers);
+        const redirectUrl = getSafeAuthRedirectPath(cookies['auth_redirect_url'], ctx.req.url, GOOGLE_REDIRECT_URI);
+        return redirectUrl || '/';
+    }),
 
     flagImportedSchedule: protectedProcedure.input(z.object({ username: z.string() })).mutation(async ({ input }) => {
         return await RDS.flagImportedUser(db, input.username);

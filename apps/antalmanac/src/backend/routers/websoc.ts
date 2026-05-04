@@ -6,6 +6,7 @@ import type {
     CourseInfo,
     WebsocCourse,
     WebsocSectionType,
+    WebsocSyllabiAPIResult,
 } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -132,7 +133,7 @@ function combineWebsocResponses(responses: WebsocAPIResponse[]) {
 
 const websocRouter = router({
     getOne: procedure.input(z.record(z.string(), z.string())).query(queryWebSoc),
-    getMany: procedure
+    getManyOfField: procedure
         .input(z.object({ params: z.record(z.string(), z.string()), fieldName: z.string() }))
         .query(async ({ input }) => {
             const responses: WebsocAPIResponse[] = [];
@@ -141,6 +142,14 @@ const websocRouter = router({
                 req[input.fieldName] = field;
                 responses.push(await queryWebSoc({ input: req }));
             }
+            return combineWebsocResponses(responses);
+        }),
+    getMultiple: procedure
+        .input(z.object({ params: z.array(z.record(z.string(), z.string())) }))
+        .query(async ({ input }) => {
+            const responses: WebsocAPIResponse[] = await Promise.all(
+                input.params.map((query) => queryWebSoc({ input: query }))
+            );
             return combineWebsocResponses(responses);
         }),
     getCourseInfo: procedure.input(z.record(z.string(), z.string())).query(async ({ input }) => {
@@ -177,6 +186,23 @@ const websocRouter = router({
     getDepartments: procedure.query(async () => {
         return await queryWebSocDepartments();
     }),
+    getSyllabi: procedure
+        .input(
+            z.object({
+                courseId: z.string(),
+                year: z.string().optional(),
+                quarter: z.string().optional(),
+                instructor: z.string().optional(),
+            })
+        )
+        .query(async ({ input }) => {
+            const result = await fetchAnteaterAPI<WebsocSyllabiAPIResult>(
+                `https://anteaterapi.com/v2/rest/websoc/syllabi?${new URLSearchParams(input)}`,
+                { errorType: 'trpc' }
+            );
+
+            return result.data;
+        }),
 });
 
 export default websocRouter;

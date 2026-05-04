@@ -92,9 +92,7 @@ export const Signin = () => {
         (event: KeyboardEvent) => {
             if (!showLegacyLogin) return;
 
-            const charCode = event.which ? event.which : event.keyCode;
-
-            if (charCode === 13 || charCode === 10) {
+            if (event.key === 'Enter') {
                 event.preventDefault();
                 setIsOpen(false);
                 document.removeEventListener('keydown', enterEvent, false);

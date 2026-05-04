@@ -74,6 +74,10 @@ function getCurrentTerm(): { year: number; quarter: string } {
     return { year, quarter };
 }
 
+export function getTermLongName(termShortName: string) {
+    return termData.find((term) => term.shortName === termShortName)?.longName ?? '';
+}
+
 /**
  * Enrollment can change until the drop deadline, i.e. when enrollment closes.
  * For full terms (10-week quarters), enrollment closes on the Friday of Week 2.
@@ -120,6 +124,10 @@ function isTermEnrollmentOpen(term: Term): boolean {
 
     const dropDeadline = setDay(addWeeks(term.startDate, weeksUntilDropDeadline), 5);
     return new Date() <= dropDeadline;
+}
+
+export function isTermAvailable(termShortName: string) {
+    return termData.find((term) => term.shortName === termShortName) !== undefined;
 }
 
 export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm, getCurrentTerm };

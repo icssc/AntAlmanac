@@ -15,6 +15,7 @@ export interface AnalyticsEnum {
     classSearch: AnalyticsCategory;
     addedClasses: AnalyticsCategory;
     map: AnalyticsCategory;
+    review: AnalyticsCategory;
 }
 
 const analyticsEnum: AnalyticsEnum = {
@@ -76,6 +77,7 @@ const analyticsEnum: AnalyticsEnum = {
             CLICK_ZOTISTICS: 'Click "Zotistics"',
             CLICK_REVIEWS: 'Click "Reviews"',
             CLICK_PAST_ENROLLMENT: 'Click "Past Enrollment"',
+            CLICK_PAST_SYLLABI: 'Click Past Syllabi',
             ADD_SPECIFIC: 'Add Course to Specific Schedule',
             COPY_COURSE_CODE: 'Copy Section Code',
             REFRESH: 'Refresh Results',
@@ -98,6 +100,15 @@ const analyticsEnum: AnalyticsEnum = {
         actions: {
             OPEN: 'Open Map',
             CLICK_PIN: 'Click on Pin',
+        },
+    },
+    review: {
+        title: 'Review Prompt',
+        actions: {
+            PROMPT_SHOWN: 'Review Prompt Shown',
+            ENROLLMENT_CONFIRMED: 'Review Enrollment Confirmed',
+            DISMISSED: 'Review Prompt Dismissed',
+            SUBMITTED: 'Review Submitted',
         },
     },
 };

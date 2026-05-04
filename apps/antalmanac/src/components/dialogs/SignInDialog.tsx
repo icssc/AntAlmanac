@@ -1,15 +1,16 @@
 import SignInButton from '$components/buttons/SignInButton';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 
 interface SignInDialogProps {
     open: boolean;
-    isDark: boolean;
-    feature: 'Load' | 'Save' | 'Notification' | 'Planner';
+    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'PlannerSearch';
     onClose: () => void;
 }
 
 export function SignInDialog(props: SignInDialogProps) {
-    const { onClose, open, isDark } = props;
+    const { onClose, open } = props;
+    const isDark = useThemeStore((store) => store.isDark);
 
     const handleClose = () => {
         onClose();
@@ -21,6 +22,8 @@ export function SignInDialog(props: SignInDialogProps) {
                 return 'Sign in to Use Notifications';
             case 'Planner':
                 return 'Sign in to Use Filter by Planner';
+            case 'PlannerSearch':
+                return 'Sign in to search with Planner';
             case 'Save':
             default:
                 return 'Save';

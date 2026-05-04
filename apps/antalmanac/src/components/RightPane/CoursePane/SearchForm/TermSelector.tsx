@@ -1,10 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { termData } from '$lib/termData';
+import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
+import { getTermLongName, termData } from '$lib/termData';
+import { ComponentProps, useCallback, useEffect, useState } from 'react';
 
-export function TermSelector() {
+type TermSelectorProps = Omit<
+    ComponentProps<typeof LabeledAutocomplete>,
+    'label' | 'autocompleteProps' | 'textFieldProps' | 'isAligned'
+>;
+
+export function TermSelector(props: TermSelectorProps) {
     const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
 
     const handleChange = (_: unknown, option: string | null) => {
@@ -17,6 +21,8 @@ export function TermSelector() {
         history.replaceState({ url: 'url' }, 'url', `/?${urlParams}`);
 
         RightPaneStore.updateFormValue('term', value);
+
+        RightPaneStore.clearWarningMessages(CourseSearchWarningType.TermUnavailable);
     };
 
     const resetField = useCallback(() => {
@@ -33,11 +39,12 @@ export function TermSelector() {
 
     return (
         <LabeledAutocomplete
+            {...props}
             label="Term"
             autocompleteProps={{
                 value: term,
                 options: termData.map((term) => term.shortName),
-                getOptionLabel: (option) => termData.find((term) => term.shortName === option)?.longName ?? '',
+                getOptionLabel: (option) => getTermLongName(option),
                 autoHighlight: true,
                 openOnFocus: true,
                 onChange: handleChange,
