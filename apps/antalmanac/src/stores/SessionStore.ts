@@ -14,7 +14,7 @@ interface SessionState {
     avatar: string | null;
     sessionIsValid: boolean;
     updateSession: (session: SessionData) => Promise<boolean>;
-    clearSession: () => Promise<void>;
+    clearSession: () => void;
 
     hasCheckedAuth: boolean;
     setHasCheckedAuth: (hasCheckedAuth: boolean) => void;
@@ -86,7 +86,7 @@ export const useSessionStore = create<SessionState>((set) => {
             return true;
         },
 
-        clearSession: async () => {
+        clearSession: () => {
             clearSsoCookie();
             set({ ...initState });
         },

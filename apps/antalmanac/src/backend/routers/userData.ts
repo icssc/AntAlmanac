@@ -71,10 +71,7 @@ const userDataRouter = router({
         const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
         const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
         oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
-
-        return {
-            logoutUrl: oidcLogoutUrl.toString(),
-        };
+        return oidcLogoutUrl.toString();
     }),
 
     /**

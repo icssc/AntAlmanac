@@ -22,43 +22,48 @@ export type SessionData = typeof authClient.$Infer.Session;
 export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}) {
     const session = useSessionStore.getState().session;
     if (!session) {
-        onLogoutComplete?.();
+        useSessionStore.getState().clearSession();
         setWasLoggedIn(false);
-        await useSessionStore.getState().clearSession();
+        onLogoutComplete?.();
         window.location.reload();
         return;
     }
 
-    const { error } = await authClient.signOut();
-
-    if (error) {
-        console.error('Error during logout', error);
-    }
-
+    let logoutUrl;
     try {
-        onLogoutComplete?.();
-        setWasLoggedIn(false);
-        await useSessionStore.getState().clearSession();
-
-        const { logoutUrl } = await trpc.userData.getLogoutUrl.query({
+        logoutUrl = await trpc.userData.getLogoutUrl.query({
             redirectUrl: window.location.origin,
         });
-
-        logAnalytics(postHog, {
-            category: analyticsEnum.auth,
-            action: analyticsEnum.auth.actions.SIGN_OUT,
-        });
-
-        window.location.href = logoutUrl;
     } catch (error) {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SIGN_OUT_FAIL,
             error: getErrorMessage(error),
         });
+        console.error('Error getting logout URL', error);
+    }
+
+    setWasLoggedIn(false);
+    useSessionStore.getState().clearSession();
+
+    const { error } = await authClient.signOut();
+    if (error) {
         console.error('Error during logout', error);
-    } finally {
-        postHog?.reset();
+    }
+
+    onLogoutComplete?.();
+
+    logAnalytics(postHog, {
+        category: analyticsEnum.auth,
+        action: analyticsEnum.auth.actions.SIGN_OUT,
+    });
+
+    postHog?.reset();
+
+    if (logoutUrl) {
+        window.location.href = logoutUrl;
+    } else {
+        window.location.reload();
     }
 }
 
