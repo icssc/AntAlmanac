@@ -62,7 +62,7 @@ const initState: Pick<
     isPlannerLoading: false,
 };
 
-export const useSessionStore = create<SessionState>((set, get) => {
+export const useSessionStore = create<SessionState>((set) => {
     return {
         ...initState,
         updateSession: async (sessionData: SessionData) => {
@@ -87,12 +87,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
         },
 
         clearSession: async () => {
-            const currentSession = get().sessionId;
-            if (currentSession) {
-                clearSsoCookie();
-                set({ ...initState });
-            }
-
             clearSsoCookie();
             set({
                 userId: null,
