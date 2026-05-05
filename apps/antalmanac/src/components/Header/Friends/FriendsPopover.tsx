@@ -1,8 +1,7 @@
-import { FriendsListSkeleton } from '$components/Header/Friends/FriendsListSkeleton';
-import { FriendsTab } from '$components/Header/Friends/FriendsTab';
-import { RequestsTab } from '$components/Header/Friends/RequestsTab';
+import { FriendsTab } from '$components/Header/Friends/Friends/FriendsTab';
+import { RequestsTab } from '$components/Header/Friends/Requests/RequestsTab';
 import type { Friend, FriendRequest } from '$src/backend/lib/rds.types';
-import { Card, CardContent, CardHeader, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Box, Card, CardContent, CardHeader, CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useState } from 'react';
 
 interface FriendsPopoverProps {
@@ -22,9 +21,11 @@ export function FriendsPopover({
 }: FriendsPopoverProps) {
     const [activeTab, setActiveTab] = useState<'friends' | 'requests'>('friends');
 
-    const handleTabChange = (event: React.MouseEvent<HTMLElement>, value: 'friends' | 'requests' | null) => {
-        event.preventDefault();
-        if (!value) return;
+    const handleTabChange = (_event: React.MouseEvent<HTMLElement>, value: 'friends' | 'requests' | null) => {
+        if (!value) {
+            return;
+        }
+
         setActiveTab(value);
     };
 
@@ -40,7 +41,9 @@ export function FriendsPopover({
 
                 <CardContent sx={{ width: 500, paddingTop: 0 }}>
                     {isLoading ? (
-                        <FriendsListSkeleton />
+                        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                            <CircularProgress size={20} />
+                        </Box>
                     ) : (
                         <>
                             <ToggleButtonGroup
