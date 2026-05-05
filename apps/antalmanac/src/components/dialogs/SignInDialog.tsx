@@ -1,4 +1,5 @@
 import { loginUser } from '$actions/AppStoreActions';
+import { safeUnreachableCase } from '$lib/utils';
 import { useThemeStore } from '$stores/SettingsStore';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Alert, Button, CircularProgress, Dialog, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
@@ -30,7 +31,7 @@ export function SignInDialog(props: SignInDialogProps) {
         }
     };
 
-    const getTitle = () => {
+    const getTitle = (): string => {
         switch (feature) {
             case 'Notification':
                 return 'Sign in to Use Notifications';
@@ -38,11 +39,17 @@ export function SignInDialog(props: SignInDialogProps) {
                 return 'Sign in to Use Filter by Planner';
             case 'PlannerSearch':
                 return 'Sign in to search with Planner';
+            case 'Friends':
+                return 'Sign in to add friends and share your schedule';
+            case 'Load':
+                return 'Sign in to load your schedule';
             case 'Save':
+                return 'Sign in to save your schedule';
             default:
-                return 'Save';
+                return safeUnreachableCase(feature) ?? '';
         }
     };
+
     return (
         <Dialog
             open={open}
