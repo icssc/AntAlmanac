@@ -1,5 +1,5 @@
-import { RequestCard } from '$components/Header/Friends/RequestCard';
-import { SentRequestCard } from '$components/Header/Friends/SentRequestCard';
+import { RequestCard } from '$components/Header/Friends/Requests/RequestCard';
+import { SentRequestCard } from '$components/Header/Friends/Requests/SentRequestCard';
 import { textFieldSx } from '$components/Header/Friends/styles';
 import trpc from '$lib/api/trpc';
 import type { FriendRequest } from '$src/backend/lib/rds.types';

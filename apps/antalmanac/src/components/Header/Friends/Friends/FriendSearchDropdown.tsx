@@ -1,4 +1,4 @@
-import { FriendDropdownCard } from '$components/Header/Friends/FriendDropdownCard';
+import { FriendDropdownCard } from '$components/Header/Friends/Friends/FriendDropdownCard';
 import type { Friend } from '$src/backend/lib/rds.types';
 import { Paper, Popper, Typography } from '@mui/material';
 

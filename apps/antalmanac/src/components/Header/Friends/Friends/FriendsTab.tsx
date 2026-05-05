@@ -1,5 +1,5 @@
-import { FriendCard } from '$components/Header/Friends/FriendCard';
-import { FriendSearchDropdown } from '$components/Header/Friends/FriendSearchDropdown';
+import { FriendCard } from '$components/Header/Friends/Friends/FriendCard';
+import { FriendSearchDropdown } from '$components/Header/Friends/Friends/FriendSearchDropdown';
 import { textFieldSx } from '$components/Header/Friends/styles';
 import trpc from '$lib/api/trpc';
 import type { Friend } from '$src/backend/lib/rds.types';
