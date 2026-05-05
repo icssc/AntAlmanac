@@ -23,10 +23,13 @@ export type Schedule = {
     scheduleId: string;
 };
 
+export type VisibilityState = 'visible' | 'outlined' | 'disappeared';
+
 export const ShortCourseSchema = type({
     color: 'string',
     term: 'string',
     sectionCode: 'string',
+    'visibility?': '"visible" | "outlined" | "disappeared"',
 });
 export type ShortCourse = typeof ShortCourseSchema.infer;
 
