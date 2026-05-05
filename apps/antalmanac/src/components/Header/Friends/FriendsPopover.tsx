@@ -17,8 +17,8 @@ import {
     DialogTitle,
     Menu,
     MenuItem,
-    Tab,
-    Tabs,
+    ToggleButton,
+    ToggleButtonGroup,
 } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -134,6 +134,12 @@ export function FriendsPopover({
         }
     };
 
+    const handleTabChange = (event: React.MouseEvent<HTMLElement>, value: 'friends' | 'requests' | null) => {
+        event.preventDefault();
+        if (!value) return;
+        setActiveTab(value);
+    };
+
     return (
         <>
             <Card>
@@ -149,20 +155,20 @@ export function FriendsPopover({
                         <FriendsListSkeleton />
                     ) : (
                         <>
-                            <Tabs
+                            <ToggleButtonGroup
+                                fullWidth
+                                size="medium"
+                                color="secondary"
                                 value={activeTab}
-                                onChange={(_, v) => setActiveTab(v)}
-                                variant="fullWidth"
-                                textColor="inherit"
+                                exclusive
+                                aria-label="Friends selection"
+                                onChange={handleTabChange}
                             >
-                                <Tab label="Friends" value="friends" />
-                                <Tab
-                                    label={
-                                        friendRequests.length > 0 ? `Requests (${friendRequests.length})` : 'Requests'
-                                    }
-                                    value="requests"
-                                />
-                            </Tabs>
+                                <ToggleButton value="friends">Friends</ToggleButton>
+                                <ToggleButton value="requests">
+                                    {friendRequests.length > 0 ? `Requests (${friendRequests.length})` : 'Requests'}
+                                </ToggleButton>
+                            </ToggleButtonGroup>
 
                             {activeTab === 'friends' && (
                                 <FriendsTab
