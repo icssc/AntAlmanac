@@ -150,7 +150,12 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                     disabled={!doesRoadmapIncludeTerm(roadmap.id)}
                     sx={{ width: '100%' }}
                 >
-                    <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
+                    <Typography
+                        sx={{ marginLeft: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}
+                        title={roadmap.name}
+                    >
+                        {roadmap.name}
+                    </Typography>
                 </MenuItem>
 
                 <Tooltip title="Open Planner">
