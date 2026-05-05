@@ -1,11 +1,9 @@
-import ColorPicker from '$components/ColorPicker';
 import { AddButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/AddButton';
 import { DeleteButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteButton';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { SectionActionMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/SectionActionMenu';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -13,7 +11,7 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
 import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
@@ -25,10 +23,6 @@ interface ActionCellProps {
     scheduleNames: string[];
 }
 
-function getSectionColor(sectionCode: string, term: string): string {
-    return AppStore.schedule.getExistingCourseInSchedule(sectionCode, term)?.section.color ?? '#5ec8e0';
-}
-
 export const ActionCell = memo(
     ({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
         const initialized = useNotificationStore(useShallow((state) => state.initialized));
@@ -37,25 +31,6 @@ export const ActionCell = memo(
             state.getVisibility(AppStore.getCurrentScheduleId(), section.sectionCode)
         );
         const isMobile = useIsMobile();
-
-        const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term));
-
-        const updateColor = useCallback(() => {
-            setSectionColor(getSectionColor(section.sectionCode, term));
-        }, [section.sectionCode, term]);
-
-        useEffect(() => {
-            AppStore.on('addedCoursesChange', updateColor);
-            AppStore.on('colorChange', updateColor);
-            AppStore.on('currentScheduleIndexChange', updateColor);
-
-            return () => {
-                AppStore.removeListener('addedCoursesChange', updateColor);
-                AppStore.removeListener('colorChange', updateColor);
-                AppStore.removeListener('currentScheduleIndexChange', updateColor);
-            };
-        }, [updateColor]);
-
         const handleVisibilityToggle = useCallback(() => {
             cycleVisibility(AppStore.getCurrentScheduleId(), section.sectionCode);
         }, [section.sectionCode, cycleVisibility]);
@@ -117,23 +92,14 @@ export const ActionCell = memo(
                         </IconButton>
                     )}
 
-                    {!isMobile &&
-                        (addedCourse ? (
-                            <ColorPicker
-                                color={sectionColor}
-                                analyticsCategory={analyticsEnum.addedClasses}
-                                isCustomEvent={false}
-                                term={term}
-                                sectionCode={section.sectionCode}
-                            />
-                        ) : (
-                            <SectionActionMenu
-                                section={section}
-                                courseDetails={courseDetails}
-                                term={term}
-                                scheduleNames={scheduleNames}
-                            />
-                        ))}
+                    {!isMobile && !addedCourse && (
+                        <SectionActionMenu
+                            section={section}
+                            courseDetails={courseDetails}
+                            term={term}
+                            scheduleNames={scheduleNames}
+                        />
+                    )}
                 </Box>
             </TableBodyCellContainer>
         );
