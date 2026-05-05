@@ -429,7 +429,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </WarningAlert>
                 ));
             })}
-            {filterTakenCourses && <WarningAlert>Filtered taken classes is toggled.</WarningAlert>}
+            {filterTakenCourses && <WarningAlert>Filtered taken courses is toggled.</WarningAlert>}
             {unofferedCourses.map((course) => {
                 return (
                     <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
