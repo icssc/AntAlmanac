@@ -262,12 +262,17 @@ export class RDS {
     }
 
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
-        const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string }>();
+        const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string; visibility: string }>();
         for (const course of courses) {
             const sectionCode = parseInt(course.sectionCode);
             const key = `${sectionCode}-${course.term}`;
             if (!uniqueByKey.has(key)) {
-                uniqueByKey.set(key, { sectionCode, term: course.term, color: course.color });
+                uniqueByKey.set(key, {
+                    sectionCode,
+                    term: course.term,
+                    color: course.color,
+                    visibility: course.visibility ?? 'visible',
+                });
             }
         }
         const incoming = [...uniqueByKey.values()];
@@ -293,6 +298,7 @@ export class RDS {
             sectionCode: 'keep',
             term: 'keep',
             color: 'update',
+            visibility: 'update',
             createdAt: 'keep',
             lastUpdated: 'update',
         } satisfies ConflictUpdatePolicy<typeof coursesInSchedule>;
@@ -438,6 +444,7 @@ export class RDS {
                     sectionCode: course.sectionCode.toString(),
                     term: course.term,
                     color: course.color,
+                    visibility: course.visibility as 'visible' | 'outlined' | 'disappeared',
                 });
             }
 
