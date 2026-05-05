@@ -418,21 +418,28 @@ function AddedSectionsGrid() {
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {courses.length === 0 && (
-                    <EmptyState
-                        Icon={MenuBook}
-                        title="No Courses Added Yet"
-                        description="Search for courses and add sections to build your schedule. You can also import from your study list."
-                        primaryAction={{
-                            label: 'Search Courses',
-                            onClick: () => useTabStore.getState().setActiveTab('search'),
-                        }}
-                        secondaryAction={{
-                            label: 'Import Schedule',
-                            onClick: () => scheduleComponentsToggleStore.getState().setOpenImportDialog(true),
-                        }}
-                    />
-                )}
+                {courses.length === 0 &&
+                    (!isReadonlyView ? (
+                        <EmptyState
+                            Icon={MenuBook}
+                            title="No Courses Added Yet"
+                            description="Search for courses and add sections to build your schedule. You can also import from your study list."
+                            primaryAction={{
+                                label: 'Search Courses',
+                                onClick: () => useTabStore.getState().setActiveTab('search'),
+                            }}
+                            secondaryAction={{
+                                label: 'Import Schedule',
+                                onClick: () => scheduleComponentsToggleStore.getState().setOpenImportDialog(true),
+                            }}
+                        />
+                    ) : (
+                        <EmptyState
+                            Icon={MenuBook}
+                            title="No Courses Added Yet"
+                            description="No courses have been added to this schedule."
+                        />
+                    ))}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         const missingSections = getMissingSections(course);
