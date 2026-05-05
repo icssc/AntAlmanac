@@ -8,7 +8,7 @@ import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/Label
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { safeUnreachableCase } from '$lib/utils';
+import { replaceUrlSearchParams, safeUnreachableCase } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
@@ -101,18 +101,13 @@ export function AdvancedSearchTextFields() {
     }, [resetField]);
 
     const updateValue = (name: AdvancedSearchParam, stringValue: string) => {
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-        if (stringValue !== '') {
-            urlParam.set(name, String(stringValue));
-        } else {
-            urlParam.delete(name);
-        }
-
-        const param = urlParam.toString();
-        const newUrl = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + newUrl);
+        replaceUrlSearchParams((params) => {
+            if (stringValue !== '') {
+                params.set(name, String(stringValue));
+            } else {
+                params.delete(name);
+            }
+        });
 
         RightPaneStore.updateFormValue(name, stringValue);
     };
@@ -133,28 +128,24 @@ export function AdvancedSearchTextFields() {
         }
 
         if (name === 'online') {
-            const stateObj = { url: 'url' };
-            const url = new URL(window.location.href);
-            const urlParam = new URLSearchParams(url.search);
             const checked = (event as ChangeEvent<HTMLInputElement>).target.value === 'true';
-            if (checked) {
-                setBuilding('ON');
-                setRoom('LINE');
-                RightPaneStore.updateFormValue('building', 'ON');
-                RightPaneStore.updateFormValue('room', 'LINE');
-                urlParam.set('building', 'ON');
-                urlParam.set('room', 'LINE');
-            } else {
-                setBuilding('');
-                setRoom('');
-                RightPaneStore.updateFormValue('building', '');
-                RightPaneStore.updateFormValue('room', '');
-                urlParam.delete('building');
-                urlParam.delete('room');
-            }
-            const param = urlParam.toString();
-            const newUrl = `${param.trim() ? '?' : ''}${param}`;
-            history.replaceState(stateObj, 'url', `${url.pathname}${newUrl}`);
+            const nextBuilding = checked ? 'ON' : '';
+            const nextRoom = checked ? 'LINE' : '';
+
+            setBuilding(nextBuilding);
+            setRoom(nextRoom);
+            RightPaneStore.updateFormValue('building', nextBuilding);
+            RightPaneStore.updateFormValue('room', nextRoom);
+
+            replaceUrlSearchParams((params) => {
+                if (nextBuilding) {
+                    params.set('building', nextBuilding);
+                    params.set('room', nextRoom);
+                } else {
+                    params.delete('building');
+                    params.delete('room');
+                }
+            });
             return;
         }
 
@@ -215,12 +206,7 @@ export function AdvancedSearchTextFields() {
             openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
             setExcludeRoadmapCourses('');
             RightPaneStore.updateFormValue('excludeRoadmapCourses', '');
-
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams(url.search);
-            params.delete('excludeRoadmapCourses');
-            const newUrl = params.toString() ? `${url.pathname}?${params.toString()}` : url.pathname;
-            history.replaceState({}, '', newUrl);
+            replaceUrlSearchParams((params) => params.delete('excludeRoadmapCourses'));
         }
     }, [roadmaps, excludeRoadmapCourses]);
 

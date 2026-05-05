@@ -1,9 +1,8 @@
+import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { WebSOC } from '$lib/websoc';
 import { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/antalmanac-types';
 
-import { WebSOC } from '$lib/websoc';
-
-const ANY_GE = 'ANY';
-const VALID_GES = new Set(['GE-1A', 'GE-1B', 'GE-2', 'GE-3', 'GE-4', 'GE-5A', 'GE-5B', 'GE-6', 'GE-7', 'GE-8']);
+const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
 
 const getCourseKey = (deptCode: string, courseNumber: string) => `${deptCode}::${courseNumber}`.replace(/\s+/g, '');
 
@@ -13,7 +12,7 @@ const parseSelectedGEs = (ge: string) => {
         .map((value) => value.trim().toUpperCase())
         .filter((value) => VALID_GES.has(value));
 
-    return validGEs.length === 0 || validGEs.includes(ANY_GE) ? [] : [...new Set(validGEs)];
+    return validGEs.length === 0 ? [] : [...new Set(validGEs)];
 };
 
 export const getSelectedGEs = (ge: string) => parseSelectedGEs(ge);
@@ -33,7 +32,7 @@ const getCourseKeys = (response: WebsocAPIResponse) =>
     );
 
 const queryWebsoc = (params: Record<string, string>) =>
-    params.units.includes(',') ? WebSOC.queryMultiple(params, 'units') : WebSOC.query(params);
+    params.units.includes(',') ? WebSOC.queryMultipleOfField(params, 'units') : WebSOC.query(params);
 
 const getSharedCourseKeys = (responses: WebsocAPIResponse[]) => {
     const [firstResponse, ...restResponses] = responses;

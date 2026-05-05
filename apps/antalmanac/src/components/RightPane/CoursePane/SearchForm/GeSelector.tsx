@@ -1,25 +1,13 @@
+import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { getSelectedGEs, normalizeGeSelection } from '$lib/multiGeSearch';
+import { replaceUrlSearchParams } from '$lib/utils';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
 
-const GE_LIST = [
-    { value: 'ANY', label: "All: Don't filter for GE" },
-    { value: 'GE-1A', label: 'GE Ia (1a): Lower Division Writing' },
-    { value: 'GE-1B', label: 'GE Ib (1b): Upper Division Writing' },
-    { value: 'GE-2', label: 'GE II (2): Science and Technology' },
-    { value: 'GE-3', label: 'GE III (3): Social and Behavioral Sciences' },
-    { value: 'GE-4', label: 'GE IV (4): Arts and Humanities' },
-    { value: 'GE-5A', label: 'GE Va (5a): Quantitative Literacy' },
-    { value: 'GE-5B', label: 'GE Vb (5b): Formal Reasoning' },
-    { value: 'GE-6', label: 'GE VI (6): Language other than English' },
-    { value: 'GE-7', label: 'GE VII (7): Multicultural Studies' },
-    { value: 'GE-8', label: 'GE VIII (8): International/Global Issues' },
-] as const;
-
-const ANY_GE = GE_LIST[0].value;
 const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
+const getShortLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.shortLabel ?? value;
 
 export function GeSelector() {
     const [ge, setGe] = useState(() => RightPaneStore.getFormData().ge);
@@ -34,19 +22,12 @@ export function GeSelector() {
         setGe(searchValue);
         RightPaneStore.updateFormValue('ge', searchValue);
 
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-
-        urlParam.delete('ge');
-
-        if (searchValue !== ANY_GE) {
-            urlParam.append('ge', searchValue);
-        }
-
-        const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
+        replaceUrlSearchParams((params) => {
+            params.delete('ge');
+            if (searchValue !== ANY_GE) {
+                params.set('ge', searchValue);
+            }
+        });
     };
 
     const resetField = useCallback(() => {
@@ -73,7 +54,7 @@ export function GeSelector() {
                     const values = selected as string[];
                     if (values.length === 0) return getLabel(ANY_GE);
                     if (values.length === 1) return getLabel(values[0]);
-                    return values.map((value) => getLabel(value).split(':')[0].trim()).join(', ');
+                    return values.map((value) => getShortLabel(value)).join(', ');
                 },
                 sx: {
                     width: '100%',
