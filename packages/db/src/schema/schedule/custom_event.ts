@@ -1,33 +1,43 @@
-import { createId } from '@paralleldrive/cuid2';
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { schedules } from './schedule';
 
 /**
  * customEvents have a N:1 relation with schedules.
- *
- * There can be multiple custom events with the same name in a schedule.
  */
-export const customEvents = pgTable('customEvents', {
-    id: text('id').primaryKey().$defaultFn(createId),
+export const customEvents = pgTable(
+    'customEvents',
+    {
+        id: text('id').notNull(),
 
-    scheduleId: text('scheduleId')
-        .references(() => schedules.id, { onDelete: 'cascade' })
-        .notNull(),
+        scheduleId: text('scheduleId')
+            .references(() => schedules.id, { onDelete: 'cascade' })
+            .notNull(),
 
-    title: text('title').notNull(),
+        title: text('title').notNull(),
 
-    start: text('start').notNull(),
+        start: text('start').notNull(),
 
-    end: text('end').notNull(),
+        end: text('end').notNull(),
 
-    days: text('days').notNull(), // Boolean (1/0) string
+        days: text('days').notNull(), // Boolean (1/0) string
 
-    color: text('color'),
+        color: text('color'),
 
-    building: text('building'),
+        building: text('building'),
 
-    lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
-});
+        createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+        lastUpdated: timestamp('last_updated', { withTimezone: true })
+            .defaultNow()
+            .notNull()
+            .$onUpdate(() => new Date()),
+    },
+    (table) => [
+        primaryKey({
+            columns: [table.scheduleId, table.id],
+        }),
+    ]
+);
 
 export type CustomEvent = typeof customEvents.$inferSelect;

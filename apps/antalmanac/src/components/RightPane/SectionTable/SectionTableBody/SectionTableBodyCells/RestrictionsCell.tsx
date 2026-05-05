@@ -1,10 +1,9 @@
-import { Box, Popover, Tooltip, Typography } from '@mui/material';
-import { Fragment, useCallback, useMemo, useState } from 'react';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import restrictionsMapping from '$components/RightPane/SectionTable/static/restrictionsMapping.json';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
+import { Box, Popover, Tooltip, Typography } from '@mui/material';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 
 interface RestrictionsCellProps {
     restrictions: string;
@@ -93,6 +92,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 ) : (
                     <Tooltip title={restrictionDescriptions}>
                         <Typography
+                            sx={{ fontSize: 'unset' }}
                             component="a"
                             href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
                             target="_blank"

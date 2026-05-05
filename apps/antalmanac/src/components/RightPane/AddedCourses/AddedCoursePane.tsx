@@ -2,7 +2,7 @@ import { updateScheduleNote } from '$actions/AppStoreActions';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import { EmptyState } from '$components/EmptyState';
-import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { CustomEventDetailView } from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
