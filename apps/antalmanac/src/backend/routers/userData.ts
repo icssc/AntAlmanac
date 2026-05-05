@@ -1,7 +1,6 @@
 import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
-import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { getCookiesFromHeader, getSafeAuthRedirectPath } from '$src/backend/lib/helpers';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
@@ -247,7 +246,6 @@ const userDataRouter = router({
         .input(z.object({ userData: z.custom<ScheduleSaveState>() }))
         .mutation(async ({ input, ctx }) => {
             const userData = input.userData;
-            userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
 
             try {
                 return await RDS.upsertUserData(db, ctx.userId, userData);
@@ -378,8 +376,6 @@ const userDataRouter = router({
                     }
                 }
             }
-
-            validatedScheduleData.schedules = mangleDuplicateScheduleNames(validatedScheduleData.schedules);
 
             await RDS.upsertUserData(db, ctx.userId, validatedScheduleData).catch((error) => {
                 console.error('RDS Failed to import user data:', error);
