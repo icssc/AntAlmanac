@@ -1,33 +1,78 @@
 import { RequestCard } from '$components/Header/Friends/RequestCard';
 import { SentRequestCard } from '$components/Header/Friends/SentRequestCard';
 import { textFieldSx } from '$components/Header/Friends/styles';
+import trpc from '$lib/api/trpc';
 import type { FriendRequest } from '$src/backend/lib/rds.types';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { PersonAdd } from '@mui/icons-material';
 import { Box, Button, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 
 interface RequestsTabProps {
-    email: string;
-    onEmailChange: (v: string) => void;
-    onAddFriend: () => void;
     friendRequests: FriendRequest[];
     sentRequests: FriendRequest[];
-    onAccept: (id: string) => void;
-    onDecline: (id: string) => void;
-    onCancelRequest: (id: string) => void;
+    onRefresh: () => Promise<void>;
 }
 
-export function RequestsTab({
-    email,
-    onEmailChange,
-    onAddFriend,
-    friendRequests,
-    sentRequests,
-    onAccept,
-    onDecline,
-    onCancelRequest,
-}: RequestsTabProps) {
+export function RequestsTab({ friendRequests, sentRequests, onRefresh }: RequestsTabProps) {
+    const [email, setEmail] = useState('');
     const [subTab, setSubTab] = useState<'received' | 'sent'>('received');
+
+    const handleAddFriend = async () => {
+        const trimmed = email.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+            openSnackbar('error', 'Please enter a valid email address.');
+            return;
+        }
+        try {
+            await trpc.friends.sendFriendRequestByEmail.mutate({ email: trimmed });
+            openSnackbar('success', 'Friend request sent.');
+            setEmail('');
+            await onRefresh();
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+            const message = error instanceof Error ? error.message : 'Failed to send friend request.';
+            openSnackbar('error', message);
+        }
+    };
+
+    const handleAccept = async (requesterId: string) => {
+        try {
+            await trpc.friends.acceptFriendRequest.mutate({ requesterId });
+            openSnackbar('success', 'Friend request accepted.');
+            await onRefresh();
+        } catch (error) {
+            console.error('Error accepting friend request:', error);
+            const message =
+                error instanceof Error && error.message.includes('no longer exists')
+                    ? 'This friend request is no longer available.'
+                    : 'Failed to accept friend request.';
+            openSnackbar('error', message);
+            await onRefresh();
+        }
+    };
+
+    const handleDecline = async (requesterId: string) => {
+        try {
+            await trpc.friends.removeFriend.mutate({ friendId: requesterId });
+            openSnackbar('info', 'Friend request declined.');
+            await onRefresh();
+        } catch (error) {
+            console.error('Error declining friend request:', error);
+            openSnackbar('error', 'Failed to decline friend request.');
+        }
+    };
+
+    const handleCancelRequest = async (addresseeId: string) => {
+        try {
+            await trpc.friends.removeFriend.mutate({ friendId: addresseeId });
+            openSnackbar('info', 'Friend request cancelled.');
+            await onRefresh();
+        } catch (error) {
+            console.error('Error cancelling friend request:', error);
+            openSnackbar('error', 'Failed to cancel friend request.');
+        }
+    };
 
     return (
         <>
@@ -38,18 +83,18 @@ export function RequestsTab({
                     placeholder="Add friend by email"
                     autoComplete="off"
                     value={email}
-                    onChange={(e) => onEmailChange(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             e.preventDefault();
-                            if (email.trim()) onAddFriend();
+                            if (email.trim()) void handleAddFriend();
                         }
                     }}
                     fullWidth
                     sx={textFieldSx}
                 />
                 <IconButton
-                    onClick={onAddFriend}
+                    onClick={handleAddFriend}
                     disabled={!email.trim()}
                     color="primary"
                     size="small"
@@ -116,8 +161,8 @@ export function RequestsTab({
                                 <RequestCard
                                     key={request.id}
                                     request={request}
-                                    onAccept={onAccept}
-                                    onDecline={onDecline}
+                                    onAccept={handleAccept}
+                                    onDecline={handleDecline}
                                 />
                             ))
                         )}
@@ -132,7 +177,7 @@ export function RequestsTab({
                             </Typography>
                         ) : (
                             sentRequests.map((request) => (
-                                <SentRequestCard key={request.id} request={request} onCancel={onCancelRequest} />
+                                <SentRequestCard key={request.id} request={request} onCancel={handleCancelRequest} />
                             ))
                         )}
                     </>

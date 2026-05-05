@@ -1,27 +1,9 @@
 import { FriendsListSkeleton } from '$components/Header/Friends/FriendsListSkeleton';
 import { FriendsTab } from '$components/Header/Friends/FriendsTab';
 import { RequestsTab } from '$components/Header/Friends/RequestsTab';
-import trpc from '$lib/api/trpc';
 import type { Friend, FriendRequest } from '$src/backend/lib/rds.types';
-import { openSnackbar } from '$stores/SnackbarStore';
-import { PersonRemove } from '@mui/icons-material';
-import {
-    Button,
-    Card,
-    CardContent,
-    CardHeader,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Menu,
-    MenuItem,
-    ToggleButton,
-    ToggleButtonGroup,
-} from '@mui/material';
-import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useState } from 'react';
 
 interface FriendsPopoverProps {
     friendRequests: FriendRequest[];
@@ -39,100 +21,6 @@ export function FriendsPopover({
     onRefresh: loadFriendsData,
 }: FriendsPopoverProps) {
     const [activeTab, setActiveTab] = useState<'friends' | 'requests'>('friends');
-    const [email, setEmail] = useState('');
-    const [friendSearch, setFriendSearch] = useState('');
-    const [friendDropdownOpen, setFriendDropdownOpen] = useState(false);
-    const searchRef = useRef<HTMLDivElement>(null);
-    const [friendMenuAnchor, setFriendMenuAnchor] = useState<{ element: HTMLElement; friendId: string } | null>(null);
-    const [unfriendDialogOpen, setUnfriendDialogOpen] = useState(false);
-    const [userToUnfriend, setUserToUnfriend] = useState<string | null>(null);
-    const navigate = useNavigate();
-
-    const handleAddFriend = async () => {
-        const trimmed = email.trim();
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-            openSnackbar('error', 'Please enter a valid email address.');
-            return;
-        }
-        try {
-            await trpc.friends.sendFriendRequestByEmail.mutate({ email: trimmed });
-            openSnackbar('success', 'Friend request sent.');
-            setEmail('');
-            await loadFriendsData();
-        } catch (error) {
-            console.error('Error sending friend request:', error);
-            const message = error instanceof Error ? error.message : 'Failed to send friend request.';
-            openSnackbar('error', message);
-        }
-    };
-
-    const handleAccept = async (requesterId: string) => {
-        try {
-            await trpc.friends.acceptFriendRequest.mutate({ requesterId });
-            openSnackbar('success', 'Friend request accepted.');
-            await loadFriendsData();
-        } catch (error) {
-            console.error('Error accepting friend request:', error);
-            const message =
-                error instanceof Error && error.message.includes('no longer exists')
-                    ? 'This friend request is no longer available.'
-                    : 'Failed to accept friend request.';
-            openSnackbar('error', message);
-            await loadFriendsData();
-        }
-    };
-
-    const handleDecline = async (requesterId: string) => {
-        try {
-            await trpc.friends.removeFriend.mutate({ friendId: requesterId });
-            openSnackbar('info', 'Friend request declined.');
-            await loadFriendsData();
-        } catch (error) {
-            console.error('Error declining friend request:', error);
-            openSnackbar('error', 'Failed to decline friend request.');
-        }
-    };
-
-    const handleViewSchedule = async (friend: Friend) => {
-        try {
-            const data = await trpc.userData.getFriendUserData.query({ userId: friend.id });
-            if (!data?.userData?.schedules?.length) {
-                openSnackbar('warning', "This friend hasn't shared any schedules with you.");
-                return;
-            }
-        } catch {
-            openSnackbar('error', "Couldn't load this friend's schedules.");
-            return;
-        }
-        navigate('/share/friend/' + encodeURIComponent(friend.id), {
-            state: { friendName: friend.name ?? friend.email ?? 'Friend' },
-        });
-    };
-
-    const handleOpenFriendMenu = (event: React.MouseEvent<HTMLElement>, friendId: string) => {
-        setFriendMenuAnchor({ element: event.currentTarget, friendId });
-    };
-
-    const handleUnfriendClick = () => {
-        if (!friendMenuAnchor) return;
-        setUserToUnfriend(friendMenuAnchor.friendId);
-        setUnfriendDialogOpen(true);
-        setFriendMenuAnchor(null);
-    };
-
-    const handleConfirmUnfriend = async () => {
-        if (!userToUnfriend) return;
-        try {
-            await trpc.friends.removeFriend.mutate({ friendId: userToUnfriend });
-            openSnackbar('info', 'Friend removed.');
-            setUserToUnfriend(null);
-            setUnfriendDialogOpen(false);
-            await loadFriendsData();
-        } catch (error) {
-            console.error('Error removing friend:', error);
-            openSnackbar('error', 'Failed to remove friend.');
-        }
-    };
 
     const handleTabChange = (event: React.MouseEvent<HTMLElement>, value: 'friends' | 'requests' | null) => {
         event.preventDefault();
@@ -170,75 +58,19 @@ export function FriendsPopover({
                                 </ToggleButton>
                             </ToggleButtonGroup>
 
-                            {activeTab === 'friends' && (
-                                <FriendsTab
-                                    friends={friends}
-                                    searchRef={searchRef}
-                                    friendSearch={friendSearch}
-                                    onSearchChange={setFriendSearch}
-                                    dropdownOpen={friendDropdownOpen || Boolean(friendMenuAnchor)}
-                                    onDropdownOpen={() => setFriendDropdownOpen(true)}
-                                    onDropdownClose={() => setFriendDropdownOpen(false)}
-                                    onView={handleViewSchedule}
-                                    onOpenMenu={handleOpenFriendMenu}
-                                />
-                            )}
+                            {activeTab === 'friends' && <FriendsTab friends={friends} onRefresh={loadFriendsData} />}
 
                             {activeTab === 'requests' && (
                                 <RequestsTab
-                                    email={email}
-                                    onEmailChange={setEmail}
-                                    onAddFriend={handleAddFriend}
                                     friendRequests={friendRequests}
                                     sentRequests={sentRequests}
-                                    onAccept={handleAccept}
-                                    onDecline={handleDecline}
-                                    onCancelRequest={handleDecline}
+                                    onRefresh={loadFriendsData}
                                 />
                             )}
                         </>
                     )}
                 </CardContent>
             </Card>
-
-            <Menu
-                anchorEl={friendMenuAnchor?.element}
-                open={Boolean(friendMenuAnchor)}
-                onClose={() => {
-                    setFriendMenuAnchor(null);
-                    setFriendDropdownOpen(false);
-                }}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                slotProps={{ paper: { sx: { zIndex: 10000 } } }}
-                style={{ zIndex: 10000 }}
-            >
-                <MenuItem onClick={handleUnfriendClick} sx={{ color: 'error.main' }}>
-                    <PersonRemove sx={{ mr: 1, fontSize: '1.25rem' }} />
-                    Unfriend
-                </MenuItem>
-            </Menu>
-
-            <Dialog open={unfriendDialogOpen} onClose={() => setUnfriendDialogOpen(false)}>
-                <DialogTitle>Remove Friend?</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>Are you sure you want to remove this friend?</DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={() => {
-                            setUserToUnfriend(null);
-                            setUnfriendDialogOpen(false);
-                        }}
-                        color="inherit"
-                    >
-                        Cancel
-                    </Button>
-                    <Button onClick={handleConfirmUnfriend} color="primary" variant="contained">
-                        Remove
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </>
     );
 }
