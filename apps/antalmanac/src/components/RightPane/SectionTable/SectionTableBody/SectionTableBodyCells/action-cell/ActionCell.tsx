@@ -54,7 +54,7 @@ export const ActionCell = memo(
                         />
                     )}
 
-                    {!isMobile && addedCourse && (
+                    {addedCourse && (
                         <Tooltip
                             title={
                                 classVisibility === 'visible'
