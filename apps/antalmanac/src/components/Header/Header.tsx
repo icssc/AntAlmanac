@@ -1,6 +1,6 @@
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
-import { FriendsButton } from '$components/Header/Friends/FriendsButton';
+import { Friends } from '$components/Header/Friends/Friends';
 import { Import } from '$components/Header/Import';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
@@ -89,7 +89,7 @@ export function Header() {
                     </Stack>
 
                     <Stack direction="row" alignItems="center">
-                        <FriendsButton />
+                        <Friends />
                         <Import key="studylist" />
                         <Save />
                         {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}

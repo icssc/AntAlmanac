@@ -1,9 +1,7 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { SETTINGS_POPOVER_BG } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { People } from '@mui/icons-material';
 import { Button, IconButton, Popover } from '@mui/material';
@@ -11,20 +9,20 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { FriendsMenu, type Friend, type FriendRequest } from './FriendsMenu';
 
-export function FriendsButton() {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [openSignInDialog, setOpenSignInDialog] = useState(false);
-    const open = Boolean(anchorEl);
-
+export function Friends() {
     const userId = useSessionStore((store) => store.userId);
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
-    const isDark = useThemeStore((store) => store.isDark);
+    const isMobile = useIsMobile();
 
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
     const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
     const [friends, setFriends] = useState<Friend[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [dataLoaded, setDataLoaded] = useState(false);
+
+    const open = Boolean(anchorEl);
 
     const mapUser = (u: { id: string; name: string | null; email: string | null; avatar: string | null }) => ({
         id: u.id,
@@ -111,7 +109,6 @@ export function FriendsButton() {
         setAnchorEl(null);
     };
 
-    const isMobile = useIsMobile();
     const showLoadingSkeleton = Boolean(open && sessionIsValid && userId && isLoading);
 
     return (
@@ -143,23 +140,6 @@ export function FriendsButton() {
                 transformOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
-                }}
-                slotProps={{
-                    paper: {
-                        sx: {
-                            width: {
-                                xs: 350,
-                                sm: 400,
-                                md: 425,
-                            },
-                            p: '16px 20px',
-                            borderRadius: 2,
-                            border: '1px solid',
-                            borderColor: 'background.default',
-                            bgcolor: isDark ? SETTINGS_POPOVER_BG : 'background.paper',
-                            color: isDark ? 'white' : 'text.primary',
-                        },
-                    },
                 }}
             >
                 <FriendsMenu

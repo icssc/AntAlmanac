@@ -1,20 +1,16 @@
-import { Box, Divider, Skeleton, Stack, Tab, Tabs } from '@mui/material';
+import { Box, Skeleton, Stack, Tab, Tabs } from '@mui/material';
 
 export function FriendsListSkeleton() {
     return (
         <Box>
-            <Box sx={{ mb: 2 }}>
-                <Skeleton variant="text" width={100} height={24} sx={{ mb: 1 }} />
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
-                    <Skeleton variant="rounded" height={40} sx={{ flex: 1 }} />
-                    <Skeleton variant="circular" width={40} height={40} />
-                </Stack>
-            </Box>
-            <Divider sx={{ my: 2 }} />
             <Tabs value="friends" variant="fullWidth" sx={{ mb: 1 }}>
-                <Tab label="Requests" value="requests" disabled />
                 <Tab label="Friends" value="friends" disabled />
+                <Tab label="Requests" value="requests" disabled />
             </Tabs>
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 2 }}>
+                <Skeleton variant="rounded" height={40} sx={{ flex: 1 }} />
+                <Skeleton variant="circular" width={40} height={40} />
+            </Stack>
             <Box sx={{ mt: 1 }}>
                 {[1, 2, 3].map((i) => (
                     <Box

@@ -6,8 +6,10 @@ import trpc from '$lib/api/trpc';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { PersonRemove } from '@mui/icons-material';
 import {
-    Box,
     Button,
+    Card,
+    CardContent,
+    CardHeader,
     Dialog,
     DialogActions,
     DialogContent,
@@ -17,7 +19,6 @@ import {
     MenuItem,
     Tab,
     Tabs,
-    Typography,
 } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -135,75 +136,75 @@ export function FriendsMenu({
         }
     };
 
-    if (isLoading) {
-        return <FriendsListSkeleton />;
-    }
-
     return (
         <>
-            <Box sx={{ minWidth: '300px' }}>
-                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, mb: 1, letterSpacing: '0.5px' }}>
-                    Manage Friends
-                </Typography>
+            <Card>
+                <CardHeader
+                    title="Manage Friends"
+                    slotProps={{
+                        title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
+                    }}
+                />
 
-                <Tabs
-                    value={activeTab}
-                    onChange={(_, v) => setActiveTab(v)}
-                    variant="fullWidth"
-                    textColor="inherit"
-                    sx={(theme) => ({
-                        mb: 1,
-                        '& .MuiTab-root': { color: theme.palette.mode === 'dark' ? '#C7C7C7' : '#606166' },
-                        '& .MuiTab-root.Mui-selected': {
-                            color: theme.palette.mode === 'dark' ? '#90B3FA' : theme.palette.primary.main,
+                <CardContent
+                    sx={{
+                        minWidth: {
+                            xs: 350,
+                            sm: 400,
+                            md: 425,
                         },
-                        '& .MuiTabs-indicator': {
-                            bgcolor: theme.palette.mode === 'dark' ? '#90B3FA' : theme.palette.primary.main,
-                        },
-                    })}
+                        paddingTop: 0,
+                    }}
                 >
-                    <Tab label="Friends" value="friends" />
-                    <Tab
-                        label={
-                            friendRequests.length > 0 ? (
-                                <Typography component="span" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>
-                                    Requests ({friendRequests.length})
-                                </Typography>
-                            ) : (
-                                'Requests'
-                            )
-                        }
-                        value="requests"
-                    />
-                </Tabs>
+                    {isLoading ? (
+                        <FriendsListSkeleton />
+                    ) : (
+                        <>
+                            <Tabs
+                                value={activeTab}
+                                onChange={(_, v) => setActiveTab(v)}
+                                variant="fullWidth"
+                                textColor="inherit"
+                            >
+                                <Tab label="Friends" value="friends" />
+                                <Tab
+                                    label={
+                                        friendRequests.length > 0 ? `Requests (${friendRequests.length})` : 'Requests'
+                                    }
+                                    value="requests"
+                                />
+                            </Tabs>
 
-                {activeTab === 'friends' && (
-                    <FriendsTab
-                        friends={friends}
-                        searchRef={searchRef}
-                        friendSearch={friendSearch}
-                        onSearchChange={setFriendSearch}
-                        dropdownOpen={friendDropdownOpen || Boolean(friendMenuAnchor)}
-                        onDropdownOpen={() => setFriendDropdownOpen(true)}
-                        onDropdownClose={() => setFriendDropdownOpen(false)}
-                        onView={handleViewSchedule}
-                        onOpenMenu={handleOpenFriendMenu}
-                    />
-                )}
+                            {activeTab === 'friends' && (
+                                <FriendsTab
+                                    friends={friends}
+                                    searchRef={searchRef}
+                                    friendSearch={friendSearch}
+                                    onSearchChange={setFriendSearch}
+                                    dropdownOpen={friendDropdownOpen || Boolean(friendMenuAnchor)}
+                                    onDropdownOpen={() => setFriendDropdownOpen(true)}
+                                    onDropdownClose={() => setFriendDropdownOpen(false)}
+                                    onView={handleViewSchedule}
+                                    onOpenMenu={handleOpenFriendMenu}
+                                />
+                            )}
 
-                {activeTab === 'requests' && (
-                    <RequestsTab
-                        email={email}
-                        onEmailChange={setEmail}
-                        onAddFriend={handleAddFriend}
-                        friendRequests={friendRequests}
-                        sentRequests={sentRequests}
-                        onAccept={handleAccept}
-                        onDecline={handleDecline}
-                        onCancelRequest={handleDecline}
-                    />
-                )}
-            </Box>
+                            {activeTab === 'requests' && (
+                                <RequestsTab
+                                    email={email}
+                                    onEmailChange={setEmail}
+                                    onAddFriend={handleAddFriend}
+                                    friendRequests={friendRequests}
+                                    sentRequests={sentRequests}
+                                    onAccept={handleAccept}
+                                    onDecline={handleDecline}
+                                    onCancelRequest={handleDecline}
+                                />
+                            )}
+                        </>
+                    )}
+                </CardContent>
+            </Card>
 
             <Menu
                 anchorEl={friendMenuAnchor?.element}
