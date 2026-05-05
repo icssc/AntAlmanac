@@ -1,7 +1,7 @@
 import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
-import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
+import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -69,7 +69,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} postHog={postHog} />
+                        <QuickSearch toggleSearch={toggleSearch} />
                     ) : (
                         <ManualSearch
                             onSubmit={() => {

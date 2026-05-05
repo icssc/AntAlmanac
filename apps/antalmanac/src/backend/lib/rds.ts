@@ -382,17 +382,18 @@ export class RDS {
 
         const userId = row.users.id;
 
-        const sectionResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-        const customEventResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+        const [sectionResults, customEventResults] = await Promise.all([
+            db
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, userId))
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+            db
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, userId))
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
+        ]);
 
         const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
@@ -573,17 +574,18 @@ export class RDS {
             return null;
         }
 
-        const sectionResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, user.id))
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-        const customEventResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, user.id))
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+        const [sectionResults, customEventResults] = await Promise.all([
+            db
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, user.id))
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+            db
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, user.id))
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
+        ]);
 
         const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 

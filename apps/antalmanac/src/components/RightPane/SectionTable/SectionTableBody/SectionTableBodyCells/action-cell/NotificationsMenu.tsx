@@ -4,7 +4,6 @@ import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analy
 import { canTermEnrollmentChange, type Term } from '$lib/termData';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import type { AASection, Course } from '@packages/antalmanac-types';
@@ -33,7 +32,6 @@ export const NotificationsMenu = memo(
         const [notification, setNotifications] = useNotificationStore(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
         );
-        const isDark = useThemeStore((store) => store.isDark);
 
         const postHog = usePostHog();
 
@@ -192,7 +190,7 @@ export const NotificationsMenu = memo(
                     })}
                 </Menu>
 
-                <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={isDark} feature="Notification" />
+                <SignInDialog open={signInOpen} onClose={handleSignInClose} feature="Notification" />
             </>
         );
     }

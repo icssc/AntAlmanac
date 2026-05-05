@@ -18,7 +18,7 @@ export function LabeledSelect<T = string | string[]>({
     const id = useId();
 
     return (
-        <LabeledInput label={label} isAligned={isAligned} id={id}>
+        <LabeledInput labelProps={{ id, label, isAligned }}>
             <Select
                 size="small"
                 variant="outlined"

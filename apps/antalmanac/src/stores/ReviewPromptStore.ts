@@ -1,5 +1,7 @@
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { termData } from '$lib/termData';
+import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { create } from 'zustand';
@@ -140,18 +142,52 @@ export const useReviewPromptStore = create(
 
             const candidate = eligible[Math.floor(Math.random() * eligible.length)];
             set({ step: 'enrollment-confirm', candidate, rating: 0, difficulty: 0, selectedTags: [] });
+            logAnalytics(postHog, {
+                category: analyticsEnum.review,
+                action: analyticsEnum.review.actions.PROMPT_SHOWN,
+                customProps: {
+                    courseId: candidate.courseId,
+                    courseTitle: candidate.courseTitle,
+                    professorId: candidate.professorId,
+                    term: candidate.term,
+                },
+            });
         },
 
-        confirm: () => set({ step: 'review' }),
+        confirm: () => {
+            const { candidate } = get();
+            set({ step: 'review' });
+            if (candidate) {
+                logAnalytics(postHog, {
+                    category: analyticsEnum.review,
+                    action: analyticsEnum.review.actions.ENROLLMENT_CONFIRMED,
+                    customProps: {
+                        courseId: candidate.courseId,
+                        professorId: candidate.professorId,
+                        term: candidate.term,
+                    },
+                });
+            }
+        },
 
         /**
          * User closed the prompt without submitting (X, Skip, "I did not", snackbar click-away, Escape).
          * Persists the course+professor combo so it is not suggested again and starts the cooldown window.
          */
         dismiss: () => {
-            const { candidate } = get();
+            const { candidate, step } = get();
             set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [] });
             if (candidate) {
+                logAnalytics(postHog, {
+                    category: analyticsEnum.review,
+                    action: analyticsEnum.review.actions.DISMISSED,
+                    customProps: {
+                        courseId: candidate.courseId,
+                        professorId: candidate.professorId,
+                        term: candidate.term,
+                        dismissedAtStep: step,
+                    },
+                });
                 trpc.review.dismissReview
                     .mutate({ professorId: candidate.professorId, courseId: candidate.courseId })
                     .catch(() => {
@@ -187,6 +223,18 @@ export const useReviewPromptStore = create(
                     tags: selectedTags,
                 });
                 set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [] });
+                logAnalytics(postHog, {
+                    category: analyticsEnum.review,
+                    action: analyticsEnum.review.actions.SUBMITTED,
+                    customProps: {
+                        courseId: candidate.courseId,
+                        professorId: candidate.professorId,
+                        term: candidate.term,
+                        rating,
+                        difficulty,
+                        tags: selectedTags,
+                    },
+                });
                 openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
             } catch {
                 openSnackbar('error', 'Failed to submit review. Please try again.');

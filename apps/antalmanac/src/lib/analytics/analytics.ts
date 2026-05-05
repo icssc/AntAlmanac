@@ -17,6 +17,7 @@ export interface AnalyticsEnum {
     addedClasses: AnalyticsCategory;
     map: AnalyticsCategory;
     aants: AnalyticsCategory;
+    review: AnalyticsCategory;
 }
 
 const analyticsEnum: AnalyticsEnum = {
@@ -114,6 +115,15 @@ const analyticsEnum: AnalyticsEnum = {
             TOGGLE_NOTIFY_FULL: 'Toggle Notify on Full',
             TOGGLE_NOTIFY_RESTRICTION: 'Toggle Notify on Restriction Changes',
             DELETE_NOTIFICATION: 'Delete Notification',
+        },
+    },
+    review: {
+        title: 'Review Prompt',
+        actions: {
+            PROMPT_SHOWN: 'Review Prompt Shown',
+            ENROLLMENT_CONFIRMED: 'Review Enrollment Confirmed',
+            DISMISSED: 'Review Prompt Dismissed',
+            SUBMITTED: 'Review Submitted',
         },
     },
 };

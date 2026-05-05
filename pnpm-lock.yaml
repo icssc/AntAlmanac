@@ -185,6 +185,9 @@ importers:
       '@packages/antalmanac-types':
         specifier: workspace:^
         version: link:../../packages/types
+      '@packages/anteater-api-types':
+        specifier: workspace:^
+        version: link:../../packages/anteater-api-types
       '@paralleldrive/cuid2':
         specifier: ^2.2.2
         version: 2.2.2

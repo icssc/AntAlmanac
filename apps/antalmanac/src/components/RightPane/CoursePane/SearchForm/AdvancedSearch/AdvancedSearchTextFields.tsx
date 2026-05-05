@@ -10,7 +10,6 @@ import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/L
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { safeUnreachableCase } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
@@ -77,7 +76,6 @@ export function AdvancedSearchTextFields() {
     const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
     const isLoggedIn = useSessionStore((s) => s.googleId !== null);
     const [signInOpen, setSignInOpen] = useState(false);
-    const isDark = useThemeStore((store) => store.isDark);
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -483,7 +481,7 @@ export function AdvancedSearchTextFields() {
                     </LabeledSelect>
                 </Box>
             </Box>
-            <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={isDark} feature="Planner" />
+            <SignInDialog open={signInOpen} onClose={handleSignInClose} feature="Planner" />
         </>
     );
 }

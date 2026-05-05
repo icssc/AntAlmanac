@@ -4,7 +4,6 @@ import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notificati
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Notifications } from '@mui/icons-material';
 import {
     Box,
@@ -31,7 +30,6 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
-    const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 
     const { isGoogleUser } = useSessionStore(
@@ -114,7 +112,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 </DialogActions>
             </Dialog>
 
-            <SignInDialog isDark={isDark} open={signInOpen} onClose={handleSignInClose} feature="Notification" />
+            <SignInDialog open={signInOpen} onClose={handleSignInClose} feature="Notification" />
         </>
     );
 }

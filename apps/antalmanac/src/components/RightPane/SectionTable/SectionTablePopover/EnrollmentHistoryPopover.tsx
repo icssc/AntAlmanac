@@ -20,18 +20,22 @@ interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
+    term: string;
+    sectionCode: string;
     enrollmentHistory: EnrollmentHistory[] | undefined;
     loading?: boolean;
 }
 
 function graphKey(enrollment: EnrollmentHistory) {
-    return `${enrollment.year}-${enrollment.quarter}-${enrollment.instructors.join('|')}`;
+    return `${enrollment.year}-${enrollment.quarter}-${enrollment.sectionCode}`;
 }
 
 export function EnrollmentHistoryPopover({
     sectionType,
     department,
     courseNumber,
+    term,
+    sectionCode,
     enrollmentHistory,
     loading = false,
 }: EnrollmentHistoryPopoverProps) {
@@ -40,8 +44,8 @@ export function EnrollmentHistoryPopover({
     const theme = useTheme();
     const isMobile = useIsMobile();
 
-    const width = isMobile ? 250 : 450;
-    const height = isMobile ? 175 : 250;
+    const width = isMobile ? 280 : 400;
+    const height = isMobile ? 180 : 240;
 
     const activeGraphIndex = useMemo(() => {
         if (!enrollmentHistory?.length) {
@@ -57,14 +61,17 @@ export function EnrollmentHistoryPopover({
                 return selectedIndex;
             }
         }
-        return enrollmentHistory.length - 1;
-    }, [enrollmentHistory, selectedGraphKey]);
+        const matchIndex = enrollmentHistory.findIndex(
+            (e) => `${e.year} ${e.quarter}` === term && e.sectionCode === sectionCode
+        );
+        return matchIndex >= 0 ? matchIndex : enrollmentHistory.length - 1;
+    }, [enrollmentHistory, sectionCode, selectedGraphKey, term]);
 
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
         currEnrollmentHistory != null ? (
-            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType}`
+            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
         ) : (
             <>&nbsp;</>
         );
@@ -123,17 +130,29 @@ export function EnrollmentHistoryPopover({
                 }}
             />
 
-            <CardContent sx={{ display: 'flex', flexDirection: 'column', paddingTop: 0 }}>
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', minWidth: width, paddingTop: 0 }}>
                 {loading ? (
-                    <Box sx={{ width: width, height: height }}>
+                    <Box sx={{ width, height }}>
                         <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />
                     </Box>
                 ) : enrollmentHistory == null || !enrollmentHistory.length ? (
-                    <Typography variant="body1" align="center" color="text.secondary">
-                        No past enrollment data found for this course
-                    </Typography>
+                    <Box
+                        sx={{
+                            width,
+                            height,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            px: 1,
+                        }}
+                    >
+                        <Typography variant="body1" color="text.secondary">
+                            No past enrollment data found for this course
+                        </Typography>
+                    </Box>
                 ) : (
-                    <Box sx={{ display: 'flex', height: height, width: width }}>
+                    <Box sx={{ display: 'flex', height, width }}>
                         <ResponsiveContainer>
                             <LineChart data={enrollmentHistory[activeGraphIndex].days} style={{ cursor: 'pointer' }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
