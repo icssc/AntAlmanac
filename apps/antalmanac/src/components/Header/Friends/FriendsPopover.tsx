@@ -1,7 +1,16 @@
 import { FriendsTab } from '$components/Header/Friends/Friends/FriendsTab';
 import { RequestsTab } from '$components/Header/Friends/Requests/RequestsTab';
 import type { Friend, FriendRequest } from '$src/backend/lib/rds.types';
-import { Box, Card, CardContent, CardHeader, CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import {
+    Box,
+    Card,
+    CardContent,
+    CardHeader,
+    CircularProgress,
+    Stack,
+    ToggleButton,
+    ToggleButtonGroup,
+} from '@mui/material';
 import { useState } from 'react';
 
 interface FriendsPopoverProps {
@@ -45,7 +54,7 @@ export function FriendsPopover({
                             <CircularProgress size={20} />
                         </Box>
                     ) : (
-                        <>
+                        <Stack direction="column" spacing={2}>
                             <ToggleButtonGroup
                                 fullWidth
                                 size="medium"
@@ -70,7 +79,7 @@ export function FriendsPopover({
                                     onRefresh={loadFriendsData}
                                 />
                             )}
-                        </>
+                        </Stack>
                     )}
                 </CardContent>
             </Card>

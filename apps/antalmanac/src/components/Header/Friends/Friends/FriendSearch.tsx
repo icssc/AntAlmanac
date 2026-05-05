@@ -31,16 +31,6 @@ export function FriendSearch({ friends, onView, onRefresh }: FriendSearchProps) 
         setOpen(Boolean(nextQuery));
     };
 
-    const handleChange = (_event: unknown, friend: Friend | null) => {
-        if (!friend) {
-            return;
-        }
-
-        setOpen(false);
-        setQuery('');
-        onView(friend);
-    };
-
     const handleClose = () => {
         if (!friendMenuOpen) {
             setOpen(false);
@@ -49,7 +39,7 @@ export function FriendSearch({ friends, onView, onRefresh }: FriendSearchProps) 
 
     return (
         <LabeledAutocomplete
-            label="Search"
+            label="Search Friends"
             autocompleteProps={{
                 options: filteredFriends,
                 value: null,
@@ -58,17 +48,22 @@ export function FriendSearch({ friends, onView, onRefresh }: FriendSearchProps) 
                 autoHighlight: true,
                 filterOptions: filterOptions,
                 getOptionLabel: getOptionLabel,
-                onChange: handleChange,
                 onClose: handleClose,
                 onInputChange: handleInputChange,
                 noOptionsText: 'No friends found',
                 popupIcon: '',
                 clearOnBlur: false,
                 renderOption: (componentProps, friend) => {
-                    const { key, ...restProps } = componentProps;
+                    const { key, onClick: _onClick, ...restProps } = componentProps;
 
                     return (
-                        <Box component="li" key={key} {...restProps} sx={{ p: 0.5 }}>
+                        <Box
+                            component="li"
+                            key={key}
+                            {...restProps}
+                            onClick={(e) => e.stopPropagation()}
+                            sx={{ width: '100%' }}
+                        >
                             <FriendDropdownCard
                                 friend={friend}
                                 onView={(selectedFriend) => {
