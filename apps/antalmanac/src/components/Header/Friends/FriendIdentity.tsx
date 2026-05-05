@@ -2,13 +2,15 @@ import { AccountCircle } from '@mui/icons-material';
 import { Avatar, Box, Stack, Typography } from '@mui/material';
 
 interface FriendIdentityProps {
-    name?: string;
-    email: string;
-    avatar?: string;
+    name: string | null;
+    email: string | null;
+    avatar: string | null;
     avatarSize?: number;
 }
 
 export function FriendIdentity({ name, email, avatar, avatarSize = 30 }: FriendIdentityProps) {
+    const displayEmail = email ?? '';
+
     return (
         <Stack direction="row" alignItems="center" spacing={1.5} flex={1} overflow="hidden">
             <Avatar
@@ -20,10 +22,10 @@ export function FriendIdentity({ name, email, avatar, avatarSize = 30 }: FriendI
             </Avatar>
             <Box sx={{ minWidth: 0, userSelect: 'none', cursor: 'default' }}>
                 <Typography variant="body2" fontWeight={600} noWrap>
-                    {name || email}
+                    {name || displayEmail}
                 </Typography>
                 <Typography variant="caption" color="text.secondary" noWrap display="block">
-                    {email}
+                    {displayEmail}
                 </Typography>
             </Box>
         </Stack>

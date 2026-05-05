@@ -1,6 +1,6 @@
 import { FriendIdentity } from '$components/Header/Friends/FriendIdentity';
 import { friendCardSx } from '$components/Header/Friends/styles';
-import type { FriendRequest } from '$components/Header/Friends/types';
+import type { FriendRequest } from '$src/backend/lib/rds.types';
 import { Box, Button } from '@mui/material';
 
 interface SentRequestCardProps {

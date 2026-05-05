@@ -1,7 +1,7 @@
 import { RequestCard } from '$components/Header/Friends/RequestCard';
 import { SentRequestCard } from '$components/Header/Friends/SentRequestCard';
 import { textFieldSx } from '$components/Header/Friends/styles';
-import type { FriendRequest } from '$components/Header/Friends/types';
+import type { FriendRequest } from '$src/backend/lib/rds.types';
 import { PersonAdd } from '@mui/icons-material';
 import { Box, Button, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';

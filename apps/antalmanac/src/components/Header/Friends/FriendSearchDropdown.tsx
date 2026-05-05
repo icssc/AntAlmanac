@@ -1,5 +1,5 @@
 import { FriendDropdownCard } from '$components/Header/Friends/FriendDropdownCard';
-import type { Friend } from '$components/Header/Friends/types';
+import type { Friend } from '$src/backend/lib/rds.types';
 import { Paper, Popper, Typography } from '@mui/material';
 
 interface FriendSearchDropdownProps {
@@ -22,7 +22,7 @@ export function FriendSearchDropdown({
     const filtered = friends.filter(
         (f) =>
             (f.name?.toLowerCase() ?? '').includes(query.toLowerCase()) ||
-            f.email.toLowerCase().includes(query.toLowerCase())
+            (f.email?.toLowerCase() ?? '').includes(query.toLowerCase())
     );
 
     return (

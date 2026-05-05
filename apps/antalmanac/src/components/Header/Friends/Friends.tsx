@@ -1,13 +1,13 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { FriendsMenu } from '$components/Header/Friends/FriendsMenu';
 import trpc from '$lib/api/trpc';
+import type { Friend, FriendRequest } from '$src/backend/lib/rds.types';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { People } from '@mui/icons-material';
 import { Button, IconButton, Popover } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-
-import { FriendsMenu, type Friend, type FriendRequest } from './FriendsMenu';
 
 export function Friends() {
     const userId = useSessionStore((store) => store.userId);
@@ -24,13 +24,6 @@ export function Friends() {
 
     const open = Boolean(anchorEl);
 
-    const mapUser = (u: { id: string; name: string | null; email: string | null; avatar: string | null }) => ({
-        id: u.id,
-        name: u.name ?? undefined,
-        email: u.email ?? '',
-        avatar: u.avatar ?? undefined,
-    });
-
     const loadFriendsData = useCallback(async () => {
         if (!sessionIsValid || !userId) {
             return;
@@ -44,9 +37,9 @@ export function Friends() {
                 trpc.friends.getSentRequests.query(),
             ]);
 
-            setFriends(friendsResult.map(mapUser));
-            setFriendRequests(pendingResult.map(mapUser));
-            setSentRequests(sentResult.map(mapUser));
+            setFriends(friendsResult);
+            setFriendRequests(pendingResult);
+            setSentRequests(sentResult);
 
             setDataLoaded(true);
         } catch (error) {
@@ -84,9 +77,9 @@ export function Friends() {
                     trpc.friends.getSentRequests.query(),
                 ]);
                 if (cancelled) return;
-                setFriends(friendsResult.map(mapUser));
-                setFriendRequests(pendingResult.map(mapUser));
-                setSentRequests(sentResult.map(mapUser));
+                setFriends(friendsResult);
+                setFriendRequests(pendingResult);
+                setSentRequests(sentResult);
             } catch {
                 // Silently skip failed polls
             }

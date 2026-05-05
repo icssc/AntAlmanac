@@ -1,7 +1,7 @@
 import { FriendCard } from '$components/Header/Friends/FriendCard';
 import { FriendSearchDropdown } from '$components/Header/Friends/FriendSearchDropdown';
 import { textFieldSx } from '$components/Header/Friends/styles';
-import type { Friend } from '$components/Header/Friends/types';
+import type { Friend } from '$src/backend/lib/rds.types';
 import { Box, TextField, Typography } from '@mui/material';
 
 interface FriendsTabProps {
