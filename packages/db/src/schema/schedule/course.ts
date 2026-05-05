@@ -32,6 +32,12 @@ export const coursesInSchedule = pgTable(
          */
         color: text('color').notNull(),
 
+        /**
+         * Visibility state of the course in the calendar.
+         * @see VisibilityState
+         */
+        visibility: text('visibility').notNull().default('visible'),
+
         createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 
         lastUpdated: timestamp('last_updated', { withTimezone: true })

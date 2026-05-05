@@ -1,0 +1,1 @@
+ALTER TABLE "coursesInSchedule" ADD COLUMN "visibility" text DEFAULT 'visible' NOT NULL;
