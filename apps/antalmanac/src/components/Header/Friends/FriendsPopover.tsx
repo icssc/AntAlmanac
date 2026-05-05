@@ -23,7 +23,7 @@ import {
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export interface FriendsMenuProps {
+interface FriendsPopoverProps {
     friendRequests: FriendRequest[];
     sentRequests: FriendRequest[];
     friends: Friend[];
@@ -31,13 +31,13 @@ export interface FriendsMenuProps {
     onRefresh: () => Promise<void>;
 }
 
-export function FriendsMenu({
+export function FriendsPopover({
     friendRequests,
     sentRequests,
     friends,
     isLoading,
     onRefresh: loadFriendsData,
-}: FriendsMenuProps) {
+}: FriendsPopoverProps) {
     const [activeTab, setActiveTab] = useState<'friends' | 'requests'>('friends');
     const [email, setEmail] = useState('');
     const [friendSearch, setFriendSearch] = useState('');
@@ -140,20 +140,11 @@ export function FriendsMenu({
                 <CardHeader
                     title="Manage Friends"
                     slotProps={{
-                        title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
+                        title: { sx: { fontWeight: 500 }, variant: 'h6' },
                     }}
                 />
 
-                <CardContent
-                    sx={{
-                        minWidth: {
-                            xs: 350,
-                            sm: 400,
-                            md: 425,
-                        },
-                        paddingTop: 0,
-                    }}
-                >
+                <CardContent sx={{ width: 500, paddingTop: 0 }}>
                     {isLoading ? (
                         <FriendsListSkeleton />
                     ) : (

@@ -1,5 +1,5 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { FriendsMenu } from '$components/Header/Friends/FriendsMenu';
+import { FriendsPopover } from '$components/Header/Friends/FriendsPopover';
 import trpc from '$lib/api/trpc';
 import type { Friend, FriendRequest } from '$src/backend/lib/rds.types';
 import { useIsMobile } from '$src/hooks/useIsMobile';
@@ -67,8 +67,12 @@ export function Friends() {
     }, [open, sessionIsValid, userId, dataLoaded, loadFriendsData]);
 
     useEffect(() => {
-        if (!open || !sessionIsValid || !userId) return;
+        if (!open || !sessionIsValid || !userId) {
+            return;
+        }
+
         let cancelled = false;
+
         const id = setInterval(async () => {
             try {
                 const [friendsResult, pendingResult, sentResult] = await Promise.all([
@@ -76,7 +80,11 @@ export function Friends() {
                     trpc.friends.getPendingRequests.query(),
                     trpc.friends.getSentRequests.query(),
                 ]);
-                if (cancelled) return;
+
+                if (cancelled) {
+                    return;
+                }
+
                 setFriends(friendsResult);
                 setFriendRequests(pendingResult);
                 setSentRequests(sentResult);
@@ -135,7 +143,7 @@ export function Friends() {
                     horizontal: 'right',
                 }}
             >
-                <FriendsMenu
+                <FriendsPopover
                     friendRequests={friendRequests}
                     sentRequests={sentRequests}
                     friends={friends}
