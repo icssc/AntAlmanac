@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
-
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
-import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { WebSOC } from '$lib/websoc';
+import { useEffect, useState } from 'react';
 
 /**
  * If we remove this component, when you search a department+GE combo, only the lectures show up, not the discussions.
@@ -46,7 +45,7 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
         []
     );
 
-    return <SectionTableLazyWrapper {...props} courseDetails={courseDetails} />;
+    return <SectionTable {...props} courseDetails={courseDetails} />;
 };
 
 export default GeDataFetchProvider;

@@ -1,13 +1,12 @@
+import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
+import { useIsMobile } from '$hooks/useIsMobile';
+import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
 import { InfoOutlined } from '@mui/icons-material';
 import { Box, Button, Popover, Skeleton } from '@mui/material';
 import type { PrerequisiteTree } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
-
-import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
-import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
 
 const noCourseInfo = {
     id: '',
@@ -90,7 +89,7 @@ export const CourseInfoBar = ({
                 description: res.description,
                 ge_list: res.geList.join(', '),
             });
-        } catch (e) {
+        } catch {
             setCourseInfo(noCourseInfo);
         }
     };

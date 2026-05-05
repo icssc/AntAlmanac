@@ -1,6 +1,3 @@
-import { AppBar, Box, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
-
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
 import { Import } from '$components/Header/Import';
@@ -17,18 +14,20 @@ import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { AppBar, Box, Stack } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
-    const { session, sessionIsValid } = useSessionStore();
+    const { sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
 
-    const clearStorage = () => {
+    const clearStorage = useCallback(() => {
         removeLocalStorageImportedUser();
         removeLocalStorageDataCache();
-    };
+    }, []);
 
     const handleCloseSuccessfulSaved = () => {
         setOpenSuccessfulSaved(false);
@@ -47,13 +46,13 @@ export function Header() {
     useEffect(() => {
         const dataCache = getLocalStorageDataCache() ?? '';
 
-        if (importedUser !== '' && session) {
+        if (importedUser !== '' && sessionIsValid) {
             setOpenSuccessfulSaved(true);
-        } else if (dataCache !== '' && session) {
+        } else if (dataCache !== '' && sessionIsValid) {
             openSnackbar('success', `Unsaved changes have been saved to your account!`);
             clearStorage();
         }
-    }, [importedUser, session]);
+    }, [importedUser, sessionIsValid, clearStorage]);
 
     return (
         <Box

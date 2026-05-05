@@ -1,14 +1,15 @@
-import { GlobalStyles, Stack } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { getLocalStorageSessionId } from '$lib/localStorage';
+import { getWasLoggedIn } from '$lib/localStorage';
+import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useTabStore } from '$stores/TabStore';
+import { GlobalStyles, Stack } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 /**
  * List of interactive tab buttons with their accompanying content.
@@ -50,7 +51,12 @@ export function ScheduleManagement() {
             return;
         }
 
-        const sessionId = getLocalStorageSessionId();
+        if (shouldSearchPlannerFromParams()) {
+            setActiveTab('search');
+            return;
+        }
+
+        const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
         const urlHasManualSearchParams = paramsAreInURL();
         const hasLocalScheduleData = () =>
             AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
@@ -61,7 +67,7 @@ export function ScheduleManagement() {
         }
 
         if (!isMobile) {
-            if (sessionId === null) {
+            if (!hasSession) {
                 setActiveTab('search');
             } else {
                 setActiveTab('added');
@@ -69,7 +75,7 @@ export function ScheduleManagement() {
             return;
         }
 
-        if (sessionId !== null || hasLocalScheduleData()) {
+        if (hasSession || hasLocalScheduleData()) {
             setActiveTab('calendar');
             return;
         }

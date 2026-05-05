@@ -1,10 +1,22 @@
-import { initTRPC } from '@trpc/server';
+import type { Context } from '$src/backend/context';
+import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 
-import type { Context } from './context';
-
-const { procedure, router, _config, mergeRouters, middleware } = initTRPC.context<Context>().create({
+const t = initTRPC.context<Context>().create({
     transformer: superjson,
 });
 
-export { procedure, router, _config, mergeRouters, middleware };
+const isAuthed = t.middleware(async ({ ctx, next }) => {
+    if (!ctx.userId || !ctx.sessionToken) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+    return next({
+        ctx: { ...ctx, userId: ctx.userId, sessionToken: ctx.sessionToken },
+    });
+});
+
+export const procedure = t.procedure;
+export const protectedProcedure = t.procedure.use(isAuthed);
+export const router = t.router;
+export const middleware = t.middleware;
+export const mergeRouters = t.mergeRouters;

@@ -1,12 +1,11 @@
+import { BLUE } from '$src/globals';
 import { Dialog, DialogContent, LinearProgress, Stack, Box } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 import { Logo } from './Header/Logo';
 
-import { BLUE } from '$src/globals';
-
 const FUN_FACTS = [
-    'Did you know? Antalmanac is maintained by the ICS Student Council at UCI!',
+    'Did you know? AntAlmanac is maintained by the ICS Student Council at UCI!',
     'AntAlmanac was created in 2018 by a small group of students under the leadership of @the-rango.',
     'Did you know you can search for classes by pressing "CTRL/CMD" + clicking on your schedule item!',
     'Need a 4 year plan? Check out AntAlmanac Planner!',
@@ -47,7 +46,15 @@ export function LoadingScreen(props: LoadingScreenProps) {
                         flexDirection="column"
                         alignItems="center"
                     >
-                        <LinearProgress sx={{ width: { default: '100%', md: '50%' } }} />
+                        <LinearProgress
+                            sx={{
+                                width: { default: '100%', md: '50%' },
+                                backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                                '& .MuiLinearProgress-bar': {
+                                    backgroundColor: 'white',
+                                },
+                            }}
+                        />
                         <Box fontStyle="italic" color="white" fontSize="h6.fontSize" sx={{ textAlign: 'center' }}>
                             {randomFact}
                         </Box>

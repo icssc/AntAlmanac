@@ -1,7 +1,6 @@
-import moment from 'moment';
-
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { terms } from '$generated/termData';
+import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
@@ -75,6 +74,10 @@ function getCurrentTerm(): { year: number; quarter: string } {
     return { year, quarter };
 }
 
+export function getTermLongName(termShortName: string) {
+    return termData.find((term) => term.shortName === termShortName)?.longName ?? '';
+}
+
 /**
  * Enrollment can change until the drop deadline, i.e. when enrollment closes.
  * For full terms (10-week quarters), enrollment closes on the Friday of Week 2.
@@ -108,8 +111,7 @@ function getOpenEnrollmentTerms() {
  * See {@link canTermEnrollmentChange} docs.
  */
 function isTermEnrollmentOpen(term: Term): boolean {
-    const instructionStartDate = moment(term.startDate);
-    const isTermShort = moment(term.finalsStartDate).diff(instructionStartDate, 'week') < 9;
+    const isTermShort = differenceInWeeks(term.finalsStartDate, term.startDate) < 9;
     const hasWeekZero = term.startDate.getDay() !== 1;
 
     let weeksUntilDropDeadline = 1;
@@ -120,7 +122,12 @@ function isTermEnrollmentOpen(term: Term): boolean {
         weeksUntilDropDeadline++;
     }
 
-    return moment() <= instructionStartDate.add(weeksUntilDropDeadline, 'week').day(5);
+    const dropDeadline = setDay(addWeeks(term.startDate, weeksUntilDropDeadline), 5);
+    return new Date() <= dropDeadline;
+}
+
+export function isTermAvailable(termShortName: string) {
+    return termData.find((term) => term.shortName === termShortName) !== undefined;
 }
 
 export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm, getCurrentTerm };

@@ -1,0 +1,5 @@
+.DS_Store
+
+src/AntAlmanac.xcodeproj/xcuserdata/
+src/AntAlmanac.xcworkspace/xcuserdata/
+src/Pods/

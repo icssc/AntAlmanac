@@ -1,4 +1,4 @@
-import { boolean, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { users } from './auth/user';
 
@@ -67,11 +67,18 @@ export const subscriptions = pgTable(
          * Environment when this subscription was created (e.g. "production", "staging-1337", "staging-1447").
          * AANTS only sends emails when its STAGE matches this value.
          */
-        environment: text('environment'),
+        environment: text('environment').notNull().default('production'),
+
+        createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+        updatedAt: timestamp('updated_at', { withTimezone: true })
+            .defaultNow()
+            .notNull()
+            .$onUpdate(() => new Date()),
     },
     (table) => [
         primaryKey({
-            columns: [table.userId, table.sectionCode, table.year, table.quarter],
+            columns: [table.userId, table.sectionCode, table.year, table.quarter, table.environment],
         }),
     ]
 );

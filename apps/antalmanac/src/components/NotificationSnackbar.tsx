@@ -1,10 +1,9 @@
 'use client';
 
-import { Alert, Snackbar, SnackbarCloseReason } from '@mui/material';
-import { mergeSx } from '@mui/x-date-pickers/internals';
-
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSnackbarStore } from '$stores/SnackbarStore';
+import { Alert, Snackbar, SnackbarCloseReason } from '@mui/material';
+import { mergeSx } from '@mui/x-date-pickers/internals';
 
 export const NotificationSnackbar = () => {
     const { open, snackbarClosed, message, severity, durationSeconds, position, style } = useSnackbarStore();

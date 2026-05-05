@@ -1,3 +1,6 @@
+import { getDefaultTerm } from '$lib/termData';
+import { WebSOC } from '$lib/websoc';
+import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type {
     Schedule,
     ScheduleCourse,
@@ -11,10 +14,6 @@ import type {
 import { createId } from '@paralleldrive/cuid2';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
-
-import { getDefaultTerm } from '$lib/termData';
-import { WebSOC } from '$lib/websoc';
-import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.
@@ -392,7 +391,7 @@ export class Schedules {
         for (const scheduleIndex of scheduleIndices) {
             const customEvents = this.schedules[scheduleIndex].customEvents;
             const index = customEvents.findIndex((customEvent) => customEvent.customEventID === customEventId);
-            if (index !== undefined) {
+            if (index !== -1) {
                 customEvents.splice(index, 1);
             }
         }

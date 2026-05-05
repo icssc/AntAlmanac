@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { useDepartments } from '$hooks/useDepartments';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
+import { useCallback, useEffect, useState } from 'react';
 
 const DEFAULT_DEPARTMENTS: Record<string, string> = {
     ALL: 'ALL: Include All Departments',
@@ -64,13 +63,15 @@ export function DepartmentSearchBar() {
 
             if (newValue === 'ALL') return;
 
-            recentSearches.includes(newValue)
-                ? setRecentSearches((prev) =>
-                      prev.sort((a, b) => {
-                          return a === newValue ? -1 : b === newValue ? 1 : 0;
-                      })
-                  )
-                : setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
+            if (recentSearches.includes(newValue)) {
+                setRecentSearches((prev) =>
+                    prev.sort((a, b) => {
+                        return a === newValue ? -1 : b === newValue ? 1 : 0;
+                    })
+                );
+            } else {
+                setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
+            }
         },
         [recentSearches, options]
     );

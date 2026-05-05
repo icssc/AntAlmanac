@@ -1,9 +1,8 @@
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 import type { AggregateGradesAPIResult, AggregateGradesByOfferingAPIResult } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 
 const gradesRouter = router({
     aggregateGrades: procedure

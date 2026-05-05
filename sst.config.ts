@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./.sst/platform/config.d.ts" />
 
 function getDomain() {
@@ -43,6 +44,8 @@ export default $config({
 
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',
+            // TODO (@KevinWu098): Unpin once https://github.com/opennextjs/opennextjs-aws/issues/1133 is fixed
+            openNextVersion: '3.6.6',
             router: {
                 instance: router,
                 path: '/',

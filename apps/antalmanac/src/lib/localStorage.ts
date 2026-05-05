@@ -11,10 +11,15 @@ enum LocalStorageKeys {
     show24HourTime = 'show24HourTime',
     previewMode = 'previewMode',
     autoSave = 'autoSave',
+    devMode = 'devMode',
+    unsavedActions = 'unsavedActions',
+    /** @deprecated Removed along with the HelpBox component in PR #1473. */
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
+    /** @deprecated Session token is now stored in an HttpOnly cookie (aa_session). */
     sessionId = 'sessionId',
+    wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
     newUser = 'newUser',
     importedUser = 'importedUser',
@@ -85,16 +90,16 @@ export function removeLocalStorageUserId() {
     window.localStorage.removeItem(LSK.userId);
 }
 
-export function setLocalStorageSessionId(value: string) {
-    window.localStorage.setItem(LSK.sessionId, value);
+export function getWasLoggedIn(): boolean {
+    return window.localStorage.getItem(LSK.wasLoggedIn) === 'true';
 }
 
-export function getLocalStorageSessionId() {
-    return window.localStorage.getItem(LSK.sessionId);
-}
-
-export function removeLocalStorageSessionId() {
-    window.localStorage.removeItem(LSK.sessionId);
+export function setWasLoggedIn(value: boolean) {
+    if (value) {
+        window.localStorage.setItem(LSK.wasLoggedIn, 'true');
+    } else {
+        window.localStorage.removeItem(LSK.wasLoggedIn);
+    }
 }
 
 // Helper functions for patchNotesKey
@@ -225,6 +230,32 @@ export function getLocalStorageAutoSave() {
 
 export function removeLocalStorageAutoSave() {
     window.localStorage.removeItem(LSK.autoSave);
+}
+
+// Helper functions for devMode
+export function setLocalStorageDevMode(value: string) {
+    localStorage.setItem(LocalStorageKeys.devMode, value);
+}
+
+export function getLocalStorageDevMode() {
+    return localStorage.getItem(LocalStorageKeys.devMode);
+}
+
+export function removeLocalStorageDevMode() {
+    localStorage.removeItem(LocalStorageKeys.devMode);
+}
+
+// Helper functions for autoSave
+export function setLocalStorageUnsavedActions(value: string) {
+    window.localStorage.setItem(LSK.unsavedActions, value);
+}
+
+export function getLocalStorageUnsavedActions() {
+    return window.localStorage.getItem(LSK.unsavedActions);
+}
+
+export function removeLocalStorageUnsavedActions() {
+    window.localStorage.removeItem(LSK.unsavedActions);
 }
 
 // Helper functions for helpBoxDismissalTime

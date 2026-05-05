@@ -1,26 +1,22 @@
+import { STATUS_PILL_DEFAULT, STATUS_PILL_STYLES } from '../theme';
+
 const pillBase = {
     padding: '4px 10px',
     display: 'inline-block' as const,
     fontWeight: '600' as const,
+    borderRadius: '9999px' as const,
 };
 
-const statusPillShape = { borderRadius: '9999px' as const };
-
-const STATUS_PILL_STYLES: Record<string, React.CSSProperties> = {
-    WAITLISTED: { ...pillBase, ...statusPillShape, backgroundColor: '#dbeafe', color: '#1e40af' },
-    OPEN: { ...pillBase, ...statusPillShape, backgroundColor: '#dcfce7', color: '#166534' },
-    FULL: { ...pillBase, ...statusPillShape, backgroundColor: '#fecaca', color: '#991b1b' },
+const STATUS_STYLES: Record<string, React.CSSProperties> = {
+    OPEN: { ...pillBase, ...STATUS_PILL_STYLES.OPEN },
+    WAITLISTED: { ...pillBase, ...STATUS_PILL_STYLES.WAITLISTED },
+    FULL: { ...pillBase, ...STATUS_PILL_STYLES.FULL },
 };
 
-const statusPillDefault: React.CSSProperties = {
-    ...pillBase,
-    ...statusPillShape,
-    backgroundColor: '#f1f5f9',
-    color: '#475569',
-};
+const statusPillDefault: React.CSSProperties = { ...pillBase, ...STATUS_PILL_DEFAULT };
 
 function getStatusPillStyle(status: string) {
-    return STATUS_PILL_STYLES[status] ?? statusPillDefault;
+    return STATUS_STYLES[status] ?? statusPillDefault;
 }
 
 /** Abbreviates WAITLISTED to WAITL on mobile to prevent wrapping */
