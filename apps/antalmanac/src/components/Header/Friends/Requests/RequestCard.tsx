@@ -1,4 +1,4 @@
-import { FriendIdentity } from '$components/Header/Friends/FriendIdentity';
+import { FriendAvatar } from '$components/Header/Friends/FriendAvatar';
 import { friendCardSx } from '$components/Header/Friends/styles';
 import type { FriendRequest } from '$src/backend/lib/rds.types';
 import { Box, Button, Stack } from '@mui/material';
@@ -12,7 +12,7 @@ interface RequestCardProps {
 export function RequestCard({ request, onAccept, onDecline }: RequestCardProps) {
     return (
         <Box sx={friendCardSx}>
-            <FriendIdentity name={request.name} email={request.email} avatar={request.avatar} />
+            <FriendAvatar name={request.name} email={request.email} avatar={request.avatar} />
             <Stack direction="row" spacing={0.5} alignItems="center">
                 <Button
                     size="small"

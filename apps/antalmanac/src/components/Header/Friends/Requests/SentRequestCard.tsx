@@ -1,4 +1,4 @@
-import { FriendIdentity } from '$components/Header/Friends/FriendIdentity';
+import { FriendAvatar } from '$components/Header/Friends/FriendAvatar';
 import { friendCardSx } from '$components/Header/Friends/styles';
 import type { FriendRequest } from '$src/backend/lib/rds.types';
 import { Box, Button } from '@mui/material';
@@ -11,7 +11,7 @@ interface SentRequestCardProps {
 export function SentRequestCard({ request, onCancel }: SentRequestCardProps) {
     return (
         <Box sx={friendCardSx}>
-            <FriendIdentity name={request.name} email={request.email} avatar={request.avatar} />
+            <FriendAvatar name={request.name} email={request.email} avatar={request.avatar} />
             <Button
                 size="small"
                 variant="contained"

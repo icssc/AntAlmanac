@@ -1,85 +1,94 @@
-import { FriendIdentity } from '$components/Header/Friends/FriendIdentity';
+import { FriendAvatar } from '$components/Header/Friends/FriendAvatar';
 import { UnfriendConfirmationDialog } from '$components/Header/Friends/Friends/UnfriendConfirmationDialog';
-import { friendCardSx } from '$components/Header/Friends/styles';
 import type { Friend } from '$src/backend/lib/rds.types';
 import { MoreVert, PersonRemove } from '@mui/icons-material';
-import { Box, Button, IconButton, Menu, MenuItem, Stack } from '@mui/material';
+import { Button, Card, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from '@mui/material';
 import { useState } from 'react';
 
 interface FriendCardProps {
     friend: Friend;
     onView: (friend: Friend) => void;
     onRefresh: () => Promise<void>;
-    preventBlur?: boolean;
+    onMenuOpenChange?: (open: boolean) => void;
+    variant?: 'card' | 'option';
 }
 
-export function FriendCard({ friend, onView, onRefresh, preventBlur }: FriendCardProps) {
+export function FriendCard({ friend, onView, onRefresh, onMenuOpenChange, variant = 'card' }: FriendCardProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [unfriendDialogOpen, setUnfriendDialogOpen] = useState(false);
-    const md = preventBlur ? (e: React.MouseEvent) => e.preventDefault() : undefined;
+    const isOption = variant === 'option';
+
+    const closeMenu = () => {
+        setAnchorEl(null);
+        onMenuOpenChange?.(false);
+    };
+
+    const closeUnfriendDialog = () => {
+        setUnfriendDialogOpen(false);
+        onMenuOpenChange?.(false);
+    };
 
     return (
         <>
-            <Box sx={friendCardSx}>
-                <FriendIdentity name={friend.name} email={friend.email} avatar={friend.avatar} />
+            <Card
+                variant={isOption ? 'elevation' : 'outlined'}
+                elevation={isOption ? 0 : undefined}
+                sx={{
+                    p: 1,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                }}
+            >
+                <FriendAvatar name={friend.name} email={friend.email} avatar={friend.avatar} />
                 <Stack direction="row" spacing={0.5} alignItems="center">
-                    <Button
-                        size="small"
-                        variant="contained"
-                        onMouseDown={md}
-                        onClick={() => onView(friend)}
-                        sx={{
-                            fontSize: '1rem',
-                            fontWeight: 600,
-                            textTransform: 'none',
-                            py: 0.5,
-                            px: 1.5,
-                            boxShadow: 2,
-                            ml: 1,
-                            whiteSpace: 'nowrap',
-                            '&:hover': { boxShadow: 3 },
-                        }}
-                    >
+                    <Button size="small" variant="contained" onClick={() => onView(friend)}>
                         View
                     </Button>
+
                     <IconButton
                         size="small"
-                        onMouseDown={md}
-                        onClick={(e) => setAnchorEl(e.currentTarget)}
-                        sx={{
-                            color: 'text.secondary',
-                            ml: 0.5,
-                            '&:hover': { bgcolor: 'action.hover', color: 'text.primary' },
+                        onClick={(e) => {
+                            if (isOption) {
+                                e.stopPropagation();
+                            }
+                            setAnchorEl(e.currentTarget);
+                            onMenuOpenChange?.(true);
                         }}
                     >
                         <MoreVert fontSize="small" />
                     </IconButton>
+
                     <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
-                        onClose={() => setAnchorEl(null)}
+                        onClose={closeMenu}
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        slotProps={{ paper: { sx: { zIndex: 10000 } } }}
-                        style={{ zIndex: 10000 }}
                     >
                         <MenuItem
-                            onClick={() => {
+                            onClick={(e) => {
+                                if (isOption) {
+                                    e.stopPropagation();
+                                }
                                 setAnchorEl(null);
                                 setUnfriendDialogOpen(true);
                             }}
-                            sx={{ color: 'error.main' }}
                         >
-                            <PersonRemove sx={{ mr: 1, fontSize: '1.25rem' }} />
-                            Unfriend
+                            <ListItemIcon>
+                                <PersonRemove fontSize="small" color="error" />
+                            </ListItemIcon>
+                            <ListItemText sx={{ color: 'error.main' }}>Unfriend</ListItemText>
                         </MenuItem>
                     </Menu>
                 </Stack>
-            </Box>
+            </Card>
+
             <UnfriendConfirmationDialog
                 friendId={friend.id}
                 open={unfriendDialogOpen}
-                onClose={() => setUnfriendDialogOpen(false)}
+                onClose={closeUnfriendDialog}
                 onRefresh={onRefresh}
             />
         </>
