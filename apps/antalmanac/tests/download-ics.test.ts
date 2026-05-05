@@ -1,7 +1,6 @@
-import { describe, test, expect } from 'vitest';
-
 import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
 import { getEventsFromCourses } from '$lib/download';
+import { describe, test, expect } from 'vitest';
 
 describe('download-ics', () => {
     test('converts schedule courses to events for the ics library', () => {
@@ -78,7 +77,7 @@ describe('download-ics', () => {
                 start: new Date(2023, 9, 29, 1, 2),
                 end: new Date(2023, 9, 29, 3, 4),
                 title: 'placeholderCustomEventTitle',
-                customEventID: 123,
+                customEventID: '123',
                 isCustomEvent: true,
                 days: ['M', 'W', 'F'],
                 building: 'placeholderCustomEventBuilding',

@@ -3,6 +3,7 @@ import courseRouter from './course';
 import enrollHistRouter from './enrollHist';
 import gradesRouter from './grades';
 import notificationsRouter from './notifications';
+import reviewRouter from './review';
 import roadmapRouter from './roadmap';
 import searchRouter from './search';
 import userDataRouter from './userData';
@@ -14,6 +15,7 @@ const appRouter = router({
     enrollHist: enrollHistRouter,
     grades: gradesRouter,
     notifications: notificationsRouter,
+    review: reviewRouter,
     search: searchRouter,
     userData: userDataRouter,
     websoc: websocRouter,

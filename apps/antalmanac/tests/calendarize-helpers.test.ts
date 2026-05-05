@@ -1,8 +1,7 @@
-import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { describe, test, expect } from 'vitest';
-
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { describe, test, expect } from 'vitest';
 
 describe('calendarize-helpers', () => {
     const courses: Schedule['courses'] = [
@@ -204,7 +203,7 @@ describe('calendarize-helpers', () => {
             start: '01:02',
             end: '03:04',
             days: [true, false, true, false, true, false, true],
-            customEventID: 0,
+            customEventID: '0',
             color: '#000000',
         },
     ];
@@ -212,7 +211,7 @@ describe('calendarize-helpers', () => {
     const calendarizedCustomEvents: CustomEvent[] = [
         {
             isCustomEvent: true,
-            customEventID: 0,
+            customEventID: '0',
             color: '#000000',
             start: new Date(2018, 0, 0, 1, 2),
             end: new Date(2018, 0, 0, 3, 4),
@@ -222,7 +221,7 @@ describe('calendarize-helpers', () => {
         },
         {
             isCustomEvent: true,
-            customEventID: 0,
+            customEventID: '0',
             color: '#000000',
             start: new Date(2018, 0, 2, 1, 2),
             end: new Date(2018, 0, 2, 3, 4),
@@ -232,7 +231,7 @@ describe('calendarize-helpers', () => {
         },
         {
             isCustomEvent: true,
-            customEventID: 0,
+            customEventID: '0',
             color: '#000000',
             start: new Date(2018, 0, 4, 1, 2),
             end: new Date(2018, 0, 4, 3, 4),
@@ -242,7 +241,7 @@ describe('calendarize-helpers', () => {
         },
         {
             isCustomEvent: true,
-            customEventID: 0,
+            customEventID: '0',
             color: '#000000',
             start: new Date(2018, 0, 6, 1, 2),
             end: new Date(2018, 0, 6, 3, 4),
