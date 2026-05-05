@@ -1,4 +1,3 @@
-import { getSectionTableChartPopoverDimensions } from '$components/RightPane/SectionTable/SectionTablePopover/sectionTableChartPopoverSizes';
 import { useIsMobile } from '$hooks/useIsMobile';
 import type { EnrollmentHistory } from '$lib/enrollmentHistory';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
@@ -45,7 +44,8 @@ export function EnrollmentHistoryPopover({
     const theme = useTheme();
     const isMobile = useIsMobile();
 
-    const { width, height } = getSectionTableChartPopoverDimensions(isMobile);
+    const width = isMobile ? 280 : 400;
+    const height = isMobile ? 180 : 240;
 
     const activeGraphIndex = useMemo(() => {
         if (!enrollmentHistory?.length) {

@@ -1,4 +1,3 @@
-import { getSectionTableChartPopoverDimensions } from '$components/RightPane/SectionTable/SectionTablePopover/sectionTableChartPopoverSizes';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades, type GradesProps } from '$lib/grades';
 import {
@@ -81,7 +80,8 @@ export function GradesPopover(props: GradesPopoverProps) {
     const [overallData, setOverallData] = useState<GradeData>();
     const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
 
-    const { width, height } = getSectionTableChartPopoverDimensions(isMobile);
+    const width = isMobile ? 280 : 400;
+    const height = isMobile ? 180 : 240;
 
     const activeData = view === 'instructor' ? instructorData : overallData;
     const hasData = activeData?.grades.some((g) => g.all > 0);
