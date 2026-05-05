@@ -43,7 +43,7 @@ export function RequestsTab({ friendRequests, sentRequests, onRefresh }: Request
                 {subTab === 'received' && (
                     <>
                         {friendRequests.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, pl: 0.5 }}>
+                            <Typography variant="body1" color="text.secondary">
                                 No pending requests
                             </Typography>
                         ) : (
@@ -57,7 +57,7 @@ export function RequestsTab({ friendRequests, sentRequests, onRefresh }: Request
                 {subTab === 'sent' && (
                     <>
                         {sentRequests.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, pl: 0.5 }}>
+                            <Typography variant="body1" color="text.secondary">
                                 No sent requests
                             </Typography>
                         ) : (
