@@ -68,13 +68,20 @@ export const LabeledAutocomplete = <T,>({
         <Autocomplete
             size="small"
             id={id}
-            sx={{
-                display: 'flex',
-                flex: 1,
-                width: '100%',
-            }}
             disabled={disabled}
             {...autocompleteProps}
+            sx={[
+                {
+                    display: 'flex',
+                    flex: 1,
+                    width: '100%',
+                },
+                ...(autocompleteProps.sx
+                    ? Array.isArray(autocompleteProps.sx)
+                        ? autocompleteProps.sx
+                        : [autocompleteProps.sx]
+                    : []),
+            ]}
             PopperComponent={ResponsivePopper}
             renderInput={(params) => (
                 <LabeledTextField

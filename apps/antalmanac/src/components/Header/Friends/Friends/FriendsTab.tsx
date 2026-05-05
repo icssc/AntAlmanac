@@ -3,7 +3,7 @@ import { FriendSearch } from '$components/Header/Friends/Friends/FriendSearch';
 import trpc from '$lib/api/trpc';
 import type { Friend } from '$src/backend/lib/rds.types';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 interface FriendsTabProps {
@@ -33,10 +33,8 @@ export function FriendsTab({ friends, onRefresh }: FriendsTabProps) {
     };
 
     return (
-        <>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <FriendSearch friends={friends} onView={handleViewSchedule} onRefresh={onRefresh} />
-
-            <Divider />
 
             <Box sx={{ maxHeight: 240, overflowY: 'auto' }}>
                 {friends.length === 0 ? (
@@ -49,6 +47,6 @@ export function FriendsTab({ friends, onRefresh }: FriendsTabProps) {
                     ))
                 )}
             </Box>
-        </>
+        </Box>
     );
 }

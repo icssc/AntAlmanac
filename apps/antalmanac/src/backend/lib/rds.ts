@@ -29,7 +29,7 @@ import {
     type ConflictUpdatePolicy,
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
-import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray, sql } from 'drizzle-orm';
 import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -76,7 +76,8 @@ export class RDS {
         return db
             .select()
             .from(users)
-            .where(eq(users.email, email))
+            .where(sql`lower(${users.email}) = lower(${email})`)
+            .limit(1)
             .then((res) => res[0]);
     }
 
