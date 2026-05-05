@@ -491,12 +491,12 @@ export default function CourseRenderPane(props: { id?: number }) {
         const requested = new Set<string>();
         const tasks: Promise<{ key: string; gpa: number } | null>[] = [];
 
-        for (const item of courseData) {
-            if (!('sections' in item)) continue;
-            const course = item;
+        for (const course of courseData) {
+            if (!('sections' in course)) continue;
             for (const section of getRepresentativeSections(course)) {
+                //get the lecs / everything else if no lecs
                 for (const instructor of section.instructors) {
-                    if (instructor === 'STAFF') continue;
+                    if (instructor === 'STAFF') continue; //teachers displayed as 'STAFF' have no data
                     const key = courseGpaKey(course.deptCode, course.courseNumber, instructor);
                     if (requested.has(key)) continue;
                     requested.add(key);
