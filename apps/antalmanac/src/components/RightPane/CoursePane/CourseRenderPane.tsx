@@ -17,6 +17,7 @@ import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { type SortOption, useSectionFilterStore } from '$stores/SectionFilterStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -32,7 +33,7 @@ import {
     GE,
 } from '@packages/antalmanac-types';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
 function getColors() {
@@ -79,6 +80,93 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
         return accumulator;
     }, []);
 };
+
+type CourseGpaMap = Map<string, number>;
+
+const STATUS_OPEN_RANK: Record<string, number> = { OPEN: 3, NewOnly: 2, Waitl: 1, FULL: 0, '': 0 };
+
+const courseGpaKey = (deptCode: string, courseNumber: string, instructor: string) =>
+    `${deptCode}|${courseNumber}|${instructor}`;
+
+function getRepresentativeSections(course: AACourse): AASection[] {
+    const lecs = course.sections.filter((section) => section.sectionType === 'Lec');
+    return lecs.length > 0 ? lecs : course.sections;
+}
+
+function getMeetingStartMinutes(section: AASection): number {
+    const meeting = section.meetings[0];
+    if (!meeting || meeting.timeIsTBA) return Infinity;
+    return meeting.startTime.hour * 60 + meeting.startTime.minute;
+}
+
+function getCourseSortKey(course: AACourse, sortBy: SortOption, gpaMap: CourseGpaMap): number {
+    const sections = getRepresentativeSections(course); //lectures if course has lections, else everything else
+
+    switch (sortBy) {
+        case 'time_asc':
+            return Math.min(...sections.map((section) => getMeetingStartMinutes(section)));
+
+        case 'status':
+            return sections.reduce((sum, section) => sum + (STATUS_OPEN_RANK[section.status] ?? 0), 0);
+
+        case 'gpa_descending': {
+            let best = -Infinity;
+            for (const section of sections) {
+                for (const instructor of section.instructors) {
+                    if (instructor === 'STAFF') continue;
+                    const gpa = gpaMap.get(courseGpaKey(course.deptCode, course.courseNumber, instructor));
+                    if (gpa !== undefined && gpa > best) best = gpa;
+                }
+            }
+            return best;
+        }
+
+        default:
+            return 0;
+    }
+}
+
+function sortCoursesInWindows(
+    items: (WebsocSchool | WebsocDepartment | AACourse)[],
+    sortBy: SortOption,
+    gpaMap: CourseGpaMap
+): (WebsocSchool | WebsocDepartment | AACourse)[] {
+    if (sortBy === 'default') return items;
+
+    const result: (WebsocSchool | WebsocDepartment | AACourse)[] = [];
+    let buffer: AACourse[] = [];
+
+    const flush = () => {
+        if (buffer.length === 0) return;
+        const ascending = sortBy === 'time_asc';
+        const sorted = [...buffer].sort((a, b) => {
+            const keyA = getCourseSortKey(a, sortBy, gpaMap);
+            const keyB = getCourseSortKey(b, sortBy, gpaMap);
+            return ascending ? keyA - keyB : keyB - keyA;
+        });
+        result.push(...sorted);
+        buffer = [];
+    };
+
+    for (const item of items) {
+        if ('sections' in item) {
+            buffer.push(item);
+        } else {
+            flush();
+            result.push(item);
+        }
+    }
+    flush();
+
+    return result;
+}
+
+function getStableKey(item: WebsocSchool | WebsocDepartment | AACourse, fallbackIndex: number): string {
+    if ('sections' in item) return `course-${item.deptCode}-${item.courseNumber}`;
+    if ('courses' in item) return `dept-${item.deptCode}`;
+    if ('departments' in item) return `school-${item.schoolName}`;
+    return `idx-${fallbackIndex}`;
+}
 
 function getFilteredCourses(
     allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
@@ -271,7 +359,9 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
+    const [gpaMap, setGpaMap] = useState<CourseGpaMap>(() => new Map());
 
+    const sortBy = useSectionFilterStore((state) => state.sortBy);
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const getQueryParams = useCallback((searchData: CourseSearchParams) => {
@@ -394,6 +484,50 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [loadCourses, props.id]);
 
+    useEffect(() => {
+        if (sortBy !== 'gpa_descending' || courseData.length === 0) return;
+
+        let cancelled = false;
+        const requested = new Set<string>();
+        const tasks: Promise<{ key: string; gpa: number } | null>[] = [];
+
+        for (const item of courseData) {
+            if (!('sections' in item)) continue;
+            const course = item;
+            for (const section of getRepresentativeSections(course)) {
+                for (const instructor of section.instructors) {
+                    if (instructor === 'STAFF') continue;
+                    const key = courseGpaKey(course.deptCode, course.courseNumber, instructor);
+                    if (requested.has(key)) continue;
+                    requested.add(key);
+                    tasks.push(
+                        Grades.queryGrades(course.deptCode, course.courseNumber, instructor, false)
+                            .then((grades) => (grades?.averageGPA ? { key, gpa: grades.averageGPA } : null))
+                            .catch(() => null)
+                    );
+                }
+            }
+        }
+
+        Promise.all(tasks).then((results) => {
+            if (cancelled) return;
+            const next: CourseGpaMap = new Map();
+            for (const result of results) {
+                if (result) next.set(result.key, result.gpa);
+            }
+            setGpaMap(next);
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [courseData, sortBy]);
+
+    const sortedCourseData = useMemo(
+        () => sortCoursesInWindows(courseData, sortBy, gpaMap),
+        [courseData, sortBy, gpaMap]
+    );
+
     /**
      * Removes hovered course when component unmounts
      * Handles edge cases where the Section Table is removed, rather than the mouse
@@ -411,6 +545,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             {Object.entries(RightPaneStore.getWarningMessages()).map(([warningType, messages]) => {
                 return messages.map((message) => (
+                    //takes each message and turns it into an alert
                     <WarningAlert
                         closable
                         key={`${warningType}${message}`}
@@ -422,6 +557,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </WarningAlert>
                 ));
             })}
+
             {unofferedCourses.map((course) => {
                 return (
                     <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
@@ -437,14 +573,20 @@ export default function CourseRenderPane(props: { id?: number }) {
                 <>
                     <RecruitmentBanner />
                     <Box>
-                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                        {sortedCourseData.map((item, index) => {
                             let heightEstimate = 200;
-                            if ((courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            if ((item as AACourse).sections !== undefined)
+                                heightEstimate = (item as AACourse).sections.length * 60 + 20 + 40;
                             return (
-                                <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
+                                <LazyLoad
+                                    once
+                                    key={getStableKey(item, index)}
+                                    overflow
+                                    height={heightEstimate}
+                                    offset={1000}
+                                >
                                     {SectionTableWrapped(index, {
-                                        courseData: courseData,
+                                        courseData: sortedCourseData,
                                         scheduleNames: scheduleNames,
                                     })}
                                 </LazyLoad>

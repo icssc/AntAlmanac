@@ -6,7 +6,7 @@ import { Grades } from '$lib/grades';
 import { ButtonBase, Popover } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-export async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
+async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
     const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
 
     // Get the GPA of the first instructor of this section where data exists
@@ -30,11 +30,9 @@ interface GpaCellProps {
     deptCode: string;
     courseNumber: string;
     instructors: string[];
-    gpa?: string;
-    gpaInstructor?: string;
 }
 
-export const GpaCell = ({ deptCode, courseNumber, instructors, gpa: gpaProp }: GpaCellProps) => {
+export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
     const isMobile = useIsMobile();
     const secondaryColor = useSecondaryColor();
 
@@ -69,7 +67,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors, gpa: gpaProp }: G
                 sx={{ fontFamily: 'inherit', fontSize: 'unset', color: secondaryColor, fontWeight: 700 }}
                 onClick={handleClick}
             >
-                {loading ? null : gpaProp || gpa || 'GPA'}
+                {loading ? null : gpa || 'GPA'}
             </ButtonBase>
 
             <Popover
