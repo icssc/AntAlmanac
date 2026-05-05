@@ -65,7 +65,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         <ToggleButton value="manual">Manual Search</ToggleButton>
                     </ToggleButtonGroup>
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TermSelector />
+                        <TermSelector isAligned={manualSearchEnabled} />
                     </Box>
 
                     {!manualSearchEnabled ? (
