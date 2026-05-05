@@ -151,7 +151,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                     sx={{ width: '100%' }}
                 >
                     <Typography
-                        sx={{ marginLeft: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}
+                        sx={{ marginLeft: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
                         title={roadmap.name}
                     >
                         {roadmap.name}
