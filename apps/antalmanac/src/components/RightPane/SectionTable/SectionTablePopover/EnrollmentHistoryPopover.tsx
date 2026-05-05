@@ -1,3 +1,4 @@
+import { getSectionTableChartPopoverDimensions } from '$components/RightPane/SectionTable/SectionTablePopover/sectionTableChartPopoverSizes';
 import { useIsMobile } from '$hooks/useIsMobile';
 import type { EnrollmentHistory } from '$lib/enrollmentHistory';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
@@ -44,8 +45,7 @@ export function EnrollmentHistoryPopover({
     const theme = useTheme();
     const isMobile = useIsMobile();
 
-    const width = isMobile ? 250 : 450;
-    const height = isMobile ? 175 : 250;
+    const { width, height } = getSectionTableChartPopoverDimensions(isMobile);
 
     const activeGraphIndex = useMemo(() => {
         if (!enrollmentHistory?.length) {
@@ -130,17 +130,29 @@ export function EnrollmentHistoryPopover({
                 }}
             />
 
-            <CardContent sx={{ display: 'flex', flexDirection: 'column', paddingTop: 0 }}>
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', minWidth: width, paddingTop: 0 }}>
                 {loading ? (
-                    <Box sx={{ width: width, height: height }}>
+                    <Box sx={{ width, height }}>
                         <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />
                     </Box>
                 ) : enrollmentHistory == null || !enrollmentHistory.length ? (
-                    <Typography variant="body1" align="center" color="text.secondary">
-                        No past enrollment data found for this course
-                    </Typography>
+                    <Box
+                        sx={{
+                            width,
+                            height,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            px: 1,
+                        }}
+                    >
+                        <Typography variant="body1" color="text.secondary">
+                            No past enrollment data found for this course
+                        </Typography>
+                    </Box>
                 ) : (
-                    <Box sx={{ display: 'flex', height: height, width: width }}>
+                    <Box sx={{ display: 'flex', height, width }}>
                         <ResponsiveContainer>
                             <LineChart data={enrollmentHistory[activeGraphIndex].days} style={{ cursor: 'pointer' }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />

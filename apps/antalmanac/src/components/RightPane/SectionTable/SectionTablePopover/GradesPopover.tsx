@@ -1,3 +1,4 @@
+import { getSectionTableChartPopoverDimensions } from '$components/RightPane/SectionTable/SectionTablePopover/sectionTableChartPopoverSizes';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades, type GradesProps } from '$lib/grades';
 import {
@@ -80,8 +81,7 @@ export function GradesPopover(props: GradesPopoverProps) {
     const [overallData, setOverallData] = useState<GradeData>();
     const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
 
-    const width = isMobile ? 250 : 400;
-    const height = isMobile ? 150 : 200;
+    const { width, height } = getSectionTableChartPopoverDimensions(isMobile);
 
     const activeData = view === 'instructor' ? instructorData : overallData;
     const hasData = activeData?.grades.some((g) => g.all > 0);
@@ -187,11 +187,23 @@ export function GradesPopover(props: GradesPopoverProps) {
                         </ResponsiveContainer>
                     </Box>
                 ) : (
-                    <Typography variant="body1" color="text.secondary">
-                        {view === 'instructor'
-                            ? "This instructor doesn't have a specific GPA for this course."
-                            : 'No data available.'}
-                    </Typography>
+                    <Box
+                        sx={{
+                            width,
+                            height,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            px: 1,
+                        }}
+                    >
+                        <Typography variant="body1" color="text.secondary">
+                            {view === 'instructor'
+                                ? "This instructor doesn't have a specific GPA for this course."
+                                : 'No data available.'}
+                        </Typography>
+                    </Box>
                 )}
             </CardContent>
         </Card>
