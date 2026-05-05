@@ -76,7 +76,7 @@ export class RDS {
         return db
             .select()
             .from(users)
-            .where(sql`lower(${users.email}) = lower(${email})`)
+            .where(sql`lower(${users.email}) = lower(${email.trim()})`)
             .limit(1)
             .then((res) => res[0]);
     }
