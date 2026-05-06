@@ -3,9 +3,9 @@ import { pgTable, text, timestamp, integer } from 'drizzle-orm/pg-core';
 
 import { users } from '../auth/user';
 
-// NOTE: unique constraints on (userId, name) and (userId, index) are intentionally
-// not declared here. They are managed manually in migration 0009 as DEFERRABLE INITIALLY DEFERRED
-// to allow index/name swaps within a transaction. Do not let drizzle-kit regenerate them.
+// NOTE: the unique constraint on (userId, index) is intentionally not declared here.
+// It is managed manually in migration 0009 as DEFERRABLE INITIALLY DEFERRED
+// to allow index reorders within a transaction. Do not let drizzle-kit regenerate it.
 export const schedules = pgTable('schedules', {
     id: text('id').primaryKey().$defaultFn(createId),
 

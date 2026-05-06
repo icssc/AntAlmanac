@@ -40,9 +40,7 @@ function getTakenRoadmapCourses(roadmap: Roadmap): string[] {
                 quarter.year < current.year ||
                 (quarter.year === current.year && QUARTER_ORDER[quarter.quarter] < QUARTER_ORDER[current.quarter])
             ) {
-                q.courses.forEach((c) => {
-                    courses.add(c);
-                });
+                q.courses.forEach((c) => courses.add(c.courseId));
             }
         }
     }
@@ -55,6 +53,7 @@ export function usePlannerRoadmaps() {
     const setFilterTakenCourses = useSessionStore((s) => s.setFilterTakenCourses);
     const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
     const setPlannerRoadmaps = useSessionStore((s) => s.setPlannerRoadmaps);
+    const { setIsPlannerLoading } = useSessionStore((s) => ({ setIsPlannerLoading: s.setIsPlannerLoading }));
     const [selectedRoadmapId, setSelectedRoadmapId] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
@@ -77,18 +76,22 @@ export function usePlannerRoadmaps() {
                 setPlannerRoadmaps([]);
                 return;
             }
+            setIsPlannerLoading(true);
             try {
                 const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query();
                 if (active) setPlannerRoadmaps(data ?? []);
             } catch (e) {
                 console.error('Failed to fetch Planner roadmaps:', e);
             }
+            if (active) {
+                setIsPlannerLoading(false);
+            }
         }
         loadRoadmaps();
         return () => {
             active = false;
         };
-    }, [googleId, setPlannerRoadmaps]);
+    }, [googleId, setPlannerRoadmaps, setIsPlannerLoading]);
 
     useEffect(() => {
         function flattenCourses() {
