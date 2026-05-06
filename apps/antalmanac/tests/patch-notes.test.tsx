@@ -1,10 +1,4 @@
 import PatchNotes, { closeButtonTestId, dialogTestId, backdropTestId } from '$components/PatchNotes';
-import { PatchNotesButton } from '$components/buttons/PatchNotesButton';
-import {
-    getLocalStoragePatchNotesKey,
-    setLocalStoragePatchNotesKey,
-    setLocalStorageTourHasRun,
-} from '$lib/localStorage';
 import { LATEST_PATCH_NOTES_UPDATE, shouldShowPatchNotes, usePatchNotesStore } from '$stores/PatchNotesStore';
 import { render, screen, act } from '@testing-library/react';
 import { afterEach, describe, expect, test, vi } from 'vitest';
@@ -69,26 +63,6 @@ describe('patch notes', () => {
             render(<PatchNotes />);
 
             expect(screen.queryByTestId(dialogTestId)).toBeTruthy();
-        });
-    });
-
-    describe('patch notes button visibility', () => {
-        test('shows Patch Notes button when release is within 30 calendar days', () => {
-            vi.useFakeTimers();
-            vi.setSystemTime(new Date('2026-02-15T12:00:00.000Z'));
-
-            render(<PatchNotesButton />);
-
-            expect(screen.getByRole('button', { name: /patch notes/i })).toBeTruthy();
-        });
-
-        test('hides Patch Notes button when release is past 30 calendar days', () => {
-            vi.useFakeTimers();
-            vi.setSystemTime(new Date('2026-03-02T12:00:00.000Z'));
-
-            render(<PatchNotesButton />);
-
-            expect(screen.queryByRole('button', { name: /patch notes/i })).toBeFalsy();
         });
     });
 

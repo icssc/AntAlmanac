@@ -13,10 +13,10 @@ export const LATEST_PATCH_NOTES_UPDATE = '20260130';
 
 const PATCH_NOTES_ADDED_ON = parse(LATEST_PATCH_NOTES_UPDATE, 'yyyyMMdd', new Date());
 
-/** Hide auto patch notes and the Patch Notes entry point after this many calendar days since release. */
+/** Stop auto-opening the patch notes modal after this many calendar days since release. */
 const PATCH_NOTES_MAX_AGE_CALENDAR_DAYS = 30;
 
-export function arePatchNotesStale(now: Date = new Date()) {
+function arePatchNotesStale(now: Date = new Date()) {
     return (
         differenceInCalendarDays(startOfDay(now), startOfDay(PATCH_NOTES_ADDED_ON)) > PATCH_NOTES_MAX_AGE_CALENDAR_DAYS
     );
