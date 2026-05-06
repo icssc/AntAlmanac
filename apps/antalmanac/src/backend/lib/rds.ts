@@ -293,13 +293,14 @@ export class RDS {
             sectionCode: 'keep',
             term: 'keep',
             color: 'update',
+            index: 'update',
             createdAt: 'keep',
             lastUpdated: 'update',
         } satisfies ConflictUpdatePolicy<typeof coursesInSchedule>;
 
         await tx
             .insert(coursesInSchedule)
-            .values(incoming.map((course) => ({ scheduleId, ...course })))
+            .values(incoming.map((course, index) => ({ scheduleId, ...course, index })))
             .onConflictDoUpdate({
                 target: [coursesInSchedule.scheduleId, coursesInSchedule.sectionCode, coursesInSchedule.term],
                 set: buildConflictUpdateSet(coursesInSchedule, courseUpdatePolicy),
@@ -420,6 +421,8 @@ export class RDS {
         // Map from schedule ID to schedule data
         const schedulesMapping: Record<string, ShortCourseSchedule & { id: string; index: number }> = {};
 
+        const courseIndexes: Record<Schedule['id'], Record<ShortCourse['sectionCode'], CourseInSchedule['index']>> = {};
+
         // Add courses to schedules
         sectionResults.forEach(({ schedules: schedule, coursesInSchedule: course }) => {
             const scheduleId = schedule.id;
@@ -434,15 +437,34 @@ export class RDS {
             };
 
             if (course) {
+                const sectionCode = course.sectionCode.toString();
                 scheduleAggregate.courses.push({
-                    sectionCode: course.sectionCode.toString(),
+                    sectionCode: sectionCode,
                     term: course.term,
                     color: course.color,
                 });
+
+                if (course.index !== null) {
+                    if (!courseIndexes[scheduleId]) {
+                        courseIndexes[scheduleId] = {};
+                    }
+                    courseIndexes[scheduleId][sectionCode] = course.index;
+                }
             }
 
             schedulesMapping[scheduleId] = scheduleAggregate;
         });
+
+        for (const [scheduleId, indexes] of Object.entries(courseIndexes)) {
+            schedulesMapping[scheduleId].courses.sort((a, b) => {
+                const aIndex = indexes[a.sectionCode];
+                const bIndex = indexes[b.sectionCode];
+                if (aIndex === null || bIndex === null) {
+                    return -1;
+                }
+                return aIndex < bIndex ? -1 : 1;
+            });
+        }
 
         // Add custom events to schedules
         customEventResults.forEach(({ schedules: schedule, customEvents: customEvent }) => {
