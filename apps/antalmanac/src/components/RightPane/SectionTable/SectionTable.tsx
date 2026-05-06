@@ -136,7 +136,7 @@ function SectionTable({
                         color="secondary"
                         sx={{ padding: 0, minWidth: 0, minHeight: 0, cursor: 'inherit' }}
                     >
-                        <SortableList.DragHandle iconSx={{ color: 'inherit' }} />
+                        <SortableList.DragHandle sx={{ height: '100%' }} iconSx={{ color: 'inherit' }} />
                     </Button>
                 ) : null}
 
