@@ -85,19 +85,49 @@ function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item i
     return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
 }
 
+function cleanHeaders(
+    items: (WebsocSchool | WebsocDepartment | AACourse)[]
+): (WebsocSchool | WebsocDepartment | AACourse)[] {
+    const result: (WebsocSchool | WebsocDepartment | AACourse)[] = [];
+    let pendingSchool: WebsocSchool | null = null;
+    let pendingDept: WebsocDepartment | null = null;
+
+    for (const item of items) {
+        if ('departments' in item) {
+            pendingSchool = item as WebsocSchool;
+            pendingDept = null;
+        } else if ('courses' in item) {
+            pendingDept = item as WebsocDepartment;
+        } else {
+            if (pendingSchool) {
+                result.push(pendingSchool);
+                pendingSchool = null;
+            }
+            if (pendingDept) {
+                result.push(pendingDept);
+                pendingDept = null;
+            }
+            result.push(item);
+        }
+    }
+
+    return result;
+}
+
 function getFilteredCourses(
     allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const { manualSearchEnabled } = useCoursePaneStore.getState();
     const { filterTakenCourses, userTakenCourses } = useSessionStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
-        return allCourses.filter((item) => {
+        const filtered = allCourses.filter((item) => {
             if (isCourseEntry(item)) {
                 const courseKey = `${item.deptCode}${item.courseNumber}`.replace(/\s+/g, '');
                 return !userTakenCourses.has(courseKey);
             }
             return true;
         });
+        return cleanHeaders(filtered);
     }
     return allCourses;
 }
