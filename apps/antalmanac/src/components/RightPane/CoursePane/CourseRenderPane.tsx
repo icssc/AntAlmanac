@@ -429,7 +429,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </WarningAlert>
                 ));
             })}
-            {filterTakenCourses && hasRenderableCourseResults && (
+            {filterTakenCourses && !hasRenderableCourseResults && (
                 <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
             )}
             {unofferedCourses.map((course) => {
