@@ -59,9 +59,6 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
     const loadFriendSchedules = useCallback(
         async (userId: string) => {
             try {
-                beginLoadingSchedule();
-                removeLocalStorageTempSaveData();
-
                 const userData = await trpc.userData.getFriendUserData.query({ userId });
 
                 if (!userData?.userData?.schedules?.length) {
@@ -86,7 +83,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 setOpenLoadingSchedule(false);
             }
         },
-        [beginLoadingSchedule, setError, setOpenLoadingSchedule]
+        [setError, setOpenLoadingSchedule]
     );
 
     useEffect(() => {
@@ -104,6 +101,14 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         }
 
         const loadFriendsData = async () => {
+            beginLoadingSchedule();
+            const placeholderSaveState: ScheduleSaveState = {
+                schedules: [createEmptyShortCourseSchedule()],
+                scheduleIndex: 0,
+            };
+            await AppStore.loadSchedule(placeholderSaveState);
+            removeLocalStorageTempSaveData();
+
             // Validate stored session so direct visits (e.g. pasted URL) recognize the user as logged in.
             // loadSession is idempotent — safe to call even if already valid.
             await loadSession();
@@ -111,7 +116,6 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             if (friendUserId) {
                 hasAttemptedLoadRef.current = true;
                 try {
-                    beginLoadingSchedule();
                     const { sessionIsValid: validAfterLoad, userId: currentUserId } = useSessionStore.getState();
                     if (!validAfterLoad || !currentUserId) {
                         setError("You're not allowed to see this schedule.");
@@ -149,9 +153,6 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             hasAttemptedLoadRef.current = true;
 
             try {
-                beginLoadingSchedule();
-                removeLocalStorageTempSaveData();
-
                 const sharedSchedule = await trpc.userData.getSharedSchedule.query({
                     scheduleId,
                 });
