@@ -81,6 +81,10 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
     }, []);
 };
 
+function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is AACourse {
+    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
+}
+
 function getFilteredCourses(
     allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
@@ -88,7 +92,7 @@ function getFilteredCourses(
     const { filterTakenCourses, userTakenCourses } = useSessionStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
         return allCourses.filter((item) => {
-            if ('sections' in item && 'deptCode' in item && 'courseNumber' in item) {
+            if (isCourseEntry(item)) {
                 const courseKey = `${item.deptCode}${item.courseNumber}`.replace(/\s+/g, '');
                 return !userTakenCourses.has(courseKey);
             }
@@ -285,6 +289,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
+    const filterTakenCourses = useSessionStore((store) => store.filterTakenCourses);
 
     const getQueryParams = useCallback((searchData: CourseSearchParams) => {
         const websocQueryParams = {
@@ -389,6 +394,8 @@ export default function CourseRenderPane(props: { id?: number }) {
         setScheduleNames(AppStore.getScheduleNames());
     };
 
+    const hasRenderableCourseResults = courseData.some(isCourseEntry);
+
     useEffect(() => {
         const changeColors = () => {
             if (websocResp == null) {
@@ -456,6 +463,9 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </WarningAlert>
                 ));
             })}
+            {filterTakenCourses && !hasRenderableCourseResults && (
+                <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
+            )}
             {unofferedCourses.map((course) => {
                 return (
                     <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
@@ -465,7 +475,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             })}
             {loading ? (
                 <LoadingMessage />
-            ) : error || courseData.length === 0 ? (
+            ) : error || !hasRenderableCourseResults ? (
                 <ErrorMessage />
             ) : (
                 <>
