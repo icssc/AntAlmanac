@@ -1,6 +1,11 @@
 import PatchNotes, { closeButtonTestId, dialogTestId, backdropTestId } from '$components/PatchNotes';
+import {
+    getLocalStoragePatchNotesKey,
+    setLocalStoragePatchNotesKey,
+    setLocalStorageTourHasRun,
+} from '$lib/localStorage';
 import { LATEST_PATCH_NOTES_UPDATE, shouldShowPatchNotes, usePatchNotesStore } from '$stores/PatchNotesStore';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
 describe('patch notes', () => {
@@ -67,7 +72,7 @@ describe('patch notes', () => {
     });
 
     describe('close patch notes with button', () => {
-        test('clicking the button closes the dialog', () => {
+        test('clicking the button closes the dialog', async () => {
             usePatchNotesStore.setState({ showPatchNotes: true });
 
             render(<PatchNotes />);
@@ -76,7 +81,9 @@ describe('patch notes', () => {
                 screen.getByTestId(closeButtonTestId).click();
             });
 
-            expect(screen.queryByTestId(dialogTestId)).toBeFalsy();
+            await waitFor(() => {
+                expect(screen.queryByTestId(dialogTestId)).toBeNull();
+            });
         });
 
         test('the latest patch notes is saved to local storage', () => {
@@ -94,7 +101,7 @@ describe('patch notes', () => {
     });
 
     describe('closing the dialog by clicking the backdrop ', () => {
-        test('clicking the backdrop closes the dialog', () => {
+        test('clicking the backdrop closes the dialog', async () => {
             usePatchNotesStore.setState({ showPatchNotes: true });
 
             render(<PatchNotes />);
@@ -103,7 +110,9 @@ describe('patch notes', () => {
                 screen.getByTestId(backdropTestId).click();
             });
 
-            expect(screen.queryByTestId(dialogTestId)).toBeFalsy();
+            await waitFor(() => {
+                expect(screen.queryByTestId(dialogTestId)).toBeNull();
+            });
         });
 
         test('the latest patch notes is saved to local storage', () => {
