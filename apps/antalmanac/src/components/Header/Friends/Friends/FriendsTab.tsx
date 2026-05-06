@@ -36,7 +36,7 @@ export function FriendsTab({ friends, onRefresh }: FriendsTabProps) {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <FriendSearch friends={friends} onView={handleViewSchedule} onRefresh={onRefresh} />
 
-            <Box sx={{ maxHeight: 240, overflowY: 'auto' }}>
+            <Box sx={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {friends.length === 0 ? (
                     <Typography variant="body1" color="text.secondary">
                         No friends added yet

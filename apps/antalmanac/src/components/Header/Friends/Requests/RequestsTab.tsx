@@ -39,7 +39,7 @@ export function RequestsTab({ friendRequests, sentRequests, onRefresh }: Request
                 <ToggleButton value="sent">Sent</ToggleButton>
             </ToggleButtonGroup>
 
-            <Box sx={{ maxHeight: 240, overflowY: 'auto' }}>
+            <Box sx={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {subTab === 'received' && (
                     <>
                         {friendRequests.length === 0 ? (
