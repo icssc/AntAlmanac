@@ -237,18 +237,18 @@ function ScheduleNoteBox() {
                     },
                     inputLabel: {
                         variant: 'filled',
+                        ...(theme.palette.mode === 'dark' && {
+                            sx: {
+                                color: LIGHT_BLUE,
+                                '&.Mui-focused': {
+                                    color: LIGHT_BLUE,
+                                },
+                            },
+                        }),
                     },
                     input: {
                         disableUnderline: true,
                     },
-                    ...(theme.palette.mode === 'dark' && {
-                        '& .MuiInputLabel-root': {
-                            color: LIGHT_BLUE,
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: LIGHT_BLUE,
-                        },
-                    }),
                 }}
             />
         </Box>
@@ -258,6 +258,7 @@ function ScheduleNoteBox() {
 function SkeletonSchedule() {
     const getScheduleData = (): ShortCourseSchedule => {
         const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();
+
         if (!skeletonSchedule.courses || skeletonSchedule.courses.length === 0) {
             const regularCourses = AppStore.schedule.getCurrentCourses();
             if (regularCourses.length > 0) {
@@ -274,6 +275,7 @@ function SkeletonSchedule() {
                 };
             }
         }
+
         return skeletonSchedule;
     };
 

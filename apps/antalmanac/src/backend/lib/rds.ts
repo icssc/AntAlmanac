@@ -853,15 +853,20 @@ export class RDS {
     }
 
     /**
-     * Deletes the friendship row between two users regardless of direction.
+     * Deletes friendship rows between the caller and another user that the caller is allowed to end.
+     * Does not delete a BLOCKED row where the caller is the addressee (the blocked party), so
+     * withdrawing a DECLINED outgoing request cannot remove the other user's block.
      */
-    static async deleteFriendship(db: DatabaseOrTransaction, userIdA: string, userIdB: string) {
+    static async deleteFriendship(db: DatabaseOrTransaction, callerId: string, otherUserId: string) {
         return db
             .delete(friendships)
             .where(
-                or(
-                    and(eq(friendships.requesterId, userIdA), eq(friendships.addresseeId, userIdB)),
-                    and(eq(friendships.requesterId, userIdB), eq(friendships.addresseeId, userIdA))
+                and(
+                    or(
+                        and(eq(friendships.requesterId, callerId), eq(friendships.addresseeId, otherUserId)),
+                        and(eq(friendships.requesterId, otherUserId), eq(friendships.addresseeId, callerId))
+                    ),
+                    or(ne(friendships.status, 'BLOCKED'), ne(friendships.addresseeId, callerId))
                 )
             );
     }
