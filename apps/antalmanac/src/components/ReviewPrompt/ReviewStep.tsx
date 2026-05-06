@@ -1,5 +1,6 @@
 'use client';
 
+import { LIGHT_BLUE } from '$src/globals';
 import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { Close } from '@mui/icons-material';
@@ -15,6 +16,7 @@ import {
     Stack,
     TextField,
     Typography,
+    useTheme,
 } from '@mui/material';
 
 function ratingLabel(rating: number): string {
@@ -53,6 +55,7 @@ function difficultyLabel(difficulty: number): string {
 }
 
 export function ReviewStep() {
+    const theme = useTheme();
     const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
     const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
     const rating = useReviewPromptStore((s) => s.rating);
@@ -122,6 +125,14 @@ export function ReviewStep() {
                             htmlInput: { maxLength: 500 },
                             formHelperText: { sx: { textAlign: 'right', mx: 0 } },
                         }}
+                        sx={
+                            theme.palette.mode === 'dark'
+                                ? {
+                                      '& .MuiInputLabel-root': { color: LIGHT_BLUE },
+                                      '& .MuiInputLabel-root.Mui-focused': { color: LIGHT_BLUE },
+                                  }
+                                : {}
+                        }
                         helperText={`${textReview.length}/500`}
                     />
 
