@@ -118,7 +118,11 @@ export function ReviewStep() {
                         fullWidth
                         value={textReview}
                         onChange={(e) => setTextReview(e.target.value)}
-                        slotProps={{ htmlInput: { maxLength: 500 } }}
+                        slotProps={{
+                            htmlInput: { maxLength: 500 },
+                            formHelperText: { sx: { textAlign: 'right', mx: 0 } },
+                        }}
+                        helperText={`${textReview.length}/500`}
                     />
 
                     <Box display="flex" flexDirection="column" gap={0.5}>
