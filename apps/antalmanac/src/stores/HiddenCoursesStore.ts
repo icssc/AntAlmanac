@@ -1,4 +1,3 @@
-import { getLocalStorageHiddenCourses, setLocalStorageHiddenCourses } from '$lib/localStorage';
 import { ShortCourse, VisibilityState } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
@@ -18,18 +17,8 @@ interface HiddenCoursesStore {
     hydrateFromSchedules: (schedules: Array<{ id?: string; courses: ShortCourse[] }>) => void;
 }
 
-function loadFromStorage(): VisibilityMap {
-    try {
-        const raw = getLocalStorageHiddenCourses();
-        if (raw) return JSON.parse(raw) as VisibilityMap;
-    } catch {
-        // ignore malformed data
-    }
-    return {};
-}
-
 export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
-    visibilityMap: loadFromStorage(),
+    visibilityMap: {},
 
     getVisibility: (scheduleId, sectionCode) => {
         return get().visibilityMap[scheduleId]?.[sectionCode] ?? 'visible';
@@ -54,7 +43,6 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
             newMap[scheduleId] = scheduleMap;
         }
 
-        setLocalStorageHiddenCourses(JSON.stringify(newMap));
         set({ visibilityMap: newMap });
     },
 
@@ -70,7 +58,6 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
                 }
             }
         }
-        setLocalStorageHiddenCourses(JSON.stringify(newMap));
         set({ visibilityMap: newMap });
     },
 }));
