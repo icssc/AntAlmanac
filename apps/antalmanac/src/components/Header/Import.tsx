@@ -22,6 +22,7 @@ import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useDevModeStore } from '$stores/SettingsStore';
@@ -75,7 +76,7 @@ export function Import() {
     const [exportSchedules, setExportSchedules] = useState<ShortCourseSchedule[]>([]);
     const [exportSelectedIndices, setExportSelectedIndices] = useState<Set<number>>(new Set());
 
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
     const { sessionIsValid } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
@@ -642,17 +643,9 @@ export function Import() {
     }, [handleOpen]);
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
         if (sessionIsValid && getLocalStorageDataCache() === null) {
             handleFirstTimeSignin();
         }
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
     }, [handleFirstTimeSignin, sessionIsValid]);
 
     useEffect(() => {
@@ -678,7 +671,7 @@ export function Import() {
                     color="inherit"
                     sx={{ fontSize: 'inherit' }}
                     startIcon={<ContentPasteGo />}
-                    disabled={skeletonMode}
+                    disabled={fallbackMode}
                     id="import-button"
                 >
                     {devMode ? 'Import/Export' : 'Import'}

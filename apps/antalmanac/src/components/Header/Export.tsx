@@ -1,5 +1,6 @@
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { ContentPaste } from '@mui/icons-material';
 import {
@@ -21,7 +22,7 @@ import { ShortCourseSchedule } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
 export function Export() {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedScheduleIndices, setSelectedScheduleIndices] = useState<Set<number>>(new Set());
     const [schedules, setSchedules] = useState<ShortCourseSchedule[]>([]);
@@ -91,14 +92,6 @@ export function Export() {
         }
     }, [openDialog]);
 
-    useEffect(() => {
-        const handleSkeletonModeChange = () => setSkeletonMode(AppStore.getSkeletonMode());
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
     return (
         <>
             <Tooltip title="Export your schedule data to a JSON file">
@@ -106,7 +99,7 @@ export function Export() {
                     onClick={handleOpen}
                     color="inherit"
                     startIcon={<ContentPaste />}
-                    disabled={skeletonMode}
+                    disabled={fallbackMode}
                     id="export-button"
                 >
                     Export

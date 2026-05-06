@@ -7,6 +7,7 @@ import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSele
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import {
     Undo as UndoIcon,
     Redo as RedoIcon,
@@ -31,7 +32,7 @@ import {
     ListItemText,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState, useCallback, useEffect, memo, useRef } from 'react';
+import { useState, useCallback, memo, useRef } from 'react';
 
 export interface CalendarPaneToolbarProps {
     scheduleNames: string[];
@@ -47,7 +48,7 @@ export interface CalendarPaneToolbarProps {
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const theme = useTheme();
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
     const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -85,18 +86,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
         });
         redoAction();
     }, [postHog]);
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setMenuAnchorEl(event.currentTarget);
@@ -155,7 +144,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             color={showFinalsSchedule ? 'primary' : 'inherit'}
                             onClick={handleToggleFinals}
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode}
+                            disabled={fallbackMode}
                             size="small"
                             sx={{
                                 border: '1px solid',
@@ -181,7 +170,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             onClick={handleToggleFinals}
                             size="small"
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode}
+                            disabled={fallbackMode}
                         >
                             Finals
                         </Button>
@@ -200,16 +189,16 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             >
                 <Box display="flex" flexDirection="row" gap={0.5}>
                     <Box display="flex" flexWrap="nowrap" alignItems="center" gap={0.5}>
-                        <IconButton onClick={handleUndo} disabled={skeletonMode}>
+                        <IconButton onClick={handleUndo} disabled={fallbackMode}>
                             <UndoIcon fontSize="small" />
                         </IconButton>
-                        <IconButton onClick={handleRedo} disabled={skeletonMode}>
+                        <IconButton onClick={handleRedo} disabled={fallbackMode}>
                             <RedoIcon fontSize="small" />
                         </IconButton>
                         <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
 
                         <Tooltip title="More options">
-                            <IconButton onClick={handleMenuOpen} disabled={skeletonMode}>
+                            <IconButton onClick={handleMenuOpen} disabled={fallbackMode}>
                                 <MoreVertIcon fontSize="small" />
                             </IconButton>
                         </Tooltip>
@@ -259,7 +248,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 <ClearScheduleButton
                                     size="medium"
                                     fontSize="small"
-                                    skeletonMode={skeletonMode}
                                     analyticsCategory={analyticsEnum.calendar}
                                 />
                             </Box>
@@ -285,22 +273,17 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     <DownloadButton />
 
                     <Tooltip title="Undo last action">
-                        <IconButton onClick={handleUndo} size="medium" disabled={skeletonMode}>
+                        <IconButton onClick={handleUndo} size="medium" disabled={fallbackMode}>
                             <UndoIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Redo last action">
-                        <IconButton onClick={handleRedo} size="medium" disabled={skeletonMode}>
+                        <IconButton onClick={handleRedo} size="medium" disabled={fallbackMode}>
                             <RedoIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
 
-                    <ClearScheduleButton
-                        size="medium"
-                        fontSize="small"
-                        skeletonMode={skeletonMode}
-                        analyticsCategory={analyticsEnum.calendar}
-                    />
+                    <ClearScheduleButton size="medium" fontSize="small" analyticsCategory={analyticsEnum.calendar} />
 
                     <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
                 </Box>

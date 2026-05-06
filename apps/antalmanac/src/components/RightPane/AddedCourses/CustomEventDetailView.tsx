@@ -5,12 +5,12 @@ import ColorPicker from '$components/ColorPicker';
 import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { format, set } from 'date-fns';
-import { useEffect, useState } from 'react';
 
 interface CustomEventDetailViewProps {
     scheduleNames: string[];
@@ -21,19 +21,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
     const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
 
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const baseDate = new Date(2000, 0, 1);
@@ -75,7 +63,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
                 />
             </CardContent>
 
-            {!skeletonMode && (
+            {!fallbackMode && (
                 <CardActions disableSpacing={true}>
                     <ColorPicker
                         color={customEvent.color}
