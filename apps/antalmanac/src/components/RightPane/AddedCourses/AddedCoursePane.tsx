@@ -16,7 +16,7 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useTabStore } from '$stores/TabStore';
 import { MenuBook } from '@mui/icons-material';
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
-import { AACourse, type ShortCourseSchedule } from '@packages/antalmanac-types';
+import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -40,13 +40,6 @@ export interface CourseWithTerm extends AACourse {
 }
 
 const NOTE_MAX_LEN = 5000;
-
-const EMPTY_FALLBACK_SCHEDULE: ShortCourseSchedule = {
-    scheduleName: '',
-    courses: [],
-    customEvents: [],
-    scheduleNote: '',
-};
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -103,7 +96,7 @@ function CustomEventsBox() {
 
     const [customEvents, setCustomEvents] = useState(
         fallbackMode
-            ? (getCurrentFallbackSchedule(currentScheduleIndex)?.customEvents ?? [])
+            ? getCurrentFallbackSchedule(currentScheduleIndex).customEvents
             : AppStore.schedule.getCurrentCustomEvents()
     );
 
@@ -149,7 +142,7 @@ function ScheduleNoteBox() {
     const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore();
     const [scheduleNote, setScheduleNote] = useState(
         fallbackMode
-            ? (getCurrentFallbackSchedule(AppStore.getCurrentScheduleIndex())?.scheduleNote ?? '')
+            ? getCurrentFallbackSchedule(AppStore.getCurrentScheduleIndex()).scheduleNote
             : AppStore.getCurrentScheduleNote()
     );
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
@@ -236,8 +229,7 @@ function FallbackSchedule() {
         };
     }, []);
 
-    const fallbackSchedule =
-        getCurrentFallbackSchedule(currentScheduleIndex) ?? EMPTY_FALLBACK_SCHEDULE;
+    const fallbackSchedule = getCurrentFallbackSchedule(currentScheduleIndex);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
         const result = fallbackSchedule.courses.reduce(
