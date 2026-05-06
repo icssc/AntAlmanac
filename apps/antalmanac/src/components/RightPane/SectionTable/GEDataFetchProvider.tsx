@@ -1,6 +1,5 @@
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import SectionTable from '$components/RightPane/SectionTable/SectionTable';
-import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
+import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { WebSOC } from '$lib/websoc';
 import { useEffect, useState } from 'react';
 

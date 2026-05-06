@@ -49,7 +49,7 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
-interface SectionTableProps {
+export interface SectionTableProps {
     courseDetails: AACourse;
     term: string;
     allowHighlight: boolean;
