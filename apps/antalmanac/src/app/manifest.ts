@@ -8,7 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
         scope: 'https://antalmanac.com',
         name: 'AntAlmanac',
         short_name: 'AntAlmanac',
-        description: 'A course exploration and scheduling tool for UCI Anteaters',
+        description:
+            'UCI planner and course explorer: build your UCI course schedule, search classes, and plan weekly calendars at UC Irvine.',
         lang: 'en',
         dir: 'ltr',
         start_url: '/',

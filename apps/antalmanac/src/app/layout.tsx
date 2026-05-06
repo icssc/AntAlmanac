@@ -3,7 +3,8 @@ import Script from 'next/script';
 
 import './globals.css';
 
-const ANTALMANAC_DESCRIPTION = 'A schedule planning and course exploration tool for UCI students.';
+const ANTALMANAC_DESCRIPTION =
+    'Free UCI planner for UC Irvine—search UCI courses, build your UCI course schedule, preview calendars, catch conflicts, and explore grades on a campus map.';
 
 export const metadata: Metadata = {
     title: 'AntAlmanac - UCI Schedule Planner',
@@ -48,6 +49,9 @@ export const metadata: Metadata = {
         'antalmanac',
         'course',
         'course planner',
+        'uci course',
+        'uci course schedule',
+        'uci planner',
     ],
 };
 

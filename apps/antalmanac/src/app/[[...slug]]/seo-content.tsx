@@ -8,12 +8,13 @@
 export function SeoContent() {
     return (
         <div className="sr-only" role="complementary" aria-label="About AntAlmanac">
-            <h1>AntAlmanac — Free UCI Schedule Planner</h1>
+            <h1>AntAlmanac — Free UCI Planner for Your UCI Course Schedule</h1>
 
             <p>
-                AntAlmanac is a free schedule planner for UC Irvine students. Search UCI courses by department, course
-                number, or GE category. Build your weekly class schedule, view locations on an interactive campus map,
-                and explore grade distributions and enrollment history.
+                AntAlmanac is a free UCI planner for UC Irvine students who want to plan a realistic UCI course
+                schedule before registration. Look up any UCI course in the schedule of classes, add sections to a
+                week view, and iterate on your UCI course schedule until it fits. Compare alternatives, keep unit
+                totals in check, and pair planning with grade history so you know what you are signing up for.
             </p>
 
             <h2>Search UCI Courses</h2>
@@ -21,13 +22,16 @@ export function SeoContent() {
                 Browse courses across 140+ UCI departments including Computer Science, Informatics, Engineering,
                 Biological Sciences, Mathematics, Economics, Psychology, Political Science, and more. Filter by General
                 Education category — from Lower Division Writing to Multicultural Studies — or search by course number,
-                title, or instructor.
+                title, or instructor. Whether you are shopping for your next term or mapping prerequisites, this UCI
+                course search is built for speed alongside your UCI course schedule.
             </p>
 
             <h2>Schedule Builder</h2>
             <p>
-                Add UCI courses to a weekly calendar. AntAlmanac detects time conflicts, tracks your unit count, and
-                lets you save multiple schedule variations to compare before enrolling.
+                Turn search results into a concrete weekly layout: add UCI courses to the calendar, spot overlapping
+                lectures and discussions automatically, and save multiple draft schedules. The schedule builder is the
+                core of the UCI planner experience—swap sections, preserve backups, and walk into enrollment with a plan
+                instead of a guess.
             </p>
 
             <h2>Interactive Campus Map</h2>
