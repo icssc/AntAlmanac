@@ -6,7 +6,7 @@ interface FallbackStore {
     fallbackSchedules: ShortCourseSchedule[];
 
     loadFallbackSchedules: (schedules: ShortCourseSchedule[]) => void;
-    getCurrentFallbackSchedule: (currentScheduleIndex: number) => ShortCourseSchedule;
+    getCurrentFallbackSchedule: (currentScheduleIndex: number) => ShortCourseSchedule | undefined;
     getFallbackScheduleNames: () => string[];
 }
 
