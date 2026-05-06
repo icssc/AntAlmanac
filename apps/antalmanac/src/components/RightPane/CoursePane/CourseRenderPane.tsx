@@ -502,7 +502,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     requested.add(key);
                     tasks.push(
                         Grades.queryGrades(course.deptCode, course.courseNumber, instructor, true)
-                            .then((grades) => (grades?.averageGPA ? { key, gpa: grades.averageGPA } : null))
+                            .then((grades) => (grades?.averageGPA != null ? { key, gpa: grades.averageGPA } : null))
                             .catch(() => null)
                     );
                 }
