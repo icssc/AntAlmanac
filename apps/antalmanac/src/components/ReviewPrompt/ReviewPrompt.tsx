@@ -40,7 +40,7 @@ export function ReviewPrompt() {
 
     return (
         <Snackbar open={open} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-            <Paper>
+            <Paper sx={{ width: 500, maxWidth: '100vw' }}>
                 {step === 'enrollment-confirm' && candidate && <EnrollmentConfirmStep />}
                 {step === 'review' && candidate && <ReviewStep />}
                 {step === 'success' && candidate && <SuccessStep />}
