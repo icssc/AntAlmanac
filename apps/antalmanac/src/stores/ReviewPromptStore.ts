@@ -3,6 +3,7 @@ import { trpc } from '$lib/api/trpc';
 import { type AATerm, termData } from '$lib/term';
 import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { create } from 'zustand';
 import { combine } from 'zustand/middleware';
 
@@ -27,7 +28,7 @@ type ReviewCandidate = {
     term: AATerm;
 };
 
-type Step = 'enrollment-confirm' | 'review' | 'hidden';
+type Step = 'enrollment-confirm' | 'review' | 'success' | 'hidden';
 
 const PAST_TERMS_WINDOW = 4;
 
@@ -36,6 +37,8 @@ const REVIEW_PROMPT_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 
 const initialState = {
     candidate: null as ReviewCandidate | null,
+    eligibleCandidates: [] as ReviewCandidate[],
+    eligibleIndex: 0,
     step: 'hidden' as Step,
     rating: 0,
     difficulty: 0,
@@ -150,16 +153,25 @@ export const useReviewPromptStore = create(
                 return;
             }
 
-            const candidate = eligible[Math.floor(Math.random() * eligible.length)];
-            set({ step: 'enrollment-confirm', candidate, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
+            const shuffled = [...eligible].sort(() => Math.random() - 0.5);
+            set({
+                step: 'enrollment-confirm',
+                candidate: shuffled[0],
+                eligibleCandidates: shuffled,
+                eligibleIndex: 0,
+                rating: 0,
+                difficulty: 0,
+                selectedTags: [],
+                textReview: '',
+            });
             logAnalytics(postHog, {
                 category: analyticsEnum.review,
                 action: analyticsEnum.review.actions.PROMPT_SHOWN,
                 customProps: {
-                    courseId: candidate.courseId,
-                    courseTitle: candidate.courseTitle,
-                    professorId: candidate.professorId,
-                    term: candidate.term.shortName,
+                    courseId: shuffled[0].courseId,
+                    courseTitle: shuffled[0].courseTitle,
+                    professorId: shuffled[0].professorId,
+                    term: shuffled[0].term.shortName,
                 },
             });
         },
@@ -187,8 +199,17 @@ export const useReviewPromptStore = create(
          */
         dismiss: () => {
             const { candidate, step } = get();
-            set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
-            if (candidate) {
+            set({
+                step: 'hidden',
+                candidate: null,
+                eligibleCandidates: [],
+                eligibleIndex: 0,
+                rating: 0,
+                difficulty: 0,
+                selectedTags: [],
+                textReview: '',
+            });
+            if (candidate && step !== 'success') {
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
                     action: analyticsEnum.review.actions.DISMISSED,
@@ -218,7 +239,87 @@ export const useReviewPromptStore = create(
             });
         },
 
+        submitReview: async () => {
+            const { candidate, rating, difficulty, selectedTags, textReview } = get();
+            if (!candidate || rating === 0 || difficulty === 0) return;
+
+            const trimmedReview = textReview.trim();
+
+            try {
+                await trpc.review.submitReview.mutate({
+                    professorId: candidate.professorId,
+                    courseId: candidate.courseId,
+                    termShortName: candidate.term.shortName,
+                    rating,
+                    difficulty,
+                    tags: selectedTags,
+                    content: trimmedReview || undefined,
+                });
+                set({ step: 'success', rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
+                logAnalytics(postHog, {
+                    category: analyticsEnum.review,
+                    action: analyticsEnum.review.actions.SUBMITTED,
+                    customProps: {
+                        courseId: candidate.courseId,
+                        professorId: candidate.professorId,
+                        term: candidate.term.shortName,
+                        rating,
+                        difficulty,
+                        tags: selectedTags,
+                    },
+                });
+            } catch {
+                openSnackbar('error', 'Failed to submit review. Please try again.');
+            }
+        },
+
         resetReview: () =>
-            set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [], textReview: '' }),
+            set({ step: 'hidden', candidate: null, eligibleCandidates: [], eligibleIndex: 0, rating: 0, difficulty: 0, selectedTags: [], textReview: '' }),
+
+        advanceToNext: () => {
+            const { eligibleCandidates, eligibleIndex } = get();
+            const nextIndex = eligibleIndex + 1;
+            const next = eligibleCandidates[nextIndex];
+            if (!next) {
+                set({ step: 'hidden', candidate: null, eligibleCandidates: [], eligibleIndex: 0 });
+                return;
+            }
+            set({
+                step: 'enrollment-confirm',
+                candidate: next,
+                eligibleIndex: nextIndex,
+                rating: 0,
+                difficulty: 0,
+                selectedTags: [],
+                textReview: '',
+            });
+            logAnalytics(postHog, {
+                category: analyticsEnum.review,
+                action: analyticsEnum.review.actions.REVIEW_ANOTHER_CLICKED,
+                customProps: {
+                    courseId: next.courseId,
+                    professorId: next.professorId,
+                    term: next.term.shortName,
+                },
+            });
+        },
+
+        finishReviewing: () => {
+            set({
+                step: 'hidden',
+                candidate: null,
+                eligibleCandidates: [],
+                eligibleIndex: 0,
+                rating: 0,
+                difficulty: 0,
+                selectedTags: [],
+                textReview: '',
+            });
+            openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
+            logAnalytics(postHog, {
+                category: analyticsEnum.review,
+                action: analyticsEnum.review.actions.REVIEW_DONE_CLICKED,
+            });
+        },
     }))
 );
