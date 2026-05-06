@@ -109,6 +109,8 @@ const analyticsEnum: AnalyticsEnum = {
             ENROLLMENT_CONFIRMED: 'Review Enrollment Confirmed',
             DISMISSED: 'Review Prompt Dismissed',
             SUBMITTED: 'Review Submitted',
+            REVIEW_ANOTHER_CLICKED: 'Review Another Clicked',
+            REVIEW_DONE_CLICKED: 'Review Done Clicked',
         },
     },
 };
