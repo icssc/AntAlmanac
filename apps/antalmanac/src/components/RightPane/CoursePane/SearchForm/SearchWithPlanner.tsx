@@ -15,7 +15,7 @@ import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { OpenInBrowser } from '@mui/icons-material';
-import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, Link, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useSearchParams } from 'next/navigation';
 import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
@@ -233,13 +233,9 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 ...(plannerRoadmaps.length === 0 && {
                     slotProps: { popper: { sx: { '& .MuiAutocomplete-noOptions': { padding: 0 } } } },
                     noOptionsText: (
-                        <MenuItem
-                            component="a"
-                            href={PLANNER_LINK}
-                            sx={(theme) => ({ color: theme.palette.text.primary, paddingTop: 1.5, paddingBottom: 1.5 })}
-                        >
-                            Create a roadmap!
-                        </MenuItem>
+                        <Link href={PLANNER_LINK} target="_blank">
+                            <MenuItem sx={{ paddingTop: 1.5, paddingBottom: 1.5 }}>Create a roadmap!</MenuItem>
+                        </Link>
                     ),
                 }),
             }}
