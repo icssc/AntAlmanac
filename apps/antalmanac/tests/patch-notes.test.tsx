@@ -1,4 +1,5 @@
 import PatchNotes, { closeButtonTestId, dialogTestId, backdropTestId } from '$components/PatchNotes';
+import { PatchNotesButton } from '$components/buttons/PatchNotesButton';
 import {
     getLocalStoragePatchNotesKey,
     setLocalStoragePatchNotesKey,
@@ -6,13 +7,17 @@ import {
 } from '$lib/localStorage';
 import { LATEST_PATCH_NOTES_UPDATE, shouldShowPatchNotes, usePatchNotesStore } from '$stores/PatchNotesStore';
 import { render, screen, act } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 describe('patch notes', () => {
     /**
      * A date that's guaranteed to be outdated.
      */
     const outdatedPatchNotes = '00000000';
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
 
     describe('patch notes displays appropriately', () => {
         test('displays when latest patch notes is outdated ', () => {
@@ -33,6 +38,43 @@ describe('patch notes', () => {
 
             expect(screen.queryByTestId(dialogTestId)).toBeFalsy();
         });
+
+        test('no auto display when patch notes are older than 30 calendar days', () => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2026-03-02T12:00:00.000Z'));
+
+            setLocalStoragePatchNotesKey(outdatedPatchNotes);
+            setLocalStorageTourHasRun('true');
+            usePatchNotesStore.setState({ showPatchNotes: shouldShowPatchNotes() });
+
+            render(<PatchNotes />);
+
+            expect(screen.queryByTestId(dialogTestId)).toBeFalsy();
+        });
+
+        test('auto display still allowed on the 30th calendar day after release', () => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2026-03-01T12:00:00.000Z'));
+
+            setLocalStoragePatchNotesKey(outdatedPatchNotes);
+            setLocalStorageTourHasRun('true');
+            usePatchNotesStore.setState({ showPatchNotes: shouldShowPatchNotes() });
+
+            render(<PatchNotes />);
+
+            expect(screen.queryByTestId(dialogTestId)).toBeTruthy();
+        });
+    });
+
+    describe('patch notes button visibility', () => {
+        test('hides Patch Notes button when release is past 30 calendar days', () => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2026-03-02T12:00:00.000Z'));
+
+            render(<PatchNotesButton />);
+
+            expect(screen.queryByRole('button', { name: /patch notes/i })).toBeFalsy();
+        });
     });
 
     describe('close patch notes with button', () => {
@@ -45,7 +87,7 @@ describe('patch notes', () => {
                 screen.getByTestId(closeButtonTestId).click();
             });
 
-            expect(screen.queryByTitle(dialogTestId)).toBeFalsy();
+            expect(screen.queryByTestId(dialogTestId)).toBeFalsy();
         });
 
         test('the latest patch notes is saved to local storage', () => {
@@ -72,9 +114,7 @@ describe('patch notes', () => {
                 screen.getByTestId(backdropTestId).click();
             });
 
-            const dialog = screen.queryByTitle(dialogTestId);
-
-            expect(dialog).toBeFalsy();
+            expect(screen.queryByTestId(dialogTestId)).toBeFalsy();
         });
 
         test('the latest patch notes is saved to local storage', () => {
