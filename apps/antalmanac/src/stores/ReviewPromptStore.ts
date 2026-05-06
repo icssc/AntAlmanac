@@ -146,9 +146,10 @@ export const useReviewPromptStore = create(
             }
 
             const shuffled = [...eligible].sort(() => Math.random() - 0.5);
+            const first = shuffled[0];
             set({
                 step: 'enrollment-confirm',
-                candidate: shuffled[0],
+                candidate: first,
                 eligibleCandidates: shuffled,
                 eligibleIndex: 0,
                 rating: 0,
@@ -160,10 +161,10 @@ export const useReviewPromptStore = create(
                 category: analyticsEnum.review,
                 action: analyticsEnum.review.actions.PROMPT_SHOWN,
                 customProps: {
-                    courseId: shuffled[0].courseId,
-                    courseTitle: shuffled[0].courseTitle,
-                    professorId: shuffled[0].professorId,
-                    term: shuffled[0].term,
+                    courseId: first.courseId,
+                    courseTitle: first.courseTitle,
+                    professorId: first.professorId,
+                    term: first.term,
                 },
             });
         },
