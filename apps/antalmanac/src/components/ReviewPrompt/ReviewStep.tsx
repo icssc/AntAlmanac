@@ -130,6 +130,8 @@ export function ReviewStep() {
                                 ? {
                                       '& .MuiInputLabel-root': { color: LIGHT_BLUE },
                                       '& .MuiInputLabel-root.Mui-focused': { color: LIGHT_BLUE },
+                                      '& .MuiInput-underline:before': { borderBottomColor: LIGHT_BLUE },
+                                      '& .MuiInput-underline:after': { borderBottomColor: LIGHT_BLUE },
                                   }
                                 : {}
                         }
