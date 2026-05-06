@@ -21,6 +21,9 @@ describe('patch notes', () => {
 
     describe('patch notes displays appropriately', () => {
         test('displays when latest patch notes is outdated ', () => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2026-02-15T12:00:00.000Z'));
+
             setLocalStoragePatchNotesKey(outdatedPatchNotes);
             setLocalStorageTourHasRun('true');
             usePatchNotesStore.setState({ showPatchNotes: shouldShowPatchNotes() });
@@ -31,6 +34,9 @@ describe('patch notes', () => {
         });
 
         test('no display when latest patch notes is up to date', () => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2026-02-15T12:00:00.000Z'));
+
             setLocalStoragePatchNotesKey(LATEST_PATCH_NOTES_UPDATE);
             usePatchNotesStore.setState({ showPatchNotes: shouldShowPatchNotes() });
 
@@ -67,6 +73,15 @@ describe('patch notes', () => {
     });
 
     describe('patch notes button visibility', () => {
+        test('shows Patch Notes button when release is within 30 calendar days', () => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2026-02-15T12:00:00.000Z'));
+
+            render(<PatchNotesButton />);
+
+            expect(screen.getByRole('button', { name: /patch notes/i })).toBeTruthy();
+        });
+
         test('hides Patch Notes button when release is past 30 calendar days', () => {
             vi.useFakeTimers();
             vi.setSystemTime(new Date('2026-03-02T12:00:00.000Z'));
