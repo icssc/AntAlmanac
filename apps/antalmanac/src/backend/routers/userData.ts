@@ -6,7 +6,7 @@ import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
+const { OIDC_ISSUER_URL, BETTER_AUTH_URL } = oidcOAuthEnvSchema.parse(process.env);
 
 const userDataRouter = router({
     getUserAndAccount: protectedProcedure.query(async ({ ctx }) => {
@@ -74,7 +74,7 @@ const userDataRouter = router({
      */
     getLogoutUrl: procedure.input(z.object({ redirectUrl: z.string().optional() })).query(async ({ input }) => {
         const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
-        const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
+        const redirectTo = input.redirectUrl || BETTER_AUTH_URL;
         oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
         return oidcLogoutUrl.toString();
     }),

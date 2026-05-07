@@ -1,7 +1,7 @@
 import 'server-only';
 import { getSafeAuthRedirectPath } from '$lib/auth/authUtils';
 import { AUTH_PROVIDER_ID } from '$lib/constants';
-import { oidcOAuthEnvSchema, betterAuthEnvSchema } from '$src/backend/env';
+import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { db } from '@packages/db';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { createAuthMiddleware, getOAuthState } from 'better-auth/api';
@@ -9,8 +9,7 @@ import { betterAuth } from 'better-auth/minimal';
 import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
 
-const { OIDC_CLIENT_ID, OIDC_ISSUER_URL } = oidcOAuthEnvSchema.parse(process.env);
-const { BETTER_AUTH_URL } = betterAuthEnvSchema.parse(process.env);
+const { OIDC_CLIENT_ID, OIDC_ISSUER_URL, BETTER_AUTH_URL } = oidcOAuthEnvSchema.parse(process.env);
 
 export interface AuthAdditionalData {
     returnUrl?: string;
