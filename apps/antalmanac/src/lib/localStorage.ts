@@ -21,7 +21,11 @@ enum LocalStorageKeys {
     sessionId = 'sessionId',
     wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
+    /** @deprecated As part of migration to better auth */
+    newUser = 'newUser',
     importedUser = 'importedUser',
+    /** @deprecated As part of migration to better auth */
+    fromLoading = 'fromLoading',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
 }
