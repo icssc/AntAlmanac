@@ -9,7 +9,7 @@ import { betterAuth } from 'better-auth/minimal';
 import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
 
-const { OIDC_CLIENT_ID, OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
+const { OIDC_CLIENT_ID, OIDC_ISSUER_URL } = oidcOAuthEnvSchema.parse(process.env);
 const { BETTER_AUTH_URL } = betterAuthEnvSchema.parse(process.env);
 
 export interface AuthAdditionalData {
@@ -47,7 +47,6 @@ export const auth = betterAuth({
                     clientId: OIDC_CLIENT_ID,
                     scopes: ['openid', 'profile', 'email'],
                     pkce: true,
-                    redirectURI: GOOGLE_REDIRECT_URI,
                     mapProfileToUser: (profile) => {
                         return {
                             ...profile,
