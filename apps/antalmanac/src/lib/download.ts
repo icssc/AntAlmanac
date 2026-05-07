@@ -360,7 +360,7 @@ export function exportCalendar() {
         });
 
         // Download the .ics file
-        const scheduleName = AppStore.getScheduleNames()[AppStore.getCurrentScheduleIndex()];
+        const scheduleName = AppStore.getScheduleNames()[AppStore.getCurrentScheduleIndex()] ?? 'schedule';
         saveAs(data, `${scheduleName}.ics`);
         openSnackbar('success', 'Schedule downloaded!', { durationSeconds: 5 });
     });
