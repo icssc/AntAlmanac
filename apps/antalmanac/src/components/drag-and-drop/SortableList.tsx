@@ -8,7 +8,7 @@ import { SortableContext, SortingStrategy, arrayMove, sortableKeyboardCoordinate
 import { List, SxProps } from '@mui/material';
 import { mergeSx } from '@mui/x-date-pickers/internals';
 import type { ReactNode } from 'react';
-import { Fragment, useMemo, useState } from 'react';
+import { createContext, Fragment, useMemo, useState } from 'react';
 
 interface BaseItem {
     id: UniqueIdentifier;
@@ -23,6 +23,18 @@ interface Props<T extends BaseItem> {
     sortingStrategy?: SortingStrategy;
 }
 
+export interface DraggingItemState {
+    isCollapsed?: boolean;
+}
+
+interface SortableListContext {
+    setDraggingItemState?: (state: DraggingItemState) => void;
+}
+
+export const SortableListContext = createContext<SortableListContext>({});
+
+export const DraggingItemContext = createContext<DraggingItemState>({});
+
 // ref: https://codesandbox.io/p/sandbox/dnd-kit-sortable-starter-template-22x1ix
 export function SortableList<T extends BaseItem>({
     items,
@@ -33,7 +45,10 @@ export function SortableList<T extends BaseItem>({
     sortingStrategy,
 }: Props<T>) {
     const [active, setActive] = useState<Active | null>(null);
+    const [draggingItemState, setDraggingItemState] = useState<DraggingItemState>({});
+
     const activeItem = useMemo(() => items.find((item) => item.id === active?.id), [active, items]);
+
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -64,14 +79,18 @@ export function SortableList<T extends BaseItem>({
                 document.body.style.cursor = '';
             }}
         >
-            <SortableContext items={items} strategy={sortingStrategy}>
-                <List sx={mergeSx({ padding: 0 }, sx)}>
-                    {items.map((item) => (
-                        <Fragment key={item.id}>{renderItem(item)}</Fragment>
-                    ))}
-                </List>
-            </SortableContext>
-            <SortableOverlay>{activeItem ? renderItem(activeItem) : null}</SortableOverlay>
+            <SortableListContext value={{ setDraggingItemState }}>
+                <SortableContext items={items} strategy={sortingStrategy}>
+                    <List sx={mergeSx({ padding: 0 }, sx)}>
+                        {items.map((item) => (
+                            <Fragment key={item.id}>{renderItem(item)}</Fragment>
+                        ))}
+                    </List>
+                </SortableContext>
+            </SortableListContext>
+            <DraggingItemContext value={draggingItemState}>
+                <SortableOverlay>{activeItem ? renderItem(activeItem) : null}</SortableOverlay>
+            </DraggingItemContext>
         </DndContext>
     );
 }

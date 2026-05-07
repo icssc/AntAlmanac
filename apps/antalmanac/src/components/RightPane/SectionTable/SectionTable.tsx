@@ -6,6 +6,7 @@ import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/Enrol
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { WarningAlert } from '$components/WarningAlert';
+import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
@@ -69,7 +70,9 @@ function SectionTable({
     missingSections = [],
     sortable = false,
 }: SectionTableProps) {
-    const [openContent, setOpenContent] = useState(true);
+    const { isCollapsed } = useDraggingItemState(() => ({ isCollapsed: !openContent }));
+
+    const [openContent, setOpenContent] = useState(!isCollapsed);
 
     const { isMilitaryTime } = useTimeFormatStore();
 
