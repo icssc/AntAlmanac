@@ -1,4 +1,5 @@
 import { SortableItemContext } from '$components/drag-and-drop/SortableItem';
+import { DraggingItemContext } from '$components/drag-and-drop/SortableList';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box } from '@mui/material';
 import { SxProps, Theme, useTheme } from '@mui/material/styles';
@@ -13,6 +14,8 @@ interface DragHandleProps {
 
 export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
     const { attributes, listeners, ref } = useContext(SortableItemContext);
+    const draggingState = useContext(DraggingItemContext);
+
     const theme = useTheme();
 
     return (
@@ -25,7 +28,7 @@ export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    cursor: disabled ? 'auto' : 'grab',
+                    cursor: draggingState !== null ? 'grabbing' : disabled ? 'auto' : 'grab',
                     borderRadius: 1,
                     touchAction: 'none',
                     '&:hover': {

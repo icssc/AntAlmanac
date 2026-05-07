@@ -63,7 +63,7 @@ export function SortableList<T extends BaseItem>({
             autoScroll={{ threshold: { x: disableHorizontalScroll ? 0 : 0.2, y: 0.2 } }}
             onDragStart={({ active }) => {
                 setActive(active);
-                document.body.style.cursor = 'grab';
+                document.body.style.cursor = 'grabbing';
             }}
             onDragEnd={({ active, over }) => {
                 if (over && active.id !== over?.id) {
