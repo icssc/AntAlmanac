@@ -67,6 +67,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                         <Typography
                             component="button"
                             type="button"
+                            variant="inherit"
                             onClick={(e) => {
                                 setAnchorEl((cur) => (cur ? null : e.currentTarget));
                             }}
@@ -92,7 +93,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 ) : (
                     <Tooltip title={restrictionDescriptions}>
                         <Typography
-                            sx={{ fontSize: 'unset' }}
+                            variant="inherit"
                             component="a"
                             href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
                             target="_blank"
