@@ -7,7 +7,7 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, SortingStrategy, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { List, SxProps } from '@mui/material';
 import { mergeSx } from '@mui/x-date-pickers/internals';
-import type { ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { createContext, Fragment, useMemo, useState } from 'react';
 
 interface BaseItem {
@@ -33,7 +33,7 @@ interface SortableListContext {
 
 export const SortableListContext = createContext<SortableListContext>({});
 
-export const DraggingItemContext = createContext<DraggingItemState>({});
+export const DraggingItemContext = createContext<DraggingItemState | null>(null);
 
 // ref: https://codesandbox.io/p/sandbox/dnd-kit-sortable-starter-template-22x1ix
 export function SortableList<T extends BaseItem>({
@@ -45,7 +45,7 @@ export function SortableList<T extends BaseItem>({
     sortingStrategy,
 }: Props<T>) {
     const [active, setActive] = useState<Active | null>(null);
-    const [draggingItemState, setDraggingItemState] = useState<DraggingItemState>({});
+    const [draggingItemState, setDraggingItemState] = useState<ContextType<typeof DraggingItemContext>>(null);
 
     const activeItem = useMemo(() => items.find((item) => item.id === active?.id), [active, items]);
 

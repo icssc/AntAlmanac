@@ -70,9 +70,9 @@ function SectionTable({
     missingSections = [],
     sortable = false,
 }: SectionTableProps) {
-    const { isCollapsed } = useDraggingItemState(() => ({ isCollapsed: !openContent }));
+    const draggingState = useDraggingItemState(() => ({ isCollapsed: !openContent }));
 
-    const [openContent, setOpenContent] = useState(!isCollapsed);
+    const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
 
     const { isMilitaryTime } = useTimeFormatStore();
 
