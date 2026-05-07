@@ -1,6 +1,7 @@
 import './App.css';
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
+import { TutorialInitializer } from '$components/TutorialInitializer';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';
@@ -144,6 +145,7 @@ export default function App() {
                                 }),
                             }}
                         >
+                            <TutorialInitializer />
                             <RouterProvider router={ROUTER} />
                         </TourProvider>
                     </AppQueryProvider>
