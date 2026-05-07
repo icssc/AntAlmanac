@@ -460,7 +460,7 @@ export class RDS {
                 const aIndex = indexes[a.sectionCode];
                 const bIndex = indexes[b.sectionCode];
                 if (aIndex === null || bIndex === null) {
-                    return -1;
+                    return 0;
                 }
                 return aIndex < bIndex ? -1 : 1;
             });
