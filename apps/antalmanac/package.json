@@ -70,6 +70,7 @@
         "react-router-dom": "^6.8.1",
         "react-split": "^2.0.14",
         "recharts": "^2.4.2",
+        "schema-dts": "^2.0.0",
         "superjson": "^1.12.3",
         "ua-parser-js": "^1.0.37",
         "zod": "3.23.8",

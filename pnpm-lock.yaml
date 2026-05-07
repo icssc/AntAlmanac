@@ -284,6 +284,9 @@ importers:
       recharts:
         specifier: ^2.4.2
         version: 2.13.3(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      schema-dts:
+        specifier: ^2.0.0
+        version: 2.0.0(typescript@5.6.3)
       superjson:
         specifier: ^1.12.3
         version: 1.13.3
@@ -5854,6 +5857,15 @@ packages:
 
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
+
+  schema-dts-lib@1.0.0:
+    resolution: {integrity: sha512-9MEO5vpQH9JdBioUupqluzxSYxPLjhmqRUudk15adUl/ypnRsM2/M1kN3AmVJQeG7nZqcL68H8JlGqQQT6vy9A==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      typescript: '>=4.9.5'
+
+  schema-dts@2.0.0:
+    resolution: {integrity: sha512-t7NoCy3Rn5GHGx6p7s1qIYK/AeIb8ZxJNR9WUNFkwMv2CiiGZBmqqYWc2FlZVm5ZbiHMY4OvBWhj7QtyrFO2Jw==}
 
   schema-utils@2.7.1:
     resolution: {integrity: sha512-SHiNtMOUGWBQJwzISiVYKu82GiV4QYGePp3odlY1tuKO7gPtphAT5R/py0fA6xtbgLL/RvtJZnU9b8s0F1q0Xg==}
@@ -12552,6 +12564,16 @@ snapshots:
       xmlchars: 2.2.0
 
   scheduler@0.27.0: {}
+
+  schema-dts-lib@1.0.0(typescript@5.6.3):
+    dependencies:
+      typescript: 5.6.3
+
+  schema-dts@2.0.0(typescript@5.6.3):
+    dependencies:
+      schema-dts-lib: 1.0.0(typescript@5.6.3)
+    transitivePeerDependencies:
+      - typescript
 
   schema-utils@2.7.1:
     dependencies:
