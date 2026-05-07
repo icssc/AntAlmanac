@@ -48,6 +48,18 @@ function getColors() {
     return courseColors;
 }
 
+function isWebsocSchool(item: WebsocSchool | WebsocDepartment | AACourse): item is WebsocSchool {
+    return 'departments' in item;
+}
+
+function isWebsocDepartment(item: WebsocSchool | WebsocDepartment | AACourse): item is WebsocDepartment {
+    return 'courses' in item;
+}
+
+function isAACourse(item: WebsocSchool | WebsocDepartment | AACourse): item is AACourse {
+    return 'sections' in item;
+}
+
 const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] => {
     const courseColors = getColors();
 
@@ -58,21 +70,20 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
             accumulator.push(dept);
 
             dept.courses.forEach((course) => {
-                for (const section of course.sections) {
-                    (section as AASection).color = courseColors[section.sectionCode];
-                }
+                const sections: AASection[] = course.sections.map((section) => ({
+                    ...section,
+                    color: courseColors[section.sectionCode],
+                }));
 
-                const sectionTypesSet = new Set<WebsocSectionType>();
+                const sectionTypes = [...new Set<WebsocSectionType>(sections.map((section) => section.sectionType))];
 
-                course.sections.forEach((section) => {
-                    sectionTypesSet.add(section.sectionType);
-                });
+                const aaCourse: AACourse = {
+                    ...course,
+                    sections,
+                    sectionTypes,
+                };
 
-                const sectionTypes = [...sectionTypesSet];
-
-                (course as AACourse).sectionTypes = sectionTypes;
-
-                accumulator.push(course as AACourse);
+                accumulator.push(aaCourse);
             });
         });
 
@@ -166,14 +177,15 @@ const SectionTableWrapped = (
 
     let component;
 
-    if ((courseData[index] as WebsocSchool).departments !== undefined) {
-        const school = courseData[index] as WebsocSchool;
-        component = <SchoolDeptCard comment={school.schoolComment} type={'school'} name={school.schoolName} />;
-    } else if ((courseData[index] as WebsocDepartment).courses !== undefined) {
-        const dept = courseData[index] as WebsocDepartment;
+    const item = courseData[index];
+
+    if (isWebsocSchool(item)) {
+        component = <SchoolDeptCard comment={item.schoolComment} type={'school'} name={item.schoolName} />;
+    } else if (isWebsocDepartment(item)) {
+        const dept = item;
         component = <SchoolDeptCard name={`Department of ${dept.deptName}`} comment={dept.deptComment} type={'dept'} />;
     } else if (formData.ge !== 'ANY') {
-        const course = courseData[index] as AACourse;
+        const course = item;
         component = (
             <GeDataFetchProvider
                 term={formData.term}
@@ -184,7 +196,7 @@ const SectionTableWrapped = (
             />
         );
     } else {
-        const course = courseData[index] as AACourse;
+        const course = item;
         component = (
             <SectionTable
                 term={formData.term}
@@ -293,9 +305,10 @@ export default function CourseRenderPane(props: { id?: number }) {
             days: searchData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
         };
 
+        const ge = searchData.ge === 'ANY' ? undefined : (searchData.ge as GE);
         const gradesQueryParams = {
             department: searchData.deptValue,
-            ge: searchData.ge as GE,
+            ge,
             instructor: searchData.instructor,
             sectionCode: searchData.sectionCode,
         };
@@ -409,19 +422,19 @@ export default function CourseRenderPane(props: { id?: number }) {
         <>
             <Box sx={{ height: '56px' }} />
 
-            {Object.entries(RightPaneStore.getWarningMessages()).map(([warningType, messages]) => {
-                return messages.map((message) => (
-                    <WarningAlert
-                        closable
-                        key={`${warningType}${message}`}
-                        onClose={() =>
-                            RightPaneStore.removeWarningMessage(warningType as CourseSearchWarningType, message)
-                        }
-                    >
-                        {message}
-                    </WarningAlert>
-                ));
-            })}
+            {(Object.entries(RightPaneStore.getWarningMessages()) as [CourseSearchWarningType, string[]][]).map(
+                ([warningType, messages]) => {
+                    return messages.map((message) => (
+                        <WarningAlert
+                            closable
+                            key={`${warningType}${message}`}
+                            onClose={() => RightPaneStore.removeWarningMessage(warningType, message)}
+                        >
+                            {message}
+                        </WarningAlert>
+                    ));
+                }
+            )}
             {unofferedCourses.map((course) => {
                 return (
                     <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
@@ -439,8 +452,8 @@ export default function CourseRenderPane(props: { id?: number }) {
                     <Box>
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
-                            if ((courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            const item = courseData[index];
+                            if (isAACourse(item)) heightEstimate = item.sections.length * 60 + 20 + 40;
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
                                     {SectionTableWrapped(index, {
