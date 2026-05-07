@@ -16,7 +16,7 @@ export function SeoContent() {
                 conflict detection, and explore grade distributions and enrollment history.
             </p>
 
-            <h2>Browse UCI Courses by Department</h2>
+            <h2>UCI Courses</h2>
             <p>
                 Search UCI courses in Computer Science, Informatics, Biological Sciences, Mathematics, Economics,
                 Engineering, Psychology, Political Science, and 130+ more departments. Filter by GE category — Writing,
