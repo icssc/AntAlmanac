@@ -1,7 +1,6 @@
 import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
-import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { getCookiesFromHeader, getSafeAuthRedirectPath } from '$src/backend/lib/helpers';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
@@ -246,8 +245,15 @@ const userDataRouter = router({
     saveUserData: protectedProcedure
         .input(z.object({ userData: z.custom<ScheduleSaveState>() }))
         .mutation(async ({ input, ctx }) => {
-            const userData = input.userData;
-            userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
+            const result = ScheduleSaveStateSchema.safeParse(input.userData);
+            if (!result.success) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: `Invalid schedule data: ${result.error.message}`,
+                });
+            }
+
+            const userData = result.data;
 
             try {
                 return await RDS.upsertUserData(db, ctx.userId, userData);
@@ -330,7 +336,7 @@ const userDataRouter = router({
         .mutation(async ({ input, ctx }) => {
             let validatedScheduleData: ScheduleSaveState;
             try {
-                validatedScheduleData = ScheduleSaveStateSchema.assert(input.scheduleData);
+                validatedScheduleData = ScheduleSaveStateSchema.parse(input.scheduleData);
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown validation error';
                 throw new TRPCError({
@@ -378,8 +384,6 @@ const userDataRouter = router({
                     }
                 }
             }
-
-            validatedScheduleData.schedules = mangleDuplicateScheduleNames(validatedScheduleData.schedules);
 
             await RDS.upsertUserData(db, ctx.userId, validatedScheduleData).catch((error) => {
                 console.error('RDS Failed to import user data:', error);

@@ -313,7 +313,7 @@ export class RDS {
         scheduleId: string,
         repeatingCustomEvents: RepeatingCustomEvent[]
     ) {
-        const incomingIds = repeatingCustomEvents.map((event) => event.customEventID);
+        const incomingIds = repeatingCustomEvents.map((event) => String(event.customEventID));
 
         await tx
             .delete(customEvents)
@@ -344,7 +344,7 @@ export class RDS {
             .insert(customEvents)
             .values(
                 repeatingCustomEvents.map((event) => ({
-                    id: event.customEventID,
+                    id: String(event.customEventID),
                     scheduleId,
                     title: event.title,
                     start: event.start,

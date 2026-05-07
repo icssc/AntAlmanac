@@ -18,7 +18,7 @@ import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
+import { AACourse, SCHEDULE_NOTE_MAX_LENGTH } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -41,8 +41,6 @@ export interface CourseWithTerm extends AACourse {
     term: string;
     id: string;
 }
-
-const NOTE_MAX_LEN = 5000;
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -203,7 +201,7 @@ function ScheduleNoteBox() {
                 onChange={handleNoteChange}
                 value={scheduleNote}
                 inputProps={{
-                    maxLength: NOTE_MAX_LEN,
+                    maxLength: SCHEDULE_NOTE_MAX_LENGTH,
                     style: { cursor: skeletonMode ? 'not-allowed' : 'text' },
                 }}
                 InputLabelProps={{
