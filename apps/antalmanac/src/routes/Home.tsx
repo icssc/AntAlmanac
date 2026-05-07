@@ -6,6 +6,7 @@ import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
+import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { BLUE } from '$src/globals';
@@ -81,6 +82,7 @@ export default function Home() {
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <TutorialInitializer />
             <PatchNotes />
             <InstallPWABanner />
 
