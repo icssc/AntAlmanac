@@ -124,7 +124,7 @@ function SectionTable({
     }, [activeColumns]);
 
     return (
-        <Box>
+        <Box sx={{ overflow: 'hidden' }}>
             <Box
                 sx={{
                     display: 'flex',
