@@ -1,5 +1,6 @@
 'use client';
 
+import { LIGHT_BLUE } from '$src/globals';
 import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { Close } from '@mui/icons-material';
@@ -13,7 +14,9 @@ import {
     IconButton,
     Rating,
     Stack,
+    TextField,
     Typography,
+    useTheme,
 } from '@mui/material';
 
 function ratingLabel(rating: number): string {
@@ -52,6 +55,7 @@ function difficultyLabel(difficulty: number): string {
 }
 
 export function ReviewStep() {
+    const theme = useTheme();
     const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
     const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
     const rating = useReviewPromptStore((s) => s.rating);
@@ -59,6 +63,8 @@ export function ReviewStep() {
     const selectedTags = useReviewPromptStore((s) => s.selectedTags);
     const setRating = useReviewPromptStore((s) => s.setRating);
     const setDifficulty = useReviewPromptStore((s) => s.setDifficulty);
+    const textReview = useReviewPromptStore((s) => s.textReview);
+    const setTextReview = useReviewPromptStore((s) => s.setTextReview);
     const toggleTag = useReviewPromptStore((s) => s.toggleTag);
     const submitReview = useReviewPromptStore((s) => s.submitReview);
     const dismiss = useReviewPromptStore((s) => s.dismiss);
@@ -106,6 +112,31 @@ export function ReviewStep() {
                             </Box>
                         </Box>
                     </Box>
+
+                    <TextField
+                        label="Write a review (optional)"
+                        multiline
+                        minRows={1}
+                        maxRows={5}
+                        fullWidth
+                        value={textReview}
+                        onChange={(e) => setTextReview(e.target.value)}
+                        slotProps={{
+                            htmlInput: { maxLength: 500 },
+                            formHelperText: { sx: { textAlign: 'right', mx: 0 } },
+                        }}
+                        sx={
+                            theme.palette.mode === 'dark'
+                                ? {
+                                      '& .MuiInputLabel-root': { color: LIGHT_BLUE },
+                                      '& .MuiInputLabel-root.Mui-focused': { color: LIGHT_BLUE },
+                                      '& .MuiInput-underline:before': { borderBottomColor: LIGHT_BLUE },
+                                      '& .MuiInput-underline:after': { borderBottomColor: LIGHT_BLUE },
+                                  }
+                                : {}
+                        }
+                        helperText={`${textReview.length}/500`}
+                    />
 
                     <Box display="flex" flexDirection="column" gap={0.5}>
                         <Typography color="text.secondary">Tags</Typography>
