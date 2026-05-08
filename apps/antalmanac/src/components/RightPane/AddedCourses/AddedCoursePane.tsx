@@ -183,7 +183,7 @@ function ScheduleNoteBox() {
                 value={scheduleNote}
                 inputProps={{
                     maxLength: SCHEDULE_NOTE_MAX_LENGTH,
-                    style: { cursor: skeletonMode ? 'not-allowed' : 'text' },
+                    style: { cursor: fallbackMode ? 'not-allowed' : 'text' },
                 }}
                 InputLabelProps={{
                     variant: 'filled',
