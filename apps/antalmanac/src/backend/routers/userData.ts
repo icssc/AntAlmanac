@@ -13,6 +13,57 @@ import { z } from 'zod';
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
 
+function clampScheduleIndex(state: ScheduleSaveState): ScheduleSaveState {
+    const { schedules, scheduleIndex } = state;
+    if (scheduleIndex < 0 || scheduleIndex >= schedules.length) {
+        return {
+            ...state,
+            scheduleIndex: schedules.length > 0 ? schedules.length - 1 : 0,
+        };
+    }
+    return state;
+}
+
+function assertScheduleSaveStateInvariants(state: ScheduleSaveState): void {
+    for (const schedule of state.schedules) {
+        for (const course of schedule.courses) {
+            if (typeof course.sectionCode !== 'string' || isNaN(parseInt(course.sectionCode, 10))) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: `Invalid section code: ${course.sectionCode}`,
+                });
+            }
+            if (typeof course.term !== 'string' || course.term.length === 0) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: `Invalid term: ${course.term}`,
+                });
+            }
+            if (typeof course.color !== 'string') {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: `Invalid color: ${course.color}`,
+                });
+            }
+        }
+
+        for (const event of schedule.customEvents) {
+            if (event.days.length !== 7) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Invalid custom event days: must be an array of 7 booleans',
+                });
+            }
+        }
+    }
+}
+
+function preparePersistableScheduleSaveState(state: ScheduleSaveState): ScheduleSaveState {
+    const clamped = clampScheduleIndex(state);
+    assertScheduleSaveStateInvariants(clamped);
+    return clamped;
+}
+
 const userDataRouter = router({
     getUserAndAccount: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
@@ -253,7 +304,7 @@ const userDataRouter = router({
                 });
             }
 
-            const userData = result.data;
+            const userData = preparePersistableScheduleSaveState(result.data);
 
             try {
                 return await RDS.upsertUserData(db, ctx.userId, userData);
@@ -345,47 +396,9 @@ const userDataRouter = router({
                 });
             }
 
-            if (
-                validatedScheduleData.scheduleIndex < 0 ||
-                validatedScheduleData.scheduleIndex >= validatedScheduleData.schedules.length
-            ) {
-                validatedScheduleData.scheduleIndex =
-                    validatedScheduleData.schedules.length > 0 ? validatedScheduleData.schedules.length - 1 : 0;
-            }
+            const userData = preparePersistableScheduleSaveState(validatedScheduleData);
 
-            for (const schedule of validatedScheduleData.schedules) {
-                for (const course of schedule.courses) {
-                    if (typeof course.sectionCode !== 'string' || isNaN(parseInt(course.sectionCode))) {
-                        throw new TRPCError({
-                            code: 'BAD_REQUEST',
-                            message: `Invalid section code: ${course.sectionCode}`,
-                        });
-                    }
-                    if (typeof course.term !== 'string' || course.term.length === 0) {
-                        throw new TRPCError({
-                            code: 'BAD_REQUEST',
-                            message: `Invalid term: ${course.term}`,
-                        });
-                    }
-                    if (typeof course.color !== 'string') {
-                        throw new TRPCError({
-                            code: 'BAD_REQUEST',
-                            message: `Invalid color: ${course.color}`,
-                        });
-                    }
-                }
-
-                for (const event of schedule.customEvents) {
-                    if (event.days.length !== 7) {
-                        throw new TRPCError({
-                            code: 'BAD_REQUEST',
-                            message: 'Invalid custom event days: must be an array of 7 booleans',
-                        });
-                    }
-                }
-            }
-
-            await RDS.upsertUserData(db, ctx.userId, validatedScheduleData).catch((error) => {
+            await RDS.upsertUserData(db, ctx.userId, userData).catch((error) => {
                 console.error('RDS Failed to import user data:', error);
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',

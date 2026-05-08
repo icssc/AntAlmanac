@@ -15,9 +15,13 @@ import {
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
+import { ShortCourseScheduleSchema } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { z } from 'zod';
+
+const dataCacheSchedulesSchema = z.array(ShortCourseScheduleSchema);
 
 export function AuthPage() {
     const [searchParams] = useSearchParams();
@@ -100,7 +104,25 @@ export function AuthPage() {
                     setLocalStorageImportedUser(savedUserId);
                 }
 
-                const data = JSON.parse(savedData);
+                let rawSchedules: unknown;
+                try {
+                    rawSchedules = JSON.parse(savedData);
+                } catch {
+                    removeLocalStorageDataCache();
+                    removeLocalStorageImportedUser();
+                    window.location.href = returnUrl;
+                    return;
+                }
+
+                const parsedCache = dataCacheSchedulesSchema.safeParse(rawSchedules);
+                if (!parsedCache.success) {
+                    removeLocalStorageDataCache();
+                    removeLocalStorageImportedUser();
+                    window.location.href = returnUrl;
+                    return;
+                }
+
+                const data = parsedCache.data;
 
                 if (userData !== null && isEmptySchedule(userData.userData.schedules)) {
                     scheduleSaveState.schedules = data;
