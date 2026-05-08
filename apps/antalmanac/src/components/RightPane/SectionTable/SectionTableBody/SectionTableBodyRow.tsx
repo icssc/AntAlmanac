@@ -93,7 +93,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         setCurrColor(getSectionScheduleColor(section, term));
     }, [section.sectionCode, section.color, term]);
     const updateColorFromPicker = useCallback((newColor: string) => {
-        setCurrColor((prev) => (prev !== newColor ? newColor : prev));
+        setCurrColor(newColor);
     }, []);
 
     const handleMouseEnter = useCallback(() => {
