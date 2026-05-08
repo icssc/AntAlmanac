@@ -124,7 +124,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     const renderGroup: AutocompleteProps['renderGroup'] = (params) => {
         const term = RightPaneStore.getFormData().term;
         const includesTerm = params.group === RoadmapTermRelation.IncludesTerm;
-        const keyword = includesTerm ? 'Includes' : "Doesn't include";
+        const keyword = includesTerm ? 'Includes' : "Doesn't Include";
 
         return (
             <li key={params.key}>

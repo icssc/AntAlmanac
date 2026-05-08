@@ -158,7 +158,7 @@ function SectionTable(props: SectionTableProps) {
             <Collapse in={openContent} onExited={handleCollapseExit}>
                 <TableContainer
                     component={Paper}
-                    sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
+                    sx={{ margin: '0px 0px 8px 0px', width: '100%' }}
                     elevation={0}
                     variant="outlined"
                 >
