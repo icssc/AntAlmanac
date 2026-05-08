@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { toPng } from "html-to-image";
-import { useEffect, useRef, useState } from "react";
+import { toPng } from 'html-to-image';
+import { useEffect, useRef, useState } from 'react';
 
 // ─── Canvas dimensions (design at largest required Apple resolution) ───────────
 const W = 1320;
@@ -33,13 +33,13 @@ function phoneW(cW: number, cH: number, clamp = 0.84) {
 
 // ─── Image preload cache ───────────────────────────────────────────────────────
 const IMAGE_PATHS = [
-    "/mockup.png",
-    "/app-icon.png",
-    "/screenshots/calendar.png",
-    "/screenshots/search.png",
-    "/screenshots/map.png",
-    "/screenshots/planner.png",
-    "/screenshots/planner-degree.png",
+    '/mockup.png',
+    '/app-icon.png',
+    '/screenshots/calendar.png',
+    '/screenshots/search.png',
+    '/screenshots/map.png',
+    '/screenshots/planner.png',
+    '/screenshots/planner-degree.png',
 ];
 const imageCache: Record<string, string> = {};
 
@@ -58,7 +58,7 @@ async function preloadAllImages() {
             } catch {
                 console.warn(`Failed to preload: ${path}`);
             }
-        }),
+        })
     );
 }
 
@@ -68,29 +68,29 @@ function img(path: string): string {
 
 // ─── Themes ────────────────────────────────────────────────────────────────────
 const THEMES = {
-    "blue-light": {
-        bg: "#f5f6fc",
-        bgAlt: "#eef0fa",
-        fg: "#212529",
-        accent: "#305db7",
-        accentLight: "#5b82d4",
-        muted: "#606166",
-        cardBg: "#ffffff",
-        pillBg: "#e8edf8",
-        pillFg: "#305db7",
-        label: "UCI Blue · Light",
+    'blue-light': {
+        bg: '#f5f6fc',
+        bgAlt: '#eef0fa',
+        fg: '#212529',
+        accent: '#305db7',
+        accentLight: '#5b82d4',
+        muted: '#606166',
+        cardBg: '#ffffff',
+        pillBg: '#e8edf8',
+        pillFg: '#305db7',
+        label: 'UCI Blue · Light',
     },
-    "blue-dark": {
-        bg: "#0d1117",
-        bgAlt: "#161b26",
-        fg: "#f0f4ff",
-        accent: "#5b82d4",
-        accentLight: "#7ba3f0",
-        muted: "#8b9ab8",
-        cardBg: "#1a2035",
-        pillBg: "#1e2d52",
-        pillFg: "#7ba3f0",
-        label: "UCI Blue · Dark",
+    'blue-dark': {
+        bg: '#0d1117',
+        bgAlt: '#161b26',
+        fg: '#f0f4ff',
+        accent: '#5b82d4',
+        accentLight: '#7ba3f0',
+        muted: '#8b9ab8',
+        cardBg: '#1a2035',
+        pillBg: '#1e2d52',
+        pillFg: '#7ba3f0',
+        label: 'UCI Blue · Dark',
     },
 } as const;
 
@@ -99,8 +99,8 @@ type ThemeId = keyof typeof THEMES;
 // ─── Copy ──────────────────────────────────────────────────────────────────────
 const SLIDES_COPY = [
     {
-        id: "hero",
-        label: "SCHEDULE SMARTER",
+        id: 'hero',
+        label: 'SCHEDULE SMARTER',
         headline: (
             <>
                 Your schedule,
@@ -111,8 +111,8 @@ const SLIDES_COPY = [
         // sub: "The #1 planner for UCI students.",
     },
     {
-        id: "search",
-        label: "COURSE SEARCH",
+        id: 'search',
+        label: 'COURSE SEARCH',
         headline: (
             <>
                 140+ departments.
@@ -120,11 +120,11 @@ const SLIDES_COPY = [
                 One search.
             </>
         ),
-        sub: "Find any UCI course instantly.",
+        sub: 'Find any UCI course instantly.',
     },
     {
-        id: "schedule",
-        label: "SCHEDULE BUILDER",
+        id: 'schedule',
+        label: 'SCHEDULE BUILDER',
         headline: (
             <>
                 Build conflict-
@@ -132,11 +132,11 @@ const SLIDES_COPY = [
                 free schedules.
             </>
         ),
-        sub: "Compare variations before you enroll.",
+        sub: 'Compare variations before you enroll.',
     },
     {
-        id: "grades",
-        label: "GRADE DISTRIBUTIONS",
+        id: 'grades',
+        label: 'GRADE DISTRIBUTIONS',
         headline: (
             <>
                 Pick the right
@@ -144,23 +144,17 @@ const SLIDES_COPY = [
                 professor.
             </>
         ),
-        sub: "See grade distributions before you commit.",
+        sub: 'See grade distributions before you commit.',
     },
     {
-        id: "map",
-        label: "CAMPUS MAP",
-        headline: (
-            <>
-                Never get
-                <br />
-                lost again
-            </>
-        ),
-        sub: "See exactly where each class meets.",
+        id: 'map',
+        label: 'CAMPUS MAP',
+        headline: <>Never get lost on campus again.</>,
+        sub: 'See exactly where each class meets.',
     },
     {
-        id: "more",
-        label: "AND MORE",
+        id: 'more',
+        label: 'AND MORE',
         headline: (
             <>
                 Everything
@@ -173,32 +167,26 @@ const SLIDES_COPY = [
 ] as const;
 
 // ─── Device frame ──────────────────────────────────────────────────────────────
-function Phone(
-    { src, alt, style }: {
-        src: string;
-        alt: string;
-        style?: React.CSSProperties;
-    },
-) {
+function Phone({ src, alt, style }: { src: string; alt: string; style?: React.CSSProperties }) {
     return (
         <div
             style={{
-                position: "relative",
+                position: 'relative',
                 aspectRatio: `${MK_W}/${MK_H}`,
                 ...style,
             }}
         >
             <img
-                src={img("/mockup.png")}
+                src={img('/mockup.png')}
                 alt=""
-                style={{ display: "block", width: "100%", height: "100%" }}
+                style={{ display: 'block', width: '100%', height: '100%' }}
                 draggable={false}
             />
             <div
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     zIndex: 10,
-                    overflow: "hidden",
+                    overflow: 'hidden',
                     left: `${SC_L}%`,
                     top: `${SC_T}%`,
                     width: `${SC_W}%`,
@@ -210,11 +198,11 @@ function Phone(
                     src={src}
                     alt={alt}
                     style={{
-                        display: "block",
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        objectPosition: "top",
+                        display: 'block',
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        objectPosition: 'top',
                     }}
                     draggable={false}
                 />
@@ -230,14 +218,14 @@ function Caption({
     headline,
     sub,
     theme,
-    align = "center",
+    align = 'center',
 }: {
     cW: number;
     label: string;
     headline: React.ReactNode;
     sub?: string | null;
     theme: (typeof THEMES)[ThemeId];
-    align?: "center" | "left";
+    align?: 'center' | 'left';
 }) {
     return (
         <div style={{ textAlign: align }}>
@@ -245,9 +233,9 @@ function Caption({
                 style={{
                     fontSize: cW * 0.028,
                     fontWeight: 600,
-                    letterSpacing: "0.12em",
+                    letterSpacing: '0.12em',
                     color: theme.accent,
-                    textTransform: "uppercase",
+                    textTransform: 'uppercase',
                     marginBottom: cW * 0.02,
                 }}
             >
@@ -297,16 +285,16 @@ function Blob({
     return (
         <div
             style={{
-                position: "absolute",
+                position: 'absolute',
                 left: x,
                 top: y,
                 width: size,
                 height: size,
-                borderRadius: "50%",
+                borderRadius: '50%',
                 background: color,
                 opacity,
-                filter: "blur(80px)",
-                pointerEvents: "none",
+                filter: 'blur(80px)',
+                pointerEvents: 'none',
             }}
         />
     );
@@ -314,15 +302,15 @@ function Blob({
 
 // ─── Feature pills ─────────────────────────────────────────────────────────────
 const FEATURE_PILLS = [
-    "Course search",
-    "Grade distributions",
-    "Campus map",
-    "4-year planner",
-    "Quarter-by-quarter roadmap",
-    "Search GEs",
-    "Enrollment history",
-    "Multiple schedules",
-    "Open source",
+    'Course search',
+    'Grade distributions',
+    'Campus map',
+    '4-year planner',
+    'Quarter-by-quarter roadmap',
+    'Search GEs',
+    'Enrollment history',
+    'Multiple schedules',
+    'Open source',
 ];
 
 // ─── Slides ────────────────────────────────────────────────────────────────────
@@ -331,57 +319,43 @@ type SlideProps = { cW: number; cH: number; theme: (typeof THEMES)[ThemeId] };
 function Slide1({ cW, cH, theme }: SlideProps) {
     const fw = phoneW(cW, cH) * 100;
     const copy = SLIDES_COPY[0];
-    const isDark = theme.bg === THEMES["blue-dark"].bg;
+    const isDark = theme.bg === THEMES['blue-dark'].bg;
 
     return (
         <div
             style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-                overflow: "hidden",
+                width: '100%',
+                height: '100%',
+                position: 'relative',
+                overflow: 'hidden',
                 background: isDark
                     ? `radial-gradient(ellipse at 60% 30%, #1a2a5e 0%, ${theme.bg} 70%)`
                     : `radial-gradient(ellipse at 60% 20%, #d6e2ff 0%, ${theme.bg} 65%)`,
             }}
         >
-            <Blob
-                x="55%"
-                y="-5%"
-                size={`${cW * 0.9}px`}
-                color={theme.accent}
-                opacity={isDark ? 0.15 : 0.12}
-            />
-            <Blob
-                x="-15%"
-                y="50%"
-                size={`${cW * 0.7}px`}
-                color={theme.accentLight}
-                opacity={isDark ? 0.1 : 0.08}
-            />
+            <Blob x="55%" y="-5%" size={`${cW * 0.9}px`} color={theme.accent} opacity={isDark ? 0.15 : 0.12} />
+            <Blob x="-15%" y="50%" size={`${cW * 0.7}px`} color={theme.accentLight} opacity={isDark ? 0.1 : 0.08} />
 
             {/* App icon + wordmark */}
             <div
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     top: cH * 0.06,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    display: "flex",
-                    alignItems: "center",
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    alignItems: 'center',
                     gap: cW * 0.035,
                 }}
             >
                 <img
-                    src={img("/app-icon.png")}
+                    src={img('/app-icon.png')}
                     alt="AntAlmanac"
                     style={{
                         width: cW * 0.13,
                         height: cW * 0.13,
                         borderRadius: cW * 0.028,
-                        boxShadow: `0 ${cW * 0.01}px ${
-                            cW * 0.04
-                        }px rgba(0,0,0,${isDark ? 0.5 : 0.15})`,
+                        boxShadow: `0 ${cW * 0.01}px ${cW * 0.04}px rgba(0,0,0,${isDark ? 0.5 : 0.15})`,
                     }}
                     draggable={false}
                 />
@@ -390,7 +364,7 @@ function Slide1({ cW, cH, theme }: SlideProps) {
                         fontSize: cW * 0.055,
                         fontWeight: 700,
                         color: theme.fg,
-                        letterSpacing: "-0.01em",
+                        letterSpacing: '-0.01em',
                     }}
                 >
                     AntAlmanac
@@ -400,35 +374,27 @@ function Slide1({ cW, cH, theme }: SlideProps) {
             {/* Caption */}
             <div
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     top: cH * 0.17,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "88%",
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '88%',
                 }}
             >
-                <Caption
-                    cW={cW}
-                    label={copy.label}
-                    headline={copy.headline}
-                    sub={null}
-                    theme={theme}
-                />
+                <Caption cW={cW} label={copy.label} headline={copy.headline} sub={null} theme={theme} />
             </div>
 
             {/* Phone — centered, peeking from bottom */}
             <Phone
-                src={img("/screenshots/calendar.png")}
+                src={img('/screenshots/calendar.png')}
                 alt="Weekly schedule"
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     bottom: 0,
-                    left: "50%",
+                    left: '50%',
                     transform: `translateX(-50%) translateY(8%)`,
                     width: `${fw}%`,
-                    filter: `drop-shadow(0 ${cW * 0.02}px ${
-                        cW * 0.06
-                    }px rgba(0,0,0,${isDark ? 0.55 : 0.22}))`,
+                    filter: `drop-shadow(0 ${cW * 0.02}px ${cW * 0.06}px rgba(0,0,0,${isDark ? 0.55 : 0.22}))`,
                 }}
             />
         </div>
@@ -438,52 +404,44 @@ function Slide1({ cW, cH, theme }: SlideProps) {
 function Slide2({ cW, cH, theme }: SlideProps) {
     const fw = phoneW(cW, cH, 0.78) * 100;
     const copy = SLIDES_COPY[1];
-    const isDark = theme.bg === THEMES["blue-dark"].bg;
+    const isDark = theme.bg === THEMES['blue-dark'].bg;
 
     return (
         <div
             style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-                overflow: "hidden",
+                width: '100%',
+                height: '100%',
+                position: 'relative',
+                overflow: 'hidden',
                 background: isDark
                     ? `linear-gradient(160deg, #0d1117 0%, #151d35 100%)`
                     : `linear-gradient(160deg, ${theme.bg} 0%, #dce6ff 100%)`,
             }}
         >
-            <Blob
-                x="60%"
-                y="10%"
-                size={`${cW * 0.8}px`}
-                color={theme.accentLight}
-                opacity={0.13}
-            />
+            <Blob x="60%" y="10%" size={`${cW * 0.8}px`} color={theme.accentLight} opacity={0.13} />
 
             {/* Phone — offset right */}
             <Phone
-                src={img("/screenshots/search.png")}
+                src={img('/screenshots/search.png')}
                 alt="Course search"
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     bottom: 0,
-                    right: "-6%",
-                    transform: "translateY(6%) rotate(3deg)",
+                    right: '-6%',
+                    transform: 'translateY(6%) rotate(3deg)',
                     width: `${fw}%`,
-                    filter: `drop-shadow(0 ${cW * 0.02}px ${
-                        cW * 0.07
-                    }px rgba(0,0,0,${isDark ? 0.6 : 0.2}))`,
+                    filter: `drop-shadow(0 ${cW * 0.02}px ${cW * 0.07}px rgba(0,0,0,${isDark ? 0.6 : 0.2}))`,
                 }}
             />
 
             {/* Caption — left-anchored, vertically centered */}
             <div
                 style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "7%",
-                    width: "100%",
-                    transform: "translateY(-283%)",
+                    position: 'absolute',
+                    top: '50%',
+                    left: '7%',
+                    width: '100%',
+                    transform: 'translateY(-283%)',
                 }}
             >
                 <Caption
@@ -499,23 +457,17 @@ function Slide2({ cW, cH, theme }: SlideProps) {
             {/* Department count badge */}
             <div
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     bottom: cH * 0.24,
-                    left: "7%",
+                    left: '7%',
                     background: theme.cardBg,
                     borderRadius: cW * 0.03,
                     padding: `${cW * 0.025}px ${cW * 0.04}px`,
-                    boxShadow: `0 ${cW * 0.005}px ${cW * 0.025}px rgba(0,0,0,${
-                        isDark ? 0.4 : 0.1
-                    })`,
-                    display: "flex",
-                    flexDirection: "column" as const,
+                    boxShadow: `0 ${cW * 0.005}px ${cW * 0.025}px rgba(0,0,0,${isDark ? 0.4 : 0.1})`,
+                    display: 'flex',
+                    flexDirection: 'column' as const,
                     gap: cW * 0.008,
-                    border: `1px solid ${
-                        isDark
-                            ? "rgba(255,255,255,0.06)"
-                            : "rgba(48,93,183,0.1)"
-                    }`,
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(48,93,183,0.1)'}`,
                 }}
             >
                 <div
@@ -585,87 +537,61 @@ function Slide2({ cW, cH, theme }: SlideProps) {
 function Slide3({ cW, cH, theme }: SlideProps) {
     const fw = phoneW(cW, cH) * 100;
     const copy = SLIDES_COPY[4]; // map copy
-    const isDark = theme.bg === THEMES["blue-dark"].bg;
+    const isDark = theme.bg === THEMES['blue-dark'].bg;
 
     return (
         <div
             style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-                overflow: "hidden",
+                width: '100%',
+                height: '100%',
+                position: 'relative',
+                overflow: 'hidden',
                 background: isDark
                     ? `linear-gradient(170deg, #0d1a18 0%, #0d1117 60%)`
                     : `linear-gradient(170deg, #e8f4f0 0%, ${theme.bg} 60%)`,
             }}
         >
-            <Blob
-                x="-20%"
-                y="20%"
-                size={`${cW}px`}
-                color="#2a8c6e"
-                opacity={isDark ? 0.13 : 0.1}
-            />
-            <Blob
-                x="50%"
-                y="55%"
-                size={`${cW * 0.7}px`}
-                color={theme.accentLight}
-                opacity={0.1}
-            />
+            <Blob x="-20%" y="20%" size={`${cW}px`} color="#2a8c6e" opacity={isDark ? 0.13 : 0.1} />
+            <Blob x="50%" y="55%" size={`${cW * 0.7}px`} color={theme.accentLight} opacity={0.1} />
 
             {/* Caption top-center */}
             <div
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     top: cH * 0.07,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "88%",
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '88%',
                 }}
             >
-                <Caption
-                    cW={cW}
-                    label={copy.label}
-                    headline={copy.headline}
-                    sub={copy.sub}
-                    theme={theme}
-                />
+                <Caption cW={cW} label={copy.label} headline={copy.headline} sub={copy.sub} theme={theme} />
             </div>
 
             {/* Phone centered */}
             <Phone
-                src={img("/screenshots/map.png")}
+                src={img('/screenshots/map.png')}
                 alt="Campus map"
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     bottom: 0,
-                    left: "50%",
-                    transform: "translateX(-50%) translateY(6%)",
+                    left: '50%',
+                    transform: 'translateX(-50%) translateY(6%)',
                     width: `${fw}%`,
-                    filter: `drop-shadow(0 ${cW * 0.02}px ${
-                        cW * 0.06
-                    }px rgba(0,0,0,${isDark ? 0.55 : 0.2}))`,
+                    filter: `drop-shadow(0 ${cW * 0.02}px ${cW * 0.06}px rgba(0,0,0,${isDark ? 0.55 : 0.2}))`,
                 }}
             />
 
             {/* Walking time badge */}
             <div
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     top: cH * 0.8,
-                    left: "5%",
+                    left: '5%',
                     background: theme.cardBg,
                     borderRadius: cW * 0.035,
                     padding: `${cW * 0.03}px ${cW * 0.045}px`,
-                    boxShadow: `0 ${cW * 0.008}px ${cW * 0.035}px rgba(0,0,0,${
-                        isDark ? 0.45 : 0.12
-                    })`,
-                    border: `1px solid ${
-                        isDark
-                            ? "rgba(255,255,255,0.07)"
-                            : "rgba(48,93,183,0.08)"
-                    }`,
+                    boxShadow: `0 ${cW * 0.008}px ${cW * 0.035}px rgba(0,0,0,${isDark ? 0.45 : 0.12})`,
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(48,93,183,0.08)'}`,
                     zIndex: 20,
                 }}
             >
@@ -703,21 +629,17 @@ function Slide3({ cW, cH, theme }: SlideProps) {
             {/* Directions badge */}
             <div
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     top: cH * 0.7,
-                    right: "5%",
-                    background: isDark ? "#1a2e3a" : "#e3f2ff",
+                    right: '5%',
+                    background: isDark ? '#1a2e3a' : '#e3f2ff',
                     borderRadius: cW * 0.035,
                     padding: `${cW * 0.03}px ${cW * 0.045}px`,
-                    boxShadow: `0 ${cW * 0.008}px ${cW * 0.035}px rgba(0,0,0,${
-                        isDark ? 0.45 : 0.1
-                    })`,
-                    border: `1px solid ${
-                        isDark ? "rgba(91,130,212,0.2)" : "rgba(48,93,183,0.15)"
-                    }`,
+                    boxShadow: `0 ${cW * 0.008}px ${cW * 0.035}px rgba(0,0,0,${isDark ? 0.45 : 0.1})`,
+                    border: `1px solid ${isDark ? 'rgba(91,130,212,0.2)' : 'rgba(48,93,183,0.15)'}`,
                     zIndex: 20,
-                    display: "flex",
-                    alignItems: "center",
+                    display: 'flex',
+                    alignItems: 'center',
                     gap: cW * 0.015,
                 }}
             >
@@ -769,7 +691,7 @@ function Slide4({ cW, cH, theme }: SlideProps) {
                 <Caption
                     cW={cW}
                     label="4-YEAR PLANNER"
-                    headline={<>Plan all<br />4 years.</>}
+                    headline={<>Plan all 4 years.</>}
                     sub="Map every quarter before you enroll."
                     theme={theme}
                     align="center"
@@ -798,7 +720,7 @@ function Slide4({ cW, cH, theme }: SlideProps) {
                 alt="Degree requirements"
                 style={{
                     position: 'absolute',
-                    bottom: "-11.5%",
+                    bottom: '-11.5%',
                     right: '-18%',
                     transform: 'translateY(-5%) rotate(5deg)',
                     width: `${fw2}%`,
@@ -812,65 +734,51 @@ function Slide4({ cW, cH, theme }: SlideProps) {
 
 function Slide5({ cW, cH, theme }: SlideProps) {
     const copy = SLIDES_COPY[5];
-    const isDark = theme.bg === THEMES["blue-dark"].bg;
+    const isDark = theme.bg === THEMES['blue-dark'].bg;
 
     return (
         <div
             style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-                overflow: "hidden",
+                width: '100%',
+                height: '100%',
+                position: 'relative',
+                overflow: 'hidden',
                 background: isDark
                     ? `linear-gradient(180deg, #0f1525 0%, #0d1117 100%)`
                     : `linear-gradient(180deg, #1e3a8a 0%, #305db7 100%)`,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
                 padding: `0 ${cW * 0.08}px`,
             }}
         >
-            <Blob
-                x="60%"
-                y="-10%"
-                size={`${cW}px`}
-                color={isDark ? theme.accentLight : "#ffffff"}
-                opacity={0.08}
-            />
-            <Blob
-                x="-20%"
-                y="60%"
-                size={`${cW * 0.8}px`}
-                color={isDark ? theme.accent : "#3b82f6"}
-                opacity={0.1}
-            />
+            <Blob x="60%" y="-10%" size={`${cW}px`} color={isDark ? theme.accentLight : '#ffffff'} opacity={0.08} />
+            <Blob x="-20%" y="60%" size={`${cW * 0.8}px`} color={isDark ? theme.accent : '#3b82f6'} opacity={0.1} />
 
             {/* App icon */}
             <img
-                src={img("/app-icon.png")}
+                src={img('/app-icon.png')}
                 alt="AntAlmanac"
                 style={{
                     width: cW * 0.22,
                     height: cW * 0.22,
                     borderRadius: cW * 0.05,
                     marginBottom: cH * 0.04,
-                    boxShadow: `0 ${cW * 0.015}px ${
-                        cW * 0.055
-                    }px rgba(0,0,0,0.35)`,
+                    boxShadow: `0 ${cW * 0.015}px ${cW * 0.055}px rgba(0,0,0,0.35)`,
                 }}
                 draggable={false}
             />
 
             {/* Caption */}
-            <div style={{ marginBottom: cH * 0.06, textAlign: "center" }}>
+            <div style={{ marginBottom: cH * 0.06, textAlign: 'center' }}>
                 <div
                     style={{
                         fontSize: cW * 0.028,
                         fontWeight: 600,
-                        letterSpacing: "0.12em",
-                        color: isDark ? theme.accent : "rgba(255,255,255,0.65)",
-                        textTransform: "uppercase",
+                        letterSpacing: '0.12em',
+                        color: isDark ? theme.accent : 'rgba(255,255,255,0.65)',
+                        textTransform: 'uppercase',
                         marginBottom: cW * 0.02,
                     }}
                 >
@@ -881,7 +789,7 @@ function Slide5({ cW, cH, theme }: SlideProps) {
                         fontSize: cW * 0.095,
                         fontWeight: 700,
                         lineHeight: 1.0,
-                        color: "#ffffff",
+                        color: '#ffffff',
                     }}
                 >
                     {copy.headline}
@@ -891,11 +799,11 @@ function Slide5({ cW, cH, theme }: SlideProps) {
             {/* Feature pills */}
             <div
                 style={{
-                    display: "flex",
-                    flexWrap: "wrap" as const,
+                    display: 'flex',
+                    flexWrap: 'wrap' as const,
                     gap: cW * 0.025,
-                    justifyContent: "center",
-                    width: "100%",
+                    justifyContent: 'center',
+                    width: '100%',
                     marginBottom: cH * 0.05,
                 }}
             >
@@ -903,19 +811,13 @@ function Slide5({ cW, cH, theme }: SlideProps) {
                     <div
                         key={pill}
                         style={{
-                            background: isDark
-                                ? "rgba(91,130,212,0.18)"
-                                : "rgba(255,255,255,0.15)",
-                            border: `1px solid ${
-                                isDark
-                                    ? "rgba(91,130,212,0.35)"
-                                    : "rgba(255,255,255,0.3)"
-                            }`,
+                            background: isDark ? 'rgba(91,130,212,0.18)' : 'rgba(255,255,255,0.15)',
+                            border: `1px solid ${isDark ? 'rgba(91,130,212,0.35)' : 'rgba(255,255,255,0.3)'}`,
                             borderRadius: cW * 0.04,
                             padding: `${cW * 0.018}px ${cW * 0.04}px`,
                             fontSize: cW * 0.032,
                             fontWeight: 500,
-                            color: "#ffffff",
+                            color: '#ffffff',
                         }}
                     >
                         {pill}
@@ -963,7 +865,7 @@ const SLIDE_COMPONENTS = [Slide1, Slide2, Slide3, Slide4, Slide5];
 function ScreenshotPreview({
     slideIndex,
     themeId,
-    exportRef,
+    exportRef: _exportRef,
     onExport,
     exporting,
 }: {
@@ -997,27 +899,27 @@ function ScreenshotPreview({
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             style={{
-                width: "100%",
+                width: '100%',
                 aspectRatio: `${W}/${H}`,
-                position: "relative",
+                position: 'relative',
                 borderRadius: 12,
-                overflow: "hidden",
-                boxShadow: hovered ? "0 6px 28px rgba(0,0,0,0.22)" : "0 4px 20px rgba(0,0,0,0.15)",
-                cursor: "default",
-                transition: "box-shadow 0.15s ease",
+                overflow: 'hidden',
+                boxShadow: hovered ? '0 6px 28px rgba(0,0,0,0.22)' : '0 4px 20px rgba(0,0,0,0.15)',
+                cursor: 'default',
+                transition: 'box-shadow 0.15s ease',
                 // Contain the scaled slide precisely — no subpixel bleed
-                contain: "strict",
+                contain: 'strict',
             }}
         >
             {/* Scaled preview */}
             <div
                 style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
                     width: W,
                     height: H,
-                    transformOrigin: "center center",
+                    transformOrigin: 'center center',
                     transform: `translate(-50%, -50%) scale(${scale})`,
                 }}
             >
@@ -1027,16 +929,16 @@ function ScreenshotPreview({
             {/* Slide number badge */}
             <div
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     bottom: 8,
                     left: 8,
-                    background: "rgba(0,0,0,0.55)",
-                    color: "#fff",
+                    background: 'rgba(0,0,0,0.55)',
+                    color: '#fff',
                     fontSize: 11,
                     fontWeight: 600,
-                    padding: "3px 8px",
+                    padding: '3px 8px',
                     borderRadius: 6,
-                    backdropFilter: "blur(4px)",
+                    backdropFilter: 'blur(4px)',
                     zIndex: 30,
                 }}
             >
@@ -1048,42 +950,38 @@ function ScreenshotPreview({
                 onClick={onExport}
                 disabled={exporting}
                 style={{
-                    position: "absolute",
+                    position: 'absolute',
                     bottom: 8,
                     right: 8,
                     zIndex: 30,
                     opacity: hovered ? 1 : 0,
-                    transition: "opacity 0.15s ease",
-                    background: exporting ? "rgba(0,0,0,0.45)" : "rgba(37,99,235,0.92)",
-                    color: "#fff",
-                    border: "none",
+                    transition: 'opacity 0.15s ease',
+                    background: exporting ? 'rgba(0,0,0,0.45)' : 'rgba(37,99,235,0.92)',
+                    color: '#fff',
+                    border: 'none',
                     borderRadius: 6,
-                    padding: "4px 10px",
+                    padding: '4px 10px',
                     fontSize: 11,
                     fontWeight: 600,
-                    cursor: exporting ? "default" : "pointer",
-                    backdropFilter: "blur(4px)",
-                    display: "flex",
-                    alignItems: "center",
+                    cursor: exporting ? 'default' : 'pointer',
+                    backdropFilter: 'blur(4px)',
+                    display: 'flex',
+                    alignItems: 'center',
                     gap: 4,
-                    whiteSpace: "nowrap",
+                    whiteSpace: 'nowrap',
                 }}
             >
-                {exporting ? "↓ …" : "↓ Save"}
+                {exporting ? '↓ …' : '↓ Save'}
             </button>
         </div>
     );
 }
 
 // ─── Export logic ──────────────────────────────────────────────────────────────
-async function captureSlide(
-    el: HTMLElement,
-    w: number,
-    h: number,
-): Promise<string> {
-    el.style.left = "0px";
-    el.style.opacity = "1";
-    el.style.zIndex = "-1";
+async function captureSlide(el: HTMLElement, w: number, h: number): Promise<string> {
+    el.style.left = '0px';
+    el.style.opacity = '1';
+    el.style.zIndex = '-1';
 
     const opts = { width: w, height: h, pixelRatio: 1, cacheBust: true };
 
@@ -1091,16 +989,16 @@ async function captureSlide(
     await toPng(el, opts);
     const dataUrl = await toPng(el, opts);
 
-    el.style.left = "-9999px";
-    el.style.opacity = "";
-    el.style.zIndex = "";
+    el.style.left = '-9999px';
+    el.style.opacity = '';
+    el.style.zIndex = '';
     return dataUrl;
 }
 
 // ─── Main page ─────────────────────────────────────────────────────────────────
 export default function ScreenshotsPage() {
     const [ready, setReady] = useState(false);
-    const [themeId, setThemeId] = useState<ThemeId>("blue-light");
+    const [themeId, setThemeId] = useState<ThemeId>('blue-light');
     const [sizeIdx, setSizeIdx] = useState(0);
     const [exporting, setExporting] = useState<string | null>(null);
     const [exportingIdx, setExportingIdx] = useState<number | null>(null);
@@ -1115,17 +1013,15 @@ export default function ScreenshotsPage() {
     const size = IPHONE_SIZES[sizeIdx];
 
     async function exportAll() {
-        setExporting("0/" + SLIDE_COMPONENTS.length);
+        setExporting('0/' + SLIDE_COMPONENTS.length);
         for (let i = 0; i < SLIDE_COMPONENTS.length; i++) {
             setExporting(`${i + 1}/${SLIDE_COMPONENTS.length}`);
             const el = exportRefs.current[i];
             if (!el) continue;
             const dataUrl = await captureSlide(el, size.w, size.h);
-            const a = document.createElement("a");
+            const a = document.createElement('a');
             a.href = dataUrl;
-            a.download = `${String(i + 1).padStart(2, "0")}-${
-                SLIDES_COPY[i].id
-            }-${themeId}-${size.w}x${size.h}.png`;
+            a.download = `${String(i + 1).padStart(2, '0')}-${SLIDES_COPY[i].id}-${themeId}-${size.w}x${size.h}.png`;
             a.click();
             await new Promise((r) => setTimeout(r, 300));
         }
@@ -1138,9 +1034,9 @@ export default function ScreenshotsPage() {
         const el = exportRefs.current[i];
         if (el) {
             const dataUrl = await captureSlide(el, size.w, size.h);
-            const a = document.createElement("a");
+            const a = document.createElement('a');
             a.href = dataUrl;
-            a.download = `${String(i + 1).padStart(2, "0")}-${SLIDES_COPY[i].id}-${themeId}-${size.w}x${size.h}.png`;
+            a.download = `${String(i + 1).padStart(2, '0')}-${SLIDES_COPY[i].id}-${themeId}-${size.w}x${size.h}.png`;
             a.click();
         }
         setExportingIdx(null);
@@ -1150,13 +1046,13 @@ export default function ScreenshotsPage() {
         return (
             <div
                 style={{
-                    minHeight: "100vh",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "#f3f4f6",
-                    fontFamily: "sans-serif",
-                    color: "#6b7280",
+                    minHeight: '100vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#f3f4f6',
+                    fontFamily: 'sans-serif',
+                    color: '#6b7280',
                     fontSize: 16,
                 }}
             >
@@ -1168,10 +1064,10 @@ export default function ScreenshotsPage() {
     return (
         <div
             style={{
-                minHeight: "100vh",
-                background: "#f3f4f6",
-                position: "relative",
-                overflowX: "hidden",
+                minHeight: '100vh',
+                background: '#f3f4f6',
+                position: 'relative',
+                overflowX: 'hidden',
             }}
         >
             {/* ── Offscreen export canvases ── */}
@@ -1182,12 +1078,12 @@ export default function ScreenshotsPage() {
                         exportRefs.current[i] = el;
                     }}
                     style={{
-                        position: "absolute",
-                        left: "-9999px",
+                        position: 'absolute',
+                        left: '-9999px',
                         top: 0,
                         width: W,
                         height: H,
-                        pointerEvents: "none",
+                        pointerEvents: 'none',
                     }}
                 >
                     <SlideComp cW={W} cH={H} theme={theme} />
@@ -1197,24 +1093,24 @@ export default function ScreenshotsPage() {
             {/* ── Toolbar ── */}
             <div
                 style={{
-                    position: "sticky",
+                    position: 'sticky',
                     top: 0,
                     zIndex: 50,
-                    background: "white",
-                    borderBottom: "1px solid #e5e7eb",
-                    display: "flex",
-                    alignItems: "center",
+                    background: 'white',
+                    borderBottom: '1px solid #e5e7eb',
+                    display: 'flex',
+                    alignItems: 'center',
                 }}
             >
                 {/* Scrollable controls */}
                 <div
                     style={{
                         flex: 1,
-                        display: "flex",
-                        alignItems: "center",
+                        display: 'flex',
+                        alignItems: 'center',
                         gap: 10,
-                        padding: "10px 16px",
-                        overflowX: "auto",
+                        padding: '10px 16px',
+                        overflowX: 'auto',
                         minWidth: 0,
                     }}
                 >
@@ -1222,8 +1118,8 @@ export default function ScreenshotsPage() {
                         style={{
                             fontWeight: 700,
                             fontSize: 14,
-                            whiteSpace: "nowrap",
-                            color: "#111827",
+                            whiteSpace: 'nowrap',
+                            color: '#111827',
                         }}
                     >
                         AntAlmanac · App Store Screenshots
@@ -1232,9 +1128,9 @@ export default function ScreenshotsPage() {
                     {/* Theme switcher */}
                     <div
                         style={{
-                            display: "flex",
+                            display: 'flex',
                             gap: 4,
-                            background: "#f3f4f6",
+                            background: '#f3f4f6',
                             borderRadius: 8,
                             padding: 4,
                             flexShrink: 0,
@@ -1245,22 +1141,16 @@ export default function ScreenshotsPage() {
                                 key={id}
                                 onClick={() => setThemeId(id)}
                                 style={{
-                                    padding: "4px 14px",
+                                    padding: '4px 14px',
                                     borderRadius: 6,
-                                    border: "none",
-                                    cursor: "pointer",
+                                    border: 'none',
+                                    cursor: 'pointer',
                                     fontSize: 12,
                                     fontWeight: 600,
-                                    whiteSpace: "nowrap",
-                                    background: themeId === id
-                                        ? "white"
-                                        : "transparent",
-                                    color: themeId === id
-                                        ? "#305db7"
-                                        : "#6b7280",
-                                    boxShadow: themeId === id
-                                        ? "0 1px 3px rgba(0,0,0,0.1)"
-                                        : "none",
+                                    whiteSpace: 'nowrap',
+                                    background: themeId === id ? 'white' : 'transparent',
+                                    color: themeId === id ? '#305db7' : '#6b7280',
+                                    boxShadow: themeId === id ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                                 }}
                             >
                                 {THEMES[id].label}
@@ -1274,10 +1164,10 @@ export default function ScreenshotsPage() {
                         onChange={(e) => setSizeIdx(Number(e.target.value))}
                         style={{
                             fontSize: 12,
-                            border: "1px solid #e5e7eb",
+                            border: '1px solid #e5e7eb',
                             borderRadius: 6,
-                            padding: "4px 10px",
-                            background: "white",
+                            padding: '4px 10px',
+                            background: 'white',
                         }}
                     >
                         {IPHONE_SIZES.map((s, i) => (
@@ -1290,12 +1180,11 @@ export default function ScreenshotsPage() {
                     <span
                         style={{
                             fontSize: 11,
-                            color: "#9ca3af",
-                            whiteSpace: "nowrap",
+                            color: '#9ca3af',
+                            whiteSpace: 'nowrap',
                         }}
                     >
-                        Note: source screenshots are RGBA — flatten to RGB
-                        before submitting to App Store
+                        Note: source screenshots are RGBA — flatten to RGB before submitting to App Store
                     </span>
                 </div>
 
@@ -1303,26 +1192,26 @@ export default function ScreenshotsPage() {
                 <div
                     style={{
                         flexShrink: 0,
-                        padding: "10px 16px",
-                        borderLeft: "1px solid #e5e7eb",
+                        padding: '10px 16px',
+                        borderLeft: '1px solid #e5e7eb',
                     }}
                 >
                     <button
                         onClick={exportAll}
                         disabled={!!exporting}
                         style={{
-                            padding: "7px 20px",
-                            background: exporting ? "#93c5fd" : "#305db7",
-                            color: "white",
-                            border: "none",
+                            padding: '7px 20px',
+                            background: exporting ? '#93c5fd' : '#305db7',
+                            color: 'white',
+                            border: 'none',
                             borderRadius: 8,
                             fontSize: 12,
                             fontWeight: 600,
-                            cursor: exporting ? "default" : "pointer",
-                            whiteSpace: "nowrap",
+                            cursor: exporting ? 'default' : 'pointer',
+                            whiteSpace: 'nowrap',
                         }}
                     >
-                        {exporting ? `Exporting… ${exporting}` : "Export All"}
+                        {exporting ? `Exporting… ${exporting}` : 'Export All'}
                     </button>
                 </div>
             </div>
@@ -1330,13 +1219,12 @@ export default function ScreenshotsPage() {
             {/* ── Slide grid ── */}
             <div
                 style={{
-                    display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fill, minmax(200px, 1fr))",
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
                     gap: 20,
                     padding: 24,
                     maxWidth: 1600,
-                    margin: "0 auto",
+                    margin: '0 auto',
                 }}
             >
                 {SLIDE_COMPONENTS.map((_, i) => (
