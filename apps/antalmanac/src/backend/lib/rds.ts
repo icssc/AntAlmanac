@@ -228,8 +228,8 @@ export class RDS {
                     prepared.map(({ schedule, index, dbId }) => ({
                         id: dbId,
                         userId,
-                        name: schedule.scheduleName,
-                        notes: schedule.scheduleNote,
+                        name: schedule.name,
+                        notes: schedule.notes,
                         index,
                     }))
                 )
@@ -243,10 +243,10 @@ export class RDS {
         await Promise.all(
             prepared.flatMap(({ schedule, dbId }) => [
                 this.upsertCourses(tx, dbId, schedule.courses).catch((error) => {
-                    throw new Error(`Failed to upsert courses for ${schedule.scheduleName}: ${error}`);
+                    throw new Error(`Failed to upsert courses for ${schedule.name}: ${error}`);
                 }),
                 this.upsertCustomEvents(tx, dbId, schedule.customEvents).catch((error) => {
-                    throw new Error(`Failed to upsert custom events for ${schedule.scheduleName}: ${error}`);
+                    throw new Error(`Failed to upsert custom events for ${schedule.name}: ${error}`);
                 }),
             ])
         );
@@ -264,10 +264,9 @@ export class RDS {
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
         const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string }>();
         for (const course of courses) {
-            const sectionCode = parseInt(course.sectionCode);
-            const key = `${sectionCode}-${course.term}`;
+            const key = `${course.sectionCode}-${course.term}`;
             if (!uniqueByKey.has(key)) {
-                uniqueByKey.set(key, { sectionCode, term: course.term, color: course.color });
+                uniqueByKey.set(key, { sectionCode: course.sectionCode, term: course.term, color: course.color });
             }
         }
         const incoming = [...uniqueByKey.values()];
@@ -426,8 +425,8 @@ export class RDS {
 
             const scheduleAggregate = schedulesMapping[scheduleId] || {
                 id: scheduleId,
-                scheduleName: schedule.name,
-                scheduleNote: schedule.notes,
+                name: schedule.name,
+                notes: schedule.notes,
                 courses: [],
                 customEvents: [],
                 index: schedule.index,
@@ -435,7 +434,7 @@ export class RDS {
 
             if (course) {
                 scheduleAggregate.courses.push({
-                    sectionCode: course.sectionCode.toString(),
+                    sectionCode: course.sectionCode,
                     term: course.term,
                     color: course.color,
                 });
@@ -448,8 +447,8 @@ export class RDS {
         customEventResults.forEach(({ schedules: schedule, customEvents: customEvent }) => {
             const scheduleId = schedule.id;
             const scheduleAggregate = schedulesMapping[scheduleId] || {
-                scheduleName: schedule.name,
-                scheduleNote: schedule.notes,
+                name: schedule.name,
+                notes: schedule.notes,
                 courses: [],
                 customEvents: [],
             };

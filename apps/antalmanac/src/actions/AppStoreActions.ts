@@ -74,7 +74,7 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
             return false;
         }
 
-        if (schedule.scheduleNote !== '') {
+        if (schedule.notes !== '') {
             return false;
         }
     }
@@ -174,15 +174,15 @@ export const mergeShortCourseSchedules = (
     incomingSchedule: ShortCourseSchedule[],
     importMessage = ''
 ) => {
-    const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
+    const existingNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.name));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
-        let scheduleName = schedule.scheduleName;
-        if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = `${scheduleName}(1)`;
+        let name = schedule.name;
+        if (existingNames.has(schedule.name)) {
+            name = `${name}(1)`;
         }
         return {
             ...schedule,
-            scheduleName: `${importMessage}${scheduleName}`,
+            name: `${importMessage}${name}`,
         };
     });
     currentSchedules.push(...cacheSchedule);

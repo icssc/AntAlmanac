@@ -556,16 +556,16 @@ export class Schedules {
         const shortSchedules: ShortCourseSchedule[] = this.schedules.map((schedule) => {
             return {
                 id: schedule.scheduleId,
-                scheduleName: schedule.scheduleName,
+                name: schedule.scheduleName,
                 customEvents: schedule.customEvents,
                 courses: schedule.courses.map((course) => {
                     return {
                         color: course.section.color,
                         term: course.term,
-                        sectionCode: course.section.sectionCode,
+                        sectionCode: parseInt(course.section.sectionCode),
                     };
                 }),
-                scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],
+                notes: this.scheduleNoteMap[schedule.scheduleNoteId],
             };
         });
         return { schedules: shortSchedules, scheduleIndex: this.currentScheduleIndex };
@@ -597,7 +597,7 @@ export class Schedules {
 
         try {
             // Get a dictionary of all unique courses
-            const courseDict: { [key: string]: Set<string> } = {};
+            const courseDict: { [key: string]: Set<number> } = {};
             for (const schedule of saveState.schedules) {
                 for (const course of schedule.courses) {
                     if (course.term in courseDict) {
@@ -628,7 +628,7 @@ export class Schedules {
                 for (const shortCourse of shortCourseSchedule.courses) {
                     const courseInfoMap = courseInfoDict.get(shortCourse.term);
                     if (courseInfoMap !== undefined) {
-                        const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, '0')];
+                        const courseInfo = courseInfoMap[String(shortCourse.sectionCode).padStart(5, '0')];
                         if (courseInfo === undefined) {
                             // Class doesn't exist/was cancelled
                             continue;
@@ -648,16 +648,10 @@ export class Schedules {
                 const groupedCourses = groupCourseSections(courses);
 
                 const scheduleNoteId = Math.random();
-                if ('scheduleNote' in shortCourseSchedule) {
-                    this.scheduleNoteMap[scheduleNoteId] = shortCourseSchedule.scheduleNote;
-                } else {
-                    // If this is a schedule that was saved before schedule notes were implemented,
-                    // just give each schedule an empty schedule note
-                    this.scheduleNoteMap[scheduleNoteId] = '';
-                }
+                this.scheduleNoteMap[scheduleNoteId] = shortCourseSchedule.notes ?? '';
 
                 this.schedules.push({
-                    scheduleName: shortCourseSchedule.scheduleName,
+                    scheduleName: shortCourseSchedule.name,
                     courses: groupedCourses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
@@ -691,7 +685,7 @@ export class Schedules {
     }
 
     getSkeletonScheduleNames(): string[] {
-        return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
+        return this.skeletonSchedules.map((schedule) => schedule.name);
     }
 
     setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {

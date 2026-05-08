@@ -186,7 +186,7 @@ export function Export() {
                                                 label={
                                                     <Box>
                                                         <Typography variant="body2" fontWeight="medium">
-                                                            {schedule.scheduleName}
+                                                            {schedule.name}
                                                         </Typography>
                                                         <Typography variant="caption" color="text.secondary">
                                                             {schedule.courses.length} course(s),{' '}

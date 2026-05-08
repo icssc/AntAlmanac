@@ -396,10 +396,10 @@ export function Import() {
 
     const validateSchedule = useCallback(
         (schedule: Record<string, unknown>, scheduleIndex: number): { valid: boolean; error?: string } => {
-            if (!schedule.scheduleName || typeof schedule.scheduleName !== 'string') {
+            if (!schedule.name || typeof schedule.name !== 'string') {
                 return {
                     valid: false,
-                    error: `Schedule ${scheduleIndex + 1} is missing required field: scheduleName`,
+                    error: `Schedule ${scheduleIndex + 1} is missing required field: name`,
                 };
             }
             if (!schedule.courses || !Array.isArray(schedule.courses)) {
@@ -785,7 +785,7 @@ export function Import() {
                                                         label={
                                                             <Box>
                                                                 <Typography variant="body2" fontWeight="medium">
-                                                                    {schedule.scheduleName}
+                                                                    {schedule.name}
                                                                 </Typography>
                                                                 <Typography variant="caption" color="text.secondary">
                                                                     {schedule.courses.length} course(s),{' '}
@@ -1089,7 +1089,7 @@ export function Import() {
                                                                 label={
                                                                     <Box>
                                                                         <Typography variant="body2" fontWeight="medium">
-                                                                            {schedule.scheduleName}
+                                                                            {schedule.name}
                                                                         </Typography>
                                                                         <Typography
                                                                             variant="caption"

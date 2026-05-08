@@ -147,7 +147,7 @@ function ScheduleNoteBox() {
     const theme = useTheme();
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [scheduleNote, setScheduleNote] = useState(
-        skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
+        skeletonMode ? AppStore.getCurrentSkeletonSchedule().notes : AppStore.getCurrentScheduleNote()
     );
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
@@ -250,7 +250,7 @@ function SkeletonSchedule() {
         const result = skeletonSchedule.courses.reduce(
             (accumulated, course) => {
                 accumulated[course.term] ??= [];
-                accumulated[course.term].push(course.sectionCode);
+                accumulated[course.term].push(String(course.sectionCode));
                 return accumulated;
             },
             {} as Record<string, string[]>
@@ -261,7 +261,7 @@ function SkeletonSchedule() {
 
     return (
         <Box display="flex" flexDirection="column" gap={1}>
-            <Typography variant="h6">{skeletonSchedule.scheduleName}</Typography>
+            <Typography variant="h6">{skeletonSchedule.name}</Typography>
             {
                 // Sections organized under terms, in case the schedule contains multiple terms
                 sectionsByTerm.map(([term, sections]) => (

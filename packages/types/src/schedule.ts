@@ -29,19 +29,29 @@ export type Schedule = {
 export const ShortCourseSchema = z.object({
     color: z.string(),
     term: z.string(),
-    sectionCode: z.string(),
+    /**
+     * Matches the integer `sectionCode` column in `coursesInSchedule`.
+     * The WebSOC API returns section codes as strings; convert with parseInt/String at the boundary.
+     */
+    sectionCode: z.number().int(),
 });
 export type ShortCourse = z.infer<typeof ShortCourseSchema>;
 
 export const ShortCourseScheduleSchema = z
     .object({
-        scheduleName: z.string(),
+        /**
+         * Matches the `name` column in the `schedules` table.
+         */
+        name: z.string(),
         courses: z.array(ShortCourseSchema),
         customEvents: z.array(RepeatingCustomEventSchema),
-        scheduleNote: z.string().max(SCHEDULE_NOTE_MAX_LENGTH).optional(),
+        /**
+         * Matches the `notes` column in the `schedules` table.
+         */
+        notes: z.string().max(SCHEDULE_NOTE_MAX_LENGTH).optional(),
         id: z.string().optional(),
     })
-    .transform((schedule) => ({ scheduleNote: '', ...schedule }));
+    .transform((schedule) => ({ notes: '', ...schedule }));
 export type ShortCourseSchedule = z.infer<typeof ShortCourseScheduleSchema>;
 
 export const ScheduleSaveStateSchema = z.object({
