@@ -6,17 +6,6 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 const scheduleRouter = router({
-    getGuest: procedure.input(z.object({ username: z.string() })).query(async ({ input }) => {
-        const result = await RDS.getGuestScheduleByUsername(db, input.username);
-        if (!result) {
-            throw new TRPCError({
-                code: 'NOT_FOUND',
-                message: `Couldn't find schedules for username "${input.username}".`,
-            });
-        }
-        return result;
-    }),
-
     get: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
@@ -44,6 +33,17 @@ const scheduleRouter = router({
                 });
             }
         }),
+
+    getGuest: procedure.input(z.object({ username: z.string() })).query(async ({ input }) => {
+        const result = await RDS.getGuestScheduleByUsername(db, input.username);
+        if (!result) {
+            throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: `Couldn't find schedules for username "${input.username}".`,
+            });
+        }
+        return result;
+    }),
 
     flagImported: protectedProcedure.input(z.object({ username: z.string() })).mutation(async ({ input }) => {
         return await RDS.flagImportedUser(db, input.username);
