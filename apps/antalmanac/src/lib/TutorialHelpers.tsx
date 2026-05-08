@@ -1,9 +1,8 @@
+import { addSampleClasses } from '$lib/tourExampleGeneration';
+import { useTabStore } from '$stores/TabStore';
 import { StepType } from '@reactour/tour';
 
 import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from './localStorage';
-
-import { addSampleClasses } from '$lib/tourExampleGeneration';
-import { useTabStore } from '$stores/TabStore';
 
 export enum TourStepName {
     welcome = 'welcome',
@@ -68,6 +67,7 @@ function isElementRectReady(selector: string, options: { minWidth?: number; minH
 
 /** Only run tour if it hasn't run before, we're on desktop, and there isn't a user ID saved */
 export function tourShouldRun(): boolean {
+    if (typeof window === 'undefined') return false;
     return !(
         getLocalStorageTourHasRun() == 'true' ||
         window.matchMedia('(max-width: 799px)').matches ||

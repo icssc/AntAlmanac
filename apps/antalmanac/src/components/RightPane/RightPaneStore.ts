@@ -62,7 +62,8 @@ class RightPaneStore extends EventEmitter {
         super();
         this.setMaxListeners(15);
         this.formData = structuredClone(defaultFormValues);
-        const search = new URLSearchParams(window.location.search);
+        const search =
+            typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
         this.multiSearchData = [];
         this.warningMessages = { [CourseSearchWarningType.TermUnavailable]: [] };
         this.urlSectionCodeValue = search.get('sectionCode') || '';

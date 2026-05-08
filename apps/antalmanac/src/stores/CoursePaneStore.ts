@@ -29,11 +29,13 @@ interface CoursePaneStore {
 }
 
 export function paramsAreInURL() {
+    if (typeof window === 'undefined') return false;
     const search = new URLSearchParams(window.location.search);
     return MANUAL_SEARCH_PARAMS.some((param) => search.get(param) !== null);
 }
 
 function requiredParamsAreInURL() {
+    if (typeof window === 'undefined') return false;
     const search = new URLSearchParams(window.location.search);
 
     const searchParams = ['sectionCode', 'courseNumber', 'ge', 'deptValue'];

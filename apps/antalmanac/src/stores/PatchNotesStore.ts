@@ -28,11 +28,8 @@ export interface PatchNotesStoreProps {
 }
 
 export function shouldShowPatchNotes() {
-    return (
-        !arePatchNotesStale() &&
-        getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE &&
-        !tourShouldRun()
-    );
+    if (typeof window === 'undefined') return false;
+    return !arePatchNotesStale() && getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE && !tourShouldRun();
 }
 
 export const usePatchNotesStore = create<PatchNotesStoreProps>((set) => {
