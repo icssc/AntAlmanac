@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { autoSaveSchedule as persistAutoSaveSchedule } from '$actions/AppStoreActions';
+import * as AppStoreActions from '$actions/AppStoreActions';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
 import { postHog } from '$providers/PostHog';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -122,7 +122,7 @@ class ActionTypesStore extends EventEmitter {
 
         this.emit('autoSaveStart');
         try {
-            await persistAutoSaveSchedule({ postHog });
+            await AppStoreActions.autoSaveSchedule({ postHog });
         } finally {
             this.emit('autoSaveEnd');
         }
