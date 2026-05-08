@@ -1,6 +1,6 @@
 import { Box, Typography, Stack } from '@mui/material';
 
-export const OutagePage = () => {
+export default function OutagePage() {
     return (
         <Box sx={{ height: '100dvh', overflowY: 'auto' }}>
             <Stack
@@ -20,11 +20,11 @@ export const OutagePage = () => {
                 </Typography>
                 <Stack spacing={2}>
                     <Typography variant="h5" component="p" sx={{ textWrap: 'balance' }}>
-                        We apologize for the inconvenience and are working to get AntAlmanac back on online. Check out
-                        the <a href="https://discord.gg/KqJq8huuBB">ICSSC Projects server</a> for updates.
+                        We apologize for the inconvenience and are working to get AntAlmanac back online. Check out the{' '}
+                        <a href="https://discord.gg/KqJq8huuBB">ICSSC Projects server</a> for updates.
                     </Typography>
                 </Stack>
             </Stack>
         </Box>
     );
-};
+}
