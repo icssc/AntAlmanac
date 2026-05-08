@@ -1,9 +1,8 @@
 import { EventEmitter } from 'events';
 
-import { autoSaveSchedule } from '$actions/AppStoreActions';
+import { autoSaveSchedule as persistAutoSaveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
 import { postHog } from '$providers/PostHog';
-import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import type { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
@@ -117,17 +116,15 @@ class ActionTypesStore extends EventEmitter {
             return;
         }
 
-        if (autoSave) {
-            this.emit('autoSaveStart');
+        if (!autoSave) {
+            return;
+        }
 
-            try {
-                await autoSaveSchedule({ postHog });
-                AppStore.unsavedChanges = false;
-            } catch (error) {
-                console.error('Auto-save failed:', error);
-            } finally {
-                this.emit('autoSaveEnd');
-            }
+        this.emit('autoSaveStart');
+        try {
+            await persistAutoSaveSchedule({ postHog });
+        } finally {
+            this.emit('autoSaveEnd');
         }
     }
 }

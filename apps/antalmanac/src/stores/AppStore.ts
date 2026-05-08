@@ -25,6 +25,7 @@ import type {
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -305,7 +306,7 @@ class AppStore extends EventEmitter {
 
     saveSchedule() {
         this.unsavedChanges = false;
-        window.localStorage.removeItem('unsavedActions');
+        removeLocalStorageUnsavedActions();
     }
 
     copySchedule(scheduleIndex: number, newScheduleName: string) {
@@ -348,7 +349,8 @@ class AppStore extends EventEmitter {
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
-        const hasDataChanged = JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
+        const loadedStateMatchesCurrent =
+            JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
         if (!loadSuccess) {
             return false;
@@ -357,7 +359,7 @@ class AppStore extends EventEmitter {
 
         this.schedule.clearPreviousStates();
 
-        if (hasDataChanged) {
+        if (loadedStateMatchesCurrent) {
             deleteTempSaveData();
         } else {
             loadTempSaveData(savedSchedule.schedules.length);
