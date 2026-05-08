@@ -1,7 +1,6 @@
-import { create } from 'zustand';
-
-import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
+import generatedDepartments from '$generated/departments.json';
 import { WebSOC } from '$lib/websoc';
+import { create } from 'zustand';
 
 interface DepartmentsState {
     departments: Record<string, string> | null;
@@ -22,7 +21,7 @@ export const useDepartmentsStore = create<DepartmentsState>((set, get) => ({
             set({ departments: departmentsMap });
         } catch (error) {
             console.error('Error loading departments: ', error);
-            set({ departments: DEPARTMENT_MAP }); //fallback to hardcoded departments
+            set({ departments: generatedDepartments }); // fallback to generated departments list
         }
     },
 }));

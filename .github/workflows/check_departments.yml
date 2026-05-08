@@ -1,0 +1,54 @@
+name: Check and update department list
+
+on:
+    schedule:
+        - cron: '0 0 * * 1'
+    workflow_dispatch:
+
+env:
+    ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+
+permissions:
+    contents: write
+
+jobs:
+    check-departments:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                  ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+            - name: Setup Node and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Update departments
+              run: pnpm --filter antalmanac fetch-departments
+
+            - name: Check for changes
+              id: git-check
+              run: |
+                  if [ -z "$(git status --porcelain apps/antalmanac/src/generated/departments.json)" ]; then
+                      echo "changes=false" >> $GITHUB_OUTPUT
+                  else
+                      echo "changes=true" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Commit and push updated departments
+              if: steps.git-check.outputs.changes == 'true'
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+                  git add apps/antalmanac/src/generated/departments.json
+
+                  git commit -m "ci: update department list from Anteater API" \
+                             -m "Auto-updated by workflow on $(date -u +%Y-%m-%d)"
+
+                  git pull --rebase origin ${{ github.ref_name }}
+                  git push
+                  echo "Updated departments.json and triggered rebuild"
