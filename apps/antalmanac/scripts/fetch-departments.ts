@@ -19,7 +19,7 @@ async function main() {
     const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
 
     console.log('Fetching departments from Anteater API...');
-    const data = await fetchAnteaterAPI<WebsocDepartmentsAPIResult>(url);
+    const data = await fetchAnteaterAPI<WebsocDepartmentsAPIResult>(url, { isApiKeyRequired: true });
 
     if (!data?.data) {
         throw new Error('Departments API returned no data');
