@@ -1,3 +1,5 @@
+'use client';
+
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
@@ -15,17 +17,16 @@ import {
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
+import { useSearchParams } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
 
-export function AuthPage() {
-    const [searchParams] = useSearchParams();
+export function AuthPageClient() {
+    const searchParams = useSearchParams();
     const isAuthenticatingRef = useRef(false);
     const postHog = usePostHog();
 
     const handleSearchParamsChange = useCallback(async () => {
-        // Prevent race condition: only allow one authentication attempt at a time
         if (isAuthenticatingRef.current) {
             return;
         }
@@ -33,7 +34,6 @@ export function AuthPage() {
         try {
             const returnUrl = await trpc.userData.getAuthReturnUrl.query();
 
-            // Silent SSO returned an error — the auth server has no session.
             if (searchParams.get('error') === 'login_required') {
                 clearSsoCookie();
                 window.location.href = returnUrl;
@@ -73,7 +73,6 @@ export function AuthPage() {
 
             setSsoCookie();
 
-            // load schedule without saving any changes
             if (fromLoading !== '') {
                 removeLocalStorageFromLoading();
                 removeLocalStorageDataCache();
@@ -82,7 +81,6 @@ export function AuthPage() {
                 return;
             }
 
-            // no changes to save
             if (savedUserId === '' && savedData === '') {
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
@@ -90,7 +88,6 @@ export function AuthPage() {
                 return;
             }
 
-            // handle unsaved changes
             if (savedData !== '') {
                 const userData = await trpc.userData.getUserData.query();
                 const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
@@ -128,5 +125,6 @@ export function AuthPage() {
     useEffect(() => {
         handleSearchParamsChange();
     }, [handleSearchParamsChange]);
+
     return <LoadingScreen open={true} />;
 }

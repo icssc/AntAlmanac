@@ -1,7 +1,5 @@
-import { Box, Typography, SxProps } from '@mui/material';
-import { Link } from 'react-router-dom';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { Box, Typography, SxProps } from '@mui/material';
 
 interface InstructorsCellProps {
     instructors: string[];
@@ -11,7 +9,7 @@ interface InstructorsCellProps {
 export const InstructorsCell = ({ instructors, sx }: InstructorsCellProps) => {
     const links = instructors.map((profName, index) => {
         if (profName === 'STAFF') {
-            return <Box key={profName + index}>{profName}</Box>; // The key should be fine as we're not changing ['STAFF, 'STAFF']
+            return <Box key={profName + index}>{profName}</Box>;
         }
 
         const lastName = profName.substring(0, profName.indexOf(','));
@@ -25,13 +23,13 @@ export const InstructorsCell = ({ instructors, sx }: InstructorsCellProps) => {
                         textOverflow: 'ellipsis',
                     }}
                 >
-                    <Link
-                        to={`https://www.ratemyprofessors.com/search/professors/1074?q=${lastName}`}
+                    <a
+                        href={`https://www.ratemyprofessors.com/search/professors/1074?q=${lastName}`}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         {profName}
-                    </Link>
+                    </a>
                 </Typography>
             </Box>
         );

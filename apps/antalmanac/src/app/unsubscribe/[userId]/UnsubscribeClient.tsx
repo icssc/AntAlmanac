@@ -1,13 +1,17 @@
-import { Box, Button } from '@mui/material';
-import { Notification } from '@packages/antalmanac-types';
-import { useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+'use client';
 
 import trpc from '$lib/api/trpc';
+import { Box, Button } from '@mui/material';
+import { Notification } from '@packages/antalmanac-types';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
-export const Unsubscribe = () => {
-    const { userId } = useParams();
-    const [searchParams] = useSearchParams();
+interface Props {
+    userId: string;
+}
+
+export function UnsubscribeClient({ userId }: Props) {
+    const searchParams = useSearchParams();
 
     const sectionCode = searchParams.get('sectionCode');
     const quarter = searchParams.get('quarter');
@@ -76,4 +80,4 @@ export const Unsubscribe = () => {
             )}
         </Box>
     );
-};
+}

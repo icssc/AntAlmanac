@@ -1,7 +1,5 @@
-import { WebsocSectionStatus } from '@packages/antalmanac-types';
-import { Link } from 'react-router-dom';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { WebsocSectionStatus } from '@packages/antalmanac-types';
 
 interface SyllabusCellProps {
     webURL: WebsocSectionStatus;
@@ -14,9 +12,9 @@ export const SyllabusCell = ({ webURL }: SyllabusCellProps) => {
 
     return (
         <TableBodyCellContainer>
-            <Link to={webURL} target="_blank" referrerPolicy="no-referrer">
+            <a href={webURL} target="_blank" rel="noopener noreferrer">
                 Link
-            </Link>
+            </a>
         </TableBodyCellContainer>
     );
 };
