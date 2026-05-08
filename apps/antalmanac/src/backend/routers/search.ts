@@ -92,20 +92,23 @@ const searchRouter = router({
                 }
             }
 
-            const matchedGEs = fuzzysort.go(query, geCategoryEntries, { keys: ['key', 'name'] }).map((r) => r.obj.key);
-            if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
+            const matchedGEs = fuzzysort
+                .go(query, geCategoryEntries, { keys: ['key', 'name'], limit: 3 })
+                .map((r) => r.obj.key);
+
+            const usedSlots = matchedSections.length + matchedGEs.length;
 
             const matchedDepts =
-                matchedSections.length === MAX_AUTOCOMPLETE_RESULTS
+                usedSlots >= MAX_AUTOCOMPLETE_RESULTS
                     ? []
                     : fuzzysort.go(query, searchData.departments, {
                           keys: ['id', 'name', 'alias'],
-                          limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length,
+                          limit: MAX_AUTOCOMPLETE_RESULTS - usedSlots,
                           threshold: 0.7,
                       });
 
             const matchedCourses =
-                matchedSections.length + matchedDepts.length === MAX_AUTOCOMPLETE_RESULTS
+                usedSlots + matchedDepts.length >= MAX_AUTOCOMPLETE_RESULTS
                     ? []
                     : fuzzysort
                           .go(query, searchData.courses, {
@@ -129,10 +132,11 @@ const searchRouter = router({
                               if (a.obj.isOffered === b.obj.isOffered) return 0;
                               return a.obj.isOffered ? -1 : 1;
                           })
-                          .slice(0, MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length);
+                          .slice(0, MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - usedSlots);
 
             return Object.fromEntries([
                 ...matchedSections.map((x) => [x.sectionCode, x]),
+                ...matchedGEs.map(toGESearchResult),
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
                 ...matchedCourses.map((x) => [x.obj.id, x.obj]),
             ]);
