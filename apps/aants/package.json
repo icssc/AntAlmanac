@@ -18,7 +18,7 @@
         "@packages/db": "workspace:*",
         "@react-email/components": "^1.0.8",
         "@react-email/render": "^2.0.4",
-        "@trpc/server": "^10.30.0",
+        "@trpc/server": "^11.0.0",
         "dotenv": "^16.4.5",
         "drizzle-orm": "^0.45.1",
         "pg": "^8.13.1",
@@ -36,6 +36,6 @@
         "drizzle-kit": "^0.28.1",
         "esbuild": "^0.17.19",
         "tsx": "^3.12.7",
-        "typescript": "^5.6.3"
+        "typescript": "^5.7.2"
     }
 }
