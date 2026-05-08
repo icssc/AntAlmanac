@@ -53,7 +53,7 @@ jobs:
 
                   git add apps/antalmanac/src/generated/departments.json
 
-                  git commit -m "ci: update department list from Anteater API" \
+                  git commit -m "ci: detected department list update" \
                              -m "Auto-updated by workflow on $(date -u +%Y-%m-%d)"
 
                   git pull --rebase origin ${{ github.ref_name }}
