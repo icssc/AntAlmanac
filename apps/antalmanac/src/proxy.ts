@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+const OUTAGE = false;
+
 const ALLOWED_ORIGINS = [
     'https://antalmanac.com',
     'https://www.antalmanac.com',
@@ -30,9 +32,14 @@ function isOriginAllowed(origin: string | null): boolean {
 }
 
 export function proxy(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    if (OUTAGE && pathname !== '/outage' && !pathname.startsWith('/api/')) {
+        return NextResponse.redirect(new URL('/outage', request.url));
+    }
+
     const origin = request.headers.get('origin');
 
-    // Handle preflight OPTIONS request
     if (request.method === 'OPTIONS') {
         if (!isOriginAllowed(origin)) {
             return new NextResponse(null, { status: 403 });
@@ -63,5 +70,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-    matcher: '/api/:path*',
+    matcher: ['/((?!_next/static|_next/image|favicon|icons|screenshots|assets).*)', '/api/:path*'],
 };
