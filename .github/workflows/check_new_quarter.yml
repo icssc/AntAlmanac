@@ -2,7 +2,8 @@ name: Check and deploy new quarter
 
 on:
     schedule:
-        - cron: '0 * * * *'
+        # Avoid minute 0 — many schedulers fire on the hour; a small offset spreads load.
+        - cron: '4 * * * *'
     workflow_dispatch:
 
 env:
