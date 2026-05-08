@@ -31,12 +31,14 @@ export interface ThemeStore {
 }
 
 function themeShouldBeDark(themeSetting: ThemeSetting) {
+    if (typeof window === 'undefined') return false;
     if (themeSetting == 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches;
     return themeSetting == 'dark';
 }
 
 export const useThemeStore = create<ThemeStore>((set) => {
-    const storedThemeSetting: ThemeSetting = (getLocalStorageTheme() ?? 'system') as ThemeSetting;
+    const storedThemeSetting: ThemeSetting =
+        typeof window !== 'undefined' ? ((getLocalStorageTheme() ?? 'system') as ThemeSetting) : 'system';
     const isDark = themeShouldBeDark(storedThemeSetting);
 
     return {
