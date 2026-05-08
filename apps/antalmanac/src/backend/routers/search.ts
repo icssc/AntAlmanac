@@ -37,6 +37,8 @@ const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge8: { type: 'GE_CATEGORY', name: 'International/Global Issues' },
 };
 
+const geCategoryEntries = geCategoryKeys.map((key) => ({ key, name: geCategories[key].name }));
+
 const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     key.toUpperCase().replace('GE', 'GE-'),
     geCategories[key],
@@ -90,10 +92,7 @@ const searchRouter = router({
                 }
             }
 
-            const matchedGEs = fuzzysort
-                .go(query, [...geCategoryKeys])
-                .map((r) => r.target)
-                .filter((t): t is GECategoryKey => t in geCategories);
+            const matchedGEs = fuzzysort.go(query, geCategoryEntries, { keys: ['key', 'name'] }).map((r) => r.obj.key);
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
 
             const matchedDepts =
