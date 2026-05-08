@@ -1,5 +1,7 @@
 import { AuthPageClient } from '$src/app/auth/AuthPageClient';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * OAuth callback sink for the native iOS wrapper. In the happy path
  * ASWebAuthenticationSession intercepts this URL via the AASA association

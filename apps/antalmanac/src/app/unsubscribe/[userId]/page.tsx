@@ -1,5 +1,7 @@
 import { UnsubscribeClient } from '$src/app/unsubscribe/[userId]/UnsubscribeClient';
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
     params: Promise<{ userId: string }>;
 }

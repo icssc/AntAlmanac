@@ -20,7 +20,7 @@ import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import { TourProvider } from '@reactour/tour';
-import { useCallback, useEffect, useRef } from 'react';
+import { Suspense, useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
 function MobileHome() {
@@ -120,7 +120,9 @@ export function HomeShell() {
             }}
         >
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <PosthogPageviewTracker />
+                <Suspense fallback={null}>
+                    <PosthogPageviewTracker />
+                </Suspense>
                 <AutoSignIn />
                 <TutorialInitializer />
                 <PatchNotes />
