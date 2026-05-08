@@ -29,7 +29,6 @@
         "@emotion/cache": "^11.14.0",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
-        "@leeoniya/ufuzzy": "1.0.14",
         "@mui/icons-material": "^7.3.7",
         "@mui/lab": "7.0.1-beta.21",
         "@mui/material": "^7.3.7",
