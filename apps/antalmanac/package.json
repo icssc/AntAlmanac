@@ -96,7 +96,6 @@
         "@types/ua-parser-js": "^0.7.39",
         "@vitejs/plugin-react": "^4.0.4",
         "aws-sdk": "^2.1550.0",
-        "@tanstack/react-query-devtools": "^5.0.0",
         "typescript": "^5.7.2",
         "vite": "^4.4.9",
         "vite-plugin-svgr": "^2.4.0"
