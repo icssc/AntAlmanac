@@ -2,7 +2,8 @@ name: Check and update department list
 
 on:
     schedule:
-        - cron: '0 * * * *'
+        # Hourly at :04 UTC — offsets this job from check_new_quarter at :00 so two Anteater pulls do not start together.
+        - cron: '4 * * * *'
     workflow_dispatch:
 
 env:
