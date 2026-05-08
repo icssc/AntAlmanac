@@ -21,6 +21,7 @@ import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
+import { SectionRowColorStrip } from './SectionRowColorStrip';
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 function getSectionScheduleColor(section: AASection, term: string): string {
@@ -107,24 +108,10 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const handleMouseLeave = useCallback(() => {
         setHoveredEvent(undefined);
     }, [setHoveredEvent]);
-    const handleRowMouseMove = useCallback(
-        (event: React.MouseEvent<HTMLTableRowElement>) => {
-            if (isMobile || !addedCourse) {
-                return;
-            }
-            const rowRect = event.currentTarget.getBoundingClientRect();
-            const leftEdgeWidthPx = 6;
-            const isHoveringLeftColorBar = event.clientX - rowRect.left <= leftEdgeWidthPx;
-            if (isHoveringLeftColorBar) {
-                if (!colorPopoverAnchorEl) {
-                    setColorPopoverAnchorEl(event.currentTarget);
-                }
-            } else if (!isHoveringColorPopover && colorPopoverAnchorEl) {
-                setColorPopoverAnchorEl(null);
-            }
-        },
-        [isMobile, addedCourse, colorPopoverAnchorEl, isHoveringColorPopover]
-    );
+
+    const handleColorStripOpenPicker = useCallback((anchorEl: HTMLElement) => {
+        setColorPopoverAnchorEl((prev) => (prev === anchorEl ? null : anchorEl));
+    }, []);
 
     const handleColorPopoverClose = useCallback(() => {
         setColorPopoverAnchorEl(null);
@@ -204,9 +191,6 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
              * CSS errors occur when combining the `nth-of-type` selector with the computed styling, so it's split into two separate props
              */
             sx={{
-                ...(addedCourse && {
-                    borderLeft: `4px solid ${currColor}`,
-                }),
                 '&:nth-of-type(odd)': {
                     backgroundColor: theme.palette.action.hover,
                 },
@@ -219,8 +203,13 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                     handleColorPopoverClose();
                 }
             }}
-            onMouseMove={handleRowMouseMove}
         >
+            <SectionRowColorStrip
+                color={currColor}
+                visible={addedCourse}
+                clickable={!isMobile && addedCourse}
+                onOpenPicker={handleColorStripOpenPicker}
+            />
             {Object.entries(tableBodyCells)
                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                 .map(([column, Component]) => {
