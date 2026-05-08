@@ -90,7 +90,10 @@ const searchRouter = router({
                 }
             }
 
-            const matchedGEs = fuzzysort.go(query, [...geCategoryKeys]).map((r) => r.target as GECategoryKey);
+            const matchedGEs = fuzzysort
+                .go(query, [...geCategoryKeys])
+                .map((r) => r.target)
+                .filter((t): t is GECategoryKey => t in geCategories);
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
 
             const matchedDepts =
