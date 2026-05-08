@@ -3,6 +3,7 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { getErrorMessage } from '$lib/utils';
+import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -18,6 +19,7 @@ interface SignoutProps {
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore();
+    const clearPlannerStore = usePlannerStore((state) => state.clearPlannerStore);
     const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
 
@@ -62,6 +64,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 error: getErrorMessage(error),
             });
         } finally {
+            clearPlannerStore();
             postHog?.reset();
         }
     };

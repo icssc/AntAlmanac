@@ -12,6 +12,7 @@ interface PlannerStore {
     isPlannerLoading: boolean;
 
     loadPlannerRoadmaps: (googleId: string) => Promise<void>;
+    clearPlannerStore: () => void;
     updateTakenCourses: (roadmapId: string) => void;
 }
 
@@ -51,7 +52,7 @@ function getTakenRoadmapCourses(roadmap: Roadmap): Set<string> {
     return courses;
 }
 
-export const usePlannerStore = create<PlannerStore>((set, get) => {
+export const usePlannerStore = create<PlannerStore>((set, get, store) => {
     return {
         filterTakenCourses: false,
         userTakenCourses: new Set(),
@@ -71,6 +72,10 @@ export const usePlannerStore = create<PlannerStore>((set, get) => {
                 console.error('Failed to fetch Planner roadmaps:', e);
             }
             set({ isPlannerLoading: false });
+        },
+
+        clearPlannerStore: () => {
+            set(store.getInitialState());
         },
 
         updateTakenCourses: (selectedRoadmapId) => {
