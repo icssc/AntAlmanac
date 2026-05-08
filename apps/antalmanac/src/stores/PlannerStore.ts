@@ -1,6 +1,7 @@
 import trpc from '$lib/api/trpc';
 import { QUARTER_ORDER_IN_YEAR } from '$lib/helpers';
 import { getCurrentTerm } from '$lib/termData';
+import { openSnackbar } from '$stores/SnackbarStore';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
@@ -69,6 +70,8 @@ export const usePlannerStore = create<PlannerStore>((set, get, store) => {
                 set({ plannerRoadmaps: data ?? [] });
             } catch (e) {
                 console.error('Failed to fetch Planner roadmaps:', e);
+                openSnackbar('error', 'Failed to fetch Planner roadmaps');
+                set({ plannerRoadmaps: [] });
             }
             set({ isPlannerLoading: false });
         },
