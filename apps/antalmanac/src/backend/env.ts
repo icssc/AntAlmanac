@@ -13,6 +13,19 @@ export const oidcOAuthEnvSchema = z.object({
 });
 
 /**
+ * Environment variables for Sign in with Apple.
+ *
+ * - APPLE_CLIENT_ID: the Services ID (web) registered in the Apple Developer portal.
+ * - APPLE_BUNDLE_ID: the iOS app bundle ID (tokens issued to the native app use this as audience).
+ *
+ * Both are optional — Sign in with Apple is only enabled when at least one is set.
+ */
+export const appleAuthEnvSchema = z.object({
+    APPLE_CLIENT_ID: z.string().optional(),
+    APPLE_BUNDLE_ID: z.string().optional(),
+});
+
+/**
  * Environment variables required by the backend to connect to the RDS instance.
  */
 export const rdsEnvSchema = z.object({
@@ -55,6 +68,7 @@ export const backendEnvSchema = z
     .object({})
     .merge(stagingEnvSchema)
     .merge(oidcOAuthEnvSchema)
+    .merge(appleAuthEnvSchema)
     .merge(rdsEnvSchema)
     .merge(mapboxEnvSchema)
     .merge(aapiEnvSchema)

@@ -2,7 +2,7 @@ import { pgTable, text, pgEnum, primaryKey, timestamp } from 'drizzle-orm/pg-cor
 
 import { users } from './user';
 
-const accountTypes = ['GOOGLE', 'GUEST', 'OIDC'] as const;
+const accountTypes = ['GOOGLE', 'GUEST', 'OIDC', 'APPLE'] as const;
 
 export const accountTypeEnum = pgEnum('account_type', accountTypes);
 

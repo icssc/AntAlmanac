@@ -1,4 +1,4 @@
-import { loadGuestSchedule, loadSchedule, loginUser } from '$actions/AppStoreActions';
+import { loadGuestSchedule, loadSchedule, loginUser, loginWithApple } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
@@ -9,7 +9,7 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { AccountCircle, ExpandMore, Google } from '@mui/icons-material';
+import { AccountCircle, Apple, ExpandMore, Google } from '@mui/icons-material';
 import {
     Alert,
     type AlertColor,
@@ -38,7 +38,7 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
         severity: 'info',
     },
     SCHEDULE_IMPORTED: {
-        title: 'This schedule was previously imported to a Google account. Did you want to sign in with Google?',
+        title: 'This schedule was previously imported to an account. Did you want to sign in?',
         severity: 'info',
     },
 };
@@ -202,6 +202,21 @@ export const Signin = () => {
                             Sign in with Google
                         </Button>
 
+                        <Button
+                            onClick={() => loginWithApple(postHog)}
+                            variant="contained"
+                            startIcon={<Apple />}
+                            size="large"
+                            fullWidth
+                            sx={{
+                                backgroundColor: '#000',
+                                color: '#fff',
+                                '&:hover': { backgroundColor: '#333' },
+                            }}
+                        >
+                            Sign in with Apple
+                        </Button>
+
                         <Box
                             onClick={() => setShowLegacyLogin(!showLegacyLogin)}
                             sx={{
@@ -308,17 +323,33 @@ export const Signin = () => {
                 title={alertMessage.title}
                 severity={alertMessage.severity}
             >
-                <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
-                <Button
-                    color="primary"
-                    variant="contained"
-                    startIcon={<Google />}
-                    fullWidth
-                    onClick={handleLogin}
-                    size="large"
-                >
-                    Sign in with Google
-                </Button>
+                <DialogContentText>To load your schedule, sign in with your account</DialogContentText>
+                <Stack spacing={1}>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        startIcon={<Google />}
+                        fullWidth
+                        onClick={handleLogin}
+                        size="large"
+                    >
+                        Sign in with Google
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<Apple />}
+                        fullWidth
+                        onClick={() => loginWithApple(postHog)}
+                        size="large"
+                        sx={{
+                            backgroundColor: '#000',
+                            color: '#fff',
+                            '&:hover': { backgroundColor: '#333' },
+                        }}
+                    >
+                        Sign in with Apple
+                    </Button>
+                </Stack>
             </AlertDialog>
         </div>
     );

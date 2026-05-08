@@ -1,5 +1,6 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { requestAppleSignIn } from '$lib/appleSignIn';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
@@ -412,6 +413,42 @@ export const loginUser = async (postHog?: PostHog) => {
         });
         console.error('Error during login initiation', error);
         openSnackbar('error', 'Error during login initiation. Please Try Again.');
+    }
+};
+
+export const loginWithApple = async (postHog?: PostHog) => {
+    try {
+        cacheSchedule();
+        const { identityToken, fullName } = await requestAppleSignIn();
+
+        const result = await trpc.userData.handleAppleSignIn.mutate({
+            identityToken,
+            fullName,
+        });
+
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SIGN_IN,
+            customProps: { provider: 'apple' },
+        });
+
+        if (result.userId) {
+            analyticsIdentifyUser(postHog, result.userId);
+            window.location.reload();
+        }
+    } catch (error) {
+        const message = getErrorMessage(error);
+        if (message === 'canceled') {
+            return;
+        }
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SIGN_IN_FAIL,
+            error: message,
+            customProps: { provider: 'apple' },
+        });
+        console.error('Error during Apple sign in', error);
+        openSnackbar('error', 'Error during Apple sign in. Please try again.');
     }
 };
 

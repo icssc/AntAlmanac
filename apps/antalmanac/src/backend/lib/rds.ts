@@ -103,14 +103,19 @@ export class RDS {
         email?: string,
         avatar?: string
     ) {
-        if (accountType !== 'OIDC') {
-            throw new Error('Invalid account type. Must be OIDC.');
+        if (accountType !== 'OIDC' && accountType !== 'APPLE') {
+            throw new Error('Invalid account type. Must be OIDC or APPLE.');
         }
 
-        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
+        let normalizedProviderId: string;
+        if (accountType === 'OIDC') {
+            normalizedProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
+        } else {
+            normalizedProviderId = providerId.startsWith('apple_') ? providerId : `apple_${providerId}`;
+        }
 
         return db.transaction(async (tx) => {
-            const existingAccount = await this.getAccountByProviderId(tx, accountType, oidcProviderId);
+            const existingAccount = await this.getAccountByProviderId(tx, accountType, normalizedProviderId);
 
             if (existingAccount) {
                 return { ...existingAccount, newUser: false };
@@ -140,7 +145,7 @@ export class RDS {
 
             const account = await tx
                 .insert(accounts)
-                .values({ userId, accountType, providerAccountId: oidcProviderId })
+                .values({ userId, accountType, providerAccountId: normalizedProviderId })
                 .onConflictDoUpdate({
                     target: [accounts.userId, accounts.accountType],
                     set: buildConflictUpdateSet(accounts, {

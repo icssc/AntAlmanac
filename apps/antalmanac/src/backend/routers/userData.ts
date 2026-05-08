@@ -1,5 +1,6 @@
 import { SESSION_COOKIE_NAME } from '$src/backend/context';
-import { oidcOAuthEnvSchema } from '$src/backend/env';
+import { appleAuthEnvSchema, oidcOAuthEnvSchema } from '$src/backend/env';
+import { verifyAppleIdentityToken } from '$src/backend/lib/auth/apple';
 import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { getCookiesFromHeader, getSafeAuthRedirectPath } from '$src/backend/lib/helpers';
 import { RDS } from '$src/backend/lib/rds';
@@ -11,6 +12,7 @@ import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState
 import { z } from 'zod';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
+const { APPLE_CLIENT_ID, APPLE_BUNDLE_ID } = appleAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
 
 const userDataRouter = router({
@@ -219,6 +221,89 @@ const userDataRouter = router({
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
                     message: 'Failed to handle OAuth callback',
+                });
+            }
+        }),
+
+    isAppleSignInEnabled: procedure.query(() => {
+        return Boolean(APPLE_CLIENT_ID || APPLE_BUNDLE_ID);
+    }),
+
+    /**
+     * Handles Sign in with Apple. Receives the Apple identity token (JWT),
+     * verifies it against Apple's JWKS, and creates or links an account.
+     */
+    handleAppleSignIn: procedure
+        .input(
+            z.object({
+                identityToken: z.string(),
+                fullName: z
+                    .object({
+                        givenName: z.string().optional(),
+                        familyName: z.string().optional(),
+                    })
+                    .optional(),
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const audiences = [APPLE_CLIENT_ID, APPLE_BUNDLE_ID].filter(Boolean) as string[];
+
+            if (audiences.length === 0) {
+                throw new TRPCError({
+                    code: 'PRECONDITION_FAILED',
+                    message: 'Sign in with Apple is not configured',
+                });
+            }
+
+            let claims;
+            try {
+                claims = await verifyAppleIdentityToken(input.identityToken, audiences);
+            } catch (error) {
+                console.error('[Apple Sign In] Token verification failed:', error);
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED',
+                    message: 'Invalid Apple identity token',
+                });
+            }
+
+            const appleUserId = claims.sub;
+            const email = claims.email;
+
+            const nameParts = [input.fullName?.givenName, input.fullName?.familyName].filter(Boolean);
+            const name = nameParts.length > 0 ? nameParts.join(' ') : undefined;
+
+            const isProduction = NODE_ENV === 'production';
+
+            try {
+                const account = await RDS.registerUserAccount(db, 'APPLE', appleUserId, name, email);
+                const userId = account.userId;
+
+                const session = await RDS.upsertSession(db, userId);
+                if (!session?.refreshToken) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Failed to create session',
+                    });
+                }
+
+                const sessionCookieOptions = `Path=/; HttpOnly; ${
+                    isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'
+                }; Max-Age=2592000`;
+                ctx.resHeaders?.append(
+                    'Set-Cookie',
+                    `${SESSION_COOKIE_NAME}=${session.refreshToken}; ${sessionCookieOptions}`
+                );
+
+                return {
+                    userId,
+                    newUser: account.newUser,
+                };
+            } catch (error) {
+                if (error instanceof TRPCError) throw error;
+                console.error('[Apple Sign In] Error:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to handle Apple sign in',
                 });
             }
         }),

@@ -258,7 +258,73 @@ extension ViewController: WKScriptMessageHandler {
         if message.name == "push-token" {
             handleFCMToken()
         }
+        if message.name == "apple-sign-in" {
+            startAppleSignIn()
+        }
   }
+}
+
+// MARK: - Sign in with Apple
+
+extension ViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return view.window ?? ASPresentationAnchor()
+    }
+
+    func startAppleSignIn() {
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        controller.performRequests()
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let identityTokenData = credential.identityToken,
+              let identityToken = String(data: identityTokenData, encoding: .utf8) else {
+            let errorJS = "window.__appleSignInCallback && window.__appleSignInCallback({error: 'missing_token'})"
+            AntAlmanac.webView.evaluateJavaScript(errorJS)
+            return
+        }
+
+        let givenName = credential.fullName?.givenName ?? ""
+        let familyName = credential.fullName?.familyName ?? ""
+
+        let tokenEscaped = identityToken
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "'", with: "\\'")
+        let givenEscaped = givenName
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "'", with: "\\'")
+        let familyEscaped = familyName
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "'", with: "\\'")
+
+        let js = """
+        window.__appleSignInCallback && window.__appleSignInCallback({
+            identityToken: '\(tokenEscaped)',
+            fullName: { givenName: '\(givenEscaped)', familyName: '\(familyEscaped)' }
+        })
+        """
+        AntAlmanac.webView.evaluateJavaScript(js)
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        let nsError = error as NSError
+        if nsError.domain == ASAuthorizationError.errorDomain &&
+            nsError.code == ASAuthorizationError.canceled.rawValue {
+            let js = "window.__appleSignInCallback && window.__appleSignInCallback({error: 'canceled'})"
+            AntAlmanac.webView.evaluateJavaScript(js)
+            return
+        }
+        print("Sign in with Apple error: \(error)")
+        let js = "window.__appleSignInCallback && window.__appleSignInCallback({error: 'auth_failed'})"
+        AntAlmanac.webView.evaluateJavaScript(js)
+    }
 }
 
 // MARK: - ASWebAuthenticationSession handoff
