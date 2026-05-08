@@ -78,7 +78,9 @@ export function AdvancedSearchTextFields() {
     const { plannerRoadmaps, updateTakenCourses } = usePlannerStore(
         useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, updateTakenCourses: s.updateTakenCourses }))
     );
-    const isLoggedIn = useSessionStore((s) => s.googleId !== null);
+    const { sessionIsValid, googleId } = useSessionStore(
+        useShallow((s) => ({ sessionIsValid: s.sessionIsValid, googleId: s.googleId }))
+    );
     const [signInOpen, setSignInOpen] = useState(false);
 
     const resetField = useCallback(() => {
@@ -206,7 +208,11 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        updateTakenCourses(excludeRoadmapCourses);
+        if (!googleId) {
+            return;
+        }
+
+        updateTakenCourses(googleId, excludeRoadmapCourses);
 
         if (!excludeRoadmapCourses) return;
         if (!plannerRoadmaps || plannerRoadmaps.length === 0) return;
@@ -423,14 +429,14 @@ export function AdvancedSearchTextFields() {
                                 width: '100%',
                             },
                             onOpen: () => {
-                                if (!isLoggedIn) {
+                                if (!sessionIsValid) {
                                     setSignInOpen(true);
                                 }
                             },
-                            open: !isLoggedIn ? false : undefined,
+                            open: !sessionIsValid ? false : undefined,
                         }}
                     >
-                        {getRoadmapMenuItems({ isLoggedIn, roadmaps: plannerRoadmaps })}
+                        {getRoadmapMenuItems({ isLoggedIn: sessionIsValid, roadmaps: plannerRoadmaps })}
                     </LabeledSelect>
 
                     <LabeledSelect

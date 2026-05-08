@@ -1,7 +1,6 @@
 import trpc from '$lib/api/trpc';
 import { QUARTER_ORDER_IN_YEAR } from '$lib/helpers';
 import { getCurrentTerm } from '$lib/termData';
-import { useSessionStore } from '$stores/SessionStore';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
@@ -13,7 +12,7 @@ interface PlannerStore {
 
     loadPlannerRoadmaps: (googleId: string) => Promise<void>;
     clearPlannerStore: () => void;
-    updateTakenCourses: (roadmapId: string) => void;
+    updateTakenCourses: (googleId: string, selectedRoadmapId: string) => void;
 }
 
 function roadmapQuarterToYearAndQuarter(startYear: number, quarterName: string): { year: number; quarter: string } {
@@ -78,8 +77,7 @@ export const usePlannerStore = create<PlannerStore>((set, get, store) => {
             set(store.getInitialState());
         },
 
-        updateTakenCourses: (selectedRoadmapId) => {
-            const googleId = useSessionStore.getState().googleId;
+        updateTakenCourses: (googleId, selectedRoadmapId) => {
             const roadmaps = get().plannerRoadmaps;
             if (!googleId || !selectedRoadmapId || roadmaps.length === 0) {
                 set({ userTakenCourses: new Set(), filterTakenCourses: false });
