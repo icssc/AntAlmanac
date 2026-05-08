@@ -83,7 +83,7 @@ export function AdvancedSearchTextFields() {
     );
     const [signInOpen, setSignInOpen] = useState(false);
 
-    const resetField = useCallback(() => {
+    const syncFieldStates = useCallback(() => {
         const formData = RightPaneStore.getFormData();
         setInstructor(formData.instructor);
         setUnits(formData.units);
@@ -99,12 +99,14 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
+        RightPaneStore.on('formDataChange', syncFieldStates);
+        RightPaneStore.on('formReset', syncFieldStates);
 
         return () => {
-            RightPaneStore.removeListener('formReset', resetField);
+            RightPaneStore.removeListener('formDataChange', syncFieldStates);
+            RightPaneStore.removeListener('formReset', syncFieldStates);
         };
-    }, [resetField]);
+    }, [syncFieldStates]);
 
     const updateValue = (name: AdvancedSearchParam, stringValue: string) => {
         const stateObj = { url: 'url' };
