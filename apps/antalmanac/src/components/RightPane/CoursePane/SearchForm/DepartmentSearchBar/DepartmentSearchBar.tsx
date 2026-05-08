@@ -1,11 +1,12 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useDepartments } from '$hooks/useDepartments';
+import generatedDepartments from '$generated/departments.json';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 import { useCallback, useEffect, useState } from 'react';
 
-const DEFAULT_DEPARTMENTS: Record<string, string> = {
+const ALL_DEPARTMENTS: Record<string, string> = {
     ALL: 'ALL: Include All Departments',
+    ...generatedDepartments,
 };
 
 const parseLocalStorageRecentlySearched = (): string[] => {
@@ -28,11 +29,7 @@ const parseLocalStorageRecentlySearched = (): string[] => {
 };
 
 export function DepartmentSearchBar() {
-    const { departments } = useDepartments();
-
-    const departmentsWithAll = departments ? { ...DEFAULT_DEPARTMENTS, ...departments } : DEFAULT_DEPARTMENTS;
-
-    const options = Object.keys(departmentsWithAll);
+    const options = Object.keys(ALL_DEPARTMENTS);
 
     const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
     const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageRecentlySearched());
@@ -96,7 +93,7 @@ export function DepartmentSearchBar() {
                 options: Array.from(new Set([...recentSearches, ...options])),
                 autoHighlight: true,
                 openOnFocus: true,
-                getOptionLabel: (option) => departmentsWithAll[option.toUpperCase()] ?? option,
+                getOptionLabel: (option) => ALL_DEPARTMENTS[option.toUpperCase()] ?? option,
                 onChange: handleChange,
                 includeInputInList: true,
                 noOptionsText: 'No departments match the search',
