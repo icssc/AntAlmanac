@@ -32,6 +32,7 @@ import {
     GE,
 } from '@packages/antalmanac-types';
 import Image from 'next/image';
+import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
@@ -199,12 +200,23 @@ const SectionTableWrapped = (
     return <div>{component}</div>;
 };
 
+const centeredPaneImageStyle: CSSProperties = {
+    objectFit: 'contain',
+    maxWidth: '80%',
+    maxHeight: '100%',
+    width: 'auto',
+    height: 'auto',
+};
+
 const LoadingMessage = () => {
     const isDark = useThemeStore((store) => store.isDark);
     return (
-        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" unoptimized />
-        </Box>
+        <Image
+            src={isDark ? darkModeLoadingGif : loadingGif}
+            alt="Loading courses"
+            unoptimized
+            style={centeredPaneImageStyle}
+        />
     );
 };
 
@@ -220,17 +232,18 @@ const ErrorMessage = () => {
     return (
         <Box
             sx={{
-                height: '100%',
+                flex: 1,
+                minHeight: 0,
                 display: 'flex',
-                alignItems: 'center',
                 flexDirection: 'column',
+                overflow: 'hidden',
             }}
         >
             {courseId && multiSearchData.length === 0 ? (
                 <Link
                     href={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
                     target="_blank"
-                    sx={{ width: '100%' }}
+                    sx={{ width: '100%', flexShrink: 0 }}
                 >
                     <Alert
                         variant="filled"
@@ -254,11 +267,21 @@ const ErrorMessage = () => {
                 </Link>
             ) : null}
 
-            <Image
-                src={isDark ? darkNoNothing : noNothing}
-                alt="No Results Found"
-                style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
-            />
+            <Box
+                sx={{
+                    flex: 1,
+                    minHeight: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <Image
+                    src={isDark ? darkNoNothing : noNothing}
+                    alt="No Results Found"
+                    style={{ ...centeredPaneImageStyle, pointerEvents: 'none' }}
+                />
+            </Box>
         </Box>
     );
 };
@@ -405,10 +428,18 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [setHoveredEvent]);
 
-    return (
-        <>
-            <Box sx={{ height: '56px' }} />
+    const showCourseRows = !loading && !error && courseData.length > 0;
 
+    return (
+        <Box
+            sx={{
+                flex: 1,
+                minHeight: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                ...(!showCourseRows ? { overflow: 'hidden' } : {}),
+            }}
+        >
             {Object.entries(RightPaneStore.getWarningMessages()).map(([warningType, messages]) => {
                 return messages.map((message) => (
                     <WarningAlert
@@ -430,13 +461,24 @@ export default function CourseRenderPane(props: { id?: number }) {
                 );
             })}
             {loading ? (
-                <LoadingMessage />
+                <Box
+                    sx={{
+                        flex: 1,
+                        minHeight: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                    }}
+                >
+                    <LoadingMessage />
+                </Box>
             ) : error || courseData.length === 0 ? (
                 <ErrorMessage />
             ) : (
                 <>
                     <RecruitmentBanner />
-                    <Box>
+                    <Box sx={{ flexShrink: 0 }}>
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
                             if ((courseData[index] as AACourse).sections !== undefined)
@@ -453,6 +495,6 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </Box>
                 </>
             )}
-        </>
+        </Box>
     );
 }

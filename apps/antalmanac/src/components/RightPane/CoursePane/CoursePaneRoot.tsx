@@ -1,7 +1,3 @@
-import { Box } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect } from 'react';
-
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
@@ -12,6 +8,9 @@ import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { Box } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect } from 'react';
 
 export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
@@ -62,16 +61,28 @@ export function CoursePaneRoot() {
     }, [handleKeydown]);
 
     return (
-        <Box sx={{ height: 0, flexGrow: 1 }}>
+        <Box
+            sx={{
+                height: 0,
+                flexGrow: 1,
+                minHeight: 0,
+                display: 'flex',
+                flexDirection: 'column',
+            }}
+        >
             <CoursePaneButtonRow
                 showSearch={!searchFormIsDisplayed}
                 onDismissSearchResults={displaySearch}
                 onRefreshSearch={refreshSearch}
             />
             {searchFormIsDisplayed ? (
-                <SearchForm toggleSearch={handleSearch} />
+                <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+                    <SearchForm toggleSearch={handleSearch} />
+                </Box>
             ) : (
-                <CourseRenderPane key={key} id={key} />
+                <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                    <CourseRenderPane key={key} id={key} />
+                </Box>
             )}
         </Box>
     );

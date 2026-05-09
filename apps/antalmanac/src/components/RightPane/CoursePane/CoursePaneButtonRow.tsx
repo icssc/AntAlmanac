@@ -1,3 +1,6 @@
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
 import {
     Box,
@@ -15,16 +18,11 @@ import {
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
-
 /**
  * All the interactive buttons have the same styles.
  */
 const buttonSx: SxProps = {
     backgroundColor: 'rgba(236, 236, 236, 1)',
-    marginRight: 1,
     padding: 1.5,
     boxShadow: '2',
     color: 'black',
@@ -160,10 +158,12 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
     return (
         <Box
             sx={{
-                display: props.showSearch ? 'block' : 'none',
-                width: 'fit-content',
+                display: props.showSearch ? 'flex' : 'none',
+                flexShrink: 0,
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                gap: 1,
                 zIndex: 3,
-                position: 'absolute',
             }}
         >
             <Tooltip title="Back">
