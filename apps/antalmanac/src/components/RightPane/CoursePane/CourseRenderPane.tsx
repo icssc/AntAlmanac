@@ -523,7 +523,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                                     },
                                 }}
                             >
-                                No courses match all selected GEs. The results below match at least one selected GE.
+                                No courses fulfill all selected GEs. The results below fulfill at least one selected GE.
                             </Alert>
                         )}
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
