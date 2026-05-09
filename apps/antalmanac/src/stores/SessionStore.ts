@@ -32,8 +32,9 @@ interface SessionState {
 }
 
 export const useSessionStore = create<SessionState>((set) => {
-    // Clean up stale localStorage token from before the cookie migration
-    window.localStorage.removeItem('sessionId');
+    if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('sessionId');
+    }
 
     return {
         userId: null,

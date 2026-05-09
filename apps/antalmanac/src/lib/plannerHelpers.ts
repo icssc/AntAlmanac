@@ -28,6 +28,7 @@ export function getRoadmapTermRelation(roadmap: Roadmap, year: string, quarter: 
 }
 
 export function shouldSearchPlannerFromParams() {
+    if (typeof window === 'undefined') return false;
     const searchParams = new URLSearchParams(window.location.search);
     return searchParams.get(PLANNER_SEARCH_PARAM) !== null;
 }

@@ -1,23 +1,23 @@
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
-
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
 import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import LocationMarker from './Marker';
 
 const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { UserLocator } from '$components/Map/UserLocator';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { UserLocator } from '$components/Map/UserLocator';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
@@ -156,10 +156,10 @@ export function getCustomEventPerBuilding() {
  * Map of all course locations on UCI campus.
  */
 export default function CourseMap() {
-    const navigate = useNavigate();
+    const router = useRouter();
     const map = useRef<Map | null>(null);
     const markerRef = createRef<Marker>();
-    const [searchParams] = useSearchParams();
+    const searchParams = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
@@ -229,9 +229,9 @@ export default function CourseMap() {
 
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
-            navigate(`/map?location=${building?.id}`);
+            router.push(`/map?location=${building?.id}`);
         },
-        [navigate]
+        [router]
     );
 
     const days = useMemo(() => {

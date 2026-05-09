@@ -1,3 +1,8 @@
+'use client';
+
+import './HomeShell.css';
+import { undoDelete, redoDelete } from '$actions/AppStoreActions';
+import { AutoSignIn } from '$components/AutoSignIn';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
@@ -8,12 +13,14 @@ import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManag
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
+import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
-import { useCallback, useEffect, useRef } from 'react';
+import { TourProvider } from '@reactour/tour';
+import { Suspense, useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
 function MobileHome() {
@@ -60,7 +67,6 @@ function DesktopHome() {
             gutterStyle={() => ({
                 backgroundColor: BLUE,
                 width: '10px',
-                // gutter contents are slightly offset to the right, this centers the content
                 paddingRight: '1px',
             })}
             onDrag={handleDrag}
@@ -75,23 +81,61 @@ function DesktopHome() {
     );
 }
 
-export default function Home() {
+export function HomeShell() {
     const isMobile = useIsMobile();
     const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 
+    useEffect(() => {
+        document.addEventListener('keydown', undoDelete, false);
+        document.addEventListener('keydown', redoDelete, false);
+        return () => {
+            document.removeEventListener('keydown', undoDelete, false);
+            document.removeEventListener('keydown', redoDelete, false);
+        };
+    }, []);
+
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <TutorialInitializer />
-            <PatchNotes />
+        <TourProvider
+            steps={[]}
+            padding={5}
+            styles={{
+                maskArea: (base) => ({
+                    ...base,
+                    rx: 5,
+                }),
+                maskWrapper: (base) => ({
+                    ...base,
+                    color: 'rgba(0, 0, 0, 0.3)',
+                }),
+                popover: (base) => ({
+                    ...base,
+                    background: '#fff',
+                    color: 'black',
+                    borderRadius: 5,
+                    boxShadow: '0 0 10px #000',
+                    padding: 20,
+                    paddingTop: 40,
+                    margin: '4px 20px 20px 20px',
+                }),
+            }}
+        >
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <Suspense fallback={null}>
+                    <PosthogPageviewTracker />
+                </Suspense>
+                <AutoSignIn />
+                <TutorialInitializer />
+                <PatchNotes />
 
-            <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
-                <Header />
-                {isMobile ? <MobileHome /> : <DesktopHome />}
-            </Stack>
+                <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
+                    <Header />
+                    {isMobile ? <MobileHome /> : <DesktopHome />}
+                </Stack>
 
-            <NotificationSnackbar />
-            <ReviewPrompt />
-            <KeyboardShortcutsModal open={shortcutsOpen} onClose={closeShortcutsModal} />
-        </LocalizationProvider>
+                <NotificationSnackbar />
+                <ReviewPrompt />
+                <KeyboardShortcutsModal open={shortcutsOpen} onClose={closeShortcutsModal} />
+            </LocalizationProvider>
+        </TourProvider>
     );
 }

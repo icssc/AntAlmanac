@@ -1,3 +1,4 @@
+import { Providers } from '$src/app/providers';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import type { WebApplication, WebSite, WithContext } from 'schema-dts';
@@ -8,7 +9,10 @@ const ANTALMANAC_DESCRIPTION =
     'Search UCI courses across 140+ departments and build your class schedule with AntAlmanac. Check grade distributions, view classes on a campus map, and plan your ideal quarter.';
 
 export const metadata: Metadata = {
-    title: 'AntAlmanac — UCI Course & Schedule Planner',
+    title: {
+        default: 'AntAlmanac — UCI Course & Schedule Planner',
+        template: '%s | AntAlmanac',
+    },
     description: ANTALMANAC_DESCRIPTION,
     manifest: '/manifest.json',
     metadataBase: new URL('https://antalmanac.com'),
@@ -88,7 +92,6 @@ const siteSchema: WithContext<WebSite> = {
     potentialAction: {
         '@type': 'SearchAction',
         target: { '@type': 'EntryPoint', urlTemplate: 'https://antalmanac.com/?search={query}' },
-        // `query-input` is a valid schema.org SearchAction annotation not yet typed in schema-dts
         ...({ 'query-input': 'required name=query' } as object),
     },
 };
@@ -108,7 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     );`}
                 </Script>
                 <noscript>You need to enable JavaScript to run this app.</noscript>
-                {children}
+                <Providers>{children}</Providers>
             </body>
         </html>
     );

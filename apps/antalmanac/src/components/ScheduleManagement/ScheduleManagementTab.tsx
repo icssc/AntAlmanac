@@ -1,14 +1,20 @@
-import { Tab } from '@mui/material';
-import { Link } from 'react-router-dom';
-
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useTabStore } from '$stores/TabStore';
+import { Tab } from '@mui/material';
+import NextLink from 'next/link';
+import { forwardRef } from 'react';
 
 interface ScheduleManagementTabProps {
     tab: ScheduleManagementTabInfo;
     value: number;
 }
+
+const LinkTab = forwardRef<HTMLAnchorElement, { href: string } & React.AnchorHTMLAttributes<HTMLAnchorElement>>(
+    function LinkTab({ href, ...props }, ref) {
+        return <NextLink ref={ref} href={href} {...props} />;
+    }
+);
 
 export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
     const { setActiveTabValue } = useTabStore();
@@ -21,8 +27,8 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
     return (
         <Tab
             id={tab.id}
-            component={Link}
-            to={tab.href}
+            component={LinkTab}
+            href={tab.href || '/'}
             icon={tab.icon}
             iconPosition={isMobile ? 'top' : 'start'}
             sx={{

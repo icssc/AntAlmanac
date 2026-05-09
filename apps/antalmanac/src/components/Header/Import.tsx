@@ -54,7 +54,6 @@ import {
 import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -1185,7 +1184,9 @@ export function Import() {
                 {alertDialogSeverity === 'error' ? (
                     <Box>
                         If you think this is a mistake please submit a{' '}
-                        <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
+                        <a href="https://forms.gle/k81f2aNdpdQYeKK8A" target="_blank" rel="noopener noreferrer">
+                            bug report
+                        </a>
                     </Box>
                 ) : (
                     <Stack direction="row" justifyContent="center">

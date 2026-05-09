@@ -8,8 +8,8 @@ import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 
 /**
  * List of interactive tab buttons with their accompanying content.
@@ -17,7 +17,7 @@ import { useParams } from 'react-router-dom';
  */
 export function ScheduleManagement() {
     const { activeTab, setActiveTab } = useTabStore();
-    const { tab } = useParams();
+    const pathname = usePathname();
     const isMobile = useIsMobile();
 
     // Tab index mapped to the last known scrollTop.
@@ -38,17 +38,17 @@ export function ScheduleManagement() {
     };
 
     useEffect(() => {
-        if (tab) {
-            switch (tab) {
+        const segment = pathname.split('/').filter(Boolean)[0];
+
+        if (segment) {
+            switch (segment) {
                 case 'added':
                     setActiveTab('added');
-                    break;
+                    return;
                 case 'map':
                     setActiveTab('map');
-                    break;
+                    return;
             }
-
-            return;
         }
 
         if (shouldSearchPlannerFromParams()) {
@@ -81,9 +81,8 @@ export function ScheduleManagement() {
         }
 
         setActiveTab('search');
-        // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile, setActiveTab]);
+    }, [isMobile, setActiveTab, pathname]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
