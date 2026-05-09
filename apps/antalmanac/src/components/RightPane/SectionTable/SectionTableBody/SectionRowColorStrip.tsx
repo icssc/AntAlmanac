@@ -41,7 +41,7 @@ export function SectionRowColorStrip({ color, visible, clickable, onOpenPicker }
                         bottom: 0,
                         width: STRIP_SHRINK_PX,
                         bgcolor: color,
-                        borderRadius: '0 3px 3px 0',
+                        borderRadius: '0 4px 4px 0',
                     }}
                 />
             </TableCell>
@@ -72,7 +72,7 @@ export function SectionRowColorStrip({ color, visible, clickable, onOpenPicker }
                     border: 'none',
                     p: 0,
                     cursor: 'pointer',
-                    borderRadius: '0 3px 3px 0',
+                    borderRadius: '0 4px 4px 0',
                     display: 'block',
                 }}
             />
