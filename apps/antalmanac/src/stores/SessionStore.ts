@@ -51,7 +51,7 @@ export const useSessionStore = create<SessionState>((set) => {
 
         loadSession: async () => {
             try {
-                const { users, accounts } = await trpc.userData.getUserAndAccount.query();
+                const { users, accounts } = await trpc.auth.getUserAndAccount.query();
 
                 let googleId = accounts?.providerAccountId ?? null;
                 if (googleId?.startsWith('google_')) {
@@ -95,7 +95,7 @@ export const useSessionStore = create<SessionState>((set) => {
         clearSession: async () => {
             let logoutUrl: string | null = null;
             try {
-                const result = await trpc.userData.logout.mutate({
+                const result = await trpc.auth.logout.mutate({
                     redirectUrl: window.location.origin,
                 });
                 logoutUrl = result.logoutUrl;
