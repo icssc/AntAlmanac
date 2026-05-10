@@ -11,7 +11,11 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+// TODO: maybe these widths should be dynamic based on i.e. the viewport width?
+const scheduleSelectButtonMinWidth = 100;
+const scheduleSelectButtonMaxWidth = 150;
 
 type EventContext = {
     triggeredBy?: string;
@@ -36,15 +40,6 @@ function handleScheduleChange(index: number, postHog?: PostHog) {
 }
 
 /**
- * Creates an event handler callback that will change the current schedule to the one at a specified index.
- */
-function createScheduleSelector(index: number, postHog?: PostHog) {
-    return () => {
-        handleScheduleChange(index, postHog);
-    };
-}
-
-/**
  * Simulates an HTML select element using a popover.
  *
  * Can select a schedule, and also control schedule settings with buttons.
@@ -61,10 +56,6 @@ export function SelectSchedulePopover() {
     const anchorElementRef = useRef(null);
 
     const postHog = usePostHog();
-
-    // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
-    const minWidth = useMemo(() => 100, []);
-    const maxWidth = useMemo(() => 150, []);
 
     const handleClick = useCallback(() => {
         setOpenScheduleSelect(true);
@@ -135,7 +126,11 @@ export function SelectSchedulePopover() {
                     color="inherit"
                     variant="outlined"
                     onClick={handleClick}
-                    sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
+                    sx={{
+                        minWidth: scheduleSelectButtonMinWidth,
+                        maxWidth: scheduleSelectButtonMaxWidth,
+                        justifyContent: 'space-between',
+                    }}
                 >
                     <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
                         {scheduleMappingToUse[currentScheduleIndex]?.name || null}
@@ -154,8 +149,7 @@ export function SelectSchedulePopover() {
                     <SortableList
                         items={scheduleMappingToUse}
                         onChange={setScheduleMapping}
-                        renderItem={(item) => {
-                            const index = scheduleMappingToUse.indexOf(item);
+                        renderItem={(item, index) => {
                             return (
                                 <SortableList.Item id={item.id}>
                                     <Box
@@ -190,8 +184,8 @@ export function SelectSchedulePopover() {
                                                 <Button
                                                     color="inherit"
                                                     sx={{
-                                                        minWidth,
-                                                        maxWidth,
+                                                        minWidth: scheduleSelectButtonMinWidth,
+                                                        maxWidth: scheduleSelectButtonMaxWidth,
                                                         width: '100%',
                                                         display: 'flex',
                                                         justifyContent: 'flex-start',
@@ -200,7 +194,7 @@ export function SelectSchedulePopover() {
                                                                 ? theme.palette.action.selected
                                                                 : undefined,
                                                     }}
-                                                    onClick={() => createScheduleSelector(index, postHog)()}
+                                                    onClick={() => handleScheduleChange(index, postHog)}
                                                 >
                                                     <Typography
                                                         overflow="hidden"
