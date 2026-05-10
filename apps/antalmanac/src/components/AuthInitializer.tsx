@@ -111,20 +111,20 @@ const AuthInitializer = () => {
                 isInitializingRef.current = true;
                 try {
                     setOpenLoadingSchedule(true);
+
                     const isSessionValid = await updateSession(sessionData);
                     if (!isSessionValid) {
                         setOpenAlert(true);
                         setHasCheckedAuth(true);
                         return;
                     }
-                    setSsoCookie();
 
+                    setSsoCookie();
                     setHasCheckedAuth(true);
 
                     analyticsIdentifyUser(postHog, sessionData.user.id);
 
                     const userData = await trpc.schedule.get.query();
-
                     await loadSchedule({ prefetched: userData, postHog });
                     await loadUnsavedChanges(userData);
 
