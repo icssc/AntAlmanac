@@ -225,7 +225,7 @@ The following environment variables are required for deployment and should be co
 - `OIDC_CLIENT_ID` - OAuth client ID for Google authentication
 - `OIDC_ISSUER_URL` - OAuth issuer URL
 - `BETTER_AUTH_URL` - URL used for OAuth (automatically set based on stage)
-- `BETTER_AUTH_SECRET` - OAuth secret key, you can generate one [here](https://better-auth.com/docs/installation#set-environment-variables)
+- `BETTER_AUTH_SECRET` - OAuth secret key, you can [generate one here](https://better-auth.com/docs/installation#set-environment-variables)
 
 # Troubleshooting
 
