@@ -91,6 +91,8 @@ export const useSessionStore = create<SessionState>((set) => {
                 console.error('Error during logout:', error);
             }
 
+            usePlannerStore.getState().clearPlannerStore();
+
             setWasLoggedIn(false);
             clearSsoCookie();
             set({

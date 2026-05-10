@@ -211,12 +211,16 @@ export function AdvancedSearchTextFields() {
 
     useEffect(() => {
         if (!googleId) {
+            // Clear the filter whenever the user is logged out.
+            updateTakenCourses('', '');
             return;
         }
 
-        updateTakenCourses(googleId, excludeRoadmapCourses);
+        if (!excludeRoadmapCourses) {
+            updateTakenCourses(googleId, '');
+            return;
+        }
 
-        if (!excludeRoadmapCourses) return;
         if (!plannerRoadmaps || plannerRoadmaps.length === 0) return;
 
         const exists = plannerRoadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
@@ -231,8 +235,11 @@ export function AdvancedSearchTextFields() {
             params.delete('excludeRoadmapCourses');
             const newUrl = params.toString() ? `${url.pathname}?${params.toString()}` : url.pathname;
             history.replaceState({}, '', newUrl);
+            return;
         }
-    }, [plannerRoadmaps, excludeRoadmapCourses]);
+
+        updateTakenCourses(googleId, excludeRoadmapCourses);
+    }, [googleId, plannerRoadmaps, excludeRoadmapCourses, updateTakenCourses]);
 
     return (
         <>

@@ -11,7 +11,8 @@ interface PlannerStore {
     plannerRoadmaps: Roadmap[];
     isPlannerLoading: boolean;
 
-    loadPlannerRoadmaps: (googleId: string) => Promise<void>;
+    loadPlannerRoadmaps: (googleId: string | null) => Promise<void>;
+    clearPlannerStore: () => void;
     updateTakenCourses: (googleId: string, selectedRoadmapId: string) => void;
 }
 
@@ -51,28 +52,49 @@ function getTakenRoadmapCourses(roadmap: Roadmap): Set<string> {
     return courses;
 }
 
+const INITIAL_STATE = {
+    filterTakenCourses: false,
+    userTakenCourses: new Set<string>(),
+    plannerRoadmaps: [] as Roadmap[],
+    isPlannerLoading: false,
+};
+
 export const usePlannerStore = create<PlannerStore>((set, get) => {
+    let currentLoadId = 0;
+
     return {
-        filterTakenCourses: false,
-        userTakenCourses: new Set(),
-        plannerRoadmaps: [],
-        isPlannerLoading: false,
+        ...INITIAL_STATE,
 
         loadPlannerRoadmaps: async (googleId) => {
             if (!googleId) {
-                set({ plannerRoadmaps: [] });
+                set({ plannerRoadmaps: [], isPlannerLoading: false });
                 return;
             }
+            const loadId = ++currentLoadId;
             set({ isPlannerLoading: true });
             try {
                 const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query();
+                if (loadId !== currentLoadId) return;
                 set({ plannerRoadmaps: data ?? [] });
             } catch (e) {
+                if (loadId !== currentLoadId) return;
                 console.error('Failed to fetch Planner roadmaps:', e);
                 openSnackbar('error', 'Failed to fetch Planner roadmaps');
                 set({ plannerRoadmaps: [] });
             }
-            set({ isPlannerLoading: false });
+            if (loadId === currentLoadId) {
+                set({ isPlannerLoading: false });
+            }
+        },
+
+        clearPlannerStore: () => {
+            ++currentLoadId;
+            set({
+                filterTakenCourses: false,
+                userTakenCourses: new Set(),
+                plannerRoadmaps: [],
+                isPlannerLoading: false,
+            });
         },
 
         updateTakenCourses: (googleId, selectedRoadmapId) => {
