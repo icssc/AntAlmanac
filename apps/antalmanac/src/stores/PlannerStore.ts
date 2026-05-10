@@ -12,7 +12,6 @@ interface PlannerStore {
     isPlannerLoading: boolean;
 
     loadPlannerRoadmaps: (googleId: string) => Promise<void>;
-    clearPlannerStore: () => void;
     updateTakenCourses: (googleId: string, selectedRoadmapId: string) => void;
 }
 
@@ -52,7 +51,7 @@ function getTakenRoadmapCourses(roadmap: Roadmap): Set<string> {
     return courses;
 }
 
-export const usePlannerStore = create<PlannerStore>((set, get, store) => {
+export const usePlannerStore = create<PlannerStore>((set, get) => {
     return {
         filterTakenCourses: false,
         userTakenCourses: new Set(),
@@ -74,10 +73,6 @@ export const usePlannerStore = create<PlannerStore>((set, get, store) => {
                 set({ plannerRoadmaps: [] });
             }
             set({ isPlannerLoading: false });
-        },
-
-        clearPlannerStore: () => {
-            set(store.getInitialState());
         },
 
         updateTakenCourses: (googleId, selectedRoadmapId) => {
