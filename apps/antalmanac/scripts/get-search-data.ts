@@ -57,10 +57,6 @@ async function main() {
     console.log('Generating cache for fuzzy search.');
 
     const activeTerms = termData.filter((t) => canTermEnrollmentChange(t.shortName));
-    if (activeTerms.length === 0) {
-        console.log('No terms in an active enrollment window; skipping search data generation.');
-        return;
-    }
 
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];
@@ -101,66 +97,70 @@ async function main() {
     await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
     await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
 
-    /*
-     * WebSOC may receive updates sooner than the course catalogue updates, notably for a
-     * new academic year (i.e. Fall term). Querying WebSOC to build course data ensures all
-     * available courses are represented.
-     *
-     * Fetch WebSOC for each term where {@link canTermEnrollmentChange} is true and merge the
-     * course lists: overlapping registration periods mean several quarters need data at once.
-     */
-    console.log(`Fetching WebSoc REST for union with catalogue: ${activeTerms.map((t) => t.shortName).join(', ')}`);
+    if (activeTerms.length > 0) {
+        /*
+         * WebSOC may receive updates sooner than the course catalogue updates, notably for a
+         * new academic year (i.e. Fall term). Querying WebSOC to build course data ensures all
+         * available courses are represented.
+         *
+         * Fetch WebSOC for each term where {@link canTermEnrollmentChange} is true and merge the
+         * course lists: overlapping registration periods mean several quarters need data at once.
+         */
+        console.log(`Fetching WebSoc REST for union with catalogue: ${activeTerms.map((t) => t.shortName).join(', ')}`);
 
-    const fromWebsoc = new Map<
-        string,
-        Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
-    >();
-    for (let i = 0; i < activeTerms.length; i++) {
-        if (i > 0) {
-            await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+        const fromWebsoc = new Map<
+            string,
+            Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
+        >();
+        for (let i = 0; i < activeTerms.length; i++) {
+            if (i > 0) {
+                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+            }
+            const [year, quarter] = activeTerms[i].shortName.split(' ');
+            const websocRest = await fetchAnteaterAPI<WebsocAPIResult>(
+                `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams({
+                    year,
+                    quarter,
+                }).toString()}`,
+                { isApiKeyRequired: true }
+            );
+            const chunk = getWebsocCoursesFromResponse(websocRest.data);
+            for (const [key, course] of chunk) {
+                fromWebsoc.set(key, course);
+            }
         }
-        const [year, quarter] = activeTerms[i].shortName.split(' ');
-        const websocRest = await fetchAnteaterAPI<WebsocAPIResult>(
-            `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams({
-                year,
-                quarter,
-            }).toString()}`,
-            { isApiKeyRequired: true }
-        );
-        const chunk = getWebsocCoursesFromResponse(websocRest.data);
-        for (const [key, course] of chunk) {
-            fromWebsoc.set(key, course);
-        }
-    }
 
-    let addedFromWebsoc = 0;
-    for (const [key, course] of fromWebsoc) {
-        if (catalogueKeys.has(key)) {
-            continue;
-        }
-        addedFromWebsoc += 1;
-        const id = `ws:${course.deptCode}:${course.courseNumber}`;
-        const name = (course.courseTitle ?? '').trim() || `${course.deptCode} ${course.courseNumber}`;
-        courseMap.set(id, {
-            id,
-            type: 'COURSE',
-            name,
-            alias: ALIASES[course.deptCode],
-            metadata: {
-                department: course.deptCode,
-                number: course.courseNumber,
-            },
-        });
-        if (!deptMap.has(course.deptCode)) {
-            deptMap.set(course.deptCode, {
-                id: course.deptCode,
-                type: 'DEPARTMENT',
-                name: (course.deptName ?? '').trim() || course.deptCode,
+        let addedFromWebsoc = 0;
+        for (const [key, course] of fromWebsoc) {
+            if (catalogueKeys.has(key)) {
+                continue;
+            }
+            addedFromWebsoc += 1;
+            const id = `ws:${course.deptCode}:${course.courseNumber}`;
+            const name = (course.courseTitle ?? '').trim() || `${course.deptCode} ${course.courseNumber}`;
+            courseMap.set(id, {
+                id,
+                type: 'COURSE',
+                name,
                 alias: ALIASES[course.deptCode],
+                metadata: {
+                    department: course.deptCode,
+                    number: course.courseNumber,
+                },
             });
+            if (!deptMap.has(course.deptCode)) {
+                deptMap.set(course.deptCode, {
+                    id: course.deptCode,
+                    type: 'DEPARTMENT',
+                    name: (course.deptName ?? '').trim() || course.deptCode,
+                    alias: ALIASES[course.deptCode],
+                });
+            }
         }
+        console.log(`WebSoc union: ${fromWebsoc.size} courses in schedule, ${addedFromWebsoc} not in catalogue.`);
+    } else {
+        console.log('No active enrollment terms; skipping WebSOC union.');
     }
-    console.log(`WebSoc union: ${fromWebsoc.size} courses in schedule, ${addedFromWebsoc} not in catalogue.`);
 
     await writeFile(
         join(__dirname, '../src/generated/searchData.ts'),
