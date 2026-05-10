@@ -2,18 +2,14 @@ import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { getTermsNeedingScheduleRefresh } from '$lib/termData';
 import type {
     Course,
     CourseSearchResult,
     DepartmentSearchResult,
     CoursesFilteredAPIResult,
 } from '@packages/antalmanac-types';
-import type {
-    WebsocAPIResponse,
-    WebsocAPIResult,
-    WebsocCourse,
-    WebsocDepartment,
-} from '@packages/anteater-api-types';
+import type { WebsocAPIResponse, WebsocAPIResult, WebsocCourse, WebsocDepartment } from '@packages/anteater-api-types';
 
 import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
@@ -102,18 +98,38 @@ async function main() {
      * WebSOC may receive updates sooner than the course catalogue updates, notably for a
      * new academic year (i.e. Fall term). Querying Websoc to build course data ensures all
      * available courses are represented.
+     *
+     * Refresh every term still in its enrollment window (see getTermsNeedingScheduleRefresh),
+     * not only termData[0]: terms are sorted by latest instruction start, so concurrent
+     * registration (e.g. Summer sessions + Fall) requires merging multiple quarters.
      */
-    const latestTerm = termData[0];
-    const [latestYear, latestQuarter] = latestTerm.shortName.split(' ');
-    console.log(`Fetching WebSoc REST for ${latestTerm.shortName} (union with catalogue)...`);
-    const websocRest = await fetchAnteaterAPI<WebsocAPIResult>(
-        `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams({
-            year: latestYear,
-            quarter: latestQuarter,
-        }).toString()}`,
-        { isApiKeyRequired: true }
+    const activeTerms = getTermsNeedingScheduleRefresh();
+    const termsForCatalogueUnion = activeTerms.length > 0 ? activeTerms : [termData[0]];
+    console.log(
+        `Fetching WebSoc REST for union with catalogue: ${termsForCatalogueUnion.map((t) => t.shortName).join(', ')}`
     );
-    const fromWebsoc = getWebsocCoursesFromResponse(websocRest.data);
+
+    const fromWebsoc = new Map<
+        string,
+        Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
+    >();
+    for (let i = 0; i < termsForCatalogueUnion.length; i++) {
+        if (i > 0) {
+            await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+        }
+        const [year, quarter] = termsForCatalogueUnion[i].shortName.split(' ');
+        const websocRest = await fetchAnteaterAPI<WebsocAPIResult>(
+            `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams({
+                year,
+                quarter,
+            }).toString()}`,
+            { isApiKeyRequired: true }
+        );
+        const chunk = getWebsocCoursesFromResponse(websocRest.data);
+        for (const [key, course] of chunk) {
+            fromWebsoc.set(key, course);
+        }
+    }
 
     let addedFromWebsoc = 0;
     for (const [key, course] of fromWebsoc) {
@@ -149,15 +165,15 @@ async function main() {
         `
     import type { CourseSearchResult, DepartmentSearchResult } from "@packages/antalmanac-types";
     export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSON.stringify(
-            Array.from(deptMap.values())
-        )};
+        Array.from(deptMap.values())
+    )};
     export const courses: Array<CourseSearchResult & { id: string }> = ${JSON.stringify(
-            Array.from(courseMap.values())
-        )};
+        Array.from(courseMap.values())
+    )};
     `
     );
 
-    const currentTerm = termData[0];
+    const refreshShortNames = new Set(activeTerms.map((t) => t.shortName));
     let count = 0;
     const termPromises = termData.map(async (term, index) => {
         try {
@@ -168,12 +184,13 @@ async function main() {
             try {
                 await access(fileName);
 
-                if (currentTerm.longName != term.longName) {
-                    console.log(`Skipping ${term.shortName}, cache already exists.`);
+                if (!refreshShortNames.has(term.shortName)) {
+                    console.log(
+                        `Skipping ${term.shortName}, cache exists and term is outside enrollment refresh window.`
+                    );
                     return 0;
-                } else {
-                    console.log(`Updating data for current term (${term.shortName})...`);
                 }
+                console.log(`Updating section-code cache for active term (${term.shortName})...`);
             } catch {
                 console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
             }

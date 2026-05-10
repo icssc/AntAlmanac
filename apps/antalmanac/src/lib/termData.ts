@@ -92,6 +92,19 @@ export function canTermEnrollmentChange(termShortName: Term['shortName']) {
     return openEnrollmentTerms.has(termShortName);
 }
 
+/**
+ * Terms whose WebSOC-derived search caches should be refreshed (schedule may still change).
+ * Uses the same enrollment drop-deadline window as {@link canTermEnrollmentChange}
+ * (Friday of week 2 for 10-week quarters, Friday of week 1 for 5-week summer sessions),
+ * which includes quarters whose instruction has not started yet.
+ *
+ * Calendar terms are ordered with the latest instruction start first (`fetch-term-data`), so the
+ * “latest” term alone is not sufficient when multiple quarters overlap in registration.
+ */
+export function getTermsNeedingScheduleRefresh(): Term[] {
+    return termData.filter((term) => canTermEnrollmentChange(term.shortName));
+}
+
 function getOpenEnrollmentTerms() {
     const openEnrollmentTerms: Set<Term['shortName']> = new Set();
 
