@@ -12,9 +12,10 @@ import { clickToCopy } from '$lib/helpers';
 import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { MenuBook } from '@mui/icons-material';
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse, SCHEDULE_NOTE_MAX_LENGTH } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -144,7 +145,7 @@ function CustomEventsBox() {
 }
 
 function ScheduleNoteBox() {
-    const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [scheduleNote, setScheduleNote] = useState(
         skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
@@ -214,7 +215,7 @@ function ScheduleNoteBox() {
                     '& .MuiInputBase-root': {
                         cursor: skeletonMode ? 'not-allowed' : 'text',
                     },
-                    ...(theme.palette.mode === 'dark' && {
+                    ...(isDark && {
                         '& .MuiInputLabel-root': {
                             color: LIGHT_BLUE,
                         },

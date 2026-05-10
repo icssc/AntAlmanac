@@ -3,6 +3,7 @@
 import { LIGHT_BLUE } from '$src/globals';
 import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Close } from '@mui/icons-material';
 import {
     Box,
@@ -16,7 +17,6 @@ import {
     Stack,
     TextField,
     Typography,
-    useTheme,
 } from '@mui/material';
 
 function ratingLabel(rating: number): string {
@@ -55,7 +55,7 @@ function difficultyLabel(difficulty: number): string {
 }
 
 export function ReviewStep() {
-    const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
     const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
     const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
     const rating = useReviewPromptStore((s) => s.rating);
@@ -126,7 +126,7 @@ export function ReviewStep() {
                             formHelperText: { sx: { textAlign: 'right', mx: 0 } },
                         }}
                         sx={
-                            theme.palette.mode === 'dark'
+                            isDark
                                 ? {
                                       '& .MuiInputLabel-root': { color: LIGHT_BLUE },
                                       '& .MuiInputLabel-root.Mui-focused': { color: LIGHT_BLUE },
