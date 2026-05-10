@@ -19,14 +19,13 @@ export function SchoolDeptCard({ name, type, comment }: SchoolDeptCardProps) {
                         sx={{
                             paddingX: 1,
                             paddingY: 0,
-
-                            /**
-                             * AccordionSummary contains a child "content" which is the actual parent of the Typography below
-                             * Styling to prevent wrap must be applied to the aforementioned parent
-                             */
-                            '& .MuiAccordionSummary-content': {
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
+                        }}
+                        slotProps={{
+                            content: {
+                                sx: {
+                                    overflow: 'hidden',
+                                    whiteSpace: 'nowrap',
+                                },
                             },
                         }}
                     >
