@@ -16,6 +16,7 @@ enum LocalStorageKeys {
     /** @deprecated Removed along with the HelpBox component in PR #1473. */
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
+    /** @deprecated Removed with the PWA install banner in PR #1678; the banner had already been disabled in PR #1213. Key retained for stale client data. */
     pwaDismissalTime = 'pwaDismissalTime',
     /** @deprecated Session token is now stored in an HttpOnly cookie (aa_session). */
     sessionId = 'sessionId',
@@ -256,15 +257,6 @@ export function setLocalStorageColumnToggles(value: string) {
 
 export function getLocalStorageColumnToggles() {
     return window.localStorage.getItem(LSK.columnToggles);
-}
-
-// Helper functions for pwaDismissalTime
-export function setLocalStoragePWADismissalTime(value: string) {
-    window.localStorage.setItem(LSK.pwaDismissalTime, value);
-}
-
-export function getLocalStoragePWADismissalTime() {
-    return window.localStorage.getItem(LSK.pwaDismissalTime);
 }
 
 export function setLocalStorageTempSaveData(value: string) {

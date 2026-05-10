@@ -16,3 +16,10 @@ export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: s
 }
 
 export const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];
+
+export const QUARTER_ORDER_IN_YEAR: Record<string, number> = {
+    Winter: 0,
+    Spring: 1,
+    Summer: 2,
+    Fall: 3,
+};

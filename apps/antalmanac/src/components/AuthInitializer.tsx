@@ -66,7 +66,7 @@ const AuthInitializer = () => {
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             if (savedUserId) {
-                await trpc.userData.flagImportedSchedule.mutate({ username: savedUserId });
+                await trpc.schedule.flagImported.mutate({ username: savedUserId });
                 setLocalStorageImportedUser(savedUserId);
             }
 
@@ -83,7 +83,7 @@ const AuthInitializer = () => {
                 }
             }
 
-            await trpc.userData.saveUserData.mutate({
+            await trpc.schedule.save.mutate({
                 userData: scheduleSaveState,
             });
 
@@ -123,7 +123,7 @@ const AuthInitializer = () => {
 
                     analyticsIdentifyUser(postHog, sessionData.user.id);
 
-                    const userData = await trpc.userData.getUserData.query();
+                    const userData = await trpc.schedule.get.query();
 
                     await loadSchedule({ prefetched: userData, postHog });
                     await loadUnsavedChanges(userData);

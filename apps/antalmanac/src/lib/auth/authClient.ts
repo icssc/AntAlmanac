@@ -36,7 +36,7 @@ export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}
 
     let logoutUrl;
     try {
-        logoutUrl = await trpc.userData.getLogoutUrl.query({
+        logoutUrl = await trpc.auth.getLogoutUrl.query({
             redirectUrl: window.location.origin,
         });
     } catch (error) {

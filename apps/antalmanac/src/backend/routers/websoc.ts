@@ -2,7 +2,6 @@ import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 import type {
     WebsocAPIResponse,
     WebsocAPIResult,
-    WebsocDepartmentsAPIResult,
     CourseInfo,
     WebsocCourse,
     WebsocSectionType,
@@ -12,8 +11,6 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
-const DEPARTMENT_YEAR_RANGE = 10;
 
 function sanitizeSearchParams(params: Record<string, string>) {
     if ('term' in params) {
@@ -84,21 +81,6 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
         });
     }
     return sortWebsocResponse(data.data);
-};
-
-const queryWebSocDepartments = async () => {
-    const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
-    const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
-
-    const data = await fetchAnteaterAPI<WebsocDepartmentsAPIResult>(url, { errorType: 'trpc' });
-
-    if (!data?.data) {
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Departments API returned no data',
-        });
-    }
-    return data.data;
 };
 
 function combineWebsocResponses(responses: WebsocAPIResponse[]) {
@@ -182,9 +164,6 @@ const websocRouter = router({
             }
         }
         return courseInfo;
-    }),
-    getDepartments: procedure.query(async () => {
-        return await queryWebSocDepartments();
     }),
     getSyllabi: procedure
         .input(

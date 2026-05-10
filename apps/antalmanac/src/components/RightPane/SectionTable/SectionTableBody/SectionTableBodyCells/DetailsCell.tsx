@@ -1,7 +1,6 @@
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Box, SxProps } from '@mui/material';
 import { WebsocSectionType } from '@packages/antalmanac-types';
-
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 
 const SECTION_COLORS = {
     Act: { color: '#c87137' },
@@ -30,7 +29,7 @@ export const DetailsCell = ({ sectionType, sectionNum, units, sx }: DetailCellPr
         <TableBodyCellContainer sx={sx}>
             <Box sx={SECTION_COLORS[sectionType]}>{sectionType}</Box>
             <Box>Sec: {sectionNum}</Box>
-            <Box>Units:{units}</Box>
+            <Box>Units: {units}</Box>
         </TableBodyCellContainer>
     );
 };

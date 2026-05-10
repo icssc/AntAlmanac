@@ -22,7 +22,7 @@ import type {
 import { TRPCClientError } from '@trpc/client';
 import type { PostHog } from 'posthog-js/react';
 
-export type UserData = Awaited<ReturnType<typeof trpc.userData.getUserData.query>>;
+export type UserData = Awaited<ReturnType<typeof trpc.schedule.get.query>>;
 
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
@@ -110,7 +110,7 @@ export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
     }
 
     try {
-        const result = await trpc.userData.saveUserData.mutate({
+        const result = await trpc.schedule.save.mutate({
             userData: scheduleSaveState,
         });
 
@@ -148,7 +148,7 @@ export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
 export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
-        const result = await trpc.userData.saveUserData.mutate({
+        const result = await trpc.schedule.save.mutate({
             userData: scheduleSaveState,
         });
 
@@ -207,7 +207,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         throw new Error("Invalid session: User isn't logged in.");
     }
 
-    const incoming = await trpc.userData.getGuestScheduleByUsername.query({ username }).catch(() => {
+    const incoming = await trpc.schedule.getGuest.query({ username }).catch(() => {
         throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
     });
 
@@ -244,7 +244,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
 
             await saveSchedule({ postHog });
 
-            await trpc.userData.flagImportedSchedule.mutate({
+            await trpc.schedule.flagImported.mutate({
                 username,
             });
         }
@@ -282,7 +282,7 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
             }
 
             try {
-                const result = await trpc.userData.getGuestScheduleByUsername.query({ username });
+                const result = await trpc.schedule.getGuest.query({ username });
                 const scheduleSaveState = result.userData;
 
                 let error = false;
@@ -336,13 +336,13 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
 };
 
 interface LoadScheduleOptions {
-    prefetched: Awaited<ReturnType<typeof trpc.userData.getUserData.query>> | null;
+    prefetched: Awaited<ReturnType<typeof trpc.schedule.get.query>> | null;
     postHog?: PostHog;
 }
 
 export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions) => {
     try {
-        const userDataResponse = prefetched ?? (await trpc.userData.getUserData.query());
+        const userDataResponse = prefetched ?? (await trpc.schedule.get.query());
         const scheduleSaveState = userDataResponse?.userData;
         const userId = userDataResponse?.id;
         let analyticsErrorMessage = '';

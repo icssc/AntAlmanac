@@ -1,5 +1,4 @@
 import { getGoogleAccount, SessionData } from '$lib/auth/authClient';
-import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 interface SessionState {
@@ -18,23 +17,13 @@ interface SessionState {
     setHasCheckedAuth: (hasCheckedAuth: boolean) => void;
 
     googleId: string | null;
+    setGoogleId: (id: string) => void;
 
     isNewUser: boolean;
     setIsNewUser: (isNewUser: boolean) => void;
 
     areSchedulesLoaded: boolean;
     setAreSchedulesLoaded: (areSchedulesLoaded: boolean) => void;
-
-    filterTakenCourses: boolean;
-    userTakenCourses: Set<string>;
-
-    plannerRoadmaps: Roadmap[];
-    isPlannerLoading: boolean;
-
-    setFilterTakenCourses: (value: boolean) => void;
-    setUserTakenCourses: (courses: Set<string>) => void;
-    setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
-    setIsPlannerLoading: (isPlannerLoading: boolean) => void;
 }
 
 export const useSessionStore = create<SessionState>((set) => {
@@ -52,10 +41,7 @@ export const useSessionStore = create<SessionState>((set) => {
         googleId: null,
         isNewUser: false,
         areSchedulesLoaded: false,
-        filterTakenCourses: false,
-        userTakenCourses: new Set(),
-        plannerRoadmaps: [],
-        isPlannerLoading: false,
+
         updateSession: async (sessionData: SessionData) => {
             const accountInfo = await getGoogleAccount();
             if (!accountInfo) {
@@ -78,11 +64,8 @@ export const useSessionStore = create<SessionState>((set) => {
         },
 
         setHasCheckedAuth: (hasCheckedAuth) => set({ hasCheckedAuth }),
+        setGoogleId: (id) => set({ googleId: id }),
         setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
         setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),
-        setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
-        setUserTakenCourses: (courses) => set({ userTakenCourses: courses }),
-        setPlannerRoadmaps: (roadmaps) => set({ plannerRoadmaps: roadmaps }),
-        setIsPlannerLoading: (isPlannerLoading) => set({ isPlannerLoading }),
     };
 });
