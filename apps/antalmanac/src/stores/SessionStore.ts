@@ -1,5 +1,4 @@
 import { getGoogleAccount, SessionData } from '$lib/auth/authClient';
-import { clearSsoCookie } from '$lib/ssoCookie';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
@@ -14,7 +13,6 @@ interface SessionState {
     avatar: string | null;
     sessionIsValid: boolean;
     updateSession: (session: SessionData) => Promise<boolean>;
-    clearSession: () => void;
 
     hasCheckedAuth: boolean;
     setHasCheckedAuth: (hasCheckedAuth: boolean) => void;
@@ -39,32 +37,25 @@ interface SessionState {
     setIsPlannerLoading: (isPlannerLoading: boolean) => void;
 }
 
-const initState: Pick<
-    SessionState,
-    { [K in keyof SessionState]: SessionState[K] extends Function ? never : K }[keyof SessionState]
-> = {
-    session: null,
-    sessionId: null,
-    user: null,
-    userId: null,
-    isGoogleUser: false,
-    email: null,
-    name: null,
-    avatar: null,
-    sessionIsValid: false,
-    hasCheckedAuth: false,
-    googleId: null,
-    isNewUser: false,
-    areSchedulesLoaded: false,
-    filterTakenCourses: false,
-    userTakenCourses: new Set(),
-    plannerRoadmaps: [],
-    isPlannerLoading: false,
-};
-
 export const useSessionStore = create<SessionState>((set) => {
     return {
-        ...initState,
+        session: null,
+        sessionId: null,
+        user: null,
+        userId: null,
+        isGoogleUser: false,
+        email: null,
+        name: null,
+        avatar: null,
+        sessionIsValid: false,
+        hasCheckedAuth: false,
+        googleId: null,
+        isNewUser: false,
+        areSchedulesLoaded: false,
+        filterTakenCourses: false,
+        userTakenCourses: new Set(),
+        plannerRoadmaps: [],
+        isPlannerLoading: false,
         updateSession: async (sessionData: SessionData) => {
             const accountInfo = await getGoogleAccount();
             if (!accountInfo) {
@@ -86,10 +77,6 @@ export const useSessionStore = create<SessionState>((set) => {
             return true;
         },
 
-        clearSession: () => {
-            clearSsoCookie();
-            set({ ...initState });
-        },
         setHasCheckedAuth: (hasCheckedAuth) => set({ hasCheckedAuth }),
         setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
         setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),

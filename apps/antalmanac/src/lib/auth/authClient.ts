@@ -1,6 +1,7 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { setWasLoggedIn } from '$lib/localStorage';
+import { clearSsoCookie } from '$lib/ssoCookie';
 import { getErrorMessage } from '$lib/utils';
 import type { auth } from '$src/lib/auth/auth';
 import { useSessionStore } from '$stores/SessionStore';
@@ -22,7 +23,7 @@ export type SessionData = typeof authClient.$Infer.Session;
 export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}) {
     const session = useSessionStore.getState().session;
     if (!session) {
-        useSessionStore.getState().clearSession();
+        clearSsoCookie();
         setWasLoggedIn(false);
         onLogoutComplete?.();
         window.location.reload();
@@ -44,7 +45,7 @@ export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}
     }
 
     setWasLoggedIn(false);
-    useSessionStore.getState().clearSession();
+    clearSsoCookie();
 
     const { error } = await authClient.signOut();
     if (error) {
