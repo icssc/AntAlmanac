@@ -1,4 +1,5 @@
 import { getGoogleAccount, SessionData } from '$lib/auth/authClient';
+import { usePlannerStore } from '$stores/PlannerStore';
 import { create } from 'zustand';
 
 interface SessionState {
@@ -48,6 +49,10 @@ export const useSessionStore = create<SessionState>((set) => {
                 return false;
             }
 
+            const googleId = accountInfo.accountId;
+
+            usePlannerStore.getState().loadPlannerRoadmaps(googleId);
+
             set({
                 session: sessionData.session,
                 sessionId: sessionData.session.id,
@@ -55,7 +60,7 @@ export const useSessionStore = create<SessionState>((set) => {
                 user: sessionData.user,
                 userId: sessionData.user.id,
                 isGoogleUser: true,
-                googleId: accountInfo.accountId,
+                googleId: googleId,
                 email: sessionData.user.email,
                 name: sessionData.user.name,
                 avatar: sessionData.user.avatar,
