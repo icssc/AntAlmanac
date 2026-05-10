@@ -315,11 +315,6 @@ const locations: Record<string, number> = {
     'Zot N Go Market': 900359,
 };
 
-/**
- * O(1) lookup from catalog numeric ID to location key (building code string).
- * If multiple keys share one numeric ID, the last entry in `Object.entries` order wins,
- * matching prior `Object.keys(locationIds).find(...)` behavior.
- */
 const locationNumericIdToBuildingCode = new Map<number, string>();
 for (const [code, numericId] of Object.entries(locations)) {
     locationNumericIdToBuildingCode.set(numericId, code);
