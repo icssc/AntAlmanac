@@ -43,7 +43,7 @@ export function AutoSignIn() {
         };
 
         checkAndSignIn();
-    }, [isPending, data]);
+    }, [isPending, data, hasCheckedAuth]);
 
     return null;
 }
