@@ -1,9 +1,9 @@
 import { Box, TableCell } from '@mui/material';
 import { useState } from 'react';
 
-export const STRIP_SLOT_PX = 14;
-
+export const STRIP_SLOT_PX = 8;
 const STRIP_SHRINK_PX = 5;
+const STRIP_EXPAND_PX = 14;
 
 const cellSx = {
     position: 'relative' as const,
@@ -12,6 +12,7 @@ const cellSx = {
     maxWidth: STRIP_SLOT_PX,
     minWidth: STRIP_SLOT_PX,
     verticalAlign: 'stretch' as const,
+    overflow: 'visible',
 };
 
 interface SectionRowColorStripProps {
@@ -23,7 +24,7 @@ interface SectionRowColorStripProps {
 
 export function SectionRowColorStrip({ color, visible, clickable, onOpenPicker }: SectionRowColorStripProps) {
     const [hovered, setHovered] = useState(false);
-    const stripWidth = visible && clickable && hovered ? STRIP_SLOT_PX : STRIP_SHRINK_PX;
+    const stripWidth = visible && clickable && hovered ? STRIP_EXPAND_PX : STRIP_SHRINK_PX;
 
     if (!visible) {
         return <TableCell sx={cellSx} />;
@@ -41,7 +42,6 @@ export function SectionRowColorStrip({ color, visible, clickable, onOpenPicker }
                         bottom: 0,
                         width: STRIP_SHRINK_PX,
                         bgcolor: color,
-                        borderRadius: '0 4px 4px 0',
                     }}
                 />
             </TableCell>
@@ -72,7 +72,6 @@ export function SectionRowColorStrip({ color, visible, clickable, onOpenPicker }
                     border: 'none',
                     p: 0,
                     cursor: 'pointer',
-                    borderRadius: '0 4px 4px 0',
                     display: 'block',
                 }}
             />
