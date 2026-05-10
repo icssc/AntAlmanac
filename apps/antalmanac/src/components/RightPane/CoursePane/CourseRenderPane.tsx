@@ -311,7 +311,6 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [sharedCourseKeys, setSharedCourseKeys] = useState<Set<string>>(new Set<string>());
     const [andCourseCount, setAndCourseCount] = useState(0);
-    const [andSchoolCount, setAndSchoolCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
@@ -367,7 +366,6 @@ export default function CourseRenderPane(props: { id?: number }) {
             const multiSearchData = RightPaneStore.getMultiSearchData();
             let websocJsonResp;
             let fetchedSharedCourseKeys = new Set<string>();
-            let fetchedAndSchoolCount = 0;
             if (multiSearchData.length > 0) {
                 const { year, quarter } = RightPaneStore.getTermParts();
                 const offeredCourses: Record<string, string>[] = [];
@@ -395,12 +393,13 @@ export default function CourseRenderPane(props: { id?: number }) {
                 const { websocQueryParams, gradesQueryParams } = getQueryParams(formData);
                 gradesQueryParams.ge =
                     formData.ge !== 'ANY' && !formData.ge.includes(',') ? (formData.ge as GE) : ('ANY' as GE);
-                const [{ response: websocJsonResponse, sharedCourseKeys: sck, andSchoolCount: asc }] =
-                    await Promise.all([queryManualSearchCourses(websocQueryParams), queryGrades(gradesQueryParams)]);
+                const [{ response: websocJsonResponse, sharedCourseKeys: sck }] = await Promise.all([
+                    queryManualSearchCourses(websocQueryParams),
+                    queryGrades(gradesQueryParams),
+                ]);
 
                 websocJsonResp = websocJsonResponse;
                 fetchedSharedCourseKeys = sck;
-                fetchedAndSchoolCount = asc;
             }
 
             setWebsocResp(websocJsonResp);
@@ -408,7 +407,6 @@ export default function CourseRenderPane(props: { id?: number }) {
             const filteredCourses = getFilteredCourses(allCourses);
             setCourseData(filteredCourses);
             setSharedCourseKeys(fetchedSharedCourseKeys);
-            setAndSchoolCount(fetchedAndSchoolCount);
             setAndCourseCount(getFilteredAndCourseCount(filteredCourses, fetchedSharedCourseKeys));
             setSearchedTerm(getTermLongName(RightPaneStore.getFormData().term));
         } catch (error) {
@@ -469,11 +467,27 @@ export default function CourseRenderPane(props: { id?: number }) {
     const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
     let orBannerIndex = -1;
     if (isMultiGeSearch && !showNoIntersection) {
-        let schoolCount = 0;
-        orBannerIndex = courseData.findIndex((item) => {
-            if (!('departments' in item)) return false;
-            return schoolCount++ === andSchoolCount;
-        });
+        let currentSchoolIdx = -1;
+        let currentSchoolHasShared = false;
+        for (let i = 0; i < courseData.length; i++) {
+            const item = courseData[i];
+            if ('departments' in item) {
+                if (currentSchoolIdx !== -1 && !currentSchoolHasShared) {
+                    orBannerIndex = currentSchoolIdx;
+                    break;
+                }
+                currentSchoolIdx = i;
+                currentSchoolHasShared = false;
+            } else if (
+                'sections' in item &&
+                sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
+            ) {
+                currentSchoolHasShared = true;
+            }
+        }
+        if (orBannerIndex === -1 && currentSchoolIdx !== -1 && !currentSchoolHasShared) {
+            orBannerIndex = currentSchoolIdx;
+        }
     }
 
     return (
