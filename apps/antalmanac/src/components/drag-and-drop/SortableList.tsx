@@ -17,7 +17,7 @@ interface BaseItem {
 interface Props<T extends BaseItem> {
     items: T[];
     onChange(items: T[], activeIndex?: number, overIndex?: number): void;
-    renderItem(item: T): ReactNode;
+    renderItem(item: T, index: number): ReactNode;
     sx?: SxProps;
     disableHorizontalScroll?: boolean;
     sortingStrategy?: SortingStrategy;
@@ -82,14 +82,21 @@ export function SortableList<T extends BaseItem>({
             <SortableListContext value={{ setDraggingItemState }}>
                 <SortableContext items={items} strategy={sortingStrategy}>
                     <List sx={mergeSx({ padding: 0 }, sx)}>
-                        {items.map((item) => (
-                            <Fragment key={item.id}>{renderItem(item)}</Fragment>
+                        {items.map((item, index) => (
+                            <Fragment key={item.id}>{renderItem(item, index)}</Fragment>
                         ))}
                     </List>
                 </SortableContext>
             </SortableListContext>
             <DraggingItemContext value={draggingItemState}>
-                <SortableOverlay>{activeItem ? renderItem(activeItem) : null}</SortableOverlay>
+                <SortableOverlay>
+                    {activeItem
+                        ? renderItem(
+                              activeItem,
+                              items.findIndex(({ id }) => id === activeItem.id)
+                          )
+                        : null}
+                </SortableOverlay>
             </DraggingItemContext>
         </DndContext>
     );

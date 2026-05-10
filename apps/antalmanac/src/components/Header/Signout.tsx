@@ -61,6 +61,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 action: analyticsEnum.auth.actions.SIGN_OUT_FAIL,
                 error: getErrorMessage(error),
             });
+            window.location.reload();
         } finally {
             postHog?.reset();
         }

@@ -110,8 +110,15 @@
     {
       "idx": 15,
       "version": "7",
-      "when": 1778119871238,
-      "tag": "0015_course_indexes",
+      "when": 1778387018420,
+      "tag": "0015_daily_starfox",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1778443025527,
+      "tag": "0016_course_indexes",
       "breakpoints": true
     }
   ]
