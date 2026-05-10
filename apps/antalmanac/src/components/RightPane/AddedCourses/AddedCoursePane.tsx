@@ -9,12 +9,11 @@ import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePan
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
-import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
 import { MenuBook } from '@mui/icons-material';
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse, SCHEDULE_NOTE_MAX_LENGTH } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -144,7 +143,6 @@ function CustomEventsBox() {
 }
 
 function ScheduleNoteBox() {
-    const theme = useTheme();
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [scheduleNote, setScheduleNote] = useState(
         skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
@@ -195,6 +193,7 @@ function ScheduleNoteBox() {
 
             <TextField
                 type="text"
+                color="secondary"
                 variant="filled"
                 label="Click here to start typing!"
                 onChange={handleNoteChange}
@@ -214,14 +213,6 @@ function ScheduleNoteBox() {
                     '& .MuiInputBase-root': {
                         cursor: skeletonMode ? 'not-allowed' : 'text',
                     },
-                    ...(theme.palette.mode === 'dark' && {
-                        '& .MuiInputLabel-root': {
-                            color: LIGHT_BLUE,
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: LIGHT_BLUE,
-                        },
-                    }),
                 }}
             />
         </Box>
