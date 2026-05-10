@@ -314,4 +314,14 @@ const locations: Record<string, number> = {
     'Starbucks @ Student Center': 900358,
     'Zot N Go Market': 900359,
 };
+
+const locationNumericIdToBuildingCode = new Map<number, string>();
+for (const [code, numericId] of Object.entries(locations)) {
+    locationNumericIdToBuildingCode.set(numericId, code);
+}
+
+export function buildingCodeFromLocationNumericId(numericId: number): string | undefined {
+    return locationNumericIdToBuildingCode.get(numericId);
+}
+
 export default locations;
