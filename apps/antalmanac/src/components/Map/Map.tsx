@@ -20,8 +20,8 @@ import { UserLocator } from '$components/Map/UserLocator';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
+import { getBuildingNameAcronym } from '$lib/locations/helpers';
 import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
-import { getBuildingNameAcronym } from '$lib/locations/mapBuildingHelpers';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 
