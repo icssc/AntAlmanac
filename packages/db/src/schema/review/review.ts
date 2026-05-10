@@ -47,7 +47,7 @@ export const instructorReviews = pgTable(
         /** Whether the review is displayed anonymously. Defaults to true. */
         anonymous: boolean('anonymous').notNull().default(true),
 
-        /** Optional free-text review body. Not collected in the quick-review UI. */
+        /** Optional free-text review body. */
         content: text('content'),
 
         /** Overall quality rating 1–5. */

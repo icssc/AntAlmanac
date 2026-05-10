@@ -42,6 +42,7 @@ const initialState = {
     rating: 0,
     difficulty: 0,
     selectedTags: [] as ReviewTag[],
+    textReview: '',
 };
 
 export const useReviewPromptStore = create(
@@ -143,7 +144,7 @@ export const useReviewPromptStore = create(
             }
 
             const candidate = eligible[Math.floor(Math.random() * eligible.length)];
-            set({ step: 'enrollment-confirm', candidate, rating: 0, difficulty: 0, selectedTags: [] });
+            set({ step: 'enrollment-confirm', candidate, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
             logAnalytics(postHog, {
                 category: analyticsEnum.review,
                 action: analyticsEnum.review.actions.PROMPT_SHOWN,
@@ -178,7 +179,7 @@ export const useReviewPromptStore = create(
          */
         dismiss: () => {
             const { candidate, step } = get();
-            set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [] });
+            set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
             if (candidate) {
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
@@ -206,6 +207,8 @@ export const useReviewPromptStore = create(
 
         setDifficulty: (difficulty: number) => set({ difficulty }),
 
+        setTextReview: (textReview: string) => set({ textReview }),
+
         toggleTag: (tag: ReviewTag) => {
             const { selectedTags } = get();
             set({
@@ -216,8 +219,10 @@ export const useReviewPromptStore = create(
         },
 
         submitReview: async () => {
-            const { candidate, rating, difficulty, selectedTags } = get();
+            const { candidate, rating, difficulty, selectedTags, textReview } = get();
             if (!candidate || rating === 0 || difficulty === 0) return;
+
+            const trimmedReview = textReview.trim();
 
             try {
                 await trpc.review.submitReview.mutate({
@@ -227,8 +232,9 @@ export const useReviewPromptStore = create(
                     rating,
                     difficulty,
                     tags: selectedTags,
+                    content: trimmedReview || undefined,
                 });
-                set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [] });
+                set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
                     action: analyticsEnum.review.actions.SUBMITTED,

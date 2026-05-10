@@ -13,6 +13,6 @@ describe('Custom Events', () => {
     };
 
     test('schema does not throw error when building property exists and is undefined', async () => {
-        expect(() => RepeatingCustomEventSchema.assert(customEvent)).not.toThrowError();
+        expect(() => RepeatingCustomEventSchema.parse(customEvent)).not.toThrowError();
     });
 });
