@@ -380,7 +380,7 @@ export default function CourseMap() {
                             .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
 
                         return (
-                            <Fragment key={marker.key}>
+                            <Fragment key={marker.sectionCode}>
                                 <LocationMarker
                                     {...marker}
                                     label={today === 'All' ? undefined : (index + 1).toString()}
