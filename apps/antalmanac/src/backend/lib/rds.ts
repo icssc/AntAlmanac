@@ -122,7 +122,11 @@ export class RDS {
             if (existingUser) {
                 await tx
                     .update(users)
-                    .set({ name, email: email ?? '', avatar: avatar ?? existingUser.avatar })
+                    .set({
+                        name: existingUser.name || name,
+                        email: existingUser.email || email || '',
+                        avatar: existingUser.avatar || avatar || '',
+                    })
                     .where(eq(users.id, existingUser.id));
                 userId = existingUser.id;
                 newUser = false;
