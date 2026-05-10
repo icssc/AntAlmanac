@@ -9,7 +9,7 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { AccountCircle, ExpandMore, Google } from '@mui/icons-material';
+import { AccountCircle, Apple, ExpandMore, Google } from '@mui/icons-material';
 import {
     Alert,
     type AlertColor,
@@ -125,8 +125,8 @@ export const Signin = () => {
         [setOpenLoadingSchedule, loadSession, validateImportedUser, postHog]
     );
 
-    const handleLogin = () => {
-        loginUser(postHog);
+    const handleLogin = (provider: 'google' | 'apple' = 'google') => {
+        loginUser({ provider, postHog });
         setLocalStorageFromLoading('true');
     };
 
@@ -192,7 +192,7 @@ export const Signin = () => {
                 <DialogContent>
                     <Stack spacing={1}>
                         <Button
-                            onClick={handleLogin}
+                            onClick={() => handleLogin('google')}
                             color="primary"
                             variant="contained"
                             startIcon={<Google />}
@@ -200,6 +200,22 @@ export const Signin = () => {
                             fullWidth
                         >
                             Sign in with Google
+                        </Button>
+                        <Button
+                            onClick={() => handleLogin('apple')}
+                            variant="contained"
+                            startIcon={<Apple />}
+                            size="large"
+                            fullWidth
+                            sx={{
+                                backgroundColor: isDark ? '#fff' : '#000',
+                                color: isDark ? '#000' : '#fff',
+                                '&:hover': {
+                                    backgroundColor: isDark ? '#e0e0e0' : '#333',
+                                },
+                            }}
+                        >
+                            Sign in with Apple
                         </Button>
 
                         <Box
@@ -308,17 +324,35 @@ export const Signin = () => {
                 title={alertMessage.title}
                 severity={alertMessage.severity}
             >
-                <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
-                <Button
-                    color="primary"
-                    variant="contained"
-                    startIcon={<Google />}
-                    fullWidth
-                    onClick={handleLogin}
-                    size="large"
-                >
-                    Sign in with Google
-                </Button>
+                <DialogContentText>To load your schedule, sign in with your account</DialogContentText>
+                <Stack spacing={1}>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        startIcon={<Google />}
+                        fullWidth
+                        onClick={() => handleLogin('google')}
+                        size="large"
+                    >
+                        Sign in with Google
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<Apple />}
+                        fullWidth
+                        onClick={() => handleLogin('apple')}
+                        size="large"
+                        sx={{
+                            backgroundColor: isDark ? '#fff' : '#000',
+                            color: isDark ? '#000' : '#fff',
+                            '&:hover': {
+                                backgroundColor: isDark ? '#e0e0e0' : '#333',
+                            },
+                        }}
+                    >
+                        Sign in with Apple
+                    </Button>
+                </Stack>
             </AlertDialog>
         </div>
     );
