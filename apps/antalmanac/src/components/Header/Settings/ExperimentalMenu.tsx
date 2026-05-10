@@ -1,5 +1,5 @@
-import { autoSaveSchedule } from '$actions/AppStoreActions';
 import actionTypesStore from '$actions/ActionTypesStore';
+import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useAutoSaveStore, useDevModeStore } from '$stores/SettingsStore';

@@ -1,5 +1,6 @@
-import { ScheduleSaveStateSchema } from './schedule';
 import { z } from 'zod';
+
+import { ScheduleSaveStateSchema } from './schedule';
 
 /**
  * Users are stored in one shared table.
