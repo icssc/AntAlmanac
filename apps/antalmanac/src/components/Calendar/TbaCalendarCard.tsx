@@ -62,19 +62,26 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
                 alignItems: 'center',
                 py: 0.5,
                 px: 0.5,
-                '& .MuiAlert-icon': {
-                    padding: 0.5,
-                    margin: 0,
+            }}
+            slotProps={{
+                icon: {
+                    sx: {
+                        padding: 0.5,
+                        margin: 0,
+                    },
                 },
-                '& .MuiAlert-message': {
-                    padding: 0.5,
-                    width: '100%',
+                message: {
+                    sx: {
+                        padding: 0.5,
+                        width: '100%',
+                    },
                 },
-
-                '& .MuiAlert-action': {
-                    padding: 0,
-                    margin: 0,
-                    alignSelf: 'flex-start',
+                action: {
+                    sx: {
+                        padding: 0,
+                        margin: 0,
+                        alignSelf: 'flex-start',
+                    },
                 },
             }}
             action={
