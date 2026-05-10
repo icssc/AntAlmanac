@@ -2,7 +2,7 @@ import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { getTermsNeedingScheduleRefresh } from '$lib/termData';
+import { canTermEnrollmentChange } from '$lib/termData';
 import type {
     Course,
     CourseSearchResult,
@@ -55,6 +55,13 @@ function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
 
 async function main() {
     console.log('Generating cache for fuzzy search.');
+
+    const activeTerms = termData.filter((t) => canTermEnrollmentChange(t.shortName));
+    if (activeTerms.length === 0) {
+        console.log('No terms in an active enrollment window; skipping search data generation.');
+        return;
+    }
+
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];
     for (let skip = 0; skip < MAX_COURSES; skip += 100) {
@@ -99,25 +106,21 @@ async function main() {
      * new academic year (i.e. Fall term). Querying Websoc to build course data ensures all
      * available courses are represented.
      *
-     * Refresh every term still in its enrollment window (see getTermsNeedingScheduleRefresh),
-     * not only termData[0]: terms are sorted by latest instruction start, so concurrent
-     * registration (e.g. Summer sessions + Fall) requires merging multiple quarters.
+     * Refresh every term where {@link canTermEnrollmentChange} is true, not only termData[0]:
+     * terms are sorted by latest instruction start, so concurrent registration (e.g. Summer
+     * sessions + Fall) requires merging multiple quarters.
      */
-    const activeTerms = getTermsNeedingScheduleRefresh();
-    const termsForCatalogueUnion = activeTerms.length > 0 ? activeTerms : [termData[0]];
-    console.log(
-        `Fetching WebSoc REST for union with catalogue: ${termsForCatalogueUnion.map((t) => t.shortName).join(', ')}`
-    );
+    console.log(`Fetching WebSoc REST for union with catalogue: ${activeTerms.map((t) => t.shortName).join(', ')}`);
 
     const fromWebsoc = new Map<
         string,
         Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
     >();
-    for (let i = 0; i < termsForCatalogueUnion.length; i++) {
+    for (let i = 0; i < activeTerms.length; i++) {
         if (i > 0) {
             await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
         }
-        const [year, quarter] = termsForCatalogueUnion[i].shortName.split(' ');
+        const [year, quarter] = activeTerms[i].shortName.split(' ');
         const websocRest = await fetchAnteaterAPI<WebsocAPIResult>(
             `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams({
                 year,
