@@ -77,7 +77,7 @@ export const Signin = () => {
 
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
-            const res = await trpc.userData.getGuestScheduleByUsername.query({ username: userID });
+            const res = await trpc.schedule.getGuest.query({ username: userID });
             if (res.user.imported) {
                 setAlertMessage(ALERT_MESSAGES.SCHEDULE_IMPORTED);
                 setOpenalert(true);
@@ -105,7 +105,7 @@ export const Signin = () => {
 
             const [validSession, prefetchedUserData] = await Promise.all([
                 loadSession(),
-                trpc.userData.getUserData.query().catch(() => null),
+                trpc.schedule.get.query().catch(() => null),
             ]);
 
             if (validSession) {
@@ -134,9 +134,7 @@ export const Signin = () => {
         (event: KeyboardEvent) => {
             if (!showLegacyLogin) return;
 
-            const charCode = event.which ? event.which : event.keyCode;
-
-            if (charCode === 13 || charCode === 10) {
+            if (event.key === 'Enter') {
                 event.preventDefault();
                 setIsOpen(false);
                 document.removeEventListener('keydown', enterEvent, false);

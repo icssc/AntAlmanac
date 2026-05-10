@@ -1,12 +1,5 @@
 import { EventEmitter } from 'events';
 
-import type {
-    ScheduleCourse,
-    ScheduleSaveState,
-    RepeatingCustomEvent,
-    CustomEventId,
-} from '@packages/antalmanac-types';
-
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
     AddCourseAction,
@@ -25,9 +18,16 @@ import type {
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
+import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
-import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
+import type {
+    ScheduleCourse,
+    ScheduleSaveState,
+    RepeatingCustomEvent,
+    CustomEventId,
+} from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -305,7 +305,7 @@ class AppStore extends EventEmitter {
 
     saveSchedule() {
         this.unsavedChanges = false;
-        window.localStorage.removeItem('unsavedActions');
+        removeLocalStorageUnsavedActions();
     }
 
     copySchedule(scheduleIndex: number, newScheduleName: string) {
@@ -348,7 +348,8 @@ class AppStore extends EventEmitter {
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
-        const hasDataChanged = JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
+        const loadedStateMatchesCurrent =
+            JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
         if (!loadSuccess) {
             return false;
@@ -357,7 +358,7 @@ class AppStore extends EventEmitter {
 
         this.schedule.clearPreviousStates();
 
-        if (hasDataChanged) {
+        if (loadedStateMatchesCurrent) {
             deleteTempSaveData();
         } else {
             loadTempSaveData(savedSchedule.schedules.length);

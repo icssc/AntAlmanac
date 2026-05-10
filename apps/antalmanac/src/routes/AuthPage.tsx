@@ -31,7 +31,7 @@ export function AuthPage() {
         }
 
         try {
-            const returnUrl = await trpc.userData.getAuthReturnUrl.query();
+            const returnUrl = await trpc.auth.getAuthReturnUrl.query();
 
             // Silent SSO returned an error — the auth server has no session.
             if (searchParams.get('error') === 'login_required') {
@@ -49,7 +49,7 @@ export function AuthPage() {
 
             isAuthenticatingRef.current = true;
 
-            const { userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
+            const { userId, providerId, newUser } = await trpc.auth.handleGoogleCallback.mutate({
                 code: code,
                 state: state,
             });
@@ -92,11 +92,11 @@ export function AuthPage() {
 
             // handle unsaved changes
             if (savedData !== '') {
-                const userData = await trpc.userData.getUserData.query();
+                const userData = await trpc.schedule.get.query();
                 const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
                 if (savedUserId !== '') {
-                    await trpc.userData.flagImportedSchedule.mutate({ username: savedUserId });
+                    await trpc.schedule.flagImported.mutate({ username: savedUserId });
                     setLocalStorageImportedUser(savedUserId);
                 }
 
@@ -113,7 +113,7 @@ export function AuthPage() {
                     }
                 }
 
-                await trpc.userData.saveUserData.mutate({
+                await trpc.schedule.save.mutate({
                     userData: scheduleSaveState,
                 });
             }

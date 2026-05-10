@@ -44,7 +44,7 @@ export function AutoSignIn() {
 
             try {
                 const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-                const authUrl = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none', returnTo });
+                const authUrl = await trpc.auth.getGoogleAuthUrl.query({ prompt: 'none', returnTo });
                 window.location.href = authUrl.toString();
             } catch {
                 // Silent SSO failed (e.g. backend unavailable). Don't retry.

@@ -44,10 +44,6 @@ class _WebSOC {
         return await trpc.websoc.getCourseInfo.query(params);
     }
 
-    async getDepartments() {
-        return await trpc.websoc.getDepartments.query();
-    }
-
     async getSyllabi(params: WebsocSyllabiQueryParams) {
         return await trpc.websoc.getSyllabi.query({ ...params });
     }

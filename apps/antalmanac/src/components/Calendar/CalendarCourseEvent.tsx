@@ -1,6 +1,6 @@
 import type { CalendarEvent, CourseEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import locationIds from '$lib/locations/locations';
+import { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
 import { Box } from '@mui/material';
 import { memo } from 'react';
 
@@ -25,7 +25,7 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
                 </Box>
 
                 <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                    <Box>{Object.keys(locationIds).find((key) => locationIds[key] === parseInt(event.building))}</Box>
+                    <Box>{buildingCodeFromLocationNumericId(parseInt(event.building, 10))}</Box>
                 </Box>
             </Box>
         );

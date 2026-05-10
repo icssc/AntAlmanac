@@ -15,6 +15,7 @@ export interface AnalyticsEnum {
     classSearch: AnalyticsCategory;
     addedClasses: AnalyticsCategory;
     map: AnalyticsCategory;
+    review: AnalyticsCategory;
 }
 
 const analyticsEnum: AnalyticsEnum = {
@@ -99,6 +100,15 @@ const analyticsEnum: AnalyticsEnum = {
         actions: {
             OPEN: 'Open Map',
             CLICK_PIN: 'Click on Pin',
+        },
+    },
+    review: {
+        title: 'Review Prompt',
+        actions: {
+            PROMPT_SHOWN: 'Review Prompt Shown',
+            ENROLLMENT_CONFIRMED: 'Review Enrollment Confirmed',
+            DISMISSED: 'Review Prompt Dismissed',
+            SUBMITTED: 'Review Submitted',
         },
     },
 };

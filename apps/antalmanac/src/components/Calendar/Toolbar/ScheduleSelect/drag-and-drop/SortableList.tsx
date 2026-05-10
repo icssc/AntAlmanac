@@ -1,3 +1,7 @@
+import { DragHandle } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/DragHandle';
+import { SortableItem } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
+import { SortableOverlay } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableOverlay';
+import AppStore from '$stores/AppStore';
 import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Active, UniqueIdentifier } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
@@ -6,11 +10,6 @@ import { List } from '@mui/material';
 import type { ReactNode } from 'react';
 import { Fragment, useMemo, useState } from 'react';
 
-import { DragHandle } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/DragHandle';
-import { SortableItem } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
-import { SortableOverlay } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableOverlay';
-import AppStore from '$stores/AppStore';
-
 interface BaseItem {
     id: UniqueIdentifier;
 }
@@ -18,7 +17,7 @@ interface BaseItem {
 interface Props<T extends BaseItem> {
     items: T[];
     onChange(items: T[]): void;
-    renderItem(item: T): ReactNode;
+    renderItem(item: T, index: number): ReactNode;
 }
 
 // ref: https://codesandbox.io/p/sandbox/dnd-kit-sortable-starter-template-22x1ix
@@ -54,12 +53,19 @@ export function SortableList<T extends BaseItem>({ items, onChange, renderItem }
         >
             <SortableContext items={items}>
                 <List sx={{ padding: 0 }}>
-                    {items.map((item) => (
-                        <Fragment key={item.id}>{renderItem(item)}</Fragment>
+                    {items.map((item, index) => (
+                        <Fragment key={item.id}>{renderItem(item, index)}</Fragment>
                     ))}
                 </List>
             </SortableContext>
-            <SortableOverlay>{activeItem ? renderItem(activeItem) : null}</SortableOverlay>
+            <SortableOverlay>
+                {activeItem
+                    ? renderItem(
+                          activeItem,
+                          items.findIndex(({ id }) => id === activeItem.id)
+                      )
+                    : null}
+            </SortableOverlay>
         </DndContext>
     );
 }

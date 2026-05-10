@@ -2,12 +2,14 @@ import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { canTermEnrollmentChange } from '$lib/termData';
 import type {
     Course,
     CourseSearchResult,
     DepartmentSearchResult,
     CoursesFilteredAPIResult,
 } from '@packages/antalmanac-types';
+import type { WebsocAPIResponse, WebsocAPIResult, WebsocCourse, WebsocDepartment } from '@packages/anteater-api-types';
 
 import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
@@ -26,8 +28,36 @@ const ALIASES: Record<string, string | undefined> = {
     IN4MATX: 'INF',
 };
 
+function catalogCourseKey(department: string, courseNumber: string) {
+    return `${department.trim()}::${courseNumber.trim()}`;
+}
+
+function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
+    const out = new Map<
+        string,
+        Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
+    >();
+    for (const school of data.schools) {
+        for (const dept of school.departments) {
+            for (const wsCourse of dept.courses) {
+                const key = catalogCourseKey(dept.deptCode, wsCourse.courseNumber);
+                out.set(key, {
+                    deptCode: dept.deptCode,
+                    deptName: dept.deptName,
+                    courseNumber: wsCourse.courseNumber,
+                    courseTitle: wsCourse.courseTitle,
+                });
+            }
+        }
+    }
+    return out;
+}
+
 async function main() {
     console.log('Generating cache for fuzzy search.');
+
+    const activeTerms = termData.filter((t) => canTermEnrollmentChange(t.shortName));
+
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];
     for (let skip = 0; skip < MAX_COURSES; skip += 100) {
@@ -40,6 +70,7 @@ async function main() {
     console.log(`Fetched ${courses.length} courses.`);
     const courseMap = new Map<string, CourseSearchResult & { id: string }>();
     const deptMap = new Map<string, DepartmentSearchResult & { id: string }>();
+    const catalogueKeys = new Set<string>();
     for (const course of courses) {
         courseMap.set(course.id, {
             id: course.id,
@@ -51,6 +82,7 @@ async function main() {
                 number: course.courseNumber,
             },
         });
+        catalogueKeys.add(catalogCourseKey(course.department, course.courseNumber));
         deptMap.set(course.department, {
             id: course.department,
             type: 'DEPARTMENT',
@@ -64,6 +96,72 @@ async function main() {
 
     await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
     await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
+
+    if (activeTerms.length > 0) {
+        /*
+         * WebSOC may receive updates sooner than the course catalogue updates, notably for a
+         * new academic year (i.e. Fall term). Querying WebSOC to build course data ensures all
+         * available courses are represented.
+         *
+         * Fetch WebSOC for each term where {@link canTermEnrollmentChange} is true and merge the
+         * course lists: overlapping registration periods mean several quarters need data at once.
+         */
+        console.log(`Fetching WebSoc REST for union with catalogue: ${activeTerms.map((t) => t.shortName).join(', ')}`);
+
+        const fromWebsoc = new Map<
+            string,
+            Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
+        >();
+        for (let i = 0; i < activeTerms.length; i++) {
+            if (i > 0) {
+                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+            }
+            const [year, quarter] = activeTerms[i].shortName.split(' ');
+            const websocRest = await fetchAnteaterAPI<WebsocAPIResult>(
+                `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams({
+                    year,
+                    quarter,
+                }).toString()}`,
+                { isApiKeyRequired: true }
+            );
+            const chunk = getWebsocCoursesFromResponse(websocRest.data);
+            for (const [key, course] of chunk) {
+                fromWebsoc.set(key, course);
+            }
+        }
+
+        let addedFromWebsoc = 0;
+        for (const [key, course] of fromWebsoc) {
+            if (catalogueKeys.has(key)) {
+                continue;
+            }
+            addedFromWebsoc += 1;
+            const id = `ws:${course.deptCode}:${course.courseNumber}`;
+            const name = (course.courseTitle ?? '').trim() || `${course.deptCode} ${course.courseNumber}`;
+            courseMap.set(id, {
+                id,
+                type: 'COURSE',
+                name,
+                alias: ALIASES[course.deptCode],
+                metadata: {
+                    department: course.deptCode,
+                    number: course.courseNumber,
+                },
+            });
+            if (!deptMap.has(course.deptCode)) {
+                deptMap.set(course.deptCode, {
+                    id: course.deptCode,
+                    type: 'DEPARTMENT',
+                    name: (course.deptName ?? '').trim() || course.deptCode,
+                    alias: ALIASES[course.deptCode],
+                });
+            }
+        }
+        console.log(`WebSoc union: ${fromWebsoc.size} courses in schedule, ${addedFromWebsoc} not in catalogue.`);
+    } else {
+        console.log('No active enrollment terms; skipping WebSOC union.');
+    }
+
     await writeFile(
         join(__dirname, '../src/generated/searchData.ts'),
         `
@@ -77,7 +175,7 @@ async function main() {
     `
     );
 
-    const currentTerm = termData[0];
+    const refreshShortNames = new Set(activeTerms.map((t) => t.shortName));
     let count = 0;
     const termPromises = termData.map(async (term, index) => {
         try {
@@ -88,12 +186,13 @@ async function main() {
             try {
                 await access(fileName);
 
-                if (currentTerm.longName != term.longName) {
-                    console.log(`Skipping ${term.shortName}, cache already exists.`);
+                if (!refreshShortNames.has(term.shortName)) {
+                    console.log(
+                        `Skipping ${term.shortName}, cache exists and term is outside enrollment refresh window.`
+                    );
                     return 0;
-                } else {
-                    console.log(`Updating data for current term (${term.shortName})...`);
                 }
+                console.log(`Updating section-code cache for active term (${term.shortName})...`);
             } catch {
                 console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
             }

@@ -39,7 +39,7 @@ export function loadTempSaveData(scheduleCount: number) {
 
         if (parsedData.currentScheduleIndex !== undefined) {
             if (parsedData.currentScheduleIndex >= scheduleCount) {
-                parsedData.currentScheduleIndex = scheduleCount = 1;
+                parsedData.currentScheduleIndex = scheduleCount > 0 ? scheduleCount - 1 : 0;
             }
             changeCurrentSchedule(parsedData.currentScheduleIndex);
         }
@@ -53,7 +53,7 @@ export function loadTempSaveData(scheduleCount: number) {
  *
  * ```typescript
  *
- *   setTempSaveData({ currentSCheduleIndex: 0 });
+ *   setTempSaveData({ currentScheduleIndex: 0 });
  *
  * ```
  *
