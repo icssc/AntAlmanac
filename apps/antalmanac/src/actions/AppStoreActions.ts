@@ -335,11 +335,6 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
     }
 };
 
-interface LoadScheduleOptions {
-    prefetched: Awaited<ReturnType<typeof trpc.schedule.get.query>> | null;
-    postHog?: PostHog;
-}
-
 export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions) => {
     try {
         const userDataResponse = prefetched ?? (await trpc.schedule.get.query());
