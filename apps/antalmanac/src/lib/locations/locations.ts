@@ -314,4 +314,19 @@ const locations: Record<string, number> = {
     'Starbucks @ Student Center': 900358,
     'Zot N Go Market': 900359,
 };
+
+/**
+ * O(1) lookup from catalog numeric ID to location key (building code string).
+ * If multiple keys share one numeric ID, the last entry in `Object.entries` order wins,
+ * matching prior `Object.keys(locationIds).find(...)` behavior.
+ */
+const locationNumericIdToBuildingCode = new Map<number, string>();
+for (const [code, numericId] of Object.entries(locations)) {
+    locationNumericIdToBuildingCode.set(numericId, code);
+}
+
+export function buildingCodeFromLocationNumericId(numericId: number): string | undefined {
+    return locationNumericIdToBuildingCode.get(numericId);
+}
+
 export default locations;

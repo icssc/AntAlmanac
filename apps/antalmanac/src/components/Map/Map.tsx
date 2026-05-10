@@ -1,13 +1,12 @@
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
-
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
 import dynamic from 'next/dynamic';
 import { usePostHog } from 'posthog-js/react';
-import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
+import { Fragment, useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
@@ -16,12 +15,13 @@ import LocationMarker from './Marker';
 const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { UserLocator } from '$components/Map/UserLocator';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { UserLocator } from '$components/Map/UserLocator';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
-import locationIds from '$lib/locations/locations';
+import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
+import { getBuildingNameAcronym } from '$lib/locations/mapBuildingHelpers';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 
@@ -71,10 +71,7 @@ export function getCoursesPerBuilding() {
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[buildingCode]];
                 const key = `${event.title} ${event.sectionType} @ ${event.locations[0]}`;
-                const acronym = locationData.name.substring(
-                    locationData.name.indexOf('(') + 1,
-                    locationData.name.indexOf(')')
-                );
+                const acronym = getBuildingNameAcronym(locationData.name);
                 const markerData = {
                     key,
                     image: locationData.imageURLs[0],
@@ -98,8 +95,9 @@ export function getCustomEventPerBuilding() {
 
     // convert all digit to name in customEventBuilding  for example: 83096  ->  ICS
     for (let i = 0; i < customEventBuildings.length; i++) {
+        const numericId = Number.parseInt(customEventBuildings[i], 10);
         customEventBuildings[i] =
-            Object.keys(locationIds).find((key) => locationIds[key] === parseInt(customEventBuildings[i])) || '';
+            (Number.isNaN(numericId) ? undefined : buildingCodeFromLocationNumericId(numericId)) ?? '';
     }
 
     const allBuildingCodes = [...customEventBuildings];
@@ -124,19 +122,16 @@ export function getCustomEventPerBuilding() {
     for (let i = 0; i < validBuildingCodes.length; i++) {
         customEventPerBuilding[validBuildingCodes[i]] = customEvents
             .filter((event) => {
-                return (
-                    Object.keys(locationIds).find(
-                        (key) => locationIds[key] === parseInt(event.building ? event.building : '')
-                    ) == validBuildingCodes[i]
-                );
+                const raw = event.building ?? '';
+                const numericId = Number.parseInt(raw, 10);
+                const code =
+                    raw === '' || Number.isNaN(numericId) ? undefined : buildingCodeFromLocationNumericId(numericId);
+                return code === validBuildingCodes[i];
             })
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[validBuildingCodes[i]]];
                 const key = `${event.title} @ ${event.building}`;
-                const acronym = locationData.name.substring(
-                    locationData.name.indexOf('(') + 1,
-                    locationData.name.indexOf(')')
-                );
+                const acronym = getBuildingNameAcronym(locationData.name);
                 const markerCustomEventData = {
                     key,
                     image: locationData.imageURLs[0],
@@ -158,7 +153,7 @@ export function getCustomEventPerBuilding() {
 export default function CourseMap() {
     const navigate = useNavigate();
     const map = useRef<Map | null>(null);
-    const markerRef = createRef<Marker>();
+    const markerRef = useRef<Marker | null>(null);
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
@@ -218,7 +213,7 @@ export default function CourseMap() {
             map.current?.flyTo([building.lat + 0.001, building.lng], 18, { duration: 250, animate: false });
             markerRef.current?.openPopup();
         }, 250);
-    }, [markerRef, searchParams]);
+    }, [searchParams]);
 
     const handleChange = useCallback(
         (_event: React.SyntheticEvent, newValue: number) => {
@@ -252,10 +247,7 @@ export default function CourseMap() {
             return undefined;
         }
 
-        const acronym = focusedBuilding.name.substring(
-            focusedBuilding?.name.indexOf('(') + 1,
-            focusedBuilding?.name.indexOf(')')
-        );
+        const acronym = getBuildingNameAcronym(focusedBuilding.name);
 
         return {
             ...focusedBuilding,
@@ -359,61 +351,57 @@ export default function CourseMap() {
 
                 {/* Draw out routes if the user is viewing a specific day. */}
                 {today !== 'All' &&
-                    startDestPairs.map((startDestPair) => {
+                    startDestPairs.map((startDestPair, pairIndex) => {
                         const latLngTuples = startDestPair.map((marker) => [marker.lat, marker.lng] as LatLngTuple);
+                        const latLngKey = latLngTuples.map((t) => `${t[0]},${t[1]}`).join('|');
+                        const key = `route-${pairIndex}-${latLngKey}`;
                         const color = startDestPair[0]?.color;
-                        /**
-                         * Previous renders of the routes will be left behind if the keys aren't unique.
-                         */
-                        const key = Math.random().toString(36).substring(7);
                         return <Routes key={key} latLngTuples={latLngTuples} color={color} />;
                     })}
 
                 {/* Draw a marker for each class that occurs today. */}
-                {markersToDisplay.map((marker, index) => {
-                    // Find all courses that occur in the same building prior to this one to stack them properly.
-                    // TODO Handle multiple buildings between class comparisons on markers.
-                    const coursesSameBuildingPrior = markersToDisplay
-                        .slice(0, index)
-                        .filter((m) =>
-                            m.locations.map((location) => location.building).includes(marker.locations[0].building)
+                {(() => {
+                    const stackCountByPrimaryBuilding: Record<string, number> = {};
+                    return markersToDisplay.map((marker, index) => {
+                        const primaryBuilding = marker.locations[0].building;
+                        const stackIndex = stackCountByPrimaryBuilding[primaryBuilding] ?? 0;
+                        stackCountByPrimaryBuilding[primaryBuilding] = stackIndex + 1;
+
+                        const allRoomsInBuilding = marker.locations
+                            .filter((location) => location.building === primaryBuilding)
+                            .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
+
+                        return (
+                            <Fragment key={marker.key}>
+                                <LocationMarker
+                                    {...marker}
+                                    label={today === 'All' ? undefined : (index + 1).toString()}
+                                    stackIndex={stackIndex}
+                                >
+                                    <Box>
+                                        <Typography variant="body1">
+                                            <span style={{ fontWeight: 'bold' }}>Class:</span> {marker.title}{' '}
+                                            {marker.sectionType}
+                                        </Typography>
+                                        <Typography variant="body1">
+                                            <span style={{ fontWeight: 'bold' }}>
+                                                Room{allRoomsInBuilding.length > 1 && 's'}:
+                                            </span>{' '}
+                                            {marker.locations[0].building} {allRoomsInBuilding.join('/')}
+                                        </Typography>
+                                    </Box>
+                                </LocationMarker>
+                            </Fragment>
                         );
-
-                    const allRoomsInBuilding = marker.locations
-                        .filter((location) => location.building == marker.locations[0].building)
-                        .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
-
-                    return (
-                        <Fragment key={Object.values(marker).join('')}>
-                            <LocationMarker
-                                {...marker}
-                                key={marker.key}
-                                label={today === 'All' ? undefined : (index + 1).toString()}
-                                stackIndex={coursesSameBuildingPrior.length}
-                            >
-                                <Box>
-                                    <Typography variant="body1">
-                                        <span style={{ fontWeight: 'bold' }}>Class:</span> {marker.title}{' '}
-                                        {marker.sectionType}
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        <span style={{ fontWeight: 'bold' }}>
-                                            Room{allRoomsInBuilding.length > 1 && 's'}:
-                                        </span>{' '}
-                                        {marker.locations[0].building} {allRoomsInBuilding.join('/')}
-                                    </Typography>
-                                </Box>
-                            </LocationMarker>
-                        </Fragment>
-                    );
-                })}
+                    });
+                })()}
 
                 {/* Draw a marker for each custom Event that occurs today. */}
                 {customEventMarkersToDisplay.map((customEventMarkers, index) => {
                     const customEventSameBuildingPrior = customEventMarkersToDisplay.slice(0, index);
 
                     return (
-                        <Fragment key={Object.values(customEventMarkers).join('')}>
+                        <Fragment key={customEventMarkers.key}>
                             <LocationMarker
                                 {...customEventMarkers}
                                 label={'E'}
