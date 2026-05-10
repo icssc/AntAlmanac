@@ -6,7 +6,7 @@ import { headers } from 'next/headers';
 
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
     const sessionData = await auth.api.getSession({ headers: await headers() });
-    const googleAccount = await fetchGoogleAccount();
+    const googleAccount = sessionData ? await fetchGoogleAccount() : null;
 
     return {
         req: opts.req,
