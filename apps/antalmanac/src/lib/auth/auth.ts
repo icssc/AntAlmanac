@@ -1,6 +1,6 @@
 import 'server-only';
 import { getSafeAuthRedirectPath } from '$lib/auth/authUtils';
-import { AUTH_PROVIDER_ID } from '$lib/constants';
+import { AUTH_PROVIDER_ID } from '$lib/auth/constants';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { db } from '@packages/db';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';

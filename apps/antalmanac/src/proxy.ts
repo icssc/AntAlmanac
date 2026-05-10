@@ -1,4 +1,4 @@
-import { AUTH_PROVIDER_ID } from '$lib/constants';
+import { AUTH_PROVIDER_ID } from '$lib/auth/constants';
 import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
