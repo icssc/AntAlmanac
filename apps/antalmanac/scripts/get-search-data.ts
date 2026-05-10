@@ -103,12 +103,11 @@ async function main() {
 
     /*
      * WebSOC may receive updates sooner than the course catalogue updates, notably for a
-     * new academic year (i.e. Fall term). Querying Websoc to build course data ensures all
+     * new academic year (i.e. Fall term). Querying WebSOC to build course data ensures all
      * available courses are represented.
      *
-     * Refresh every term where {@link canTermEnrollmentChange} is true, not only termData[0]:
-     * terms are sorted by latest instruction start, so concurrent registration (e.g. Summer
-     * sessions + Fall) requires merging multiple quarters.
+     * Fetch WebSOC for each term where {@link canTermEnrollmentChange} is true and merge the
+     * course lists: overlapping registration periods mean several quarters need data at once.
      */
     console.log(`Fetching WebSoc REST for union with catalogue: ${activeTerms.map((t) => t.shortName).join(', ')}`);
 
