@@ -20,12 +20,16 @@ export const authClient = createAuthClient({
 
 export type SessionData = typeof authClient.$Infer.Session;
 
+function cleanupSignOut({ onLogoutComplete }: SignOutOptions = {}) {
+    clearSsoCookie();
+    setWasLoggedIn(false);
+    onLogoutComplete?.();
+}
+
 export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}) {
     const session = useSessionStore.getState().session;
     if (!session) {
-        clearSsoCookie();
-        setWasLoggedIn(false);
-        onLogoutComplete?.();
+        cleanupSignOut({ onLogoutComplete });
         window.location.reload();
         return;
     }
@@ -44,15 +48,12 @@ export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}
         console.error('Error getting logout URL', error);
     }
 
-    setWasLoggedIn(false);
-    clearSsoCookie();
+    cleanupSignOut({ onLogoutComplete });
 
     const { error } = await authClient.signOut();
     if (error) {
         console.error('Error during logout', error);
     }
-
-    onLogoutComplete?.();
 
     logAnalytics(postHog, {
         category: analyticsEnum.auth,
