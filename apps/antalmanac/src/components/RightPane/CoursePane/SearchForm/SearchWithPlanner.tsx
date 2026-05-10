@@ -12,6 +12,7 @@ import {
 } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { OpenInBrowser } from '@mui/icons-material';
@@ -43,13 +44,16 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
 
-    const { sessionIsValid, isPlannerLoading, plannerRoadmaps, hasCheckedAuth } = useSessionStore(
+    const { sessionIsValid, hasCheckedAuth } = useSessionStore(
         useShallow((state) => ({
             sessionIsValid: state.sessionIsValid,
-            isPlannerLoading: state.isPlannerLoading,
-            plannerRoadmaps: state.plannerRoadmaps,
+
             hasCheckedAuth: state.hasCheckedAuth,
         }))
+    );
+
+    const { isPlannerLoading, plannerRoadmaps } = usePlannerStore(
+        useShallow((state) => ({ isPlannerLoading: state.isPlannerLoading, plannerRoadmaps: state.plannerRoadmaps }))
     );
 
     const { displaySections, hasSearchedWithUrlParams, setHasSearchedWithUrlParams } = useCoursePaneStore(
