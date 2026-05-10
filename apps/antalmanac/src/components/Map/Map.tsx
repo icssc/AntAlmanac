@@ -20,10 +20,18 @@ import { UserLocator } from '$components/Map/UserLocator';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
-import { getBuildingNameAcronym } from '$lib/locations/helpers';
 import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
+
+function getBuildingNameAcronym(name: string): string {
+    const open = name.indexOf('(');
+    const close = name.indexOf(')');
+    if (open === -1 || close === -1 || close <= open) {
+        return '';
+    }
+    return name.substring(open + 1, close);
+}
 
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
