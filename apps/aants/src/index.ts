@@ -4,7 +4,7 @@ import type {
     WebsocCourse,
     WebsocSection,
     WebsocSectionMeeting,
-} from '@packages/anteater-api-types';
+} from '@packages/anteater-api/types';
 
 import type { CourseDetails } from './helpers/notificationDispatch';
 import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
