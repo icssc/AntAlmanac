@@ -1,7 +1,7 @@
 import { loginUser } from '$actions/AppStoreActions';
+import { AppleSignInButton, GoogleSignInButton } from '$components/buttons/SignInButtons';
 import { useThemeStore } from '$stores/SettingsStore';
-import { Apple as AppleIcon, Google as GoogleIcon } from '@mui/icons-material';
-import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
+import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 
 interface SignInDialogProps {
@@ -56,30 +56,8 @@ export function SignInDialog(props: SignInDialogProps) {
                             All changes made will be saved to your account
                         </Alert>
                     )}
-                    <Button
-                        onClick={() => loginUser({ provider: 'google', postHog })}
-                        startIcon={<GoogleIcon />}
-                        color="primary"
-                        variant="contained"
-                        size="large"
-                    >
-                        Sign in with Google
-                    </Button>
-                    <Button
-                        onClick={() => loginUser({ provider: 'apple', postHog })}
-                        startIcon={<AppleIcon />}
-                        variant="contained"
-                        size="large"
-                        sx={{
-                            backgroundColor: isDark ? '#fff' : '#000',
-                            color: isDark ? '#000' : '#fff',
-                            '&:hover': {
-                                backgroundColor: isDark ? '#e0e0e0' : '#333',
-                            },
-                        }}
-                    >
-                        Sign in with Apple
-                    </Button>
+                    <GoogleSignInButton onClick={() => loginUser({ provider: 'google', postHog })} />
+                    <AppleSignInButton onClick={() => loginUser({ provider: 'apple', postHog })} />
                 </Stack>
             </DialogContent>
         </Dialog>

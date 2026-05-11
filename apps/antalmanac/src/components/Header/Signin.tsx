@@ -1,5 +1,6 @@
 import { loadGuestSchedule, loadSchedule, loginUser } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { AppleSignInButton, GoogleSignInButton } from '$components/buttons/SignInButtons';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
@@ -9,7 +10,7 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { AccountCircle, Apple, ExpandMore, Google } from '@mui/icons-material';
+import { AccountCircle, ExpandMore } from '@mui/icons-material';
 import {
     Alert,
     type AlertColor,
@@ -191,32 +192,8 @@ export const Signin = () => {
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
                     <Stack spacing={1}>
-                        <Button
-                            onClick={() => handleLogin('google')}
-                            color="primary"
-                            variant="contained"
-                            startIcon={<Google />}
-                            size="large"
-                            fullWidth
-                        >
-                            Sign in with Google
-                        </Button>
-                        <Button
-                            onClick={() => handleLogin('apple')}
-                            variant="contained"
-                            startIcon={<Apple />}
-                            size="large"
-                            fullWidth
-                            sx={{
-                                backgroundColor: isDark ? '#fff' : '#000',
-                                color: isDark ? '#000' : '#fff',
-                                '&:hover': {
-                                    backgroundColor: isDark ? '#e0e0e0' : '#333',
-                                },
-                            }}
-                        >
-                            Sign in with Apple
-                        </Button>
+                        <GoogleSignInButton onClick={() => handleLogin('google')} fullWidth />
+                        <AppleSignInButton onClick={() => handleLogin('apple')} fullWidth />
 
                         <Box
                             onClick={() => setShowLegacyLogin(!showLegacyLogin)}
@@ -326,32 +303,8 @@ export const Signin = () => {
             >
                 <DialogContentText>To load your schedule, sign in with your account</DialogContentText>
                 <Stack spacing={1}>
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        startIcon={<Google />}
-                        fullWidth
-                        onClick={() => handleLogin('google')}
-                        size="large"
-                    >
-                        Sign in with Google
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<Apple />}
-                        fullWidth
-                        onClick={() => handleLogin('apple')}
-                        size="large"
-                        sx={{
-                            backgroundColor: isDark ? '#fff' : '#000',
-                            color: isDark ? '#000' : '#fff',
-                            '&:hover': {
-                                backgroundColor: isDark ? '#e0e0e0' : '#333',
-                            },
-                        }}
-                    >
-                        Sign in with Apple
-                    </Button>
+                    <GoogleSignInButton onClick={() => handleLogin('google')} fullWidth />
+                    <AppleSignInButton onClick={() => handleLogin('apple')} fullWidth />
                 </Stack>
             </AlertDialog>
         </div>
