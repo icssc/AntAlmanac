@@ -3,6 +3,7 @@ import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Not
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
 import { LIGHT_BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Notifications } from '@mui/icons-material';
 import {
     Box,
@@ -14,7 +15,6 @@ import {
     IconButton,
     type SxProps,
     Tooltip,
-    useTheme,
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -25,7 +25,7 @@ interface NotificationsDialogProps {
 }
 
 export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogProps) {
-    const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
 
@@ -76,7 +76,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 </DialogTitle>
                 <DialogContent
                     sx={
-                        theme.palette.mode === 'dark'
+                        isDark
                             ? {
                                   '& a, & a:hover, & a:visited': { color: LIGHT_BLUE },
                                   '& .MuiTab-root': { color: 'text.secondary' },
