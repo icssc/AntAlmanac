@@ -12,8 +12,7 @@ import { Button } from '@mui/material';
  * themselves are unchanged from Google's published asset.
  *
  * Per Google's branding guidelines, monochrome versions of the "G" are
- * explicitly disallowed, and the logo must appear on a white (light) or
- * near-black (dark) background only:
+ * explicitly disallowed:
  *   https://developers.google.com/identity/branding-guidelines
  */
 const GoogleLogo = () => (
@@ -49,8 +48,15 @@ interface GoogleSignInButtonProps {
 /**
  * Sign in with Google button styled to Google's branding spec.
  *
- * Light theme: white fill (#FFFFFF), #747775 1 px border, #1F1F1F text.
- * Dark theme:  #131314 fill, #8E918F 1 px border, #E3E3E3 text.
+ * Light mode → Light theme:   #FFFFFF fill, #747775 1 px border, #1F1F1F text.
+ * Dark mode  → Neutral theme: #F2F2F2 fill, no border,           #1F1F1F text.
+ *
+ * The Neutral theme is used for dark mode because the Dark theme's near-black
+ * fill (#131314) reads poorly inside a dark dialog. Neutral's light-gray fill
+ * pops cleanly against dark surfaces and drops the border, both of which are
+ * permitted by Google's spec:
+ *   https://developers.google.com/identity/branding-guidelines#custom-button
+ *
  * Font: Roboto Medium (per spec), no box-shadow at rest.
  */
 export const GoogleSignInButton = ({ onClick, fullWidth }: GoogleSignInButtonProps) => {
@@ -63,16 +69,16 @@ export const GoogleSignInButton = ({ onClick, fullWidth }: GoogleSignInButtonPro
             size="large"
             fullWidth={fullWidth}
             sx={{
-                backgroundColor: isDark ? '#131314' : '#ffffff',
-                color: isDark ? '#e3e3e3' : '#1f1f1f',
-                border: `1px solid ${isDark ? '#8e918f' : '#747775'}`,
+                backgroundColor: '#f2f2f2',
+                color: '#1f1f1f',
+                border: isDark ? 'none' : '1px solid #747775',
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 500,
                 boxShadow: 'none',
                 '&:hover': {
-                    backgroundColor: isDark ? '#1e1e1f' : '#f2f2f2',
+                    backgroundColor: '#e8e8e8',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
-                    border: `1px solid ${isDark ? '#8e918f' : '#747775'}`,
+                    border: isDark ? 'none' : '1px solid #747775',
                 },
             }}
         >
