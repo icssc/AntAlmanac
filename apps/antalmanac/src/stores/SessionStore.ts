@@ -1,7 +1,7 @@
 import trpc from '$lib/api/trpc';
 import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
-import type { Roadmap } from '@packages/antalmanac-types';
+import { usePlannerStore } from '$stores/PlannerStore';
 import { TRPCClientError } from '@trpc/client';
 import { create } from 'zustand';
 
@@ -18,17 +18,7 @@ interface SessionState {
     hasCheckedAuth: boolean;
 
     googleId: string | null;
-    filterTakenCourses: boolean;
-    userTakenCourses: Set<string>;
-
-    plannerRoadmaps: Roadmap[];
-    isPlannerLoading: boolean;
-
     setGoogleId: (id: string) => void;
-    setFilterTakenCourses: (value: boolean) => void;
-    setUserTakenCourses: (courses: Set<string>) => void;
-    setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
-    setIsPlannerLoading: (isPlannerLoading: boolean) => void;
 }
 
 export const useSessionStore = create<SessionState>((set) => {
@@ -44,14 +34,10 @@ export const useSessionStore = create<SessionState>((set) => {
         sessionIsValid: false,
         hasCheckedAuth: false,
         googleId: null,
-        filterTakenCourses: false,
-        userTakenCourses: new Set(),
-        plannerRoadmaps: [],
-        isPlannerLoading: false,
 
         loadSession: async () => {
             try {
-                const { users, accounts } = await trpc.userData.getUserAndAccount.query();
+                const { users, accounts } = await trpc.auth.getUserAndAccount.query();
 
                 let googleId = accounts?.providerAccountId ?? null;
                 if (googleId?.startsWith('google_')) {
@@ -68,6 +54,8 @@ export const useSessionStore = create<SessionState>((set) => {
                     avatar: users.avatar ?? null,
                     googleId,
                 });
+
+                usePlannerStore.getState().loadPlannerRoadmaps(googleId);
 
                 setWasLoggedIn(true);
                 return true;
@@ -95,7 +83,7 @@ export const useSessionStore = create<SessionState>((set) => {
         clearSession: async () => {
             let logoutUrl: string | null = null;
             try {
-                const result = await trpc.userData.logout.mutate({
+                const result = await trpc.auth.logout.mutate({
                     redirectUrl: window.location.origin,
                 });
                 logoutUrl = result.logoutUrl;
@@ -113,18 +101,11 @@ export const useSessionStore = create<SessionState>((set) => {
                 name: null,
                 avatar: null,
                 googleId: null,
-                filterTakenCourses: false,
-                userTakenCourses: new Set(),
-                plannerRoadmaps: [],
             });
 
             return logoutUrl;
         },
 
         setGoogleId: (id) => set({ googleId: id }),
-        setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
-        setUserTakenCourses: (courses) => set({ userTakenCourses: courses }),
-        setPlannerRoadmaps: (roadmaps) => set({ plannerRoadmaps: roadmaps }),
-        setIsPlannerLoading: (isPlannerLoading) => set({ isPlannerLoading }),
     };
 });

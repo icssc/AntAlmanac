@@ -28,11 +28,7 @@ export interface PatchNotesStoreProps {
 }
 
 export function shouldShowPatchNotes() {
-    return (
-        !arePatchNotesStale() &&
-        getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE &&
-        !tourShouldRun()
-    );
+    return !arePatchNotesStale() && getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE && !tourShouldRun();
 }
 
 export const usePatchNotesStore = create<PatchNotesStoreProps>((set) => {
