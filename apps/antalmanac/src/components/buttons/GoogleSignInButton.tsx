@@ -1,18 +1,17 @@
-import { useThemeStore } from '$stores/SettingsStore';
 import { Button } from '@mui/material';
 
 /**
  * Colored four-path Google "G" logo.
  *
- * Path data is sourced verbatim from Google's official Sign in with Google
+ * Path data sourced verbatim from Google's official Sign in with Google
  * button builder (48 × 48 viewBox):
  *   https://developers.google.com/identity/sign-in/web/build-button
  *
- * Rendered at 18 × 18 display size via the SVG viewBox attribute — the paths
- * themselves are unchanged from Google's published asset.
+ * Rendered at 18 × 18 via the SVG viewBox — paths are unchanged from
+ * Google's published asset.
  *
- * Per Google's branding guidelines, monochrome versions of the "G" are
- * explicitly disallowed:
+ * Monochrome versions of the "G" are explicitly disallowed by Google's
+ * branding guidelines:
  *   https://developers.google.com/identity/branding-guidelines
  */
 const GoogleLogo = () => (
@@ -45,44 +44,15 @@ interface GoogleSignInButtonProps {
     fullWidth?: boolean;
 }
 
-/**
- * Sign in with Google button styled to Google's branding spec.
- *
- * Light mode → Light theme:   #FFFFFF fill, #747775 1 px border, #1F1F1F text.
- * Dark mode  → Neutral theme: #F2F2F2 fill, no border,           #1F1F1F text.
- *
- * The Neutral theme is used for dark mode because the Dark theme's near-black
- * fill (#131314) reads poorly inside a dark dialog. Neutral's light-gray fill
- * pops cleanly against dark surfaces and drops the border, both of which are
- * permitted by Google's spec:
- *   https://developers.google.com/identity/branding-guidelines#custom-button
- *
- * Font: Roboto Medium (per spec), no box-shadow at rest.
- */
-export const GoogleSignInButton = ({ onClick, fullWidth }: GoogleSignInButtonProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
-    return (
-        <Button
-            onClick={onClick}
-            startIcon={<GoogleLogo />}
-            variant="outlined"
-            size="large"
-            fullWidth={fullWidth}
-            sx={{
-                backgroundColor: '#f2f2f2',
-                color: '#1f1f1f',
-                border: isDark ? 'none' : '1px solid #747775',
-                fontFamily: 'Roboto, sans-serif',
-                fontWeight: 500,
-                boxShadow: 'none',
-                '&:hover': {
-                    backgroundColor: '#e8e8e8',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
-                    border: isDark ? 'none' : '1px solid #747775',
-                },
-            }}
-        >
-            Sign in with Google
-        </Button>
-    );
-};
+export const GoogleSignInButton = ({ onClick, fullWidth }: GoogleSignInButtonProps) => (
+    <Button
+        onClick={onClick}
+        startIcon={<GoogleLogo />}
+        color="primary"
+        variant="contained"
+        size="large"
+        fullWidth={fullWidth}
+    >
+        Sign in with Google
+    </Button>
+);
