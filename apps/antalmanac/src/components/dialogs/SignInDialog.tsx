@@ -1,5 +1,6 @@
 import { loginUser } from '$actions/AppStoreActions';
-import { AppleSignInButton, GoogleSignInButton } from '$components/buttons/SignInButtons';
+import { AppleSignInButton } from '$components/buttons/AppleSignInButton';
+import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';

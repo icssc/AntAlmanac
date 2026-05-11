@@ -1,6 +1,7 @@
 import { loadGuestSchedule, loadSchedule, loginUser } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
-import { AppleSignInButton, GoogleSignInButton } from '$components/buttons/SignInButtons';
+import { AppleSignInButton } from '$components/buttons/AppleSignInButton';
+import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
