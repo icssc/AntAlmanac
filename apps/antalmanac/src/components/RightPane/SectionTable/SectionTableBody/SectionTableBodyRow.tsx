@@ -84,7 +84,6 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 
     const [currColor, setCurrColor] = useState(() => getSectionScheduleColor(section, term));
     const [colorPopoverAnchorEl, setColorPopoverAnchorEl] = useState<PopoverProps['anchorEl']>(null);
-    const [isHoveringColorPopover, setIsHoveringColorPopover] = useState(false);
 
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
@@ -199,9 +198,6 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={() => {
                 handleMouseLeave();
-                if (!isHoveringColorPopover) {
-                    handleColorPopoverClose();
-                }
             }}
         >
             <SectionRowColorStrip
@@ -246,15 +242,6 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                     transformOrigin={{
                         vertical: 'top',
                         horizontal: 'left',
-                    }}
-                    slotProps={{
-                        paper: {
-                            onMouseEnter: () => setIsHoveringColorPopover(true),
-                            onMouseLeave: () => {
-                                setIsHoveringColorPopover(false);
-                                setColorPopoverAnchorEl(null);
-                            },
-                        },
                     }}
                 >
                     <SketchPicker

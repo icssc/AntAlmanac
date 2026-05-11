@@ -98,7 +98,6 @@ const ColorPicker = memo(function ColorPicker({
                 anchorEl={anchorEl}
                 onClose={handleClose}
                 onClick={(e) => e.stopPropagation()}
-                onMouseLeave={() => setAnchorEl(null)}
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'center',
