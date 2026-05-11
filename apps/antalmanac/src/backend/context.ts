@@ -1,6 +1,5 @@
 import { RDS } from '$src/backend/lib/rds';
 import { db } from '@packages/db';
-import type { inferAsyncReturnType } from '@trpc/server';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 
 export const SESSION_COOKIE_NAME = 'aa_session';
@@ -26,4 +25,4 @@ export const createContext = async (opts: FetchCreateContextFnOptions) => {
     };
 };
 
-export type Context = inferAsyncReturnType<typeof createContext>;
+export type Context = Awaited<ReturnType<typeof createContext>>;
