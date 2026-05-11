@@ -11,7 +11,12 @@ import analyticsEnum from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
-import { getMultiGeCourseKey, isMultiGeSelection, queryManualSearchCourses } from '$lib/multiGeSearch';
+import {
+    getMultiGeCourseKey,
+    gradesGeForManualSearch,
+    isMultiGeSelection,
+    queryManualSearchCourses,
+} from '$lib/multiGeSearch';
 import { getTermLongName } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
@@ -391,8 +396,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             } else {
                 const formData = RightPaneStore.getFormData();
                 const { websocQueryParams, gradesQueryParams } = getQueryParams(formData);
-                gradesQueryParams.ge =
-                    formData.ge !== 'ANY' && !formData.ge.includes(',') ? (formData.ge as GE) : ('ANY' as GE);
+                gradesQueryParams.ge = gradesGeForManualSearch(formData.ge);
                 const [{ response: websocJsonResponse, sharedCourseKeys: sck }] = await Promise.all([
                     queryManualSearchCourses(websocQueryParams),
                     queryGrades(gradesQueryParams),
