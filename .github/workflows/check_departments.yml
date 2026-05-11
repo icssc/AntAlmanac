@@ -1,9 +1,9 @@
 name: Check and update department list
 
+# AAPI WebSOC departments endpoint isn't stable, sometimes returning truncated names (e.g. "Engrbe*", "Int Dep*").
+# Cron jobs are disabled until the API is stable.
+# TODO (@KevinWu098): Reenable cron jobs
 on:
-    schedule:
-        # Hourly at :04 UTC — offsets this job from check_new_quarter at :00 so two Anteater pulls do not start together.
-        - cron: '4 * * * *'
     workflow_dispatch:
 
 env:
