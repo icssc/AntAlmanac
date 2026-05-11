@@ -462,31 +462,31 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [setHoveredEvent]);
 
-    const currGeSelection = RightPaneStore.getFormData().ge;
-    const isMultiGeSearch = isMultiGeSelection(currGeSelection);
+    const ge = RightPaneStore.getFormData().ge;
+    const isMultiGeSearch = isMultiGeSelection(ge);
     const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
-    let orBannerIndex = -1;
+    let orBannerIdx = -1;
     if (isMultiGeSearch && !showNoIntersection) {
-        let currentSchoolIdx = -1;
-        let currentSchoolHasShared = false;
+        let currSchoolIdx = -1;
+        let schoolIsAnd = false;
         for (let i = 0; i < courseData.length; i++) {
             const item = courseData[i];
             if ('departments' in item) {
-                if (currentSchoolIdx !== -1 && !currentSchoolHasShared) {
-                    orBannerIndex = currentSchoolIdx;
+                if (currSchoolIdx !== -1 && !schoolIsAnd) {
+                    orBannerIdx = currSchoolIdx;
                     break;
                 }
-                currentSchoolIdx = i;
-                currentSchoolHasShared = false;
+                currSchoolIdx = i;
+                schoolIsAnd = false;
             } else if (
                 'sections' in item &&
                 sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
             ) {
-                currentSchoolHasShared = true;
+                schoolIsAnd = true;
             }
         }
-        if (orBannerIndex === -1 && currentSchoolIdx !== -1 && !currentSchoolHasShared) {
-            orBannerIndex = currentSchoolIdx;
+        if (orBannerIdx === -1 && currSchoolIdx !== -1 && !schoolIsAnd) {
+            orBannerIdx = currSchoolIdx;
         }
     }
 
@@ -546,7 +546,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                                 heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
-                                    {index === orBannerIndex && (
+                                    {index === orBannerIdx && (
                                         <Alert
                                             severity="warning"
                                             sx={{
