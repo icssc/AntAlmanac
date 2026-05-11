@@ -1,9 +1,9 @@
 name: Check and update department list
 
+# Scheduled runs are disabled: the Anteater departments feed often returns truncated
+# names (e.g. "Engrbe*", "Int Dep*"). We keep apps/antalmanac/src/generated/departments.json
+# fixed until names are authoritative. Run manually via workflow_dispatch if you refresh on purpose.
 on:
-    schedule:
-        # Hourly at :04 UTC — offsets this job from check_new_quarter at :00 so two Anteater pulls do not start together.
-        - cron: '4 * * * *'
     workflow_dispatch:
 
 env:
