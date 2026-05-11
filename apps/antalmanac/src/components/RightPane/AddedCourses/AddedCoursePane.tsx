@@ -9,7 +9,6 @@ import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePan
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
-import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -145,7 +144,6 @@ function CustomEventsBox() {
 }
 
 function ScheduleNoteBox() {
-    const isDark = useThemeStore((store) => store.isDark);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [scheduleNote, setScheduleNote] = useState(
         skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
@@ -196,6 +194,7 @@ function ScheduleNoteBox() {
 
             <TextField
                 type="text"
+                color="secondary"
                 variant="filled"
                 label="Click here to start typing!"
                 onChange={handleNoteChange}
@@ -215,14 +214,6 @@ function ScheduleNoteBox() {
                     '& .MuiInputBase-root': {
                         cursor: skeletonMode ? 'not-allowed' : 'text',
                     },
-                    ...(isDark && {
-                        '& .MuiInputLabel-root': {
-                            color: LIGHT_BLUE,
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: LIGHT_BLUE,
-                        },
-                    }),
                 }}
             />
         </Box>

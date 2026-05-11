@@ -1,4 +1,4 @@
-import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api-types';
+import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api/types';
 import { db } from '@packages/db';
 import { type User as DbUser, users } from '@packages/db/src/schema/auth/user';
 import { type Subscription, subscriptions } from '@packages/db/src/schema/subscription';
