@@ -23,7 +23,7 @@ import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { useSessionStore } from '$stores/SessionStore';
+import { usePlannerStore } from '$stores/PlannerStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
@@ -123,7 +123,7 @@ function getFilteredCourses(
     allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const { manualSearchEnabled } = useCoursePaneStore.getState();
-    const { filterTakenCourses, userTakenCourses } = useSessionStore.getState();
+    const { filterTakenCourses, userTakenCourses } = usePlannerStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
         const filtered = allCourses.filter((item) => {
             if (isCourseEntry(item)) {

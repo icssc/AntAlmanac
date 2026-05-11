@@ -8,11 +8,8 @@
   "scripts": {
       "postinstall": "openapi-typescript https://anteaterapi.com/openapi.json -o src/generated/anteater-api-types.ts"
   },
-  "dependencies": {
-    "arktype": "1.0.14-alpha"
-  },
   "devDependencies": {
-    "typescript": "5.6.3",
+    "typescript": "^5.7.2",
       "openapi-typescript": "7.4.3"
   }
 }

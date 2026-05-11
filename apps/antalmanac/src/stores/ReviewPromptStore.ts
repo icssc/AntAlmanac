@@ -42,6 +42,7 @@ const initialState = {
     rating: 0,
     difficulty: 0,
     selectedTags: [] as ReviewTag[],
+    textReview: '',
 };
 
 export const useReviewPromptStore = create(
@@ -87,8 +88,8 @@ export const useReviewPromptStore = create(
                     continue;
                 }
 
-                const instructor = course.section.instructors?.[0];
-                if (!instructor) {
+                const instructor = course.section.instructors.at(0)?.trim();
+                if (!instructor || instructor === 'STAFF') {
                     continue;
                 }
 
@@ -107,7 +108,9 @@ export const useReviewPromptStore = create(
                 });
             }
 
-            if (candidates.length === 0) return;
+            if (candidates.length === 0) {
+                return;
+            }
 
             let dismissedSet = new Set<string>();
             let reviewedSet = new Set<string>();
@@ -117,8 +120,8 @@ export const useReviewPromptStore = create(
                     trpc.review.getReviewedCombos.query(),
                     trpc.review.getReviewPromptLastInteractionAt.query(),
                 ]);
-                dismissedSet = new Set(dismissed.map((d) => `${d.courseId}::${d.professorId}`));
-                reviewedSet = new Set(reviewed.map((r) => `${r.courseId}::${r.professorId}`));
+                dismissedSet = new Set(dismissed.map((d) => `${d.courseId}::${d.professorId}::${d.term}`));
+                reviewedSet = new Set(reviewed.map((r) => `${r.courseId}::${r.professorId}::${r.term}`));
 
                 if (cooldown.lastInteractionAt) {
                     const elapsed = Date.now() - new Date(cooldown.lastInteractionAt).getTime();
@@ -132,7 +135,7 @@ export const useReviewPromptStore = create(
             }
 
             const eligible = candidates.filter((c) => {
-                const key = `${c.courseId}::${c.professorId}`;
+                const key = `${c.courseId}::${c.professorId}::${c.term}`;
                 return !dismissedSet.has(key) && !reviewedSet.has(key);
             });
 
@@ -141,7 +144,7 @@ export const useReviewPromptStore = create(
             }
 
             const candidate = eligible[Math.floor(Math.random() * eligible.length)];
-            set({ step: 'enrollment-confirm', candidate, rating: 0, difficulty: 0, selectedTags: [] });
+            set({ step: 'enrollment-confirm', candidate, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
             logAnalytics(postHog, {
                 category: analyticsEnum.review,
                 action: analyticsEnum.review.actions.PROMPT_SHOWN,
@@ -176,7 +179,7 @@ export const useReviewPromptStore = create(
          */
         dismiss: () => {
             const { candidate, step } = get();
-            set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [] });
+            set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
             if (candidate) {
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
@@ -189,7 +192,11 @@ export const useReviewPromptStore = create(
                     },
                 });
                 trpc.review.dismissReview
-                    .mutate({ professorId: candidate.professorId, courseId: candidate.courseId })
+                    .mutate({
+                        professorId: candidate.professorId,
+                        courseId: candidate.courseId,
+                        term: candidate.term,
+                    })
                     .catch(() => {
                         // Non-fatal — worst case the user is prompted again on the next session.
                     });
@@ -199,6 +206,8 @@ export const useReviewPromptStore = create(
         setRating: (rating: number) => set({ rating }),
 
         setDifficulty: (difficulty: number) => set({ difficulty }),
+
+        setTextReview: (textReview: string) => set({ textReview }),
 
         toggleTag: (tag: ReviewTag) => {
             const { selectedTags } = get();
@@ -210,8 +219,10 @@ export const useReviewPromptStore = create(
         },
 
         submitReview: async () => {
-            const { candidate, rating, difficulty, selectedTags } = get();
+            const { candidate, rating, difficulty, selectedTags, textReview } = get();
             if (!candidate || rating === 0 || difficulty === 0) return;
+
+            const trimmedReview = textReview.trim();
 
             try {
                 await trpc.review.submitReview.mutate({
@@ -221,8 +232,9 @@ export const useReviewPromptStore = create(
                     rating,
                     difficulty,
                     tags: selectedTags,
+                    content: trimmedReview || undefined,
                 });
-                set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [] });
+                set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
                     action: analyticsEnum.review.actions.SUBMITTED,

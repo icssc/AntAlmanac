@@ -8,13 +8,19 @@ import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/Label
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+<<<<<<< vz/multi-ge-search
 import { replaceUrlSearchParams, safeUnreachableCase } from '$lib/utils';
+=======
+import { safeUnreachableCase } from '$lib/utils';
+import { usePlannerStore } from '$stores/PlannerStore';
+>>>>>>> main
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 type InputEvent =
     | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -73,11 +79,15 @@ export function AdvancedSearchTextFields() {
     const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
-    const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
-    const isLoggedIn = useSessionStore((s) => s.googleId !== null);
+    const { plannerRoadmaps, updateTakenCourses } = usePlannerStore(
+        useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, updateTakenCourses: s.updateTakenCourses }))
+    );
+    const { sessionIsValid, googleId } = useSessionStore(
+        useShallow((s) => ({ sessionIsValid: s.sessionIsValid, googleId: s.googleId }))
+    );
     const [signInOpen, setSignInOpen] = useState(false);
 
-    const resetField = useCallback(() => {
+    const syncFieldStates = useCallback(() => {
         const formData = RightPaneStore.getFormData();
         setInstructor(formData.instructor);
         setUnits(formData.units);
@@ -93,12 +103,14 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
+        RightPaneStore.on('formDataChange', syncFieldStates);
+        RightPaneStore.on('formReset', syncFieldStates);
 
         return () => {
-            RightPaneStore.removeListener('formReset', resetField);
+            RightPaneStore.removeListener('formDataChange', syncFieldStates);
+            RightPaneStore.removeListener('formReset', syncFieldStates);
         };
-    }, [resetField]);
+    }, [syncFieldStates]);
 
     const updateValue = (name: AdvancedSearchParam, stringValue: string) => {
         replaceUrlSearchParams((params) => {
@@ -197,10 +209,16 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        if (!excludeRoadmapCourses) return;
-        if (!roadmaps || roadmaps.length === 0) return;
+        if (!googleId) {
+            return;
+        }
 
-        const exists = roadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
+        updateTakenCourses(googleId, excludeRoadmapCourses);
+
+        if (!excludeRoadmapCourses) return;
+        if (!plannerRoadmaps || plannerRoadmaps.length === 0) return;
+
+        const exists = plannerRoadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
 
         if (!exists) {
             openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
@@ -208,7 +226,7 @@ export function AdvancedSearchTextFields() {
             RightPaneStore.updateFormValue('excludeRoadmapCourses', '');
             replaceUrlSearchParams((params) => params.delete('excludeRoadmapCourses'));
         }
-    }, [roadmaps, excludeRoadmapCourses]);
+    }, [plannerRoadmaps, excludeRoadmapCourses]);
 
     return (
         <>
@@ -407,14 +425,14 @@ export function AdvancedSearchTextFields() {
                                 width: '100%',
                             },
                             onOpen: () => {
-                                if (!isLoggedIn) {
+                                if (!sessionIsValid) {
                                     setSignInOpen(true);
                                 }
                             },
-                            open: !isLoggedIn ? false : undefined,
+                            open: !sessionIsValid ? false : undefined,
                         }}
                     >
-                        {getRoadmapMenuItems({ isLoggedIn, roadmaps })}
+                        {getRoadmapMenuItems({ isLoggedIn: sessionIsValid, roadmaps: plannerRoadmaps })}
                     </LabeledSelect>
 
                     <LabeledSelect
