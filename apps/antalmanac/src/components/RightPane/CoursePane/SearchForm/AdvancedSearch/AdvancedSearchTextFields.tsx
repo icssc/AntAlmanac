@@ -8,12 +8,8 @@ import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/Label
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-<<<<<<< vz/multi-ge-search
 import { replaceUrlSearchParams, safeUnreachableCase } from '$lib/utils';
-=======
-import { safeUnreachableCase } from '$lib/utils';
 import { usePlannerStore } from '$stores/PlannerStore';
->>>>>>> main
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
