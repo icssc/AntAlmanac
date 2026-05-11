@@ -1,6 +1,4 @@
-import createFetchClient, { type Middleware } from 'openapi-fetch';
-
-import type { paths } from '../types/generated/anteater-api-types';
+import type { paths } from '$types/generated/anteater-api-types';
 import type {
     AggregateGrades,
     AggregateGradesByOffering,
@@ -13,11 +11,24 @@ import type {
     WebsocAPIResponse,
     WebsocSyllabiResponse,
     WebsocTerm,
-} from '../types/index';
+} from '$types/index';
+import createFetchClient, { type Middleware } from 'openapi-fetch';
+
+export class AAPIError extends Error {
+    constructor(
+        message: string,
+        public readonly status?: number
+    ) {
+        super(message);
+        this.name = 'AAPIError';
+    }
+}
 
 const BASE_URL = 'https://anteaterapi.com';
 
-export type AAPIClientOptions = { apiKey?: string };
+export interface AAPIClientOptions {
+    apiKey?: string;
+}
 
 export function createClient({ apiKey }: AAPIClientOptions = {}) {
     const http = createFetchClient<paths>({ baseUrl: BASE_URL });
@@ -38,7 +49,10 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 params: NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']>
             ): Promise<WebsocAPIResponse> {
                 const { data, error } = await http.GET('/v2/rest/websoc', { params: { query: params } });
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
 
@@ -46,13 +60,19 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 params: NonNullable<paths['/v2/rest/websoc/syllabi']['get']['parameters']['query']>
             ): Promise<WebsocSyllabiResponse> {
                 const { data, error } = await http.GET('/v2/rest/websoc/syllabi', { params: { query: params } });
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
 
             async getTerms(): Promise<WebsocTerm[]> {
                 const { data, error } = await http.GET('/v2/rest/websoc/terms', {});
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
 
@@ -62,7 +82,10 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 const { data, error } = await http.GET('/v2/rest/websoc/departments', {
                     params: { query: params },
                 });
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
         },
@@ -72,7 +95,10 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 const { data, error } = await http.GET('/v2/rest/courses/{id}', {
                     params: { path: { id } },
                 });
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
 
@@ -80,7 +106,10 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 const { data, error } = await http.GET('/v2/rest/courses/batch', {
                     params: { query: { ids: ids.join(',') } },
                 });
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
 
@@ -88,7 +117,10 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 params: NonNullable<paths['/v2/rest/courses']['get']['parameters']['query']>
             ): Promise<CoursesFilteredAPIResult['data']> {
                 const { data, error } = await http.GET('/v2/rest/courses', { params: { query: params } });
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
         },
@@ -100,7 +132,10 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 const { data, error } = await http.GET('/v2/rest/grades/aggregate', {
                     params: { query: params },
                 });
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
 
@@ -110,7 +145,10 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 const { data, error } = await http.GET('/v2/rest/grades/aggregateByOffering', {
                     params: { query: params },
                 });
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
         },
@@ -122,7 +160,10 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 const { data, error } = await http.GET('/v2/rest/enrollmentHistory', {
                     params: { query: params },
                 });
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
         },
@@ -130,7 +171,10 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
         calendar: {
             async all(): Promise<CalendarAllAPIResult['data']> {
                 const { data, error } = await http.GET('/v2/rest/calendar/all', {});
-                if (error || !data) throw new Error(`Anteater API error: ${JSON.stringify(error)}`);
+                if (error || !data) {
+                    throw new AAPIError(JSON.stringify(error));
+                }
+
                 return data.data;
             },
         },

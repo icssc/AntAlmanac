@@ -1,11 +1,10 @@
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
-import type { AggregateGradesAPIResult, AggregateGradesByOfferingAPIResult } from '@packages/antalmanac-types';
+import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import { z } from 'zod';
 
-import { procedure, router } from '../trpc';
+import { router } from '../trpc';
 
 const gradesRouter = router({
-    aggregateGrades: procedure
+    aggregateGrades: aapiProcedure
         .input(
             z.object({
                 department: z.string().optional(),
@@ -14,15 +13,10 @@ const gradesRouter = router({
                 ge: z.string().optional(),
             })
         )
-        .query(async ({ input }) => {
-            const result = await fetchAnteaterAPI<AggregateGradesAPIResult>(
-                `https://anteaterapi.com/v2/rest/grades/aggregate?${new URLSearchParams(input)}`,
-                { errorType: 'trpc' }
-            );
-            return result.data;
-        }),
-    // This is a "mutation" because we don't want tRPC to batch it with the query for WebSoc data.
-    aggregateByOffering: procedure
+        .query(({ input }) => aapiClient.grades.aggregate(input)),
+
+    // Mutation so tRPC doesn't batch it with concurrent WebSOC queries.
+    aggregateByOffering: aapiProcedure
         .input(
             z
                 .object({
@@ -36,15 +30,7 @@ const gradesRouter = router({
                     return ge === undefined ? { department: dept, ...rest } : { department: dept, ge, ...rest };
                 })
         )
-        .mutation(async ({ input }) => {
-            const result = await fetchAnteaterAPI<AggregateGradesByOfferingAPIResult>(
-                `https://anteaterapi.com/v2/rest/grades/aggregateByOffering?${new URLSearchParams(
-                    input as Record<string, string>
-                )}`,
-                { errorType: 'trpc' }
-            );
-            return result.data;
-        }),
+        .mutation(({ input }) => aapiClient.grades.aggregateByOffering(input)),
 });
 
 export default gradesRouter;

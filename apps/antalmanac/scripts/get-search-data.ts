@@ -3,20 +3,17 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { canTermEnrollmentChange } from '$lib/termData';
-import type {
-    Course,
-    CourseSearchResult,
-    DepartmentSearchResult,
-    CoursesFilteredAPIResult,
-} from '@packages/antalmanac-types';
-import type { WebsocAPIResponse, WebsocAPIResult, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
+import type { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
+import { createClient } from '@packages/anteater-api/client';
+import type { WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
-import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
 
 import 'dotenv/config';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 const MAX_COURSES = 10_000;
 const DELAY_MS = 500; // avoid rate limits from AAPI
@@ -33,24 +30,24 @@ function catalogCourseKey(department: string, courseNumber: string) {
 }
 
 function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
-    const out = new Map<
-        string,
-        Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
-    >();
-    for (const school of data.schools) {
-        for (const dept of school.departments) {
-            for (const wsCourse of dept.courses) {
-                const key = catalogCourseKey(dept.deptCode, wsCourse.courseNumber);
-                out.set(key, {
-                    deptCode: dept.deptCode,
-                    deptName: dept.deptName,
-                    courseNumber: wsCourse.courseNumber,
-                    courseTitle: wsCourse.courseTitle,
-                });
-            }
-        }
-    }
-    return out;
+    return new Map(
+        data.schools.flatMap((school) =>
+            school.departments.flatMap((dept) =>
+                dept.courses.map(
+                    (course) =>
+                        [
+                            catalogCourseKey(dept.deptCode, course.courseNumber),
+                            {
+                                deptCode: dept.deptCode,
+                                deptName: dept.deptName,
+                                courseNumber: course.courseNumber,
+                                courseTitle: course.courseTitle,
+                            },
+                        ] as const
+                )
+            )
+        )
+    );
 }
 
 async function main() {
@@ -61,11 +58,8 @@ async function main() {
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];
     for (let skip = 0; skip < MAX_COURSES; skip += 100) {
-        const data = await fetchAnteaterAPI<CoursesFilteredAPIResult>(
-            `https://anteaterapi.com/v2/rest/courses?take=100&skip=${skip}`,
-            { isApiKeyRequired: true }
-        );
-        courses.push(...data.data);
+        const batch = await aapiClient.courses.list({ take: 100, skip });
+        courses.push(...batch);
     }
     console.log(`Fetched ${courses.length} courses.`);
     const courseMap = new Map<string, CourseSearchResult & { id: string }>();
@@ -117,14 +111,11 @@ async function main() {
                 await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
             }
             const [year, quarter] = activeTerms[i].shortName.split(' ');
-            const websocRest = await fetchAnteaterAPI<WebsocAPIResult>(
-                `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams({
-                    year,
-                    quarter,
-                }).toString()}`,
-                { isApiKeyRequired: true }
-            );
-            const chunk = getWebsocCoursesFromResponse(websocRest.data);
+            const websocData = await aapiClient.websoc.query({
+                year,
+                quarter,
+            } as Parameters<typeof aapiClient.websoc.query>[0]);
+            const chunk = getWebsocCoursesFromResponse(websocData);
             for (const [key, course] of chunk) {
                 fromWebsoc.set(key, course);
             }
@@ -201,7 +192,7 @@ async function main() {
             await new Promise((resolve) => setTimeout(resolve, DELAY_MS * index));
 
             const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
-            const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
+            const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
 
             if (!res) {
                 throw new Error(`Error fetching section codes for ${term.shortName}.`);

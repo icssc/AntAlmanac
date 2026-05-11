@@ -2,14 +2,13 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { createClient } from '@packages/anteater-api/client';
+import type { WebsocTerm } from '@packages/anteater-api/types';
+import { flattenSections } from '@packages/anteater-api/utils';
 import 'dotenv/config';
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
-import { WebsocAPIResult, WebsocTerm, WebsocTermsAPIResult } from '@packages/antalmanac-types';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const TERMS_URL = 'https://anteaterapi.com/v2/rest/websoc/terms';
-const WEBSOC_URL = 'https://anteaterapi.com/v2/rest/websoc';
 const OUTPUT_PATH = resolve(__dirname, '../src/generated/deployed_terms.json');
 
 interface DeployedTermsData {
@@ -19,39 +18,29 @@ interface DeployedTermsData {
     reason?: string;
 }
 
+const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
+
 async function getSectionCount(term: WebsocTerm) {
     const [year, quarter] = term.shortName.split(' ');
-    console.log(`Checking section count for ${year} ${quarter} from ${WEBSOC_URL}...`);
-
-    const params = new URLSearchParams({ year, quarter });
-    const json = await fetchAnteaterAPI<WebsocAPIResult>(`${WEBSOC_URL}?${params.toString()}`, {
-        isApiKeyRequired: true,
-    });
-
-    let count = 0;
-    for (const school of json.data.schools) {
-        for (const dept of school.departments) {
-            for (const course of dept.courses) {
-                count += course.sections.length;
-            }
-        }
-    }
-    return count;
+    console.log(`Checking section count for ${year} ${quarter}...`);
+    const response = await aapiClient.websoc.query({
+        year,
+        quarter,
+    } as Parameters<typeof aapiClient.websoc.query>[0]);
+    return flattenSections(response).length;
 }
 
 async function updateTerms() {
     try {
-        console.log(`Fetching terms from ${TERMS_URL}...`);
-        const termsJson = await fetchAnteaterAPI<WebsocTermsAPIResult>(TERMS_URL, { isApiKeyRequired: true });
+        console.log('Fetching terms from Anteater API...');
+        const terms = await aapiClient.websoc.getTerms();
 
-        const data = termsJson.data;
-
-        if (!data || data.length === 0) {
+        if (!terms || terms.length === 0) {
             throw new Error('API returned empty term data');
         }
 
-        const latestTerm = data[0].longName;
-        const currentCount = await getSectionCount(data[0]);
+        const latestTerm = terms[0].longName;
+        const currentCount = await getSectionCount(terms[0]);
 
         console.log(`Latest term from API: ${latestTerm}`);
         console.log(`Total sections from API: ${currentCount}`);
