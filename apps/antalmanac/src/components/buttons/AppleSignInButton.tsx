@@ -10,10 +10,14 @@ interface AppleSignInButtonProps {
 /**
  * Sign in with Apple button.
  *
- * Per Apple's Human Interface Guidelines, the button must use black text/logo
- * on a white background, or white text/logo on a black background — no other
- * color combinations are permitted.
+ * Apple HIG defines three permitted styles: black, white, and white-outline.
+ * No gray or colored combinations are allowed — hover states must stay within
+ * the same black/white family as the resting state.
  *   https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple
+ *   https://developer.apple.com/documentation/authenticationservices/signinwithapplebutton/style
+ *
+ * Dark mode  → white style: #FFFFFF bg, #000000 text, #F5F5F5 on hover.
+ * Light mode → black style: #000000 bg, #FFFFFF text, #1A1A1A on hover.
  */
 export const AppleSignInButton = ({ onClick, fullWidth }: AppleSignInButtonProps) => {
     const isDark = useThemeStore((store) => store.isDark);
@@ -28,7 +32,7 @@ export const AppleSignInButton = ({ onClick, fullWidth }: AppleSignInButtonProps
                 backgroundColor: isDark ? '#fff' : '#000',
                 color: isDark ? '#000' : '#fff',
                 '&:hover': {
-                    backgroundColor: isDark ? '#e0e0e0' : '#333',
+                    backgroundColor: isDark ? '#f5f5f5' : '#1a1a1a',
                 },
             }}
         >
