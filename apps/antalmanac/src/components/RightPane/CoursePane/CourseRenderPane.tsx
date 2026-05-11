@@ -323,7 +323,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
-    const filterTakenCourses = useSessionStore((store) => store.filterTakenCourses);
+    const { filterTakenCourses } = usePlannerStore.getState();
 
     const getQueryParams = useCallback((searchData: CourseSearchParams) => {
         const websocQueryParams = {
