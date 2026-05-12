@@ -14,9 +14,9 @@ import {
 import { PostHog } from 'posthog-js/react';
 import { create } from 'zustand';
 
-export type ThemeSetting = 'light' | 'dark' | 'system';
+type ThemeSetting = 'light' | 'dark' | 'system';
 
-export interface ThemeStore {
+interface ThemeStore {
     /**
      * The 'raw' theme, based on the user's selected setting
      */
@@ -60,7 +60,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
     };
 });
 
-export interface TimeFormatStore {
+interface TimeFormatStore {
     isMilitaryTime: boolean;
     setTimeFormat: (militaryTime: boolean) => void;
 }
@@ -78,7 +78,7 @@ export const useTimeFormatStore = create<TimeFormatStore>((set) => {
         },
     };
 });
-export interface PreviewStore {
+interface PreviewStore {
     previewMode: boolean;
     setPreviewMode: (previewMode: boolean) => void;
 }
@@ -98,7 +98,7 @@ export const usePreviewStore = create<PreviewStore>((set) => {
     };
 });
 
-export interface AutoSaveStore {
+interface AutoSaveStore {
     autoSave: boolean;
     setAutoSave: (autoSave: boolean) => void;
 }
@@ -117,7 +117,7 @@ export const useAutoSaveStore = create<AutoSaveStore>((set) => {
     };
 });
 
-export interface DevModeStore {
+interface DevModeStore {
     devMode: boolean;
     setDevMode: (devMode: boolean) => void;
 }

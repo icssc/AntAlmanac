@@ -37,12 +37,7 @@ const defaultFormValues: Record<ManualSearchParam, string> = {
 };
 
 export type CourseSearchParams = typeof defaultFormValues;
-export type CourseSearchParamKey = keyof CourseSearchParams;
-
-export interface BuildingFocusInfo {
-    location: string; // E.g., ICS 174
-    courseName: string;
-}
+type CourseSearchParamKey = keyof CourseSearchParams;
 
 export enum CourseSearchWarningType {
     TermUnavailable = 'termUnavailable',

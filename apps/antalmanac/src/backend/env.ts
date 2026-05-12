@@ -15,21 +15,21 @@ export const oidcOAuthEnvSchema = z.object({
 /**
  * Environment variables required by the backend to connect to the RDS instance.
  */
-export const rdsEnvSchema = z.object({
+const rdsEnvSchema = z.object({
     DB_URL: z.string(),
 });
 
 /**
  * Environment variables required by the backend to connect to the Mapbox API.
  */
-export const mapboxEnvSchema = z.object({
+const mapboxEnvSchema = z.object({
     MAPBOX_ACCESS_TOKEN: z.string(),
 });
 
 /**
  * Environment variables required by the backend to connect to the Anteater API.
  */
-export const aapiEnvSchema = z.object({
+const aapiEnvSchema = z.object({
     ANTEATER_API_KEY: z.string(),
 });
 
@@ -44,7 +44,7 @@ export const plannerEnvSchema = z.object({
  * STAGE: "production" on production; staging instance on staging (e.g. "staging-1337").
  * Used to set subscription.environment so only that AANTS instance sends emails.
  */
-export const stagingEnvSchema = z.object({
+const stagingEnvSchema = z.object({
     STAGE: z.string().optional(),
 });
 

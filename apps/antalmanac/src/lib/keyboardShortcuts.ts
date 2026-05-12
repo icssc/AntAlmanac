@@ -4,7 +4,7 @@
  */
 export type ShortcutKey = { type: 'key'; label: string } | { type: 'mod'; mac: string; other: string };
 
-export interface ShortcutItem {
+interface ShortcutItem {
     /** Short label for the key combo (e.g. "⌘ Z") — used for aria; built from keys on render */
     id: string;
     description: string;
@@ -13,7 +13,7 @@ export interface ShortcutItem {
 
 export type ShortcutSectionIcon = 'general' | 'search' | 'dialogs';
 
-export interface ShortcutSection {
+interface ShortcutSection {
     title: string;
     icon: ShortcutSectionIcon;
     items: ShortcutItem[];
