@@ -1,4 +1,5 @@
 export * from './schedule';
+export * from './grades';
 export * from './customEvent';
 export * from './courseData';
 export * from './user';

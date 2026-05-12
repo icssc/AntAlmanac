@@ -1,4 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
+import { GradesGeSchema } from '@packages/antalmanac-types';
 import type { AggregateGrades, AggregateGradesByOffering } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
@@ -11,7 +12,7 @@ const gradesRouter = router({
                 department: z.string().optional(),
                 courseNumber: z.string().optional(),
                 instructor: z.string().optional(),
-                ge: z.string().optional(),
+                ge: GradesGeSchema.optional(),
             })
         )
         .query(({ input }): Promise<AggregateGrades> => aapiClient.grades.aggregate(input)),
@@ -24,7 +25,7 @@ const gradesRouter = router({
                     department: z.string().optional(),
                     courseNumber: z.string().optional(),
                     instructor: z.string().optional(),
-                    ge: z.string().optional(),
+                    ge: GradesGeSchema.optional(),
                 })
                 .transform(({ department, ge, ...rest }) => {
                     const dept = department?.toUpperCase();
