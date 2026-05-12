@@ -29,15 +29,8 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
-import {
-    AACourse,
-    AASection,
-    WebsocDepartment,
-    WebsocSchool,
-    WebsocAPIResponse,
-    WebsocSectionType,
-    GE,
-} from '@packages/antalmanac-types';
+import { AACourse, AASection } from '@packages/antalmanac-types';
+import { GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool, WebsocSectionType } from '@packages/anteater-api/types';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';

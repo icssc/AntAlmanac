@@ -2,7 +2,8 @@ import { Notifications } from '$lib/notifications';
 import { WebSOC } from '$lib/websoc';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
-import type { AASection, Course, CourseInfo } from '@packages/antalmanac-types';
+import type { AASection, CourseInfo } from '@packages/antalmanac-types';
+import type { Course } from '@packages/anteater-api/types';
 import { create } from 'zustand';
 
 export type NotifyOn = {

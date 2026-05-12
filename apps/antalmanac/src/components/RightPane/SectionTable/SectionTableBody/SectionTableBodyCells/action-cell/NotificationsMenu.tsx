@@ -5,7 +5,8 @@ import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
-import type { AASection, Course } from '@packages/antalmanac-types';
+import type { AASection } from '@packages/antalmanac-types';
+import type { Course } from '@packages/anteater-api/types';
 import { memo, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
