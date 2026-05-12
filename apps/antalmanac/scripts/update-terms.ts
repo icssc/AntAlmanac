@@ -1,4 +1,4 @@
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -45,8 +45,8 @@ async function updateTerms() {
 
         let deployedData: DeployedTermsData = { latestTerm: '', sectionCount: 0 };
 
-        if (existsSync(OUTPUT_PATH)) {
-            const currentFile = readFileSync(OUTPUT_PATH, 'utf-8');
+        try {
+            const currentFile = await readFile(OUTPUT_PATH, 'utf-8');
             try {
                 deployedData = JSON.parse(currentFile);
             } catch {
@@ -54,9 +54,12 @@ async function updateTerms() {
             }
             console.log(`Current deployed term: ${deployedData.latestTerm}`);
             console.log(`Current deployed section count: ${deployedData.sectionCount}`);
-        } else {
+        } catch (e) {
+            if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+                throw e;
+            }
             console.log('No existing deployed_terms.json found.');
-            mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
+            await mkdir(dirname(OUTPUT_PATH), { recursive: true });
         }
 
         const termChanged = latestTerm !== deployedData.latestTerm;
@@ -74,7 +77,7 @@ async function updateTerms() {
                 updatedAt: new Date().toISOString(),
                 reason: reasons,
             };
-            writeFileSync(OUTPUT_PATH, JSON.stringify(newData, null, 2));
+            await writeFile(OUTPUT_PATH, JSON.stringify(newData, null, 2), 'utf-8');
             console.log(`Updated ${OUTPUT_PATH}`);
         } else {
             console.log('Terms and section count are up to date. No changes needed.');

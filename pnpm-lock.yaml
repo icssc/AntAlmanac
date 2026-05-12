@@ -161,9 +161,6 @@ importers:
       '@trpc/server':
         specifier: ^11.0.0
         version: 11.17.0(typescript@5.9.3)
-      archiver:
-        specifier: ^6.0.2
-        version: 6.0.2
       arctic:
         specifier: ^3.7.0
         version: 3.7.0
@@ -303,6 +300,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.0.4
         version: 4.3.3(vite@4.5.5(@types/node@22.19.17)(stylus@0.51.1)(terser@5.46.2))
+      archiver:
+        specifier: ^6.0.2
+        version: 6.0.2
       aws-sdk:
         specifier: ^2.1550.0
         version: 2.1692.0
