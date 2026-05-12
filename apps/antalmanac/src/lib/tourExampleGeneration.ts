@@ -1,6 +1,6 @@
-import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
-
 import AppStore from '$stores/AppStore';
+import { ScheduleCourse } from '@packages/antalmanac-types';
+import { HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/anteater-api/types';
 
 const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
 let sampleClassesSectionCodes: Array<string> = [];

@@ -1,13 +1,8 @@
-import type {
-    ScheduleCourse,
-    RepeatingCustomEvent,
-    HourMinute,
-    WebsocSectionFinalExam,
-} from '@packages/antalmanac-types';
-
 import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getFinalsStartDateForTerm } from '$lib/termData';
 import { notNull, getReferencesOccurring } from '$lib/utils';
+import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { HourMinute, WebsocSectionFinalExam } from '@packages/anteater-api/types';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
@@ -120,8 +115,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             const locationsWithNoDays = bldg
                 ? bldg.map(getLocation)
                 : !course.section.meetings[0].timeIsTBA
-                ? course.section.meetings[0].bldg.map(getLocation)
-                : [];
+                  ? course.section.meetings[0].bldg.map(getLocation)
+                  : [];
 
             /**
              * Fallback to January 2018 if no finals start date is available.
