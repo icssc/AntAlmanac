@@ -112,12 +112,7 @@ const AuthInitializer = () => {
                 try {
                     setOpenLoadingSchedule(true);
 
-                    const isSessionValid = await updateSession(sessionData);
-                    if (!isSessionValid) {
-                        setOpenAlert(true);
-                        setHasCheckedAuth(true);
-                        return;
-                    }
+                    await updateSession(sessionData);
 
                     setSsoCookie();
                     setHasCheckedAuth(true);

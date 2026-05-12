@@ -13,6 +13,7 @@ const { OIDC_CLIENT_ID, OIDC_ISSUER_URL, BETTER_AUTH_URL } = oidcOAuthEnvSchema.
 
 export interface AuthAdditionalData {
     returnUrl?: string;
+    provider?: string;
 }
 
 export const auth = betterAuth({
@@ -35,6 +36,21 @@ export const auth = betterAuth({
                 }
             }
         }),
+    },
+    databaseHooks: {
+        account: {
+            create: {
+                before: async (account) => {
+                    const additionalData = (await getOAuthState()) as AuthAdditionalData | null;
+                    return {
+                        data: {
+                            ...account,
+                            accountType: additionalData?.provider ?? 'OIDC',
+                        },
+                    };
+                },
+            },
+        },
     },
     plugins: [
         genericOAuth({
@@ -64,9 +80,9 @@ export const auth = betterAuth({
         additionalFields: {
             accountType: {
                 type: 'string',
-                required: false,
+                required: true,
                 defaultValue: 'OIDC',
-                input: false,
+                input: true,
             },
         },
     },

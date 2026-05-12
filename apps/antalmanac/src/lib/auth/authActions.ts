@@ -3,6 +3,7 @@
 import { auth, AuthAdditionalData, AuthorizationUrlParams } from '$lib/auth/auth';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { Provider } from '$lib/auth/authTypes';
+import { getIcsscProviderName } from '$lib/auth/authUtils';
 import { headers } from 'next/headers';
 
 interface GetSignInUrlOptions {
@@ -22,6 +23,7 @@ export async function getSignInUrl(
             callbackURL: redirectUrl,
             additionalData: {
                 returnUrl,
+                provider,
             } satisfies AuthAdditionalData,
         },
     });
@@ -29,7 +31,7 @@ export async function getSignInUrl(
     for (const [key, val] of Object.entries(authorizationUrlParams ?? {})) {
         authUrl.searchParams.set(key, val);
     }
-    authUrl.searchParams.set('provider', provider.toLowerCase());
+    authUrl.searchParams.set('provider', getIcsscProviderName(provider));
     return authUrl.toString();
 }
 
@@ -42,7 +44,7 @@ export async function fetchGoogleAccount() {
         const [account] = accounts;
         return account;
     } catch (error) {
-        console.error('Error occurred while getting account info:', error);
+        console.error('Error occurred while fetching account info:', error);
         return null;
     }
 }

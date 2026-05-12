@@ -12,7 +12,7 @@ interface SessionState {
     name: string | null;
     avatar: string | null;
     sessionIsValid: boolean;
-    updateSession: (session: SessionData) => Promise<boolean>;
+    updateSession: (session: SessionData) => Promise<void>;
 
     hasCheckedAuth: boolean;
     setHasCheckedAuth: (hasCheckedAuth: boolean) => void;
@@ -45,13 +45,11 @@ export const useSessionStore = create<SessionState>((set) => {
 
         updateSession: async (sessionData: SessionData) => {
             const accountInfo = await getGoogleAccount();
-            if (!accountInfo) {
-                return false;
+
+            const googleId = accountInfo?.accountId;
+            if (googleId) {
+                usePlannerStore.getState().loadPlannerRoadmaps(googleId);
             }
-
-            const googleId = accountInfo.accountId;
-
-            usePlannerStore.getState().loadPlannerRoadmaps(googleId);
 
             set({
                 session: sessionData.session,
@@ -65,7 +63,6 @@ export const useSessionStore = create<SessionState>((set) => {
                 name: sessionData.user.name,
                 avatar: sessionData.user.avatar,
             });
-            return true;
         },
 
         setHasCheckedAuth: (hasCheckedAuth) => set({ hasCheckedAuth }),

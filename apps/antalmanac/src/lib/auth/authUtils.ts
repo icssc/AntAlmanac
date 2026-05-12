@@ -61,3 +61,15 @@ export function getProviderDisplayName(provider: Provider) {
             return '';
     }
 }
+
+export function getIcsscProviderName(provider: Provider) {
+    switch (provider) {
+        case Provider.Google:
+            return 'google';
+        case Provider.Apple:
+            return 'apple';
+        default:
+            console.error('Unrecognized provider:', provider);
+            return '';
+    }
+}
