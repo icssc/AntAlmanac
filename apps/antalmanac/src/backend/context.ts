@@ -9,6 +9,7 @@ export const createContext = async (opts: FetchCreateContextFnOptions) => {
         req: opts.req,
         resHeaders: opts.resHeaders,
         userId: sessionData?.user.id,
+        userEmail: sessionData?.user.email,
         sessionToken: sessionData?.session?.token,
     };
 };

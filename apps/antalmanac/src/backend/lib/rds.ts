@@ -55,21 +55,6 @@ export class RDS {
             .then((res) => res[0] ?? null);
     }
 
-    /**
-     * Retrieves a user by their ID from the database.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The ID of the user to retrieve.
-     * @returns A promise that resolves to the user object if found, otherwise undefined.
-     */
-    static async getUserById(db: DatabaseOrTransaction, userId: string) {
-        return db
-            .select()
-            .from(users)
-            .where(eq(users.id, userId))
-            .then((res) => res[0]);
-    }
-
     static async getUserByEmail(db: DatabaseOrTransaction, email: string) {
         return db
             .select()
