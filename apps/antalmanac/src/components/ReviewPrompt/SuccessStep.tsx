@@ -11,7 +11,6 @@ export function SuccessStep() {
     const eligibleIndex = useReviewPromptStore((s) => s.eligibleIndex);
     const advanceToNext = useReviewPromptStore((s) => s.advanceToNext);
     const finishReviewing = useReviewPromptStore((s) => s.finishReviewing);
-    const dismiss = useReviewPromptStore((s) => s.dismiss);
 
     const hasMore = eligibleIndex + 1 < eligibleCandidates.length;
 
@@ -24,7 +23,7 @@ export function SuccessStep() {
                     </Typography>
                 }
                 action={
-                    <IconButton size="small" onClick={dismiss} aria-label="close">
+                    <IconButton size="small" onClick={finishReviewing} aria-label="close">
                         <Close fontSize="small" />
                     </IconButton>
                 }
@@ -44,15 +43,15 @@ export function SuccessStep() {
             </CardContent>
 
             <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
+                <Button size="small" color="inherit" onClick={finishReviewing}>
+                    Done
+                </Button>
+
                 {hasMore && (
                     <Button size="small" variant="contained" onClick={advanceToNext}>
                         Review another course
                     </Button>
                 )}
-
-                <Button size="small" color="inherit" onClick={finishReviewing} sx={{ px: 4 }}>
-                    Done
-                </Button>
             </CardActions>
         </>
     );
