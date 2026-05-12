@@ -1,9 +1,8 @@
+import { SortableItemContext } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
+import { useThemeStore } from '$stores/SettingsStore';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { useContext } from 'react';
-
-import { SortableItemContext } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
 
 interface DragHandleProps {
     disabled?: boolean;
@@ -11,7 +10,7 @@ interface DragHandleProps {
 
 export function DragHandle({ disabled = false }: DragHandleProps) {
     const { attributes, listeners, ref } = useContext(SortableItemContext);
-    const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
 
     return (
         <Box
@@ -34,7 +33,7 @@ export function DragHandle({ disabled = false }: DragHandleProps) {
         >
             <DragIndicatorIcon
                 sx={{
-                    color: disabled ? 'gray' : theme.palette.mode === 'light' ? 'black' : 'white',
+                    color: disabled ? 'gray' : !isDark ? 'black' : 'white',
                 }}
             />
         </Box>

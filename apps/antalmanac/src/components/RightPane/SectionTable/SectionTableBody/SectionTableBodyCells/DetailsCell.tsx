@@ -30,7 +30,7 @@ export const DetailsCell = ({ sectionType, sectionNum, units, sx }: DetailCellPr
         <TableBodyCellContainer sx={sx}>
             <Box sx={SECTION_COLORS[sectionType]}>{sectionType}</Box>
             <Box>Sec: {sectionNum}</Box>
-            <Box>Units:{units}</Box>
+            <Box>Units: {units}</Box>
         </TableBodyCellContainer>
     );
 };

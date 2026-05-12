@@ -7,10 +7,10 @@
     "type": "module",
     "scripts": {},
     "dependencies": {
-        "@packages/anteater-api-types": "workspace:*",
+        "@packages/anteater-api": "workspace:*",
         "zod": "3.23.8"
     },
     "devDependencies": {
-        "typescript": "5.6.3"
+        "typescript": "^5.7.2"
     }
 }

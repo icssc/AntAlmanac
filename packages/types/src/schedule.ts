@@ -1,4 +1,4 @@
-import { WebsocSectionType } from '@packages/anteater-api-types';
+import { WebsocSectionType } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
 import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customEvent';

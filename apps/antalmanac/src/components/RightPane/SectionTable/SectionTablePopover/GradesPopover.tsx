@@ -1,4 +1,3 @@
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades, type GradesProps } from '$lib/grades';
 import {
     Box,
@@ -70,7 +69,7 @@ export interface GradesPopoverProps {
 
 export function GradesPopover(props: GradesPopoverProps) {
     const theme = useTheme();
-    const secondaryColor = useSecondaryColor();
+    const secondaryColor = theme.palette.secondary.main;
 
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
 

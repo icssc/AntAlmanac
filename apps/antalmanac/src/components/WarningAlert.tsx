@@ -19,11 +19,13 @@ export const WarningAlert = ({ children, closable = false, onClose }: WarningAle
         <Alert
             severity="warning"
             onClose={closable ? handleClose : undefined}
-            sx={{
-                mb: 1,
-                '& .MuiAlert-message': {
-                    display: 'flex',
-                    alignItems: 'center',
+            sx={{ mb: 1 }}
+            slotProps={{
+                message: {
+                    sx: {
+                        display: 'flex',
+                        alignItems: 'center',
+                    },
                 },
             }}
         >

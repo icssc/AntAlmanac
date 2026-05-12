@@ -1,20 +1,19 @@
-import { AccountCircle } from '@mui/icons-material';
-import { Box, Divider, Stack, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { User } from '@packages/antalmanac-types';
-import Image from 'next/image';
-
 import { About } from '$components/Header/About';
 import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
 import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
 import { TimeSelector } from '$components/Header/Settings/TimeSelector';
+import { useThemeStore } from '$stores/SettingsStore';
+import { AccountCircle } from '@mui/icons-material';
+import { Box, Divider, Stack, Typography } from '@mui/material';
+import { User } from '@packages/antalmanac-types';
+import Image from 'next/image';
 
 interface UserProfileSectionProps {
     user: Pick<User, 'name' | 'avatar' | 'email'> | null;
 }
 
 function UserProfileSection({ user }: UserProfileSectionProps) {
-    const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
 
     if (!user) {
         return null;
@@ -50,7 +49,7 @@ function UserProfileSection({ user }: UserProfileSectionProps) {
                 <Typography
                     style={{
                         fontSize: '14px',
-                        color: theme.palette.mode === 'dark' ? '#96969b' : '#606166',
+                        color: isDark ? '#96969b' : '#606166',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         paddingBottom: '4px',

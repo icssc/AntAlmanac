@@ -1,8 +1,7 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import restrictionsMapping from '$components/RightPane/SectionTable/static/restrictionsMapping.json';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
-import { Box, Popover, Tooltip, Typography } from '@mui/material';
+import { Box, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import { Fragment, useCallback, useMemo, useState } from 'react';
 
 interface RestrictionsCellProps {
@@ -11,7 +10,8 @@ interface RestrictionsCellProps {
 
 export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
     const isMobile = useIsMobile();
-    const secondaryColor = useSecondaryColor();
+    const theme = useTheme();
+    const secondaryColor = theme.palette.secondary.main;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const parsedRestrictions = useMemo(
