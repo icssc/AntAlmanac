@@ -12,5 +12,4 @@ export const DEPARTMENTS_FILE = join(GENERATED_DIR, 'departments.json');
 export const SEARCH_DATA_FILE = join(GENERATED_DIR, 'searchData.ts');
 export const DEPLOYED_TERMS_FILE = join(GENERATED_DIR, 'deployed_terms.json');
 export const DIST_DIR = join(appRoot, 'dist');
-export const DIST_TERMS_DIR = join(DIST_DIR, 'terms');
 export const DIST_ZIP = join(appRoot, 'dist.zip');

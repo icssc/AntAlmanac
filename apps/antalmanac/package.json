@@ -15,7 +15,6 @@
         "fetch-term-data": "tsx scripts/fetch-term-data.ts",
         "fetch-departments": "tsx scripts/fetch-departments.ts",
         "get-data": "tsx scripts/fetch-term-data.ts && tsx scripts/fetch-departments.ts && tsx scripts/get-search-data.ts",
-        "move-terms-to-dist": "tsx scripts/move-terms-to-dist.ts",
         "zip-dist": "tsx scripts/zip-dist.ts",
         "update-terms": "tsx scripts/update-terms.ts",
         "build": "next build",
