@@ -183,7 +183,7 @@ export class RDS {
             const result = await db
                 .insert(users)
                 .values({
-                    avatar: avatar ?? '',
+                    avatar: avatar || '',
                     name: name,
                     email: email ?? '',
                 })
@@ -205,7 +205,7 @@ export class RDS {
             .set({
                 name: name,
                 email: email ?? '',
-                avatar: avatar ?? existingUser.avatar,
+                avatar: avatar || existingUser.avatar,
                 lastUpdated: new Date(),
             })
             .where(eq(users.id, existingUser.id));
