@@ -1,6 +1,7 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
+import { z } from 'zod';
 
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
@@ -27,23 +28,29 @@ function parseLocalDate(dateStr: string): Date {
     return new Date(year, month - 1, day);
 }
 
-type RawTerm = {
-    shortName: `${string} ${string}`;
-    longName: string;
-    startDate: string;
-    finalsStartDate: string;
-    socAvailable: string;
-    isSummerTerm: boolean;
-};
+const termSchema = z
+    .object({
+        shortName: z.string().refine((s): s is `${string} ${string}` => s.includes(' '), {
+            message: 'shortName must be "<year> <quarter>"',
+        }),
+        longName: z.string(),
+        startDate: z.string().date(),
+        finalsStartDate: z.string().date(),
+        socAvailable: z.string().date(),
+        isSummerTerm: z.boolean(),
+    })
+    .transform(
+        (t): Term => ({
+            shortName: t.shortName,
+            longName: t.longName,
+            startDate: parseLocalDate(t.startDate),
+            finalsStartDate: parseLocalDate(t.finalsStartDate),
+            socAvailable: parseLocalDate(t.socAvailable),
+            isSummerTerm: t.isSummerTerm,
+        })
+    );
 
-const terms: Term[] = (termJson as RawTerm[]).map((t) => ({
-    shortName: t.shortName,
-    longName: t.longName,
-    startDate: parseLocalDate(t.startDate),
-    finalsStartDate: parseLocalDate(t.finalsStartDate),
-    socAvailable: parseLocalDate(t.socAvailable),
-    isSummerTerm: t.isSummerTerm,
-}));
+const terms: Term[] = z.array(termSchema).parse(termJson);
 
 /**
  * Only include terms that have a SOC available.
