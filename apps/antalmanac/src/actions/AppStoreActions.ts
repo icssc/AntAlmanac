@@ -1,6 +1,7 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
+import { Provider } from '$lib/auth/authTypes';
 import { getAuthReturnUrl } from '$lib/auth/authUtils';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
@@ -399,17 +400,18 @@ const cacheSchedule = () => {
 /**
  * If `signInUrl` is not provided, {@link getSignInUrl} with default params will be used.
  */
-export const loginUser = async ({ silent = false, signInUrl = '', postHog }: LoginUserOptions = {}) => {
+export const loginUser = async (
+    provider: Provider,
+    { silent = false, signInUrl = '', postHog }: LoginUserOptions = {}
+) => {
     try {
         const url =
             signInUrl !== ''
                 ? signInUrl
-                : (
-                      await getSignInUrl({
-                          redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined,
-                          returnUrl: getAuthReturnUrl(),
-                      })
-                  ).url;
+                : await getSignInUrl(provider, {
+                      redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined,
+                      returnUrl: getAuthReturnUrl(),
+                  });
 
         if (url) {
             logAnalytics(postHog, {

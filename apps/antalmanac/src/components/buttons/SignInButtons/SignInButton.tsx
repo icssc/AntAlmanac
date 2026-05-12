@@ -18,7 +18,7 @@ export const SignInButton = ({ icon, provider, fullWidth, sx }: Props) => {
 
     const handleClick = async () => {
         setIsSigningIn(true);
-        await loginUser({ postHog });
+        await loginUser(provider, { postHog });
         setIsSigningIn(false);
     };
 

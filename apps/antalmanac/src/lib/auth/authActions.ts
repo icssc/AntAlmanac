@@ -2,6 +2,7 @@
 
 import { auth, AuthAdditionalData, AuthorizationUrlParams } from '$lib/auth/auth';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
+import { Provider } from '$lib/auth/authTypes';
 import { headers } from 'next/headers';
 
 interface GetSignInUrlOptions {
@@ -10,11 +11,11 @@ interface GetSignInUrlOptions {
     returnUrl?: string;
 }
 
-export async function getSignInUrl({ authorizationUrlParams, redirectUrl, returnUrl }: GetSignInUrlOptions = {}) {
-    // TODO: Remove this hack once better-auth supports dynamic prompts/config
-    auth.options.plugins[0].options.config[0].authorizationUrlParams = authorizationUrlParams;
-
-    return await auth.api.signInWithOAuth2({
+export async function getSignInUrl(
+    provider: Provider,
+    { authorizationUrlParams, redirectUrl, returnUrl }: GetSignInUrlOptions = {}
+) {
+    const { url } = await auth.api.signInWithOAuth2({
         body: {
             providerId: AUTH_PROVIDER_ID,
             newUserCallbackURL: '/welcome',
@@ -24,6 +25,12 @@ export async function getSignInUrl({ authorizationUrlParams, redirectUrl, return
             } satisfies AuthAdditionalData,
         },
     });
+    const authUrl = new URL(url);
+    for (const [key, val] of Object.entries(authorizationUrlParams ?? {})) {
+        authUrl.searchParams.set(key, val);
+    }
+    authUrl.searchParams.set('provider', provider.toLowerCase());
+    return authUrl.toString();
 }
 
 export async function fetchGoogleAccount() {
