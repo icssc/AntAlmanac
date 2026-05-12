@@ -1,4 +1,4 @@
-import type { WebsocAPIResponse, WebsocCourse, WebsocSection } from '$types/index';
+import type { WebsocAPIResponse, WebsocCourse, WebsocSection } from '@packages/anteater-api/types';
 
 function compareCourses(a: WebsocCourse, b: WebsocCourse) {
     const aNum = Number.parseInt(a.courseNumber.replaceAll(/\D/g, ''), 10);

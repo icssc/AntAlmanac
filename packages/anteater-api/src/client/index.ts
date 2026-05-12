@@ -1,4 +1,3 @@
-import type { paths } from '$types/generated/anteater-api-types';
 import type {
     AggregateGrades,
     AggregateGradesByOffering,
@@ -7,11 +6,12 @@ import type {
     CoursesBatchAPIResult,
     CoursesFilteredAPIResult,
     EnrollmentHistory,
+    paths,
     WebsocAPIDepartmentsResponse,
     WebsocAPIResponse,
     WebsocSyllabiResponse,
     WebsocTerm,
-} from '$types/index';
+} from '@packages/anteater-api/types';
 import createFetchClient, { type Middleware } from 'openapi-fetch';
 
 export class AAPIError extends Error {

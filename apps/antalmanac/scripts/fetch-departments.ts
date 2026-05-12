@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { createClient } from '@packages/anteater-api/client';
-import type { WebsocDepartment } from '@packages/anteater-api/types';
+import type { WebsocAPIDepartmentsResponse } from '@packages/anteater-api/types';
 import 'dotenv/config';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -23,7 +23,10 @@ async function main() {
     console.log(`Fetched ${departments.length} departments.`);
 
     const departmentMap = Object.fromEntries(
-        departments.map((dept: WebsocDepartment) => [dept.deptCode, `${dept.deptCode}: ${dept.deptName}`])
+        departments.map((dept: WebsocAPIDepartmentsResponse[number]) => [
+            dept.deptCode,
+            `${dept.deptCode}: ${dept.deptName}`,
+        ])
     );
 
     await mkdir(OUTPUT_DIR, { recursive: true });
