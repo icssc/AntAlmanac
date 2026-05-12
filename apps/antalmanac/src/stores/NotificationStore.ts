@@ -2,7 +2,7 @@ import { Notifications } from '$lib/notifications';
 import { WebSOC } from '$lib/websoc';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
-import type { AASection, CourseInfo } from '@packages/antalmanac-types';
+import { type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
 import type { Course } from '@packages/anteater-api/types';
 import { create } from 'zustand';
 
@@ -21,7 +21,7 @@ export type Notification = {
     courseTitle: Course['title'];
     sectionType: AASection['sectionType'];
     notifyOn: NotifyOn;
-    lastUpdated: string;
+    lastUpdated: AASection['status'] | null;
     lastCodes: string;
     deptCode?: string;
     courseNumber?: string;
@@ -206,6 +206,12 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                         );
 
                         if (existingNotification) {
+                            const storedStatus = existingNotification.lastUpdatedStatus;
+                            const parsedStatus =
+                                storedStatus == null ? undefined : WebsocSectionStatusSchema.safeParse(storedStatus);
+                            const lastUpdatedStatus =
+                                parsedStatus?.success === true ? parsedStatus.data : course.section.status;
+
                             notifications[key] = {
                                 term,
                                 sectionCode,
@@ -219,7 +225,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                     notifyOnFull: existingNotification.notifyOnFull ?? false,
                                     notifyOnRestriction: existingNotification.notifyOnRestriction ?? false,
                                 },
-                                lastUpdated: existingNotification.lastUpdatedStatus ?? course.section.status,
+                                lastUpdated: lastUpdatedStatus,
                                 lastCodes: existingNotification.lastCodes ?? course.section.restrictions,
                                 deptCode: course.courseDetails.deptCode,
                                 courseNumber: course.courseDetails.courseNumber,

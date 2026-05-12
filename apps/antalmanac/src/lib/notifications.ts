@@ -38,10 +38,10 @@ class NotificationsClient {
     async deleteNotification(notification: Notification) {
         const userId = useSessionStore.getState().userId;
         if (userId) {
-            const transformedNotification = _transformNotificationToApiFormat(notification);
             return await trpc.notifications.deleteNotification.mutate({
                 userId,
-                notification: transformedNotification,
+                sectionCode: notification.sectionCode,
+                term: notification.term,
             });
         }
         console.error('No session found to delete notification successfully.');
