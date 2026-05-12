@@ -5,7 +5,6 @@ import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { getErrorMessage } from '$lib/utils';
 import type { auth } from '$src/lib/auth/auth';
-import { useSessionStore } from '$stores/SessionStore';
 import { genericOAuthClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import { PostHog } from 'posthog-js';
@@ -21,20 +20,7 @@ export const authClient = createAuthClient({
 
 export type SessionData = typeof authClient.$Infer.Session;
 
-function cleanupSignOut({ onLogoutComplete }: SignOutOptions = {}) {
-    clearSsoCookie();
-    setWasLoggedIn(false);
-    onLogoutComplete?.();
-}
-
 export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}) {
-    const session = useSessionStore.getState().session;
-    if (!session) {
-        cleanupSignOut({ onLogoutComplete });
-        window.location.reload();
-        return;
-    }
-
     let logoutUrl;
     try {
         logoutUrl = await trpc.auth.getLogoutUrl.query({
@@ -49,7 +35,9 @@ export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}
         console.error('Error getting logout URL', error);
     }
 
-    cleanupSignOut({ onLogoutComplete });
+    clearSsoCookie();
+    setWasLoggedIn(false);
+    onLogoutComplete?.();
 
     const { error } = await authClient.signOut();
     if (error) {
