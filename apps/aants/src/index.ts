@@ -1,10 +1,5 @@
-import type {
-    HourMinute,
-    WebsocAPIResponse,
-    WebsocCourse,
-    WebsocSection,
-    WebsocSectionMeeting,
-} from '@packages/anteater-api-types';
+import type { HourMinute, WebsocCourse, WebsocSection, WebsocSectionMeeting } from '@packages/anteater-api/types';
+import { flattenSectionsWithCourse } from '@packages/anteater-api/utils';
 
 import type { CourseDetails } from './helpers/notificationDispatch';
 import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
@@ -34,11 +29,6 @@ function formatMeetingTime(meeting: WebsocSectionMeeting): string {
     };
 
     return `${formatTime(meeting.startTime)}-${formatTime(meeting.endTime)}`;
-}
-
-interface FlattenedSection {
-    section: WebsocSection;
-    course: WebsocCourse;
 }
 
 interface PreviousState {
@@ -114,18 +104,9 @@ async function processSection(
  */
 async function processBatch(batch: string[], quarter: string, year: string) {
     console.log(`[BATCH] Processing ${batch.length} section codes for ${quarter} ${year}`);
-    const response: WebsocAPIResponse = (await getUpdatedClasses(quarter, year, batch)) || { schools: [] };
+    const response = (await getUpdatedClasses(quarter, year, batch)) ?? { schools: [] };
 
-    const flatSections: FlattenedSection[] = [];
-    for (const school of response.schools || []) {
-        for (const department of school.departments) {
-            for (const course of department.courses) {
-                for (const section of course.sections) {
-                    flatSections.push({ section, course });
-                }
-            }
-        }
-    }
+    const flatSections = flattenSectionsWithCourse(response);
 
     const processedSectionCodes = new Set(flatSections.map((s) => s.section.sectionCode));
     const notProcessed = batch.filter((code) => !processedSectionCodes.has(code));

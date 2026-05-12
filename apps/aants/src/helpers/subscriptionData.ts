@@ -1,16 +1,11 @@
-import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api-types';
+import { createClient } from '@packages/anteater-api/client';
+import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api/types';
 import { db } from '@packages/db';
 import { type User as DbUser, users } from '@packages/db/src/schema/auth/user';
 import { type Subscription, subscriptions } from '@packages/db/src/schema/subscription';
 import { and, eq, inArray } from 'drizzle-orm';
 
-const ANTEATER_API_BASE_URL = 'https://anteaterapi.com/v2/rest/websoc';
-
-interface AnteaterAPIResponse {
-    ok: boolean;
-    data?: WebsocAPIResponse;
-    message?: string;
-}
+const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 interface TermGrouping {
     [term: string]: string[];
@@ -40,23 +35,14 @@ async function getUpdatedClasses(
     sections: string[]
 ): Promise<WebsocAPIResponse | undefined> {
     try {
-        const params = new URLSearchParams({
+        return await aapiClient.websoc.query({
             year,
             quarter,
             sectionCodes: sections.join(','),
         });
-
-        const response = await fetch(`${ANTEATER_API_BASE_URL}?${params.toString()}`);
-        const json: AnteaterAPIResponse = await response.json();
-
-        if (!json.ok) {
-            console.error('AnteaterAPI error:', json.message);
-            return undefined;
-        }
-
-        return json.data;
     } catch (error) {
         console.error('Error getting class information:', error);
+        return undefined;
     }
 }
 

@@ -24,7 +24,6 @@ export interface ThemeStore {
     /**
      * The 'derived' theme, based on user settings and device preferences
      */
-    appTheme: 'light' | 'dark';
     isDark: boolean;
 
     setAppTheme: (themeSetting: ThemeSetting, postHog?: PostHog) => void;
@@ -41,16 +40,14 @@ export const useThemeStore = create<ThemeStore>((set) => {
 
     return {
         themeSetting: storedThemeSetting,
-        appTheme: isDark ? 'dark' : 'light',
         isDark: isDark,
 
         setAppTheme: (themeSetting, postHog) => {
             setLocalStorageTheme(themeSetting);
 
             const isDark = themeShouldBeDark(themeSetting);
-            const appTheme = isDark ? 'dark' : 'light';
 
-            set({ appTheme, themeSetting, isDark });
+            set({ themeSetting, isDark });
 
             logAnalytics(postHog, {
                 category: analyticsEnum.nav,

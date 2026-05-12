@@ -6,6 +6,7 @@ import {
 import { Logo } from '$components/Header/Logo';
 import { BLUE, PLANNER_LINK } from '$src/globals';
 import appStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
 import {
     Button,
@@ -18,7 +19,6 @@ import {
     Popover,
     Typography,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 import type { MouseEventHandler } from 'react';
 
@@ -36,8 +36,7 @@ const darkMenuSx = {
 export function AppSwitcher({ isMobile }: AppSwitcherProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [plannerLoading, setPlannerLoading] = useState(false);
-    const theme = useTheme();
-    const isDark = theme.palette.mode === 'dark';
+    const isDark = useThemeStore((store) => store.isDark);
 
     const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 

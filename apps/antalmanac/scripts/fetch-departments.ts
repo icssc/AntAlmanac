@@ -2,35 +2,31 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { WebsocDepartmentsAPIResult } from '@packages/antalmanac-types';
-
-import { fetchAnteaterAPI } from '../src/backend/lib/helpers';
-
+import { createClient } from '@packages/anteater-api/client';
+import type { WebsocAPIDepartmentsResponse } from '@packages/anteater-api/types';
 import 'dotenv/config';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Production refresh: .github/workflows/check_departments.yml runs hourly at minute 4 UTC (staggered from other hourly jobs).
 const DEPARTMENT_YEAR_RANGE = 10;
 const OUTPUT_DIR = join(__dirname, '../src/generated/');
 const OUTPUT_FILE = join(OUTPUT_DIR, 'departments.json');
 
+const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
+
 async function main() {
-    const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
-    const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
+    const sinceYear = String(new Date().getFullYear() - DEPARTMENT_YEAR_RANGE);
 
     console.log('Fetching departments from Anteater API...');
-    const data = await fetchAnteaterAPI<WebsocDepartmentsAPIResult>(url, { isApiKeyRequired: true });
+    const departments = await aapiClient.websoc.getDepartments({ sinceYear });
 
-    if (!data?.data) {
-        throw new Error('Departments API returned no data');
-    }
-
-    const departments = data.data;
     console.log(`Fetched ${departments.length} departments.`);
 
     const departmentMap = Object.fromEntries(
-        departments.map((dept) => [dept.deptCode, `${dept.deptCode}: ${dept.deptName}`])
+        departments.map((dept: WebsocAPIDepartmentsResponse[number]) => [
+            dept.deptCode,
+            `${dept.deptCode}: ${dept.deptName}`,
+        ])
     );
 
     await mkdir(OUTPUT_DIR, { recursive: true });
