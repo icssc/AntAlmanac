@@ -1,17 +1,14 @@
+import 'dotenv/config';
 import { access, mkdir, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
-import { canTermEnrollmentChange } from '$lib/termData';
+import { canTermEnrollmentChange, termData } from '$lib/termData';
 import type { CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
-import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
-
-import 'dotenv/config';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { parseSectionCodes, SectionCodesGraphQLResponse } from '../src/backend/lib/term-section-codes';
+import { GENERATED_DIR, GENERATED_TERMS_DIR, SEARCH_DATA_FILE } from './lib/paths.js';
 
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
@@ -89,8 +86,8 @@ async function main() {
 
     const QUERY_TEMPLATE = `{websoc(query:{year:"$$YEAR$$",quarter:$$QUARTER$$}){schools{departments{deptCode courses{courseTitle courseNumber sections{sectionCode sectionType sectionNum}}}}}}`;
 
-    await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
-    await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
+    await mkdir(GENERATED_DIR, { recursive: true });
+    await mkdir(GENERATED_TERMS_DIR, { recursive: true });
 
     if (activeTerms.length > 0) {
         /*
@@ -153,7 +150,7 @@ async function main() {
     }
 
     await writeFile(
-        join(__dirname, '../src/generated/searchData.ts'),
+        SEARCH_DATA_FILE,
         `
     import type { CourseSearchResult, DepartmentSearchResult } from "@packages/antalmanac-types";
     export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSON.stringify(
@@ -171,7 +168,7 @@ async function main() {
         try {
             const [year, quarter] = term.shortName.split(' ');
             const parsedTerm = `${quarter}_${year}`;
-            const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
+            const fileName = join(GENERATED_TERMS_DIR, `${parsedTerm}.json`);
 
             try {
                 await access(fileName);

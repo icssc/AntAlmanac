@@ -1,6 +1,6 @@
-import { terms } from '$generated/termData';
 import { SectionSearchResult } from '@packages/antalmanac-types';
 import { WebsocCourse, WebsocDepartment, WebsocSchool, WebsocSection } from '@packages/anteater-api/types';
+
 export interface SectionCodesGraphQLResponse {
     data: {
         websoc: {
@@ -35,19 +35,3 @@ export function parseSectionCodes(response: SectionCodesGraphQLResponse): Record
 
     return results;
 }
-
-export type Term = {
-    shortName: `${string} ${string}`;
-    longName: string;
-    startDate: Date;
-    finalsStartDate: Date;
-    socAvailable: Date;
-    isSummerTerm: boolean;
-};
-
-/**
- * Only include terms that have a SOC available.
- */
-export const termData = terms.filter((term) => {
-    return term.socAvailable <= new Date();
-});
