@@ -11,6 +11,13 @@ import analyticsEnum from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
+import {
+    getMultiGeCourseKey,
+    getMultiGeOrBannerIdx,
+    gradesGeForManualSearch,
+    isMultiGeSelection,
+    queryManualSearchCourses,
+} from '$lib/multiGeSearch';
 import { getTermLongName } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
@@ -22,15 +29,8 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
-import {
-    AACourse,
-    AASection,
-    WebsocDepartment,
-    WebsocSchool,
-    WebsocAPIResponse,
-    WebsocSectionType,
-    GE,
-} from '@packages/antalmanac-types';
+import { AACourse, AASection } from '@packages/antalmanac-types';
+import { GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool, WebsocSectionType } from '@packages/anteater-api/types';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -38,13 +38,10 @@ import LazyLoad from 'react-lazyload';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    const courseColors = currentCourses.reduce(
-        (accumulator, { section }) => {
-            accumulator[section.sectionCode] = section.color;
-            return accumulator;
-        },
-        {} as Record<string, string>
-    );
+    const courseColors = currentCourses.reduce<Record<string, string>>((accumulator, { section }) => {
+        accumulator[section.sectionCode] = section.color;
+        return accumulator;
+    }, {});
 
     return courseColors;
 }
@@ -82,22 +79,64 @@ const flattenSOCObject = (
     }, []);
 };
 
+function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is AACourse {
+    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
+}
+
+function cleanHeaders(
+    items: (WebsocSchool | WebsocDepartment | AACourse)[]
+): (WebsocSchool | WebsocDepartment | AACourse)[] {
+    const result: (WebsocSchool | WebsocDepartment | AACourse)[] = [];
+    let pendingSchool: WebsocSchool | null = null;
+    let pendingDept: WebsocDepartment | null = null;
+
+    for (const item of items) {
+        if ('departments' in item) {
+            pendingSchool = item as WebsocSchool;
+            pendingDept = null;
+        } else if ('courses' in item) {
+            pendingDept = item as WebsocDepartment;
+        } else {
+            if (pendingSchool) {
+                result.push(pendingSchool);
+                pendingSchool = null;
+            }
+            if (pendingDept) {
+                result.push(pendingDept);
+                pendingDept = null;
+            }
+            result.push(item);
+        }
+    }
+
+    return result;
+}
+
 function getFilteredCourses(
     allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const { manualSearchEnabled } = useCoursePaneStore.getState();
     const { filterTakenCourses, userTakenCourses } = usePlannerStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
-        return allCourses.filter((item) => {
-            if ('sections' in item && 'deptCode' in item && 'courseNumber' in item) {
+        const filtered = allCourses.filter((item) => {
+            if (isCourseEntry(item)) {
                 const courseKey = `${item.deptCode}${item.courseNumber}`.replace(/\s+/g, '');
                 return !userTakenCourses.has(courseKey);
             }
             return true;
         });
+        return cleanHeaders(filtered);
     }
     return allCourses;
 }
+
+const getFilteredAndCourseCount = (
+    flattenedCourseData: (WebsocSchool | WebsocDepartment | AACourse)[],
+    sharedCourseKeys: Set<string>
+) =>
+    flattenedCourseData.filter(
+        (item) => 'sections' in item && sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
+    ).length;
 
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
@@ -267,11 +306,13 @@ const ErrorMessage = () => {
 
 export default function CourseRenderPane(props: { id?: number }) {
     const [courseColors, setCourseColors] = useState(getColors);
+    const [sharedCourseKeys, setSharedCourseKeys] = useState<Set<string>>(new Set<string>());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
+    const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
     const {
         data: websocResp,
@@ -286,6 +327,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             try {
                 const multiSearchData = RightPaneStore.getMultiSearchData();
                 let websocJsonResp;
+                let fetchedSharedCourseKeys = new Set<string>();
                 if (multiSearchData.length > 0) {
                     const { year, quarter } = RightPaneStore.getTermParts();
                     const offeredCourses: Record<string, string>[] = [];
@@ -298,7 +340,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     });
                     for (const course of multiSearchData) {
                         if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
-                            const { websocQueryParams, gradesQueryParams } = getQueryParams(course);
+                            const { websocQueryParams, gradesQueryParams } = getQueryParams(course, false);
                             offeredCourses.push(websocQueryParams);
                             gradeQueries.push(queryGrades(gradesQueryParams));
                         } else {
@@ -310,15 +352,15 @@ export default function CourseRenderPane(props: { id?: number }) {
                     await Promise.all(gradeQueries);
                 } else {
                     const formData = RightPaneStore.getFormData();
-                    const { websocQueryParams, gradesQueryParams } = getQueryParams(formData);
-                    const [websocJsonResponse, _] = await Promise.all([
-                        websocQueryParams.units.includes(',')
-                            ? WebSOC.queryMultipleOfField(websocQueryParams, 'units')
-                            : WebSOC.query(websocQueryParams),
+                    const { websocQueryParams, gradesQueryParams } = getQueryParams(formData, true);
+                    const [{ response: websocJsonResponse, sharedCourseKeys }, _] = await Promise.all([
+                        queryManualSearchCourses(websocQueryParams),
                         queryGrades(gradesQueryParams),
                     ]);
                     websocJsonResp = websocJsonResponse;
+                    fetchedSharedCourseKeys = sharedCourseKeys;
                 }
+                setSharedCourseKeys(fetchedSharedCourseKeys);
                 setSearchedTerm(getTermLongName(RightPaneStore.getFormData().term));
                 return websocJsonResp;
             } catch (error) {
@@ -334,7 +376,9 @@ export default function CourseRenderPane(props: { id?: number }) {
         [websocResp, courseColors]
     );
 
-    const getQueryParams = useCallback((searchData: CourseSearchParams) => {
+    const andCourseCount = useMemo(() => getFilteredAndCourseCount(courseData, sharedCourseKeys), [courseData]);
+
+    const getQueryParams = useCallback((searchData: CourseSearchParams, isManualSearch: boolean) => {
         const websocQueryParams = {
             department: searchData.deptValue,
             term: searchData.term,
@@ -355,7 +399,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
         const gradesQueryParams = {
             department: searchData.deptValue,
-            ge: searchData.ge as GE,
+            ge: isManualSearch ? gradesGeForManualSearch(searchData.ge) : (searchData.ge as GE),
             instructor: searchData.instructor,
             sectionCode: searchData.sectionCode,
         };
@@ -374,6 +418,8 @@ export default function CourseRenderPane(props: { id?: number }) {
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
     };
+
+    const hasRenderableCourseResults = courseData.some(isCourseEntry);
 
     useEffect(() => {
         const changeColors = () => {
@@ -400,6 +446,12 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [setHoveredEvent]);
 
+    const ge = RightPaneStore.getFormData().ge;
+    const isMultiGeSearch = isMultiGeSelection(ge);
+    const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
+    const orBannerIdx =
+        isMultiGeSearch && !showNoIntersection ? getMultiGeOrBannerIdx(courseData, sharedCourseKeys) : -1;
+
     return (
         <>
             <Box sx={{ height: '56px' }} />
@@ -417,6 +469,9 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </WarningAlert>
                 ));
             })}
+            {filterTakenCourses && !hasRenderableCourseResults && (
+                <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
+            )}
             {unofferedCourses.map((course) => {
                 return (
                     <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
@@ -426,18 +481,48 @@ export default function CourseRenderPane(props: { id?: number }) {
             })}
             {isLoading ? (
                 <LoadingMessage />
-            ) : isError || courseData.length === 0 ? (
+            ) : isError || !hasRenderableCourseResults ? (
                 <ErrorMessage />
             ) : (
                 <>
                     <RecruitmentBanner />
                     <Box>
+                        {showNoIntersection && (
+                            <Alert
+                                severity="warning"
+                                sx={{
+                                    mb: 1,
+                                    fontSize: '1rem',
+                                    '& .MuiAlert-message': {
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                    },
+                                }}
+                            >
+                                No courses fulfill all selected GEs. The results below fulfill at least one selected GE.
+                            </Alert>
+                        )}
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
                             if ((courseData[index] as AACourse).sections !== undefined)
                                 heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
+                                    {index === orBannerIdx && (
+                                        <Alert
+                                            severity="warning"
+                                            sx={{
+                                                mb: 1,
+                                                fontSize: '1rem',
+                                                '& .MuiAlert-message': {
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                },
+                                            }}
+                                        >
+                                            The courses below satisfy at least one of the selected GEs.
+                                        </Alert>
+                                    )}
                                     {SectionTableWrapped(index, {
                                         courseData: courseData,
                                         scheduleNames: scheduleNames,

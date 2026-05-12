@@ -15,8 +15,8 @@ import type {
     RepeatingCustomEvent,
     ScheduleCourse,
     ShortCourseSchedule,
-    WebsocSection,
 } from '@packages/antalmanac-types';
+import type { WebsocSection } from '@packages/anteater-api/types';
 import { TRPCClientError } from '@trpc/client';
 import type { PostHog } from 'posthog-js/react';
 
@@ -388,13 +388,17 @@ const cacheSchedule = () => {
     }
 };
 
-export const loginUser = async (postHog?: PostHog) => {
+export const loginUser = async ({
+    provider = 'google',
+    postHog,
+}: { provider?: 'google' | 'apple'; postHog?: PostHog } = {}) => {
     try {
         const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
         const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-        const authUrl = await trpc.auth.getGoogleAuthUrl.query({
+        const authUrl = await trpc.auth.getAuthUrl.query({
             ...(redirectUri ? { redirectUri } : {}),
             returnTo,
+            provider,
         });
         if (authUrl) {
             logAnalytics(postHog, {

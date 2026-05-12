@@ -119,7 +119,7 @@ declare module '@mui/material/styles' {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const appTheme = useThemeStore((store) => store.appTheme);
+    const isDark = useThemeStore((store) => store.isDark);
     const setAppTheme = useThemeStore((store) => store.setAppTheme);
     const postHog = usePostHog();
 
@@ -175,7 +175,7 @@ export default function AppThemeProvider(props: Props) {
                     MuiCssBaseline: {
                         styleOverrides: {
                             a: {
-                                color: appTheme === 'dark' ? LIGHT_BLUE : BLUE,
+                                color: isDark ? LIGHT_BLUE : BLUE,
                             },
                         },
                     },
@@ -184,7 +184,7 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
-                                ...(appTheme === 'dark' && darkPaperOverride),
+                                ...(isDark && darkPaperOverride),
                             },
                         },
                     },
@@ -216,7 +216,7 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
-                                ...(appTheme === 'dark' && darkPaperOverride),
+                                ...(isDark && darkPaperOverride),
                             },
                         },
                     },
@@ -224,7 +224,7 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
-                                ...(appTheme === 'dark' && darkPaperOverride),
+                                ...(isDark && darkPaperOverride),
                             },
                         },
                     },
@@ -263,11 +263,11 @@ export default function AppThemeProvider(props: Props) {
                     },
                 },
                 palette: {
-                    mode: appTheme === 'dark' ? 'dark' : 'light',
-                    ...(appTheme === 'dark' ? darkTheme : lightTheme),
+                    mode: isDark ? 'dark' : 'light',
+                    ...(isDark ? darkTheme : lightTheme),
                 },
             }),
-        [appTheme]
+        [isDark]
     );
 
     return (

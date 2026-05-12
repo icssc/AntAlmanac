@@ -1,6 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Box, SxProps } from '@mui/material';
-import { WebsocSectionType } from '@packages/antalmanac-types';
+import { WebsocSectionType } from '@packages/anteater-api/types';
 
 const SECTION_COLORS = {
     Act: { color: '#c87137' },
