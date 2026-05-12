@@ -113,6 +113,13 @@
       "when": 1778387018420,
       "tag": "0015_daily_starfox",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1778395420130,
+      "tag": "0016_sparkling_mauler",
+      "breakpoints": true
     }
   ]
 }

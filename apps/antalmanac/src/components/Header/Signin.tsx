@@ -1,5 +1,7 @@
 import { loadGuestSchedule, loadSchedule, loginUser } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { AppleSignInButton } from '$components/buttons/AppleSignInButton';
+import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
@@ -9,7 +11,7 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { AccountCircle, ExpandMore, Google } from '@mui/icons-material';
+import { AccountCircle, ExpandMore } from '@mui/icons-material';
 import {
     Alert,
     type AlertColor,
@@ -125,8 +127,8 @@ export const Signin = () => {
         [setOpenLoadingSchedule, loadSession, validateImportedUser, postHog]
     );
 
-    const handleLogin = () => {
-        loginUser(postHog);
+    const handleLogin = (provider: 'google' | 'apple' = 'google') => {
+        loginUser({ provider, postHog });
         setLocalStorageFromLoading('true');
     };
 
@@ -191,16 +193,8 @@ export const Signin = () => {
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
                     <Stack spacing={1}>
-                        <Button
-                            onClick={handleLogin}
-                            color="primary"
-                            variant="contained"
-                            startIcon={<Google />}
-                            size="large"
-                            fullWidth
-                        >
-                            Sign in with Google
-                        </Button>
+                        <GoogleSignInButton onClick={() => handleLogin('google')} fullWidth />
+                        <AppleSignInButton onClick={() => handleLogin('apple')} fullWidth />
 
                         <Box
                             onClick={() => setShowLegacyLogin(!showLegacyLogin)}
@@ -308,17 +302,11 @@ export const Signin = () => {
                 title={alertMessage.title}
                 severity={alertMessage.severity}
             >
-                <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
-                <Button
-                    color="primary"
-                    variant="contained"
-                    startIcon={<Google />}
-                    fullWidth
-                    onClick={handleLogin}
-                    size="large"
-                >
-                    Sign in with Google
-                </Button>
+                <DialogContentText>To load your schedule, sign in with your account</DialogContentText>
+                <Stack spacing={1}>
+                    <GoogleSignInButton onClick={() => handleLogin('google')} fullWidth />
+                    <AppleSignInButton onClick={() => handleLogin('apple')} fullWidth />
+                </Stack>
             </AlertDialog>
         </div>
     );
