@@ -11,7 +11,7 @@ export function notNull<T>(value: T): value is NonNullable<T> {
  * input = 'ace'
  * result = [true, false, true, false, true]
  *
- * Can be used in conjunection with {@link notNull} to get only indices.
+ * Can be used in conjunction with {@link notNull} to get only indices.
  *
  * @example
  *

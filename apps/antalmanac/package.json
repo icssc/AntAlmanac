@@ -49,6 +49,7 @@
         "date-fns": "^2.29.3",
         "dotenv": "^16.4.5",
         "drizzle-orm": "^0.45.1",
+        "pg": "^8.13.1",
         "events": "^3.3.0",
         "file-saver": "^2.0.5",
         "fuzzysort": "3.1.0",
