@@ -2,7 +2,6 @@
 
 import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Close } from '@mui/icons-material';
 import {
     Box,
