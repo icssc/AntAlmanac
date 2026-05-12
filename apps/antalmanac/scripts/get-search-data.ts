@@ -33,18 +33,15 @@ function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
     return new Map(
         data.schools.flatMap((school) =>
             school.departments.flatMap((dept) =>
-                dept.courses.map(
-                    (course) =>
-                        [
-                            catalogCourseKey(dept.deptCode, course.courseNumber),
-                            {
-                                deptCode: dept.deptCode,
-                                deptName: dept.deptName,
-                                courseNumber: course.courseNumber,
-                                courseTitle: course.courseTitle,
-                            },
-                        ] as const
-                )
+                dept.courses.map((course) => [
+                    catalogCourseKey(dept.deptCode, course.courseNumber),
+                    {
+                        deptCode: dept.deptCode,
+                        deptName: dept.deptName,
+                        courseNumber: course.courseNumber,
+                        courseTitle: course.courseTitle,
+                    },
+                ])
             )
         )
     );
