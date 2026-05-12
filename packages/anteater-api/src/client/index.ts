@@ -25,6 +25,7 @@ export class AAPIError extends Error {
 }
 
 const BASE_URL = 'https://anteaterapi.com';
+const ORIGIN = 'https://antalmanac.com';
 
 export interface AAPIClientOptions {
     apiKey?: string;
@@ -33,15 +34,17 @@ export interface AAPIClientOptions {
 export function createClient({ apiKey }: AAPIClientOptions = {}) {
     const http = createFetchClient<paths>({ baseUrl: BASE_URL });
 
-    if (apiKey) {
-        const auth: Middleware = {
-            onRequest({ request }) {
+    const auth: Middleware = {
+        onRequest({ request }) {
+            request.headers.set('Origin', ORIGIN);
+            if (apiKey) {
                 request.headers.set('Authorization', `Bearer ${apiKey}`);
-                return request;
-            },
-        };
-        http.use(auth);
-    }
+            }
+
+            return request;
+        },
+    };
+    http.use(auth);
 
     return {
         websoc: {
@@ -183,6 +186,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
+                    Origin: ORIGIN,
                     ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
                 },
                 body: JSON.stringify({ query }),
