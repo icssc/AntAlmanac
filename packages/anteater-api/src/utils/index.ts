@@ -3,8 +3,20 @@ import type { WebsocAPIResponse, WebsocCourse, WebsocSection } from '$types/inde
 function compareCourses(a: WebsocCourse, b: WebsocCourse) {
     const aNum = Number.parseInt(a.courseNumber.replaceAll(/\D/g, ''), 10);
     const bNum = Number.parseInt(b.courseNumber.replaceAll(/\D/g, ''), 10);
+    if (Number.isNaN(aNum) && Number.isNaN(bNum)) return a.courseNumber.localeCompare(b.courseNumber);
+    if (Number.isNaN(aNum)) return 1;
+    if (Number.isNaN(bNum)) return -1;
     const diff = Math.sign(aNum - bNum);
     return diff === 0 ? a.courseNumber.localeCompare(b.courseNumber) : diff;
+}
+
+function compareSectionCodes(a: WebsocSection, b: WebsocSection) {
+    const aCode = Number.parseInt(a.sectionCode, 10);
+    const bCode = Number.parseInt(b.sectionCode, 10);
+    if (Number.isNaN(aCode) && Number.isNaN(bCode)) return a.sectionCode.localeCompare(b.sectionCode);
+    if (Number.isNaN(aCode)) return 1;
+    if (Number.isNaN(bCode)) return -1;
+    return aCode - bCode;
 }
 
 /**
@@ -18,7 +30,7 @@ export function sortWebsocResponse(response: WebsocAPIResponse): WebsocAPIRespon
         for (const department of school.departments) {
             department.courses.sort(compareCourses);
             for (const course of department.courses) {
-                course.sections.sort((a, b) => Number.parseInt(a.sectionCode, 10) - Number.parseInt(b.sectionCode, 10));
+                course.sections.sort(compareSectionCodes);
             }
         }
     }
@@ -55,9 +67,7 @@ export function combineWebsocResponses(responses: WebsocAPIResponse[]): WebsocAP
                         for (const section of course.sections) {
                             sectionMap.set(section.sectionCode, section);
                         }
-                        existingCourse.sections = [...sectionMap.values()].sort(
-                            (a, b) => Number.parseInt(a.sectionCode, 10) - Number.parseInt(b.sectionCode, 10)
-                        );
+                        existingCourse.sections = [...sectionMap.values()].sort(compareSectionCodes);
                     } else {
                         combinedDept.courses.push(course);
                     }
