@@ -1,6 +1,7 @@
 import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { WebSOC } from '$lib/websoc';
-import { AACourse, GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/antalmanac-types';
+import { AACourse } from '@packages/antalmanac-types';
+import { GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
 
 const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
 

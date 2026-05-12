@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';
 
-import type { CalendarTerm } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
+import type { CalendarTerm } from '@packages/anteater-api/types';
 
 import { GENERATED_DIR, TERM_DATA_FILE } from './lib/paths.js';
 

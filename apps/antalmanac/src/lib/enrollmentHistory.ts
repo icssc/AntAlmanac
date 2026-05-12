@@ -1,5 +1,5 @@
 import trpc from '$lib/api/trpc';
-import type { WebsocSectionType } from '@packages/antalmanac-types';
+import type { WebsocSectionType } from '@packages/anteater-api/types';
 import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
 
 import { termData } from './termData';
