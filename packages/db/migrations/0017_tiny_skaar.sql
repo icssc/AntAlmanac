@@ -1,1 +1,1 @@
-ALTER TABLE "coursesInSchedule" ADD COLUMN "visibility" text DEFAULT 'visible' NOT NULL;
+ALTER TABLE "coursesInSchedule" ADD COLUMN IF NOT EXISTS "visibility" text DEFAULT 'visible' NOT NULL;
