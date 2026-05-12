@@ -1,3 +1,5 @@
+import { Provider } from '$lib/auth/authTypes';
+
 export function removeGoogleIdPrefix(prefixedGoogleId: string) {
     return prefixedGoogleId.replace('google_', '');
 }
@@ -47,3 +49,15 @@ export const getSafeAuthRedirectPath = (
 
     return '/';
 };
+
+export function getProviderDisplayName(provider: Provider) {
+    switch (provider) {
+        case Provider.Google:
+            return 'Google';
+        case Provider.Apple:
+            return 'Apple';
+        default:
+            console.error('Unrecognized provider:', provider);
+            return '';
+    }
+}

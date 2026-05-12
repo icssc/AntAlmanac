@@ -1,4 +1,4 @@
 export enum Provider {
-    Google = 'Google',
-    Apple = 'Apple',
+    Google = 'OIDC',
+    Apple = 'APPLE',
 }

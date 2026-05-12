@@ -1,5 +1,6 @@
 import { loginUser } from '$actions/AppStoreActions';
 import { Provider } from '$lib/auth/authTypes';
+import { getProviderDisplayName } from '$lib/auth/authUtils';
 import { Button, SxProps } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { ComponentProps, ReactNode, useState } from 'react';
@@ -33,7 +34,7 @@ export const SignInButton = ({ icon, provider, fullWidth, sx }: Props) => {
             loading={isSigningIn}
             sx={sx}
         >
-            Sign in with {provider}
+            Sign in with {getProviderDisplayName(provider)}
         </Button>
     );
 };
