@@ -1,4 +1,5 @@
-import SignInButton from '$components/buttons/SignInButton';
+import { AppleSignInButton } from '$components/buttons/AppleSignInButton';
+import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 
@@ -50,10 +51,11 @@ export function SignInDialog(props: SignInDialogProps) {
                 <Stack spacing={1}>
                     {props.feature === 'Save' && (
                         <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
-                            All changes made will be saved to your Google account
+                            All changes made will be saved to your account
                         </Alert>
                     )}
-                    <SignInButton />
+                    <GoogleSignInButton />
+                    <AppleSignInButton />
                 </Stack>
             </DialogContent>
         </Dialog>

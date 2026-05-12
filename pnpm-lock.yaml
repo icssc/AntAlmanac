@@ -70,9 +70,9 @@ importers:
       '@aws-sdk/client-sqs':
         specifier: ^3.750.0
         version: 3.980.0
-      '@packages/anteater-api-types':
+      '@packages/anteater-api':
         specifier: workspace:*
-        version: link:../../packages/anteater-api-types
+        version: link:../../packages/anteater-api
       '@packages/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -158,9 +158,9 @@ importers:
       '@packages/antalmanac-types':
         specifier: workspace:^
         version: link:../../packages/types
-      '@packages/anteater-api-types':
+      '@packages/anteater-api':
         specifier: workspace:^
-        version: link:../../packages/anteater-api-types
+        version: link:../../packages/anteater-api
       '@paralleldrive/cuid2':
         specifier: ^2.2.2
         version: 2.2.2
@@ -334,7 +334,7 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0(rollup@2.79.2)(vite@4.5.5(@types/node@22.19.17)(stylus@0.51.1)(terser@5.46.2))
 
-  packages/anteater-api-types:
+  packages/anteater-api:
     devDependencies:
       openapi-typescript:
         specifier: 7.4.3
@@ -367,9 +367,9 @@ importers:
 
   packages/types:
     dependencies:
-      '@packages/anteater-api-types':
+      '@packages/anteater-api':
         specifier: workspace:*
-        version: link:../anteater-api-types
+        version: link:../anteater-api
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -12537,7 +12537,7 @@ snapshots:
 
   parse-json@8.1.0:
     dependencies:
-      '@babel/code-frame': 7.26.2
+      '@babel/code-frame': 7.28.6
       index-to-position: 0.1.2
       type-fest: 4.27.0
 

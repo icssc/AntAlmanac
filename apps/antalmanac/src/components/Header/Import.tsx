@@ -18,7 +18,7 @@ import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useDevModeStore } from '$stores/SettingsStore';
+import { useDevModeStore, useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { CloudUpload, ContentPasteGo } from '@mui/icons-material';
 import {
@@ -43,7 +43,6 @@ import {
     TextField,
     Tooltip,
     Typography,
-    useTheme,
 } from '@mui/material';
 import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -88,7 +87,7 @@ export function Import() {
     );
     const devMode = useDevModeStore((store) => store.devMode);
 
-    const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
 
     const postHog = usePostHog();
 
@@ -704,7 +703,7 @@ export function Import() {
                     </Tabs>
                 )}
                 <DialogTitle>{dialogTab === 'export' ? 'Export Schedules' : 'Import Schedule'}</DialogTitle>
-                <DialogContent sx={theme.palette.mode === 'dark' ? { '& a': { color: LIGHT_BLUE } } : undefined}>
+                <DialogContent sx={isDark ? { '& a': { color: LIGHT_BLUE } } : undefined}>
                     {dialogTab === 'export' ? (
                         <>
                             <DialogContentText sx={{ mb: 2 }}>
