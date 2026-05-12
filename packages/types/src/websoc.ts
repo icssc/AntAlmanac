@@ -1,4 +1,4 @@
-import { WebsocSection, WebsocCourse, WebsocSectionType } from '@packages/anteater-api/types';
+import type { WebsocSection, WebsocCourse, WebsocSectionStatus, WebsocSectionType } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
 export const WebsocSectionTypeSchema = z.enum([
@@ -15,6 +15,14 @@ export const WebsocSectionTypeSchema = z.enum([
     'Tap',
     'Tut',
 ] as const satisfies readonly WebsocSectionType[]);
+
+export const WebsocSectionStatusSchema = z.enum([
+    '',
+    'OPEN',
+    'Waitl',
+    'FULL',
+    'NewOnly',
+] as const satisfies readonly WebsocSectionStatus[]);
 
 type AASectionExtendedProperties = {
     color: string;

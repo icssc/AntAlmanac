@@ -1,9 +1,7 @@
+import trpc from '$lib/api/trpc';
 import { Box, Button } from '@mui/material';
-import { Notification } from '@packages/antalmanac-types';
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-
-import trpc from '$lib/api/trpc';
 
 export const Unsubscribe = () => {
     const { userId } = useParams();
@@ -24,26 +22,11 @@ export const Unsubscribe = () => {
     const handleUnsubscribe = async () => {
         if (!userId || !sectionCode || !quarter || !year) return;
 
-        const notification: Notification = {
-            term,
-            sectionCode,
-            courseTitle: '',
-            sectionType: '',
-            notifyOn: {
-                notifyOnOpen: false,
-                notifyOnWaitlist: false,
-                notifyOnFull: false,
-                notifyOnRestriction: false,
-            },
-            lastUpdatedStatus: '',
-            lastCodes: '',
-        };
-
         try {
             if (unsubscribeAll === 'true') {
                 await trpc.notifications.deleteAllNotifications.mutate({ userId });
             } else {
-                await trpc.notifications.deleteNotification.mutate({ userId, notification });
+                await trpc.notifications.deleteNotification.mutate({ userId, sectionCode, term });
             }
             setDone(true);
         } catch (err) {

@@ -1,6 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { SxProps, Theme } from '@mui/material';
-import { WebsocSectionStatus } from '@packages/antalmanac-types';
+import { WebsocSectionStatus } from '@packages/anteater-api/types';
 
 const SECTION_STATUS_COLORS: Partial<Record<WebsocSectionStatus, SxProps<Theme>>> = {
     OPEN: {

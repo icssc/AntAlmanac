@@ -3,7 +3,7 @@ import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/Sec
 import { useIsMobile } from '$hooks/useIsMobile';
 import { DepartmentEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
 import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
-import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/antalmanac-types';
+import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/anteater-api/types';
 import { useCallback, useMemo, useState } from 'react';
 
 interface EnrollmentCellProps {
