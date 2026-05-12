@@ -1,5 +1,5 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
-import { terms } from '$generated/termData';
+import termJson from '$generated/termData.json';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 
 /**
@@ -16,6 +16,34 @@ export type Term = {
     socAvailable: Date;
     isSummerTerm: boolean;
 };
+
+/**
+ * The JSON stores dates as ISO "YYYY-MM-DD" strings. We reconstruct local-timezone
+ * Date objects (mirroring `new Date(year, month-1, day)`) so that date arithmetic
+ * elsewhere in the app is unaffected by the UTC-vs-local distinction.
+ */
+function parseLocalDate(dateStr: string): Date {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+}
+
+type RawTerm = {
+    shortName: `${string} ${string}`;
+    longName: string;
+    startDate: string;
+    finalsStartDate: string;
+    socAvailable: string;
+    isSummerTerm: boolean;
+};
+
+const terms: Term[] = (termJson as RawTerm[]).map((t) => ({
+    shortName: t.shortName,
+    longName: t.longName,
+    startDate: parseLocalDate(t.startDate),
+    finalsStartDate: parseLocalDate(t.finalsStartDate),
+    socAvailable: parseLocalDate(t.socAvailable),
+    isSummerTerm: t.isSummerTerm,
+}));
 
 /**
  * Only include terms that have a SOC available.
