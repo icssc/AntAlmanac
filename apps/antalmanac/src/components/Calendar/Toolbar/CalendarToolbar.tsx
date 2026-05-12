@@ -7,6 +7,7 @@ import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSele
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import {
     Undo as UndoIcon,
     Redo as RedoIcon,
@@ -46,6 +47,7 @@ export interface CalendarPaneToolbarProps {
  */
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
@@ -163,7 +165,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 borderRadius: '4px',
                                 padding: '3px',
                                 ...(showFinalsSchedule &&
-                                    theme.palette.mode === 'dark' && {
+                                    isDark && {
                                         backgroundColor: theme.palette.primary.main,
                                         color: '#fff',
                                         '&:hover': {

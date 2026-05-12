@@ -11,11 +11,11 @@
     "scripts": {
         "postinstall": "openapi-typescript https://anteaterapi.com/openapi.json -o src/types/generated/anteater-api-types.ts"
     },
+    "dependencies": {
+        "openapi-fetch": "^0.17.0"
+    },
     "devDependencies": {
         "openapi-typescript": "7.4.3",
         "typescript": "^5.7.2"
-    },
-    "dependencies": {
-        "openapi-fetch": "^0.17.0"
     }
 }

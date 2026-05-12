@@ -7,6 +7,7 @@ import {
     type ShortcutKey,
     type ShortcutSectionIcon,
 } from '$lib/keyboardShortcuts';
+import { useThemeStore } from '$stores/SettingsStore';
 import { ChatBubbleOutlineOutlined, Close, Keyboard, SearchOutlined, SettingsOutlined } from '@mui/icons-material';
 import { Box, Dialog, IconButton, Stack, Typography, useMediaQuery, useTheme, alpha } from '@mui/material';
 import { useCallback, useEffect } from 'react';
@@ -14,7 +15,8 @@ import { useCallback, useEffect } from 'react';
 /** Accent blue: theme maps light → primary (BLUE), dark → secondary (LIGHT_BLUE) — matches links & app chrome */
 function useShortcutsAccentColor() {
     const theme = useTheme();
-    return theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.primary.main;
+    const isDark = useThemeStore((store) => store.isDark);
+    return isDark ? theme.palette.secondary.main : theme.palette.primary.main;
 }
 
 function SectionHeaderIcon({ icon }: { icon: ShortcutSectionIcon }) {
@@ -31,6 +33,7 @@ function SectionHeaderIcon({ icon }: { icon: ShortcutSectionIcon }) {
 }
 
 function Kbd({ children }: { children: React.ReactNode }) {
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box
             component="kbd"
@@ -48,10 +51,7 @@ function Kbd({ children }: { children: React.ReactNode }) {
                 fontWeight: 600,
                 lineHeight: 1.2,
                 color: 'text.primary',
-                bgcolor: (t) =>
-                    t.palette.mode === 'dark'
-                        ? alpha(t.palette.common.white, 0.1)
-                        : alpha(t.palette.text.primary, 0.06),
+                bgcolor: (t) => (isDark ? alpha(t.palette.common.white, 0.1) : alpha(t.palette.text.primary, 0.06)),
                 border: '1px solid',
                 borderColor: 'divider',
             }}
@@ -182,9 +182,10 @@ export interface KeyboardShortcutsModalProps {
  */
 export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModalProps) {
     const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
     const isFullScreenLayout = useMediaQuery(theme.breakpoints.down('md'));
     const mac = isMacPlatform();
-    const accent = theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.primary.main;
+    const accent = isDark ? theme.palette.secondary.main : theme.palette.primary.main;
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
@@ -213,7 +214,7 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
             slotProps={{
                 backdrop: {
                     sx: {
-                        backgroundColor: (t) => alpha(t.palette.common.black, t.palette.mode === 'dark' ? 0.55 : 0.36),
+                        backgroundColor: (t) => alpha(t.palette.common.black, isDark ? 0.55 : 0.36),
                         backdropFilter: 'blur(6px)',
                     },
                 },
@@ -236,9 +237,7 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                         bgcolor: 'background.paper',
                         border: isFullScreenLayout ? 'none' : '1px solid',
                         borderColor: 'divider',
-                        boxShadow: isFullScreenLayout
-                            ? 'none'
-                            : (t) => (t.palette.mode === 'dark' ? t.shadows[16] : t.shadows[8]),
+                        boxShadow: isFullScreenLayout ? 'none' : (t) => (isDark ? t.shadows[16] : t.shadows[8]),
                         pt: isFullScreenLayout ? 'env(safe-area-inset-top, 0px)' : undefined,
                         pb: isFullScreenLayout ? 'env(safe-area-inset-bottom, 0px)' : undefined,
                     },
@@ -291,18 +290,14 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                                         color: accent,
                                         bgcolor: (t) =>
                                             alpha(
-                                                t.palette.mode === 'dark'
-                                                    ? t.palette.secondary.main
-                                                    : t.palette.primary.main,
-                                                t.palette.mode === 'dark' ? 0.2 : 0.12
+                                                isDark ? t.palette.secondary.main : t.palette.primary.main,
+                                                isDark ? 0.2 : 0.12
                                             ),
                                         border: '1px solid',
                                         borderColor: (t) =>
                                             alpha(
-                                                t.palette.mode === 'dark'
-                                                    ? t.palette.secondary.main
-                                                    : t.palette.primary.main,
-                                                t.palette.mode === 'dark' ? 0.4 : 0.28
+                                                isDark ? t.palette.secondary.main : t.palette.primary.main,
+                                                isDark ? 0.4 : 0.28
                                             ),
                                     }}
                                 >
@@ -334,7 +329,7 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                             borderRadius: 1.5,
                             border: '1px solid',
                             borderColor: 'divider',
-                            bgcolor: (t) => alpha(t.palette.text.primary, t.palette.mode === 'dark' ? 0.06 : 0.04),
+                            bgcolor: (t) => alpha(t.palette.text.primary, isDark ? 0.06 : 0.04),
                             '&:hover': {
                                 bgcolor: 'action.hover',
                             },
