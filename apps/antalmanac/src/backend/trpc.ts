@@ -19,4 +19,3 @@ export const procedure = t.procedure;
 export const protectedProcedure = t.procedure.use(isAuthed);
 export const router = t.router;
 export const middleware = t.middleware;
-export const mergeRouters = t.mergeRouters;

@@ -12,11 +12,11 @@ import {
     Skeleton,
     Typography,
 } from '@mui/material';
-import type { WebsocSyllabiResponse } from '@packages/antalmanac-types';
+import type { WebsocSyllabiResponse } from '@packages/anteater-api/types';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
-export interface PastSyllabiPopoverProps {
+interface PastSyllabiPopoverProps {
     deptCode: string;
     courseNumber: string;
     courseId: string;

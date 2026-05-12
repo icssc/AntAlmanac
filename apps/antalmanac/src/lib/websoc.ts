@@ -1,5 +1,5 @@
 import trpc from '$lib/api/trpc';
-import { WebsocAPIResponse, WebsocSyllabiQueryParams } from '@packages/antalmanac-types';
+import { WebsocAPIResponse, WebsocSyllabiQueryParams } from '@packages/anteater-api/types';
 
 type CacheEntry = WebsocAPIResponse & {
     timestamp: number;

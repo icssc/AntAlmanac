@@ -88,7 +88,7 @@ export interface ChangeCourseColorAction {
     newColor: string;
 }
 
-export type ActionType =
+type ActionType =
     | AddCourseAction
     | DeleteCourseAction
     | AddCustomEventAction

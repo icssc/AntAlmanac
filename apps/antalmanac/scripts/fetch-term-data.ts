@@ -1,24 +1,12 @@
-/**
- * NB: This script exists in both apps/antalmanac and apps/backend
- * for the purpose of fetching and processing term data from the Anteater API.
- * If you're making changes to the logic in one location, you most likely
- * should make the corresponding changes in the other to maintain consistency.
- */
+import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
-import type { CalendarTerm, CalendarAllAPIResult } from '@packages/antalmanac-types';
+import { createClient } from '@packages/anteater-api/client';
+import type { CalendarTerm } from '@packages/anteater-api/types';
 
-const PUBLIC_ANTEATER_API_KEY = 'INSqn9qP1pXlEwihpQa_GtrJhGOxQyjE5zcAKYLptLg.pk.prj9hlf3sf7q638jkq61u282';
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { GENERATED_DIR, TERM_DATA_FILE } from './lib/paths.js';
 
-const OUTPUT_DIR = join(__dirname, '../src/generated/');
-const OUTPUT_FILE = join(OUTPUT_DIR, 'termData.ts');
-
-const API_URL = 'https://anteaterapi.com/v2/rest/calendar/all';
-const ORIGIN = 'https://antalmanac.com';
+const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 const QUARTER_MAP = {
     Summer1: 'Summer Session 1',
@@ -31,20 +19,6 @@ const QUARTER_MAP = {
 
 function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${string} ${string}` {
     return `${year} ${QUARTER_MAP[quarter]}`;
-}
-
-async function fetchCalendarTerms(): Promise<CalendarTerm[]> {
-    const { data } = await fetchAnteaterAPI<CalendarAllAPIResult>(API_URL, {
-        headers: {
-            Authorization: `Bearer ${PUBLIC_ANTEATER_API_KEY}`,
-            Origin: ORIGIN,
-        },
-        invalidResponseCallback: (res) => {
-            throw new Error(`Failed to fetch terms: ${res.statusText}`);
-        },
-    });
-
-    return data;
 }
 
 function toLocalDateCode(dateString: string): string {
@@ -76,10 +50,10 @@ function serializeTerm(term: CalendarTerm): string {
 
 async function main() {
     console.log('Fetching all calendar terms from Anteater API...');
-    const calendarTerms = await fetchCalendarTerms();
-    console.log(`Fetched ${calendarTerms?.length} calendar terms.`);
+    const calendarTerms = await aapiClient.calendar.all();
+    console.log(`Fetched ${calendarTerms.length} calendar terms.`);
 
-    const sortedTerms = calendarTerms.sort((a, b) => {
+    const sortedTerms = calendarTerms.sort((a: CalendarTerm, b: CalendarTerm) => {
         const dateA = new Date(a.instructionStart).getTime();
         const dateB = new Date(b.instructionStart).getTime();
         return dateB - dateA;
@@ -93,10 +67,10 @@ ${termEntries}
 ];
     `;
 
-    await mkdir(OUTPUT_DIR, { recursive: true });
-    await writeFile(OUTPUT_FILE, fileContent);
+    await mkdir(GENERATED_DIR, { recursive: true });
+    await writeFile(TERM_DATA_FILE, fileContent);
 
-    console.log('Term data generated. Written to ', OUTPUT_FILE);
+    console.log('Term data generated. Written to ', TERM_DATA_FILE);
 }
 
 main();

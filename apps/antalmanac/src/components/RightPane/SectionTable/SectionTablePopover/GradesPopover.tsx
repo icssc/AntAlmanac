@@ -15,7 +15,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsT
 
 type GradeView = 'instructor' | 'overall';
 
-export interface GradeData {
+interface GradeData {
     grades: {
         name: string;
         all: number;
@@ -60,7 +60,7 @@ async function getGradeData(
     return { grades, courseGrades, totalGrades };
 }
 
-export interface GradesPopoverProps {
+interface GradesPopoverProps {
     deptCode: string;
     courseNumber: string;
     instructor?: string;

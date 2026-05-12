@@ -1,9 +1,8 @@
-import { Box } from '@mui/material';
-import { WebsocSectionMeeting } from '@packages/antalmanac-types';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useTimeFormatStore } from '$stores/SettingsStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
+import { useTimeFormatStore } from '$stores/SettingsStore';
+import { Box } from '@mui/material';
+import { WebsocSectionMeeting } from '@packages/anteater-api/types';
 
 interface DayAndTimeCellProps {
     meetings: WebsocSectionMeeting[];

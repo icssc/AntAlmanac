@@ -1,10 +1,9 @@
-import { Box } from '@mui/material';
-import { WebsocSectionMeeting } from '@packages/antalmanac-types';
-import { Fragment } from 'react';
-
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { MapLink } from '$components/buttons/MapLink';
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import locationIds from '$lib/locations/locations';
+import { Box } from '@mui/material';
+import { WebsocSectionMeeting } from '@packages/anteater-api/types';
+import { Fragment } from 'react';
 
 interface LocationsCellProps {
     meetings: WebsocSectionMeeting[];

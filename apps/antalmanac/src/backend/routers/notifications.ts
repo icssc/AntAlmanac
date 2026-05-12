@@ -1,5 +1,6 @@
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
+import { WebsocSectionStatusSchema, WebsocSectionTypeSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { z } from 'zod';
 
@@ -14,8 +15,8 @@ const NotificationSchema = z.object({
     term: z.string(),
     sectionCode: z.string(),
     courseTitle: z.string(),
-    sectionType: z.string(),
-    lastUpdatedStatus: z.string(),
+    sectionType: WebsocSectionTypeSchema,
+    lastUpdatedStatus: WebsocSectionStatusSchema.nullable(),
     lastCodes: z.string(),
     notifyOn: NotifyOnSchema,
 });
@@ -44,10 +45,16 @@ const notificationsRouter = router({
 
     // Intentionally public: used by unauthenticated unsubscribe links
     deleteNotification: procedure
-        .input(z.object({ userId: z.string(), notification: NotificationSchema }))
+        .input(
+            z.object({
+                userId: z.string(),
+                sectionCode: z.string(),
+                term: z.string(),
+            })
+        )
         .mutation(async ({ input }) => {
             const stage = getStage();
-            await RDS.deleteNotification(db, input.notification, input.userId, stage);
+            await RDS.deleteNotification(db, input.userId, input.sectionCode, input.term, stage);
         }),
 
     // Intentionally public: used by unauthenticated unsubscribe links

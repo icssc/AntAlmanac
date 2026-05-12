@@ -1,9 +1,8 @@
+import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
 import { SyntheticEvent } from 'react';
 import { create } from 'zustand';
 
-import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
-
-export interface SelectedEventStore {
+interface SelectedEventStore {
     selectedEvent: CalendarEvent | null;
     selectedEventAnchorEl: Element | null;
     setSelectedEvent: (anchorEl: SyntheticEvent | null, selectedEvent: CalendarEvent | null) => void;

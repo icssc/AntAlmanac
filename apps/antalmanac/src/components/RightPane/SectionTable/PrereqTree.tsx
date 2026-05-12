@@ -1,11 +1,11 @@
 import { CourseInfo } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { Button, Popover, useTheme } from '@mui/material';
-import { Prerequisite, PrerequisiteTree } from '@packages/antalmanac-types';
+import { Prerequisite, PrerequisiteTree } from '@packages/anteater-api/types';
 import { FC, useState } from 'react';
 
 import './PrereqTree.css';
 
-export type PrerequisiteNode = Prerequisite | PrerequisiteTree;
+type PrerequisiteNode = Prerequisite | PrerequisiteTree;
 
 const phraseMapping = {
     AND: 'all of',

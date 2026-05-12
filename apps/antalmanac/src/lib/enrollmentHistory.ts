@@ -1,27 +1,8 @@
 import trpc from '$lib/api/trpc';
-import type { WebsocSectionType } from '@packages/antalmanac-types';
+import type { WebsocSectionType } from '@packages/anteater-api/types';
+import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
 
 import { termData } from './termData';
-
-// This represents the enrollment history of a course section during one quarter
-export interface EnrollmentHistoryGraphQL {
-    year: string;
-    quarter: string;
-    department: string;
-    courseNumber: string;
-    sectionCode: string;
-    dates: string[];
-    totalEnrolledHistory: string[];
-    maxCapacityHistory: string[];
-    waitlistHistory: string[];
-    instructors: string[];
-}
-
-export interface EnrollmentHistoryGraphQLResponse {
-    data: {
-        enrollmentHistory: EnrollmentHistoryGraphQL[];
-    };
-}
 
 /**
  * To organize the data and make it easier to graph the enrollment
@@ -97,7 +78,7 @@ export class DepartmentEnrollmentHistory {
      * @param res Array of enrollment histories from Anteater API
      * @returns Array of enrollment histories that we can use for the graph
      */
-    static parseEnrollmentHistoryResponse(res: EnrollmentHistoryGraphQL[]): EnrollmentHistory[] {
+    static parseEnrollmentHistoryResponse(res: EnrollmentHistoryEntry[]): EnrollmentHistory[] {
         const parsedEnrollmentHistory: EnrollmentHistory[] = [];
 
         for (const enrollmentHistory of res) {
