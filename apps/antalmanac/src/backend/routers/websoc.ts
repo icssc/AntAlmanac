@@ -1,6 +1,11 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import type { CourseInfo, WebsocAPIResponse, WebsocSectionType } from '@packages/antalmanac-types';
-import type { WebsocSyllabiResponse } from '@packages/anteater-api/types';
+import type { CourseInfo } from '@packages/antalmanac-types';
+import type {
+    WebsocAPIResponse,
+    WebsocSectionType,
+    WebsocSyllabiQueryParams,
+    WebsocSyllabiResponse,
+} from '@packages/anteater-api/types';
 import { combineWebsocResponses, sortWebsocResponse } from '@packages/anteater-api/utils';
 import { z } from 'zod';
 
@@ -100,7 +105,10 @@ const websocRouter = router({
                 instructor: z.string().optional(),
             })
         )
-        .query(({ input }): Promise<WebsocSyllabiResponse> => aapiClient.websoc.getSyllabi(input)),
+        .query(
+            ({ input }): Promise<WebsocSyllabiResponse> =>
+                aapiClient.websoc.getSyllabi(input as WebsocSyllabiQueryParams)
+        ),
 });
 
 export default websocRouter;

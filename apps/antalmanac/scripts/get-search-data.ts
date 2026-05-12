@@ -195,6 +195,10 @@ async function main() {
 
             const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
             const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
+            if (!res) {
+                throw new Error(`Error fetching section codes for ${term.shortName}.`);
+            }
+
             const parsedSectionData = parseSectionCodes(res);
 
             console.log(
