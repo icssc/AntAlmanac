@@ -27,6 +27,9 @@ export function Export() {
     const [schedules, setSchedules] = useState<ShortCourseSchedule[]>([]);
 
     const handleOpen = useCallback(() => {
+        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+        setSchedules(scheduleSaveState.schedules);
+        setSelectedScheduleIndices(new Set(scheduleSaveState.schedules.map((_, index) => index)));
         setOpenDialog(true);
     }, []);
 
@@ -82,14 +85,6 @@ export function Export() {
             openSnackbar('error', errorMessage);
         }
     }, [selectedScheduleIndices, handleClose]);
-
-    useEffect(() => {
-        if (openDialog) {
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-            setSchedules(scheduleSaveState.schedules);
-            setSelectedScheduleIndices(new Set(scheduleSaveState.schedules.map((_, index) => index)));
-        }
-    }, [openDialog]);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => setSkeletonMode(AppStore.getSkeletonMode());
