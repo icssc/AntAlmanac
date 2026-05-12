@@ -1,4 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
+import type { AggregateGrades, AggregateGradesByOffering } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
 import { router } from '../trpc';
@@ -13,7 +14,7 @@ const gradesRouter = router({
                 ge: z.string().optional(),
             })
         )
-        .query(({ input }) => aapiClient.grades.aggregate(input)),
+        .query(({ input }): Promise<AggregateGrades> => aapiClient.grades.aggregate(input)),
 
     // Mutation so tRPC doesn't batch it with concurrent WebSOC queries.
     aggregateByOffering: aapiProcedure
@@ -30,7 +31,7 @@ const gradesRouter = router({
                     return ge === undefined ? { department: dept, ...rest } : { department: dept, ge, ...rest };
                 })
         )
-        .mutation(({ input }) => aapiClient.grades.aggregateByOffering(input)),
+        .mutation(({ input }): Promise<AggregateGradesByOffering> => aapiClient.grades.aggregateByOffering(input)),
 });
 
 export default gradesRouter;

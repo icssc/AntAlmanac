@@ -1,5 +1,6 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import type { CourseInfo, WebsocAPIResponse, WebsocSectionType } from '@packages/antalmanac-types';
+import type { WebsocSyllabiResponse } from '@packages/anteater-api/types';
 import { combineWebsocResponses, sortWebsocResponse } from '@packages/anteater-api/utils';
 import { z } from 'zod';
 
@@ -38,11 +39,13 @@ async function queryWebsoc(rawParams: Record<string, string>): Promise<WebsocAPI
 }
 
 const websocRouter = router({
-    getOne: aapiProcedure.input(z.record(z.string(), z.string())).query(({ input }) => queryWebsoc(input)),
+    getOne: aapiProcedure
+        .input(z.record(z.string(), z.string()))
+        .query(({ input }): Promise<WebsocAPIResponse> => queryWebsoc(input)),
 
     getManyOfField: aapiProcedure
         .input(z.object({ params: z.record(z.string(), z.string()), fieldName: z.string() }))
-        .query(({ input }) => {
+        .query(({ input }): Promise<WebsocAPIResponse> => {
             const fields = input.params[input.fieldName].trim().replaceAll(' ', '').split(',');
             return Promise.all(fields.map((field) => queryWebsoc({ ...input.params, [input.fieldName]: field }))).then(
                 combineWebsocResponses
@@ -51,37 +54,42 @@ const websocRouter = router({
 
     getMultiple: aapiProcedure
         .input(z.object({ params: z.array(z.record(z.string(), z.string())) }))
-        .query(({ input }) => Promise.all(input.params.map(queryWebsoc)).then(combineWebsocResponses)),
+        .query(
+            ({ input }): Promise<WebsocAPIResponse> =>
+                Promise.all(input.params.map(queryWebsoc)).then(combineWebsocResponses)
+        ),
 
-    getCourseInfo: aapiProcedure.input(z.record(z.string(), z.string())).query(async ({ input }) => {
-        const res = await queryWebsoc(input);
+    getCourseInfo: aapiProcedure
+        .input(z.record(z.string(), z.string()))
+        .query(async ({ input }): Promise<Record<string, CourseInfo>> => {
+            const res = await queryWebsoc(input);
 
-        const entries = res.schools.flatMap((school) =>
-            school.departments.flatMap((dept) =>
-                dept.courses.flatMap((course) => {
-                    const sectionTypes = [...new Set<WebsocSectionType>(course.sections.map((s) => s.sectionType))];
-                    return course.sections.map(
-                        (section) =>
-                            [
-                                section.sectionCode,
-                                {
-                                    courseDetails: {
-                                        deptCode: dept.deptCode,
-                                        courseNumber: course.courseNumber,
-                                        courseTitle: course.courseTitle,
-                                        courseComment: course.courseComment,
-                                        prerequisiteLink: course.prerequisiteLink,
-                                        sectionTypes,
-                                    },
-                                    section,
-                                } satisfies CourseInfo,
-                            ] as const
-                    );
-                })
-            )
-        );
-        return Object.fromEntries(entries);
-    }),
+            const entries = res.schools.flatMap((school) =>
+                school.departments.flatMap((dept) =>
+                    dept.courses.flatMap((course) => {
+                        const sectionTypes = [...new Set<WebsocSectionType>(course.sections.map((s) => s.sectionType))];
+                        return course.sections.map(
+                            (section) =>
+                                [
+                                    section.sectionCode,
+                                    {
+                                        courseDetails: {
+                                            deptCode: dept.deptCode,
+                                            courseNumber: course.courseNumber,
+                                            courseTitle: course.courseTitle,
+                                            courseComment: course.courseComment,
+                                            prerequisiteLink: course.prerequisiteLink,
+                                            sectionTypes,
+                                        },
+                                        section,
+                                    } satisfies CourseInfo,
+                                ] as const
+                        );
+                    })
+                )
+            );
+            return Object.fromEntries(entries);
+        }),
 
     getSyllabi: aapiProcedure
         .input(
@@ -92,7 +100,7 @@ const websocRouter = router({
                 instructor: z.string().optional(),
             })
         )
-        .query(({ input }) => aapiClient.websoc.getSyllabi(input)),
+        .query(({ input }): Promise<WebsocSyllabiResponse> => aapiClient.websoc.getSyllabi(input)),
 });
 
 export default websocRouter;
