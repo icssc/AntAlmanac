@@ -3,9 +3,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { canTermEnrollmentChange } from '$lib/termData';
-import type { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
+import type { CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
-import type { WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
+import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
 
