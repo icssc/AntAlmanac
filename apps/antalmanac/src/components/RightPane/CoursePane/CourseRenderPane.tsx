@@ -19,7 +19,6 @@ import {
     queryManualSearchCourses,
 } from '$lib/multiGeSearch';
 import { getTermLongName } from '$lib/termData';
-import { WebSOC } from '$lib/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -360,7 +359,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
         try {
             const multiSearchData = RightPaneStore.getMultiSearchData();
-            let websocJsonResp;
+            let websocJsonResp: WebsocAPIResponse;
             let fetchedSharedCourseKeys = new Set<string>();
             if (multiSearchData.length > 0) {
                 const { year, quarter } = RightPaneStore.getTermParts();
@@ -382,7 +381,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     }
                 }
                 setUnofferedCourses(unofferedCourses);
-                websocJsonResp = await WebSOC.queryMultiple(offeredCourses);
+                websocJsonResp = await trpc.websoc.getMultiple.query({ params: offeredCourses });
                 await Promise.all(gradeQueries);
             } else {
                 const formData = RightPaneStore.getFormData();

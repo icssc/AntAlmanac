@@ -1,5 +1,5 @@
+import trpc from '$lib/api/trpc';
 import { getDefaultTerm } from '$lib/termData';
-import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type {
     Schedule,
@@ -613,7 +613,7 @@ export class Schedules {
 
             const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
                 const sectionCodes = Array.from(courseSet).join(',');
-                const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
+                const courseInfo = await trpc.websoc.getCourseInfo.query({ term, sectionCodes });
                 courseInfoDict.set(term, courseInfo);
             });
 
