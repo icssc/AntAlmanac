@@ -44,11 +44,16 @@ import { NextResponse } from 'next/server';
 
 const TEAM_ID = '66682RDDDK';
 
-// Universal Links. Current value includes the TestFlight bundle from
-// apps/pwa/src/AntAlmanac.xcodeproj/project.pbxproj. Add the App Store
-// production bundle ID when it's registered.
+// Universal Links. Must list every bundle ID that ships with Associated Domains
+// for antalmanac.com. ASWebAuthenticationSession's `.https(host:path:)` callback (iOS
+// 17.4+) requires a matching `TEAM_ID.bundleId` entry here — if the installed app's
+// bundle ID is missing, OAuth redirects to `/auth/native` open in Safari and the auth
+// flow never returns to the WKWebView wrapper.
+//
+// Keep historical IDs until no installs remain; Xcode `PRODUCT_BUNDLE_IDENTIFIER` lives
+// in apps/pwa/src/AntAlmanac.xcodeproj/project.pbxproj.
 const BUNDLE_IDS: readonly string[] = [
-    'com.antalmanac.testflight1127',
+    'com.antalmanac',
     // 'com.icssc.antalmanac', // App Store production — uncomment when registered
 ];
 
