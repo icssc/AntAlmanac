@@ -60,6 +60,10 @@ async function main() {
     for (let skip = 0; skip < MAX_COURSES; skip += 100) {
         const batch = await aapiClient.courses.list({ take: 100, skip });
         courses.push(...batch);
+
+        if (batch.length < 100) {
+            break;
+        }
     }
     console.log(`Fetched ${courses.length} courses.`);
     const courseMap = new Map<string, CourseSearchResult & { id: string }>();

@@ -30,7 +30,7 @@ function sanitizeWebsocParams(params: Record<string, string>): WebsocQueryParams
     for (const [key, value] of Object.entries(p)) {
         if (value === '') delete p[key];
     }
-    return p;
+    return p as unknown as WebsocQueryParams;
 }
 
 async function queryWebsoc(rawParams: Record<string, string>): Promise<WebsocAPIResponse> {
