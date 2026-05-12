@@ -17,6 +17,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = join(__dirname, '../src/generated/');
 const OUTPUT_FILE = join(OUTPUT_DIR, 'termData.ts');
 
+const aapiClient = createClient({ apiKey: PUBLIC_ANTEATER_API_KEY });
+
 const QUARTER_MAP = {
     Summer1: 'Summer Session 1',
     Summer10wk: '10-wk Summer',
@@ -58,11 +60,9 @@ function serializeTerm(term: CalendarTerm): string {
 }
 
 async function main() {
-    const aapiClient = createClient({ apiKey: PUBLIC_ANTEATER_API_KEY });
-
     console.log('Fetching all calendar terms from Anteater API...');
     const calendarTerms = await aapiClient.calendar.all();
-    console.log(`Fetched ${calendarTerms?.length} calendar terms.`);
+    console.log(`Fetched ${calendarTerms.length} calendar terms.`);
 
     const sortedTerms = calendarTerms.sort((a: CalendarTerm, b: CalendarTerm) => {
         const dateA = new Date(a.instructionStart).getTime();

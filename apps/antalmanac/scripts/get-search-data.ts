@@ -111,10 +111,8 @@ async function main() {
                 await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
             }
             const [year, quarter] = activeTerms[i].shortName.split(' ');
-            const websocData = await aapiClient.websoc.query({
-                year,
-                quarter,
-            } as Parameters<typeof aapiClient.websoc.query>[0]);
+            if (!year || !quarter) throw new Error(`Invalid term format: ${activeTerms[i].shortName}`);
+            const websocData = await aapiClient.websoc.query({ year, quarter });
             const chunk = getWebsocCoursesFromResponse(websocData);
             for (const [key, course] of chunk) {
                 fromWebsoc.set(key, course);
@@ -223,4 +221,4 @@ async function main() {
     console.log('Cache generated.');
 }
 
-main().then();
+main();

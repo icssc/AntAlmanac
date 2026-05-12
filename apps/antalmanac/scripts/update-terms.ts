@@ -22,11 +22,9 @@ const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 async function getSectionCount(term: WebsocTerm) {
     const [year, quarter] = term.shortName.split(' ');
+    if (!year || !quarter) throw new Error(`Invalid term format: ${term.shortName}`);
     console.log(`Checking section count for ${year} ${quarter}...`);
-    const response = await aapiClient.websoc.query({
-        year,
-        quarter,
-    } as Parameters<typeof aapiClient.websoc.query>[0]);
+    const response = await aapiClient.websoc.query({ year, quarter });
     return flattenSections(response).length;
 }
 
