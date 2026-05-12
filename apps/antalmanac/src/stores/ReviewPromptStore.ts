@@ -218,7 +218,11 @@ export const useReviewPromptStore = create(
                         },
                     });
                     trpc.review.dismissReview
-                        .mutate({ professorId: candidate.professorId, courseId: candidate.courseId, term: candidate.term })
+                        .mutate({
+                            professorId: candidate.professorId,
+                            courseId: candidate.courseId,
+                            term: candidate.term,
+                        })
                         .catch(() => {
                             // Non-fatal — worst case the user is prompted again on the next session.
                         });
@@ -294,12 +298,12 @@ export const useReviewPromptStore = create(
                 });
             },
 
-            finishReviewing: () => {
+            finishReviewing: (action = analyticsEnum.review.actions.REVIEW_DONE_CLICKED) => {
                 toStep('hidden', RESET_STATE);
-                openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
+                openSnackbar('success', 'Review submitted! Thanks for helping other Anteaters!');
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
-                    action: analyticsEnum.review.actions.REVIEW_DONE_CLICKED,
+                    action,
                 });
             },
         };

@@ -111,6 +111,7 @@ const analyticsEnum: AnalyticsEnum = {
             SUBMITTED: 'Review Submitted',
             REVIEW_ANOTHER_CLICKED: 'Review Another Clicked',
             REVIEW_DONE_CLICKED: 'Review Done Clicked',
+            REVIEW_SUCCESS_DISMISSED: 'Review Success Dismissed',
         },
     },
 };

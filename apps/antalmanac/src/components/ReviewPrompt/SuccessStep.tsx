@@ -1,5 +1,6 @@
 'use client';
 
+import analyticsEnum from '$lib/analytics/analytics';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { CheckCircleOutline, Close } from '@mui/icons-material';
 import { Box, Button, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
@@ -23,7 +24,11 @@ export function SuccessStep() {
                     </Typography>
                 }
                 action={
-                    <IconButton size="small" onClick={finishReviewing} aria-label="close">
+                    <IconButton
+                        size="small"
+                        onClick={() => finishReviewing(analyticsEnum.review.actions.REVIEW_SUCCESS_DISMISSED)}
+                        aria-label="close"
+                    >
                         <Close fontSize="small" />
                     </IconButton>
                 }
@@ -43,7 +48,7 @@ export function SuccessStep() {
             </CardContent>
 
             <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
-                <Button size="small" color="inherit" onClick={finishReviewing}>
+                <Button size="small" color="inherit" onClick={() => finishReviewing()}>
                     Done
                 </Button>
 
