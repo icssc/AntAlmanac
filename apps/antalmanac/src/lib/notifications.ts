@@ -4,17 +4,11 @@ import { useSessionStore } from '$stores/SessionStore';
 
 class NotificationsClient {
     async getNotifications() {
-        if (useSessionStore.getState().sessionIsValid) {
-            return await trpc.notifications.get.query();
-        }
-        return [];
+        return await trpc.notifications.get.query();
     }
 
     async setNotifications(notifications: Notification[]) {
-        if (useSessionStore.getState().sessionIsValid) {
-            return await trpc.notifications.set.mutate({ notifications });
-        }
-        console.error('No session found to set notifications successfully.');
+        return await trpc.notifications.set.mutate({ notifications });
     }
 
     async updateNotifications(notification: Notification) {
