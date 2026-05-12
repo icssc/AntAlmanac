@@ -57,7 +57,7 @@ export const NotificationsMenu = memo(
                     sectionNum,
                     term,
                     status,
-                    lastUpdated: currStatus,
+                    lastUpdatedStatus: currStatus,
                     lastCodes: restrictions,
                     deptCode,
                     courseNumber,
