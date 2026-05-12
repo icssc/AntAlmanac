@@ -52,10 +52,10 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
         try {
             await processEmailRecord(record);
         } catch (error) {
-            const emailRequest: EmailRequest = JSON.parse(record.body);
-            const logPrefix = emailRequest.LogContext
-                ? `${emailRequest.LogContext.deptCode} ${emailRequest.LogContext.courseNumber} ${emailRequest.LogContext.sectionCode}`
-                : emailRequest.Content.Subject;
+            const { LogContext, Content } = JSON.parse(record.body) as EmailRequest;
+            const logPrefix = LogContext
+                ? `${LogContext.deptCode} ${LogContext.courseNumber} ${LogContext.sectionCode}`
+                : Content.Subject;
             console.error(`[EMAIL ERROR] Failed to send email for ${logPrefix} (record ${record.messageId}):`, error);
             batchItemFailures.push({ itemIdentifier: record.messageId });
         }

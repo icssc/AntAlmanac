@@ -4,6 +4,7 @@ import { flattenSectionsWithCourse } from '@packages/anteater-api/utils';
 import type { CourseDetails } from './helpers/notificationDispatch';
 import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
 import {
+    type ClassStatus,
     filterUsersToNotify,
     getLastUpdatedStatus,
     getSubscriptionSectionCodes,
@@ -31,11 +32,6 @@ function formatMeetingTime(meeting: WebsocSectionMeeting): string {
     return `${formatTime(meeting.startTime)}-${formatTime(meeting.endTime)}`;
 }
 
-interface PreviousState {
-    lastUpdatedStatus: WebsocSection['status'] | null;
-    lastCodes: string | null;
-}
-
 /**
  * Processes a section of a course and sends notifications to users if and only if the status and/or restriction codes have changed.
  * Also updates the subscription status in the database to the most current status and restriction codes.
@@ -45,14 +41,14 @@ async function processSection(
     course: WebsocCourse,
     quarter: string,
     year: string,
-    previousState: PreviousState | undefined,
+    previousState: ClassStatus | undefined,
     sectionSubscriptions: SubscriptionWithUser[]
 ) {
     const { sectionCode, instructors, meetings, status, restrictions, sectionType } = section;
     const instructor = instructors.join(', ');
 
-    const previousStatus = previousState?.lastUpdatedStatus || null;
-    const previousRestrictions = previousState?.lastCodes || '';
+    const previousStatus = previousState?.lastUpdatedStatus ?? null;
+    const previousRestrictions = previousState?.lastCodes ?? '';
 
     const statusChanged = previousStatus !== status;
     const codesChanged = previousRestrictions !== restrictions;
@@ -73,7 +69,7 @@ async function processSection(
 
     const meeting = meetings[0];
     const courseDetails: CourseDetails = {
-        sectionCode: sectionCode,
+        sectionCode,
         instructor,
         days: meeting && !meeting.timeIsTBA ? meeting.days : 'TBA',
         hours: meeting ? formatMeetingTime(meeting) : 'TBA',
@@ -89,7 +85,7 @@ async function processSection(
         year,
     };
 
-    if (users && users.length > 0) {
+    if (users.length > 0) {
         console.log(`  Notifying ${users.length} user(s) for ${course.deptCode} ${course.courseNumber} ${sectionCode}`);
         await sendNotification(courseDetails, users, statusChanged, codesChanged);
     } else {
@@ -126,7 +122,7 @@ async function processBatch(batch: string[], quarter: string, year: string) {
 
     for (const { section, course } of flatSections) {
         const previousState = previousStatuses.get(section.sectionCode);
-        const sectionSubscriptions = allSubscriptions.get(section.sectionCode) || [];
+        const sectionSubscriptions = allSubscriptions.get(section.sectionCode) ?? [];
         await processSection(section, course, quarter, year, previousState, sectionSubscriptions);
     }
 }

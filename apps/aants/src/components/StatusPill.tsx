@@ -1,19 +1,21 @@
+import type { CSSProperties } from 'react';
+
 import { STATUS_PILL_DEFAULT, STATUS_PILL_STYLES } from '../theme';
 
-const pillBase = {
+const pillBase: CSSProperties = {
     padding: '4px 10px',
-    display: 'inline-block' as const,
-    fontWeight: '600' as const,
-    borderRadius: '9999px' as const,
+    display: 'inline-block',
+    fontWeight: '600',
+    borderRadius: '9999px',
 };
 
-const STATUS_STYLES: Record<string, React.CSSProperties> = {
+const STATUS_STYLES: Record<string, CSSProperties> = {
     OPEN: { ...pillBase, ...STATUS_PILL_STYLES.OPEN },
     WAITLISTED: { ...pillBase, ...STATUS_PILL_STYLES.WAITLISTED },
     FULL: { ...pillBase, ...STATUS_PILL_STYLES.FULL },
 };
 
-const statusPillDefault: React.CSSProperties = { ...pillBase, ...STATUS_PILL_DEFAULT };
+const statusPillDefault: CSSProperties = { ...pillBase, ...STATUS_PILL_DEFAULT };
 
 function getStatusPillStyle(status: string) {
     return STATUS_STYLES[status] ?? statusPillDefault;

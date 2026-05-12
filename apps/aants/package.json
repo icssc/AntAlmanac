@@ -6,7 +6,6 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "aants": "tsx src/index.ts",
-        "template": "tsx scripts/createTemplate.ts",
         "preview:email": "tsx watch scripts/previewEmail.tsx"
     },
     "keywords": [],

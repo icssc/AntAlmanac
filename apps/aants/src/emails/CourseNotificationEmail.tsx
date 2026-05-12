@@ -235,4 +235,3 @@ export function CourseNotificationEmail({
     );
 }
 
-export default CourseNotificationEmail;

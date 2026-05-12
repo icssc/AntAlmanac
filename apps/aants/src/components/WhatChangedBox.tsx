@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 import { Section, Text } from '@react-email/components';
 
 import { BLUE } from '../theme';
@@ -12,6 +14,15 @@ interface WhatChangedBoxProps {
     statusChange?: StatusChange | null;
     restrictionCodesChange?: { from: string; to: string } | null;
 }
+
+const codeBadge: CSSProperties = {
+    padding: '4px 10px',
+    display: 'inline-block',
+    fontWeight: '600',
+    borderRadius: '6px',
+    backgroundColor: '#f1f5f9',
+    color: '#000000',
+};
 
 export function WhatChangedBox({ statusChange, restrictionCodesChange }: WhatChangedBoxProps) {
     if (!statusChange && !restrictionCodesChange) return null;
@@ -68,31 +79,9 @@ export function WhatChangedBox({ statusChange, restrictionCodesChange }: WhatCha
                                 Restriction Codes:
                             </td>
                             <td style={{ padding: '4px 0', fontSize: '14px' }}>
-                                <span
-                                    style={{
-                                        padding: '4px 10px',
-                                        display: 'inline-block' as const,
-                                        fontWeight: '600' as const,
-                                        borderRadius: '6px' as const,
-                                        backgroundColor: '#f1f5f9',
-                                        color: '#000000',
-                                    }}
-                                >
-                                    {restrictionCodesChange.from}
-                                </span>
+                                <span style={codeBadge}>{restrictionCodesChange.from}</span>
                                 <span style={{ margin: '0 6px' }}>→</span>
-                                <span
-                                    style={{
-                                        padding: '4px 10px',
-                                        display: 'inline-block' as const,
-                                        fontWeight: '600' as const,
-                                        borderRadius: '6px' as const,
-                                        backgroundColor: '#f1f5f9',
-                                        color: '#000000',
-                                    }}
-                                >
-                                    {restrictionCodesChange.to}
-                                </span>
+                                <span style={codeBadge}>{restrictionCodesChange.to}</span>
                             </td>
                         </tr>
                     )}

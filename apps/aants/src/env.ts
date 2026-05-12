@@ -3,27 +3,17 @@ import { z } from 'zod';
 
 dotenv.config({ path: '../.env' });
 
-/**
- * Environment variables required by aants to connect to the RDS instance.
- */
-const rdsEnvSchema = z.object({
+export const aantsEnvSchema = z.object({
+    NODE_ENV: z.string().optional(),
+    /** Environment tier — required so DB queries filter to the correct row set. */
+    STAGE: z.string(),
+    /** Postgres connection string for the RDS instance. */
     DB_URL: z.string(),
-});
-
-/**
- * Environment variables required by aants for the email SQS queue.
- */
-const queueEnvSchema = z.object({
+    /** SQS queue URL for the email worker. */
     QUEUE_URL: z.string(),
+    /** Anteater API key for WebSoc queries. */
+    ANTEATER_API_KEY: z.string(),
 });
 
-/**
- * Environment variables required by aants during runtime.
- */
-export const aantsEnvSchema = z
-    .object({
-        NODE_ENV: z.string().optional(),
-        STAGE: z.string().optional(),
-    })
-    .merge(rdsEnvSchema)
-    .merge(queueEnvSchema);
+/** Parsed and validated runtime environment. Import this instead of accessing process.env directly. */
+export const env = aantsEnvSchema.parse(process.env);

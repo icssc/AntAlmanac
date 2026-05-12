@@ -5,13 +5,15 @@ import { type User as DbUser, users } from '@packages/db/src/schema/auth/user';
 import { type Subscription, subscriptions } from '@packages/db/src/schema/subscription';
 import { and, eq, inArray } from 'drizzle-orm';
 
-const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
+import { env } from '../env';
+
+const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 
 interface TermGrouping {
     [term: string]: string[];
 }
 
-interface ClassStatus {
+export interface ClassStatus {
     lastUpdatedStatus: WebsocSection['status'] | null;
     lastCodes: string | null;
 }
@@ -52,7 +54,6 @@ async function getUpdatedClasses(
  */
 async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> {
     try {
-        const stage = process.env.STAGE!;
         const result = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
@@ -60,9 +61,8 @@ async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> 
                 year: subscriptions.year,
             })
             .from(subscriptions)
-            .where(eq(subscriptions.environment, stage));
+            .where(eq(subscriptions.environment, env.STAGE));
 
-        // group together by year and quarter
         const groupedByTerm = result.reduce<TermGrouping>((acc, { quarter, year, sectionCode }) => {
             if (quarter && year) {
                 const term = `${quarter}-${year}`;
@@ -96,16 +96,15 @@ async function updateSubscriptionStatus(
     lastCodes: string
 ): Promise<void> {
     try {
-        const stage = process.env.STAGE!;
         await db
             .update(subscriptions)
-            .set({ lastUpdatedStatus: lastUpdatedStatus, lastCodes: lastCodes })
+            .set({ lastUpdatedStatus, lastCodes })
             .where(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
                     eq(subscriptions.sectionCode, sectionCode),
-                    eq(subscriptions.environment, stage)
+                    eq(subscriptions.environment, env.STAGE)
                 )
             );
     } catch (error) {
@@ -132,7 +131,6 @@ async function getLastUpdatedStatus(
     }
 
     try {
-        const stage = process.env.STAGE!;
         const rows = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
@@ -144,7 +142,7 @@ async function getLastUpdatedStatus(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.environment, stage),
+                    eq(subscriptions.environment, env.STAGE),
                     inArray(subscriptions.sectionCode, sectionCodes)
                 )
             );
@@ -184,7 +182,6 @@ async function getSubscriptionsForSections(
     if (sectionCodes.length === 0) return result;
 
     try {
-        const stage = process.env.STAGE!;
         const rows = await db
             .select({
                 sectionCode: subscriptions.sectionCode,
@@ -202,13 +199,13 @@ async function getSubscriptionsForSections(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.environment, stage),
+                    eq(subscriptions.environment, env.STAGE),
                     inArray(subscriptions.sectionCode, sectionCodes)
                 )
             );
 
         for (const row of rows) {
-            const existing = result.get(row.sectionCode) || [];
+            const existing = result.get(row.sectionCode) ?? [];
             existing.push(row);
             result.set(row.sectionCode, existing);
         }
@@ -230,21 +227,13 @@ function filterUsersToNotify(
 ): User[] {
     return subscriptionsForSection
         .filter((sub) => {
-            if (statusChanged && codesChanged) {
-                const statusMatch =
-                    (status === 'OPEN' && sub.notifyOnOpen) ||
+            const statusMatch =
+                statusChanged &&
+                ((status === 'OPEN' && sub.notifyOnOpen) ||
                     (status === 'Waitl' && sub.notifyOnWaitlist) ||
-                    (status === 'FULL' && sub.notifyOnFull);
-                return statusMatch || sub.notifyOnRestriction;
-            } else if (statusChanged) {
-                if (status === 'OPEN') return sub.notifyOnOpen;
-                if (status === 'Waitl') return sub.notifyOnWaitlist;
-                if (status === 'FULL') return sub.notifyOnFull;
-                return false;
-            } else if (codesChanged) {
-                return sub.notifyOnRestriction;
-            }
-            return false;
+                    (status === 'FULL' && sub.notifyOnFull));
+            const codesMatch = codesChanged && sub.notifyOnRestriction;
+            return statusMatch || codesMatch;
         })
         .map((sub) => ({
             userId: sub.userId,

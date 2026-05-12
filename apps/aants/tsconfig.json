@@ -11,6 +11,6 @@
         "resolveJsonModule": true,
         "jsx": "react-jsx"
     },
-    "include": ["src/**/*", "drizzle.config.ts", "scripts"],
+    "include": ["src/**/*", "scripts"],
     "exclude": ["node_modules", "dist"]
 }

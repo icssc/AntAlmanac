@@ -1,8 +1,8 @@
-import { WebsocSection } from '@packages/anteater-api/types';
+import type { WebsocSection } from '@packages/anteater-api/types';
 import { render, toPlainText } from '@react-email/render';
 
 import { CourseNotificationEmail } from '../emails/CourseNotificationEmail';
-import { aantsEnvSchema } from '../env';
+import { env } from '../env';
 import { queueEmail } from './emailQueue';
 import { User } from './subscriptionData';
 
@@ -25,8 +25,6 @@ export interface CourseDetails {
 
 const BATCH_SIZE = 450;
 
-const env = aantsEnvSchema.parse(process.env);
-
 /**
  * Batches an array of course codes into smaller arrays based on a predefined BATCH_SIZE.
  * @param codes - An array of course codes to be batched.
@@ -42,27 +40,14 @@ function batchCourseCodes(codes: string[]): string[][] {
 
 /**
  * Returns a formatted timestamp string for the current date and time in PST/PDT.
- * @returns A string representing the current date and time in the format "HH:MM AM/PM on MM/DD/YYYY" in Pacific time.
+ * @returns A string like "3:30 PM on 5/12/2026" in Pacific time.
  */
 function getFormattedTime(): string {
     const now = new Date();
-    const timeZone = 'America/Los_Angeles'; // PST/PDT
-
-    return (
-        new Intl.DateTimeFormat('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true,
-            timeZone,
-        }).format(now) +
-        ' on ' +
-        new Intl.DateTimeFormat('en-US', {
-            month: 'numeric',
-            day: 'numeric',
-            year: 'numeric',
-            timeZone,
-        }).format(now)
-    );
+    const timeZone = 'America/Los_Angeles';
+    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone });
+    const date = now.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric', timeZone });
+    return `${time} on ${date}`;
 }
 
 /**
@@ -101,15 +86,15 @@ async function sendNotification(
 
         const statusChange = statusChanged
             ? {
-                  from: formerStatus !== null ? (formerStatusLabel ?? '—') : '—',
+                  from: formerStatus !== null ? formerStatusLabel : '—',
                   to: status,
               }
             : null;
 
         const restrictionCodesChange = codesChanged
             ? {
-                  from: formerRestrictionCodes !== null && formerRestrictionCodes !== '' ? formerRestrictionCodes : '—',
-                  to: restrictionCodes !== null && restrictionCodes !== '' ? restrictionCodes : '—',
+                  from: formerRestrictionCodes !== null ? formerRestrictionCodes : '—',
+                  to: restrictionCodes !== '' ? restrictionCodes : '—',
               }
             : null;
 

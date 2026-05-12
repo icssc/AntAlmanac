@@ -1,5 +1,5 @@
 /*
- * Run pnpm run preview:email to view AANTS email template in browswer
+ * Run pnpm run preview:email to view AANTS email template in browser
  */
 
 import { createServer } from 'http';
