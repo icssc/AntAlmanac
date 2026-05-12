@@ -1,4 +1,4 @@
-import { getGoogleAccount, SessionData } from '$lib/auth/authClient';
+import { SessionData } from '$lib/auth/authClient';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { create } from 'zustand';
 
@@ -16,9 +16,6 @@ interface SessionState {
 
     hasCheckedAuth: boolean;
     setHasCheckedAuth: (hasCheckedAuth: boolean) => void;
-
-    googleId: string | null;
-    setGoogleId: (id: string) => void;
 
     isNewUser: boolean;
     setIsNewUser: (isNewUser: boolean) => void;
@@ -39,17 +36,11 @@ export const useSessionStore = create<SessionState>((set) => {
         avatar: null,
         sessionIsValid: false,
         hasCheckedAuth: false,
-        googleId: null,
         isNewUser: false,
         areSchedulesLoaded: false,
 
         updateSession: async (sessionData: SessionData) => {
-            const accountInfo = await getGoogleAccount();
-
-            const googleId = accountInfo?.accountId;
-            if (googleId) {
-                usePlannerStore.getState().loadPlannerRoadmaps(googleId);
-            }
+            usePlannerStore.getState().loadPlannerRoadmaps();
 
             set({
                 session: sessionData.session,
@@ -58,7 +49,6 @@ export const useSessionStore = create<SessionState>((set) => {
                 user: sessionData.user,
                 userId: sessionData.user.id,
                 isGoogleUser: true,
-                googleId: googleId,
                 email: sessionData.user.email,
                 name: sessionData.user.name,
                 avatar: sessionData.user.avatar,
@@ -66,7 +56,6 @@ export const useSessionStore = create<SessionState>((set) => {
         },
 
         setHasCheckedAuth: (hasCheckedAuth) => set({ hasCheckedAuth }),
-        setGoogleId: (id) => set({ googleId: id }),
         setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
         setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),
     };

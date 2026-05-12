@@ -79,22 +79,6 @@ export class RDS {
     }
 
     /**
-     * Retrieves a google ID by their user ID from the database.
-     *
-     * @param db - The database to use for the query.
-     * @param userId - The ID of the user to retrieve.
-     * @returns The google ID if found, otherwise null.
-     */
-    static async getGoogleIdByUserId(db: DatabaseOrTransaction, userId: string): Promise<string | null> {
-        return db
-            .select({ providerAccountId: accounts.providerAccountId })
-            .from(accounts)
-            .where(eq(accounts.userId, userId))
-            .limit(1)
-            .then((res) => (res.length > 0 ? res[0].providerAccountId : null));
-    }
-
-    /**
      * Upserts the given user's schedules and selected schedule index.
      *
      * @param db The Drizzle client or transaction object
