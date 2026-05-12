@@ -35,7 +35,7 @@ async function updateTerms() {
         console.log('Fetching terms from Anteater API...');
         const terms = await aapiClient.websoc.getTerms();
 
-        if (!terms || terms.length === 0) {
+        if (!terms.length) {
             throw new Error('API returned empty term data');
         }
 

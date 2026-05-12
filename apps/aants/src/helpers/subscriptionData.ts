@@ -39,7 +39,7 @@ async function getUpdatedClasses(
             year,
             quarter,
             sectionCodes: sections.join(','),
-        } as Parameters<typeof aapiClient.websoc.query>[0]);
+        });
     } catch (error) {
         console.error('Error getting class information:', error);
         return undefined;
