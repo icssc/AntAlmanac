@@ -16,7 +16,7 @@ import {
     Session,
     subscriptions,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, sql } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -123,7 +123,8 @@ export class RDS {
             tx
                 .select()
                 .from(users)
-                .where(eq(users.email, email))
+                .where(sql`lower(${users.email}) = lower(${email.trim()})`)
+                .limit(1)
                 .then((res) => res[0])
         );
     }
