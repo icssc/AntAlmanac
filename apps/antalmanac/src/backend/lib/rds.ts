@@ -414,6 +414,47 @@ export class RDS {
     }
 
     /**
+     * Retrieves a schedule by its ID. All schedules are publicly accessible via their ID.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param scheduleId - The unique identifier of the schedule.
+     * @returns A promise that resolves to a ShortCourseSchedule object, or null if the schedule is not found.
+     */
+    static async getScheduleById(
+        db: DatabaseOrTransaction,
+        scheduleId: string
+    ): Promise<(ShortCourseSchedule & { id: string; index: number; userId: string }) | null> {
+        return db.transaction(async (tx) => {
+            const schedule = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .then((res) => res[0]);
+
+            if (!schedule) {
+                return null;
+            }
+
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+            const scheduleArray = RDS.aggregateUserData(sectionResults, customEventResults);
+            const result = scheduleArray[0];
+            if (!result) return null;
+            return { ...result, userId: schedule.userId };
+        });
+    }
+
+    /**
      * Retrieves user data by user ID, including schedules and custom events.
      *
      * @param db - The database or transaction object to use for the query.
