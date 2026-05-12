@@ -1,5 +1,6 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { getGoogleAccountFromData } from '$lib/auth/authUtils';
 import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { getErrorMessage } from '$lib/utils';
@@ -78,6 +79,5 @@ export async function getGoogleAccount() {
         console.error('Error occurred while getting account info:', error);
         return null;
     }
-    const [account] = data;
-    return account;
+    return getGoogleAccountFromData(data);
 }

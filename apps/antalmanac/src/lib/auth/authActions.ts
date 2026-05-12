@@ -3,7 +3,7 @@
 import { auth, AuthAdditionalData, AuthorizationUrlParams } from '$lib/auth/auth';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { Provider } from '$lib/auth/authTypes';
-import { getIcsscProviderName } from '$lib/auth/authUtils';
+import { getGoogleAccountFromData, getIcsscProviderName } from '$lib/auth/authUtils';
 import { headers } from 'next/headers';
 
 interface GetSignInUrlOptions {
@@ -41,8 +41,7 @@ export async function fetchGoogleAccount() {
         if (!accounts || accounts.length === 0) {
             throw new Error('No accounts were found');
         }
-        const [account] = accounts;
-        return account;
+        return getGoogleAccountFromData(accounts);
     } catch (error) {
         console.error('Error occurred while fetching account info:', error);
         return null;
