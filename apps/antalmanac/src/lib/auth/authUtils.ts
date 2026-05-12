@@ -1,9 +1,4 @@
-import { Accounts } from '$lib/auth/auth';
 import { Provider } from '$lib/auth/authTypes';
-
-export function removeGoogleIdPrefix(prefixedGoogleId: string) {
-    return prefixedGoogleId.replace('google_', '');
-}
 
 export function getAuthReturnUrl() {
     return `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -73,20 +68,4 @@ export function getIcsscProviderName(provider: Provider) {
             console.error('Unrecognized provider:', provider);
             return '';
     }
-}
-
-function getAccountTypeFromId(accountId: string) {
-    const prefix = accountId.split('_')[0];
-    switch (prefix) {
-        case 'google':
-            return Provider.Google;
-        case 'apple':
-            return Provider.Apple;
-        default:
-            throw new Error(`Unknown provider prefix: ${prefix}`);
-    }
-}
-
-export function getGoogleAccountFromData(accounts: Accounts) {
-    return accounts.find((account) => getAccountTypeFromId(account.accountId) === Provider.Google);
 }

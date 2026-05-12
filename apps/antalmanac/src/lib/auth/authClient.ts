@@ -1,6 +1,5 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
-import { getGoogleAccountFromData } from '$lib/auth/authUtils';
 import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { getErrorMessage } from '$lib/utils';
@@ -56,16 +55,4 @@ export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}
     } else {
         window.location.reload();
     }
-}
-
-/**
- * Returns the current user's google account info if valid, `null` if invalid.
- */
-export async function getGoogleAccount() {
-    const { data, error } = await authClient.listAccounts();
-    if (!data || data.length === 0 || error) {
-        console.error('Error occurred while getting account info:', error);
-        return null;
-    }
-    return getGoogleAccountFromData(data);
 }

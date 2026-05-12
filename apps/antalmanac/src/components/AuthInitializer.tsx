@@ -30,11 +30,10 @@ const AuthInitializer = () => {
     const hasInitializedRef = useRef(false);
 
     const setOpenLoadingSchedule = useScheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
-    const { updateSession, setAreSchedulesLoaded, googleId, setHasCheckedAuth } = useSessionStore(
+    const { updateSession, setAreSchedulesLoaded, setHasCheckedAuth } = useSessionStore(
         useShallow((state) => ({
             updateSession: state.updateSession,
             setAreSchedulesLoaded: state.setAreSchedulesLoaded,
-            googleId: state.googleId,
             setHasCheckedAuth: state.setHasCheckedAuth,
         }))
     );
@@ -62,7 +61,7 @@ const AuthInitializer = () => {
             return;
         }
 
-        if (savedData && googleId) {
+        if (savedData) {
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             if (savedUserId) {
