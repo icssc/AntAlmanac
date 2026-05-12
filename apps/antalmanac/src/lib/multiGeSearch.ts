@@ -1,6 +1,6 @@
 import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { WebSOC } from '$lib/websoc';
-import { GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/antalmanac-types';
+import { AACourse, GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/antalmanac-types';
 
 const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
 
@@ -129,3 +129,29 @@ export async function queryManualSearchCourses(params: Record<string, string>) {
 }
 
 export const getMultiGeCourseKey = getCourseKey;
+
+export function getMultiGeOrBannerIdx(
+    courseData: (WebsocSchool | WebsocDepartment | AACourse)[],
+    sharedCourseKeys: Set<string>
+): number {
+    let orBannerIdx = -1;
+    let currSchoolIdx = -1;
+    let schoolIsAnd = false;
+    for (let i = 0; i < courseData.length; i++) {
+        const item = courseData[i];
+        if ('departments' in item) {
+            if (currSchoolIdx !== -1 && !schoolIsAnd) {
+                orBannerIdx = currSchoolIdx;
+                break;
+            }
+            currSchoolIdx = i;
+            schoolIsAnd = false;
+        } else if ('sections' in item && sharedCourseKeys.has(getCourseKey(item.deptCode, item.courseNumber))) {
+            schoolIsAnd = true;
+        }
+    }
+    if (orBannerIdx === -1 && currSchoolIdx !== -1 && !schoolIsAnd) {
+        orBannerIdx = currSchoolIdx;
+    }
+    return orBannerIdx;
+}

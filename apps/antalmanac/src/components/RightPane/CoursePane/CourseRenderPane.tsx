@@ -13,6 +13,7 @@ import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import {
     getMultiGeCourseKey,
+    getMultiGeOrBannerIdx,
     gradesGeForManualSearch,
     isMultiGeSelection,
     queryManualSearchCourses,
@@ -469,30 +470,8 @@ export default function CourseRenderPane(props: { id?: number }) {
     const ge = RightPaneStore.getFormData().ge;
     const isMultiGeSearch = isMultiGeSelection(ge);
     const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
-    let orBannerIdx = -1;
-    if (isMultiGeSearch && !showNoIntersection) {
-        let currSchoolIdx = -1;
-        let schoolIsAnd = false;
-        for (let i = 0; i < courseData.length; i++) {
-            const item = courseData[i];
-            if ('departments' in item) {
-                if (currSchoolIdx !== -1 && !schoolIsAnd) {
-                    orBannerIdx = currSchoolIdx;
-                    break;
-                }
-                currSchoolIdx = i;
-                schoolIsAnd = false;
-            } else if (
-                'sections' in item &&
-                sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
-            ) {
-                schoolIsAnd = true;
-            }
-        }
-        if (orBannerIdx === -1 && currSchoolIdx !== -1 && !schoolIsAnd) {
-            orBannerIdx = currSchoolIdx;
-        }
-    }
+    const orBannerIdx =
+        isMultiGeSearch && !showNoIntersection ? getMultiGeOrBannerIdx(courseData, sharedCourseKeys) : -1;
 
     return (
         <>
