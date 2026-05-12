@@ -80,22 +80,6 @@ export class RDS {
             .then((res) => res[0]);
     }
 
-    /**
-     * Retrieves a google ID by their user ID from the database.
-     *
-     * @param db - The database to use for the query.
-     * @param userId - The ID of the user to retrieve.
-     * @returns The google ID if found, otherwise null.
-     */
-    static async getGoogleIdByUserId(db: DatabaseOrTransaction, userId: string): Promise<string | null> {
-        return db
-            .select({ providerAccountId: accounts.providerAccountId })
-            .from(accounts)
-            .where(eq(accounts.userId, userId))
-            .limit(1)
-            .then((res) => (res.length > 0 ? res[0].providerAccountId : null));
-    }
-
     static async registerUserAccount(
         db: DatabaseOrTransaction,
         accountType: Account['accountType'],
@@ -104,14 +88,12 @@ export class RDS {
         email?: string,
         avatar?: string
     ) {
-        if (accountType !== 'OIDC') {
-            throw new Error('Invalid account type. Must be OIDC.');
+        if (accountType !== 'OIDC' && accountType !== 'APPLE') {
+            throw new Error('Invalid account type. Must be OIDC or APPLE.');
         }
 
-        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
-
         return db.transaction(async (tx) => {
-            const existingAccount = await this.getAccountByProviderId(tx, accountType, oidcProviderId);
+            const existingAccount = await this.getAccountByProviderId(tx, accountType, providerId);
 
             if (existingAccount) {
                 return { ...existingAccount, newUser: false };
@@ -125,7 +107,11 @@ export class RDS {
             if (existingUser) {
                 await tx
                     .update(users)
-                    .set({ name, email: email ?? '', avatar: avatar ?? existingUser.avatar })
+                    .set({
+                        name: existingUser.name || name,
+                        email: existingUser.email || email || '',
+                        avatar: existingUser.avatar || avatar || '',
+                    })
                     .where(eq(users.id, existingUser.id));
                 userId = existingUser.id;
                 newUser = false;
@@ -141,7 +127,7 @@ export class RDS {
 
             const account = await tx
                 .insert(accounts)
-                .values({ userId, accountType, providerAccountId: oidcProviderId })
+                .values({ userId, accountType, providerAccountId: providerId })
                 .onConflictDoUpdate({
                     target: [accounts.userId, accounts.accountType],
                     set: buildConflictUpdateSet(accounts, {
@@ -749,18 +735,19 @@ export class RDS {
     }
 
     /**
-     * Deletes a notification for a specified user and environment.
+     * Deletes a subscription row for the given user, section, term, and environment.
      *
      * @param db - The database or transaction object to use for the operation.
-     * @param notification - The notification object type we are deleting.
      * @param userId - The ID of the user for whom we're deleting a notification.
+     * @param sectionCode - WebSOC section code.
+     * @param term - Term string.
      * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
-     * @returns A promise that deletes a user's notification.
      */
     static async deleteNotification(
         db: DatabaseOrTransaction,
-        notification: Notification,
         userId: string,
+        sectionCode: string,
+        term: string,
         environment: string
     ) {
         return db
@@ -768,9 +755,9 @@ export class RDS {
             .where(
                 and(
                     eq(subscriptions.userId, userId),
-                    eq(subscriptions.sectionCode, notification.sectionCode),
-                    eq(subscriptions.year, notification.term.split(' ')[0]),
-                    eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                    eq(subscriptions.sectionCode, sectionCode),
+                    eq(subscriptions.year, term.split(' ')[0]),
+                    eq(subscriptions.quarter, term.split(' ')[1]),
                     eq(subscriptions.environment, environment)
                 )
             );

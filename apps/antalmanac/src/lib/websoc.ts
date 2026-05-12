@@ -1,5 +1,5 @@
 import trpc from '$lib/api/trpc';
-import { WebsocAPIResponse, WebsocSyllabiQueryParams } from '@packages/antalmanac-types';
+import { WebsocAPIResponse, WebsocSyllabiQueryParams } from '@packages/anteater-api/types';
 
 type CacheEntry = WebsocAPIResponse & {
     timestamp: number;
@@ -42,10 +42,6 @@ class _WebSOC {
 
     async getCourseInfo(params: Record<string, string>) {
         return await trpc.websoc.getCourseInfo.query(params);
-    }
-
-    async getDepartments() {
-        return await trpc.websoc.getDepartments.query();
     }
 
     async getSyllabi(params: WebsocSyllabiQueryParams) {

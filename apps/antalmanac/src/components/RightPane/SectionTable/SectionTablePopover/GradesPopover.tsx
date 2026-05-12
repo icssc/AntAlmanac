@@ -1,4 +1,3 @@
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades, type GradesProps } from '$lib/grades';
 import {
     Box,
@@ -16,7 +15,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsT
 
 type GradeView = 'instructor' | 'overall';
 
-export interface GradeData {
+interface GradeData {
     grades: {
         name: string;
         all: number;
@@ -61,7 +60,7 @@ async function getGradeData(
     return { grades, courseGrades, totalGrades };
 }
 
-export interface GradesPopoverProps {
+interface GradesPopoverProps {
     deptCode: string;
     courseNumber: string;
     instructor?: string;
@@ -70,7 +69,7 @@ export interface GradesPopoverProps {
 
 export function GradesPopover(props: GradesPopoverProps) {
     const theme = useTheme();
-    const secondaryColor = useSecondaryColor();
+    const secondaryColor = theme.palette.secondary.main;
 
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
 

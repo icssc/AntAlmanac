@@ -1,3 +1,6 @@
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
 import {
     Box,
@@ -14,10 +17,6 @@ import {
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useMemo, useState } from 'react';
-
-import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -139,7 +138,7 @@ export function ColumnToggleDropdown() {
     );
 }
 
-export interface CoursePaneButtonRowProps {
+interface CoursePaneButtonRowProps {
     /**
      * Whether the search results are currently being shown.
      *

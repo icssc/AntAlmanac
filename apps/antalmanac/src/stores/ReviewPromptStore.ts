@@ -17,9 +17,9 @@ export const REVIEW_TAGS = [
     'Test Heavy',
 ] as const;
 
-export type ReviewTag = (typeof REVIEW_TAGS)[number];
+type ReviewTag = (typeof REVIEW_TAGS)[number];
 
-export type ReviewCandidate = {
+type ReviewCandidate = {
     /** e.g. "ICS 31" */
     courseId: string;
     courseTitle: string;
@@ -88,8 +88,8 @@ export const useReviewPromptStore = create(
                     continue;
                 }
 
-                const instructor = course.section.instructors?.[0];
-                if (!instructor) {
+                const instructor = course.section.instructors.at(0)?.trim();
+                if (!instructor || instructor === 'STAFF') {
                     continue;
                 }
 
@@ -108,7 +108,9 @@ export const useReviewPromptStore = create(
                 });
             }
 
-            if (candidates.length === 0) return;
+            if (candidates.length === 0) {
+                return;
+            }
 
             let dismissedSet = new Set<string>();
             let reviewedSet = new Set<string>();
@@ -118,8 +120,8 @@ export const useReviewPromptStore = create(
                     trpc.review.getReviewedCombos.query(),
                     trpc.review.getReviewPromptLastInteractionAt.query(),
                 ]);
-                dismissedSet = new Set(dismissed.map((d) => `${d.courseId}::${d.professorId}`));
-                reviewedSet = new Set(reviewed.map((r) => `${r.courseId}::${r.professorId}`));
+                dismissedSet = new Set(dismissed.map((d) => `${d.courseId}::${d.professorId}::${d.term}`));
+                reviewedSet = new Set(reviewed.map((r) => `${r.courseId}::${r.professorId}::${r.term}`));
 
                 if (cooldown.lastInteractionAt) {
                     const elapsed = Date.now() - new Date(cooldown.lastInteractionAt).getTime();
@@ -133,7 +135,7 @@ export const useReviewPromptStore = create(
             }
 
             const eligible = candidates.filter((c) => {
-                const key = `${c.courseId}::${c.professorId}`;
+                const key = `${c.courseId}::${c.professorId}::${c.term}`;
                 return !dismissedSet.has(key) && !reviewedSet.has(key);
             });
 
@@ -190,7 +192,11 @@ export const useReviewPromptStore = create(
                     },
                 });
                 trpc.review.dismissReview
-                    .mutate({ professorId: candidate.professorId, courseId: candidate.courseId })
+                    .mutate({
+                        professorId: candidate.professorId,
+                        courseId: candidate.courseId,
+                        term: candidate.term,
+                    })
                     .catch(() => {
                         // Non-fatal — worst case the user is prompted again on the next session.
                     });

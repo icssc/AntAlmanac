@@ -1,5 +1,5 @@
 {
-  "id": "8243fae1-493b-4b7d-9248-7d3d292b71dc",
+  "id": "86fe6712-ef97-4261-a30c-fdc3387d1268",
   "prevId": "91ccb8bb-8fda-4075-a0bf-7e2a7f61010b",
   "version": "7",
   "dialect": "postgresql",
@@ -249,6 +249,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "term": {
+          "name": "term",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -297,7 +303,8 @@
           "columns": [
             "user_id",
             "professor_id",
-            "course_id"
+            "course_id",
+            "term"
           ]
         }
       },
@@ -483,7 +490,8 @@
           "columns": [
             "user_id",
             "professor_id",
-            "course_id"
+            "course_id",
+            "quarter"
           ]
         }
       },
@@ -598,13 +606,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "visibility": {
-          "name": "visibility",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'visible'"
         },
         "created_at": {
           "name": "created_at",

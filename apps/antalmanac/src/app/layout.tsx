@@ -5,7 +5,7 @@ import type { WebApplication, WebSite, WithContext } from 'schema-dts';
 import './globals.css';
 
 const ANTALMANAC_DESCRIPTION =
-    "AntAlmanac is UCI's most-used course and schedule planner. Search 140+ departments, build your weekly class schedule, check grade distributions, and see your classes on an interactive campus map. Trusted by UCI students every quarter.";
+    'Search UCI courses across 140+ departments and build your class schedule with AntAlmanac. Check grade distributions, view classes on a campus map, and plan your ideal quarter.';
 
 export const metadata: Metadata = {
     title: 'AntAlmanac — UCI Course & Schedule Planner',

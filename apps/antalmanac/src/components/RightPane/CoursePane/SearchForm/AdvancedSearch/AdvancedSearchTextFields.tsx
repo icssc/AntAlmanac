@@ -8,13 +8,15 @@ import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/Label
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { safeUnreachableCase } from '$lib/utils';
+import { replaceUrlSearchParams, safeUnreachableCase } from '$lib/utils';
+import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 type InputEvent =
     | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -73,11 +75,13 @@ export function AdvancedSearchTextFields() {
     const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
-    const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
-    const isLoggedIn = useSessionStore((s) => s.googleId !== null);
+    const { plannerRoadmaps, updateTakenCourses } = usePlannerStore(
+        useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, updateTakenCourses: s.updateTakenCourses }))
+    );
+    const { sessionIsValid } = useSessionStore(useShallow((s) => ({ sessionIsValid: s.sessionIsValid })));
     const [signInOpen, setSignInOpen] = useState(false);
 
-    const resetField = useCallback(() => {
+    const syncFieldStates = useCallback(() => {
         const formData = RightPaneStore.getFormData();
         setInstructor(formData.instructor);
         setUnits(formData.units);
@@ -93,26 +97,23 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
+        RightPaneStore.on('formDataChange', syncFieldStates);
+        RightPaneStore.on('formReset', syncFieldStates);
 
         return () => {
-            RightPaneStore.removeListener('formReset', resetField);
+            RightPaneStore.removeListener('formDataChange', syncFieldStates);
+            RightPaneStore.removeListener('formReset', syncFieldStates);
         };
-    }, [resetField]);
+    }, [syncFieldStates]);
 
     const updateValue = (name: AdvancedSearchParam, stringValue: string) => {
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-        if (stringValue !== '') {
-            urlParam.set(name, String(stringValue));
-        } else {
-            urlParam.delete(name);
-        }
-
-        const param = urlParam.toString();
-        const newUrl = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + newUrl);
+        replaceUrlSearchParams((params) => {
+            if (stringValue !== '') {
+                params.set(name, String(stringValue));
+            } else {
+                params.delete(name);
+            }
+        });
 
         RightPaneStore.updateFormValue(name, stringValue);
     };
@@ -133,24 +134,24 @@ export function AdvancedSearchTextFields() {
         }
 
         if (name === 'online') {
-            const url = new URL(window.location.href);
-            const urlParam = new URLSearchParams(url.search);
             const checked = (event as ChangeEvent<HTMLInputElement>).target.value === 'true';
-            if (checked) {
-                setBuilding('ON');
-                setRoom('LINE');
-                RightPaneStore.updateFormValue('building', 'ON');
-                RightPaneStore.updateFormValue('room', 'LINE');
-                urlParam.set('building', 'ON');
-                urlParam.set('room', 'LINE');
-            } else {
-                setBuilding('');
-                setRoom('');
-                RightPaneStore.updateFormValue('building', '');
-                RightPaneStore.updateFormValue('room', '');
-                urlParam.delete('building');
-                urlParam.delete('room');
-            }
+            const nextBuilding = checked ? 'ON' : '';
+            const nextRoom = checked ? 'LINE' : '';
+
+            setBuilding(nextBuilding);
+            setRoom(nextRoom);
+            RightPaneStore.updateFormValue('building', nextBuilding);
+            RightPaneStore.updateFormValue('room', nextRoom);
+
+            replaceUrlSearchParams((params) => {
+                if (nextBuilding) {
+                    params.set('building', nextBuilding);
+                    params.set('room', nextRoom);
+                } else {
+                    params.delete('building');
+                    params.delete('room');
+                }
+            });
             return;
         }
 
@@ -202,23 +203,20 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        if (!excludeRoadmapCourses) return;
-        if (!roadmaps || roadmaps.length === 0) return;
+        updateTakenCourses(excludeRoadmapCourses);
 
-        const exists = roadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
+        if (!excludeRoadmapCourses) return;
+        if (!plannerRoadmaps || plannerRoadmaps.length === 0) return;
+
+        const exists = plannerRoadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
 
         if (!exists) {
             openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
             setExcludeRoadmapCourses('');
             RightPaneStore.updateFormValue('excludeRoadmapCourses', '');
-
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams(url.search);
-            params.delete('excludeRoadmapCourses');
-            const newUrl = params.toString() ? `${url.pathname}?${params.toString()}` : url.pathname;
-            history.replaceState({}, '', newUrl);
+            replaceUrlSearchParams((params) => params.delete('excludeRoadmapCourses'));
         }
-    }, [roadmaps, excludeRoadmapCourses]);
+    }, [plannerRoadmaps, excludeRoadmapCourses]);
 
     return (
         <>
@@ -417,14 +415,14 @@ export function AdvancedSearchTextFields() {
                                 width: '100%',
                             },
                             onOpen: () => {
-                                if (!isLoggedIn) {
+                                if (!sessionIsValid) {
                                     setSignInOpen(true);
                                 }
                             },
-                            open: !isLoggedIn ? false : undefined,
+                            open: !sessionIsValid ? false : undefined,
                         }}
                     >
-                        {getRoadmapMenuItems({ isLoggedIn, roadmaps })}
+                        {getRoadmapMenuItems({ isLoggedIn: sessionIsValid, roadmaps: plannerRoadmaps })}
                     </LabeledSelect>
 
                     <LabeledSelect

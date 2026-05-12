@@ -1,6 +1,5 @@
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
-import appStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useAutoSaveStore, useDevModeStore } from '$stores/SettingsStore';
@@ -14,7 +13,6 @@ export function ExperimentalMenu() {
     const { sessionIsValid } = useSessionStore();
     const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
     const [devMode, setDevMode] = useDevModeStore((store) => [store.devMode, store.setDevMode]);
-
     const postHog = usePostHog();
 
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +33,6 @@ export function ExperimentalMenu() {
 
         actionTypesStore.emit('autoSaveStart');
         await autoSaveSchedule({ postHog });
-        appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };
 

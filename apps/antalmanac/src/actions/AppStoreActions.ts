@@ -16,12 +16,12 @@ import type {
     RepeatingCustomEvent,
     ScheduleCourse,
     ShortCourseSchedule,
-    WebsocSection,
 } from '@packages/antalmanac-types';
+import type { WebsocSection } from '@packages/anteater-api/types';
 import { TRPCClientError } from '@trpc/client';
 import type { PostHog } from 'posthog-js/react';
 
-export interface CopyScheduleOptions {
+interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
 }
@@ -110,7 +110,7 @@ export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
     }
 
     try {
-        const result = await trpc.userData.saveUserData.mutate({
+        const result = await trpc.schedule.save.mutate({
             userData: scheduleSaveState,
         });
 
@@ -150,7 +150,7 @@ export async function autoSaveSchedule(options: AutoSaveScheduleOptions) {
 
     const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
     try {
-        const result = await trpc.userData.saveUserData.mutate({
+        const result = await trpc.schedule.save.mutate({
             userData: scheduleSaveState,
         });
 
@@ -209,7 +209,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         throw new Error("Invalid session: User isn't logged in.");
     }
 
-    const incoming = await trpc.userData.getGuestScheduleByUsername.query({ username }).catch(() => {
+    const incoming = await trpc.schedule.getGuest.query({ username }).catch(() => {
         throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
     });
 
@@ -246,7 +246,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
 
             await saveSchedule({ postHog });
 
-            await trpc.userData.flagImportedSchedule.mutate({
+            await trpc.schedule.flagImported.mutate({
                 username,
             });
         }
@@ -284,7 +284,7 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
             }
 
             try {
-                const result = await trpc.userData.getGuestScheduleByUsername.query({ username });
+                const result = await trpc.schedule.getGuest.query({ username });
                 const scheduleSaveState = result.userData;
 
                 let error = false;
@@ -338,13 +338,13 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
 };
 
 interface LoadScheduleOptions {
-    prefetched: Awaited<ReturnType<typeof trpc.userData.getUserData.query>> | null;
+    prefetched: Awaited<ReturnType<typeof trpc.schedule.get.query>> | null;
     postHog?: PostHog;
 }
 
 export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions) => {
     try {
-        const userDataResponse = prefetched ?? (await trpc.userData.getUserData.query());
+        const userDataResponse = prefetched ?? (await trpc.schedule.get.query());
         const scheduleSaveState = userDataResponse?.userData;
         const userId = userDataResponse?.id;
         let analyticsErrorMessage = '';
@@ -404,13 +404,17 @@ const cacheSchedule = () => {
     }
 };
 
-export const loginUser = async (postHog?: PostHog) => {
+export const loginUser = async ({
+    provider = 'google',
+    postHog,
+}: { provider?: 'google' | 'apple'; postHog?: PostHog } = {}) => {
     try {
         const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
         const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query({
+        const authUrl = await trpc.auth.getAuthUrl.query({
             ...(redirectUri ? { redirectUri } : {}),
             returnTo,
+            provider,
         });
         if (authUrl) {
             logAnalytics(postHog, {

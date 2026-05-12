@@ -1,6 +1,5 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
-import InstallPWABanner from '$components/InstallPWABanner';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
@@ -84,7 +83,6 @@ export default function Home() {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <TutorialInitializer />
             <PatchNotes />
-            <InstallPWABanner />
 
             <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
                 <Header />
