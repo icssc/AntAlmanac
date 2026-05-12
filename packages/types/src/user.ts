@@ -6,7 +6,6 @@ import { ScheduleSaveStateSchema } from './schedule';
  * Users are stored in one shared table.
  *
  * All users can be queried by their `id`.
- * Google users can be queried via the `googleId` column.
  */
 export const UserSchema = z.object({
     /**
@@ -16,12 +15,6 @@ export const UserSchema = z.object({
      * TODO: Handle case where existing ID conflicts with the Google ID.
      */
     id: z.string(),
-
-    /**
-     * Some users will have a Google ID from logging in via Google OAuth.
-     * They can still use their ID to log in.
-     */
-    googleId: z.string().optional(),
 
     /**
      * Users can view other users' schedules, even anonymously.

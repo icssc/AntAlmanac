@@ -16,9 +16,6 @@ interface SessionState {
     clearSession: () => Promise<string | null>;
 
     hasCheckedAuth: boolean;
-
-    googleId: string | null;
-    setGoogleId: (id: string) => void;
 }
 
 export const useSessionStore = create<SessionState>((set) => {
@@ -33,16 +30,10 @@ export const useSessionStore = create<SessionState>((set) => {
         avatar: null,
         sessionIsValid: false,
         hasCheckedAuth: false,
-        googleId: null,
 
         loadSession: async () => {
             try {
-                const { users, accounts } = await trpc.auth.getUserAndAccount.query();
-
-                let googleId = accounts?.providerAccountId ?? null;
-                if (googleId?.startsWith('google_')) {
-                    googleId = googleId.slice('google_'.length);
-                }
+                const { users } = await trpc.auth.getUserAndAccount.query();
 
                 set({
                     sessionIsValid: true,
@@ -52,10 +43,9 @@ export const useSessionStore = create<SessionState>((set) => {
                     email: users.email ?? null,
                     name: users.name ?? null,
                     avatar: users.avatar ?? null,
-                    googleId,
                 });
 
-                usePlannerStore.getState().loadPlannerRoadmaps(googleId);
+                usePlannerStore.getState().loadPlannerRoadmaps();
 
                 setWasLoggedIn(true);
                 return true;
@@ -74,7 +64,6 @@ export const useSessionStore = create<SessionState>((set) => {
                     email: null,
                     name: null,
                     avatar: null,
-                    googleId: null,
                 });
                 return false;
             }
@@ -100,12 +89,9 @@ export const useSessionStore = create<SessionState>((set) => {
                 email: null,
                 name: null,
                 avatar: null,
-                googleId: null,
             });
 
             return logoutUrl;
         },
-
-        setGoogleId: (id) => set({ googleId: id }),
     };
 });
