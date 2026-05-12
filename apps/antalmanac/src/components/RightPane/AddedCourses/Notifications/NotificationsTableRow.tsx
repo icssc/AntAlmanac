@@ -24,7 +24,7 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
         term,
         sectionCode,
         lastCodes,
-        lastUpdatedStatus: lastUpdated,
+        lastUpdatedStatus,
         units,
         sectionNum,
         deptCode,
@@ -62,7 +62,7 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
                     sectionType={sectionType}
                     units={units}
                     sectionNum={sectionNum}
-                    lastUpdatedStatus={lastUpdated}
+                    lastUpdatedStatus={lastUpdatedStatus}
                     lastCodes={lastCodes}
                     term={term}
                     notificationKey={notificationKey}

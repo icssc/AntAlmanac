@@ -17,7 +17,7 @@ export const NotificationTableRowCheckbox = memo(
         sectionType,
         notificationKey,
         statusKey,
-        lastUpdatedStatus: lastUpdated,
+        lastUpdatedStatus,
         lastCodes,
     }: NotificationTableRowCheckboxProps) => {
         const status = useNotificationStore(
@@ -34,7 +34,7 @@ export const NotificationTableRowCheckbox = memo(
                 units,
                 sectionNum,
                 status: statusKey,
-                lastUpdatedStatus: lastUpdated,
+                lastUpdatedStatus,
                 lastCodes,
             });
         }, [
@@ -44,7 +44,7 @@ export const NotificationTableRowCheckbox = memo(
             sectionType,
             term,
             statusKey,
-            lastUpdated,
+            lastUpdatedStatus,
             lastCodes,
             units,
             sectionNum,
