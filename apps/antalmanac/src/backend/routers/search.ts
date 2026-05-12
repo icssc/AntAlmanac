@@ -3,7 +3,6 @@ import { join } from 'node:path';
 
 // eslint-disable-next-line import/no-unresolved
 import * as searchData from '$generated/searchData';
-import uFuzzy from '@leeoniya/ufuzzy';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
@@ -42,8 +41,6 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     key.toUpperCase().replace('GE', 'GE-'),
     geCategories[key],
 ];
-
-const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
 async function getTermSectionCodes(year: string, quarter: string): Promise<Record<string, SectionSearchResult>> {
     const parsedTerm = `${quarter}_${year}`;
@@ -93,8 +90,10 @@ const searchRouter = router({
                 }
             }
 
-            const u = new uFuzzy();
-            const matchedGEs = u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i]) ?? [];
+            const matchedGEs = fuzzysort
+                .go(query, [...geCategoryKeys])
+                .map((r) => r.target)
+                .filter((t): t is GECategoryKey => t in geCategories);
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
 
             const matchedDepts =

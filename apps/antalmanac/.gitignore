@@ -1,5 +1,6 @@
 src/generated/*
 !src/generated/deployed_terms.json
+!src/generated/departments.json
 .next
 .open-next
 next-env.d.ts

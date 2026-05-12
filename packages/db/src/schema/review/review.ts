@@ -110,7 +110,7 @@ export const instructorReviews = pgTable(
             'difficulty_check',
             sql`${table.difficulty} IS NULL OR (${table.difficulty} >= 1 AND ${table.difficulty} <= 5)`
         ),
-        unique('unique_review').on(table.userId, table.professorId, table.courseId),
+        unique('unique_review').on(table.userId, table.professorId, table.courseId, table.quarter),
         index('reviews_professor_id_idx').on(table.professorId),
         index('reviews_course_id_idx').on(table.courseId),
     ]

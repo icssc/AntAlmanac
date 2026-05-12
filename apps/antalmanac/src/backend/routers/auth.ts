@@ -4,7 +4,6 @@ import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri 
 import { getCookiesFromHeader, getSafeAuthRedirectPath } from '$src/backend/lib/helpers';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
-import { type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, type OAuth2Tokens } from 'arctic';
@@ -13,44 +12,41 @@ import { z } from 'zod';
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
 
-const userDataRouter = router({
+function accountTypeFromSub(sub: string): 'OIDC' | 'APPLE' {
+    const prefix = sub.split('_')[0];
+    switch (prefix) {
+        case 'google':
+            return 'OIDC';
+        case 'apple':
+            return 'APPLE';
+        default:
+            throw new Error(`Unknown provider prefix in sub: ${sub}`);
+    }
+}
+
+const authRouter = router({
     getUserAndAccount: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
     }),
 
-    getGuestScheduleByUsername: procedure.input(z.object({ username: z.string() })).query(async ({ input }) => {
-        const result = await RDS.getGuestScheduleByUsername(db, input.username);
-        if (!result) {
-            throw new TRPCError({
-                code: 'NOT_FOUND',
-                message: `Couldn't find schedules for username "${input.username}".`,
-            });
-        }
-        return result;
-    }),
-
-    getUserData: protectedProcedure.query(async ({ ctx }) => {
-        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
-    }),
-
     /**
-     * Retrieves Google authentication URL for login/sign up.
+     * Retrieves authentication URL for login/sign up.
+     * Supports Google (default) and Apple providers via icssc/auth.
      */
-    getGoogleAuthUrl: procedure
+    getAuthUrl: procedure
         .input(
-            z
-                .object({
-                    prompt: z.enum(['none', 'consent']).optional(),
-                    redirectUri: z.enum(ALLOWED_REDIRECT_URIS).optional(),
-                    returnTo: z.string().optional(),
-                })
-                .optional()
+            z.object({
+                prompt: z.enum(['none', 'consent']).optional(),
+                redirectUri: z.enum(ALLOWED_REDIRECT_URIS).optional(),
+                returnTo: z.string().optional(),
+                provider: z.enum(['google', 'apple']).default('google'),
+            })
         )
         .query(async ({ input, ctx }) => {
             const state = generateState();
             const codeVerifier = generateCodeVerifier();
 
-            const redirectUri = input?.redirectUri ?? ALLOWED_REDIRECT_URIS[0];
+            const redirectUri = input.redirectUri ?? ALLOWED_REDIRECT_URIS[0];
             const client = oauthClientForRedirectUri(redirectUri);
 
             const url = client.createAuthorizationURLWithPKCE(
@@ -61,7 +57,9 @@ const userDataRouter = router({
                 ['openid', 'profile', 'email']
             );
 
-            if (input?.prompt) {
+            url.searchParams.set('provider', input.provider);
+
+            if (input.prompt) {
                 url.searchParams.set('prompt', input.prompt);
             }
 
@@ -76,7 +74,7 @@ const userDataRouter = router({
             ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=${redirectUri}; ${cookieOptions}`);
 
             const referer = ctx.req.headers.get('referer');
-            const redirectUrl = getSafeAuthRedirectPath(input?.returnTo ?? referer, ctx.req.url, GOOGLE_REDIRECT_URI);
+            const redirectUrl = getSafeAuthRedirectPath(input.returnTo ?? referer, ctx.req.url, GOOGLE_REDIRECT_URI);
             ctx.resHeaders?.append(
                 'Set-Cookie',
                 `auth_redirect_url=${encodeURIComponent(redirectUrl)}; ${cookieOptions}`
@@ -164,23 +162,20 @@ const userDataRouter = router({
                     console.error('OAuth Callback - Missing OIDC refresh token in response');
                 }
 
-                const tokenData = tokens.data as {
-                    google_access_token?: string;
-                    google_refresh_token?: string;
-                    google_token_expiry?: number;
-                };
-                const googleAccessToken = tokenData.google_access_token;
-                const googleRefreshToken = tokenData.google_refresh_token;
-                if (!googleAccessToken || !googleRefreshToken) {
-                    console.error('OAuth Callback - Missing Google tokens in OIDC response:', tokenData);
-                }
-
                 const oauthUserId = claims.sub;
                 const username = claims.name;
                 const email = claims.email;
                 const picture = claims.picture;
 
-                const account = await RDS.registerUserAccount(db, 'OIDC', oauthUserId, username, email, picture ?? '');
+                const accountType = accountTypeFromSub(oauthUserId);
+                const account = await RDS.registerUserAccount(
+                    db,
+                    accountType,
+                    oauthUserId,
+                    username,
+                    email,
+                    picture ?? ''
+                );
 
                 const userId: string = account.userId;
 
@@ -223,38 +218,10 @@ const userDataRouter = router({
             }
         }),
 
-    saveUserData: protectedProcedure
-        .input(z.object({ userData: z.custom<ScheduleSaveState>() }))
-        .mutation(async ({ input, ctx }) => {
-            const result = ScheduleSaveStateSchema.safeParse(input.userData);
-            if (!result.success) {
-                throw new TRPCError({
-                    code: 'BAD_REQUEST',
-                    message: `Invalid schedule data: ${result.error.message}`,
-                });
-            }
-
-            const userData = result.data;
-
-            try {
-                return await RDS.upsertUserData(db, ctx.userId, userData);
-            } catch (error) {
-                console.error('RDS Failed to upsert user data:', error);
-                throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Failed to save user data',
-                });
-            }
-        }),
-
     getAuthReturnUrl: procedure.query(async ({ ctx }) => {
         const cookies = getCookiesFromHeader(ctx.req.headers);
         const redirectUrl = getSafeAuthRedirectPath(cookies['auth_redirect_url'], ctx.req.url, GOOGLE_REDIRECT_URI);
         return redirectUrl || '/';
-    }),
-
-    flagImportedSchedule: protectedProcedure.input(z.object({ username: z.string() })).mutation(async ({ input }) => {
-        return await RDS.flagImportedUser(db, input.username);
     }),
 
     /**
@@ -289,4 +256,4 @@ const userDataRouter = router({
     }),
 });
 
-export default userDataRouter;
+export default authRouter;

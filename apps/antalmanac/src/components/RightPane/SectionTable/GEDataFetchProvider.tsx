@@ -2,6 +2,9 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { WebSOC } from '$lib/websoc';
+import AppStore from '$stores/AppStore';
+import type { AACourse } from '@packages/antalmanac-types';
+import { flattenCourses } from '@packages/anteater-api/utils';
 import { useEffect, useState } from 'react';
 
 /**
@@ -37,7 +40,24 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
 
                 const jsonResp = await WebSOC.query(params);
 
-                setCourseDetails(jsonResp.schools[0].departments[0].courses[0] as SectionTableProps['courseDetails']);
+                const course = flattenCourses(jsonResp).find(
+                    (c) => c.courseNumber === props.courseDetails.courseNumber
+                );
+
+                if (course) {
+                    const courseColors = AppStore.schedule
+                        .getCurrentCourses()
+                        .reduce<Record<string, string>>((acc, { section }) => {
+                            acc[section.sectionCode] = section.color;
+                            return acc;
+                        }, {});
+
+                    setCourseDetails({
+                        ...course,
+                        sections: course.sections.map((s) => ({ ...s, color: courseColors[s.sectionCode] ?? '' })),
+                        sectionTypes: [...new Set(course.sections.map((s) => s.sectionType))],
+                    } satisfies AACourse);
+                }
             })();
         },
         // Should only run once
