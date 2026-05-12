@@ -315,12 +315,12 @@ export const useReviewPromptStore = create(
                 });
             },
 
-            finishReviewing: () => {
+            finishReviewing: (action = analyticsEnum.review.actions.REVIEW_DONE_CLICKED) => {
                 toStep('hidden', RESET_STATE);
-                openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
+                openSnackbar('success', 'Review submitted! Thanks for helping other Anteaters!');
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
-                    action: analyticsEnum.review.actions.REVIEW_DONE_CLICKED,
+                    action,
                 });
             },
         };
