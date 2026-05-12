@@ -34,7 +34,7 @@ interface RawNotification {
     sectionCode: string;
 }
 
-export interface NotificationStore {
+interface NotificationStore {
     initialized: boolean;
     notifications: Partial<Record<string, Notification>>;
     setNotifications: (notification: Omit<Notification, 'notifyOn'> & { status: keyof NotifyOn }) => void;

@@ -17,9 +17,9 @@ export const REVIEW_TAGS = [
     'Test Heavy',
 ] as const;
 
-export type ReviewTag = (typeof REVIEW_TAGS)[number];
+type ReviewTag = (typeof REVIEW_TAGS)[number];
 
-export type ReviewCandidate = {
+type ReviewCandidate = {
     /** e.g. "ICS 31" */
     courseId: string;
     courseTitle: string;

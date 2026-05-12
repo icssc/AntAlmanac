@@ -8,7 +8,7 @@ export interface AnalyticsCategory {
     actions: Record<string, string>;
 }
 
-export interface AnalyticsEnum {
+interface AnalyticsEnum {
     calendar: AnalyticsCategory;
     auth: AnalyticsCategory;
     nav: AnalyticsCategory;
@@ -117,7 +117,7 @@ export default analyticsEnum;
 
 // There is no explicit type for what PostHog accepts as a property value
 // A list of accepted types: https://posthog.com/docs/data/events#event-properties
-export type PostHogPropertyValue = string | number | boolean | Date | PostHogPropertyValue[];
+type PostHogPropertyValue = string | number | boolean | Date | PostHogPropertyValue[];
 
 interface AnalyticsProps {
     category: AnalyticsCategory;
