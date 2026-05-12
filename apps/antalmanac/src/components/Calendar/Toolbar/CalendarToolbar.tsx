@@ -34,7 +34,7 @@ import {
 import { usePostHog } from 'posthog-js/react';
 import { useState, useCallback, useEffect, memo, useRef } from 'react';
 
-export interface CalendarPaneToolbarProps {
+interface CalendarPaneToolbarProps {
     scheduleNames: string[];
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;

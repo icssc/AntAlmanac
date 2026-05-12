@@ -3,12 +3,12 @@
 import type { SvgIconComponent } from '@mui/icons-material';
 import { Box, Button, type SxProps, type Theme, Typography } from '@mui/material';
 
-export interface EmptyStateAction {
+interface EmptyStateAction {
     label: string;
     onClick: () => void;
 }
 
-export interface EmptyStateProps {
+interface EmptyStateProps {
     Icon: SvgIconComponent;
     title: string;
     description?: string;
