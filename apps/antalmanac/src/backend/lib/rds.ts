@@ -5,6 +5,7 @@ import type {
     RepeatingCustomEvent,
     Notification,
     ScheduleSaveState,
+    VisibilityState,
 } from '@packages/antalmanac-types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
@@ -444,7 +445,11 @@ export class RDS {
                     sectionCode: course.sectionCode.toString(),
                     term: course.term,
                     color: course.color,
-                    visibility: course.visibility as 'visible' | 'outlined' | 'disappeared',
+                    visibility: (['visible', 'outlined', 'disappeared'] as const).includes(
+                        course.visibility as VisibilityState
+                    )
+                        ? (course.visibility as VisibilityState)
+                        : 'visible',
                 });
             }
 
