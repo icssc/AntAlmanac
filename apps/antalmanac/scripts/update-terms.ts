@@ -1,15 +1,12 @@
+import 'dotenv/config';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 
 import { createClient } from '@packages/anteater-api/client';
 import type { WebsocTerm } from '@packages/anteater-api/types';
 import { flattenSections } from '@packages/anteater-api/utils';
-import 'dotenv/config';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-const OUTPUT_PATH = resolve(__dirname, '../src/generated/deployed_terms.json');
+import { DEPLOYED_TERMS_FILE } from './lib/paths.js';
 
 interface DeployedTermsData {
     latestTerm: string;
@@ -46,7 +43,7 @@ async function updateTerms() {
         let deployedData: DeployedTermsData = { latestTerm: '', sectionCount: 0 };
 
         try {
-            const currentFile = await readFile(OUTPUT_PATH, 'utf-8');
+            const currentFile = await readFile(DEPLOYED_TERMS_FILE, 'utf-8');
             try {
                 deployedData = JSON.parse(currentFile);
             } catch {
@@ -59,7 +56,7 @@ async function updateTerms() {
                 throw e;
             }
             console.log('No existing deployed_terms.json found.');
-            await mkdir(dirname(OUTPUT_PATH), { recursive: true });
+            await mkdir(dirname(DEPLOYED_TERMS_FILE), { recursive: true });
         }
 
         const termChanged = latestTerm !== deployedData.latestTerm;
@@ -77,8 +74,8 @@ async function updateTerms() {
                 updatedAt: new Date().toISOString(),
                 reason: reasons,
             };
-            await writeFile(OUTPUT_PATH, JSON.stringify(newData, null, 2), 'utf-8');
-            console.log(`Updated ${OUTPUT_PATH}`);
+            await writeFile(DEPLOYED_TERMS_FILE, JSON.stringify(newData, null, 2), 'utf-8');
+            console.log(`Updated ${DEPLOYED_TERMS_FILE}`);
         } else {
             console.log('Terms and section count are up to date. No changes needed.');
         }

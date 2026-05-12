@@ -1,14 +1,12 @@
 import { createWriteStream } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import archiver from 'archiver';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { DIST_DIR, DIST_ZIP } from './lib/paths.js';
 
 async function main() {
-    const distDir = join(__dirname, '../dist');
-    const zipPath = join(__dirname, '../dist.zip');
+    const distDir = DIST_DIR;
+    const zipPath = DIST_ZIP;
 
     console.log(`Zipping ${distDir} to ${zipPath}...`);
 

@@ -1,17 +1,12 @@
+import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import type { CalendarTerm } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 
-const PUBLIC_ANTEATER_API_KEY = 'INSqn9qP1pXlEwihpQa_GtrJhGOxQyjE5zcAKYLptLg.pk.prj9hlf3sf7q638jkq61u282';
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { GENERATED_DIR, TERM_DATA_FILE } from './lib/paths.js';
 
-const OUTPUT_DIR = join(__dirname, '../src/generated/');
-const OUTPUT_FILE = join(OUTPUT_DIR, 'termData.ts');
-
-const aapiClient = createClient({ apiKey: PUBLIC_ANTEATER_API_KEY });
+const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 const QUARTER_MAP = {
     Summer1: 'Summer Session 1',
@@ -72,10 +67,10 @@ ${termEntries}
 ];
     `;
 
-    await mkdir(OUTPUT_DIR, { recursive: true });
-    await writeFile(OUTPUT_FILE, fileContent);
+    await mkdir(GENERATED_DIR, { recursive: true });
+    await writeFile(TERM_DATA_FILE, fileContent);
 
-    console.log('Term data generated. Written to ', OUTPUT_FILE);
+    console.log('Term data generated. Written to ', TERM_DATA_FILE);
 }
 
 main();
