@@ -208,9 +208,13 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                         if (existingNotification) {
                             const storedStatus = existingNotification.lastUpdatedStatus;
                             const parsedStatus =
-                                storedStatus == null ? undefined : WebsocSectionStatusSchema.safeParse(storedStatus);
+                                storedStatus !== null ? WebsocSectionStatusSchema.safeParse(storedStatus) : null;
                             const lastUpdatedStatus =
-                                parsedStatus?.success === true ? parsedStatus.data : course.section.status;
+                                parsedStatus === null
+                                    ? null
+                                    : parsedStatus.success
+                                      ? parsedStatus.data
+                                      : course.section.status;
 
                             notifications[key] = {
                                 term,

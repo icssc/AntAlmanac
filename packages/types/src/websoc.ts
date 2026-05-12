@@ -1,4 +1,4 @@
-import { WebsocSection, WebsocCourse, WebsocSectionStatus, WebsocSectionType } from '@packages/anteater-api/types';
+import type { WebsocSection, WebsocCourse, WebsocSectionStatus, WebsocSectionType } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
 export const WebsocSectionTypeSchema = z.enum([
