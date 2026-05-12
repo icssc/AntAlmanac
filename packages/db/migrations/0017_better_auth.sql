@@ -19,4 +19,4 @@ ALTER TABLE "sessions" ADD COLUMN "ip_address" text;--> statement-breakpoint
 ALTER TABLE "sessions" ADD COLUMN "user_agent" text;--> statement-breakpoint
 ALTER TABLE "users" ADD COLUMN "email_verified" boolean DEFAULT false NOT NULL;--> statement-breakpoint
 CREATE INDEX "session_userId_idx" ON "sessions" USING btree ("user_id");
-UPDATE accounts SET provider_id = 'icssc' WHERE account_type = 'OIDC' OR account_type = 'GOOGLE';
+UPDATE accounts SET provider_id = 'icssc' WHERE account_type = 'OIDC' OR account_type = 'GOOGLE' OR account_type = 'APPLE';
