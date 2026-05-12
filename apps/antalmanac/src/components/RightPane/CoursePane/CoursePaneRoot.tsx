@@ -4,10 +4,10 @@ import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchFo
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
-import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
@@ -15,6 +15,7 @@ export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
         useCoursePaneStore();
     const postHog = usePostHog();
+    const queryClient = useQueryClient();
 
     const handleSearch = useCallback(() => {
         if (!advancedSearchEnabled) {
@@ -38,10 +39,10 @@ export function CoursePaneRoot() {
             category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.REFRESH,
         });
-        WebSOC.clearCache();
+        queryClient.invalidateQueries({ queryKey: [['websoc']] });
         Grades.clearCache();
         forceUpdate();
-    }, [forceUpdate, postHog]);
+    }, [forceUpdate, postHog, queryClient]);
 
     const handleKeydown = useCallback(
         (event: KeyboardEvent) => {
