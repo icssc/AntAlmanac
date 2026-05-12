@@ -2,12 +2,23 @@ import { readFile } from 'fs/promises';
 import { join } from 'node:path';
 
 // eslint-disable-next-line import/no-unresolved
-import * as searchData from '$generated/searchData';
-import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
+import _searchData from '$generated/searchData.json';
+import type {
+    CourseSearchResult,
+    DepartmentSearchResult,
+    GESearchResult,
+    SearchResult,
+    SectionSearchResult,
+} from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
+
+const searchData = _searchData as {
+    departments: Array<DepartmentSearchResult & { id: string }>;
+    courses: Array<CourseSearchResult & { id: string }>;
+};
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
