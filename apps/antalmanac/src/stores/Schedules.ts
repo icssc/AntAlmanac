@@ -41,7 +41,7 @@ export class Schedules {
 
         this.schedules = [
             {
-                scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
+                scheduleName: getDefaultTerm().shortName,
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
@@ -68,7 +68,7 @@ export class Schedules {
     }
 
     getDefaultScheduleName() {
-        return getDefaultTerm().shortName.replaceAll(' ', '-');
+        return getDefaultTerm().shortName;
     }
 
     getCurrentScheduleIndex() {
