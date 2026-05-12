@@ -9,7 +9,7 @@ import type {
     DepartmentSearchResult,
     CoursesFilteredAPIResult,
 } from '@packages/antalmanac-types';
-import type { WebsocAPIResponse, WebsocAPIResult, WebsocCourse, WebsocDepartment } from '@packages/anteater-api-types';
+import type { WebsocAPIResponse, WebsocAPIResult, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
 import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';

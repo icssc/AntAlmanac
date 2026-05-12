@@ -1,8 +1,9 @@
 import { SortableItemContext } from '$components/drag-and-drop/SortableItem';
 import { DraggingItemContext } from '$components/drag-and-drop/SortableList';
+import { useThemeStore } from '$stores/SettingsStore';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box } from '@mui/material';
-import { SxProps, Theme, useTheme } from '@mui/material/styles';
+import { SxProps, Theme } from '@mui/material/styles';
 import { mergeSx } from '@mui/x-date-pickers/internals';
 import { useContext } from 'react';
 
@@ -16,7 +17,7 @@ export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
     const { attributes, listeners, ref } = useContext(SortableItemContext);
     const draggingState = useContext(DraggingItemContext);
 
-    const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
 
     return (
         <Box
@@ -44,7 +45,7 @@ export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
             <DragIndicatorIcon
                 sx={mergeSx(
                     {
-                        color: disabled ? 'gray' : theme.palette.mode === 'light' ? 'black' : 'white',
+                        color: disabled ? 'gray' : isDark ? 'white' : 'black',
                     },
                     iconSx
                 )}

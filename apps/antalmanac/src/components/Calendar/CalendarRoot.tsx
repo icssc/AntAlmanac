@@ -358,8 +358,7 @@ export const ScheduleCalendar = memo(() => {
                         justifyContent="center"
                         zIndex={1}
                         sx={{
-                            backgroundColor: (theme) =>
-                                theme.palette.mode === 'dark' ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
+                            backgroundColor: isDark ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
                         }}
                     >
                         <EmptyState

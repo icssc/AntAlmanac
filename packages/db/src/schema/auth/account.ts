@@ -2,7 +2,13 @@ import { pgTable, text, pgEnum, primaryKey, timestamp } from 'drizzle-orm/pg-cor
 
 import { users } from './user';
 
-const accountTypes = ['GOOGLE', 'GUEST', 'OIDC'] as const;
+/**
+ * GOOGLE: legacy pre-OIDC accounts (raw Google IDs, no longer created)
+ * GUEST: anonymous/guest schedule saves
+ * OIDC: Google Sign-In via icssc/auth OIDC server
+ * APPLE: Apple Sign-In via icssc/auth OIDC server
+ */
+const accountTypes = ['GOOGLE', 'GUEST', 'OIDC', 'APPLE'] as const;
 
 export const accountTypeEnum = pgEnum('account_type', accountTypes);
 

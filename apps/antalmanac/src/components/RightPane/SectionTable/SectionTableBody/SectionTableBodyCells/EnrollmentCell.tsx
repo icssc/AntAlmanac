@@ -1,9 +1,8 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTablePopover/EnrollmentHistoryPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { DepartmentEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
-import { Box, ButtonBase, Popover, Tooltip, Typography } from '@mui/material';
+import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -44,7 +43,8 @@ export const EnrollmentCell = ({
     formattedTime,
 }: EnrollmentCellProps) => {
     const isMobile = useIsMobile();
-    const secondaryColor = useSecondaryColor();
+    const theme = useTheme();
+    const secondaryColor = theme.palette.secondary.main;
     const showTooltip = !isMobile && formattedTime;
 
     const [anchorEl, setAnchorEl] = useState<Element>();

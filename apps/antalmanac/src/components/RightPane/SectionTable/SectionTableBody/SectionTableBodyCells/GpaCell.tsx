@@ -1,9 +1,8 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePopover/GradesPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades } from '$lib/grades';
-import { ButtonBase, Popover } from '@mui/material';
+import { ButtonBase, Popover, useTheme } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
@@ -34,7 +33,8 @@ interface GpaCellProps {
 
 export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
     const isMobile = useIsMobile();
-    const secondaryColor = useSecondaryColor();
+    const theme = useTheme();
+    const secondaryColor = theme.palette.secondary.main;
 
     const [loading, setLoading] = useState(true);
     const [gpa, setGpa] = useState('');

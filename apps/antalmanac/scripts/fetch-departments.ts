@@ -10,7 +10,6 @@ import 'dotenv/config';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Production refresh: .github/workflows/check_departments.yml runs hourly at minute 4 UTC (staggered from other hourly jobs).
 const DEPARTMENT_YEAR_RANGE = 10;
 const OUTPUT_DIR = join(__dirname, '../src/generated/');
 const OUTPUT_FILE = join(OUTPUT_DIR, 'departments.json');
