@@ -2,7 +2,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const NewUserPage = () => {
+export const NewUserPage = () => {
     const navigate = useNavigate();
     const setIsNewUser = useSessionStore((state) => state.setIsNewUser);
 
@@ -12,4 +12,3 @@ const NewUserPage = () => {
     }, [navigate, setIsNewUser]);
     return null;
 };
-export default NewUserPage;

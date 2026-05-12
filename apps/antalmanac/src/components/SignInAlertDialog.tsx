@@ -10,7 +10,7 @@ interface Props {
     onClose: () => void;
 }
 
-const SignInAlertDialog = ({ open, title, severity = 'info', onClose }: Props) => {
+export const SignInAlertDialog = ({ open, title, severity = 'info', onClose }: Props) => {
     return (
         <AlertDialog open={open} onClose={onClose} title={title} severity={severity}>
             <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
@@ -20,5 +20,3 @@ const SignInAlertDialog = ({ open, title, severity = 'info', onClose }: Props) =
         </AlertDialog>
     );
 };
-
-export default SignInAlertDialog;

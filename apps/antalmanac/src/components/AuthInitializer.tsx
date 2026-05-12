@@ -1,5 +1,5 @@
 import { isEmptySchedule, loadSchedule, mergeShortCourseSchedules, UserData } from '$actions/AppStoreActions';
-import SignInAlertDialog from '$components/SignInAlertDialog';
+import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { authClient, signOut } from '$lib/auth/authClient';
@@ -23,7 +23,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-const AuthInitializer = () => {
+export const AuthInitializer = () => {
     const [openAlert, setOpenAlert] = useState(false);
 
     const isInitializingRef = useRef(false);
@@ -154,5 +154,3 @@ const AuthInitializer = () => {
         />
     );
 };
-
-export default AuthInitializer;

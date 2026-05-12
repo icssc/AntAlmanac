@@ -3,7 +3,7 @@ import { SignInButtons } from '$components/buttons/SignInButtons/SignInButtons';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import SignInAlertDialog from '$components/SignInAlertDialog';
+import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';

@@ -7,7 +7,7 @@ import AppQueryProvider from '$providers/Query';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
-import NewUserPage from '$routes/NewUserPage';
+import { NewUserPage } from '$routes/NewUserPage';
 import { OutagePage } from '$routes/OutagePage';
 import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
