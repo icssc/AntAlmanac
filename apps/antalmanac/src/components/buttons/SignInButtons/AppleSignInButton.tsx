@@ -1,8 +1,7 @@
-import { loginUser } from '$actions/AppStoreActions';
+import { SignInButton } from '$components/buttons/SignInButtons/SignInButton';
+import { Provider } from '$lib/auth/authTypes';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Apple as AppleIcon } from '@mui/icons-material';
-import { Button } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
 
 interface AppleSignInButtonProps {
     fullWidth?: boolean;
@@ -22,18 +21,11 @@ interface AppleSignInButtonProps {
  */
 export const AppleSignInButton = ({ fullWidth }: AppleSignInButtonProps) => {
     const isDark = useThemeStore((store) => store.isDark);
-    const postHog = usePostHog();
-
-    const handleClick = () => {
-        loginUser({ postHog });
-    };
 
     return (
-        <Button
-            onClick={handleClick}
-            startIcon={<AppleIcon />}
-            variant="contained"
-            size="large"
+        <SignInButton
+            icon={<AppleIcon />}
+            provider={Provider.Apple}
             fullWidth={fullWidth}
             sx={{
                 backgroundColor: isDark ? '#fff' : '#000',
@@ -42,8 +34,6 @@ export const AppleSignInButton = ({ fullWidth }: AppleSignInButtonProps) => {
                     backgroundColor: isDark ? '#f5f5f5' : '#1a1a1a',
                 },
             }}
-        >
-            Sign in with Apple
-        </Button>
+        />
     );
 };

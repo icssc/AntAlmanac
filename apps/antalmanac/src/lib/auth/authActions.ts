@@ -1,7 +1,7 @@
 'use server';
 
 import { auth, AuthAdditionalData, AuthorizationUrlParams } from '$lib/auth/auth';
-import { AUTH_PROVIDER_ID } from '$lib/auth/constants';
+import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { headers } from 'next/headers';
 
 interface GetSignInUrlOptions {

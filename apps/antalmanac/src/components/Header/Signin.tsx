@@ -1,6 +1,5 @@
 import { loadGuestSchedule } from '$actions/AppStoreActions';
-import { AppleSignInButton } from '$components/buttons/AppleSignInButton';
-import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
+import { SignInButtons } from '$components/buttons/SignInButtons/SignInButtons';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
@@ -145,8 +144,7 @@ export const Signin = () => {
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
                     <Stack spacing={1}>
-                        <GoogleSignInButton fullWidth />
-                        <AppleSignInButton fullWidth />
+                        <SignInButtons />
 
                         <Box
                             onClick={() => setShowLegacyLogin(!showLegacyLogin)}

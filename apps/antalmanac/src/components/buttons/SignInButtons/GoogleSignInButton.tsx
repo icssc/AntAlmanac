@@ -1,6 +1,5 @@
-import { loginUser } from '$actions/AppStoreActions';
-import { Button } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
+import { SignInButton } from '$components/buttons/SignInButtons/SignInButton';
+import { Provider } from '$lib/auth/authTypes';
 
 /**
  * Colored four-path Google "G" logo.
@@ -46,22 +45,5 @@ interface GoogleSignInButtonProps {
 }
 
 export const GoogleSignInButton = ({ fullWidth }: GoogleSignInButtonProps) => {
-    const postHog = usePostHog();
-
-    const handleClick = () => {
-        loginUser({ postHog });
-    };
-
-    return (
-        <Button
-            onClick={handleClick}
-            startIcon={<GoogleLogo />}
-            color="primary"
-            variant="contained"
-            size="large"
-            fullWidth={fullWidth}
-        >
-            Sign in with Google
-        </Button>
-    );
+    return <SignInButton icon={<GoogleLogo />} provider={Provider.Google} fullWidth={fullWidth} />;
 };

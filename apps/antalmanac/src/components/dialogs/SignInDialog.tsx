@@ -1,5 +1,4 @@
-import { AppleSignInButton } from '$components/buttons/AppleSignInButton';
-import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
+import { SignInButtons } from '$components/buttons/SignInButtons/SignInButtons';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 
@@ -54,8 +53,7 @@ export function SignInDialog(props: SignInDialogProps) {
                             All changes made will be saved to your account
                         </Alert>
                     )}
-                    <GoogleSignInButton />
-                    <AppleSignInButton />
+                    <SignInButtons />
                 </Stack>
             </DialogContent>
         </Dialog>

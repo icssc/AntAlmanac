@@ -1,14 +1,17 @@
 import { loginUser } from '$actions/AppStoreActions';
-import GoogleIcon from '@mui/icons-material/Google';
-import { Button } from '@mui/material';
+import { Provider } from '$lib/auth/authTypes';
+import { Button, SxProps } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { ComponentProps, useState } from 'react';
+import { ComponentProps, ReactNode, useState } from 'react';
 
 interface Props {
+    icon: ReactNode;
+    provider: Provider;
     fullWidth?: ComponentProps<typeof Button>['fullWidth'];
+    sx?: SxProps;
 }
 
-const SignInButton = ({ fullWidth }: Props) => {
+export const SignInButton = ({ icon, provider, fullWidth, sx }: Props) => {
     const [isSigningIn, setIsSigningIn] = useState(false);
 
     const postHog = usePostHog();
@@ -22,15 +25,15 @@ const SignInButton = ({ fullWidth }: Props) => {
     return (
         <Button
             onClick={handleClick}
-            startIcon={<GoogleIcon />}
+            startIcon={icon}
             color="primary"
             variant="contained"
             size="large"
             fullWidth={fullWidth}
             loading={isSigningIn}
+            sx={sx}
         >
-            Sign in with Google
+            Sign in with {provider}
         </Button>
     );
 };
-export default SignInButton;
