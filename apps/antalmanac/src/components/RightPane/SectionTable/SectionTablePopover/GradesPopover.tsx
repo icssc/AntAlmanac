@@ -97,26 +97,33 @@ export function GradesPopover(props: GradesPopoverProps) {
     };
 
     useEffect(() => {
-        if (loading === false) {
-            return;
-        }
+        let canceled = false;
+        setLoading(true);
+        setInstructorData(undefined);
+        setOverallData(undefined);
 
         const fetches: Promise<unknown>[] = [
             getGradeData(deptCode, courseNumber, '').then((result) => {
-                if (result) setOverallData(result);
+                if (!canceled && result) setOverallData(result);
             }),
         ];
 
         if (instructor) {
             fetches.push(
                 getGradeData(deptCode, courseNumber, instructor).then((result) => {
-                    if (result) setInstructorData(result);
+                    if (!canceled && result) setInstructorData(result);
                 })
             );
         }
 
-        Promise.all(fetches).finally(() => setLoading(false));
-    }, [loading, deptCode, courseNumber, instructor]);
+        Promise.all(fetches).finally(() => {
+            if (!canceled) setLoading(false);
+        });
+
+        return () => {
+            canceled = true;
+        };
+    }, [deptCode, courseNumber, instructor]);
 
     return (
         <Card>

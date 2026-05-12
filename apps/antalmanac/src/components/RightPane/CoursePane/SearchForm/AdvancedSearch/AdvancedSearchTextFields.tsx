@@ -94,7 +94,8 @@ export function AdvancedSearchTextFields() {
         setExcludeRoadmapCourses(formData.excludeRoadmapCourses);
         setExcludeRestrictionCodes(formData.excludeRestrictionCodes);
         setDays(formData.days);
-    }, []);
+        updateTakenCourses(formData.excludeRoadmapCourses);
+    }, [updateTakenCourses]);
 
     useEffect(() => {
         RightPaneStore.on('formDataChange', syncFieldStates);
@@ -179,6 +180,7 @@ export function AdvancedSearchTextFields() {
                 break;
             case 'excludeRoadmapCourses':
                 setExcludeRoadmapCourses(stringValue);
+                updateTakenCourses(stringValue);
                 break;
             case 'excludeRestrictionCodes':
                 setExcludeRestrictionCodes(stringValue);
@@ -203,12 +205,13 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        updateTakenCourses(excludeRoadmapCourses);
+        const currentExclude = RightPaneStore.getFormData().excludeRoadmapCourses;
+        updateTakenCourses(currentExclude);
 
-        if (!excludeRoadmapCourses) return;
+        if (!currentExclude) return;
         if (!plannerRoadmaps || plannerRoadmaps.length === 0) return;
 
-        const exists = plannerRoadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
+        const exists = plannerRoadmaps.some((r) => r.id.toString() === currentExclude);
 
         if (!exists) {
             openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
@@ -216,7 +219,7 @@ export function AdvancedSearchTextFields() {
             RightPaneStore.updateFormValue('excludeRoadmapCourses', '');
             replaceUrlSearchParams((params) => params.delete('excludeRoadmapCourses'));
         }
-    }, [plannerRoadmaps, excludeRoadmapCourses]);
+    }, [plannerRoadmaps, updateTakenCourses]);
 
     return (
         <>

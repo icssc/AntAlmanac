@@ -2,7 +2,7 @@ import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import generatedDepartments from '$generated/departments.json';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 
 const ALL_DEPARTMENTS: Record<string, string> = {
     ALL: 'ALL: Include All Departments',
@@ -33,6 +33,7 @@ export function DepartmentSearchBar() {
 
     const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
     const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageRecentlySearched());
+    const recentSearchesRef = useRef(recentSearches);
 
     const resetField = useCallback(() => {
         setValue(() => RightPaneStore.getFormData().deptValue);
@@ -60,17 +61,19 @@ export function DepartmentSearchBar() {
 
             if (newValue === 'ALL') return;
 
-            if (recentSearches.includes(newValue)) {
-                setRecentSearches((prev) =>
-                    prev.sort((a, b) => {
-                        return a === newValue ? -1 : b === newValue ? 1 : 0;
-                    })
-                );
+            let nextRecentSearches: string[];
+            if (recentSearchesRef.current.includes(newValue)) {
+                nextRecentSearches = [...recentSearchesRef.current].sort((a, b) => {
+                    return a === newValue ? -1 : b === newValue ? 1 : 0;
+                });
             } else {
-                setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
+                nextRecentSearches = [newValue, ...recentSearchesRef.current].slice(0, 5);
             }
+            recentSearchesRef.current = nextRecentSearches;
+            setRecentSearches(nextRecentSearches);
+            setLocalStorageRecentlySearched(JSON.stringify(nextRecentSearches));
         },
-        [recentSearches, options]
+        [options]
     );
 
     useEffect(() => {
@@ -80,10 +83,6 @@ export function DepartmentSearchBar() {
             RightPaneStore.off('formReset', resetField);
         };
     }, [resetField]);
-
-    useEffect(() => {
-        setLocalStorageRecentlySearched(JSON.stringify(recentSearches));
-    }, [recentSearches]);
 
     return (
         <LabeledAutocomplete
