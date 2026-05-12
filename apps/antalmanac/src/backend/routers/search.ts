@@ -2,12 +2,38 @@ import { readFile } from 'fs/promises';
 import { join } from 'node:path';
 
 // eslint-disable-next-line import/no-unresolved
-import * as searchData from '$generated/searchData';
+import _searchData from '$generated/searchData.json';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
+
+const departmentSchema = z.object({
+    id: z.string(),
+    type: z.literal('DEPARTMENT'),
+    name: z.string(),
+    alias: z.string().optional(),
+});
+
+const courseSchema = z.object({
+    id: z.string(),
+    type: z.literal('COURSE'),
+    name: z.string(),
+    alias: z.string().optional(),
+    metadata: z.object({
+        department: z.string(),
+        number: z.string(),
+    }),
+    isOffered: z.boolean().optional(),
+});
+
+const searchDataSchema = z.object({
+    departments: z.array(departmentSchema),
+    courses: z.array(courseSchema),
+});
+
+const searchData = searchDataSchema.parse(_searchData);
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
