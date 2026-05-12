@@ -14,10 +14,7 @@ const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 const MAX_COURSES = 10_000;
 
-/**
- * Delay between GraphQL requests to avoid triggering AAPI rate limits / OOM.
- * TODO (@kevin): remove once AAPI resolves OOM issues.
- */
+// Delay between GraphQL requests to avoid triggering AAPI rate limits / OOM.
 const DELAY_MS = 500;
 
 const ALIASES: Record<string, string | undefined> = {
@@ -49,11 +46,6 @@ function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
     );
 }
 
-/**
- * Build a WebSOC GraphQL query for section codes in a given term.
- * Returns the raw section code, type, and number for every section so
- * the caller can populate the per-term section-code cache.
- */
 function buildSectionCodesQuery(year: string, quarter: string): string {
     return `{
         websoc(query: { year: "${year}", quarter: ${quarter} }) {

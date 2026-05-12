@@ -35,7 +35,6 @@ function serializeTerm(term: CalendarTerm) {
     return {
         shortName,
         longName,
-        // ISO "YYYY-MM-DD" strings so consumers can reconstruct local-timezone Date objects
         startDate: instructionStart,
         finalsStartDate: finalsStart,
         socAvailable,
