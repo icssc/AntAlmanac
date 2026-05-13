@@ -1,15 +1,7 @@
-import trpc from '$lib/api/trpc';
-import type { WebsocSectionType } from '@packages/anteater-api/types';
 import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
 
 import { termData } from './termData';
 
-/**
- * To organize the data and make it easier to graph the enrollment
- * data, we can merge the dates, totalEnrolledHistory, maxCapacityHistory,
- * and waitlistHistory arrays into one array that contains the enrollment data
- * for each day
- */
 export interface EnrollmentHistory {
     year: string;
     quarter: string;
@@ -27,109 +19,28 @@ export interface EnrollmentHistoryDay {
     waitlist: number | null;
 }
 
-export class DepartmentEnrollmentHistory {
-    static enrollmentHistoryCache: Record<string, EnrollmentHistory[]> = {};
-    static termShortNames: string[] = termData.map((term) => term.shortName);
+const termShortNames = termData.map((term) => term.shortName);
 
-    department: string;
+export function parseAndSortEnrollmentHistory(res: EnrollmentHistoryEntry[]): EnrollmentHistory[] {
+    const parsed: EnrollmentHistory[] = res.map((entry) => ({
+        year: entry.year,
+        quarter: entry.quarter,
+        department: entry.department,
+        courseNumber: entry.courseNumber,
+        sectionCode: entry.sectionCode,
+        instructors: entry.instructors,
+        days: entry.dates.map((dateString, i) => ({
+            date: new Date(dateString).toLocaleDateString(),
+            totalEnrolled: Number(entry.totalEnrolledHistory[i]),
+            maxCapacity: Number(entry.maxCapacityHistory[i]),
+            waitlist: entry.waitlistHistory[i] === '-1' ? null : Number(entry.waitlistHistory[i]),
+        })),
+    }));
 
-    constructor(department: string) {
-        this.department = department;
-    }
-
-    async find(courseNumber: string, sectionType: WebsocSectionType): Promise<EnrollmentHistory[]> {
-        const cacheKey = `${this.department}-${courseNumber}-${sectionType}`;
-        const cacheResult = DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey];
-
-        if (cacheResult) {
-            return cacheResult;
-        }
-
-        const result = await this.queryEnrollmentHistory(courseNumber, sectionType);
-
-        DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] = result;
-
-        return result;
-    }
-
-    async queryEnrollmentHistory(courseNumber: string, sectionType: WebsocSectionType): Promise<EnrollmentHistory[]> {
-        const res = await trpc.enrollHist.get.query({
-            department: this.department,
-            courseNumber,
-            sectionType,
-        });
-
-        if (!res?.length) {
-            return [];
-        }
-
-        const parsedEnrollmentHistory = DepartmentEnrollmentHistory.parseEnrollmentHistoryResponse(res);
-        DepartmentEnrollmentHistory.sortEnrollmentHistory(parsedEnrollmentHistory);
-        return parsedEnrollmentHistory;
-    }
-
-    /**
-     * Parses enrollment history data from Anteater API so that
-     * we can pass the data into a recharts graph. For each element in the given
-     * array, merge the dates, totalEnrolledHistory, maxCapacityHistory,
-     * and waitlistHistory arrays into one array that contains the enrollment data
-     * for each day.
-     *
-     * @param res Array of enrollment histories from Anteater API
-     * @returns Array of enrollment histories that we can use for the graph
-     */
-    static parseEnrollmentHistoryResponse(res: EnrollmentHistoryEntry[]): EnrollmentHistory[] {
-        const parsedEnrollmentHistory: EnrollmentHistory[] = [];
-
-        for (const enrollmentHistory of res) {
-            const enrollmentDays: EnrollmentHistoryDay[] = [];
-
-            for (const [i, dateString] of enrollmentHistory.dates.entries()) {
-                const date = new Date(dateString); // dateString is formatted YYYY-MM-DD
-                const formattedDateString = date.toLocaleDateString();
-
-                enrollmentDays.push({
-                    date: formattedDateString,
-                    totalEnrolled: Number(enrollmentHistory.totalEnrolledHistory[i]),
-                    maxCapacity: Number(enrollmentHistory.maxCapacityHistory[i]),
-                    waitlist:
-                        enrollmentHistory.waitlistHistory[i] === '-1'
-                            ? null
-                            : Number(enrollmentHistory.waitlistHistory[i]),
-                });
-            }
-
-            parsedEnrollmentHistory.push({
-                year: enrollmentHistory.year,
-                quarter: enrollmentHistory.quarter,
-                department: enrollmentHistory.department,
-                courseNumber: enrollmentHistory.courseNumber,
-                sectionCode: enrollmentHistory.sectionCode,
-                days: enrollmentDays,
-                instructors: enrollmentHistory.instructors,
-            });
-        }
-
-        return parsedEnrollmentHistory;
-    }
-
-    /**
-     * Sorts the given array of enrollment histories so that
-     * the oldest quarters are in the beginning of the array
-     *
-     * @param enrollmentHistory Array where each element represents the enrollment
-     * history of a course section during one quarter
-     */
-    static sortEnrollmentHistory(enrollmentHistory: EnrollmentHistory[]) {
-        enrollmentHistory.sort((a, b) => {
-            const aTerm = `${a.year} ${a.quarter}`;
-            const bTerm = `${b.year} ${b.quarter}`;
-            // If the term for a appears earlier than the term for b in the list of
-            // term short names, then a must be the enrollment history for a more recent quarter
-            return (
-                DepartmentEnrollmentHistory.termShortNames.indexOf(bTerm) -
-                DepartmentEnrollmentHistory.termShortNames.indexOf(aTerm)
-            );
-        });
-    }
+    type ShortName = (typeof termShortNames)[number];
+    return parsed.sort((a, b) => {
+        const aTerm = `${a.year} ${a.quarter}` as ShortName;
+        const bTerm = `${b.year} ${b.quarter}` as ShortName;
+        return termShortNames.indexOf(bTerm) - termShortNames.indexOf(aTerm);
+    });
 }
