@@ -1018,6 +1018,44 @@ export class RDS {
     }
 
     /**
+     * Returns the sharedWithFriends status for all schedules owned by the given user.
+     */
+    static async getScheduleSharingStatuses(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
+            .from(schedules)
+            .where(eq(schedules.userId, userId));
+    }
+
+    /**
+     * Toggles the sharedWithFriends flag on a schedule owned by the given user.
+     * Returns the updated value, or null if the schedule was not found.
+     */
+    static async toggleScheduleSharing(
+        db: DatabaseOrTransaction,
+        userId: string,
+        scheduleId: string
+    ): Promise<{ sharedWithFriends: boolean } | null> {
+        return db.transaction(async (tx) => {
+            const [schedule] = await tx
+                .select({ sharedWithFriends: schedules.sharedWithFriends })
+                .from(schedules)
+                .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+                .limit(1);
+
+            if (!schedule) return null;
+
+            const [updated] = await tx
+                .update(schedules)
+                .set({ sharedWithFriends: !schedule.sharedWithFriends })
+                .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+                .returning({ sharedWithFriends: schedules.sharedWithFriends });
+
+            return { sharedWithFriends: updated.sharedWithFriends };
+        });
+    }
+
+    /**
      * Flags a user as imported based on the provided provider ID.
      *
      * This function checks if a user associated with the given provider ID has already been flagged as imported.
