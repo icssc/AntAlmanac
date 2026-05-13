@@ -1,8 +1,7 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
-import { getSignInUrl } from '$lib/auth/authActions';
+import { getSignInUrl } from '$lib/auth/authClient';
 import { Provider } from '$lib/auth/authTypes';
-import { getAuthReturnUrl } from '$lib/auth/authUtils';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
@@ -399,6 +398,8 @@ const cacheSchedule = () => {
 
 /**
  * If `signInUrl` is not provided, {@link getSignInUrl} with default params will be used.
+ *
+ * @param options.silent Sign in silently with `prompt: none` and suppress errors?
  */
 export const loginUser = async (
     provider: Provider,
@@ -410,7 +411,7 @@ export const loginUser = async (
                 ? signInUrl
                 : await getSignInUrl(provider, {
                       redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined,
-                      returnUrl: getAuthReturnUrl(),
+                      authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
                   });
 
         if (url) {

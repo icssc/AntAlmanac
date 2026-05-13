@@ -1,8 +1,6 @@
 import { loginUser } from '$actions/AppStoreActions';
-import { getSignInUrl } from '$lib/auth/authActions';
 import { authClient } from '$lib/auth/authClient';
 import { Provider } from '$lib/auth/authTypes';
-import { getAuthReturnUrl } from '$lib/auth/authUtils';
 import { hasSsoCookie } from '$lib/ssoCookie';
 import { useSessionStore } from '$stores/SessionStore';
 import { useEffect, useRef } from 'react';
@@ -33,11 +31,7 @@ export function AutoSignIn() {
             }
 
             try {
-                const url = await getSignInUrl(Provider.Google, {
-                    authorizationUrlParams: { prompt: 'none' },
-                    returnUrl: getAuthReturnUrl(),
-                });
-                loginUser(Provider.Google, { silent: true, signInUrl: url });
+                loginUser(Provider.Google, { silent: true });
             } catch {
                 // Silent SSO failed (e.g. backend unavailable). Don't retry.
             }

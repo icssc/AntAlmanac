@@ -1,9 +1,12 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
+import { Provider } from '$lib/auth/authTypes';
+import { getIcsscProviderName } from '$lib/auth/authUtils';
 import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { getErrorMessage } from '$lib/utils';
-import type { auth } from '$src/lib/auth/auth';
+import type { auth, AuthAdditionalData, AuthorizationUrlParams } from '$src/lib/auth/auth';
 import { genericOAuthClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import { PostHog } from 'posthog-js';
@@ -18,6 +21,35 @@ export const authClient = createAuthClient({
 });
 
 export type SessionData = typeof authClient.$Infer.Session;
+
+interface GetSignInUrlOptions {
+    authorizationUrlParams?: AuthorizationUrlParams;
+    redirectUrl?: string;
+}
+
+export async function getSignInUrl(
+    provider: Provider,
+    { authorizationUrlParams, redirectUrl }: GetSignInUrlOptions = {}
+) {
+    const response = await authClient.signIn.oauth2({
+        providerId: AUTH_PROVIDER_ID,
+        newUserCallbackURL: '/welcome',
+        callbackURL: redirectUrl,
+        additionalData: {
+            returnUrl: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+            provider,
+        } satisfies AuthAdditionalData,
+    });
+    if (response.error) {
+        return '';
+    }
+    const authUrl = new URL(response.data.url);
+    for (const [key, val] of Object.entries(authorizationUrlParams ?? {})) {
+        authUrl.searchParams.set(key, val);
+    }
+    authUrl.searchParams.set('provider', getIcsscProviderName(provider));
+    return authUrl.toString();
+}
 
 export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}) {
     let logoutUrl;

@@ -1,9 +1,5 @@
 import { Provider } from '$lib/auth/authTypes';
 
-export function getAuthReturnUrl() {
-    return `${window.location.pathname}${window.location.search}${window.location.hash}`;
-}
-
 export const getSafeAuthRedirectPath = (
     redirectUrl: string | null | undefined,
     requestUrl: string,
