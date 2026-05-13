@@ -1,4 +1,5 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
+import { SectionRowColorStrip } from '$components/RightPane/SectionTable/SectionTableBody/SectionRowColorStrip';
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { EnrollmentCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell';
@@ -21,7 +22,6 @@ import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
-import { SectionRowColorStrip } from './SectionRowColorStrip';
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 function getSectionScheduleColor(section: AASection, term: string): string {
@@ -196,9 +196,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             }}
             style={computedRowStyle}
             onMouseEnter={handleMouseEnter}
-            onMouseLeave={() => {
-                handleMouseLeave();
-            }}
+            onMouseLeave={handleMouseLeave}
         >
             <SectionRowColorStrip
                 color={currColor}
