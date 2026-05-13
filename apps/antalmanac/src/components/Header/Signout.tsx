@@ -32,7 +32,6 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         [sessionIsValid, name, avatar, email]
     );
 
-    const open = Boolean(anchorEl);
     const handleClick = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -47,7 +46,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         <div id="load-save-container">
             <ProfileMenuButtons user={user} handleOpen={handleClick} handleSettingsOpen={handleClick} />
             <Popover
-                open={open}
+                open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
                 onClose={() => setAnchorEl(null)}
                 anchorOrigin={{

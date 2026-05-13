@@ -2,37 +2,37 @@ import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 
-import trpc from './api/trpc';
-import { QueryZotcourseError } from './customErrors';
-
 export interface ZotcourseResponse {
     codes: string[];
     customEvents: RepeatingCustomEvent[];
 }
-export async function queryZotcourse(schedule_name: string) {
-    if (!schedule_name) throw new QueryZotcourseError('Cannot import an empty Zotcourse schedule name');
-    const response = await trpc.zotcourse.getUserData.mutate({ scheduleName: schedule_name });
-    if (!response.success) throw new QueryZotcourseError('Cannot import an invalid Zotcourse');
-    // For custom event, there is no course attribute in each.
-    const codes = response.data
-        .filter((section: { eventType: number }) => section.eventType === 3)
-        .map((section: { course: { code: string } }) => section.course.code) as string[];
+
+type ZotcourseSection =
+    | { eventType: 3; course: { code: string } }
+    | { eventType: 1; title: string; start: string; end: string; dow: number[] }
+    | { eventType: number };
+
+export function processZotcourseResponse(data: ZotcourseSection[]): ZotcourseResponse {
     const days = [false, false, false, false, false, false, false];
-    const customEvents: RepeatingCustomEvent[] = response.data
-        .filter((section: { eventType: number }) => section.eventType === 1)
-        .map((event: { title: string; start: string; end: string; dow: number[] }) => {
-            return {
-                title: event.title,
-                start: event.start,
-                end: event.end,
-                days: days.map((_, index) => event.dow.includes(index)),
-                scheduleIndices: [AppStore.getCurrentScheduleIndex()],
-                customEventID: createId(),
-                color: '#551a8b',
-            };
-        }) as RepeatingCustomEvent[];
-    return {
-        codes: codes,
-        customEvents: customEvents,
-    };
+
+    const codes = data
+        .filter((section): section is { eventType: 3; course: { code: string } } => section.eventType === 3)
+        .map((section) => section.course.code);
+
+    const customEvents: RepeatingCustomEvent[] = data
+        .filter(
+            (section): section is { eventType: 1; title: string; start: string; end: string; dow: number[] } =>
+                section.eventType === 1
+        )
+        .map((event) => ({
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            days: days.map((_, index) => event.dow.includes(index)),
+            scheduleIndices: [AppStore.getCurrentScheduleIndex()],
+            customEventID: createId(),
+            color: '#551a8b',
+        }));
+
+    return { codes, customEvents };
 }
