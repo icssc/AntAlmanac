@@ -761,6 +761,20 @@ export class RDS {
         });
     }
 
+    /**
+     * Resolves a session token to a userId, verifying the session is valid and not expired.
+     * Returns null if the session is invalid or expired.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param sessionToken - The refresh token identifying the session.
+     * @returns A promise that resolves to the userId string, or null if the session is not found or expired.
+     */
+    static async getUserIdBySessionToken(db: DatabaseOrTransaction, sessionToken: string): Promise<string | null> {
+        const session = await this.getCurrentSession(db, sessionToken);
+        if (!session || session.expires <= new Date()) return null;
+        return session.userId;
+    }
+
     static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
         return db.transaction((tx) =>
             tx
