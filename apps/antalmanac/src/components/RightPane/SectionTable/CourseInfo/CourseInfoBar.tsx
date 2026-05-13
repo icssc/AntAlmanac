@@ -4,7 +4,7 @@ import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/a
 import trpc from '$lib/api/trpc';
 import { InfoOutlined } from '@mui/icons-material';
 import { Box, Button, Popover, Skeleton } from '@mui/material';
-import type { PrerequisiteTree } from '@packages/antalmanac-types';
+import type { PrerequisiteTree } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 

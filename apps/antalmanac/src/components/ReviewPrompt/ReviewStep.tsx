@@ -1,7 +1,11 @@
 'use client';
 
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { trpcReact } from '$lib/api/trpcReact';
+import { postHog } from '$providers/PostHog';
 import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import {
     Box,
@@ -53,8 +57,9 @@ function difficultyLabel(difficulty: number): string {
 }
 
 export function ReviewStep() {
-    const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
-    const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
+    const candidate = useReviewPromptStore((s) => s.candidate);
+    const courseId = candidate?.courseId ?? '';
+    const professorId = candidate?.professorId ?? '';
     const rating = useReviewPromptStore((s) => s.rating);
     const difficulty = useReviewPromptStore((s) => s.difficulty);
     const selectedTags = useReviewPromptStore((s) => s.selectedTags);
@@ -63,8 +68,67 @@ export function ReviewStep() {
     const textReview = useReviewPromptStore((s) => s.textReview);
     const setTextReview = useReviewPromptStore((s) => s.setTextReview);
     const toggleTag = useReviewPromptStore((s) => s.toggleTag);
-    const submitReview = useReviewPromptStore((s) => s.submitReview);
     const dismiss = useReviewPromptStore((s) => s.dismiss);
+    const resetReview = useReviewPromptStore((s) => s.resetReview);
+
+    const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
+
+    const { mutate: submitReview, isPending: isSubmitting } = trpcReact.review.submitReview.useMutation({
+        onSuccess: () => {
+            if (!candidate) {
+                return;
+            }
+
+            logAnalytics(postHog, {
+                category: analyticsEnum.review,
+                action: analyticsEnum.review.actions.SUBMITTED,
+                customProps: {
+                    courseId: candidate.courseId,
+                    professorId: candidate.professorId,
+                    term: candidate.term,
+                    rating,
+                    difficulty,
+                    tags: selectedTags,
+                },
+            });
+            resetReview();
+            openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
+        },
+        onError: () => {
+            openSnackbar('error', 'Failed to submit review. Please try again.');
+        },
+    });
+
+    const handleDismiss = () => {
+        if (isSubmitting) {
+            return;
+        }
+
+        const dismissedCandidate = dismiss();
+        if (dismissedCandidate) {
+            dismissReview({
+                professorId: dismissedCandidate.professorId,
+                courseId: dismissedCandidate.courseId,
+                term: dismissedCandidate.term,
+            });
+        }
+    };
+
+    const handleSubmit = () => {
+        if (!candidate || rating === 0 || difficulty === 0) {
+            return;
+        }
+
+        submitReview({
+            professorId: candidate.professorId,
+            courseId: candidate.courseId,
+            quarter: candidate.term,
+            rating,
+            difficulty,
+            tags: selectedTags,
+            content: textReview.trim() || undefined,
+        });
+    };
 
     return (
         <>
@@ -76,7 +140,7 @@ export function ReviewStep() {
                 }
                 subheader={<Typography color="text.secondary">with {professorId}</Typography>}
                 action={
-                    <IconButton size="small" onClick={dismiss} aria-label="dismiss">
+                    <IconButton size="small" onClick={handleDismiss} aria-label="dismiss">
                         <Close fontSize="small" />
                     </IconButton>
                 }
@@ -148,15 +212,16 @@ export function ReviewStep() {
             </CardContent>
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
-                <Button size="small" color="inherit" onClick={dismiss}>
+                <Button size="small" color="inherit" onClick={handleDismiss}>
                     Skip
                 </Button>
 
                 <Button
                     size="small"
                     variant="contained"
-                    disabled={rating === 0 || difficulty === 0}
-                    onClick={submitReview}
+                    disabled={rating === 0 || difficulty === 0 || isSubmitting}
+                    loading={isSubmitting}
+                    onClick={handleSubmit}
                 >
                     Submit
                 </Button>

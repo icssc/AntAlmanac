@@ -15,8 +15,6 @@ export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: s
     openSnackbar('success', 'WebsocSection code copied to clipboard');
 }
 
-export const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];
-
 export const QUARTER_ORDER_IN_YEAR: Record<string, number> = {
     Winter: 0,
     Spring: 1,

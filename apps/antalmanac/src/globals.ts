@@ -1,4 +1,3 @@
-export const DODGER_BLUE = '#1e90ff';
 export const BLUE = '#305db7';
 export const LIGHT_BLUE = '#90B3F9';
 

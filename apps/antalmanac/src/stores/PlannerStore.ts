@@ -11,8 +11,8 @@ interface PlannerStore {
     plannerRoadmaps: Roadmap[];
     isPlannerLoading: boolean;
 
-    loadPlannerRoadmaps: (googleId: string) => Promise<void>;
-    updateTakenCourses: (googleId: string, selectedRoadmapId: string) => void;
+    loadPlannerRoadmaps: () => Promise<void>;
+    updateTakenCourses: (selectedRoadmapId: string) => void;
 }
 
 function roadmapQuarterToYearAndQuarter(startYear: number, quarterName: string): { year: number; quarter: string } {
@@ -58,11 +58,7 @@ export const usePlannerStore = create<PlannerStore>((set, get) => {
         plannerRoadmaps: [],
         isPlannerLoading: false,
 
-        loadPlannerRoadmaps: async (googleId) => {
-            if (!googleId) {
-                set({ plannerRoadmaps: [] });
-                return;
-            }
+        loadPlannerRoadmaps: async () => {
             set({ isPlannerLoading: true });
             try {
                 const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query();
@@ -75,9 +71,9 @@ export const usePlannerStore = create<PlannerStore>((set, get) => {
             set({ isPlannerLoading: false });
         },
 
-        updateTakenCourses: (googleId, selectedRoadmapId) => {
+        updateTakenCourses: (selectedRoadmapId) => {
             const roadmaps = get().plannerRoadmaps;
-            if (!googleId || !selectedRoadmapId || roadmaps.length === 0) {
+            if (!selectedRoadmapId || roadmaps.length === 0) {
                 set({ userTakenCourses: new Set(), filterTakenCourses: false });
                 return;
             }

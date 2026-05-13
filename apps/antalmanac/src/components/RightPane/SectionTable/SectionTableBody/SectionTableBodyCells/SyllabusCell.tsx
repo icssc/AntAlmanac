@@ -1,10 +1,9 @@
-import { WebsocSectionStatus } from '@packages/antalmanac-types';
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import type { WebsocSection } from '@packages/anteater-api/types';
 import { Link } from 'react-router-dom';
 
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-
 interface SyllabusCellProps {
-    webURL: WebsocSectionStatus;
+    webURL: WebsocSection['webURL'];
 }
 
 export const SyllabusCell = ({ webURL }: SyllabusCellProps) => {
