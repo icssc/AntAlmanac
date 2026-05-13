@@ -33,7 +33,7 @@ const SAMPLE_PROPS = {
     userId: 'test-user-123',
     quarter: 'Spring',
     year: '2025',
-};
+} as const;
 
 const PORT = 3457;
 

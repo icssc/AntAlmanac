@@ -1,9 +1,10 @@
 import trpc from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
-import { buildTermShortName, parseTermShortName, type Quarter } from '$lib/term';
+import { buildTermShortName, parseTermShortName } from '$lib/term';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
 import { type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
+import type { Quarter } from '@packages/anteater-api/types';
 import type { Course } from '@packages/anteater-api/types';
 import { create } from 'zustand';
 

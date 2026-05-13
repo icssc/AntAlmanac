@@ -1,13 +1,13 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
+import type { Quarter } from '@packages/anteater-api/types';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
 
-export const REGULAR_QUARTERS = ['Fall', 'Winter', 'Spring'] as const;
-export const SUMMER_QUARTERS = ['Summer1', 'Summer2', 'Summer10wk'] as const;
-export const QUARTERS = [...REGULAR_QUARTERS, ...SUMMER_QUARTERS] as const;
+export const REGULAR_QUARTERS = ['Fall', 'Winter', 'Spring'] as const satisfies readonly Quarter[];
+export const SUMMER_QUARTERS = ['Summer1', 'Summer2', 'Summer10wk'] as const satisfies readonly Quarter[];
+export const QUARTERS = [...REGULAR_QUARTERS, ...SUMMER_QUARTERS] as const satisfies readonly Quarter[];
 
-export type Quarter = (typeof QUARTERS)[number];
 export const QuarterSchema = z.enum(QUARTERS);
 
 export const QUARTER_LONG_NAMES = {

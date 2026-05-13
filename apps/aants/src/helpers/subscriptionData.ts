@@ -1,5 +1,5 @@
 import { createClient } from '@packages/anteater-api/client';
-import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api/types';
+import type { Quarter, WebsocAPIResponse, WebsocSection } from '@packages/anteater-api/types';
 import { db } from '@packages/db';
 import { type User as DbUser, users } from '@packages/db/src/schema/auth/user';
 import { type Subscription, subscriptions } from '@packages/db/src/schema/subscription';
@@ -8,7 +8,9 @@ import { and, eq, inArray } from 'drizzle-orm';
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 interface TermGrouping {
-    [term: string]: string[];
+    quarter: Quarter;
+    year: string;
+    sectionCodes: string[];
 }
 
 interface ClassStatus {
@@ -30,7 +32,7 @@ export interface User {
  * @returns A promise that resolves to the WebSoc response, or undefined if an error occurs.
  */
 async function getUpdatedClasses(
-    quarter: string,
+    quarter: Quarter,
     year: string,
     sections: string[]
 ): Promise<WebsocAPIResponse | undefined> {
@@ -50,7 +52,7 @@ async function getUpdatedClasses(
  * Fetches and batches all unique section codes and their associated term information from the database.
  * @returns A promise that resolves to an object mapping terms to arrays of section codes, or undefined if an error occurs.
  */
-async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> {
+async function getSubscriptionSectionCodes(): Promise<TermGrouping[] | undefined> {
     try {
         const stage = process.env.STAGE!;
         const result = await db
@@ -62,19 +64,19 @@ async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> 
             .from(subscriptions)
             .where(eq(subscriptions.environment, stage));
 
-        // group together by year and quarter
-        const groupedByTerm = result.reduce<TermGrouping>((acc, { quarter, year, sectionCode }) => {
-            if (quarter && year) {
-                const term = `${quarter}-${year}`;
-                if (!acc[term]) {
-                    acc[term] = [];
-                }
-                acc[term].push(sectionCode);
+        const groupMap = new Map<string, TermGrouping>();
+        for (const { quarter, year, sectionCode } of result) {
+            if (!quarter || !year) continue;
+            const key = `${quarter}-${year}`;
+            const existing = groupMap.get(key);
+            if (existing) {
+                existing.sectionCodes.push(sectionCode);
+            } else {
+                groupMap.set(key, { quarter: quarter as Quarter, year, sectionCodes: [sectionCode] });
             }
-            return acc;
-        }, {});
+        }
 
-        return groupedByTerm;
+        return Array.from(groupMap.values());
     } catch (error) {
         console.error('Error getting subscriptions:', error);
     }
@@ -90,7 +92,7 @@ async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> 
  */
 async function updateSubscriptionStatus(
     year: string,
-    quarter: string,
+    quarter: Quarter,
     sectionCode: string,
     lastUpdatedStatus: WebsocSection['status'],
     lastCodes: string
@@ -122,7 +124,7 @@ async function updateSubscriptionStatus(
  */
 async function getLastUpdatedStatus(
     year: string,
-    quarter: string,
+    quarter: Quarter,
     sectionCodes: string[]
 ): Promise<Map<string, ClassStatus>> {
     const result = new Map<string, ClassStatus>();
@@ -177,7 +179,7 @@ export type SubscriptionWithUser = Pick<
  */
 async function getSubscriptionsForSections(
     year: string,
-    quarter: string,
+    quarter: Quarter,
     sectionCodes: string[]
 ): Promise<Map<string, SubscriptionWithUser[]>> {
     const result = new Map<string, SubscriptionWithUser[]>();

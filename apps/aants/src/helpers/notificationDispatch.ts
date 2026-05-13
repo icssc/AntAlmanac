@@ -1,4 +1,4 @@
-import { WebsocSection } from '@packages/anteater-api/types';
+import { Quarter, WebsocSection } from '@packages/anteater-api/types';
 import { render, toPlainText } from '@react-email/render';
 
 import { CourseNotificationEmail } from '../emails/CourseNotificationEmail';
@@ -19,7 +19,7 @@ export interface CourseDetails {
     courseNumber: string;
     courseTitle: string;
     courseType: string;
-    quarter: string;
+    quarter: Quarter;
     year: string;
 }
 
