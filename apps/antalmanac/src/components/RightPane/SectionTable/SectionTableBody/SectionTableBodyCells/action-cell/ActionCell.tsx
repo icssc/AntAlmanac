@@ -63,7 +63,6 @@ export const ActionCell = memo(
                                       ? 'Hide class in calendar'
                                       : 'Show class in calendar'
                             }
-                            arrow
                             disableInteractive
                         >
                             <IconButton onClick={handleVisibilityToggle} size="small" sx={{ p: 0.5 }}>
