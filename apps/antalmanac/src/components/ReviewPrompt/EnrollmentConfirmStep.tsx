@@ -62,7 +62,7 @@ export function EnrollmentConfirmStep() {
                 </Button>
 
                 <Button size="small" variant="contained" onClick={confirm}>
-                    Yes!
+                    Yes, continue!
                 </Button>
             </CardActions>
         </>

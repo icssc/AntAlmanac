@@ -69,7 +69,6 @@ export function ReviewStep() {
     const setTextReview = useReviewPromptStore((s) => s.setTextReview);
     const toggleTag = useReviewPromptStore((s) => s.toggleTag);
     const dismiss = useReviewPromptStore((s) => s.dismiss);
-    const resetReview = useReviewPromptStore((s) => s.resetReview);
 
     const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
 
@@ -91,8 +90,7 @@ export function ReviewStep() {
                     tags: selectedTags,
                 },
             });
-            resetReview();
-            openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
+            useReviewPromptStore.setState({ step: 'success', rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
         },
         onError: () => {
             openSnackbar('error', 'Failed to submit review. Please try again.');
