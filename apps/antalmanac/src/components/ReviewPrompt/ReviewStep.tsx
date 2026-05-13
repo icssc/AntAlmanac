@@ -100,6 +100,10 @@ export function ReviewStep() {
     });
 
     const handleDismiss = () => {
+        if (isSubmitting) {
+            return;
+        }
+
         const dismissedCandidate = dismiss();
         if (dismissedCandidate) {
             dismissReview({
