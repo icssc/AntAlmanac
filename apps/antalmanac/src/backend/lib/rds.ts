@@ -938,6 +938,86 @@ export class RDS {
     }
 
     /**
+     * Blocks a user. If the blockId had sent a PENDING request to userId, that row is updated to
+     * DECLINED (so the sender's card stays visible). All other rows between the pair are deleted,
+     * then the (userId→blockId, BLOCKED) row is inserted.
+     */
+    static async blockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
+        return db.transaction(async (tx) => {
+            // Preserve the incoming request row as DECLINED so the sender can still see it
+            await tx
+                .update(friendships)
+                .set({ status: 'DECLINED', updatedAt: new Date() })
+                .where(
+                    and(
+                        eq(friendships.requesterId, blockId),
+                        eq(friendships.addresseeId, userId),
+                        eq(friendships.status, 'PENDING')
+                    )
+                );
+
+            // Delete everything else between the pair except the row we just updated
+            await tx
+                .delete(friendships)
+                .where(
+                    or(
+                        and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, blockId)),
+                        and(
+                            eq(friendships.requesterId, blockId),
+                            eq(friendships.addresseeId, userId),
+                            ne(friendships.status, 'DECLINED')
+                        )
+                    )
+                );
+
+            return tx
+                .insert(friendships)
+                .values({ requesterId: userId, addresseeId: blockId, status: 'BLOCKED', updatedAt: new Date() })
+                .returning();
+        });
+    }
+
+    /**
+     * Returns all users blocked by the given user (id, name, email).
+     */
+    static async getBlockedUsers(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.addresseeId, users.id))
+            .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'BLOCKED')));
+    }
+
+    /**
+     * Removes a block placed by userId on blockId.
+     */
+    static async unblockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
+        return db.transaction(async (tx) => {
+            await tx
+                .delete(friendships)
+                .where(
+                    and(
+                        eq(friendships.requesterId, userId),
+                        eq(friendships.addresseeId, blockId),
+                        eq(friendships.status, 'BLOCKED')
+                    )
+                );
+
+            // Restore the original request so it reappears in the blocker's received-requests tab
+            await tx
+                .update(friendships)
+                .set({ status: 'PENDING', updatedAt: new Date() })
+                .where(
+                    and(
+                        eq(friendships.requesterId, blockId),
+                        eq(friendships.addresseeId, userId),
+                        eq(friendships.status, 'DECLINED')
+                    )
+                );
+        });
+    }
+
+    /**
      * Flags a user as imported based on the provided provider ID.
      *
      * This function checks if a user associated with the given provider ID has already been flagged as imported.
