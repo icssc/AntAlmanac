@@ -3,10 +3,10 @@ import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane'
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { trpcReact } from '$lib/api/trpcReact';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
@@ -14,7 +14,7 @@ export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
         useCoursePaneStore();
     const postHog = usePostHog();
-    const queryClient = useQueryClient();
+    const utils = trpcReact.useUtils();
 
     const handleSearch = useCallback(() => {
         if (!advancedSearchEnabled) {
@@ -38,10 +38,10 @@ export function CoursePaneRoot() {
             category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.REFRESH,
         });
-        queryClient.invalidateQueries({ queryKey: [['websoc']] });
-        queryClient.invalidateQueries({ queryKey: [['grades']] });
+        utils.websoc.invalidate();
+        utils.grades.invalidate();
         forceUpdate();
-    }, [forceUpdate, postHog, queryClient]);
+    }, [forceUpdate, postHog, utils]);
 
     const handleKeydown = useCallback(
         (event: KeyboardEvent) => {
