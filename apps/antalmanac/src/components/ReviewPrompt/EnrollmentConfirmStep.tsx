@@ -16,9 +16,9 @@ export function EnrollmentConfirmStep() {
     const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
 
     const handleDismiss = () => {
-        const candidate = dismiss();
-        if (candidate) {
-            dismissReview({ professorId: candidate.professorId, courseId: candidate.courseId, term: candidate.term });
+        dismiss();
+        if (professorId && courseId && term) {
+            dismissReview({ professorId, courseId, term });
         }
     };
 
@@ -58,7 +58,7 @@ export function EnrollmentConfirmStep() {
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button size="small" color="inherit" onClick={handleDismiss}>
-                    I did not
+                    Nope
                 </Button>
 
                 <Button size="small" variant="contained" onClick={confirm}>

@@ -3,8 +3,7 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpcReact';
 import { postHog } from '$providers/PostHog';
-import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
-import { useReviewPromptStore } from '$stores/ReviewPromptStore';
+import { REVIEW_TAGS, useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import {
@@ -90,7 +89,13 @@ export function ReviewStep() {
                     tags: selectedTags,
                 },
             });
-            useReviewPromptStore.setState({ step: 'success', rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
+            useReviewPromptStore.setState({
+                step: 'success',
+                rating: 0,
+                difficulty: 0,
+                selectedTags: [],
+                textReview: '',
+            });
         },
         onError: () => {
             openSnackbar('error', 'Failed to submit review. Please try again.');
@@ -102,12 +107,12 @@ export function ReviewStep() {
             return;
         }
 
-        const dismissedCandidate = dismiss();
-        if (dismissedCandidate) {
+        dismiss();
+        if (candidate) {
             dismissReview({
-                professorId: dismissedCandidate.professorId,
-                courseId: dismissedCandidate.courseId,
-                term: dismissedCandidate.term,
+                professorId: candidate.professorId,
+                courseId: candidate.courseId,
+                term: candidate.term,
             });
         }
     };
@@ -211,7 +216,7 @@ export function ReviewStep() {
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button size="small" color="inherit" onClick={handleDismiss}>
-                    Skip
+                    Cancel
                 </Button>
 
                 <Button
