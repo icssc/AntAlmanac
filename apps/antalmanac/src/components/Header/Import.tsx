@@ -9,10 +9,10 @@ import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -248,15 +248,12 @@ export function Import() {
     ) => {
         try {
             const term = RightPaneStore.getFormData().term;
-
-            const sectionsAdded = addCoursesMultiple(
-                await WebSOC.getCourseInfo({
-                    term,
-                    sectionCodes: sectionCodes.join(','),
-                }),
+            const courseInfo = await trpc.websoc.getCourseInfo.query({
                 term,
-                currentSchedule
-            );
+                sectionCodes: sectionCodes.join(','),
+            });
+
+            const sectionsAdded = addCoursesMultiple(courseInfo, term, currentSchedule);
 
             logAnalytics(postHog, {
                 category: analyticsEnum.nav,

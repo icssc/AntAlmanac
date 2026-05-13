@@ -1,29 +1,9 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePopover/GradesPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { Grades } from '$lib/grades';
+import { trpcReact } from '$lib/api/trpcReact';
 import { ButtonBase, Popover, useTheme } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-
-async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
-    const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
-
-    // Get the GPA of the first instructor of this section where data exists
-    for (const instructor of namedInstructors) {
-        const grades = await Grades.queryGrades(deptCode, courseNumber, instructor, false);
-        if (grades?.averageGPA) {
-            return {
-                gpa: grades.averageGPA.toFixed(2).toString(),
-                instructor: instructor,
-            };
-        }
-    }
-
-    return {
-        gpa: '',
-        instructor: namedInstructors[0] || '',
-    };
-}
+import { useCallback, useMemo, useState } from 'react';
 
 interface GpaCellProps {
     deptCode: string;
@@ -34,37 +14,47 @@ interface GpaCellProps {
 export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
     const isMobile = useIsMobile();
     const theme = useTheme();
-    const secondaryColor = theme.palette.secondary.main;
-
-    const [loading, setLoading] = useState(true);
-    const [gpa, setGpa] = useState('');
-    const [instructor, setInstructor] = useState('');
     const [anchorEl, setAnchorEl] = useState<Element>();
 
+    const namedInstructors = useMemo(() => instructors.filter((i) => i !== 'STAFF'), [instructors]);
+
+    const instructorResults = trpcReact.useQueries((t) =>
+        namedInstructors.map((instructor) =>
+            t.grades.aggregateGrades(
+                { department: deptCode, courseNumber, instructor },
+                { select: (data) => data?.gradeDistribution ?? null }
+            )
+        )
+    );
+
+    const loading = instructorResults.some((r) => r.isLoading);
+
+    const { gpa, instructor } = useMemo(() => {
+        const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
+        if (idx >= 0) {
+            const avg = instructorResults[idx].data?.averageGPA;
+            return { gpa: avg || avg === 0 ? avg.toFixed(2) : '', instructor: namedInstructors[idx] };
+        }
+        return { gpa: '', instructor: namedInstructors[0] ?? '' };
+    }, [instructorResults, namedInstructors]);
+
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
+        setAnchorEl((current) => (current ? undefined : event.currentTarget));
     }, []);
 
     const hideDistribution = useCallback(() => {
         setAnchorEl(undefined);
     }, []);
 
-    useEffect(() => {
-        setLoading(true);
-
-        getGpaData(deptCode, courseNumber, instructors)
-            .then((data) => {
-                setGpa(data?.gpa);
-                setInstructor(data?.instructor);
-            })
-            .catch(console.log)
-            .finally(() => setLoading(false));
-    }, [deptCode, courseNumber, instructors]);
-
     return (
         <TableBodyCellContainer>
             <ButtonBase
-                sx={{ fontFamily: 'inherit', fontSize: 'unset', color: secondaryColor, fontWeight: 700 }}
+                sx={{
+                    fontFamily: 'inherit',
+                    fontSize: 'unset',
+                    color: theme.palette.secondary.main,
+                    fontWeight: 700,
+                }}
                 onClick={handleClick}
             >
                 {loading ? null : gpa || 'GPA'}

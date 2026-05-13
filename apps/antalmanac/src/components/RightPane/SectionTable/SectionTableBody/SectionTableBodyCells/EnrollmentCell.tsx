@@ -1,7 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTablePopover/EnrollmentHistoryPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { DepartmentEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
 import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/anteater-api/types';
 import { useCallback, useMemo, useState } from 'react';
@@ -48,35 +47,10 @@ export const EnrollmentCell = ({
     const showTooltip = !isMobile && formattedTime;
 
     const [anchorEl, setAnchorEl] = useState<Element>();
-    const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[]>();
-    const [loadingEnrollmentHistory, setLoadingEnrollmentHistory] = useState(false);
 
-    const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(deptCode), [deptCode]);
-
-    const handleClick = useCallback(
-        (event: React.MouseEvent<HTMLElement>) => {
-            setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
-
-            if (anchorEl || loadingEnrollmentHistory) {
-                return;
-            }
-
-            setLoadingEnrollmentHistory(true);
-
-            deptEnrollmentHistory
-                .find(courseNumber, sectionType)
-                .then((history) => {
-                    setEnrollmentHistory(history);
-                })
-                .catch(() => {
-                    setEnrollmentHistory(undefined);
-                })
-                .finally(() => {
-                    setLoadingEnrollmentHistory(false);
-                });
-        },
-        [anchorEl, courseNumber, deptEnrollmentHistory, loadingEnrollmentHistory, sectionType]
-    );
+    const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl((current) => (current ? undefined : event.currentTarget));
+    }, []);
 
     const hideEnrollmentHistory = useCallback(() => {
         setAnchorEl(undefined);
@@ -132,8 +106,6 @@ export const EnrollmentCell = ({
                     courseNumber={courseNumber}
                     term={term}
                     sectionCode={sectionCode}
-                    enrollmentHistory={enrollmentHistory}
-                    loading={loadingEnrollmentHistory}
                 />
             </Popover>
         </TableBodyCellContainer>
