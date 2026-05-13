@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { canTermEnrollmentChange, termData } from '$lib/term';
 import type { CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
-import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
+import type { Course, Quarter, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
 import { parseSectionCodes, SectionCodesGraphQLResponse } from '../src/backend/lib/term-section-codes';
 import { GENERATED_DIR, GENERATED_TERMS_DIR, SEARCH_DATA_FILE } from './lib/paths.js';
@@ -46,7 +46,7 @@ function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
     );
 }
 
-function buildSectionCodesQuery(year: string, quarter: string): string {
+function buildSectionCodesQuery(year: string, quarter: Quarter): string {
     return `{
         websoc(query: { year: "${year}", quarter: ${quarter} }) {
             schools {

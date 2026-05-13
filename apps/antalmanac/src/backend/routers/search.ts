@@ -1,10 +1,10 @@
 import { readFile } from 'fs/promises';
 import { join } from 'node:path';
 
-// eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
-import { parseTermShortName } from '$lib/term';
+import { parseTermShortName, QuarterSchema } from '$lib/term';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
+import type { Quarter } from '@packages/anteater-api/types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
@@ -69,7 +69,7 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     geCategories[key],
 ];
 
-async function getTermSectionCodes(year: string, quarter: string): Promise<Record<string, SectionSearchResult>> {
+async function getTermSectionCodes(year: string, quarter: Quarter): Promise<Record<string, SectionSearchResult>> {
     const parsedTerm = `${quarter}_${year}`;
     try {
         const filePath = join(termsFolderPath, `${parsedTerm}.json`);
@@ -172,7 +172,7 @@ const searchRouter = router({
             z.object({
                 courses: z.array(bareCourseSchema),
                 year: z.string(),
-                quarter: z.string(),
+                quarter: QuarterSchema,
             })
         )
         .query(async ({ input }): Promise<Record<BareCourse['department'], Set<BareCourse['courseNumber']>>> => {

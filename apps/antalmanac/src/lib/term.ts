@@ -113,14 +113,6 @@ export function getFinalsStartDateForTerm(term: string) {
     return new Date(termThatMatches.finalsStart);
 }
 
-export function getCurrentTerm(): { year: number; quarter: string } {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const quarter = month <= 3 ? 'Winter' : month <= 6 ? 'Spring' : month <= 9 ? 'Summer' : 'Fall';
-    return { year, quarter };
-}
-
 export function getTermLongName(termShortName: string) {
     return termData.find((term) => term.shortName === termShortName)?.longName ?? '';
 }
