@@ -10,7 +10,7 @@ import { createEvents, type EventAttributes } from 'ics';
 
 import { notNull } from './utils';
 
-const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
+const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.instructionStart]));
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 

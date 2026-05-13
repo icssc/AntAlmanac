@@ -59,7 +59,7 @@ export const useReviewPromptStore = create(
             // We further filter to terms whose finals have already ended.
             const pastTermNames = new Set<string>(
                 termData
-                    .filter((t) => t.finalsStartDate < today)
+                    .filter((t) => t.finalsStart < today)
                     .slice(0, PAST_TERMS_WINDOW)
                     .map((t) => t.shortName)
             );

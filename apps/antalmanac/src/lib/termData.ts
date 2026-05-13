@@ -1,10 +1,9 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
-import { parseTermShortName, QUARTERS, type Quarter } from '$lib/term-constants';
+import { isSummerQuarter, QUARTER_LONG_NAMES, QuarterSchema, type Quarter } from '$lib/term-constants';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
 
-// Re-export all term constants so callers only need to import from this module.
 export type { Quarter } from '$lib/term-constants';
 export {
     buildTermShortName,
@@ -20,82 +19,58 @@ export {
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
  * Quick Reference Ten Year Calendar {@link https://www.reg.uci.edu/calendars/academic/tenyr-19-29.html}
- * The `startDate`, if available, should correspond to the __instruction start date__ (not the quarter start date)
- * The `finalsStartDate`, if available, should correspond to the __final exams__ first date (should be a Saturday)
  */
 export type Term = {
+    year: string;
+    quarter: Quarter;
     shortName: `${string} ${Quarter}`;
     longName: string;
-    startDate: Date;
-    finalsStartDate: Date;
+    instructionStart: Date;
+    instructionEnd: Date;
+    finalsStart: Date;
+    finalsEnd: Date;
     socAvailable: Date;
     isSummerTerm: boolean;
 };
 
-/**
- * The JSON stores dates as ISO "YYYY-MM-DD" strings. We reconstruct local-timezone
- * Date objects (mirroring `new Date(year, month-1, day)`) so that date arithmetic
- * elsewhere in the app is unaffected by the UTC-vs-local distinction.
- */
 function parseLocalDate(dateStr: string): Date {
     const [year, month, day] = dateStr.split('-').map(Number);
     return new Date(year, month - 1, day);
 }
 
-/**
- * Zod schema for a single term entry in termData.json.
- *
- * The quarter segment of `shortName` is validated against the 6 known {@link Quarter} values
- * defined in `term-constants.ts`, so any unrecognised quarter emitted by the data-generation
- * script will be caught here at startup rather than silently propagated.
- */
 const termSchema = z
     .object({
-        shortName: z.string().refine(
-            (s): s is `${string} ${Quarter}` => {
-                const parsed = parseTermShortName(s);
-                return parsed !== null;
-            },
-            { message: 'shortName must be "<year> <validQuarter>" (one of: ' + QUARTERS.join(', ') + ')' }
-        ),
-        longName: z.string(),
-        startDate: z.string().date(),
-        finalsStartDate: z.string().date(),
+        year: z.string(),
+        quarter: QuarterSchema,
+        instructionStart: z.string().date(),
+        instructionEnd: z.string().date(),
+        finalsStart: z.string().date(),
+        finalsEnd: z.string().date(),
         socAvailable: z.string().date(),
-        isSummerTerm: z.boolean(),
     })
     .transform(
-        (t): Term => ({
-            shortName: t.shortName,
-            longName: t.longName,
-            startDate: parseLocalDate(t.startDate),
-            finalsStartDate: parseLocalDate(t.finalsStartDate),
-            socAvailable: parseLocalDate(t.socAvailable),
-            isSummerTerm: t.isSummerTerm,
+        ({ year, quarter, instructionStart, instructionEnd, finalsStart, finalsEnd, socAvailable }): Term => ({
+            year,
+            quarter,
+            shortName: `${year} ${quarter}`,
+            longName: `${year} ${QUARTER_LONG_NAMES[quarter]}`,
+            instructionStart: parseLocalDate(instructionStart),
+            instructionEnd: parseLocalDate(instructionEnd),
+            finalsStart: parseLocalDate(finalsStart),
+            finalsEnd: parseLocalDate(finalsEnd),
+            socAvailable: parseLocalDate(socAvailable),
+            isSummerTerm: isSummerQuarter(quarter),
         })
     );
 
 const terms: Term[] = z.array(termSchema).parse(termJson);
 
-/**
- * Only include terms that have a SOC available.
- */
-const termData = terms.filter((term) => {
-    return term.socAvailable <= new Date();
-});
+const termData = terms.filter((term) => term.socAvailable <= new Date());
 
-// The index of the default term in termData, as per WebSOC
 const defaultTerm = termData.findIndex((term) => !term.isSummerTerm);
 
-/** Short names of terms whose courses' enrollment can change */
 const openEnrollmentTerms = getOpenEnrollmentTerms();
 
-/**
- * Get the default term.
- *
- * By default, use a static index.
- * If an array of events is provided, select the first term found.
- */
 function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
     let term = termData[defaultTerm];
 
@@ -113,7 +88,7 @@ function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
 }
 
 function getDefaultFinalsStartDate() {
-    return new Date(termData[defaultTerm].finalsStartDate);
+    return new Date(termData[defaultTerm].finalsStart);
 }
 
 function getFinalsStartDateForTerm(term: string) {
@@ -123,7 +98,7 @@ function getFinalsStartDateForTerm(term: string) {
         return getDefaultFinalsStartDate();
     }
 
-    return new Date(termThatMatches.finalsStartDate);
+    return new Date(termThatMatches.finalsStart);
 }
 
 function getCurrentTerm(): { year: number; quarter: string } {
@@ -156,7 +131,7 @@ function getOpenEnrollmentTerms() {
     const openEnrollmentTerms: Set<Term['shortName']> = new Set();
 
     for (const term of termData) {
-        if (new Date().getFullYear() - term.startDate.getFullYear() > 1) {
+        if (new Date().getFullYear() - term.instructionStart.getFullYear() > 1) {
             break;
         }
         if (isTermEnrollmentOpen(term)) {
@@ -171,8 +146,8 @@ function getOpenEnrollmentTerms() {
  * See {@link canTermEnrollmentChange} docs.
  */
 function isTermEnrollmentOpen(term: Term): boolean {
-    const isTermShort = differenceInWeeks(term.finalsStartDate, term.startDate) < 9;
-    const hasWeekZero = term.startDate.getDay() !== 1;
+    const isTermShort = differenceInWeeks(term.finalsStart, term.instructionStart) < 9;
+    const hasWeekZero = term.instructionStart.getDay() !== 1;
 
     let weeksUntilDropDeadline = 1;
     if (isTermShort) {
@@ -182,7 +157,7 @@ function isTermEnrollmentOpen(term: Term): boolean {
         weeksUntilDropDeadline++;
     }
 
-    const dropDeadline = setDay(addWeeks(term.startDate, weeksUntilDropDeadline), 5);
+    const dropDeadline = setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
     return new Date() <= dropDeadline;
 }
 

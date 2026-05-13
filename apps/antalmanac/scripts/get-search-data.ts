@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { parseTermShortName } from '$lib/term-constants';
 import { canTermEnrollmentChange, termData } from '$lib/termData';
 import type { CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
@@ -130,9 +129,7 @@ async function main() {
             if (i > 0) {
                 await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
             }
-            const termParts = parseTermShortName(activeTerms[i].shortName);
-            if (!termParts) throw new Error(`Invalid term format: ${activeTerms[i].shortName}`);
-            const { year, quarter } = termParts;
+            const { year, quarter } = activeTerms[i];
             const websocData = await aapiClient.websoc.query({ year, quarter });
             const chunk = getWebsocCoursesFromResponse(websocData);
             for (const [key, course] of chunk) {
@@ -195,9 +192,7 @@ async function main() {
     let requestsMade = 0;
     for (const term of termData) {
         try {
-            const termParts = parseTermShortName(term.shortName);
-            if (!termParts) throw new Error(`Invalid term format: ${term.shortName}`);
-            const { year, quarter } = termParts;
+            const { year, quarter } = term;
             const parsedTerm = `${quarter}_${year}`;
             const fileName = join(GENERATED_TERMS_DIR, `${parsedTerm}.json`);
 

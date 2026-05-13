@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';
 
-import { isSummerQuarter, QUARTER_LONG_NAMES, QuarterSchema } from '$lib/term-constants';
 import { createClient } from '@packages/anteater-api/client';
 import type { CalendarTerm } from '@packages/anteater-api/types';
 
@@ -10,27 +9,13 @@ import { GENERATED_DIR, TERM_DATA_FILE } from './lib/paths.js';
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 function serializeTerm(term: CalendarTerm) {
-    const { year, quarter: rawQuarter, instructionStart, finalsStart, socAvailable } = term;
+    const { year, quarter, instructionStart, instructionEnd, finalsStart, finalsEnd, socAvailable } = term;
 
-    if (!instructionStart || !finalsStart || !socAvailable) {
-        throw new Error(`Term ${year} ${rawQuarter} is missing required date fields`);
+    if (!instructionStart || !instructionEnd || !finalsStart || !finalsEnd || !socAvailable) {
+        throw new Error(`Term ${year} ${quarter} is missing required date fields`);
     }
 
-    // Validate the quarter against the 6 known values defined in term-constants.ts.
-    // A ZodError here means the Anteater API returned an unrecognised quarter token.
-    const quarter = QuarterSchema.parse(rawQuarter);
-
-    const shortName = `${year} ${quarter}`;
-    const longName = `${year} ${QUARTER_LONG_NAMES[quarter]}`;
-
-    return {
-        shortName,
-        longName,
-        startDate: instructionStart,
-        finalsStartDate: finalsStart,
-        socAvailable,
-        isSummerTerm: isSummerQuarter(quarter),
-    };
+    return { year, quarter, instructionStart, instructionEnd, finalsStart, finalsEnd, socAvailable };
 }
 
 async function main() {

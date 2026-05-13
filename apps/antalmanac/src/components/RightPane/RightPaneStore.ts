@@ -6,7 +6,7 @@ import {
     ManualSearchParam,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { normalizeGeSelection } from '$lib/multiGeSearch';
-import { getDefaultTerm, isTermAvailable } from '$lib/termData';
+import { getDefaultTerm, isTermAvailable, parseTermShortName } from '$lib/termData';
 import { openSnackbar } from '$stores/SnackbarStore';
 
 const defaultBasicSearchValues: Record<BasicSearchParam, string> = {
@@ -191,8 +191,7 @@ class RightPaneStore extends EventEmitter {
     };
 
     getTermParts = (): { year: string; quarter: string } => {
-        const [year, quarter] = this.formData.term.split(' ');
-        return { year, quarter };
+        return parseTermShortName(this.formData.term) ?? { year: '', quarter: '' };
     };
 
     setWarningMessages = (warningType: CourseSearchWarningType, messages: string[]) => {
