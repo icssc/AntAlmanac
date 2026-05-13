@@ -1,8 +1,14 @@
-import { pgTable, text, pgEnum, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, text, pgEnum, primaryKey, timestamp } from 'drizzle-orm/pg-core';
 
 import { users } from './user';
 
-const accountTypes = ['GOOGLE', 'GUEST', 'OIDC'] as const;
+/**
+ * GOOGLE: legacy pre-OIDC accounts (raw Google IDs, no longer created)
+ * GUEST: anonymous/guest schedule saves
+ * OIDC: Google Sign-In via icssc/auth OIDC server
+ * APPLE: Apple Sign-In via icssc/auth OIDC server
+ */
+const accountTypes = ['GOOGLE', 'GUEST', 'OIDC', 'APPLE'] as const;
 
 export const accountTypeEnum = pgEnum('account_type', accountTypes);
 
@@ -22,6 +28,13 @@ export const accounts = pgTable(
             .$default(() => 'GUEST'),
 
         providerAccountId: text('provider_account_id').notNull(),
+
+        createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+        updatedAt: timestamp('updated_at', { withTimezone: true })
+            .defaultNow()
+            .notNull()
+            .$onUpdate(() => new Date()),
     },
     (table) => [primaryKey({ columns: [table.userId, table.accountType] })]
 );

@@ -1,15 +1,14 @@
-import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
-import type { AASection, Course } from '@packages/antalmanac-types';
-import { memo, useCallback, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
-
-import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { canTermEnrollmentChange, Term } from '$lib/termData';
+import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
+import { canTermEnrollmentChange, type Term } from '$lib/termData';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
+import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
+import type { AASection } from '@packages/antalmanac-types';
+import type { Course } from '@packages/anteater-api/types';
+import { memo, useCallback, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
     { status: 'notifyOnOpen', label: 'Section becomes OPEN' },
@@ -32,14 +31,12 @@ export const NotificationsMenu = memo(
         const [notification, setNotifications] = useNotificationStore(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
         );
-        const isDark = useThemeStore((store) => store.isDark);
 
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
         const [signInOpen, setSignInOpen] = useState(false);
 
-        const { session, isGoogleUser } = useSessionStore(
+        const { isGoogleUser } = useSessionStore(
             useShallow((state) => ({
-                session: state.session,
                 isGoogleUser: state.isGoogleUser,
             }))
         );
@@ -60,7 +57,7 @@ export const NotificationsMenu = memo(
                     sectionNum,
                     term,
                     status,
-                    lastUpdated: currStatus,
+                    lastUpdatedStatus: currStatus,
                     lastCodes: restrictions,
                     deptCode,
                     courseNumber,
@@ -160,7 +157,7 @@ export const NotificationsMenu = memo(
                                     e.stopPropagation();
                                 }}
                             >
-                                <NotificationEmailTooltip sessionToken={session} />
+                                <NotificationEmailTooltip />
                             </Box>
                         </Box>
                     </MenuItem>
@@ -180,7 +177,7 @@ export const NotificationsMenu = memo(
                     })}
                 </Menu>
 
-                <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={isDark} feature="Notification" />
+                <SignInDialog open={signInOpen} onClose={handleSignInClose} feature="Notification" />
             </>
         );
     }

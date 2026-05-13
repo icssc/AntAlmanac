@@ -1,28 +1,9 @@
-import { Button, Popover } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-
-import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePopover/GradesPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
-import { Grades } from '$lib/grades';
-
-async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
-    const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
-
-    // Get the GPA of the first instructor of this section where data exists
-    for (const instructor of namedInstructors) {
-        const grades = await Grades.queryGrades(deptCode, courseNumber, instructor, false);
-        if (grades?.averageGPA) {
-            return {
-                gpa: grades.averageGPA.toFixed(2).toString(),
-                instructor: instructor,
-            };
-        }
-    }
-
-    return undefined;
-}
+import { trpcReact } from '$lib/api/trpcReact';
+import { ButtonBase, Popover, useTheme } from '@mui/material';
+import { useCallback, useMemo, useState } from 'react';
 
 interface GpaCellProps {
     deptCode: string;
@@ -32,54 +13,60 @@ interface GpaCellProps {
 
 export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
     const isMobile = useIsMobile();
-    const secondaryColor = useSecondaryColor();
-
-    const [gpa, setGpa] = useState('');
-    const [instructor, setInstructor] = useState('');
+    const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<Element>();
 
+    const namedInstructors = useMemo(() => instructors.filter((i) => i !== 'STAFF'), [instructors]);
+
+    const instructorResults = trpcReact.useQueries((t) =>
+        namedInstructors.map((instructor) =>
+            t.grades.aggregateGrades(
+                { department: deptCode, courseNumber, instructor },
+                { select: (data) => data?.gradeDistribution ?? null }
+            )
+        )
+    );
+
+    const loading = instructorResults.some((r) => r.isLoading);
+
+    const { gpa, instructor } = useMemo(() => {
+        const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
+        if (idx >= 0) {
+            const avg = instructorResults[idx].data?.averageGPA;
+            return { gpa: avg || avg === 0 ? avg.toFixed(2) : '', instructor: namedInstructors[idx] };
+        }
+        return { gpa: '', instructor: namedInstructors[0] ?? '' };
+    }, [instructorResults, namedInstructors]);
+
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
+        setAnchorEl((current) => (current ? undefined : event.currentTarget));
     }, []);
 
     const hideDistribution = useCallback(() => {
         setAnchorEl(undefined);
     }, []);
 
-    useEffect(() => {
-        getGpaData(deptCode, courseNumber, instructors)
-            .then((data) => {
-                if (data) {
-                    setGpa(data.gpa);
-                    setInstructor(data.instructor);
-                }
-            })
-            .catch(console.log);
-    }, [deptCode, courseNumber, instructors]);
-
     return (
         <TableBodyCellContainer>
-            <Button
+            <ButtonBase
                 sx={{
-                    paddingX: 0,
-                    paddingY: 0,
-                    minWidth: 0,
-                    fontWeight: 400,
-                    fontSize: '1rem',
-                    color: secondaryColor,
+                    fontFamily: 'inherit',
+                    fontSize: 'unset',
+                    color: theme.palette.secondary.main,
+                    fontWeight: 700,
                 }}
                 onClick={handleClick}
-                variant="text"
             >
-                {gpa}
-            </Button>
+                {loading ? null : gpa || 'GPA'}
+            </ButtonBase>
+
             <Popover
                 open={Boolean(anchorEl)}
                 onClose={hideDistribution}
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-                <GradesPopup
+                <GradesPopover
                     deptCode={deptCode}
                     courseNumber={courseNumber}
                     instructor={instructor}

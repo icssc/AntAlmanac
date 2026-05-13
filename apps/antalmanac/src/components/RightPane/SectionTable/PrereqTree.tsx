@@ -1,14 +1,11 @@
-/* eslint-disable prefer-const */
-import { Button, Popover } from '@mui/material';
-import { Prerequisite, PrerequisiteTree } from '@packages/antalmanac-types';
-import { FC, useState } from 'react';
-
 import { CourseInfo } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
-import { useThemeStore } from '$stores/SettingsStore';
+import { Button, Popover, useTheme } from '@mui/material';
+import { Prerequisite, PrerequisiteTree } from '@packages/anteater-api/types';
+import { FC, useState } from 'react';
 
 import './PrereqTree.css';
 
-export type PrerequisiteNode = Prerequisite | PrerequisiteTree;
+type PrerequisiteNode = Prerequisite | PrerequisiteTree;
 
 const phraseMapping = {
     AND: 'all of',
@@ -19,18 +16,17 @@ const phraseMapping = {
 interface NodeProps {
     node: string;
     label: string;
-    index?: number;
 }
 
 const Node: FC<NodeProps> = (props) => {
-    const isDark = useThemeStore((store) => store.isDark);
+    const theme = useTheme();
     return (
-        <div style={{ padding: '1px 0' }} className={`${props.node}`} key={props.index}>
+        <div style={{ padding: '1px 0' }} className={`${props.node}`}>
             <div
                 className={'course'}
                 style={{
-                    backgroundColor: isDark ? '#303030' : '#e0e0e0',
-                    color: isDark ? '#bfbfbf' : 'black',
+                    backgroundColor: theme.palette.background.paper,
+                    color: theme.palette.text.primary,
                 }}
             >
                 {props.label}
@@ -47,7 +43,6 @@ interface TreeProps {
 }
 
 const PrereqTreeNode: FC<TreeProps> = (props) => {
-    // eslint-disable-next-line prefer-const
     const prerequisite = props.prerequisite;
     const isValueNode = Object.prototype.hasOwnProperty.call(prerequisite, 'prereqType');
 
@@ -102,8 +97,8 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
 type PrereqProps = CourseInfo;
 
 const PrereqTree: FC<PrereqProps> = (props) => {
-    let hasPrereqs = JSON.stringify(props.prerequisite_tree) !== '{}';
-    let hasDependencies = Object.keys(props.prerequisite_for).length !== 0;
+    const hasPrereqs = Object.keys(props.prerequisite_tree).length > 0;
+    const hasDependencies = Object.keys(props.prerequisite_for).length !== 0;
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 

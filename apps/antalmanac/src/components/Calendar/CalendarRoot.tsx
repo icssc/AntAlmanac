@@ -7,6 +7,7 @@ import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseE
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -51,8 +52,56 @@ const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
 const BASE_DATE = new Date(2018, 0, 1);
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
+interface SkeletonBlueprint {
+    dayOffset: number;
+    startHour: number;
+    startMinute: number;
+    endHour: number;
+    endMinute: number;
+}
+
+function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
+    const start = new Date(BASE_DATE);
+    start.setDate(start.getDate() + blueprint.dayOffset);
+    start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
+
+    const end = new Date(start);
+    end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
+
+    return {
+        color: '#6d6d6d',
+        start,
+        end,
+        title: '',
+        isSkeletonEvent: true,
+    } as SkeletonEvent;
+}
+
+function createSkeletonEvents(): SkeletonEvent[] {
+    const savedDataString = getLocalStorageSkeletonBlueprint();
+
+    let skeletonBlueprints: SkeletonBlueprint[] | null = null;
+
+    if (savedDataString) {
+        const parsedData = JSON.parse(savedDataString);
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+            skeletonBlueprints = parsedData;
+        }
+    }
+
+    if (skeletonBlueprints) {
+        return skeletonBlueprints.map(blueprintToSkeletonEvent);
+    }
+
+    const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
+    const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
+
+    return fallbackBlueprints.map(blueprintToSkeletonEvent);
+}
+
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
+    const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
@@ -118,61 +167,10 @@ export const ScheduleCalendar = memo(() => {
         }
     }, [eventsInCalendar, loadingSchedule]);
 
-    const blueprintToSkeletonEvent = useCallback(
-        (blueprint: {
-            dayOffset: number;
-            startHour: number;
-            startMinute: number;
-            endHour: number;
-            endMinute: number;
-        }): SkeletonEvent => {
-            const start = new Date(BASE_DATE);
-            start.setDate(start.getDate() + blueprint.dayOffset);
-            start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
-
-            const end = new Date(start);
-            end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
-
-            return {
-                color: '#6d6d6d',
-                start,
-                end,
-                title: '',
-                isSkeletonEvent: true,
-            } as SkeletonEvent;
-        },
-        []
+    const events = useMemo(
+        () => (loadingSchedule ? createSkeletonEvents() : getEventsForCalendar()),
+        [loadingSchedule, getEventsForCalendar]
     );
-
-    const createSkeletonEvents = useCallback((): SkeletonEvent[] => {
-        const savedDataString = getLocalStorageSkeletonBlueprint();
-
-        let skeletonBlueprints: Array<{
-            dayOffset: number;
-            startHour: number;
-            startMinute: number;
-            endHour: number;
-            endMinute: number;
-        }> | null = null;
-
-        if (savedDataString) {
-            const parsedData = JSON.parse(savedDataString);
-            if (Array.isArray(parsedData) && parsedData.length > 0) {
-                skeletonBlueprints = parsedData;
-            }
-        }
-
-        if (skeletonBlueprints) {
-            return skeletonBlueprints.map(blueprintToSkeletonEvent);
-        }
-
-        const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
-        const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
-
-        return fallbackBlueprints.map(blueprintToSkeletonEvent);
-    }, [blueprintToSkeletonEvent]);
-
-    const events = loadingSchedule ? createSkeletonEvents() : getEventsForCalendar();
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
         setShowFinalsSchedule((prevState) => !prevState);
@@ -180,9 +178,8 @@ export const ScheduleCalendar = memo(() => {
 
     /**
      * Finds the earliest start time and returns that or 7AM, whichever is earlier
-     * @returns A date with the earliest time or 7AM
      */
-    const getStartTime = useCallback(() => {
+    const startTime = useMemo(() => {
         const eventStartHours = events.map((event) => event.start.getHours());
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
     }, [events]);
@@ -243,8 +240,12 @@ export const ScheduleCalendar = memo(() => {
     };
 
     const showEmptyState = useMemo(
-        () => !loadingSchedule && !showFinalsSchedule && eventsInCalendar.length === 0 && !hoveredCalendarizedCourses,
-        [loadingSchedule, showFinalsSchedule, eventsInCalendar.length, hoveredCalendarizedCourses]
+        () =>
+            !loadingSchedule &&
+            !showFinalsSchedule &&
+            !hoveredCalendarizedCourses &&
+            currentScheduleCourses.length === 0,
+        [loadingSchedule, showFinalsSchedule, hoveredCalendarizedCourses, currentScheduleCourses.length]
     );
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
@@ -298,6 +299,7 @@ export const ScheduleCalendar = memo(() => {
             setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
+            setCurrentScheduleCourses(AppStore.schedule.getCurrentCourses());
         };
 
         const updateScheduleNames = () => {
@@ -346,6 +348,7 @@ export const ScheduleCalendar = memo(() => {
                 scheduleNames={scheduleNames}
             />
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
+                <TbaCalendarCard />
                 <CalendarEventPopover />
 
                 {showEmptyState && (
@@ -361,8 +364,7 @@ export const ScheduleCalendar = memo(() => {
                         justifyContent="center"
                         zIndex={1}
                         sx={{
-                            backgroundColor: (theme) =>
-                                theme.palette.mode === 'dark' ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
+                            backgroundColor: isDark ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
                         }}
                     >
                         <EmptyState
@@ -395,9 +397,9 @@ export const ScheduleCalendar = memo(() => {
                     onNavigate={() => {
                         return;
                     }}
-                    min={getStartTime()}
+                    min={startTime}
                     max={CALENDAR_MAX_DATE}
-                    scrollToTime={getStartTime()}
+                    scrollToTime={startTime}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     dayPropGetter={dayStyleGetter}

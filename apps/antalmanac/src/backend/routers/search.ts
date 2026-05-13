@@ -1,15 +1,39 @@
 import { readFile } from 'fs/promises';
 import { join } from 'node:path';
 
-import uFuzzy from '@leeoniya/ufuzzy';
+// eslint-disable-next-line import/no-unresolved
+import _searchData from '$generated/searchData.json';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
 
-// eslint-disable-next-line import/no-unresolved
-import * as searchData from '$generated/searchData';
+const departmentSchema = z.object({
+    id: z.string(),
+    type: z.literal('DEPARTMENT'),
+    name: z.string(),
+    alias: z.string().optional(),
+});
+
+const courseSchema = z.object({
+    id: z.string(),
+    type: z.literal('COURSE'),
+    name: z.string(),
+    alias: z.string().optional(),
+    metadata: z.object({
+        department: z.string(),
+        number: z.string(),
+    }),
+    isOffered: z.boolean().optional(),
+});
+
+const searchDataSchema = z.object({
+    departments: z.array(departmentSchema),
+    courses: z.array(courseSchema),
+});
+
+const searchData = searchDataSchema.parse(_searchData);
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
@@ -18,6 +42,13 @@ const termsFolderPath = join(process.cwd(), 'src', 'generated', 'terms');
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
 type GECategoryKey = (typeof geCategoryKeys)[number];
+
+const bareCourseSchema = z.object({
+    department: z.string(),
+    courseNumber: z.string(),
+});
+
+type BareCourse = z.infer<typeof bareCourseSchema>;
 
 const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge1a: { type: 'GE_CATEGORY', name: 'Lower Division Writing' },
@@ -37,7 +68,20 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     geCategories[key],
 ];
 
-const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
+async function getTermSectionCodes(year: string, quarter: string): Promise<Record<string, SectionSearchResult>> {
+    const parsedTerm = `${quarter}_${year}`;
+    try {
+        const filePath = join(termsFolderPath, `${parsedTerm}.json`);
+        const fileContent = await readFile(filePath, 'utf-8');
+        return JSON.parse(fileContent);
+    } catch (err) {
+        throw new Error(`Failed to load term data for ${parsedTerm}: ${err}`);
+    }
+}
+
+function getOfferedCourses(termSectionCodes: Awaited<ReturnType<typeof getTermSectionCodes>>) {
+    return new Set(Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`));
+}
 
 const isCourseOffered = (department: string, courseNumber: string, offeredCourseSet: Set<string>): boolean => {
     return offeredCourseSet.has(`${department}-${courseNumber}`);
@@ -49,20 +93,10 @@ const searchRouter = router({
         .query(async ({ input }): Promise<Record<string, SearchResult>> => {
             const { query } = input;
             const [year, quarter] = input.term.split(' ');
-            const parsedTerm = `${quarter}_${year}`;
 
-            let termSectionCodes: Record<string, SectionSearchResult>;
-            try {
-                const filePath = join(termsFolderPath, `${parsedTerm}.json`);
-                const fileContent = await readFile(filePath, 'utf-8');
-                termSectionCodes = JSON.parse(fileContent);
-            } catch (err) {
-                throw new Error(`Failed to load term data for ${parsedTerm}: ${err}`);
-            }
+            const termSectionCodes = await getTermSectionCodes(year, quarter);
 
-            const offeredCourseSet = new Set(
-                Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`)
-            );
+            const offeredCourseSet = getOfferedCourses(termSectionCodes);
 
             const num = Number(input.query);
             const matchedSections: SectionSearchResult[] = [];
@@ -82,8 +116,10 @@ const searchRouter = router({
                 }
             }
 
-            const u = new uFuzzy();
-            const matchedGEs = u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i]) ?? [];
+            const matchedGEs = fuzzysort
+                .go(query, [...geCategoryKeys])
+                .map((r) => r.target)
+                .filter((t): t is GECategoryKey => t in geCategories);
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
 
             const matchedDepts =
@@ -127,6 +163,29 @@ const searchRouter = router({
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
                 ...matchedCourses.map((x) => [x.obj.id, x.obj]),
             ]);
+        }),
+    filterOfferedCourses: procedure
+        .input(
+            z.object({
+                courses: z.array(bareCourseSchema),
+                year: z.string(),
+                quarter: z.string(),
+            })
+        )
+        .query(async ({ input }): Promise<Record<BareCourse['department'], Set<BareCourse['courseNumber']>>> => {
+            const { courses, year, quarter } = input;
+            const termSectionCodes = await getTermSectionCodes(year, quarter);
+            const offeredCourseSet = getOfferedCourses(termSectionCodes);
+            const offeredCourses: Record<string, Set<string>> = {};
+            for (const course of courses) {
+                if (isCourseOffered(course.department, course.courseNumber, offeredCourseSet)) {
+                    if (!Object.hasOwn(offeredCourses, course.department)) {
+                        offeredCourses[course.department] = new Set();
+                    }
+                    offeredCourses[course.department].add(course.courseNumber);
+                }
+            }
+            return offeredCourses;
         }),
 });
 

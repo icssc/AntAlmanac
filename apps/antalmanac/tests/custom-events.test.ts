@@ -7,12 +7,12 @@ describe('Custom Events', () => {
         start: '10:30',
         end: '13:30',
         days: [false, false, true, false, false, false, false],
-        customEventID: 999,
+        customEventID: '999',
         color: 'placeholderColor',
         building: undefined,
     };
 
     test('schema does not throw error when building property exists and is undefined', async () => {
-        expect(() => RepeatingCustomEventSchema.assert(customEvent)).not.toThrowError();
+        expect(() => RepeatingCustomEventSchema.parse(customEvent)).not.toThrowError();
     });
 });

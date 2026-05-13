@@ -1,10 +1,8 @@
-import { Box, Popover, Tooltip, Typography } from '@mui/material';
-import { Fragment, useCallback, useMemo, useState } from 'react';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import restrictionsMapping from '$components/RightPane/SectionTable/static/restrictionsMapping.json';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
+import { Box, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 
 interface RestrictionsCellProps {
     restrictions: string;
@@ -12,7 +10,8 @@ interface RestrictionsCellProps {
 
 export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
     const isMobile = useIsMobile();
-    const secondaryColor = useSecondaryColor();
+    const theme = useTheme();
+    const secondaryColor = theme.palette.secondary.main;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const parsedRestrictions = useMemo(
@@ -68,6 +67,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                         <Typography
                             component="button"
                             type="button"
+                            variant="inherit"
                             onClick={(e) => {
                                 setAnchorEl((cur) => (cur ? null : e.currentTarget));
                             }}
@@ -93,6 +93,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 ) : (
                     <Tooltip title={restrictionDescriptions}>
                         <Typography
+                            variant="inherit"
                             component="a"
                             href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
                             target="_blank"

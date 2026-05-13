@@ -1,17 +1,17 @@
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
-import type { CourseByIdAPIResult } from '@packages/antalmanac-types';
+import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
+import type { Course, CoursesBatchAPIResult } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
-import { procedure, router } from '../trpc';
+import { router } from '../trpc';
 
 const courseRouter = router({
-    get: procedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
-        const data = await fetchAnteaterAPI<CourseByIdAPIResult>(
-            `https://anteaterapi.com/v2/rest/courses/${encodeURIComponent(input.id)}`,
-            { errorType: 'trpc' }
-        );
-        return data.data;
-    }),
+    get: aapiProcedure
+        .input(z.object({ id: z.string() }))
+        .query(({ input }): Promise<Course> => aapiClient.courses.get(input.id)),
+
+    getMultiple: aapiProcedure
+        .input(z.object({ courseIds: z.array(z.string()) }))
+        .query(({ input }): Promise<CoursesBatchAPIResult['data']> => aapiClient.courses.getBatch(input.courseIds)),
 });
 
 export default courseRouter;

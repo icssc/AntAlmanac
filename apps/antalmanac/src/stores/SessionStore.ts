@@ -1,107 +1,97 @@
-import type { Roadmap } from '@packages/antalmanac-types';
+import trpc from '$lib/api/trpc';
+import { setWasLoggedIn } from '$lib/localStorage';
+import { clearSsoCookie } from '$lib/ssoCookie';
+import { usePlannerStore } from '$stores/PlannerStore';
+import { TRPCClientError } from '@trpc/client';
 import { create } from 'zustand';
 
-import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
-import { clearSsoCookie } from '$lib/ssoCookie';
-import { useNotificationStore } from '$stores/NotificationStore';
-
 interface SessionState {
-    session: string | null;
     userId: string | null;
     isGoogleUser: boolean;
     email: string | null;
+    name: string | null;
+    avatar: string | null;
     sessionIsValid: boolean;
-    updateSession: (session: string | null) => Promise<boolean>;
-    clearSession: () => Promise<void>;
+    loadSession: () => Promise<boolean>;
+    clearSession: () => Promise<string | null>;
 
-    googleId: string | null;
-    filterTakenCourses: boolean;
-    userTakenCourses: Set<string>;
-
-    plannerRoadmaps: Roadmap[];
-
-    setGoogleId: (id: string) => void;
-    setFilterTakenCourses: (value: boolean) => void;
-    setUserTakenCourses: (courses: Set<string>) => void;
-    setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
+    hasCheckedAuth: boolean;
 }
 
 export const useSessionStore = create<SessionState>((set) => {
-    const localSessionId = getLocalStorageSessionId();
+    // Clean up stale localStorage token from before the cookie migration
+    window.localStorage.removeItem('sessionId');
+
     return {
-        session: localSessionId,
         userId: null,
         isGoogleUser: false,
         email: null,
+        name: null,
+        avatar: null,
         sessionIsValid: false,
-        googleId: null,
-        filterTakenCourses: false,
-        userTakenCourses: new Set(),
-        plannerRoadmaps: [],
-        updateSession: async (session) => {
-            if (session) {
-                const sessionIsValid: boolean = await trpc.auth.validateSession.query({
-                    token: session,
+        hasCheckedAuth: false,
+
+        loadSession: async () => {
+            try {
+                const { users } = await trpc.auth.getUserAndAccount.query();
+
+                set({
+                    sessionIsValid: true,
+                    hasCheckedAuth: true,
+                    userId: users.id,
+                    isGoogleUser: Boolean(users.email),
+                    email: users.email ?? null,
+                    name: users.name ?? null,
+                    avatar: users.avatar ?? null,
                 });
-                if (sessionIsValid) {
-                    setLocalStorageSessionId(session);
-                    set({ session: session, sessionIsValid: true });
 
-                    try {
-                        const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                            token: session,
-                        });
+                usePlannerStore.getState().loadPlannerRoadmaps();
 
-                        let googleId = await trpc.userData.getGoogleIdByUserId.query({
-                            userId: users.id,
-                        });
-                        if (googleId?.startsWith('google_')) {
-                            googleId = googleId.slice('google_'.length);
-                        }
-                        const isGoogleUser = Boolean(users.email);
-                        set({
-                            userId: users.id,
-                            isGoogleUser,
-                            email: users.email ?? null,
-                            googleId,
-                        });
-                    } catch (error) {
-                        console.error('Failed to fetch user data:', error);
-                        set({ isGoogleUser: false, email: null, googleId: null });
-                    }
+                setWasLoggedIn(true);
+                return true;
+            } catch (error) {
+                const isUnauthorized = error instanceof TRPCClientError && error.data?.code === 'UNAUTHORIZED';
+
+                if (!isUnauthorized) {
+                    console.error('Failed to load session:', error);
                 }
-                useNotificationStore.getState().loadNotifications();
-                return sessionIsValid;
-            } else {
-                set({ session: null, sessionIsValid: false });
-                useNotificationStore.getState().loadNotifications();
+
+                set({
+                    sessionIsValid: false,
+                    hasCheckedAuth: true,
+                    userId: null,
+                    isGoogleUser: false,
+                    email: null,
+                    name: null,
+                    avatar: null,
+                });
                 return false;
             }
         },
+
         clearSession: async () => {
-            const currentSession = getLocalStorageSessionId();
-            if (currentSession) {
-                await trpc.auth.invalidateSession.mutate({ token: currentSession });
-                removeLocalStorageSessionId();
-                clearSsoCookie();
-                set({
-                    session: null,
-                    userId: null,
-                    sessionIsValid: false,
-                    isGoogleUser: false,
-                    email: null,
-                    googleId: null,
-                    filterTakenCourses: false,
-                    userTakenCourses: new Set(),
-                    plannerRoadmaps: [],
+            let logoutUrl: string | null = null;
+            try {
+                const result = await trpc.auth.logout.mutate({
+                    redirectUrl: window.location.origin,
                 });
-                window.location.reload();
+                logoutUrl = result.logoutUrl;
+            } catch (error) {
+                console.error('Error during logout:', error);
             }
+
+            setWasLoggedIn(false);
+            clearSsoCookie();
+            set({
+                userId: null,
+                sessionIsValid: false,
+                isGoogleUser: false,
+                email: null,
+                name: null,
+                avatar: null,
+            });
+
+            return logoutUrl;
         },
-        setGoogleId: (id) => set({ googleId: id }),
-        setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
-        setUserTakenCourses: (courses) => set({ userTakenCourses: courses }),
-        setPlannerRoadmaps: (roadmaps) => set({ plannerRoadmaps: roadmaps }),
     };
 });

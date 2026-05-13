@@ -1,8 +1,6 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
+import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import {
     getLocalStorageDataCache,
@@ -13,15 +11,18 @@ import {
     removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
     removeLocalStorageFromLoading,
-    setLocalStorageSessionId,
     setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
+import { usePostHog } from 'posthog-js/react';
+import { useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export function AuthPage() {
     const [searchParams] = useSearchParams();
     const isAuthenticatingRef = useRef(false);
+    const postHog = usePostHog();
 
     const handleSearchParamsChange = useCallback(async () => {
         // Prevent race condition: only allow one authentication attempt at a time
@@ -30,26 +31,30 @@ export function AuthPage() {
         }
 
         try {
+            const returnUrl = await trpc.auth.getAuthReturnUrl.query();
+
             // Silent SSO returned an error — the auth server has no session.
             if (searchParams.get('error') === 'login_required') {
                 clearSsoCookie();
-                window.location.href = '/';
+                window.location.href = returnUrl;
                 return;
             }
 
             const code = searchParams.get('code');
             const state = searchParams.get('state');
             if (!code || !state) {
-                window.location.href = '/';
+                window.location.href = returnUrl;
                 return;
             }
 
             isAuthenticatingRef.current = true;
 
-            const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
+            const { userId, providerId, newUser } = await trpc.auth.handleGoogleCallback.mutate({
                 code: code,
                 state: state,
             });
+
+            analyticsIdentifyUser(postHog, userId);
 
             const fromLoading = getLocalStorageFromLoading() ?? '';
             const savedUserId = getLocalStorageUserId() ?? '';
@@ -61,12 +66,11 @@ export function AuthPage() {
                 removeLocalStorageUserId();
             }
 
-            if (!(sessionToken && providerId)) {
-                window.location.href = '/';
+            if (!providerId) {
+                window.location.href = returnUrl;
                 return;
             }
 
-            setLocalStorageSessionId(sessionToken);
             setSsoCookie();
 
             // load schedule without saving any changes
@@ -74,7 +78,7 @@ export function AuthPage() {
                 removeLocalStorageFromLoading();
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = '/';
+                window.location.href = returnUrl;
                 return;
             }
 
@@ -82,17 +86,17 @@ export function AuthPage() {
             if (savedUserId === '' && savedData === '') {
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = '/';
+                window.location.href = returnUrl;
                 return;
             }
 
             // handle unsaved changes
             if (savedData !== '') {
-                const userData = await trpc.userData.getUserData.query({ userId: userId });
+                const userData = await trpc.schedule.get.query();
                 const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
                 if (savedUserId !== '') {
-                    await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
+                    await trpc.schedule.flagImported.mutate({ username: savedUserId });
                     setLocalStorageImportedUser(savedUserId);
                 }
 
@@ -109,27 +113,17 @@ export function AuthPage() {
                     }
                 }
 
-                // Fetch user info to enable proper account migration
-                const userInfo = await trpc.userData.getUserByUid.query({ userId });
-
-                await trpc.userData.saveUserData.mutate({
-                    id: providerId,
-                    data: {
-                        id: providerId,
-                        email: userInfo?.email ?? undefined,
-                        name: userInfo?.name ?? undefined,
-                        avatar: userInfo?.avatar ?? undefined,
-                        userData: scheduleSaveState,
-                    },
+                await trpc.schedule.save.mutate({
+                    userData: scheduleSaveState,
                 });
             }
-            window.location.href = '/';
+            window.location.href = returnUrl;
         } catch (error) {
             console.error('Error during authentication', error);
             clearSsoCookie();
             window.location.href = '/';
         }
-    }, [searchParams]);
+    }, [searchParams, postHog]);
 
     useEffect(() => {
         handleSearchParamsChange();

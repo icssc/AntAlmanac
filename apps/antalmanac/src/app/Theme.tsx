@@ -1,13 +1,12 @@
 'use client';
 
+import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
+import { useThemeStore } from '$stores/SettingsStore';
 import { CssBaseline, type PaletteOptions } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Roboto } from 'next/font/google';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
-
-import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -120,7 +119,8 @@ declare module '@mui/material/styles' {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const [appTheme, setAppTheme] = useThemeStore((store) => [store.appTheme, store.setAppTheme]);
+    const isDark = useThemeStore((store) => store.isDark);
+    const setAppTheme = useThemeStore((store) => store.setAppTheme);
     const postHog = usePostHog();
 
     useEffect(() => {
@@ -175,7 +175,7 @@ export default function AppThemeProvider(props: Props) {
                     MuiCssBaseline: {
                         styleOverrides: {
                             a: {
-                                color: appTheme === 'dark' ? LIGHT_BLUE : BLUE,
+                                color: isDark ? LIGHT_BLUE : BLUE,
                             },
                         },
                     },
@@ -184,7 +184,7 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
-                                ...(appTheme === 'dark' && darkPaperOverride),
+                                ...(isDark && darkPaperOverride),
                             },
                         },
                     },
@@ -216,7 +216,7 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
-                                ...(appTheme === 'dark' && darkPaperOverride),
+                                ...(isDark && darkPaperOverride),
                             },
                         },
                     },
@@ -224,7 +224,7 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
-                                ...(appTheme === 'dark' && darkPaperOverride),
+                                ...(isDark && darkPaperOverride),
                             },
                         },
                     },
@@ -263,11 +263,11 @@ export default function AppThemeProvider(props: Props) {
                     },
                 },
                 palette: {
-                    mode: appTheme === 'dark' ? 'dark' : 'light',
-                    ...(appTheme === 'dark' ? darkTheme : lightTheme),
+                    mode: isDark ? 'dark' : 'light',
+                    ...(isDark ? darkTheme : lightTheme),
                 },
             }),
-        [appTheme]
+        [isDark]
     );
 
     return (

@@ -1,23 +1,21 @@
-import { access, mkdir, writeFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import type {
-    Course,
-    CourseSearchResult,
-    DepartmentSearchResult,
-    CoursesFilteredAPIResult,
-} from '@packages/antalmanac-types';
-
-import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
-import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
-
 import 'dotenv/config';
+import { access, mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { canTermEnrollmentChange, termData } from '$lib/termData';
+import type { CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
+import { createClient } from '@packages/anteater-api/client';
+import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
+
+import { parseSectionCodes, SectionCodesGraphQLResponse } from '../src/backend/lib/term-section-codes';
+import { GENERATED_DIR, GENERATED_TERMS_DIR, SEARCH_DATA_FILE } from './lib/paths.js';
+
+const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 const MAX_COURSES = 10_000;
-const DELAY_MS = 500; // avoid rate limits from AAPI
+
+// Delay between GraphQL requests to avoid triggering AAPI rate limits / OOM.
+const DELAY_MS = 500;
 
 const ALIASES: Record<string, string | undefined> = {
     COMPSCI: 'CS',
@@ -26,20 +24,68 @@ const ALIASES: Record<string, string | undefined> = {
     IN4MATX: 'INF',
 };
 
+function catalogCourseKey(department: string, courseNumber: string) {
+    return `${department.trim()}::${courseNumber.trim()}`;
+}
+
+function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
+    return new Map(
+        data.schools.flatMap((school) =>
+            school.departments.flatMap((dept) =>
+                dept.courses.map((course) => [
+                    catalogCourseKey(dept.deptCode, course.courseNumber),
+                    {
+                        deptCode: dept.deptCode,
+                        deptName: dept.deptName,
+                        courseNumber: course.courseNumber,
+                        courseTitle: course.courseTitle,
+                    },
+                ])
+            )
+        )
+    );
+}
+
+function buildSectionCodesQuery(year: string, quarter: string): string {
+    return `{
+        websoc(query: { year: "${year}", quarter: ${quarter} }) {
+            schools {
+                departments {
+                    deptCode
+                    courses {
+                        courseTitle
+                        courseNumber
+                        sections {
+                            sectionCode
+                            sectionType
+                            sectionNum
+                        }
+                    }
+                }
+            }
+        }
+    }`;
+}
+
 async function main() {
     console.log('Generating cache for fuzzy search.');
+
+    const activeTerms = termData.filter((t) => canTermEnrollmentChange(t.shortName));
+
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];
     for (let skip = 0; skip < MAX_COURSES; skip += 100) {
-        const data = await fetchAnteaterAPI<CoursesFilteredAPIResult>(
-            `https://anteaterapi.com/v2/rest/courses?take=100&skip=${skip}`,
-            { isApiKeyRequired: true }
-        );
-        courses.push(...data.data);
+        const batch = await aapiClient.courses.list({ take: 100, skip });
+        courses.push(...batch);
+
+        if (batch.length < 100) {
+            break;
+        }
     }
     console.log(`Fetched ${courses.length} courses.`);
     const courseMap = new Map<string, CourseSearchResult & { id: string }>();
     const deptMap = new Map<string, DepartmentSearchResult & { id: string }>();
+    const catalogueKeys = new Set<string>();
     for (const course of courses) {
         courseMap.set(course.id, {
             id: course.id,
@@ -51,6 +97,7 @@ async function main() {
                 number: course.courseNumber,
             },
         });
+        catalogueKeys.add(catalogCourseKey(course.department, course.courseNumber));
         deptMap.set(course.department, {
             id: course.department,
             type: 'DEPARTMENT',
@@ -60,82 +107,137 @@ async function main() {
     }
     console.log(`Fetched ${deptMap.size} departments.`);
 
-    const QUERY_TEMPLATE = `{websoc(query:{year:"$$YEAR$$",quarter:$$QUARTER$$}){schools{departments{deptCode courses{courseTitle courseNumber sections{sectionCode sectionType sectionNum}}}}}}`;
+    await mkdir(GENERATED_DIR, { recursive: true });
+    await mkdir(GENERATED_TERMS_DIR, { recursive: true });
 
-    await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
-    await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
+    if (activeTerms.length > 0) {
+        /*
+         * WebSOC may receive updates sooner than the course catalogue updates, notably for a
+         * new academic year (i.e. Fall term). Querying WebSOC to build course data ensures all
+         * available courses are represented.
+         *
+         * Fetch WebSOC for each term where {@link canTermEnrollmentChange} is true and merge the
+         * course lists: overlapping registration periods mean several quarters need data at once.
+         */
+        console.log(`Fetching WebSoc REST for union with catalogue: ${activeTerms.map((t) => t.shortName).join(', ')}`);
+
+        const fromWebsoc = new Map<
+            string,
+            Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
+        >();
+        for (let i = 0; i < activeTerms.length; i++) {
+            if (i > 0) {
+                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+            }
+            const [year, quarter] = activeTerms[i].shortName.split(' ');
+            if (!year || !quarter) throw new Error(`Invalid term format: ${activeTerms[i].shortName}`);
+            const websocData = await aapiClient.websoc.query({ year, quarter });
+            const chunk = getWebsocCoursesFromResponse(websocData);
+            for (const [key, course] of chunk) {
+                fromWebsoc.set(key, course);
+            }
+        }
+
+        let addedFromWebsoc = 0;
+        for (const [key, course] of fromWebsoc) {
+            if (catalogueKeys.has(key)) {
+                continue;
+            }
+            addedFromWebsoc += 1;
+            const id = `ws:${course.deptCode}:${course.courseNumber}`;
+            const name = (course.courseTitle ?? '').trim() || `${course.deptCode} ${course.courseNumber}`;
+            courseMap.set(id, {
+                id,
+                type: 'COURSE',
+                name,
+                alias: ALIASES[course.deptCode],
+                metadata: {
+                    department: course.deptCode,
+                    number: course.courseNumber,
+                },
+            });
+            if (!deptMap.has(course.deptCode)) {
+                deptMap.set(course.deptCode, {
+                    id: course.deptCode,
+                    type: 'DEPARTMENT',
+                    name: (course.deptName ?? '').trim() || course.deptCode,
+                    alias: ALIASES[course.deptCode],
+                });
+            }
+        }
+        console.log(`WebSoc union: ${fromWebsoc.size} courses in schedule, ${addedFromWebsoc} not in catalogue.`);
+    } else {
+        console.log('No active enrollment terms; skipping WebSOC union.');
+    }
+
     await writeFile(
-        join(__dirname, '../src/generated/searchData.ts'),
-        `
-    import type { CourseSearchResult, DepartmentSearchResult } from "@packages/antalmanac-types";
-    export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSON.stringify(
-        Array.from(deptMap.values())
-    )};
-    export const courses: Array<CourseSearchResult & { id: string }> = ${JSON.stringify(
-        Array.from(courseMap.values())
-    )};
-    `
+        SEARCH_DATA_FILE,
+        JSON.stringify(
+            {
+                departments: Array.from(deptMap.values()),
+                courses: Array.from(courseMap.values()),
+            },
+            null,
+            2
+        )
     );
 
-    const currentTerm = termData[0];
+    const refreshShortNames = new Set(activeTerms.map((t) => t.shortName));
     let count = 0;
-    const termPromises = termData.map(async (term, index) => {
+
+    /*
+     * Fetch section-code data one term at a time with a fixed delay between requests.
+     * Sequential execution (rather than staggered Promise.all) ensures we never have
+     * concurrent in-flight GraphQL calls, which matters while AAPI has OOM constraints.
+     */
+    let requestsMade = 0;
+    for (const term of termData) {
         try {
             const [year, quarter] = term.shortName.split(' ');
             const parsedTerm = `${quarter}_${year}`;
-            const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
+            const fileName = join(GENERATED_TERMS_DIR, `${parsedTerm}.json`);
 
             try {
                 await access(fileName);
 
-                if (currentTerm.longName != term.longName) {
-                    console.log(`Skipping ${term.shortName}, cache already exists.`);
-                    return 0;
-                } else {
-                    console.log(`Updating data for current term (${term.shortName})...`);
+                if (!refreshShortNames.has(term.shortName)) {
+                    console.log(
+                        `Skipping ${term.shortName}, cache exists and term is outside enrollment refresh window.`
+                    );
+                    continue;
                 }
+                console.log(`Updating section-code cache for active term (${term.shortName})...`);
             } catch {
                 console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
             }
 
-            // TODO (@kevin): remove delay once AAPI resolves OOM issues
-            await new Promise((resolve) => setTimeout(resolve, DELAY_MS * index));
+            // Stagger requests to respect AAPI rate limits / avoid OOM
+            if (requestsMade > 0) {
+                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
+            }
+            requestsMade++;
 
-            const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
-            const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
-
+            const query = buildSectionCodesQuery(year, quarter);
+            const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
             if (!res) {
                 throw new Error(`Error fetching section codes for ${term.shortName}.`);
             }
 
             const parsedSectionData = parseSectionCodes(res);
+            const numKeys = Object.keys(parsedSectionData).length;
 
-            console.log(
-                `Fetched ${Object.keys(parsedSectionData).length} section codes for ${
-                    term.shortName
-                } from Anteater API.`
-            );
+            console.log(`Fetched ${numKeys} section codes for ${term.shortName} from Anteater API.`);
 
             await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
-            return Object.keys(parsedSectionData).length;
+            count += numKeys;
         } catch (error) {
-            console.error(`ERROR in promise ${index} for term "${term.shortName}":`);
-            console.error(`Term details:`, {
-                shortName: term.shortName,
-                year: term.shortName.split(' ')[0],
-                quarter: term.shortName.split(' ')[1],
-                index,
-            });
-
+            console.error(`ERROR for term "${term.shortName}":`);
             throw error;
         }
-    });
-
-    const results = await Promise.all(termPromises);
-    count = results.reduce((acc, numKeys) => acc + numKeys, 0);
+    }
 
     console.log(`Fetched ${count} section codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
 }
 
-main().then();
+main();

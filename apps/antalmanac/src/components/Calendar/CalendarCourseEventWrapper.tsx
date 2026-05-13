@@ -1,23 +1,24 @@
 'use client';
 
-import { Box } from '@mui/material';
-import { cloneElement, isValidElement, useCallback } from 'react';
-import { EventWrapperProps } from 'react-big-calendar';
-import { useShallow } from 'zustand/react/shallow';
-
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
+import { cloneElement, isValidElement, memo, useCallback } from 'react';
+import type { EventWrapperProps } from 'react-big-calendar';
+import { useShallow } from 'zustand/react/shallow';
 
 interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEvent> {
     children?: React.ReactElement<{ onClick: (e: React.MouseEvent) => void }>;
 }
 
 /**
- * CalendarCourseEventWrapper allows us to override the default onClick event behavior which problamtically rerenders the entire calendar
+ * CalendarCourseEventWrapper allows us to override the default onClick event behavior which problematically rerenders the entire calendar.
  */
-export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCourseEventWrapperProps) => {
+export const CalendarCourseEventWrapper = memo(function CalendarCourseEventWrapper({
+    children,
+    ...props
+}: CalendarCourseEventWrapperProps) {
     const quickSearch = useQuickSearch();
 
     const setSelectedEvent = useSelectedEventStore(useShallow((state) => state.setSelectedEvent));
@@ -41,5 +42,5 @@ export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCours
         [props.event, quickSearch, setSelectedEvent]
     );
 
-    return <Box>{isValidElement(children) ? cloneElement(children, { onClick: handleClick }) : children}</Box>;
-};
+    return <div>{isValidElement(children) ? cloneElement(children, { onClick: handleClick }) : children}</div>;
+});

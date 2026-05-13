@@ -1,10 +1,10 @@
-import { debounce } from '@mui/material';
-import type { AASection, Course, CourseInfo } from '@packages/antalmanac-types';
-import { create } from 'zustand';
-
+import trpc from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
-import { WebSOC } from '$lib/websoc';
 import { useSessionStore } from '$stores/SessionStore';
+import { debounce } from '@mui/material';
+import { type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
+import type { Course } from '@packages/anteater-api/types';
+import { create } from 'zustand';
 
 export type NotifyOn = {
     notifyOnOpen: boolean;
@@ -21,7 +21,7 @@ export type Notification = {
     courseTitle: Course['title'];
     sectionType: AASection['sectionType'];
     notifyOn: NotifyOn;
-    lastUpdated: string;
+    lastUpdatedStatus: AASection['status'] | null;
     lastCodes: string;
     deptCode?: string;
     courseNumber?: string;
@@ -34,7 +34,7 @@ interface RawNotification {
     sectionCode: string;
 }
 
-export interface NotificationStore {
+interface NotificationStore {
     initialized: boolean;
     notifications: Partial<Record<string, Notification>>;
     setNotifications: (notification: Omit<Notification, 'notifyOn'> & { status: keyof NotifyOn }) => void;
@@ -47,7 +47,9 @@ const pendingUpdates: Record<string, Notification> = {};
 const debouncedSetNotifications = debounce(async () => {
     try {
         const updates = Object.values(pendingUpdates);
-        Object.keys(pendingUpdates).forEach((key) => delete pendingUpdates[key]);
+        Object.keys(pendingUpdates).forEach((key) => {
+            delete pendingUpdates[key];
+        });
 
         if (updates.length > 0) {
             await Notifications.setNotifications(updates);
@@ -69,7 +71,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             term,
             sectionType,
             status,
-            lastUpdated,
+            lastUpdatedStatus,
             lastCodes,
             deptCode,
             courseNumber,
@@ -80,7 +82,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             set((state) => {
                 const notifications = state.notifications;
                 const existingNotification = notifications[key];
-                const previousLastUpdated = existingNotification?.lastUpdated ?? null;
+                const previousLastUpdated = existingNotification?.lastUpdatedStatus ?? null;
 
                 const previousLastCodes = existingNotification?.lastCodes ?? null;
 
@@ -91,7 +93,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                               ...existingNotification.notifyOn,
                               [status]: !existingNotification.notifyOn[status],
                           },
-                          lastUpdated,
+                          lastUpdatedStatus,
                           lastCodes,
                       }
                     : {
@@ -108,7 +110,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                               notifyOnRestriction: false,
                               [status]: true, // Toggle the given (now-initialized) status to true
                           },
-                          lastUpdated,
+                          lastUpdatedStatus,
                           lastCodes,
                           deptCode,
                           courseNumber,
@@ -120,7 +122,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     [key]: newNotification,
                 };
                 if (
-                    previousLastUpdated !== newNotification.lastUpdated ||
+                    previousLastUpdated !== newNotification.lastUpdatedStatus ||
                     previousLastCodes !== newNotification.lastCodes
                 ) {
                     Notifications.updateNotifications(newNotification);
@@ -180,7 +182,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
                 const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
                     const sectionCodes = Array.from(courseSet).join(',');
-                    const courseInfo = await WebSOC.getCourseInfo({
+                    const courseInfo = await trpc.websoc.getCourseInfo.query({
                         term,
                         sectionCodes,
                     });
@@ -204,6 +206,16 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                         );
 
                         if (existingNotification) {
+                            const storedStatus = existingNotification.lastUpdatedStatus;
+                            const parsedStatus =
+                                storedStatus !== null ? WebsocSectionStatusSchema.safeParse(storedStatus) : null;
+                            const lastUpdatedStatus =
+                                parsedStatus === null
+                                    ? null
+                                    : parsedStatus.success
+                                      ? parsedStatus.data
+                                      : course.section.status;
+
                             notifications[key] = {
                                 term,
                                 sectionCode,
@@ -217,7 +229,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                     notifyOnFull: existingNotification.notifyOnFull ?? false,
                                     notifyOnRestriction: existingNotification.notifyOnRestriction ?? false,
                                 },
-                                lastUpdated: existingNotification.lastUpdatedStatus ?? course.section.status,
+                                lastUpdatedStatus: lastUpdatedStatus,
                                 lastCodes: existingNotification.lastCodes ?? course.section.restrictions,
                                 deptCode: course.courseDetails.deptCode,
                                 courseNumber: course.courseDetails.courseNumber,

@@ -9,6 +9,7 @@ import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import {
@@ -18,13 +19,12 @@ import {
     removeLocalStorageOnFirstSignin,
     removeLocalStorageUserId,
 } from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useDevModeStore } from '$stores/SettingsStore';
+import { useDevModeStore, useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { CloudUpload, ContentPasteGo } from '@mui/icons-material';
 import {
@@ -49,7 +49,6 @@ import {
     TextField,
     Tooltip,
     Typography,
-    useTheme,
 } from '@mui/material';
 import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -81,7 +80,10 @@ export function Import() {
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
     const devMode = useDevModeStore((store) => store.devMode);
 
-    const theme = useTheme();
+    const effectiveImportSource =
+        !devMode && importSource === ImportSource.JSON_IMPORT ? ImportSource.STUDY_LIST_IMPORT : importSource;
+
+    const isDark = useThemeStore((store) => store.isDark);
 
     const postHog = usePostHog();
 
@@ -113,10 +115,9 @@ export function Import() {
 
     const handleSubmit = async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
-        const term = RightPaneStore.getFormData().term;
         let sectionCodes: string[] | null = null;
 
-        switch (importSource) {
+        switch (effectiveImportSource) {
             case ImportSource.ZOT_COURSE_IMPORT:
                 try {
                     const zotcourseImport: ZotcourseResponse = await queryZotcourse(zotcourseScheduleName);
@@ -124,7 +125,7 @@ export function Import() {
                     for (const event of zotcourseImport.customEvents) {
                         addCustomEvent(event, [currentSchedule]);
                     }
-                    uploadSectionCodes(sectionCodes, term, currentSchedule);
+                    uploadSectionCodes(sectionCodes, currentSchedule, ImportSource.ZOT_COURSE_IMPORT);
                 } catch (e) {
                     if (e instanceof QueryZotcourseError) {
                         openSnackbar('error', e.message);
@@ -140,10 +141,10 @@ export function Import() {
                 sectionCodes = studyListText.match(/\d{5}/g);
 
                 if (!sectionCodes || sectionCodes.length === 0) break;
-                uploadSectionCodes(sectionCodes, term, currentSchedule);
+                uploadSectionCodes(sectionCodes, currentSchedule, ImportSource.STUDY_LIST_IMPORT);
                 break;
             case ImportSource.AA_USERNAME_IMPORT: {
-                const importStatus = await importScheduleWithUsername(aaUsername);
+                const importStatus = await importScheduleWithUsername(aaUsername, postHog);
                 if (importStatus.error) {
                     setAlertDialog(true);
                     setAlertDialogSeverity('error');
@@ -200,13 +201,13 @@ export function Import() {
 
         if (
             !sectionCodes &&
-            importSource !== ImportSource.AA_USERNAME_IMPORT &&
-            importSource !== ImportSource.JSON_IMPORT
+            effectiveImportSource !== ImportSource.AA_USERNAME_IMPORT &&
+            effectiveImportSource !== ImportSource.JSON_IMPORT
         ) {
             openSnackbar(
                 'error',
                 `Cannot import an empty ${
-                    importSource === ImportSource.ZOT_COURSE_IMPORT ? 'Zotcourse' : 'Study List'
+                    effectiveImportSource === ImportSource.ZOT_COURSE_IMPORT ? 'Zotcourse Schedule' : 'Study List'
                 }.`
             );
             handleClose();
@@ -228,28 +229,34 @@ export function Import() {
     };
 
     const handleImportAnyways = () => {
-        importValidatedSchedule(aaUsername);
+        importValidatedSchedule(aaUsername, postHog);
         setOpenImportDialog(false);
         setAlertDialog(false);
     };
 
-    const uploadSectionCodes = async (sectionCodes: string[], term: string, currentSchedule: number) => {
+    const uploadSectionCodes = async (
+        sectionCodes: string[],
+        currentSchedule: number,
+        importSource: ImportSource.STUDY_LIST_IMPORT | ImportSource.ZOT_COURSE_IMPORT
+    ) => {
         try {
             const term = RightPaneStore.getFormData().term;
-
-            const sectionsAdded = addCoursesMultiple(
-                await WebSOC.getCourseInfo({
-                    term,
-                    sectionCodes: sectionCodes.join(','),
-                }),
+            const courseInfo = await trpc.websoc.getCourseInfo.query({
                 term,
-                currentSchedule
-            );
+                sectionCodes: sectionCodes.join(','),
+            });
+
+            const sectionsAdded = addCoursesMultiple(courseInfo, term, currentSchedule);
 
             logAnalytics(postHog, {
                 category: analyticsEnum.nav,
-                action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
-                value: sectionsAdded / (sectionCodes.length || 1),
+                action:
+                    importSource === ImportSource.STUDY_LIST_IMPORT
+                        ? analyticsEnum.nav.actions.IMPORT_STUDY_LIST
+                        : analyticsEnum.nav.actions.IMPORT_ZOTCOURSE,
+                customProps: {
+                    percentImported: sectionsAdded / (sectionCodes.length || 1),
+                },
             });
 
             if (sectionsAdded === sectionCodes.length) {
@@ -263,11 +270,18 @@ export function Import() {
             } else {
                 openSnackbar(
                     'error',
-                    'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+                    `Failed to import any classes! Please make sure that you pasted the correct ${
+                        importSource === ImportSource.STUDY_LIST_IMPORT ? 'Study List' : 'Zotcourse Schedule'
+                    }.`
                 );
             }
         } catch (e) {
-            openSnackbar('error', 'An error occurred while trying to import the Study List.');
+            openSnackbar(
+                'error',
+                `An error occurred while trying to import the ${
+                    importSource === ImportSource.STUDY_LIST_IMPORT ? 'Study List' : 'Zotcourse Schedule'
+                }.`
+            );
             console.error(e);
         }
     };
@@ -640,21 +654,6 @@ export function Import() {
         };
     }, [handleFirstTimeSignin, sessionIsValid]);
 
-    useEffect(() => {
-        if (!devMode && importSource === ImportSource.JSON_IMPORT) {
-            setImportSource(ImportSource.STUDY_LIST_IMPORT);
-        }
-    }, [devMode, importSource]);
-
-    // Load schedules when export tab is opened
-    useEffect(() => {
-        if (openImportDialog && dialogTab === 'export') {
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-            setExportSchedules(scheduleSaveState.schedules);
-            setExportSelectedIndices(new Set(scheduleSaveState.schedules.map((_, index) => index)));
-        }
-    }, [openImportDialog, dialogTab]);
-
     return (
         <>
             <Tooltip title={devMode ? 'Import or export schedule data' : 'Import a schedule from your Study List'}>
@@ -673,7 +672,14 @@ export function Import() {
                 {devMode && (
                     <Tabs
                         value={dialogTab}
-                        onChange={(_, newValue) => setDialogTab(newValue)}
+                        onChange={(_, newValue) => {
+                            setDialogTab(newValue);
+                            if (newValue === 'export') {
+                                const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+                                setExportSchedules(scheduleSaveState.schedules);
+                                setExportSelectedIndices(new Set(scheduleSaveState.schedules.map((_, index) => index)));
+                            }
+                        }}
                         textColor="secondary"
                         indicatorColor="secondary"
                         sx={{ borderBottom: 1, borderColor: 'divider' }}
@@ -683,7 +689,7 @@ export function Import() {
                     </Tabs>
                 )}
                 <DialogTitle>{dialogTab === 'export' ? 'Export Schedules' : 'Import Schedule'}</DialogTitle>
-                <DialogContent sx={theme.palette.mode === 'dark' ? { '& a': { color: LIGHT_BLUE } } : undefined}>
+                <DialogContent sx={isDark ? { '& a': { color: LIGHT_BLUE } } : undefined}>
                     {dialogTab === 'export' ? (
                         <>
                             <DialogContentText sx={{ mb: 2 }}>
@@ -792,7 +798,7 @@ export function Import() {
                                 <RadioGroup
                                     name="changeImportSource"
                                     aria-label="changeImportSource"
-                                    value={importSource}
+                                    value={effectiveImportSource}
                                     onChange={handleImportSourceChange}
                                 >
                                     <FormControlLabel
@@ -824,7 +830,7 @@ export function Import() {
                                     )}
                                 </RadioGroup>
                             </FormControl>
-                            {importSource === ImportSource.STUDY_LIST_IMPORT && (
+                            {effectiveImportSource === ImportSource.STUDY_LIST_IMPORT && (
                                 <Box>
                                     <DialogContentText>
                                         Paste the contents of your Study List below to import it into AntAlmanac.
@@ -849,7 +855,7 @@ export function Import() {
                                     <br />
                                 </Box>
                             )}
-                            {importSource === ImportSource.ZOT_COURSE_IMPORT && (
+                            {effectiveImportSource === ImportSource.ZOT_COURSE_IMPORT && (
                                 <Box>
                                     <DialogContentText>
                                         Paste your Zotcourse schedule name below to import it into AntAlmanac.
@@ -868,7 +874,7 @@ export function Import() {
                                     <br />
                                 </Box>
                             )}
-                            {importSource === ImportSource.AA_USERNAME_IMPORT && (
+                            {effectiveImportSource === ImportSource.AA_USERNAME_IMPORT && (
                                 <Box
                                     component="form"
                                     onSubmit={(e) => {
@@ -893,8 +899,8 @@ export function Import() {
                                 </Box>
                             )}
 
-                            {importSource !== ImportSource.AA_USERNAME_IMPORT &&
-                                importSource !== ImportSource.JSON_IMPORT && (
+                            {effectiveImportSource !== ImportSource.AA_USERNAME_IMPORT &&
+                                effectiveImportSource !== ImportSource.JSON_IMPORT && (
                                     <Stack spacing={1}>
                                         <DialogContentText>
                                             Make sure you also have the right term selected.
@@ -902,7 +908,7 @@ export function Import() {
                                         <TermSelector />
                                     </Stack>
                                 )}
-                            {importSource === ImportSource.JSON_IMPORT && (
+                            {effectiveImportSource === ImportSource.JSON_IMPORT && (
                                 <Box>
                                     <DialogContentText>
                                         Upload your schedule data JSON file here to import it into AntAlmanac.

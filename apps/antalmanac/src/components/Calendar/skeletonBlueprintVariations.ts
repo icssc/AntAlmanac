@@ -1,4 +1,4 @@
-export type SkeletonBlueprint = {
+type SkeletonBlueprint = {
     dayOffset: number;
     startHour: number;
     startMinute: number;

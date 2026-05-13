@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-
-import { tourShouldRun } from '$lib/TutorialHelpers';
 import { getLocalStoragePatchNotesKey } from '$lib/localStorage';
+import { tourShouldRun } from '$lib/TutorialHelpers';
+import { differenceInCalendarDays, parse, startOfDay } from 'date-fns';
+import { create } from 'zustand';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -11,13 +11,24 @@ import { getLocalStoragePatchNotesKey } from '$lib/localStorage';
  */
 export const LATEST_PATCH_NOTES_UPDATE = '20260130';
 
-export interface PatchNotesStoreProps {
+const PATCH_NOTES_ADDED_ON = parse(LATEST_PATCH_NOTES_UPDATE, 'yyyyMMdd', new Date());
+
+/** Stop auto-opening the patch notes modal after this many calendar days since release. */
+const PATCH_NOTES_MAX_AGE_CALENDAR_DAYS = 30;
+
+function arePatchNotesStale(now: Date = new Date()) {
+    return (
+        differenceInCalendarDays(startOfDay(now), startOfDay(PATCH_NOTES_ADDED_ON)) > PATCH_NOTES_MAX_AGE_CALENDAR_DAYS
+    );
+}
+
+interface PatchNotesStoreProps {
     showPatchNotes: boolean;
     setShowPatchNotes: (value: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export function shouldShowPatchNotes() {
-    return getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE && !tourShouldRun();
+    return !arePatchNotesStale() && getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE && !tourShouldRun();
 }
 
 export const usePatchNotesStore = create<PatchNotesStoreProps>((set) => {

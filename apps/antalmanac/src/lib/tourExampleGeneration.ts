@@ -1,6 +1,6 @@
-import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
-
 import AppStore from '$stores/AppStore';
+import { ScheduleCourse } from '@packages/antalmanac-types';
+import { HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/anteater-api/types';
 
 const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
 let sampleClassesSectionCodes: Array<string> = [];
@@ -100,7 +100,7 @@ export function removeSampleClasses() {
     sampleClassesSectionCodes = [];
 }
 
-export function randint(min: number, max: number): number {
+function randint(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
@@ -128,7 +128,7 @@ type NonStrictPartialWebsocSectionMeeting = Partial<Extract<WebsocSectionMeeting
     timeIsTBA?: boolean;
 };
 
-export function sampleMeetingsFactory({
+function sampleMeetingsFactory({
     bldg = ['DBH 1200'],
     days = 'MWF',
     startTime = {
@@ -156,7 +156,7 @@ type NonStrictPartialWebsocSectionFinalExam = Partial<
     Omit<Extract<WebsocSectionFinalExam, { examStatus: 'SCHEDULED_FINAL' }>, 'examStatus'>
 > & { examStatus?: WebsocSectionFinalExam['examStatus'] };
 
-export function sampleFinalExamFactory({
+function sampleFinalExamFactory({
     examStatus = 'SCHEDULED_FINAL',
     dayOfWeek,
     month = 11,
@@ -192,7 +192,7 @@ interface sampleClassOptions {
     finalExam?: WebsocSectionFinalExam;
 }
 
-export function sampleClassFactory({
+function sampleClassFactory({
     courseComment = '',
     courseNumber = '-1',
     courseTitle = 'Example class',
