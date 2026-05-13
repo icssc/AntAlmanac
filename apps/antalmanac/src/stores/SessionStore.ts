@@ -13,7 +13,7 @@ interface SessionState {
     avatar: string | null;
     sessionIsValid: boolean;
     loadSession: () => Promise<boolean>;
-    clearSession: () => Promise<string | null>;
+    clearSession: () => void;
 
     hasCheckedAuth: boolean;
 }
@@ -69,17 +69,7 @@ export const useSessionStore = create<SessionState>((set) => {
             }
         },
 
-        clearSession: async () => {
-            let logoutUrl: string | null = null;
-            try {
-                const result = await trpc.auth.logout.mutate({
-                    redirectUrl: window.location.origin,
-                });
-                logoutUrl = result.logoutUrl;
-            } catch (error) {
-                console.error('Error during logout:', error);
-            }
-
+        clearSession: () => {
             setWasLoggedIn(false);
             clearSsoCookie();
             set({
@@ -90,8 +80,6 @@ export const useSessionStore = create<SessionState>((set) => {
                 name: null,
                 avatar: null,
             });
-
-            return logoutUrl;
         },
     };
 });

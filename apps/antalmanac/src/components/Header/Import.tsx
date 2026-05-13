@@ -10,6 +10,7 @@ import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSe
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { trpcReact } from '$lib/api/trpcReact';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import {
@@ -19,7 +20,7 @@ import {
     removeLocalStorageOnFirstSignin,
     removeLocalStorageUserId,
 } from '$lib/localStorage';
-import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
+import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -86,6 +87,7 @@ export function Import() {
     const isDark = useThemeStore((store) => store.isDark);
 
     const postHog = usePostHog();
+    const { mutateAsync: fetchZotcourse } = trpcReact.zotcourse.getUserData.useMutation();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -120,7 +122,17 @@ export function Import() {
         switch (effectiveImportSource) {
             case ImportSource.ZOT_COURSE_IMPORT:
                 try {
-                    const zotcourseImport: ZotcourseResponse = await queryZotcourse(zotcourseScheduleName);
+                    if (!zotcourseScheduleName) {
+                        throw new QueryZotcourseError('Cannot import an empty Zotcourse schedule name');
+                    }
+
+                    const response = await fetchZotcourse({ scheduleName: zotcourseScheduleName });
+
+                    if (!response.success) {
+                        throw new QueryZotcourseError('Cannot import an invalid Zotcourse');
+                    }
+
+                    const zotcourseImport = processZotcourseResponse(response.data);
                     sectionCodes = zotcourseImport.codes;
                     for (const event of zotcourseImport.customEvents) {
                         addCustomEvent(event, [currentSchedule]);
