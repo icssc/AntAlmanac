@@ -1,4 +1,5 @@
-import { integer, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import { check, integer, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { schedules } from './index';
 
@@ -49,6 +50,7 @@ export const coursesInSchedule = pgTable(
         primaryKey({
             columns: [table.scheduleId, table.sectionCode, table.term],
         }),
+        check('visibility_check', sql`${table.visibility} IN ('visible', 'outlined', 'disappeared')`),
     ]
 );
 

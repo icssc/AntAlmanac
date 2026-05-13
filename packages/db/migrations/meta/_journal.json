@@ -127,6 +127,13 @@
       "when": 1778627692246,
       "tag": "0017_tiny_skaar",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1747109200000,
+      "tag": "0018_add_visibility_check",
+      "breakpoints": true
     }
   ]
 }
