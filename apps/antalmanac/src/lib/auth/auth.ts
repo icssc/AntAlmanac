@@ -1,5 +1,6 @@
 import 'server-only';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
+import { AuthAdditionalData } from '$lib/auth/authTypes';
 import { getSafeAuthRedirectPath } from '$lib/auth/authUtils';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { db } from '@packages/db';
@@ -10,11 +11,6 @@ import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
 
 const { OIDC_CLIENT_ID, OIDC_ISSUER_URL, BETTER_AUTH_URL } = oidcOAuthEnvSchema.parse(process.env);
-
-export interface AuthAdditionalData {
-    returnUrl?: string;
-    provider?: string;
-}
 
 export const auth = betterAuth({
     appName: 'AntAlmanac',
