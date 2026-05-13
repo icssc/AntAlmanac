@@ -20,6 +20,27 @@ export const auth = betterAuth({
     appName: 'AntAlmanac',
     baseURL: BETTER_AUTH_URL,
     database: drizzleAdapter(db, { provider: 'pg', usePlural: true }),
+    plugins: [
+        genericOAuth({
+            config: [
+                {
+                    providerId: AUTH_PROVIDER_ID,
+                    issuer: OIDC_ISSUER_URL,
+                    discoveryUrl: `${OIDC_ISSUER_URL}/.well-known/openid-configuration`,
+                    clientId: OIDC_CLIENT_ID,
+                    scopes: ['openid', 'profile', 'email'],
+                    pkce: true,
+                    mapProfileToUser: (profile) => {
+                        return {
+                            ...profile,
+                            avatar: profile.image,
+                        } as object;
+                    },
+                },
+            ],
+        }),
+        nextCookies(),
+    ],
     hooks: {
         after: createAuthMiddleware(async (ctx) => {
             if (ctx.path === '/oauth2/callback/:providerId') {
@@ -52,27 +73,6 @@ export const auth = betterAuth({
             },
         },
     },
-    plugins: [
-        genericOAuth({
-            config: [
-                {
-                    providerId: AUTH_PROVIDER_ID,
-                    issuer: OIDC_ISSUER_URL,
-                    discoveryUrl: `${OIDC_ISSUER_URL}/.well-known/openid-configuration`,
-                    clientId: OIDC_CLIENT_ID,
-                    scopes: ['openid', 'profile', 'email'],
-                    pkce: true,
-                    mapProfileToUser: (profile) => {
-                        return {
-                            ...profile,
-                            avatar: profile.image,
-                        } as object;
-                    },
-                },
-            ],
-        }),
-        nextCookies(),
-    ],
     account: {
         fields: {
             accountId: 'providerAccountId',
