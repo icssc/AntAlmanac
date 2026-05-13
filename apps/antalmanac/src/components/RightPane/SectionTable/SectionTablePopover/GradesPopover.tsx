@@ -1,5 +1,4 @@
 import { trpcReact } from '$lib/api/trpcReact';
-import { type GradesProps } from '$lib/grades';
 import {
     Box,
     ToggleButton,
@@ -11,6 +10,7 @@ import {
     useTheme,
     Skeleton,
 } from '@mui/material';
+import type { AggregateGrades } from '@packages/anteater-api/types';
 import { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
 
@@ -21,11 +21,13 @@ interface GradeData {
         name: string;
         all: number;
     }[];
-    courseGrades: GradesProps;
+    courseGrades: NonNullable<AggregateGrades>['gradeDistribution'];
     totalGrades: number;
 }
 
-function toGradeData(courseGrades: GradesProps | null | undefined): GradeData | undefined {
+function toGradeData(
+    courseGrades: NonNullable<AggregateGrades>['gradeDistribution'] | null | undefined
+): GradeData | undefined {
     if (!courseGrades) {
         return undefined;
     }

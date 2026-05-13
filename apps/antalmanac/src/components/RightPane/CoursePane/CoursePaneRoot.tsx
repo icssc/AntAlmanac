@@ -3,7 +3,6 @@ import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane'
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { Grades } from '$lib/grades';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
@@ -40,7 +39,7 @@ export function CoursePaneRoot() {
             action: analyticsEnum.classSearch.actions.REFRESH,
         });
         queryClient.invalidateQueries({ queryKey: [['websoc']] });
-        Grades.clearCache();
+        queryClient.invalidateQueries({ queryKey: [['grades']] });
         forceUpdate();
     }, [forceUpdate, postHog, queryClient]);
 

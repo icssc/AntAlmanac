@@ -9,12 +9,10 @@ import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
-import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import {
     getMultiGeCourseKey,
     getMultiGeOrBannerIdx,
-    gradesGeForManualSearch,
     isMultiGeSelection,
     queryManualSearchCourses,
 } from '$lib/multiGeSearch';
@@ -29,7 +27,7 @@ import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
-import { GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool, WebsocSectionType } from '@packages/anteater-api/types';
+import { WebsocAPIResponse, WebsocDepartment, WebsocSchool, WebsocSectionType } from '@packages/anteater-api/types';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
@@ -315,8 +313,8 @@ export default function CourseRenderPane(props: { id?: number }) {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
-    const getQueryParams = useCallback((searchData: CourseSearchParams) => {
-        const websocQueryParams = {
+    const getQueryParams = useCallback(
+        (searchData: CourseSearchParams) => ({
             department: searchData.deptValue,
             term: searchData.term,
             ge: searchData.ge,
@@ -332,25 +330,9 @@ export default function CourseRenderPane(props: { id?: number }) {
             division: searchData.division,
             excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
             days: searchData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
-        };
-
-        const gradesQueryParams = {
-            department: searchData.deptValue,
-            ge: searchData.ge as GE,
-            instructor: searchData.instructor,
-            sectionCode: searchData.sectionCode,
-        };
-
-        return { websocQueryParams, gradesQueryParams };
-    }, []);
-
-    const queryGrades = useCallback(async (gradesQueryParams: Parameters<typeof Grades.populateGradesCache>[0]) => {
-        // Catch the error here so that the course pane still loads even if the grades cache fails to populate
-        await Grades.populateGradesCache(gradesQueryParams).catch((error) => {
-            console.error(error);
-            openSnackbar('error', 'Error loading grades information');
-        });
-    }, []);
+        }),
+        []
+    );
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
@@ -365,7 +347,6 @@ export default function CourseRenderPane(props: { id?: number }) {
                 const { year, quarter } = RightPaneStore.getTermParts();
                 const offeredCourses: Record<string, string>[] = [];
                 const unofferedCourses: CourseSearchParams[] = [];
-                const gradeQueries: Promise<unknown>[] = [];
                 const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
                     year: year,
                     quarter: quarter,
@@ -373,27 +354,21 @@ export default function CourseRenderPane(props: { id?: number }) {
                 });
                 for (const course of multiSearchData) {
                     if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
-                        const { websocQueryParams, gradesQueryParams } = getQueryParams(course);
-                        offeredCourses.push(websocQueryParams);
-                        gradeQueries.push(queryGrades(gradesQueryParams));
+                        offeredCourses.push(getQueryParams(course));
                     } else {
                         unofferedCourses.push(course);
                     }
                 }
                 setUnofferedCourses(unofferedCourses);
                 websocJsonResp = await trpc.websoc.getMultiple.query({ params: offeredCourses });
-                await Promise.all(gradeQueries);
             } else {
                 const formData = RightPaneStore.getFormData();
-                const { websocQueryParams, gradesQueryParams } = getQueryParams(formData);
-                gradesQueryParams.ge = gradesGeForManualSearch(formData.ge);
-                const [{ response: websocJsonResponse, sharedCourseKeys: sck }] = await Promise.all([
-                    queryManualSearchCourses(websocQueryParams),
-                    queryGrades(gradesQueryParams),
-                ]);
+                const { response: websocJsonResponse, sharedCourseKeys } = await queryManualSearchCourses(
+                    getQueryParams(formData)
+                );
 
                 websocJsonResp = websocJsonResponse;
-                fetchedSharedCourseKeys = sck;
+                fetchedSharedCourseKeys = sharedCourseKeys;
             }
 
             setWebsocResp(websocJsonResp);
