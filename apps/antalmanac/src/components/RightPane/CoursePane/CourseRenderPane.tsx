@@ -347,9 +347,8 @@ export default function CourseRenderPane(props: { id?: number }) {
                 } else {
                     const formData = RightPaneStore.getFormData();
                     const websocQueryParams = getQueryParams(formData);
-                    const { response: websocJsonResponse, sharedCourseKeys } =
-                        await queryManualSearchCourses(websocQueryParams);
-                    websocJsonResp = websocJsonResponse;
+                    const { response, sharedCourseKeys } = await queryManualSearchCourses(websocQueryParams);
+                    websocJsonResp = response;
                     fetchedSharedCourseKeys = sharedCourseKeys;
                 }
                 setSharedCourseKeys(fetchedSharedCourseKeys);
