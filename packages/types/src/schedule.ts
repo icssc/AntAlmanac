@@ -33,7 +33,7 @@ export const ShortCourseSchema = z.object({
     color: z.string(),
     term: z.string(),
     sectionCode: z.string(),
-    visibility: z.enum(VISIBILITY_STATES),
+    visibility: z.enum(VISIBILITY_STATES).optional().default('visible'),
 });
 export type ShortCourse = z.infer<typeof ShortCourseSchema>;
 
