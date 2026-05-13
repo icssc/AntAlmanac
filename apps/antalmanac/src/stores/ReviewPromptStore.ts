@@ -3,7 +3,6 @@ import trpc from '$lib/api/trpc';
 import { termData } from '$lib/termData';
 import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 import { create } from 'zustand';
 import { combine } from 'zustand/middleware';
 
@@ -17,9 +16,9 @@ export const REVIEW_TAGS = [
     'Test Heavy',
 ] as const;
 
-export type ReviewTag = (typeof REVIEW_TAGS)[number];
+type ReviewTag = (typeof REVIEW_TAGS)[number];
 
-export type ReviewCandidate = {
+type ReviewCandidate = {
     /** e.g. "ICS 31" */
     courseId: string;
     courseTitle: string;
@@ -175,7 +174,8 @@ export const useReviewPromptStore = create(
 
         /**
          * User closed the prompt without submitting (X, Skip, "I did not", snackbar click-away, Escape).
-         * Persists the course+professor combo so it is not suggested again and starts the cooldown window.
+         * Updates local state and logs analytics. The caller is responsible for firing the dismissReview
+         * mutation so the combo is not suggested again and the cooldown window starts.
          */
         dismiss: () => {
             const { candidate, step } = get();
@@ -191,16 +191,8 @@ export const useReviewPromptStore = create(
                         dismissedAtStep: step,
                     },
                 });
-                trpc.review.dismissReview
-                    .mutate({
-                        professorId: candidate.professorId,
-                        courseId: candidate.courseId,
-                        term: candidate.term,
-                    })
-                    .catch(() => {
-                        // Non-fatal — worst case the user is prompted again on the next session.
-                    });
             }
+            return candidate;
         },
 
         setRating: (rating: number) => set({ rating }),
@@ -218,39 +210,7 @@ export const useReviewPromptStore = create(
             });
         },
 
-        submitReview: async () => {
-            const { candidate, rating, difficulty, selectedTags, textReview } = get();
-            if (!candidate || rating === 0 || difficulty === 0) return;
-
-            const trimmedReview = textReview.trim();
-
-            try {
-                await trpc.review.submitReview.mutate({
-                    professorId: candidate.professorId,
-                    courseId: candidate.courseId,
-                    quarter: candidate.term,
-                    rating,
-                    difficulty,
-                    tags: selectedTags,
-                    content: trimmedReview || undefined,
-                });
-                set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
-                logAnalytics(postHog, {
-                    category: analyticsEnum.review,
-                    action: analyticsEnum.review.actions.SUBMITTED,
-                    customProps: {
-                        courseId: candidate.courseId,
-                        professorId: candidate.professorId,
-                        term: candidate.term,
-                        rating,
-                        difficulty,
-                        tags: selectedTags,
-                    },
-                });
-                openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
-            } catch {
-                openSnackbar('error', 'Failed to submit review. Please try again.');
-            }
-        },
+        resetReview: () =>
+            set({ step: 'hidden', candidate: null, rating: 0, difficulty: 0, selectedTags: [], textReview: '' }),
     }))
 );

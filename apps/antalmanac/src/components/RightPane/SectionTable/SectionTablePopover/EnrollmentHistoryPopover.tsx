@@ -1,9 +1,10 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import type { EnrollmentHistory } from '$lib/enrollmentHistory';
+import { trpcReact } from '$lib/api/trpcReact';
+import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import type { WebsocSectionType } from '@packages/antalmanac-types';
+import type { WebsocSectionType } from '@packages/anteater-api/types';
 import { useCallback, useMemo, useState } from 'react';
 import {
     CartesianGrid,
@@ -22,8 +23,6 @@ interface EnrollmentHistoryPopoverProps {
     courseNumber: string;
     term: string;
     sectionCode: string;
-    enrollmentHistory: EnrollmentHistory[] | undefined;
-    loading?: boolean;
 }
 
 function graphKey(enrollment: EnrollmentHistory) {
@@ -36,9 +35,11 @@ export function EnrollmentHistoryPopover({
     courseNumber,
     term,
     sectionCode,
-    enrollmentHistory,
-    loading = false,
 }: EnrollmentHistoryPopoverProps) {
+    const { data: enrollmentHistory, isLoading: loading } = trpcReact.enrollHist.get.useQuery(
+        { department, courseNumber, sectionType },
+        { select: parseAndSortEnrollmentHistory }
+    );
     const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
 
     const theme = useTheme();

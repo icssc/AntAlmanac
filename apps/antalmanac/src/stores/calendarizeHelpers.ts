@@ -1,19 +1,14 @@
-import type {
-    ScheduleCourse,
-    RepeatingCustomEvent,
-    HourMinute,
-    WebsocSectionFinalExam,
-} from '@packages/antalmanac-types';
-
 import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getFinalsStartDateForTerm } from '$lib/termData';
 import { notNull, getReferencesOccurring } from '$lib/utils';
+import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { HourMinute, WebsocSectionFinalExam } from '@packages/anteater-api/types';
 
-export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
-export const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
-export function getLocation(location: string): Location {
+function getLocation(location: string): Location {
     const [building = '', room = ''] = location.split(' ');
     return { building, room };
 }
@@ -120,8 +115,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             const locationsWithNoDays = bldg
                 ? bldg.map(getLocation)
                 : !course.section.meetings[0].timeIsTBA
-                ? course.section.meetings[0].bldg.map(getLocation)
-                : [];
+                  ? course.section.meetings[0].bldg.map(getLocation)
+                  : [];
 
             /**
              * Fallback to January 2018 if no finals start date is available.
@@ -198,7 +193,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
 
 export const SHORT_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
-export const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join('|')})`, 'g');
+const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join('|')})`, 'g');
 
 /**
  * Parses a day string into an array of numbers.

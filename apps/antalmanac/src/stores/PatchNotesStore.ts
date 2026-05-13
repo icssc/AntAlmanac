@@ -22,7 +22,7 @@ function arePatchNotesStale(now: Date = new Date()) {
     );
 }
 
-export interface PatchNotesStoreProps {
+interface PatchNotesStoreProps {
     showPatchNotes: boolean;
     setShowPatchNotes: (value: boolean | ((prev: boolean) => boolean)) => void;
 }
