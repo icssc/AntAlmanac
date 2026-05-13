@@ -16,13 +16,27 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<Element>();
 
-    const firstNamedInstructor = useMemo(() => instructors.find((i) => i !== 'STAFF') ?? '', [instructors]);
+    const namedInstructors = useMemo(() => instructors.filter((i) => i !== 'STAFF'), [instructors]);
 
-    const { data: grades, isLoading: loading } = trpcReact.grades.aggregateGrades.useQuery(
-        { department: deptCode, courseNumber, instructor: firstNamedInstructor },
-        { select: (data) => data?.gradeDistribution ?? null }
+    const instructorResults = trpcReact.useQueries((t) =>
+        namedInstructors.map((instructor) =>
+            t.grades.aggregateGrades(
+                { department: deptCode, courseNumber, instructor },
+                { select: (data) => data?.gradeDistribution ?? null }
+            )
+        )
     );
-    const gpa = grades?.averageGPA ? grades.averageGPA.toFixed(2) : '';
+
+    const loading = instructorResults.some((r) => r.isLoading);
+
+    const { gpa, instructor } = useMemo(() => {
+        const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
+        if (idx >= 0) {
+            const avg = instructorResults[idx].data?.averageGPA;
+            return { gpa: avg ? avg.toFixed(2) : '', instructor: namedInstructors[idx] };
+        }
+        return { gpa: '', instructor: namedInstructors[0] ?? '' };
+    }, [instructorResults, namedInstructors]);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl((current) => (current ? undefined : event.currentTarget));
@@ -55,7 +69,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                 <GradesPopover
                     deptCode={deptCode}
                     courseNumber={courseNumber}
-                    instructor={firstNamedInstructor}
+                    instructor={instructor}
                     isMobile={isMobile}
                 />
             </Popover>
