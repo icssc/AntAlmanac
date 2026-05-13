@@ -33,17 +33,14 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const height = isMobile ? 150 : 200;
 
     const syllabiByTerm = useMemo(() => {
-        return syllabi.reduce(
-            (acc, entry) => {
-                const term = `${entry.year} ${entry.quarter}`;
+        return syllabi.reduce<Record<string, WebsocSyllabiResponse[number][]>>((acc, entry) => {
+            const term = `${entry.year} ${entry.quarter}`;
 
-                acc[term] ??= [];
-                acc[term].push(entry);
+            acc[term] ??= [];
+            acc[term].push(entry);
 
-                return acc;
-            },
-            {} as Record<string, WebsocSyllabiResponse[number][]>
-        );
+            return acc;
+        }, {});
     }, [syllabi]);
 
     const title = `${deptCode} ${courseNumber}`;
