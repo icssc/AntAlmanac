@@ -405,34 +405,35 @@ export const loginUser = async (
     provider: Provider,
     { silent = false, signInUrl = '', postHog }: LoginUserOptions = {}
 ) => {
-    try {
-        const url =
-            signInUrl !== ''
-                ? signInUrl
-                : await getSignInUrl(provider, {
-                      redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined,
-                      authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
-                  });
-
-        if (url) {
+    let authUrl;
+    if (signInUrl !== '') {
+        authUrl = signInUrl;
+    } else {
+        const { url, error } = await getSignInUrl(provider, {
+            redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined,
+            authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
+        });
+        if (error || !url) {
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SIGN_IN,
+                action: analyticsEnum.auth.actions.SIGN_IN_FAIL,
+                error: getErrorMessage(error),
             });
-            cacheSchedule();
-            window.location.href = url.toString();
+            if (!silent) {
+                console.error('Error during login initiation', error);
+                openSnackbar('error', 'Error during login initiation. Please Try Again.');
+            }
+            return;
         }
-    } catch (error) {
-        logAnalytics(postHog, {
-            category: analyticsEnum.auth,
-            action: analyticsEnum.auth.actions.SIGN_IN_FAIL,
-            error: getErrorMessage(error),
-        });
-        if (!silent) {
-            console.error('Error during login initiation', error);
-            openSnackbar('error', 'Error during login initiation. Please Try Again.');
-        }
+        authUrl = url;
     }
+
+    logAnalytics(postHog, {
+        category: analyticsEnum.auth,
+        action: analyticsEnum.auth.actions.SIGN_IN,
+    });
+    cacheSchedule();
+    window.location.href = authUrl;
 };
 
 export const deleteCourse = (sectionCode: string, term: string, scheduleIndex: number) => {

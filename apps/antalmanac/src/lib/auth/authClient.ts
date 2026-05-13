@@ -41,14 +41,14 @@ export async function getSignInUrl(
         } satisfies AuthAdditionalData,
     });
     if (response.error) {
-        return '';
+        return { error: response.error };
     }
     const authUrl = new URL(response.data.url);
     for (const [key, val] of Object.entries(authorizationUrlParams ?? {})) {
         authUrl.searchParams.set(key, val);
     }
     authUrl.searchParams.set('provider', getIcsscProviderName(provider));
-    return authUrl.toString();
+    return { url: authUrl.toString() };
 }
 
 export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}) {
