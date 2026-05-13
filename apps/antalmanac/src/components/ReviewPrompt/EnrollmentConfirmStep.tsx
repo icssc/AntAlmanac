@@ -62,7 +62,7 @@ export function EnrollmentConfirmStep() {
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button size="small" color="inherit" onClick={handleDismiss}>
-                    I did not
+                    Nope
                 </Button>
 
                 <Button size="small" variant="contained" onClick={confirm}>
