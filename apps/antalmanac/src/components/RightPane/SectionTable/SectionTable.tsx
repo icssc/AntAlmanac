@@ -7,6 +7,7 @@ import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTa
 import { WarningAlert } from '$components/WarningAlert';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
+import { Term } from '$lib/term';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
@@ -37,9 +38,9 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
-interface SectionTableProps {
+export interface SectionTableProps {
     courseDetails: AACourse;
-    term: string;
+    term: Term;
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: AnalyticsCategory;
@@ -195,7 +196,7 @@ function SectionTable(props: SectionTableProps) {
 
                         <SectionTableBody
                             courseDetails={courseDetails}
-                            term={term}
+                            term={term.shortName}
                             allowHighlight={allowHighlight}
                             scheduleNames={scheduleNames}
                             analyticsCategory={analyticsCategory}

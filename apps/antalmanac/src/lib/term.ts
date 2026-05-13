@@ -79,7 +79,7 @@ const terms = z.array(termSchema).parse(termJson);
 
 export const termData = terms.filter((term) => term.socAvailable <= new Date());
 
-export const defaultTerm = termData.findIndex((term) => !term.isSummerTerm);
+const defaultTerm = termData.findIndex((term) => !term.isSummerTerm);
 
 const openEnrollmentTerms = getOpenEnrollmentTerms();
 
@@ -165,6 +165,6 @@ function isTermEnrollmentOpen(term: Term): boolean {
     return new Date() <= dropDeadline;
 }
 
-export function isTermAvailable(termShortName: string) {
-    return termData.find((term) => term.shortName === termShortName) !== undefined;
+export function isTermAvailable(term: Term) {
+    return termData.find((t) => t.shortName === term.shortName) !== undefined;
 }

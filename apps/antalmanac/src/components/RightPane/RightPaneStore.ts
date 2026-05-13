@@ -6,11 +6,11 @@ import {
     ManualSearchParam,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { normalizeGeSelection } from '$lib/multiGeSearch';
-import { getDefaultTerm, isTermAvailable, parseTermShortName } from '$lib/term';
+import { getDefaultTerm, isTermAvailable, type Term } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
 
-const defaultBasicSearchValues: Record<BasicSearchParam, string> = {
-    term: getDefaultTerm().shortName,
+const defaultBasicSearchValues: Record<BasicSearchParam, Term> = {
+    term: getDefaultTerm(),
 };
 
 const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
@@ -27,7 +27,7 @@ const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
     days: '',
 };
 
-const defaultFormValues: Record<ManualSearchParam, string> = {
+const defaultFormValues: Record<Exclude<ManualSearchParam, 'term'>, string> & { term: Term } = {
     deptValue: 'ALL',
     ge: 'ANY',
     courseNumber: '',
@@ -115,7 +115,7 @@ class RightPaneStore extends EventEmitter {
             openSnackbar('error', message);
             console.error('Error setting term from URL:', message);
 
-            this.formData.term = getDefaultTerm().shortName;
+            this.formData.term = getDefaultTerm();
 
             this.setWarningMessages(CourseSearchWarningType.TermUnavailable, [message]);
         }
@@ -141,7 +141,7 @@ class RightPaneStore extends EventEmitter {
 
     getWarningMessages = () => this.warningMessages;
 
-    updateFormValue = (field: CourseSearchParamKey, value: string) => {
+    updateFormValue = <T extends CourseSearchParamKey>(field: T, value: CourseSearchParams[T]) => {
         this.formData[field] = value;
         this.emit('formDataChange');
     };
@@ -188,10 +188,6 @@ class RightPaneStore extends EventEmitter {
     formDataHasAdvancedSearch = () => {
         const formFields = Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[];
         return formFields.some((key) => this.formData[key] !== defaultAdvancedSearchValues[key]);
-    };
-
-    getTermParts = (): { year: string; quarter: string } => {
-        return parseTermShortName(this.formData.term) ?? { year: '', quarter: '' };
     };
 
     setWarningMessages = (warningType: CourseSearchWarningType, messages: string[]) => {

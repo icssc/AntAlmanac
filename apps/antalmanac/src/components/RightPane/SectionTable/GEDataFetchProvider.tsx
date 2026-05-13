@@ -1,6 +1,5 @@
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import SectionTable from '$components/RightPane/SectionTable/SectionTable';
-import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
+import SectionTable, { type SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpcReact';
 import AppStore from '$stores/AppStore';
 import type { AACourse } from '@packages/antalmanac-types';
@@ -17,7 +16,7 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
         const formData = RightPaneStore.getFormData();
         return {
             department: props.courseDetails.deptCode,
-            term: formData.term,
+            term: formData.term.shortName,
             ge: 'ANY',
             courseNumber: props.courseDetails.courseNumber,
             courseTitle: props.courseDetails.courseTitle,

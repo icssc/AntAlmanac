@@ -16,7 +16,6 @@ import {
     isMultiGeSelection,
     queryManualSearchCourses,
 } from '$lib/multiGeSearch';
-import { getTermLongName } from '$lib/term';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -308,7 +307,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
-    const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
+    const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term);
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
@@ -344,7 +343,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             let websocJsonResp: WebsocAPIResponse;
             let fetchedSharedCourseKeys = new Set<string>();
             if (multiSearchData.length > 0) {
-                const { year, quarter } = RightPaneStore.getTermParts();
+                const { year, quarter } = RightPaneStore.getFormData().term;
                 const offeredCourses: Record<string, string>[] = [];
                 const unofferedCourses: CourseSearchParams[] = [];
                 const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
@@ -354,7 +353,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                 });
                 for (const course of multiSearchData) {
                     if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
-                        offeredCourses.push(getQueryParams(course));
+                        offeredCourses.push({ ...getQueryParams(course), term: course.term.shortName });
                     } else {
                         unofferedCourses.push(course);
                     }
@@ -363,9 +362,10 @@ export default function CourseRenderPane(props: { id?: number }) {
                 websocJsonResp = await trpc.websoc.getMultiple.query({ params: offeredCourses });
             } else {
                 const formData = RightPaneStore.getFormData();
-                const { response: websocJsonResponse, sharedCourseKeys } = await queryManualSearchCourses(
-                    getQueryParams(formData)
-                );
+                const { response: websocJsonResponse, sharedCourseKeys } = await queryManualSearchCourses({
+                    ...getQueryParams(formData),
+                    term: formData.term.shortName,
+                });
 
                 websocJsonResp = websocJsonResponse;
                 fetchedSharedCourseKeys = sharedCourseKeys;
@@ -377,7 +377,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             setCourseData(filteredCourses);
             setSharedCourseKeys(fetchedSharedCourseKeys);
             setAndCourseCount(getFilteredAndCourseCount(filteredCourses, fetchedSharedCourseKeys));
-            setSearchedTerm(getTermLongName(RightPaneStore.getFormData().term));
+            setSearchedTerm(RightPaneStore.getFormData().term);
         } catch (error) {
             console.error(error);
             setError(true);
@@ -460,7 +460,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             {unofferedCourses.map((course) => {
                 return (
                     <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
-                        {course.deptValue} {course.courseNumber} is not offered in {searchedTerm}.
+                        {course.deptValue} {course.courseNumber} is not offered in {searchedTerm.shortName}.
                     </WarningAlert>
                 );
             })}

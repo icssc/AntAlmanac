@@ -1,6 +1,6 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
-import { getTermLongName, termData } from '$lib/term';
+import { Term, termData } from '$lib/term';
 import { ComponentProps, useCallback, useEffect, useState } from 'react';
 
 type TermSelectorProps = Omit<
@@ -9,15 +9,15 @@ type TermSelectorProps = Omit<
 >;
 
 export function TermSelector(props: TermSelectorProps) {
-    const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
+    const [term, setTerm] = useState<Term>(() => RightPaneStore.getFormData().term);
 
-    const handleChange = (_: unknown, option: string | null) => {
-        const value = option ?? termData.at(0)?.shortName ?? '';
+    const handleChange = (_: unknown, option: Term | null) => {
+        const value = option ?? termData[0];
 
         setTerm(value);
 
         const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('term', value);
+        urlParams.set('term', value?.shortName ?? '');
         history.replaceState({ url: 'url' }, 'url', `/?${urlParams}`);
 
         RightPaneStore.updateFormValue('term', value);
@@ -38,13 +38,13 @@ export function TermSelector(props: TermSelectorProps) {
     }, [resetField]);
 
     return (
-        <LabeledAutocomplete
+        <LabeledAutocomplete<Term>
             {...props}
             label="Term"
             autocompleteProps={{
                 value: term,
-                options: termData.map((term) => term.shortName),
-                getOptionLabel: (option) => getTermLongName(option),
+                options: termData,
+                getOptionLabel: (option) => option.longName,
                 autoHighlight: true,
                 openOnFocus: true,
                 onChange: handleChange,
