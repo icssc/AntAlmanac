@@ -1,5 +1,4 @@
 import { SessionData } from '$lib/auth/authClient';
-import { usePlannerStore } from '$stores/PlannerStore';
 import { create } from 'zustand';
 
 interface SessionState {
@@ -40,8 +39,6 @@ export const useSessionStore = create<SessionState>((set) => {
         areSchedulesLoaded: false,
 
         updateSession: async (sessionData: SessionData) => {
-            usePlannerStore.getState().loadPlannerRoadmaps();
-
             set({
                 session: sessionData.session,
                 sessionId: sessionData.session.id,

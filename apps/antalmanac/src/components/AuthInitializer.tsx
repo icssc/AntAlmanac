@@ -16,6 +16,7 @@ import {
 import { setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
+import { usePlannerStore } from '$stores/PlannerStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -37,6 +38,8 @@ export const AuthInitializer = () => {
             setHasCheckedAuth: state.setHasCheckedAuth,
         }))
     );
+
+    const loadPlannerRoadmaps = usePlannerStore((state) => state.loadPlannerRoadmaps);
 
     const loadNotifications = useNotificationStore((state) => state.loadNotifications);
 
@@ -113,6 +116,8 @@ export const AuthInitializer = () => {
 
                     await updateSession(sessionData);
 
+                    loadPlannerRoadmaps();
+
                     setSsoCookie();
                     setHasCheckedAuth(true);
 
@@ -144,7 +149,15 @@ export const AuthInitializer = () => {
             setHasCheckedAuth(true);
             loadNotifications();
         }
-    }, [sessionData, isSessionPending, updateSession, setAreSchedulesLoaded, postHog, setHasCheckedAuth]);
+    }, [
+        sessionData,
+        isSessionPending,
+        updateSession,
+        setAreSchedulesLoaded,
+        postHog,
+        setHasCheckedAuth,
+        loadPlannerRoadmaps,
+    ]);
 
     return (
         <SignInAlertDialog
