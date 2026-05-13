@@ -1,5 +1,5 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import { WebSOC } from '$lib/websoc';
+import { trpcReact } from '$lib/api/trpcReact';
 import { OpenInNew } from '@mui/icons-material';
 import {
     Card,
@@ -12,11 +12,10 @@ import {
     Skeleton,
     Typography,
 } from '@mui/material';
-import type { WebsocSyllabiResponse } from '@packages/anteater-api/types';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
-export interface PastSyllabiPopoverProps {
+interface PastSyllabiPopoverProps {
     deptCode: string;
     courseNumber: string;
     courseId: string;
@@ -26,8 +25,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const isMobile = useIsMobile();
     const { deptCode, courseNumber, courseId } = props;
 
-    const [loading, setLoading] = useState(true);
-    const [syllabi, setSyllabi] = useState<WebsocSyllabiResponse>([]);
+    const { data: syllabi = [], isLoading: loading } = trpcReact.websoc.getSyllabi.useQuery({ courseId });
 
     const width = isMobile ? 250 : 400;
     const height = isMobile ? 150 : 200;
@@ -42,7 +40,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
 
                 return acc;
             },
-            {} as Record<string, WebsocSyllabiResponse[number][]>
+            {} as Record<string, (typeof syllabi)[number][]>
         );
     }, [syllabi]);
 
@@ -52,22 +50,6 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     ) : (
         `${syllabi.length} ${syllabi.length === 1 ? 'syllabus' : 'syllabi'} across ${Object.keys(syllabiByTerm).length} ${Object.keys(syllabiByTerm).length === 1 ? 'term' : 'terms'}`
     );
-
-    useEffect(() => {
-        setLoading(true);
-
-        WebSOC.getSyllabi({ courseId })
-            .catch((e) => {
-                console.error(e);
-                return undefined;
-            })
-            .then((result) => {
-                setSyllabi(result ?? []);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, [courseId]);
 
     return (
         <Card>

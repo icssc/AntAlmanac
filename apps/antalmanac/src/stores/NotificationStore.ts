@@ -1,5 +1,5 @@
+import trpc from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
-import { WebSOC } from '$lib/websoc';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
 import { type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
@@ -34,7 +34,7 @@ interface RawNotification {
     sectionCode: string;
 }
 
-export interface NotificationStore {
+interface NotificationStore {
     initialized: boolean;
     notifications: Partial<Record<string, Notification>>;
     setNotifications: (notification: Omit<Notification, 'notifyOn'> & { status: keyof NotifyOn }) => void;
@@ -182,7 +182,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
                 const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
                     const sectionCodes = Array.from(courseSet).join(',');
-                    const courseInfo = await WebSOC.getCourseInfo({
+                    const courseInfo = await trpc.websoc.getCourseInfo.query({
                         term,
                         sectionCodes,
                     });

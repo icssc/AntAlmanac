@@ -172,7 +172,7 @@ function SectionBlock({
     );
 }
 
-export interface KeyboardShortcutsModalProps {
+interface KeyboardShortcutsModalProps {
     open: boolean;
     onClose: () => void;
 }

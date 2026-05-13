@@ -1,5 +1,5 @@
 import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { WebSOC } from '$lib/websoc';
+import trpc from '$lib/api/trpc';
 import { AACourse } from '@packages/antalmanac-types';
 import { GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
 
@@ -36,7 +36,9 @@ const getCourseKeys = (response: WebsocAPIResponse) =>
     );
 
 const queryWebsoc = (params: Record<string, string>) =>
-    params.units.includes(',') ? WebSOC.queryMultipleOfField(params, 'units') : WebSOC.query(params);
+    params.units.includes(',')
+        ? trpc.websoc.getManyOfField.query({ params, fieldName: 'units' })
+        : trpc.websoc.getOne.query(params);
 
 const getSharedCourseKeys = (responses: WebsocAPIResponse[]) => {
     const [firstResponse, ...restResponses] = responses;

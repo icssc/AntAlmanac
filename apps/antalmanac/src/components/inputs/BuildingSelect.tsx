@@ -1,7 +1,6 @@
+import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import { Autocomplete, TextField, type TextFieldProps } from '@mui/material';
 import { useCallback, useMemo } from 'react';
-
-import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 
 export interface ExtendedBuilding extends Building {
     id: string;
@@ -18,7 +17,7 @@ const buildings: ExtendedBuilding[] = Object.entries(buildingCatalogue)
     )
     .map(([id, building]) => ({ id, ...building }));
 
-export type BuildingSelectProps = {
+type BuildingSelectProps = {
     value?: string;
     onChange?: (building?: ExtendedBuilding | null) => unknown;
     variant?: TextFieldProps['variant'];

@@ -9,19 +9,17 @@ import { createEvents, type EventAttributes } from 'ics';
 
 import { notNull } from './utils';
 
-export const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
+const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
 
-export const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
+const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 
-export const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
+const daysOffset: Record<string, number> = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
 
-export const daysOffset: Record<string, number> = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
+const fallDaysOffset: Record<string, number> = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
 
-export const fallDaysOffset: Record<string, number> = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
+const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' };
 
-export const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' };
-
-export const vTimeZoneSection =
+const vTimeZoneSection =
     'BEGIN:VTIMEZONE\n' +
     'TZID:America/Los_Angeles\n' +
     'X-LIC-LOCATION:America/Los_Angeles\n' +
@@ -42,19 +40,19 @@ export const vTimeZoneSection =
     'END:VTIMEZONE\n' +
     'BEGIN:VEVENT';
 
-export const CALENDAR_ID = 'antalmanac/ics';
+const CALENDAR_ID = 'antalmanac/ics';
 
-export const CALENDAR_OUTPUT = 'local' as const;
+const CALENDAR_OUTPUT = 'local' as const;
 
 /**
  * @example [YEAR, MONTH, DAY, HOUR, MINUTE]
  */
-export type DateTimeArray = [number, number, number, number, number];
+type DateTimeArray = [number, number, number, number, number];
 
 /**
  * @example [YEAR, MONTH, DAY]
  */
-export type YearMonthDay = [number, number, number];
+type YearMonthDay = [number, number, number];
 
 /**
  * Get the days that a class occurs.
@@ -62,7 +60,7 @@ export type YearMonthDay = [number, number, number];
  *
  * @example ("TuThF") -> ["TU", "TH", "FR"]
  */
-export function getByDays(days: string): string[] {
+function getByDays(days: string): string[] {
     return daysOfWeek.filter((day) => days.includes(day)).map((day) => translateDaysForIcs[day]);
 }
 
@@ -72,7 +70,7 @@ export function getByDays(days: string): string[] {
  *
  * @example ("2021 Spring", 'Tu') -> [2021, 3, 30]
  */
-export function getClassStartDate(term: string, bydays: string[]) {
+function getClassStartDate(term: string, bydays: string[]) {
     // Get the start date of the quarter (Monday)
     const quarterStartDate = new Date(quarterStartDates[term]);
 
@@ -102,7 +100,7 @@ export function getClassStartDate(term: string, bydays: string[]) {
 /**
  * Convert a Date object to ics format, i.e. [YYYY, MM, DD]
  */
-export function dateToIcs(date: Date) {
+function dateToIcs(date: Date) {
     return [
         date.getFullYear(),
         date.getMonth() + 1, // Add 1 month since it is 0-indexed
@@ -115,11 +113,7 @@ export function dateToIcs(date: Date) {
  *
  * @example ([2021, 3, 30], " 4:00-4:50p") -> [[2021, 3, 30, 16, 0], [2021, 3, 30, 16, 50]]
  */
-export function getFirstClass(
-    date: YearMonthDay,
-    startTime: HourMinute,
-    endTime: HourMinute
-): [DateTimeArray, DateTimeArray] {
+function getFirstClass(date: YearMonthDay, startTime: HourMinute, endTime: HourMinute): [DateTimeArray, DateTimeArray] {
     const [classStartTime, classEndTime] = parseTimes(startTime, endTime);
     return [
         [...date, ...classStartTime],
@@ -155,7 +149,7 @@ export function getFirstClass(
  * // examEnd = [2019, 6, 7, 12, 30]
  * ```
  */
-export function getExamTime(exam: FinalExam, year: number): [DateTimeArray, DateTimeArray] | [] {
+function getExamTime(exam: FinalExam, year: number): [DateTimeArray, DateTimeArray] | [] {
     if (exam.examStatus === 'SCHEDULED_FINAL') {
         const month = exam.month;
         const day = exam.day;
@@ -176,7 +170,7 @@ export function getExamTime(exam: FinalExam, year: number): [DateTimeArray, Date
  *
  * @example { hour: 16, minute: 0}, { hour: 16, minute: 50 } -> [[16, 0], [16, 50]]
  */
-export function parseTimes(startTime: HourMinute, endTime: HourMinute) {
+function parseTimes(startTime: HourMinute, endTime: HourMinute) {
     return [
         [startTime.hour, startTime.minute],
         [endTime.hour, endTime.minute],
@@ -188,7 +182,7 @@ export function parseTimes(startTime: HourMinute, endTime: HourMinute) {
  *
  * @example "2019 Fall" -> "2019"
  */
-export function getYear(term: string) {
+function getYear(term: string) {
     return parseInt(term.split(' ')[0]);
 }
 
@@ -197,7 +191,7 @@ export function getYear(term: string) {
  *
  * @example "2019 Fall" -> "Fall"
  */
-export function getQuarter(term: string) {
+function getQuarter(term: string) {
     return term.split(' ')[1];
 }
 
@@ -206,7 +200,7 @@ export function getQuarter(term: string) {
  *
  * @example 10 for quarters and Summer Session 10wk, 5 for Summer Sessions I and II.
  */
-export function getTermLength(quarter: string) {
+function getTermLength(quarter: string) {
     return quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10;
 }
 
@@ -215,7 +209,7 @@ export function getTermLength(quarter: string) {
  *
  * @example ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
  */
-export function getRRule(bydays: string[], quarter: string) {
+function getRRule(bydays: string[], quarter: string) {
     /**
      * Number of occurrences in the quarter
      */

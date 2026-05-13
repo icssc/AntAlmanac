@@ -1,11 +1,10 @@
+import { addSampleClasses } from '$lib/tourExampleGeneration';
+import { useTabStore } from '$stores/TabStore';
 import { StepType } from '@reactour/tour';
 
 import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from './localStorage';
 
-import { addSampleClasses } from '$lib/tourExampleGeneration';
-import { useTabStore } from '$stores/TabStore';
-
-export enum TourStepName {
+enum TourStepName {
     welcome = 'welcome',
     searchBar = 'searchBar',
     importButton = 'importButton',
@@ -20,7 +19,7 @@ export enum TourStepName {
 }
 
 // Preserves ordering of steps as defined in enum.
-export const tourStepNames = Object.values(TourStepName);
+const tourStepNames = Object.values(TourStepName);
 
 function markTourHasRun() {
     setLocalStorageTourHasRun('true');
@@ -94,7 +93,7 @@ function KbdCard(props: { children?: React.ReactNode }) {
     );
 }
 
-export function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepName, StepType> {
+function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepName, StepType> {
     const setActiveTab = useTabStore.getState().setActiveTab;
 
     const goToNamedStep = (stepName: TourStepName) => {
