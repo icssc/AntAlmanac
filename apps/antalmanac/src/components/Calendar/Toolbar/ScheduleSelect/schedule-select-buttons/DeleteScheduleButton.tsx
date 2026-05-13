@@ -1,16 +1,16 @@
+import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
+import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { Clear as ClearIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
-import AppStore from '$stores/AppStore';
-
 interface DeleteScheduleButtonProps {
     index: number;
-    disabled?: boolean;
 }
 
-export function DeleteScheduleButton({ index, disabled }: DeleteScheduleButtonProps) {
+export function DeleteScheduleButton({ index }: DeleteScheduleButtonProps) {
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {
@@ -28,7 +28,7 @@ export function DeleteScheduleButton({ index, disabled }: DeleteScheduleButtonPr
                     <IconButton
                         onClick={handleOpen}
                         size="small"
-                        disabled={AppStore.schedule.getNumberOfSchedules() === 1 || disabled}
+                        disabled={AppStore.schedule.getNumberOfSchedules() === 1 || fallbackMode}
                     >
                         <ClearIcon />
                     </IconButton>

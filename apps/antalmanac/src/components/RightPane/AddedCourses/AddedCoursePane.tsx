@@ -12,6 +12,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
 import { MenuBook } from '@mui/icons-material';
@@ -89,23 +90,14 @@ function getCourses() {
 }
 
 function CustomEventsBox() {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore();
+    const currentScheduleIndex = AppStore.getCurrentScheduleIndex();
 
     const [customEvents, setCustomEvents] = useState(
-        skeletonMode ? AppStore.getCurrentSkeletonSchedule().customEvents : AppStore.schedule.getCurrentCustomEvents()
+        fallbackMode
+            ? getCurrentFallbackSchedule(currentScheduleIndex).customEvents
+            : AppStore.schedule.getCurrentCustomEvents()
     );
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
 
     useEffect(() => {
         const handleCustomEventsChange = () => {
@@ -145,9 +137,11 @@ function CustomEventsBox() {
 }
 
 function ScheduleNoteBox() {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore();
     const [scheduleNote, setScheduleNote] = useState(
-        skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
+        fallbackMode
+            ? getCurrentFallbackSchedule(AppStore.getCurrentScheduleIndex()).scheduleNote
+            : AppStore.getCurrentScheduleNote()
     );
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
@@ -158,18 +152,6 @@ function ScheduleNoteBox() {
         },
         [scheduleIndex]
     );
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
 
     useEffect(() => {
         const handleScheduleNoteChange = () => {
@@ -202,7 +184,7 @@ function ScheduleNoteBox() {
                 value={scheduleNote}
                 inputProps={{
                     maxLength: SCHEDULE_NOTE_MAX_LENGTH,
-                    style: { cursor: skeletonMode ? 'not-allowed' : 'text' },
+                    style: { cursor: fallbackMode ? 'not-allowed' : 'text' },
                 }}
                 InputLabelProps={{
                     variant: 'filled',
@@ -210,10 +192,10 @@ function ScheduleNoteBox() {
                 InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
-                disabled={skeletonMode}
+                disabled={fallbackMode}
                 sx={{
                     '& .MuiInputBase-root': {
-                        cursor: skeletonMode ? 'not-allowed' : 'text',
+                        cursor: fallbackMode ? 'not-allowed' : 'text',
                     },
                 }}
             />
@@ -221,26 +203,27 @@ function ScheduleNoteBox() {
     );
 }
 
-function SkeletonSchedule() {
-    const [skeletonSchedule, setSkeletonSchedule] = useState(AppStore.getCurrentSkeletonSchedule());
+function FallbackSchedule() {
+    const { getCurrentFallbackSchedule } = useFallbackStore();
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const postHog = usePostHog();
 
     useEffect(() => {
-        const updateSkeletonSchedule = () => {
-            setSkeletonSchedule(AppStore.getCurrentSkeletonSchedule());
+        const handleScheduleIndexChange = () => {
+            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
         };
 
-        AppStore.on('skeletonScheduleChange', updateSkeletonSchedule);
-        AppStore.on('currentScheduleIndexChange', updateSkeletonSchedule);
+        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
 
         return () => {
-            AppStore.off('skeletonScheduleChange', updateSkeletonSchedule);
-            AppStore.off('currentScheduleIndexChange', updateSkeletonSchedule);
+            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
 
+    const fallbackSchedule = getCurrentFallbackSchedule(currentScheduleIndex);
+
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = skeletonSchedule.courses.reduce(
+        const result = fallbackSchedule.courses.reduce(
             (accumulated, course) => {
                 accumulated[course.term] ??= [];
                 accumulated[course.term].push(course.sectionCode);
@@ -250,11 +233,11 @@ function SkeletonSchedule() {
         );
 
         return Object.entries(result);
-    }, [skeletonSchedule.courses]);
+    }, [fallbackSchedule.courses]);
 
     return (
         <Box display="flex" flexDirection="column" gap={1}>
-            <Typography variant="h6">{skeletonSchedule.scheduleName}</Typography>
+            <Typography variant="h6">{fallbackSchedule.scheduleName}</Typography>
             {
                 // Sections organized under terms, in case the schedule contains multiple terms
                 sectionsByTerm.map(([term, sections]) => (
@@ -399,25 +382,15 @@ function AddedSectionsGrid() {
 }
 
 export function AddedCoursePane() {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const postHog = usePostHog();
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,
             action: analyticsEnum.addedClasses.actions.OPEN,
         });
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
     }, [postHog]);
 
-    return <Box>{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
+    return <Box>{fallbackMode ? <FallbackSchedule /> : <AddedSectionsGrid />}</Box>;
 }
