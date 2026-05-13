@@ -279,11 +279,13 @@ export class RDS {
         userId: string,
         schedule: ShortCourseSchedule,
         index: number,
-        existingIds: Set<string>
+        existingIds: Set<string>,
+        existingSharingStatuses: Map<string, boolean>
     ): Promise<{ frontendId: string | undefined; dbId: string }> {
         // Reuse the existing DB ID if this schedule was previously saved by this
         // user. An unrecognized or foreign ID must not be trusted — generate fresh.
         const safeId = schedule.id && existingIds.has(schedule.id) ? schedule.id : undefined;
+        const preservedSharing = safeId !== undefined ? existingSharingStatuses.get(safeId) : undefined;
 
         const result = await tx
             .insert(schedules)
@@ -294,6 +296,7 @@ export class RDS {
                 notes: schedule.scheduleNote,
                 index,
                 lastUpdated: new Date(),
+                sharedWithFriends: preservedSharing ?? true,
             })
             .returning({ id: schedules.id });
 
@@ -328,12 +331,15 @@ export class RDS {
         userId: string,
         scheduleArray: ShortCourseSchedule[]
     ): Promise<Record<string, string>> {
-        // Snapshot existing IDs before deleting so we can validate safeIds below.
+        // Snapshot existing IDs and sharing statuses before deleting so we can
+        // validate safeIds and preserve the user's sharedWithFriends preference
+        // across the delete-then-reinsert cycle below.
         const existingSchedules = await tx
-            .select({ id: schedules.id })
+            .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
             .from(schedules)
             .where(eq(schedules.userId, userId));
         const existingIds = new Set(existingSchedules.map((s) => s.id));
+        const existingSharingStatuses = new Map(existingSchedules.map((s) => [s.id, s.sharedWithFriends]));
 
         // Delete all schedules up-front. Courses and custom events cascade.
         // users.currentScheduleId is set null on delete and updated at the end
@@ -342,7 +348,7 @@ export class RDS {
 
         const results = await Promise.all(
             scheduleArray.map((schedule, index) =>
-                this.insertScheduleAndContents(tx, userId, schedule, index, existingIds)
+                this.insertScheduleAndContents(tx, userId, schedule, index, existingIds, existingSharingStatuses)
             )
         );
 
