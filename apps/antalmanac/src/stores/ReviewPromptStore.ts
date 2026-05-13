@@ -286,7 +286,12 @@ export const useReviewPromptStore = create(
                     toStep('hidden', RESET_STATE);
                     return;
                 }
-                toStep('enrollment-confirm', { ...RESET_STATE, candidate: next, eligibleCandidates, eligibleIndex: nextIndex });
+                toStep('enrollment-confirm', {
+                    ...RESET_STATE,
+                    candidate: next,
+                    eligibleCandidates,
+                    eligibleIndex: nextIndex,
+                });
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
                     action: analyticsEnum.review.actions.REVIEW_ANOTHER_CLICKED,
