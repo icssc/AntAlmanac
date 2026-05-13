@@ -18,7 +18,7 @@ import {
 } from '$lib/localStorage';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
-import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
+import { useHiddenCoursesStore, type VisibilityState } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
@@ -140,7 +140,8 @@ export const ScheduleCalendar = memo(() => {
         return raw.filter((e) => {
             if ('isCustomEvent' in e && e.isCustomEvent) return true;
             if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
-            const visibility = visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? 'visible';
+            const visibility: VisibilityState =
+                visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? 'visible';
             return visibility !== 'disappeared';
         });
     }, [
@@ -201,7 +202,7 @@ export const ScheduleCalendar = memo(() => {
         (event: CalendarEvent | SkeletonEvent) => {
             const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
 
-            const visibility =
+            const visibility: VisibilityState =
                 !isSkeletonEvent && !('isCustomEvent' in event && event.isCustomEvent)
                     ? (visibilityMap[currentScheduleId]?.[(event as CourseEvent).sectionCode] ?? 'visible')
                     : 'visible';

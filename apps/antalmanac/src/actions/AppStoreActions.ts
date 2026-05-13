@@ -16,6 +16,7 @@ import type {
     RepeatingCustomEvent,
     ScheduleCourse,
     ShortCourseSchedule,
+    VisibilityState,
 } from '@packages/antalmanac-types';
 import type { WebsocSection } from '@packages/anteater-api/types';
 import { TRPCClientError } from '@trpc/client';
@@ -91,7 +92,7 @@ function enrichSaveStateWithVisibility(saveState: ReturnType<typeof AppStore.sch
             ...schedule,
             courses: schedule.courses.map((course) => ({
                 ...course,
-                visibility: visibilityMap[schedule.id!]?.[course.sectionCode] ?? 'visible',
+                visibility: visibilityMap[schedule.id!]?.[course.sectionCode] ?? ('visible' satisfies VisibilityState),
             })),
         })),
     };

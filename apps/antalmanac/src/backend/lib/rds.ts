@@ -7,6 +7,7 @@ import type {
     ScheduleSaveState,
     VisibilityState,
 } from '@packages/antalmanac-types';
+import { VISIBILITY_STATES } from '@packages/antalmanac-types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
 import {
@@ -258,7 +259,7 @@ export class RDS {
                     sectionCode,
                     term: course.term,
                     color: course.color,
-                    visibility: course.visibility ?? 'visible',
+                    visibility: course.visibility ?? ('visible' satisfies VisibilityState),
                 });
             }
         }
@@ -431,11 +432,9 @@ export class RDS {
                     sectionCode: course.sectionCode.toString(),
                     term: course.term,
                     color: course.color,
-                    visibility: (['visible', 'outlined', 'disappeared'] as const).includes(
-                        course.visibility as VisibilityState
-                    )
+                    visibility: VISIBILITY_STATES.includes(course.visibility as VisibilityState)
                         ? (course.visibility as VisibilityState)
-                        : 'visible',
+                        : ('visible' satisfies VisibilityState),
                 });
             }
 

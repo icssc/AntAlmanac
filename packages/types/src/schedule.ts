@@ -26,13 +26,14 @@ export type Schedule = {
     scheduleId: string;
 };
 
-export type VisibilityState = 'visible' | 'outlined' | 'disappeared';
+export const VISIBILITY_STATES = ['visible', 'outlined', 'disappeared'] as const;
+export type VisibilityState = (typeof VISIBILITY_STATES)[number];
 
 export const ShortCourseSchema = z.object({
     color: z.string(),
     term: z.string(),
     sectionCode: z.string(),
-    visibility: z.enum(['visible', 'outlined', 'disappeared']),
+    visibility: z.enum(VISIBILITY_STATES),
 });
 export type ShortCourse = z.infer<typeof ShortCourseSchema>;
 
