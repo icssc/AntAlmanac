@@ -3,8 +3,7 @@ import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane'
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { Grades } from '$lib/grades';
-import { WebSOC } from '$lib/websoc';
+import { trpcReact } from '$lib/api/trpcReact';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
@@ -15,6 +14,7 @@ export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
         useCoursePaneStore();
     const postHog = usePostHog();
+    const utils = trpcReact.useUtils();
 
     const handleSearch = useCallback(() => {
         if (!advancedSearchEnabled) {
@@ -38,10 +38,10 @@ export function CoursePaneRoot() {
             category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.REFRESH,
         });
-        WebSOC.clearCache();
-        Grades.clearCache();
+        utils.websoc.invalidate();
+        utils.grades.invalidate();
         forceUpdate();
-    }, [forceUpdate, postHog]);
+    }, [forceUpdate, postHog, utils]);
 
     const handleKeydown = useCallback(
         (event: KeyboardEvent) => {

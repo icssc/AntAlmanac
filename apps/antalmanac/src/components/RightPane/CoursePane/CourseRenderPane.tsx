@@ -9,17 +9,14 @@ import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
-import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import {
     getMultiGeCourseKey,
     getMultiGeOrBannerIdx,
-    gradesGeForManualSearch,
     isMultiGeSelection,
     queryManualSearchCourses,
 } from '$lib/multiGeSearch';
 import { getTermLongName } from '$lib/termData';
-import { WebSOC } from '$lib/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -348,7 +345,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                         }
                     }
                     setUnofferedCourses(unofferedCourses);
-                    websocJsonResp = await WebSOC.queryMultiple(offeredCourses);
+                    websocJsonResp = await trpc.websoc.queryMultiple({ params: offeredCourses });
                     await Promise.all(gradeQueries);
                 } else {
                     const formData = RightPaneStore.getFormData();

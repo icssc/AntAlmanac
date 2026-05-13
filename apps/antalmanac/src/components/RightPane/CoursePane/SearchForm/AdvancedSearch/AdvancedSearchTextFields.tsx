@@ -90,9 +90,7 @@ export function AdvancedSearchTextFields() {
     const { plannerRoadmaps, updateTakenCourses } = usePlannerStore(
         useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, updateTakenCourses: s.updateTakenCourses }))
     );
-    const { sessionIsValid, googleId } = useSessionStore(
-        useShallow((s) => ({ sessionIsValid: s.sessionIsValid, googleId: s.googleId }))
-    );
+    const { sessionIsValid } = useSessionStore(useShallow((s) => ({ sessionIsValid: s.sessionIsValid })));
     const [signInOpen, setSignInOpen] = useState(false);
 
     const syncFieldStates = useCallback(() => {
@@ -217,11 +215,7 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        if (!googleId) {
-            return;
-        }
-
-        updateTakenCourses(googleId, excludeRoadmapCourses);
+        updateTakenCourses(excludeRoadmapCourses);
 
         if (!excludeRoadmapCourses) return;
         if (!plannerRoadmaps || plannerRoadmaps.length === 0) return;
