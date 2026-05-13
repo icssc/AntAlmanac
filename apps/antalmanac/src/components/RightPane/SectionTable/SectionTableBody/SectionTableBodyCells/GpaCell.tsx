@@ -33,7 +33,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
         const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
         if (idx >= 0) {
             const avg = instructorResults[idx].data?.averageGPA;
-            return { gpa: avg ? avg.toFixed(2) : '', instructor: namedInstructors[idx] };
+            return { gpa: avg || avg === 0 ? avg.toFixed(2) : '', instructor: namedInstructors[idx] };
         }
         return { gpa: '', instructor: namedInstructors[0] ?? '' };
     }, [instructorResults, namedInstructors]);
