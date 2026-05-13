@@ -1,4 +1,5 @@
-import { Grades, type GradesProps } from '$lib/grades';
+import { trpcReact } from '$lib/api/trpcReact';
+import { type GradesProps } from '$lib/grades';
 import {
     Box,
     ToggleButton,
@@ -10,7 +11,7 @@ import {
     useTheme,
     Skeleton,
 } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
 
 type GradeView = 'instructor' | 'overall';
@@ -24,38 +25,21 @@ interface GradeData {
     totalGrades: number;
 }
 
-async function getGradeData(
-    deptCode: string,
-    courseNumber: string,
-    instructor: string
-): Promise<GradeData | undefined> {
-    const courseGrades = await Grades.queryGrades(deptCode, courseNumber, instructor, false).catch((e) => {
-        console.error(e);
-        return undefined;
-    });
-
+function toGradeData(courseGrades: GradesProps | null | undefined): GradeData | undefined {
     if (!courseGrades) {
         return undefined;
     }
 
-    const totalGrades = Object.values(Object.entries(courseGrades).filter(([key]) => key !== 'averageGPA')).reduce(
-        (acc, [_, value]) => acc + value,
-        0
-    );
+    const totalGrades = Object.entries(courseGrades)
+        .filter(([key]) => key !== 'averageGPA')
+        .reduce((acc, [, value]) => acc + (value as number), 0);
 
-    /**
-     * Format data for displaying in chart.
-     *
-     * @example { gradeACount: 10, gradeBCount: 20 }
-     */
     const grades = Object.entries(courseGrades)
         .filter(([key]) => key !== 'averageGPA')
-        .map(([key, value]) => {
-            return {
-                name: key.replace('grade', '').replace('Count', ''),
-                all: Number(((value / totalGrades) * 100).toFixed(2)),
-            };
-        });
+        .map(([key, value]) => ({
+            name: key.replace('grade', '').replace('Count', ''),
+            all: Number((((value as number) / totalGrades) * 100).toFixed(2)),
+        }));
 
     return { grades, courseGrades, totalGrades };
 }
@@ -73,14 +57,24 @@ export function GradesPopover(props: GradesPopoverProps) {
 
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
 
-    const [loading, setLoading] = useState(true);
+    const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGrades.useQuery(
+        { department: deptCode, courseNumber, instructor: '' },
+        { select: (data) => data?.gradeDistribution ?? null }
+    );
+    const { data: instructorGrades, isLoading: instructorLoading } = trpcReact.grades.aggregateGrades.useQuery(
+        { department: deptCode, courseNumber, instructor },
+        { select: (data) => data?.gradeDistribution ?? null, enabled: !!instructor }
+    );
 
-    const [instructorData, setInstructorData] = useState<GradeData>();
-    const [overallData, setOverallData] = useState<GradeData>();
+    const loading = overallLoading || (!!instructor && instructorLoading);
+
     const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
 
     const width = isMobile ? 280 : 400;
     const height = isMobile ? 180 : 240;
+
+    const overallData = useMemo(() => toGradeData(overallGrades), [overallGrades]);
+    const instructorData = useMemo(() => toGradeData(instructorGrades), [instructorGrades]);
 
     const activeData = view === 'instructor' ? instructorData : overallData;
     const hasData = activeData?.grades.some((g) => g.all > 0);
@@ -95,28 +89,6 @@ export function GradesPopover(props: GradesPopoverProps) {
             setView(newView);
         }
     };
-
-    useEffect(() => {
-        if (loading === false) {
-            return;
-        }
-
-        const fetches: Promise<unknown>[] = [
-            getGradeData(deptCode, courseNumber, '').then((result) => {
-                if (result) setOverallData(result);
-            }),
-        ];
-
-        if (instructor) {
-            fetches.push(
-                getGradeData(deptCode, courseNumber, instructor).then((result) => {
-                    if (result) setInstructorData(result);
-                })
-            );
-        }
-
-        Promise.all(fetches).finally(() => setLoading(false));
-    }, [loading, deptCode, courseNumber, instructor]);
 
     return (
         <Card>
