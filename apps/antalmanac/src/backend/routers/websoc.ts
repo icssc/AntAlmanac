@@ -1,4 +1,4 @@
-import { parseTermShortName } from '$lib/term-constants';
+import { parseTermShortName } from '$lib/term';
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import type { CourseInfo } from '@packages/antalmanac-types';
 import type {

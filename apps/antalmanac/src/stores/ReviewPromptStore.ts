@@ -1,6 +1,6 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
-import { termData } from '$lib/termData';
+import { termData } from '$lib/term';
 import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';

@@ -1,5 +1,5 @@
 import trpc from '$lib/api/trpc';
-import { getDefaultTerm } from '$lib/termData';
+import { getDefaultTerm } from '$lib/term';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type {
     Schedule,

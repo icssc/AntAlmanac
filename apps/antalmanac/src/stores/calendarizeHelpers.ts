@@ -1,5 +1,5 @@
 import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { getFinalsStartDateForTerm } from '$lib/termData';
+import { getFinalsStartDateForTerm } from '$lib/term';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import type { HourMinute, WebsocSectionFinalExam } from '@packages/anteater-api/types';

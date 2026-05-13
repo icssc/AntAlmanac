@@ -1,7 +1,6 @@
 import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import { parseTermShortName } from '$lib/term-constants';
-import { getDefaultTerm, termData } from '$lib/termData';
+import { getDefaultTerm, parseTermShortName, termData } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type { HourMinute } from '@packages/anteater-api/types';

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { canTermEnrollmentChange, termData } from '$lib/termData';
+import { canTermEnrollmentChange, termData } from '$lib/term';
 import type { CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';

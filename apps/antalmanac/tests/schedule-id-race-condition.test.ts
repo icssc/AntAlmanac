@@ -26,7 +26,7 @@ vi.mock('@paralleldrive/cuid2', () => ({
 }));
 
 // termData touches the DOM / fetch for term filtering; stub it out.
-vi.mock('$lib/termData', () => ({
+vi.mock('$lib/term', () => ({
     getDefaultTerm: () => ({ shortName: 'Fall 2024' }),
     getDefaultFinalsStartDate: () => new Date(),
     getFinalsStartDateForTerm: () => new Date(),

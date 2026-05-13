@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
-import { parseTermShortName } from '$lib/term-constants';
+import { parseTermShortName } from '$lib/term';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';

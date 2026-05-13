@@ -16,7 +16,7 @@ import {
     isMultiGeSelection,
     queryManualSearchCourses,
 } from '$lib/multiGeSearch';
-import { getTermLongName } from '$lib/termData';
+import { getTermLongName } from '$lib/term';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';

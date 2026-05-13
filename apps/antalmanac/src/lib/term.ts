@@ -1,20 +1,43 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
-import { isSummerQuarter, QUARTER_LONG_NAMES, QuarterSchema, type Quarter } from '$lib/term-constants';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
 
-export type { Quarter } from '$lib/term-constants';
-export {
-    buildTermShortName,
-    isSummerQuarter,
-    parseTermShortName,
-    QUARTER_LONG_NAMES,
-    QUARTERS,
-    QuarterSchema,
-    REGULAR_QUARTERS,
-    SUMMER_QUARTERS,
-} from '$lib/term-constants';
+export const REGULAR_QUARTERS = ['Fall', 'Winter', 'Spring'] as const;
+export const SUMMER_QUARTERS = ['Summer1', 'Summer2', 'Summer10wk'] as const;
+export const QUARTERS = [...REGULAR_QUARTERS, ...SUMMER_QUARTERS] as const;
+
+export type Quarter = (typeof QUARTERS)[number];
+export const QuarterSchema = z.enum(QUARTERS);
+
+export const QUARTER_LONG_NAMES = {
+    Fall: 'Fall Quarter',
+    Winter: 'Winter Quarter',
+    Spring: 'Spring Quarter',
+    Summer1: 'Summer Session 1',
+    Summer2: 'Summer Session 2',
+    Summer10wk: '10-wk Summer',
+} as const satisfies Record<Quarter, string>;
+
+export function isSummerQuarter(quarter: Quarter): boolean {
+    return (SUMMER_QUARTERS as readonly string[]).includes(quarter);
+}
+
+export function buildTermShortName(year: string | number, quarter: Quarter): `${string} ${Quarter}` {
+    return `${year} ${quarter}`;
+}
+
+/**
+ * Parses a term short name (e.g. `"2024 Fall"`) into `{ year, quarter }`.
+ * Returns `null` for unrecognised quarter tokens instead of throwing.
+ */
+export function parseTermShortName(term: string): { year: string; quarter: Quarter } | null {
+    const spaceIdx = term.indexOf(' ');
+    if (spaceIdx === -1) return null;
+    const result = QuarterSchema.safeParse(term.slice(spaceIdx + 1));
+    if (!result.success) return null;
+    return { year: term.slice(0, spaceIdx), quarter: result.data };
+}
 
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
@@ -65,13 +88,13 @@ const termSchema = z
 
 const terms: Term[] = z.array(termSchema).parse(termJson);
 
-const termData = terms.filter((term) => term.socAvailable <= new Date());
+export const termData = terms.filter((term) => term.socAvailable <= new Date());
 
-const defaultTerm = termData.findIndex((term) => !term.isSummerTerm);
+export const defaultTerm = termData.findIndex((term) => !term.isSummerTerm);
 
 const openEnrollmentTerms = getOpenEnrollmentTerms();
 
-function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
+export function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
     let term = termData[defaultTerm];
 
     for (const event of events) {
@@ -87,11 +110,11 @@ function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
     return term;
 }
 
-function getDefaultFinalsStartDate() {
+export function getDefaultFinalsStartDate() {
     return new Date(termData[defaultTerm].finalsStart);
 }
 
-function getFinalsStartDateForTerm(term: string) {
+export function getFinalsStartDateForTerm(term: string) {
     const termThatMatches = termData.find((t) => t.shortName === term);
     if (termThatMatches === undefined) {
         console.warn(`No matching term for ${term}`);
@@ -101,7 +124,7 @@ function getFinalsStartDateForTerm(term: string) {
     return new Date(termThatMatches.finalsStart);
 }
 
-function getCurrentTerm(): { year: number; quarter: string } {
+export function getCurrentTerm(): { year: number; quarter: string } {
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
@@ -164,5 +187,3 @@ function isTermEnrollmentOpen(term: Term): boolean {
 export function isTermAvailable(termShortName: string) {
     return termData.find((term) => term.shortName === termShortName) !== undefined;
 }
-
-export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm, getCurrentTerm };

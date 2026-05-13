@@ -6,7 +6,7 @@ import {
     ManualSearchParam,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { normalizeGeSelection } from '$lib/multiGeSearch';
-import { getDefaultTerm, isTermAvailable, parseTermShortName } from '$lib/termData';
+import { getDefaultTerm, isTermAvailable, parseTermShortName } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
 
 const defaultBasicSearchValues: Record<BasicSearchParam, string> = {

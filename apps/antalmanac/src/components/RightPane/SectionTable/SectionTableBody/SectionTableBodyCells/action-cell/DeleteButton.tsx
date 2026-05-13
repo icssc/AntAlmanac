@@ -1,6 +1,6 @@
 import { deleteCourse } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { Term } from '$lib/termData';
+import { Term } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { Delete } from '@mui/icons-material';
 import { IconButton } from '@mui/material';

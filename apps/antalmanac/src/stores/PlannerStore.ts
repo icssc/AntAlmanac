@@ -1,6 +1,6 @@
 import trpc from '$lib/api/trpc';
 import { QUARTER_ORDER_IN_YEAR } from '$lib/helpers';
-import { getCurrentTerm } from '$lib/termData';
+import { getCurrentTerm } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';

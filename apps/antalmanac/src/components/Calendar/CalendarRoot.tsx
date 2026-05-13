@@ -16,7 +16,7 @@ import {
     removeLocalStorageSkeletonBlueprint,
     setLocalStorageSkeletonBlueprint,
 } from '$lib/localStorage';
-import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
+import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';

@@ -1,4 +1,4 @@
-import { parseTermShortName } from '$lib/term-constants';
+import { parseTermShortName } from '$lib/term';
 import type {
     ShortCourse,
     ShortCourseSchedule,

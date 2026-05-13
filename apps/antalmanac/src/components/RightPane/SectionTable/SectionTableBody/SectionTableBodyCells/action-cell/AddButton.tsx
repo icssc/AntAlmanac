@@ -1,5 +1,5 @@
 import { addCourse } from '$actions/AppStoreActions';
-import { Term } from '$lib/termData';
+import { Term } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Add } from '@mui/icons-material';
