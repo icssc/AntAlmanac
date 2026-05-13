@@ -2,7 +2,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { AuthAdditionalData, Provider } from '$lib/auth/authTypes';
-import { getIcsscProviderName } from '$lib/auth/authUtils';
+import { getProviderIcsscName } from '$lib/auth/authUtils';
 import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { getErrorMessage } from '$lib/utils';
@@ -10,6 +10,11 @@ import type { auth, AuthorizationUrlParams } from '$src/lib/auth/auth';
 import { genericOAuthClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import { PostHog } from 'posthog-js';
+
+interface GetSignInUrlOptions {
+    authorizationUrlParams?: AuthorizationUrlParams;
+    redirectUrl?: string;
+}
 
 interface SignOutOptions {
     onLogoutComplete?: () => void;
@@ -21,11 +26,6 @@ export const authClient = createAuthClient({
 });
 
 export type SessionData = typeof authClient.$Infer.Session;
-
-interface GetSignInUrlOptions {
-    authorizationUrlParams?: AuthorizationUrlParams;
-    redirectUrl?: string;
-}
 
 export async function getSignInUrl(
     provider: Provider,
@@ -47,7 +47,7 @@ export async function getSignInUrl(
     for (const [key, val] of Object.entries(authorizationUrlParams ?? {})) {
         authUrl.searchParams.set(key, val);
     }
-    authUrl.searchParams.set('provider', getIcsscProviderName(provider));
+    authUrl.searchParams.set('provider', getProviderIcsscName(provider));
     return { url: authUrl.toString() };
 }
 

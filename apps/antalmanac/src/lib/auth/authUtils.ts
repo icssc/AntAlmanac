@@ -54,7 +54,7 @@ export function getProviderDisplayName(provider: Provider) {
     }
 }
 
-export function getIcsscProviderName(provider: Provider) {
+export function getProviderIcsscName(provider: Provider) {
     switch (provider) {
         case Provider.Google:
             return 'google';
