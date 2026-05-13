@@ -39,23 +39,8 @@ export function parseTermShortName(term: string): { year: string; quarter: Quart
     return { year: term.slice(0, spaceIdx), quarter: result.data };
 }
 
-/**
- * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
- * Quick Reference Ten Year Calendar {@link https://www.reg.uci.edu/calendars/academic/tenyr-19-29.html}
- */
-export type Term = {
-    year: string;
-    quarter: Quarter;
-    shortName: `${string} ${Quarter}`;
-    longName: string;
-    instructionStart: Date;
-    instructionEnd: Date;
-    finalsStart: Date;
-    finalsEnd: Date;
-    socAvailable: Date;
-    isSummerTerm: boolean;
-};
-
+// Parses "YYYY-MM-DD" as local midnight — new Date(str) would give UTC midnight,
+// which shifts the date backward in negative-offset timezones (e.g. LA at UTC-8).
 function parseLocalDate(dateStr: string): Date {
     const [year, month, day] = dateStr.split('-').map(Number);
     return new Date(year, month - 1, day);
@@ -71,22 +56,26 @@ const termSchema = z
         finalsEnd: z.string().date(),
         socAvailable: z.string().date(),
     })
-    .transform(
-        ({ year, quarter, instructionStart, instructionEnd, finalsStart, finalsEnd, socAvailable }): Term => ({
-            year,
-            quarter,
-            shortName: `${year} ${quarter}`,
-            longName: `${year} ${QUARTER_LONG_NAMES[quarter]}`,
-            instructionStart: parseLocalDate(instructionStart),
-            instructionEnd: parseLocalDate(instructionEnd),
-            finalsStart: parseLocalDate(finalsStart),
-            finalsEnd: parseLocalDate(finalsEnd),
-            socAvailable: parseLocalDate(socAvailable),
-            isSummerTerm: isSummerQuarter(quarter),
-        })
-    );
+    .transform(({ year, quarter, instructionStart, instructionEnd, finalsStart, finalsEnd, socAvailable }) => ({
+        year,
+        quarter,
+        shortName: buildTermShortName(year, quarter),
+        longName: `${year} ${QUARTER_LONG_NAMES[quarter]}`,
+        instructionStart: parseLocalDate(instructionStart),
+        instructionEnd: parseLocalDate(instructionEnd),
+        finalsStart: parseLocalDate(finalsStart),
+        finalsEnd: parseLocalDate(finalsEnd),
+        socAvailable: parseLocalDate(socAvailable),
+        isSummerTerm: isSummerQuarter(quarter),
+    }));
 
-const terms: Term[] = z.array(termSchema).parse(termJson);
+/**
+ * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
+ * Quick Reference Ten Year Calendar {@link https://www.reg.uci.edu/calendars/academic/tenyr-19-29.html}
+ */
+export type Term = z.infer<typeof termSchema>;
+
+const terms = z.array(termSchema).parse(termJson);
 
 export const termData = terms.filter((term) => term.socAvailable <= new Date());
 

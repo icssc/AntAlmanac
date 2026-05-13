@@ -1,34 +1,20 @@
 import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
 
-import { termData } from './termData';
+export type EnrollmentHistory = EnrollmentHistoryEntry & {
+    days: {
+        date: string;
+        totalEnrolled: number;
+        maxCapacity: number;
+        waitlist: number | null;
+    }[];
+};
 
-export interface EnrollmentHistory {
-    year: string;
-    quarter: string;
-    department: string;
-    courseNumber: string;
-    sectionCode: string;
-    days: EnrollmentHistoryDay[];
-    instructors: string[];
-}
-
-export interface EnrollmentHistoryDay {
-    date: string;
-    totalEnrolled: number;
-    maxCapacity: number;
-    waitlist: number | null;
-}
-
-const termShortNames = termData.map((term) => term.shortName);
+// Calendar-year order within a year: Winter < Spring < Summer1 ≈ Summer10wk < Summer2 < Fall
+const QUARTER_ORDER = { Winter: 0, Spring: 1, Summer1: 2, Summer10wk: 2, Summer2: 3, Fall: 4 } as const;
 
 export function parseAndSortEnrollmentHistory(res: EnrollmentHistoryEntry[]): EnrollmentHistory[] {
     const parsed: EnrollmentHistory[] = res.map((entry) => ({
-        year: entry.year,
-        quarter: entry.quarter,
-        department: entry.department,
-        courseNumber: entry.courseNumber,
-        sectionCode: entry.sectionCode,
-        instructors: entry.instructors,
+        ...entry,
         days: entry.dates.map((dateString, i) => ({
             date: new Date(dateString).toLocaleDateString(),
             totalEnrolled: Number(entry.totalEnrolledHistory[i]),
@@ -37,10 +23,13 @@ export function parseAndSortEnrollmentHistory(res: EnrollmentHistoryEntry[]): En
         })),
     }));
 
-    type ShortName = (typeof termShortNames)[number];
     return parsed.sort((a, b) => {
-        const aTerm = `${a.year} ${a.quarter}` as ShortName;
-        const bTerm = `${b.year} ${b.quarter}` as ShortName;
-        return termShortNames.indexOf(bTerm) - termShortNames.indexOf(aTerm);
+        const yearDiff = Number(b.year) - Number(a.year);
+
+        if (yearDiff !== 0) {
+            return yearDiff;
+        }
+
+        return QUARTER_ORDER[b.quarter] - QUARTER_ORDER[a.quarter];
     });
 }
