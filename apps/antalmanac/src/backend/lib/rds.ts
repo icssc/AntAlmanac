@@ -1,3 +1,4 @@
+import { parseTermShortName } from '$lib/term-constants';
 import type {
     ShortCourse,
     ShortCourseSchedule,
@@ -656,13 +657,15 @@ export class RDS {
         notification: Notification,
         environment: string
     ) {
+        const termParts = parseTermShortName(notification.term);
+        if (!termParts) throw new Error(`Invalid term format: "${notification.term}"`);
         return db
             .insert(subscriptions)
             .values({
                 userId,
                 sectionCode: notification.sectionCode,
-                year: notification.term.split(' ')[0],
-                quarter: notification.term.split(' ')[1],
+                year: termParts.year,
+                quarter: termParts.quarter,
                 notifyOnOpen: notification.notifyOn.notifyOnOpen,
                 notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
                 notifyOnFull: notification.notifyOn.notifyOnFull,
@@ -706,6 +709,8 @@ export class RDS {
      * @returns A promise that updates ALL notifications with a shared sectionCode, year, quarter, and environment.
      */
     static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, environment: string) {
+        const termParts = parseTermShortName(notification.term);
+        if (!termParts) throw new Error(`Invalid term format: "${notification.term}"`);
         return db
             .update(subscriptions)
             .set({
@@ -715,8 +720,8 @@ export class RDS {
             .where(
                 and(
                     eq(subscriptions.sectionCode, notification.sectionCode),
-                    eq(subscriptions.year, notification.term.split(' ')[0]),
-                    eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                    eq(subscriptions.year, termParts.year),
+                    eq(subscriptions.quarter, termParts.quarter),
                     eq(subscriptions.environment, environment)
                 )
             );
@@ -738,14 +743,16 @@ export class RDS {
         term: string,
         environment: string
     ) {
+        const termParts = parseTermShortName(term);
+        if (!termParts) throw new Error(`Invalid term format: "${term}"`);
         return db
             .delete(subscriptions)
             .where(
                 and(
                     eq(subscriptions.userId, userId),
                     eq(subscriptions.sectionCode, sectionCode),
-                    eq(subscriptions.year, term.split(' ')[0]),
-                    eq(subscriptions.quarter, term.split(' ')[1]),
+                    eq(subscriptions.year, termParts.year),
+                    eq(subscriptions.quarter, termParts.quarter),
                     eq(subscriptions.environment, environment)
                 )
             );

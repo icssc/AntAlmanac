@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
+import { parseTermShortName } from '$lib/term-constants';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
@@ -92,7 +93,9 @@ const searchRouter = router({
         .input(z.object({ query: z.string(), term: z.string() }))
         .query(async ({ input }): Promise<Record<string, SearchResult>> => {
             const { query } = input;
-            const [year, quarter] = input.term.split(' ');
+            const parsed = parseTermShortName(input.term);
+            if (!parsed) throw new Error(`Invalid term: "${input.term}"`);
+            const { year, quarter } = parsed;
 
             const termSectionCodes = await getTermSectionCodes(year, quarter);
 

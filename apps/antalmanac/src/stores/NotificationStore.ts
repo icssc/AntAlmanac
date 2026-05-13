@@ -1,5 +1,6 @@
 import trpc from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
+import { buildTermShortName, parseTermShortName, type Quarter } from '$lib/term-constants';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
 import { type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
@@ -170,7 +171,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
                 for (const notification of existingNotifications) {
                     const { year, quarter, sectionCode } = notification;
-                    const term = year + ' ' + quarter;
+                    const term = buildTermShortName(year, quarter as Quarter);
 
                     if (term in courseDict) {
                         courseDict[term].add(sectionCode.toString());
@@ -198,11 +199,13 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                         const course = courseInfo[sectionCode];
                         const key = sectionCode + ' ' + term;
 
+                        const termParts = parseTermShortName(term);
                         const existingNotification = existingNotifications.find(
                             (notification: RawNotification) =>
                                 notification.sectionCode === sectionCode &&
-                                notification.year === term.split(' ')[0] &&
-                                notification.quarter === term.split(' ')[1]
+                                termParts !== null &&
+                                notification.year === termParts.year &&
+                                notification.quarter === termParts.quarter
                         );
 
                         if (existingNotification) {

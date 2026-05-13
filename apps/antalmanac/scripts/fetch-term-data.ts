@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';
 
+import { isSummerQuarter, QUARTER_LONG_NAMES, QuarterSchema } from '$lib/term-constants';
 import { createClient } from '@packages/anteater-api/client';
 import type { CalendarTerm } from '@packages/anteater-api/types';
 
@@ -8,29 +9,19 @@ import { GENERATED_DIR, TERM_DATA_FILE } from './lib/paths.js';
 
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
-const QUARTER_MAP = {
-    Summer1: 'Summer Session 1',
-    Summer10wk: '10-wk Summer',
-    Summer2: 'Summer Session 2',
-    Fall: 'Fall Quarter',
-    Winter: 'Winter Quarter',
-    Spring: 'Spring Quarter',
-} as const;
-
-function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${string} ${string}` {
-    return `${year} ${QUARTER_MAP[quarter]}`;
-}
-
 function serializeTerm(term: CalendarTerm) {
-    const { year, quarter, instructionStart, finalsStart, socAvailable } = term;
+    const { year, quarter: rawQuarter, instructionStart, finalsStart, socAvailable } = term;
 
     if (!instructionStart || !finalsStart || !socAvailable) {
-        throw new Error(`Term ${year} ${quarter} is missing required date fields`);
+        throw new Error(`Term ${year} ${rawQuarter} is missing required date fields`);
     }
 
+    // Validate the quarter against the 6 known values defined in term-constants.ts.
+    // A ZodError here means the Anteater API returned an unrecognised quarter token.
+    const quarter = QuarterSchema.parse(rawQuarter);
+
     const shortName = `${year} ${quarter}`;
-    const longName = sanitizeTermName(year, quarter);
-    const isSummerTerm = quarter.toLowerCase().includes('summer');
+    const longName = `${year} ${QUARTER_LONG_NAMES[quarter]}`;
 
     return {
         shortName,
@@ -38,7 +29,7 @@ function serializeTerm(term: CalendarTerm) {
         startDate: instructionStart,
         finalsStartDate: finalsStart,
         socAvailable,
-        isSummerTerm,
+        isSummerTerm: isSummerQuarter(quarter),
     };
 }
 

@@ -1,5 +1,6 @@
 import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
+import { parseTermShortName } from '$lib/term-constants';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -80,7 +81,7 @@ function getClassStartDate(term: string, bydays: string[]) {
     // Since Fall quarter starts on a Thursday,
     // the first byday and offset will be different from other quarters.
     // Sort by this ordering: [TH, FR, SA, SU, MO, TU, WE]
-    if (getQuarter(term) === 'Fall') {
+    if (getTermQuarter(term) === 'Fall') {
         bydays.sort((day1, day2) => {
             return fallDaysOffset[day1] - fallDaysOffset[day2];
         });
@@ -178,21 +179,21 @@ function parseTimes(startTime: HourMinute, endTime: HourMinute) {
 }
 
 /**
- * Get the year of a given term.
+ * Get the year of a given term as an integer.
  *
- * @example "2019 Fall" -> "2019"
+ * @example getTermYear("2019 Fall") // 2019
  */
-function getYear(term: string) {
-    return parseInt(term.split(' ')[0]);
+function getTermYear(term: string): number {
+    return parseInt(parseTermShortName(term)?.year ?? term.split(' ')[0]);
 }
 
 /**
- * Get the quarter of a given term.
+ * Get the quarter token of a given term.
  *
- * @example "2019 Fall" -> "Fall"
+ * @example getTermQuarter("2019 Fall") // "Fall"
  */
-function getQuarter(term: string) {
-    return term.split(' ')[1];
+function getTermQuarter(term: string): string {
+    return parseTermShortName(term)?.quarter ?? term.split(' ')[1];
 }
 
 /**
@@ -254,7 +255,7 @@ export function getEventsFromCourses(
             const term = _term ?? getDefaultTerm(events).shortName;
             const { title, start, end, building } = event as CustomEvent;
             const days = getByDays(event.days.join(''));
-            const rrule = getRRule(days, getQuarter(term));
+            const rrule = getRRule(days, getTermQuarter(term));
             const eventStartDate = getClassStartDate(term, days);
             const [firstClassStart, firstClassEnd] = getFirstClass(
                 eventStartDate,
@@ -286,7 +287,7 @@ export function getEventsFromCourses(
                     }
                     const days = getByDays(location.days);
 
-                    const [finalStart, finalEnd] = getExamTime(finalExam, getYear(term));
+                    const [finalStart, finalEnd] = getExamTime(finalExam, getTermYear(term));
 
                     if (sectionType === 'Fin' && finalStart && finalEnd) {
                         return {
@@ -307,7 +308,7 @@ export function getEventsFromCourses(
                             { hour: end.getHours(), minute: end.getMinutes() }
                         );
 
-                        const rrule = getRRule(days, getQuarter(term));
+                        const rrule = getRRule(days, getTermQuarter(term));
 
                         // Add VEvent to events array.
                         return {

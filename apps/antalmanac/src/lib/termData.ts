@@ -1,7 +1,21 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
+import { parseTermShortName, QUARTERS, type Quarter } from '$lib/term-constants';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
+
+// Re-export all term constants so callers only need to import from this module.
+export type { Quarter } from '$lib/term-constants';
+export {
+    buildTermShortName,
+    isSummerQuarter,
+    parseTermShortName,
+    QUARTER_LONG_NAMES,
+    QUARTERS,
+    QuarterSchema,
+    REGULAR_QUARTERS,
+    SUMMER_QUARTERS,
+} from '$lib/term-constants';
 
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
@@ -10,7 +24,7 @@ import { z } from 'zod';
  * The `finalsStartDate`, if available, should correspond to the __final exams__ first date (should be a Saturday)
  */
 export type Term = {
-    shortName: `${string} ${string}`;
+    shortName: `${string} ${Quarter}`;
     longName: string;
     startDate: Date;
     finalsStartDate: Date;
@@ -28,11 +42,22 @@ function parseLocalDate(dateStr: string): Date {
     return new Date(year, month - 1, day);
 }
 
+/**
+ * Zod schema for a single term entry in termData.json.
+ *
+ * The quarter segment of `shortName` is validated against the 6 known {@link Quarter} values
+ * defined in `term-constants.ts`, so any unrecognised quarter emitted by the data-generation
+ * script will be caught here at startup rather than silently propagated.
+ */
 const termSchema = z
     .object({
-        shortName: z.string().refine((s): s is `${string} ${string}` => s.includes(' '), {
-            message: 'shortName must be "<year> <quarter>"',
-        }),
+        shortName: z.string().refine(
+            (s): s is `${string} ${Quarter}` => {
+                const parsed = parseTermShortName(s);
+                return parsed !== null;
+            },
+            { message: 'shortName must be "<year> <validQuarter>" (one of: ' + QUARTERS.join(', ') + ')' }
+        ),
         longName: z.string(),
         startDate: z.string().date(),
         finalsStartDate: z.string().date(),

@@ -1,3 +1,4 @@
+import { parseTermShortName } from '$lib/term-constants';
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import type { CourseInfo } from '@packages/antalmanac-types';
 import type {
@@ -16,11 +17,11 @@ type WebsocQueryParams = Parameters<typeof aapiClient.websoc.query>[0];
 function sanitizeWebsocParams(params: Record<string, string>): WebsocQueryParams {
     const p = { ...params };
     if ('term' in p) {
-        const [year, quarter] = p.term.split(' ');
+        const parsed = parseTermShortName(p.term);
         delete p.term;
-        if (year && quarter) {
-            p.year = year;
-            p.quarter = quarter;
+        if (parsed) {
+            p.year = parsed.year;
+            p.quarter = parsed.quarter;
         }
     }
     if ('department' in p) {
