@@ -1,8 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTablePopover/EnrollmentHistoryPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { trpcReact } from '$lib/api/trpcReact';
-import { parseAndSortEnrollmentHistory } from '$lib/enrollmentHistory';
 import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/anteater-api/types';
 import { useCallback, useMemo, useState } from 'react';
@@ -49,12 +47,6 @@ export const EnrollmentCell = ({
     const showTooltip = !isMobile && formattedTime;
 
     const [anchorEl, setAnchorEl] = useState<Element>();
-    const popoverOpen = Boolean(anchorEl);
-
-    const { data: enrollmentHistory, isLoading: loadingEnrollmentHistory } = trpcReact.enrollHist.get.useQuery(
-        { department: deptCode, courseNumber, sectionType },
-        { select: parseAndSortEnrollmentHistory, enabled: popoverOpen }
-    );
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl((current) => (current ? undefined : event.currentTarget));
@@ -103,7 +95,7 @@ export const EnrollmentCell = ({
             </Box>
 
             <Popover
-                open={popoverOpen}
+                open={Boolean(anchorEl)}
                 onClose={hideEnrollmentHistory}
                 anchorEl={anchorEl}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -114,8 +106,6 @@ export const EnrollmentCell = ({
                     courseNumber={courseNumber}
                     term={term}
                     sectionCode={sectionCode}
-                    enrollmentHistory={enrollmentHistory}
-                    loading={loadingEnrollmentHistory}
                 />
             </Popover>
         </TableBodyCellContainer>
