@@ -30,11 +30,7 @@ export function AutoSignIn() {
                 return;
             }
 
-            try {
-                loginUser(Provider.Google, { silent: true });
-            } catch {
-                // Silent SSO failed (e.g. backend unavailable). Don't retry.
-            }
+            loginUser(Provider.Google, { silent: true });
         };
 
         checkAndSignIn();
