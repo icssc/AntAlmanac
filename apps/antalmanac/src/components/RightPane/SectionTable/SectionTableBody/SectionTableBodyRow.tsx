@@ -1,3 +1,5 @@
+import { changeCourseColor } from '$actions/AppStoreActions';
+import { SectionRowColorStrip } from '$components/RightPane/SectionTable/SectionTableBody/SectionRowColorStrip';
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { EnrollmentCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell';
@@ -8,16 +10,27 @@ import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTabl
 import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
-import { TableRow, useTheme } from '@mui/material';
+import { Popover, PopoverProps, TableRow, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { SketchPicker } from 'react-color';
 
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
+
+function getSectionScheduleColor(section: AASection, term: string): string {
+    return (
+        AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term)?.section.color ??
+        section.color ??
+        '#5ec8e0'
+    );
+}
 
 interface SectionTableBodyRowProps {
     section: AASection;
@@ -59,6 +72,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     } = props;
 
     const theme = useTheme();
+    const isMobile = useIsMobile();
     const isDark = useThemeStore((store) => store.isDark);
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
@@ -68,11 +82,19 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
     );
 
-    // Stable references to event listeners will synchronize React state with the store.
+    const [currColor, setCurrColor] = useState(() => getSectionScheduleColor(section, term));
+    const [colorPopoverAnchorEl, setColorPopoverAnchorEl] = useState<PopoverProps['anchorEl']>(null);
 
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
     }, [section.sectionCode, term]);
+
+    const updateColorFromSchedule = useCallback(() => {
+        setCurrColor(getSectionScheduleColor(section, term));
+    }, [section.sectionCode, section.color, term]);
+    const updateColorFromPicker = useCallback((newColor: string) => {
+        setCurrColor(newColor);
+    }, []);
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
@@ -86,6 +108,22 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         setHoveredEvent(undefined);
     }, [setHoveredEvent]);
 
+    const handleColorStripOpenPicker = useCallback((anchorEl: HTMLElement) => {
+        setColorPopoverAnchorEl((prev) => (prev === anchorEl ? null : anchorEl));
+    }, []);
+
+    const handleColorPopoverClose = useCallback(() => {
+        setColorPopoverAnchorEl(null);
+    }, []);
+
+    const handleColorChange = useCallback(
+        (newColor: { hex: string }) => {
+            setCurrColor(newColor.hex);
+            changeCourseColor(section.sectionCode, term, newColor.hex);
+        },
+        [section.sectionCode, term]
+    );
+
     // Attach event listeners to the store.
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateHighlight);
@@ -96,6 +134,32 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
         };
     }, [updateHighlight]);
+
+    useEffect(() => {
+        setCurrColor(getSectionScheduleColor(section, term));
+    }, [section.sectionCode, section.color, term]);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateColorFromSchedule);
+        AppStore.on('colorChange', updateColorFromSchedule);
+        AppStore.on('currentScheduleIndexChange', updateColorFromSchedule);
+
+        return () => {
+            AppStore.removeListener('addedCoursesChange', updateColorFromSchedule);
+            AppStore.removeListener('colorChange', updateColorFromSchedule);
+            AppStore.removeListener('currentScheduleIndexChange', updateColorFromSchedule);
+        };
+    }, [updateColorFromSchedule]);
+
+    useEffect(() => {
+        if (!addedCourse) {
+            return;
+        }
+        AppStore.registerColorPicker(section.sectionCode, updateColorFromPicker);
+        return () => {
+            AppStore.unregisterColorPicker(section.sectionCode, updateColorFromPicker);
+        };
+    }, [addedCourse, section.sectionCode, updateColorFromPicker]);
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {
@@ -134,6 +198,12 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
+            <SectionRowColorStrip
+                color={currColor}
+                visible={addedCourse}
+                clickable={!isMobile && addedCourse}
+                onOpenPicker={handleColorStripOpenPicker}
+            />
             {Object.entries(tableBodyCells)
                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                 .map(([column, Component]) => {
@@ -157,6 +227,28 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                         />
                     );
                 })}
+            {!isMobile && addedCourse && (
+                <Popover
+                    open={Boolean(colorPopoverAnchorEl)}
+                    anchorEl={colorPopoverAnchorEl}
+                    onClose={handleColorPopoverClose}
+                    onClick={(e) => e.stopPropagation()}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                >
+                    <SketchPicker
+                        color={currColor}
+                        onChange={handleColorChange}
+                        presetColors={colorPickerPresetColors}
+                    />
+                </Popover>
+            )}
         </TableRow>
     );
 });

@@ -2,10 +2,10 @@ import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/Cou
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
+import { STRIP_SLOT_PX } from '$components/RightPane/SectionTable/SectionTableBody/SectionRowColorStrip';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { WarningAlert } from '$components/WarningAlert';
-import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
@@ -55,7 +55,6 @@ function SectionTable(props: SectionTableProps) {
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
-    const isMobile = useIsMobile();
 
     const handleToggleExpand = () => {
         setOpenContent(!openContent);
@@ -65,7 +64,7 @@ function SectionTable(props: SectionTableProps) {
         forceCheck();
     };
 
-    const actionColumnWidth = isMobile ? 54 : 77;
+    const actionColumnWidth = 77;
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
@@ -172,6 +171,7 @@ function SectionTable(props: SectionTableProps) {
                     >
                         <TableHead>
                             <TableRow>
+                                <TableCell sx={{ padding: 0, width: `${STRIP_SLOT_PX}px` }} />
                                 <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
                                 {(() => {
                                     const visible = tableHeaderColumnEntries.filter(([column]) =>

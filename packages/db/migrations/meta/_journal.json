@@ -120,6 +120,20 @@
       "when": 1778395420130,
       "tag": "0016_sparkling_mauler",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1778627692246,
+      "tag": "0017_tiny_skaar",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1747109200000,
+      "tag": "0018_add_visibility_check",
+      "breakpoints": true
     }
   ]
 }

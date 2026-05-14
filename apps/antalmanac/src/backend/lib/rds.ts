@@ -5,7 +5,9 @@ import type {
     RepeatingCustomEvent,
     Notification,
     ScheduleSaveState,
+    VisibilityState,
 } from '@packages/antalmanac-types';
+import { VISIBILITY_STATES } from '@packages/antalmanac-types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
 import {
@@ -248,12 +250,17 @@ export class RDS {
     }
 
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
-        const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string }>();
+        const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string; visibility: string }>();
         for (const course of courses) {
             const sectionCode = parseInt(course.sectionCode);
             const key = `${sectionCode}-${course.term}`;
             if (!uniqueByKey.has(key)) {
-                uniqueByKey.set(key, { sectionCode, term: course.term, color: course.color });
+                uniqueByKey.set(key, {
+                    sectionCode,
+                    term: course.term,
+                    color: course.color,
+                    visibility: course.visibility ?? ('visible' satisfies VisibilityState),
+                });
             }
         }
         const incoming = [...uniqueByKey.values()];
@@ -279,6 +286,7 @@ export class RDS {
             sectionCode: 'keep',
             term: 'keep',
             color: 'update',
+            visibility: 'update',
             createdAt: 'keep',
             lastUpdated: 'update',
         } satisfies ConflictUpdatePolicy<typeof coursesInSchedule>;
@@ -424,6 +432,9 @@ export class RDS {
                     sectionCode: course.sectionCode.toString(),
                     term: course.term,
                     color: course.color,
+                    visibility: VISIBILITY_STATES.includes(course.visibility as VisibilityState)
+                        ? (course.visibility as VisibilityState)
+                        : ('visible' satisfies VisibilityState),
                 });
             }
 
