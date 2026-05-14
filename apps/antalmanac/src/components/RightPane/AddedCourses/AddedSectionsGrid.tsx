@@ -44,7 +44,8 @@ function getCourses() {
             (needleCourse) =>
                 needleCourse.courseNumber === course.courseNumber &&
                 needleCourse.deptCode === course.deptCode &&
-                needleCourse.courseTitle === course.courseTitle
+                needleCourse.courseTitle === course.courseTitle &&
+                needleCourse.term === course.term
         );
 
         const sectionUpdatedAt = course.section?.updatedAt ?? null;

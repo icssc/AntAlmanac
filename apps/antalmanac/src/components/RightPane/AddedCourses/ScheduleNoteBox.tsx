@@ -24,7 +24,13 @@ export function ScheduleNoteBox() {
 
     useEffect(() => {
         const handleScheduleNoteChange = () => {
-            setScheduleNote(AppStore.getCurrentScheduleNote());
+            const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore.getState();
+            if (fallbackMode) {
+                const idx = AppStore.getCurrentScheduleIndex();
+                setScheduleNote(getCurrentFallbackSchedule(idx).scheduleNote);
+            } else {
+                setScheduleNote(AppStore.getCurrentScheduleNote());
+            }
         };
 
         const handleScheduleIndexChange = () => {

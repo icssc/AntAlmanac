@@ -17,7 +17,13 @@ export function CustomEventsBox() {
 
     useEffect(() => {
         const handleCustomEventsChange = () => {
-            setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
+            const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore.getState();
+            if (fallbackMode) {
+                const idx = AppStore.getCurrentScheduleIndex();
+                setCustomEvents([...getCurrentFallbackSchedule(idx).customEvents]);
+            } else {
+                setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
+            }
         };
 
         AppStore.on('customEventsChange', handleCustomEventsChange);
