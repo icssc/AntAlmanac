@@ -2,6 +2,7 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { trpcReact } from '$lib/api/trpcReact';
+import { isSectionOffered } from '$lib/courseAvailability';
 import AppStore from '$stores/AppStore';
 import type { AACourse } from '@packages/antalmanac-types';
 import { flattenCourses } from '@packages/anteater-api/utils';
@@ -48,6 +49,11 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             return props.courseDetails;
         }
 
+        const offeredSections = course.sections.filter(isSectionOffered);
+        if (offeredSections.length === 0) {
+            return props.courseDetails;
+        }
+
         const courseColors = AppStore.schedule
             .getCurrentCourses()
             .reduce<Record<string, string>>((acc, { section }) => {
@@ -57,8 +63,8 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
 
         return {
             ...course,
-            sections: course.sections.map((s) => ({ ...s, color: courseColors[s.sectionCode] ?? '' })),
-            sectionTypes: [...new Set(course.sections.map((s) => s.sectionType))],
+            sections: offeredSections.map((s) => ({ ...s, color: courseColors[s.sectionCode] ?? '' })),
+            sectionTypes: [...new Set(offeredSections.map((s) => s.sectionType))],
         } satisfies AACourse;
     }, [data, props.courseDetails]);
 

@@ -59,6 +59,7 @@ function buildSectionCodesQuery(year: string, quarter: string): string {
                             sectionCode
                             sectionType
                             sectionNum
+                            isCancelled
                         }
                     }
                 }

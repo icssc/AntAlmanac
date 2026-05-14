@@ -27,6 +27,7 @@ export type SectionSearchResult = {
     sectionCode: string;
     sectionNum: string;
     sectionType: string;
+    isCancelled?: boolean;
 };
 
 export type SearchResult = GESearchResult | DepartmentSearchResult | CourseSearchResult | SectionSearchResult;

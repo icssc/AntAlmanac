@@ -23,6 +23,7 @@ export function parseSectionCodes(response: SectionCodesGraphQLResponse): Record
                         sectionCode: section.sectionCode,
                         sectionNum: section.sectionNum,
                         sectionType: section.sectionType,
+                        isCancelled: section.isCancelled,
                     };
                 });
             });

@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
+import { getOfferedCourseSet, isCourseOffered, isSectionOffered } from '$lib/courseAvailability';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
@@ -79,14 +80,6 @@ async function getTermSectionCodes(year: string, quarter: string): Promise<Recor
     }
 }
 
-function getOfferedCourses(termSectionCodes: Awaited<ReturnType<typeof getTermSectionCodes>>) {
-    return new Set(Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`));
-}
-
-const isCourseOffered = (department: string, courseNumber: string, offeredCourseSet: Set<string>): boolean => {
-    return offeredCourseSet.has(`${department}-${courseNumber}`);
-};
-
 const searchRouter = router({
     doSearch: procedure
         .input(z.object({ query: z.string(), term: z.string() }))
@@ -96,7 +89,7 @@ const searchRouter = router({
 
             const termSectionCodes = await getTermSectionCodes(year, quarter);
 
-            const offeredCourseSet = getOfferedCourses(termSectionCodes);
+            const offeredCourseSet = getOfferedCourseSet(Object.values(termSectionCodes));
 
             const num = Number(input.query);
             const matchedSections: SectionSearchResult[] = [];
@@ -105,12 +98,15 @@ const searchRouter = router({
                 if (input.query.length === 4) {
                     for (let i = 0; i < 10; i++) {
                         const possibleSectionCode = `${baseSectionCode}${i}`;
-                        if (termSectionCodes[possibleSectionCode]) {
+                        if (
+                            termSectionCodes[possibleSectionCode] &&
+                            isSectionOffered(termSectionCodes[possibleSectionCode])
+                        ) {
                             matchedSections.push(termSectionCodes[possibleSectionCode]);
                         }
                     }
                 } else if (input.query.length === 5) {
-                    if (termSectionCodes[baseSectionCode]) {
+                    if (termSectionCodes[baseSectionCode] && isSectionOffered(termSectionCodes[baseSectionCode])) {
                         matchedSections.push(termSectionCodes[baseSectionCode]);
                     }
                 }
@@ -175,7 +171,7 @@ const searchRouter = router({
         .query(async ({ input }): Promise<Record<BareCourse['department'], Set<BareCourse['courseNumber']>>> => {
             const { courses, year, quarter } = input;
             const termSectionCodes = await getTermSectionCodes(year, quarter);
-            const offeredCourseSet = getOfferedCourses(termSectionCodes);
+            const offeredCourseSet = getOfferedCourseSet(Object.values(termSectionCodes));
             const offeredCourses: Record<string, Set<string>> = {};
             for (const course of courses) {
                 if (isCourseOffered(course.department, course.courseNumber, offeredCourseSet)) {

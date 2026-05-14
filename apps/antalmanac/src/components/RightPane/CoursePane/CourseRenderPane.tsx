@@ -9,6 +9,7 @@ import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { filterCancelledSectionsFromResponse } from '$lib/courseAvailability';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import {
     getMultiGeCourseKey,
@@ -132,6 +133,45 @@ const getFilteredAndCourseCount = (
     flattenedCourseData.filter(
         (item) => 'sections' in item && sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
     ).length;
+
+const getResponseCourseKeys = (response: WebsocAPIResponse) =>
+    new Set(
+        response.schools.flatMap((school) =>
+            school.departments.flatMap((department) =>
+                department.courses.map((course) => getMultiGeCourseKey(course.deptCode, course.courseNumber))
+            )
+        )
+    );
+
+function hasTargetedCourseSearch(searchData: CourseSearchParams) {
+    return searchData.deptValue !== 'ALL' && searchData.courseNumber.trim() !== '';
+}
+
+function dedupeCourseSearchParams(courses: CourseSearchParams[]) {
+    const dedupedCourses = new Map<string, CourseSearchParams>();
+
+    for (const course of courses) {
+        dedupedCourses.set(getMultiGeCourseKey(course.deptValue, course.courseNumber), course);
+    }
+
+    return [...dedupedCourses.values()];
+}
+
+function getCancelledOnlyCourseWarnings(
+    searchData: CourseSearchParams,
+    rawResponse: WebsocAPIResponse,
+    filteredResponse: WebsocAPIResponse
+) {
+    if (!hasTargetedCourseSearch(searchData)) {
+        return [];
+    }
+
+    const courseKey = getMultiGeCourseKey(searchData.deptValue, searchData.courseNumber);
+    const rawCourseKeys = getResponseCourseKeys(rawResponse);
+    const filteredCourseKeys = getResponseCourseKeys(filteredResponse);
+
+    return rawCourseKeys.has(courseKey) && !filteredCourseKeys.has(courseKey) ? [searchData] : [];
+}
 
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
@@ -343,11 +383,12 @@ export default function CourseRenderPane(props: { id?: number }) {
             const multiSearchData = RightPaneStore.getMultiSearchData();
             let websocJsonResp: WebsocAPIResponse;
             let fetchedSharedCourseKeys = new Set<string>();
+            let offeredCoursesMapping: Record<string, Set<string>> | undefined;
+            let nextUnofferedCourses: CourseSearchParams[] = [];
             if (multiSearchData.length > 0) {
                 const { year, quarter } = RightPaneStore.getTermParts();
                 const offeredCourses: Record<string, string>[] = [];
-                const unofferedCourses: CourseSearchParams[] = [];
-                const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
+                offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
                     year: year,
                     quarter: quarter,
                     courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
@@ -356,10 +397,9 @@ export default function CourseRenderPane(props: { id?: number }) {
                     if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
                         offeredCourses.push(getQueryParams(course));
                     } else {
-                        unofferedCourses.push(course);
+                        nextUnofferedCourses.push(course);
                     }
                 }
-                setUnofferedCourses(unofferedCourses);
                 websocJsonResp = await trpc.websoc.getMultiple.query({ params: offeredCourses });
             } else {
                 const formData = RightPaneStore.getFormData();
@@ -371,8 +411,31 @@ export default function CourseRenderPane(props: { id?: number }) {
                 fetchedSharedCourseKeys = sharedCourseKeys;
             }
 
-            setWebsocResp(websocJsonResp);
-            const allCourses = flattenSOCObject(websocJsonResp);
+            const filteredWebsocResp = filterCancelledSectionsFromResponse(websocJsonResp);
+
+            if (multiSearchData.length > 0 && offeredCoursesMapping) {
+                const filteredCourseKeys = getResponseCourseKeys(filteredWebsocResp);
+                for (const course of multiSearchData) {
+                    if (
+                        offeredCoursesMapping[course.deptValue]?.has(course.courseNumber) &&
+                        !filteredCourseKeys.has(getMultiGeCourseKey(course.deptValue, course.courseNumber))
+                    ) {
+                        nextUnofferedCourses.push(course);
+                    }
+                }
+            } else {
+                nextUnofferedCourses = getCancelledOnlyCourseWarnings(
+                    RightPaneStore.getFormData(),
+                    websocJsonResp,
+                    filteredWebsocResp
+                );
+            }
+
+            nextUnofferedCourses = dedupeCourseSearchParams(nextUnofferedCourses);
+
+            setUnofferedCourses(nextUnofferedCourses);
+            setWebsocResp(filteredWebsocResp);
+            const allCourses = flattenSOCObject(filteredWebsocResp);
             const filteredCourses = getFilteredCourses(allCourses);
             setCourseData(filteredCourses);
             setSharedCourseKeys(fetchedSharedCourseKeys);
