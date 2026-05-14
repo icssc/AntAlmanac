@@ -1,4 +1,4 @@
-import trpc from '$lib/api/trpc';
+import { trpcReact } from '$lib/api/trpcReact';
 import { Box, Button } from '@mui/material';
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -19,20 +19,29 @@ export const Unsubscribe = () => {
 
     const term = `${year} ${quarter}`;
 
-    const handleUnsubscribe = async () => {
+    const { mutate: deleteAllNotifications, isPending: isDeletingAll } =
+        trpcReact.notifications.deleteAllNotifications.useMutation({
+            onSuccess: () => setDone(true),
+            onError: (err) => console.error('Error unsubscribing:', err),
+        });
+
+    const { mutate: deleteNotification, isPending: isDeletingOne } =
+        trpcReact.notifications.deleteNotification.useMutation({
+            onSuccess: () => setDone(true),
+            onError: (err) => console.error('Error unsubscribing:', err),
+        });
+
+    const handleUnsubscribe = () => {
         if (!userId || !sectionCode || !quarter || !year) return;
 
-        try {
-            if (unsubscribeAll === 'true') {
-                await trpc.notifications.deleteAllNotifications.mutate({ userId });
-            } else {
-                await trpc.notifications.deleteNotification.mutate({ userId, sectionCode, term });
-            }
-            setDone(true);
-        } catch (err) {
-            console.error('Error unsubscribing:', err);
+        if (unsubscribeAll === 'true') {
+            deleteAllNotifications({ userId });
+        } else {
+            deleteNotification({ userId, sectionCode, term });
         }
     };
+
+    const isPending = isDeletingAll || isDeletingOne;
 
     return (
         <Box
@@ -48,7 +57,14 @@ export const Unsubscribe = () => {
             <h2>Hello, would you like to unsubscribe from notifications for</h2>
             <h2>{unsubscribeAll === 'true' ? 'ALL courses' : `${deptCode} ${courseNumber} (${instructor})`}</h2>
             {!done ? (
-                <Button variant="contained" color="error" sx={{ mt: 2 }} onClick={handleUnsubscribe}>
+                <Button
+                    variant="contained"
+                    color="error"
+                    sx={{ mt: 2 }}
+                    onClick={handleUnsubscribe}
+                    disabled={isPending}
+                    loading={isPending}
+                >
                     Confirm Unsubscribe
                 </Button>
             ) : (

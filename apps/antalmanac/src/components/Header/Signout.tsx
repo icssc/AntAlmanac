@@ -2,6 +2,7 @@ import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { trpcReact } from '$lib/api/trpcReact';
 import { getErrorMessage } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -33,18 +34,10 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         [sessionIsValid, name, avatar, email]
     );
 
-    const open = Boolean(anchorEl);
-    const handleClick = (event: MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleLogout = async () => {
-        setAnchorEl(null);
-
-        try {
-            const logoutUrl = await clearSession();
+    const { mutate: logout } = trpcReact.auth.logout.useMutation({
+        onSuccess: ({ logoutUrl }) => {
+            clearSession();
             onLogoutComplete?.();
-
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
                 action: analyticsEnum.auth.actions.SIGN_OUT,
@@ -53,8 +46,10 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             if (logoutUrl) {
                 window.location.href = logoutUrl;
             }
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error('Error during logout', error);
+            clearSession();
             onLogoutComplete?.();
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
@@ -62,16 +57,26 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 error: getErrorMessage(error),
             });
             window.location.reload();
-        } finally {
+        },
+        onSettled: () => {
             postHog?.reset();
-        }
+        },
+    });
+
+    const handleClick = (event: MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleLogout = () => {
+        setAnchorEl(null);
+        logout({ redirectUrl: window.location.origin });
     };
 
     return (
         <div id="load-save-container">
             <ProfileMenuButtons user={user} handleOpen={handleClick} handleSettingsOpen={handleClick} />
             <Popover
-                open={open}
+                open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
                 onClose={() => setAnchorEl(null)}
                 anchorOrigin={{

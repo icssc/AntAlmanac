@@ -1,16 +1,16 @@
+import CopyScheduleDialog from '$components/dialogs/CopySchedule';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { ContentCopy } from '@mui/icons-material';
 import { IconButton, SxProps, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import CopyScheduleDialog from '$components/dialogs/CopySchedule';
-
 interface CopyScheduleButtonProps {
     index: number;
-    disabled?: boolean;
     buttonSx?: SxProps;
 }
 
-export function CopyScheduleButton({ index, disabled, buttonSx }: CopyScheduleButtonProps) {
+export function CopyScheduleButton({ index, buttonSx }: CopyScheduleButtonProps) {
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {
@@ -25,7 +25,7 @@ export function CopyScheduleButton({ index, disabled, buttonSx }: CopyScheduleBu
         <>
             <Tooltip title="Copy Schedule" disableInteractive>
                 <span>
-                    <IconButton sx={buttonSx} onClick={handleOpen} size="small" disabled={disabled}>
+                    <IconButton sx={buttonSx} onClick={handleOpen} size="small" disabled={fallbackMode}>
                         <ContentCopy />
                     </IconButton>
                 </span>
