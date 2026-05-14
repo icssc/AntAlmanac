@@ -6,7 +6,7 @@ import { SectionActionMenu } from '$components/RightPane/SectionTable/SectionTab
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
-import type { Term } from '$lib/termData';
+import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Box, CircularProgress, IconButton } from '@mui/material';
@@ -16,7 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
     section: AASection;
-    term: Term['shortName'];
+    term: AATerm['shortName'];
     courseDetails: CourseDetails;
     scheduleConflict: boolean;
     addedCourse: boolean;

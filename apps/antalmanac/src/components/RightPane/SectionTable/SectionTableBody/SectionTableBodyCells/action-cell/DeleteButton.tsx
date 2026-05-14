@@ -1,6 +1,6 @@
 import { deleteCourse } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { Term } from '$lib/termData';
+import { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { Delete } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
@@ -10,7 +10,7 @@ import { memo, useCallback } from 'react';
 
 interface DeleteButtonProps {
     sectionCode: AASection['sectionCode'];
-    term: Term['shortName'];
+    term: AATerm['shortName'];
 }
 
 export const DeleteButton = memo(function DeleteButton({ sectionCode, term }: DeleteButtonProps) {

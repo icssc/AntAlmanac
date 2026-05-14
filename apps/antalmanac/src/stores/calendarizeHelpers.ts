@@ -1,5 +1,5 @@
 import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { getFinalsStartDateForTerm } from '$lib/termData';
+import { getTermByShortName, getDefaultTerm } from '$lib/term';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import type { HourMinute, WebsocSectionFinalExam } from '@packages/anteater-api/types';
@@ -122,7 +122,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              * Fallback to January 2018 if no finals start date is available.
              * finalsDay is handled later by day since it varies by day.
              */
-            const finalsStartDate = getFinalsStartDateForTerm(course.term);
+            const finalsStartDate = (getTermByShortName(course.term) ?? getDefaultTerm()).finalsStart;
 
             return dayIndicesOccurring.map((dayIndex) => {
                 const startDate = new Date(finalsStartDate);

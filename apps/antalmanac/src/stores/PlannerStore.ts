@@ -1,6 +1,6 @@
 import trpc from '$lib/api/trpc';
 import { QUARTER_ORDER_IN_YEAR } from '$lib/helpers';
-import { getCurrentTerm } from '$lib/termData';
+import { getDefaultTerm } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
@@ -34,14 +34,15 @@ function roadmapQuarterToYearAndQuarter(startYear: number, quarterName: string):
 }
 
 function getTakenRoadmapCourses(roadmap: Roadmap): Set<string> {
-    const current = getCurrentTerm();
+    const current = getDefaultTerm();
+    const currentYear = parseInt(current.year);
     const courses = new Set<string>();
     for (const year of roadmap.content ?? []) {
         for (const q of year.quarters ?? []) {
             const quarter = roadmapQuarterToYearAndQuarter(year.startYear, q.name);
             if (
-                quarter.year < current.year ||
-                (quarter.year === current.year &&
+                quarter.year < currentYear ||
+                (quarter.year === currentYear &&
                     QUARTER_ORDER_IN_YEAR[quarter.quarter] < QUARTER_ORDER_IN_YEAR[current.quarter])
             ) {
                 q.courses.forEach((c) => courses.add(c.courseId));

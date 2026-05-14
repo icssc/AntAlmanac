@@ -1,7 +1,14 @@
-import type { CalendarTerm, Quarter } from '@packages/anteater-api/types';
+import type { Quarter } from '@packages/anteater-api/types';
 
-export type AATerm = CalendarTerm & {
+export type AATerm = {
+    year: string;
+    quarter: Quarter;
     shortName: `${string} ${Quarter}`;
     longName: string;
+    instructionStart: Date;
+    instructionEnd: Date;
+    finalsStart: Date;
+    finalsEnd: Date;
+    socAvailable: Date;
     isSummerTerm: boolean;
 };

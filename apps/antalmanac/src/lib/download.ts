@@ -1,6 +1,6 @@
 import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import { getDefaultTerm, termData } from '$lib/termData';
+import { getDefaultTerm, termData } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type { HourMinute } from '@packages/anteater-api/types';
@@ -9,7 +9,7 @@ import { createEvents, type EventAttributes } from 'ics';
 
 import { notNull } from './utils';
 
-const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
+const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.instructionStart]));
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 
@@ -72,7 +72,7 @@ function getByDays(days: string): string[] {
  */
 function getClassStartDate(term: string, bydays: string[]) {
     // Get the start date of the quarter (Monday)
-    const quarterStartDate = new Date(quarterStartDates[term]);
+    const quarterStartDate = quarterStartDates[term];
 
     // The number of days since the start of the quarter.
     let dayOffset: number;

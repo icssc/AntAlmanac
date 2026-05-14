@@ -16,7 +16,8 @@ import {
     isMultiGeSelection,
     queryManualSearchCourses,
 } from '$lib/multiGeSearch';
-import { getTermLongName } from '$lib/termData';
+import { getTermByShortName } from '$lib/term';
+import type { WebsocSearchInput } from '$src/backend/routers/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -26,6 +27,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
+import type { AATerm } from '@packages/antalmanac-types';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { WebsocAPIResponse, WebsocDepartment, WebsocSchool, WebsocSectionType } from '@packages/anteater-api/types';
 import Image from 'next/image';
@@ -308,13 +310,15 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
-    const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
+    const [searchedTerm, setSearchedTerm] = useState(
+        () => getTermByShortName(RightPaneStore.getFormData().term as AATerm['shortName'])?.longName ?? ''
+    );
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
     const getQueryParams = useCallback(
-        (searchData: CourseSearchParams) => ({
+        (searchData: CourseSearchParams): WebsocSearchInput => ({
             department: searchData.deptValue,
             term: searchData.term,
             ge: searchData.ge,
@@ -328,8 +332,8 @@ export default function CourseRenderPane(props: { id?: number }) {
             building: searchData.building,
             room: searchData.room,
             division: searchData.division,
-            excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
-            days: searchData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
+            excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','),
+            days: searchData.days.split(/(?=[A-Z])/).join(','),
         }),
         []
     );
@@ -345,7 +349,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             let fetchedSharedCourseKeys = new Set<string>();
             if (multiSearchData.length > 0) {
                 const { year, quarter } = RightPaneStore.getTermParts();
-                const offeredCourses: Record<string, string>[] = [];
+                const offeredCourses: WebsocSearchInput[] = [];
                 const unofferedCourses: CourseSearchParams[] = [];
                 const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
                     year: year,
@@ -377,7 +381,9 @@ export default function CourseRenderPane(props: { id?: number }) {
             setCourseData(filteredCourses);
             setSharedCourseKeys(fetchedSharedCourseKeys);
             setAndCourseCount(getFilteredAndCourseCount(filteredCourses, fetchedSharedCourseKeys));
-            setSearchedTerm(getTermLongName(RightPaneStore.getFormData().term));
+            setSearchedTerm(
+                getTermByShortName(RightPaneStore.getFormData().term as AATerm['shortName'])?.longName ?? ''
+            );
         } catch (error) {
             console.error(error);
             setError(true);

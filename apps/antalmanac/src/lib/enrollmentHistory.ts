@@ -1,6 +1,6 @@
 import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
 
-import { termData } from './termData';
+import { termData } from './term';
 
 export interface EnrollmentHistory {
     year: string;

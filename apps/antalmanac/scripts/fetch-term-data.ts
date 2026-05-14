@@ -33,11 +33,9 @@ function serializeTerm(term: CalendarTerm) {
     const isSummerTerm = quarter.toLowerCase().includes('summer');
 
     return {
+        ...term,
         shortName,
         longName,
-        startDate: instructionStart,
-        finalsStartDate: finalsStart,
-        socAvailable,
         isSummerTerm,
     };
 }
