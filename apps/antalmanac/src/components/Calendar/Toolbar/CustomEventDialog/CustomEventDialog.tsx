@@ -4,6 +4,7 @@ import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { Add, Edit } from '@mui/icons-material';
 import {
     Button,
@@ -19,7 +20,7 @@ import {
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
@@ -37,7 +38,7 @@ const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
 };
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
     const [open, setOpen] = useState(false);
     const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
@@ -135,18 +136,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         }
     };
 
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
     return (
         <>
             {props.customEvent ? (
@@ -157,7 +146,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                 </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">
-                    <IconButton onClick={handleOpen} size="medium" disabled={skeletonMode}>
+                    <IconButton onClick={handleOpen} size="medium" disabled={fallbackMode}>
                         <Add fontSize="small" />
                     </IconButton>
                 </Tooltip>

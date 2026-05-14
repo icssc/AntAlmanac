@@ -290,7 +290,7 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
                 if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule loaded.`);
                 } else {
-                    AppStore.loadSkeletonSchedule(scheduleSaveState);
+                    AppStore.loadFallbackSchedule(scheduleSaveState);
                     error = true;
                 }
 
@@ -364,7 +364,7 @@ export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions)
             return true;
         } else {
             analyticsErrorMessage = 'Network error';
-            AppStore.loadSkeletonSchedule(scheduleSaveState);
+            AppStore.loadFallbackSchedule(scheduleSaveState);
             openSnackbar(
                 'error',
                 `Network error loading course information". 	              

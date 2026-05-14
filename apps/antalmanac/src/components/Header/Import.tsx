@@ -17,6 +17,7 @@ import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUser
 import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useDevModeStore, useThemeStore } from '$stores/SettingsStore';
@@ -70,7 +71,7 @@ export function Import() {
     const [exportSchedules, setExportSchedules] = useState<ShortCourseSchedule[]>([]);
     const [exportSelectedIndices, setExportSelectedIndices] = useState<Set<number>>(new Set());
 
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
     const { sessionIsValid, isNewUser, setIsNewUser, areSchedulesLoaded } = useSessionStore(
         useShallow((state) => ({
@@ -659,17 +660,9 @@ export function Import() {
     }, [handleOpen, isNewUser, setIsNewUser, areSchedulesLoaded]);
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
         if (sessionIsValid && getLocalStorageDataCache() === null) {
             handleFirstTimeSignin();
         }
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
     }, [handleFirstTimeSignin, sessionIsValid]);
 
     return (
@@ -680,7 +673,7 @@ export function Import() {
                     color="inherit"
                     sx={{ fontSize: 'inherit' }}
                     startIcon={<ContentPasteGo />}
-                    disabled={skeletonMode}
+                    disabled={fallbackMode}
                     id="import-button"
                 >
                     {devMode ? 'Import/Export' : 'Import'}

@@ -5,6 +5,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpcReact';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -20,14 +21,13 @@ export const Save = () => {
     const { sessionIsValid } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [autoSaving, setAutoSaving] = useState(false);
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = useScheduleComponentsToggleStore(
         useShallow((state) => ({
             openAutoSaveWarning: state.openAutoSaveWarning,
             setOpenAutoSaveWarning: state.setOpenAutoSaveWarning,
         }))
     );
-
     const postHog = usePostHog();
 
     const { mutate: saveSchedule, isPending: isSaving } = trpcReact.schedule.save.useMutation({
@@ -97,18 +97,6 @@ export const Save = () => {
     };
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
-    useEffect(() => {
         const handleAutoSaveStart = () => setAutoSaving(true);
         const handleAutoSaveEnd = () => setAutoSaving(false);
 
@@ -132,7 +120,7 @@ export const Save = () => {
                 loadingPosition="start"
                 onClick={sessionIsValid ? saveScheduleData : handleClickSignIn}
                 sx={{ fontSize: 'inherit' }}
-                disabled={skeletonMode || saving}
+                disabled={fallbackMode || saving}
                 loading={saving}
             >
                 Save
