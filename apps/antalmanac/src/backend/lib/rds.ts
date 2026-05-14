@@ -6,6 +6,7 @@ import type {
     Notification,
     ScheduleSaveState,
 } from '@packages/antalmanac-types';
+import type { Quarter } from '@packages/anteater-api/types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
 import {
@@ -1110,7 +1111,7 @@ export class RDS {
         userId: string,
         sectionCode: string,
         year: string,
-        quarter: string,
+        quarter: Quarter,
         environment: string
     ) {
         return db

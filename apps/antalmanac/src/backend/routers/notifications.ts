@@ -52,7 +52,7 @@ const notificationsRouter = router({
                 userId: z.string(),
                 sectionCode: z.string(),
                 year: z.string(),
-                quarter: z.string(),
+                quarter: z.enum(QUARTERS),
             })
         )
         .mutation(async ({ input }) => {

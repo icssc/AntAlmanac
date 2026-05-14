@@ -1,3 +1,4 @@
+import type { Quarter } from '@packages/anteater-api/types';
 import {
     Body,
     Button,
@@ -32,7 +33,7 @@ export interface CourseNotificationEmailProps {
     hours: string;
     sectionCode: string;
     userId: string;
-    quarter: string;
+    quarter: Quarter;
     year: string;
 }
 

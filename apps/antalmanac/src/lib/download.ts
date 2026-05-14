@@ -3,7 +3,7 @@ import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { type AATerm, getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import type { HourMinute } from '@packages/anteater-api/types';
+import type { HourMinute, Quarter } from '@packages/anteater-api/types';
 import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
 
@@ -179,7 +179,7 @@ function parseTimes(startTime: HourMinute, endTime: HourMinute) {
  *
  * @example 10 for quarters and Summer Session 10wk, 5 for Summer Sessions I and II.
  */
-function getTermLength(quarter: string) {
+function getTermLength(quarter: Quarter) {
     return quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10;
 }
 
@@ -188,7 +188,7 @@ function getTermLength(quarter: string) {
  *
  * @example ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
  */
-function getRRule(bydays: string[], quarter: string) {
+function getRRule(bydays: string[], quarter: Quarter) {
     /**
      * Number of occurrences in the quarter
      */
