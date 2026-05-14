@@ -8,7 +8,7 @@ import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover'
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
-import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
+import { ScheduleCalendarToolbar } from '$components/Calendar/Toolbar/ScheduleCalendarToolbar';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
@@ -104,7 +104,7 @@ export const ScheduleCalendar = memo(() => {
     const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
+    const [_currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const theme = useTheme();
@@ -341,8 +341,7 @@ export const ScheduleCalendar = memo(() => {
                 })}
                 open={loadingSchedule}
             />
-            <CalendarToolbar
-                currentScheduleIndex={currentScheduleIndex}
+            <ScheduleCalendarToolbar
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
