@@ -7,6 +7,7 @@ import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTa
 import { WarningAlert } from '$components/WarningAlert';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
+import { getCourseCancellationWarning } from '$lib/courseAvailability';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
@@ -70,6 +71,11 @@ function SectionTable(props: SectionTableProps) {
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
+
+    const cancellationWarning = useMemo(
+        () => getCourseCancellationWarning(courseDetails.sections),
+        [courseDetails.sections]
+    );
 
     const formattedTime = useMemo(() => {
         if (!courseDetails.updatedAt) {
@@ -155,6 +161,7 @@ function SectionTable(props: SectionTableProps) {
             {missingSections?.length > 0 && (
                 <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
             )}
+            {cancellationWarning && <WarningAlert>{cancellationWarning}</WarningAlert>}
             <Collapse in={openContent} onExited={handleCollapseExit}>
                 <TableContainer
                     component={Paper}
