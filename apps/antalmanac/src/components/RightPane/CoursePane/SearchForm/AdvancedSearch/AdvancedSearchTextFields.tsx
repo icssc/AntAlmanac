@@ -14,7 +14,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
-import { format, parse } from 'date-fns';
+import { format, isValid, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -122,7 +122,9 @@ export function AdvancedSearchTextFields() {
         if (name === 'startTime' || name === 'endTime') {
             // time picker event is Date | null
             if (event instanceof Date || event === null) {
-                const stringTime = event ? format(event, 'HH:mm') : '';
+                // Guard against Invalid Date (e.g. user typing a partial time in the picker).
+                // Calling format() on an Invalid Date throws RangeError: Invalid time value.
+                const stringTime = event && isValid(event) ? format(event, 'HH:mm') : '';
                 if (name === 'startTime') {
                     setStartTime(stringTime);
                 } else {
