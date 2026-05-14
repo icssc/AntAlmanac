@@ -9,6 +9,7 @@ import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTable
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
+import type { Term } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
@@ -22,7 +23,7 @@ import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 interface SectionTableBodyRowProps {
     section: AASection;
     courseDetails: CourseDetails;
-    term: string;
+    term: Term;
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
@@ -65,14 +66,14 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(
-        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
+        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
     );
 
     // Stable references to event listeners will synchronize React state with the store.
 
     const updateHighlight = useCallback(() => {
-        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
-    }, [section.sectionCode, term]);
+        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`));
+    }, [section.sectionCode, term.shortName]);
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {

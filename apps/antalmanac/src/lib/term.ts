@@ -1,6 +1,7 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
 import type { Quarter } from '@packages/anteater-api/types';
+import type { TermShortName } from '@packages/antalmanac-types';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
 
@@ -46,7 +47,7 @@ function parseLocalDate(dateStr: string): Date {
     return new Date(year, month - 1, day);
 }
 
-const termSchema = z
+export const termSchema = z
     .object({
         year: z.string(),
         quarter: QuarterSchema,
@@ -88,7 +89,7 @@ export function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term
 
     for (const event of events) {
         if (!event.isCustomEvent && event.term) {
-            const existingTerm = termData.find((t) => t.shortName === event.term);
+            const existingTerm = findTermByShortName(event.term);
             if (existingTerm) {
                 term = existingTerm;
                 break;
@@ -103,8 +104,8 @@ export function getDefaultFinalsStartDate() {
     return new Date(termData[defaultTerm].finalsStart);
 }
 
-export function getFinalsStartDateForTerm(term: string) {
-    const termThatMatches = termData.find((t) => t.shortName === term);
+export function getFinalsStartDateForTerm(term: TermShortName) {
+    const termThatMatches = findTermByShortName(term);
     if (termThatMatches === undefined) {
         console.warn(`No matching term for ${term}`);
         return getDefaultFinalsStartDate();
@@ -113,8 +114,16 @@ export function getFinalsStartDateForTerm(term: string) {
     return new Date(termThatMatches.finalsStart);
 }
 
-export function getTermLongName(termShortName: string) {
-    return termData.find((term) => term.shortName === termShortName)?.longName ?? '';
+export function getTermLongName(termShortName: TermShortName) {
+    return findTermByShortName(termShortName)?.longName ?? '';
+}
+
+/**
+ * Look up a `Term` object by its short name (e.g. `"2025 Fall"`).
+ * Returns `undefined` for unrecognised or future terms not yet in `termData`.
+ */
+export function findTermByShortName(shortName: TermShortName): Term | undefined {
+    return termData.find((term) => term.shortName === shortName);
 }
 
 /**
@@ -127,12 +136,12 @@ export function getTermLongName(termShortName: string) {
  *
  * @returns `true` if enrollment is open for the given term, `false` if not.
  */
-export function canTermEnrollmentChange(termShortName: Term['shortName']) {
+export function canTermEnrollmentChange(termShortName: TermShortName) {
     return openEnrollmentTerms.has(termShortName);
 }
 
 function getOpenEnrollmentTerms() {
-    const openEnrollmentTerms: Set<Term['shortName']> = new Set();
+    const openEnrollmentTerms: Set<TermShortName> = new Set();
 
     for (const term of termData) {
         if (new Date().getFullYear() - term.instructionStart.getFullYear() > 1) {
@@ -166,5 +175,5 @@ function isTermEnrollmentOpen(term: Term): boolean {
 }
 
 export function isTermAvailable(term: Term) {
-    return termData.find((t) => t.shortName === term.shortName) !== undefined;
+    return findTermByShortName(term.shortName) !== undefined;
 }

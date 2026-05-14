@@ -16,6 +16,7 @@ import {
     isMultiGeSelection,
     queryManualSearchCourses,
 } from '$lib/multiGeSearch';
+import type { WebsocQueryParams } from '@packages/anteater-api/types';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -313,22 +314,23 @@ export default function CourseRenderPane(props: { id?: number }) {
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
     const getQueryParams = useCallback(
-        (searchData: CourseSearchParams) => ({
+        (searchData: CourseSearchParams): WebsocQueryParams => ({
+            year: searchData.term.year,
+            quarter: searchData.term.quarter,
             department: searchData.deptValue,
-            term: searchData.term,
-            ge: searchData.ge,
+            ge: searchData.ge as WebsocQueryParams['ge'],
             courseNumber: searchData.courseNumber,
             sectionCodes: searchData.sectionCode,
             instructorName: searchData.instructor,
             units: searchData.units,
             endTime: searchData.endTime,
             startTime: searchData.startTime,
-            fullCourses: searchData.coursesFull,
+            fullCourses: searchData.coursesFull as WebsocQueryParams['fullCourses'],
             building: searchData.building,
             room: searchData.room,
-            division: searchData.division,
-            excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
-            days: searchData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
+            division: searchData.division as WebsocQueryParams['division'],
+            excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','),
+            days: searchData.days.split(/(?=[A-Z])/).join(','),
         }),
         []
     );
@@ -344,16 +346,16 @@ export default function CourseRenderPane(props: { id?: number }) {
             let fetchedSharedCourseKeys = new Set<string>();
             if (multiSearchData.length > 0) {
                 const { year, quarter } = RightPaneStore.getFormData().term;
-                const offeredCourses: Record<string, string>[] = [];
+                const offeredCourses: ReturnType<typeof getQueryParams>[] = [];
                 const unofferedCourses: CourseSearchParams[] = [];
                 const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
-                    year: year,
-                    quarter: quarter,
+                    year,
+                    quarter,
                     courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
                 });
                 for (const course of multiSearchData) {
                     if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
-                        offeredCourses.push({ ...getQueryParams(course), term: course.term.shortName });
+                        offeredCourses.push(getQueryParams(course));
                     } else {
                         unofferedCourses.push(course);
                     }
@@ -362,10 +364,9 @@ export default function CourseRenderPane(props: { id?: number }) {
                 websocJsonResp = await trpc.websoc.getMultiple.query({ params: offeredCourses });
             } else {
                 const formData = RightPaneStore.getFormData();
-                const { response: websocJsonResponse, sharedCourseKeys } = await queryManualSearchCourses({
-                    ...getQueryParams(formData),
-                    term: formData.term.shortName,
-                });
+                const { response: websocJsonResponse, sharedCourseKeys } = await queryManualSearchCourses(
+                    getQueryParams(formData)
+                );
 
                 websocJsonResp = websocJsonResponse;
                 fetchedSharedCourseKeys = sharedCourseKeys;

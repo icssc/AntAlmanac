@@ -173,5 +173,3 @@ export async function scanAndNotify() {
         throw error;
     }
 }
-
-// ! FOOBAR

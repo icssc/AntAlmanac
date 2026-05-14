@@ -10,20 +10,20 @@ import type { Term } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Box, CircularProgress, IconButton } from '@mui/material';
-import type { AASection, CourseDetails } from '@packages/antalmanac-types';
+import type { AASection, CourseDetails, TermShortName } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
     section: AASection;
-    term: Term['shortName'];
+    term: Term;
     courseDetails: CourseDetails;
     scheduleConflict: boolean;
     addedCourse: boolean;
     scheduleNames: string[];
 }
 
-function getSectionColor(sectionCode: string, term: string): string {
+function getSectionColor(sectionCode: string, term: TermShortName): string {
     return AppStore.schedule.getExistingCourseInSchedule(sectionCode, term)?.section.color ?? '#5ec8e0';
 }
 
@@ -32,11 +32,11 @@ export const ActionCell = memo(
         const initialized = useNotificationStore(useShallow((state) => state.initialized));
         const isMobile = useIsMobile();
 
-        const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term));
+        const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term.shortName));
 
         const updateColor = useCallback(() => {
-            setSectionColor(getSectionColor(section.sectionCode, term));
-        }, [section.sectionCode, term]);
+            setSectionColor(getSectionColor(section.sectionCode, term.shortName));
+        }, [section.sectionCode, term.shortName]);
 
         useEffect(() => {
             AppStore.on('addedCoursesChange', updateColor);
@@ -89,7 +89,7 @@ export const ActionCell = memo(
                                 color={sectionColor}
                                 analyticsCategory={analyticsEnum.addedClasses}
                                 isCustomEvent={false}
-                                term={term}
+                                term={term.shortName}
                                 sectionCode={section.sectionCode}
                             />
                         ) : (

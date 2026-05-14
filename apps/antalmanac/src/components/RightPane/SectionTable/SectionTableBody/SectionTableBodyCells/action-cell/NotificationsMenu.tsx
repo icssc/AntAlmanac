@@ -19,7 +19,7 @@ const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
 
 interface NotificationsMenuProps {
     section: AASection;
-    term: Term['shortName'];
+    term: Term;
     courseTitle: Course['title'];
     deptCode?: string;
     courseNumber?: string;
@@ -27,7 +27,7 @@ interface NotificationsMenuProps {
 
 export const NotificationsMenu = memo(
     ({ section, term, courseTitle, deptCode, courseNumber }: NotificationsMenuProps) => {
-        const notificationKey = section.sectionCode + ' ' + term;
+        const notificationKey = section.sectionCode + ' ' + term.shortName;
         const [notification, setNotifications] = useNotificationStore(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
         );
@@ -41,7 +41,7 @@ export const NotificationsMenu = memo(
             }))
         );
 
-        const isTermCurrent = canTermEnrollmentChange(term);
+        const isTermCurrent = canTermEnrollmentChange(term.shortName);
         const notifyOn = notification?.notifyOn;
         const hasNotifications = notifyOn && Object.values(notifyOn).some((n) => n);
 
@@ -55,7 +55,7 @@ export const NotificationsMenu = memo(
                     sectionType,
                     units: Number(units),
                     sectionNum,
-                    term,
+                    term: term.shortName,
                     status,
                     lastUpdatedStatus: currStatus,
                     lastCodes: restrictions,

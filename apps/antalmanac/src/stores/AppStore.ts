@@ -19,6 +19,7 @@ import type {
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
+import type { Term } from '$lib/term';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
@@ -27,6 +28,7 @@ import type {
     ScheduleSaveState,
     RepeatingCustomEvent,
     CustomEventId,
+    TermShortName,
 } from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
@@ -169,7 +171,7 @@ class AppStore extends EventEmitter {
         }
     }
 
-    deleteCourse(sectionCode: string, term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+    deleteCourse(sectionCode: string, term: TermShortName, scheduleIndex: number, triggerUnsavedWarning = true) {
         this.schedule.deleteCourse(sectionCode, term, scheduleIndex);
         this.unsavedChanges = triggerUnsavedWarning;
         const action: DeleteCourseAction = {
@@ -182,7 +184,12 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
     }
 
-    deleteCourses(sectionCodes: string[], term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+    deleteCourses(
+        sectionCodes: string[],
+        term: TermShortName,
+        scheduleIndex: number,
+        triggerUnsavedWarning = true
+    ) {
         sectionCodes.forEach((sectionCode) =>
             this.deleteCourse(sectionCode, term, scheduleIndex, triggerUnsavedWarning)
         );
@@ -422,7 +429,7 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    changeCourseColor(sectionCode: string, term: string, newColor: string) {
+    changeCourseColor(sectionCode: string, term: TermShortName, newColor: string) {
         this.schedule.changeCourseColor(sectionCode, term, newColor);
         this.unsavedChanges = true;
         const action: ChangeCourseColorAction = {
@@ -441,8 +448,8 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    termsInSchedule = (term: string) =>
-        new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+    termsInSchedule = (term: Term): Set<TermShortName> =>
+        new Set([term.shortName, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
 
     getPreviousStates = () => this.schedule.getPreviousStates();
 }

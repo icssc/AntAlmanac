@@ -1,4 +1,4 @@
-import { WebsocSectionType } from '@packages/anteater-api/types';
+import { Quarter, WebsocSectionType } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
 import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customEvent';
@@ -7,6 +7,8 @@ import { AASection } from './websoc';
 /** Max length for schedule notes (UI and server validation). */
 export const SCHEDULE_NOTE_MAX_LENGTH = 5000;
 
+export type TermShortName = `${string} ${Quarter}`;
+
 export type ScheduleCourse = {
     courseComment: string;
     courseNumber: string;
@@ -14,7 +16,7 @@ export type ScheduleCourse = {
     deptCode: string;
     prerequisiteLink: string;
     section: AASection;
-    term: string;
+    term: TermShortName;
     sectionTypes: WebsocSectionType[];
 };
 
@@ -31,7 +33,7 @@ export const ShortCourseSchema = z.object({
     term: z.string(),
     sectionCode: z.string(),
 });
-export type ShortCourse = z.infer<typeof ShortCourseSchema>;
+export type ShortCourse = Omit<z.infer<typeof ShortCourseSchema>, 'term'> & { term: TermShortName };
 
 export const ShortCourseScheduleSchema = z
     .object({
@@ -42,13 +44,17 @@ export const ShortCourseScheduleSchema = z
         id: z.string().optional(),
     })
     .transform((schedule) => ({ scheduleNote: '', ...schedule }));
-export type ShortCourseSchedule = z.infer<typeof ShortCourseScheduleSchema>;
+export type ShortCourseSchedule = Omit<z.infer<typeof ShortCourseScheduleSchema>, 'courses'> & {
+    courses: ShortCourse[];
+};
 
 export const ScheduleSaveStateSchema = z.object({
     schedules: z.array(ShortCourseScheduleSchema),
     scheduleIndex: z.number(),
 });
-export type ScheduleSaveState = z.infer<typeof ScheduleSaveStateSchema>;
+export type ScheduleSaveState = Omit<z.infer<typeof ScheduleSaveStateSchema>, 'schedules'> & {
+    schedules: ShortCourseSchedule[];
+};
 
 export type ScheduleUndoState = {
     schedules: Schedule[];

@@ -3,6 +3,7 @@ import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { type Term } from '$lib/term';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
@@ -62,12 +63,12 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [pendingRequest, setPendingRequest] = useState<number | undefined>(undefined);
-    const [currentTerm, setCurrentTerm] = useState<string>(RightPaneStore.getFormData().term);
+    const [currentTerm, setCurrentTerm] = useState<Term>(RightPaneStore.getFormData().term);
 
     const requestTimestampRef = useRef<number | undefined>(undefined);
 
-    const getCacheKey = (term: string, query: string): string => {
-        return `${term}:${query}`;
+    const getCacheKey = (term: Term, query: string): string => {
+        return `${term.shortName}:${query}`;
     };
 
     const doSearch = (option: SearchOption) => {
@@ -146,7 +147,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
             const requestTerm = RightPaneStore.getFormData().term;
 
             trpc.search.doSearch
-                .query({ query: requestQuery, term: requestTerm })
+                .query({ query: requestQuery, term: requestTerm.shortName })
                 .then((result) => {
                     if (!requestIsCurrent(requestTimestamp)) return;
 

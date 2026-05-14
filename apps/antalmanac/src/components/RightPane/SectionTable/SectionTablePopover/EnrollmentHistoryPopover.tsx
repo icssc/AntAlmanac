@@ -5,6 +5,7 @@ import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import type { WebsocSectionType } from '@packages/anteater-api/types';
+import type { TermShortName } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
 import {
     CartesianGrid,
@@ -21,7 +22,7 @@ interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
-    term: string;
+    term: TermShortName;
     sectionCode: string;
 }
 

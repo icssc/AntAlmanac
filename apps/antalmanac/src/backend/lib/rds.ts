@@ -1,11 +1,12 @@
 import { parseTermShortName } from '$lib/term';
 import type {
+    Notification,
     ShortCourse,
     ShortCourseSchedule,
     User,
     RepeatingCustomEvent,
-    Notification,
     ScheduleSaveState,
+    TermShortName,
 } from '@packages/antalmanac-types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
@@ -249,7 +250,7 @@ export class RDS {
     }
 
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
-        const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string }>();
+        const uniqueByKey = new Map<string, { sectionCode: number; term: TermShortName; color: string }>();
         for (const course of courses) {
             const sectionCode = parseInt(course.sectionCode);
             const key = `${sectionCode}-${course.term}`;
@@ -423,7 +424,7 @@ export class RDS {
             if (course) {
                 scheduleAggregate.courses.push({
                     sectionCode: course.sectionCode.toString(),
-                    term: course.term,
+                    term: course.term as TermShortName,
                     color: course.color,
                 });
             }
@@ -733,14 +734,14 @@ export class RDS {
      * @param db - The database or transaction object to use for the operation.
      * @param userId - The ID of the user for whom we're deleting a notification.
      * @param sectionCode - WebSOC section code.
-     * @param term - Term string.
+     * @param term - Term short name (e.g. `"2024 Fall"`).
      * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
      */
     static async deleteNotification(
         db: DatabaseOrTransaction,
         userId: string,
         sectionCode: string,
-        term: string,
+        term: TermShortName,
         environment: string
     ) {
         const termParts = parseTermShortName(term);

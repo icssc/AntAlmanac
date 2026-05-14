@@ -4,7 +4,7 @@ import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
-import { CustomEventId } from '@packages/antalmanac-types';
+import { CustomEventId, type TermShortName } from '@packages/antalmanac-types';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
@@ -17,7 +17,7 @@ interface ColorPickerProps {
     /**Not undefined when isCustomEvent is true */
     customEventID?: CustomEventId;
     /**Not undefined  when isCustomEvent is false */
-    term?: string;
+    term?: TermShortName;
     /**Not undefined  when isCustomEvent is false */
     sectionCode?: string;
 }

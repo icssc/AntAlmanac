@@ -3,7 +3,7 @@ import { Notifications } from '$lib/notifications';
 import { buildTermShortName, parseTermShortName } from '$lib/term';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
-import { type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
+import { type AASection, type CourseInfo, type TermShortName, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
 import type { Quarter } from '@packages/anteater-api/types';
 import type { Course } from '@packages/anteater-api/types';
 import { create } from 'zustand';
@@ -16,7 +16,7 @@ export type NotifyOn = {
 };
 
 export type Notification = {
-    term: string;
+    term: TermShortName;
     sectionCode: AASection['sectionCode'];
     units: number;
     sectionNum: string;
@@ -183,11 +183,10 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
                 const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
                 const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
+                    const parsed = parseTermShortName(term);
+                    if (!parsed) return;
                     const sectionCodes = Array.from(courseSet).join(',');
-                    const courseInfo = await trpc.websoc.getCourseInfo.query({
-                        term,
-                        sectionCodes,
-                    });
+                    const courseInfo = await trpc.websoc.getCourseInfo.query({ ...parsed, sectionCodes });
                     courseInfoDict.set(term, courseInfo);
                 });
 
@@ -221,7 +220,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                       : course.section.status;
 
                             notifications[key] = {
-                                term,
+                                term: term as TermShortName,
                                 sectionCode,
                                 courseTitle: course.courseDetails.courseTitle,
                                 sectionType: course.section.sectionType,

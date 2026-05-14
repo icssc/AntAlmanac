@@ -9,6 +9,7 @@ import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePan
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import { findTermByShortName, getDefaultTerm, type Term } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
@@ -34,7 +35,7 @@ const buttonSx: SxProps = {
 };
 
 export interface CourseWithTerm extends AACourse {
-    term: string;
+    term: Term;
 }
 
 function getCourses() {
@@ -58,8 +59,9 @@ function getCourses() {
             });
             formattedCourse.updatedAt = sectionUpdatedAt;
         } else {
+            const termObj = findTermByShortName(course.term) ?? getDefaultTerm();
             formattedCourse = {
-                term: course.term,
+                term: termObj,
                 deptCode: course.deptCode,
                 courseComment: course.courseComment,
                 prerequisiteLink: course.prerequisiteLink,

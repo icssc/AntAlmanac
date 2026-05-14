@@ -4,12 +4,13 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
+import type { Term } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
 
 interface SectionTableBodyProps {
     courseDetails: AACourse;
-    term: string;
+    term: Term;
     scheduleNames: string[];
     allowHighlight: boolean;
     analyticsCategory: AnalyticsCategory;

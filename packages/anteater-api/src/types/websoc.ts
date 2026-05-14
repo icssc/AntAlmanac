@@ -34,6 +34,8 @@ export type WebsocTermsAPIResult =
 
 export type WebsocTerm = WebsocTermsAPIResult['data'][number];
 
+export type WebsocQueryParams = NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']>;
+
 export type WebsocSyllabiQueryParams = paths['/v2/rest/websoc/syllabi']['get']['parameters']['query'];
 
 export type WebsocSyllabiAPIResult =

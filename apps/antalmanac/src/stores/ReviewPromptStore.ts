@@ -1,6 +1,7 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { termData } from '$lib/term';
+import type { TermShortName } from '@packages/antalmanac-types';
 import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -25,8 +26,8 @@ type ReviewCandidate = {
     courseTitle: string;
     /** Raw WebSOC instructor name, e.g. "PATTIS, R." */
     professorId: string;
-    /** AntAlmanac term shortName, e.g. "Fall 2024" */
-    term: string;
+    /** AntAlmanac term shortName, e.g. "2024 Fall" */
+    term: TermShortName;
 };
 
 type Step = 'enrollment-confirm' | 'review' | 'hidden';
@@ -57,7 +58,7 @@ export const useReviewPromptStore = create(
             // Collect past terms within the window (termData is ordered newest-first
             // after the filter in termData.ts — see its `filter(socAvailable <= today)`).
             // We further filter to terms whose finals have already ended.
-            const pastTermNames = new Set<string>(
+            const pastTermNames = new Set<TermShortName>(
                 termData
                     .filter((t) => t.finalsStart < today)
                     .slice(0, PAST_TERMS_WINDOW)

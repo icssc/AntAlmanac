@@ -3,6 +3,7 @@ import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
+import { Term } from '$lib/term';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -14,7 +15,9 @@ import type {
     CustomEventId,
     RepeatingCustomEvent,
     ScheduleCourse,
+    ScheduleSaveState,
     ShortCourseSchedule,
+    TermShortName,
 } from '@packages/antalmanac-types';
 import type { WebsocSection } from '@packages/anteater-api/types';
 import { TRPCClientError } from '@trpc/client';
@@ -32,7 +35,7 @@ interface AutoSaveScheduleOptions {
 export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
-    term: string,
+    term: Term,
     scheduleIndex: number,
     quiet?: boolean,
     postHog?: PostHog
@@ -51,7 +54,7 @@ export const addCourse = (
 
     // The color will be set properly in Schedules
     const newCourse: ScheduleCourse = {
-        term: term,
+        term: term.shortName,
         deptCode: courseDetails.deptCode,
         courseNumber: courseDetails.courseNumber,
         courseTitle: courseDetails.courseTitle,
@@ -202,7 +205,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         return { imported: true, error: null };
     }
 
-    const scheduleSaveState = incoming.userData;
+    const scheduleSaveState = incoming.userData as ScheduleSaveState;
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
@@ -270,7 +273,7 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
 
             try {
                 const result = await trpc.schedule.getGuest.query({ username });
-                const scheduleSaveState = result.userData;
+                const scheduleSaveState = result.userData as ScheduleSaveState;
 
                 let error = false;
 
@@ -419,7 +422,7 @@ export const loginUser = async ({
     }
 };
 
-export const deleteCourse = (sectionCode: string, term: string, scheduleIndex: number) => {
+export const deleteCourse = (sectionCode: string, term: TermShortName, scheduleIndex: number) => {
     AppStore.deleteCourse(sectionCode, term, scheduleIndex);
 };
 
@@ -463,7 +466,7 @@ export const changeCustomEventColor = (customEventID: CustomEventId, newColor: s
     AppStore.changeCustomEventColor(customEventID, newColor);
 };
 
-export const changeCourseColor = (sectionCode: string, term: string, newColor: string) => {
+export const changeCourseColor = (sectionCode: string, term: TermShortName, newColor: string) => {
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 

@@ -1,5 +1,5 @@
 import trpc from '$lib/api/trpc';
-import { getDefaultTerm } from '$lib/term';
+import { getDefaultTerm, parseTermShortName } from '$lib/term';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type {
     Schedule,
@@ -10,6 +10,7 @@ import type {
     RepeatingCustomEvent,
     CourseInfo,
     CustomEventId,
+    TermShortName,
 } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 
@@ -206,7 +207,7 @@ export class Schedules {
     /**
      * Get course that matches the params across **all** schedules.
      */
-    getExistingCourse(sectionCode: string, term: string) {
+    getExistingCourse(sectionCode: string, term: TermShortName) {
         for (const course of this.getAllCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return course;
@@ -218,7 +219,7 @@ export class Schedules {
     /**
      * Get a course that matches the params in the **current** schedule.
      */
-    getExistingCourseInSchedule(sectionCode: string, term: string) {
+    getExistingCourseInSchedule(sectionCode: string, term: TermShortName) {
         for (const course of this.getCurrentCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return course;
@@ -298,7 +299,7 @@ export class Schedules {
     /**
      * Change courses that match the code and term in all schedules to new color.
      */
-    changeCourseColor(sectionCode: string, term: string, newColor: string) {
+    changeCourseColor(sectionCode: string, term: TermShortName, newColor: string) {
         this.addUndoState();
 
         const course = this.getExistingCourseInSchedule(sectionCode, term);
@@ -311,7 +312,7 @@ export class Schedules {
     /**
      * Delete a course in current schedule.
      */
-    deleteCourse(sectionCode: string, term: string, scheduleIndex: number) {
+    deleteCourse(sectionCode: string, term: TermShortName, scheduleIndex: number) {
         this.addUndoState();
         this.setCurrentScheduleIndex(scheduleIndex);
         this.schedules[scheduleIndex].courses = this.schedules[this.currentScheduleIndex].courses.filter((course) => {
@@ -322,7 +323,7 @@ export class Schedules {
     /**
      * Check if a course has already been added to a schedule.
      */
-    doesCourseExistInSchedule(sectionCode: string, term: string, scheduleIndex: number) {
+    doesCourseExistInSchedule(sectionCode: string, term: TermShortName, scheduleIndex: number) {
         for (const course of this.schedules[scheduleIndex].courses) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return true;
@@ -612,8 +613,10 @@ export class Schedules {
             const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
 
             const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
+                const parsed = parseTermShortName(term);
+                if (!parsed) return;
                 const sectionCodes = Array.from(courseSet).join(',');
-                const courseInfo = await trpc.websoc.getCourseInfo.query({ term, sectionCodes });
+                const courseInfo = await trpc.websoc.getCourseInfo.query({ ...parsed, sectionCodes });
                 courseInfoDict.set(term, courseInfo);
             });
 

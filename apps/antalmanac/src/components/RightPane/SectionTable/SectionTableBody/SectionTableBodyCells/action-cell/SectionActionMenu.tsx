@@ -10,7 +10,7 @@ import { memo, useCallback, useState } from 'react';
 interface SectionActionMenuProps {
     section: AASection;
     courseDetails: CourseDetails;
-    term: Term['shortName'];
+    term: Term;
     scheduleNames: string[];
 }
 

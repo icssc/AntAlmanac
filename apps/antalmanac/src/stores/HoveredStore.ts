@@ -1,4 +1,5 @@
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { Term } from '$lib/term';
 import { calendarizeCourseEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 import { AASection, ScheduleCourse, CourseDetails } from '@packages/antalmanac-types';
 import { create } from 'zustand';
@@ -6,7 +7,7 @@ import { create } from 'zustand';
 const HOVERED_SECTION_COLOR = '#80808080';
 interface HoveredStore {
     hoveredEvent: ScheduleCourse | undefined;
-    setHoveredEvent: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
+    setHoveredEvent: (section?: AASection, courseDetails?: CourseDetails, term?: Term) => void;
     hoveredCalendarizedCourses: CourseEvent[] | undefined;
     hoveredCalendarizedFinal: CourseEvent | undefined;
 }
@@ -32,7 +33,7 @@ export const useHoveredStore = create<HoveredStore>((set) => {
                     ...section,
                     color: HOVERED_SECTION_COLOR,
                 },
-                term,
+                term: term.shortName,
             };
 
             set({

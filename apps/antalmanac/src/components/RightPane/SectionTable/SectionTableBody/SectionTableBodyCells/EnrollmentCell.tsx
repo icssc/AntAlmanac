@@ -3,13 +3,14 @@ import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/Sec
 import { useIsMobile } from '$hooks/useIsMobile';
 import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/anteater-api/types';
+import type { TermShortName } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
 
 interface EnrollmentCellProps {
     sectionType: WebsocSectionType;
     deptCode: string;
     courseNumber: string;
-    term: string;
+    term: TermShortName;
     sectionCode: string;
     numCurrentlyEnrolled: WebsocSectionEnrollment;
     maxCapacity: number;

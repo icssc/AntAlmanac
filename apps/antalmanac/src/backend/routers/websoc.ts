@@ -1,8 +1,9 @@
-import { parseTermShortName } from '$lib/term';
+import { QuarterSchema } from '$lib/term';
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import type { CourseInfo } from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,
+    WebsocQueryParams,
     WebsocSectionType,
     WebsocSyllabiQueryParams,
     WebsocSyllabiResponse,
@@ -12,61 +13,48 @@ import { z } from 'zod';
 
 import { router } from '../trpc';
 
-type WebsocQueryParams = Parameters<typeof aapiClient.websoc.query>[0];
-
-function sanitizeWebsocParams(params: Record<string, string>): WebsocQueryParams {
-    const p = { ...params };
-    if ('term' in p) {
-        const parsed = parseTermShortName(p.term);
-        delete p.term;
-        if (parsed) {
-            p.year = parsed.year;
-            p.quarter = parsed.quarter;
-        }
-    }
-    if ('department' in p) {
-        if (p.department.toUpperCase() === 'ALL') {
-            delete p.department;
-        } else {
-            p.department = p.department.toUpperCase();
-        }
-    }
-    if ('courseNumber' in p) {
-        p.courseNumber = p.courseNumber.toUpperCase();
-    }
-    for (const [key, value] of Object.entries(p)) {
-        if (value === '') delete p[key];
-    }
-    return p as unknown as WebsocQueryParams;
+function sanitizeWebsocParams({ department, courseNumber, ...rest }: WebsocQueryParams): WebsocQueryParams {
+    const p: Partial<WebsocQueryParams> = { ...rest };
+    if (department && department.toUpperCase() !== 'ALL') {p.department = department.toUpperCase();}
+    if (courseNumber) {p.courseNumber = courseNumber.toUpperCase();}
+    return p;
 }
 
-async function queryWebsoc(rawParams: Record<string, string>): Promise<WebsocAPIResponse> {
-    return sortWebsocResponse(await aapiClient.websoc.query(sanitizeWebsocParams(rawParams)));
+async function queryWebsoc(params: WebsocQueryParams): Promise<WebsocAPIResponse> {
+    return sortWebsocResponse(await aapiClient.websoc.query(sanitizeWebsocParams(params)));
 }
+
+const websocInput = z.custom<WebsocQueryParams>(
+    (v) => typeof v === 'object' && v !== null && 'year' in v && 'quarter' in v
+);
 
 const websocRouter = router({
     getOne: aapiProcedure
-        .input(z.record(z.string(), z.string()))
+        .input(websocInput)
         .query(({ input }): Promise<WebsocAPIResponse> => queryWebsoc(input)),
 
+    // !
     getManyOfField: aapiProcedure
-        .input(z.object({ params: z.record(z.string(), z.string()), fieldName: z.string() }))
+        .input(z.object({ params: websocInput, fieldName: z.string() }))
         .query(({ input }): Promise<WebsocAPIResponse> => {
-            const fields = input.params[input.fieldName].trim().replaceAll(' ', '').split(',');
-            return Promise.all(fields.map((field) => queryWebsoc({ ...input.params, [input.fieldName]: field }))).then(
-                combineWebsocResponses
-            );
+            const fields = (String(input.params[input.fieldName as keyof WebsocQueryParams] ?? ''))
+                .trim()
+                .replaceAll(' ', '')
+                .split(',');
+            return Promise.all(
+                fields.map((field) => queryWebsoc({ ...input.params, [input.fieldName]: field }))
+            ).then(combineWebsocResponses);
         }),
 
     getMultiple: aapiProcedure
-        .input(z.object({ params: z.array(z.record(z.string(), z.string())) }))
+        .input(z.object({ params: z.array(websocInput) }))
         .query(
             ({ input }): Promise<WebsocAPIResponse> =>
                 Promise.all(input.params.map(queryWebsoc)).then(combineWebsocResponses)
         ),
 
     getCourseInfo: aapiProcedure
-        .input(z.record(z.string(), z.string()))
+        .input(z.object({ year: z.string(), quarter: QuarterSchema, sectionCodes: z.string() }))
         .query(async ({ input }): Promise<Record<string, CourseInfo>> => {
             const res = await queryWebsoc(input);
 
@@ -102,13 +90,13 @@ const websocRouter = router({
             z.object({
                 courseId: z.string(),
                 year: z.string().optional(),
-                quarter: z.string().optional(),
+                quarter: QuarterSchema.optional(),
                 instructor: z.string().optional(),
             })
         )
         .query(
             ({ input }): Promise<WebsocSyllabiResponse> =>
-                aapiClient.websoc.getSyllabi(input as WebsocSyllabiQueryParams)
+                aapiClient.websoc.getSyllabi(input)
         ),
 });
 

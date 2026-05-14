@@ -6,7 +6,7 @@ import {
     ManualSearchParam,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { normalizeGeSelection } from '$lib/multiGeSearch';
-import { getDefaultTerm, isTermAvailable, type Term } from '$lib/term';
+import { getDefaultTerm, termData, type Term } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
 
 const defaultBasicSearchValues: Record<BasicSearchParam, Term> = {
@@ -99,29 +99,36 @@ class RightPaneStore extends EventEmitter {
     }
 
     updateFormDataFromURL = (search: URLSearchParams) => {
-        const formFields = Object.keys(defaultFormValues) as CourseSearchParamKey[];
-
-        formFields.forEach((field) => {
+        const stringFields = Object.keys(defaultFormValues).filter((f) => f !== 'term') as Exclude<
+            CourseSearchParamKey,
+            'term'
+        >[];
+        stringFields.forEach((field) => {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
-
             if (paramValue !== null) {
                 this.formData[field] = field === 'ge' ? normalizeGeSelection(paramValue) : paramValue;
             }
         });
 
-        if (this.formData.term !== null && !isTermAvailable(this.formData.term)) {
-            const fallbackTerm = getDefaultTerm().shortName;
-            const message = `${this.formData.term} is currently unavailable, falling back to ${fallbackTerm}`;
-            openSnackbar('error', message);
-            console.error('Error setting term from URL:', message);
-
-            this.formData.term = getDefaultTerm();
-
-            this.setWarningMessages(CourseSearchWarningType.TermUnavailable, [message]);
+        const termParam = search.get('term') || search.get('TERM');
+        if (termParam !== null) {
+            const termObj = termData.find((t) => t.shortName === termParam);
+            if (termObj) {
+                this.formData.term = termObj;
+            } else {
+                const fallbackTerm = getDefaultTerm();
+                const message = `${termParam} is currently unavailable, falling back to ${fallbackTerm.shortName}`;
+                openSnackbar('error', message);
+                console.error('Error setting term from URL:', message);
+                this.formData.term = fallbackTerm;
+                this.setWarningMessages(CourseSearchWarningType.TermUnavailable, [message]);
+            }
         }
 
         this.emit('formDataChange');
     };
+
+    getTermParts = () => ({ year: this.formData.term.year, quarter: this.formData.term.quarter });
 
     getFormData = () => {
         return this.formData;

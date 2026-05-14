@@ -3,6 +3,7 @@ import SectionTable, { type SectionTableProps } from '$components/RightPane/Sect
 import { trpcReact } from '$lib/api/trpcReact';
 import AppStore from '$stores/AppStore';
 import type { AACourse } from '@packages/antalmanac-types';
+import type { WebsocQueryParams } from '@packages/anteater-api/types';
 import { flattenCourses } from '@packages/anteater-api/utils';
 import { useMemo } from 'react';
 
@@ -12,11 +13,12 @@ import { useMemo } from 'react';
  * GE criteria will miss them.
  */
 const GeDataFetchProvider = (props: SectionTableProps) => {
-    const params = useMemo(() => {
+    const params = useMemo((): WebsocQueryParams => {
         const formData = RightPaneStore.getFormData();
         return {
+            year: formData.term.year,
+            quarter: formData.term.quarter,
             department: props.courseDetails.deptCode,
-            term: formData.term.shortName,
             ge: 'ANY',
             courseNumber: props.courseDetails.courseNumber,
             courseTitle: props.courseDetails.courseTitle,
@@ -24,10 +26,10 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             units: formData.units,
             endTime: formData.endTime,
             startTime: formData.startTime,
-            fullCourses: formData.coursesFull,
+            fullCourses: formData.coursesFull as WebsocQueryParams['fullCourses'],
             building: formData.building,
             room: formData.room,
-            division: formData.division,
+            division: formData.division as WebsocQueryParams['division'],
             excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
             days: formData.days.split(/(?=[A-Z])/).join(','),
         };

@@ -19,6 +19,7 @@ import {
     removeLocalStorageOnFirstSignin,
     removeLocalStorageUserId,
 } from '$lib/localStorage';
+import { Term } from '$lib/term';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -242,7 +243,8 @@ export function Import() {
         try {
             const term = RightPaneStore.getFormData().term;
             const courseInfo = await trpc.websoc.getCourseInfo.query({
-                term,
+                year: term.year,
+                quarter: term.quarter,
                 sectionCodes: sectionCodes.join(','),
             });
 
@@ -288,7 +290,7 @@ export function Import() {
 
     const addCoursesMultiple = (
         courseInfo: { [sectionCode: string]: CourseInfo },
-        term: string,
+        term: Term,
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {

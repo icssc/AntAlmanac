@@ -10,7 +10,7 @@ import { useCallback } from 'react';
 interface AddButtonProps {
     section: AASection;
     courseDetails: CourseDetails;
-    term: Term['shortName'];
+    term: Term;
     scheduleConflict: boolean;
 }
 

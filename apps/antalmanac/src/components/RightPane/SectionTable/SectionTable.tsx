@@ -196,7 +196,7 @@ function SectionTable(props: SectionTableProps) {
 
                         <SectionTableBody
                             courseDetails={courseDetails}
-                            term={term.shortName}
+                            term={term}
                             allowHighlight={allowHighlight}
                             scheduleNames={scheduleNames}
                             analyticsCategory={analyticsCategory}

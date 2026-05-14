@@ -6,13 +6,14 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
+import { findTermByShortName } from '$lib/term';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { CustomEventId } from '@packages/antalmanac-types';
+import { CustomEventId, type TermShortName } from '@packages/antalmanac-types';
 import { WebsocSectionFinalExam } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
@@ -57,7 +58,7 @@ export interface CourseEvent extends CommonCalendarEvent {
     sectionType: string;
     deptValue: string;
     courseNumber: string;
-    term: string;
+    term: TermShortName;
 }
 
 /**
@@ -133,7 +134,8 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
         }
 
         const handleQuickSearch = () => {
-            quickSearch(deptValue, courseNumber, term);
+            const termObj = findTermByShortName(term);
+            if (termObj) quickSearch(deptValue, courseNumber, termObj);
         };
 
         return (
@@ -221,7 +223,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     color={selectedEvent.color}
                                     isCustomEvent={selectedEvent.isCustomEvent}
                                     sectionCode={selectedEvent.sectionCode}
-                                    term={selectedEvent.term}
+                                    term={term}
                                     analyticsCategory={analyticsEnum.calendar}
                                 />
                             </td>
