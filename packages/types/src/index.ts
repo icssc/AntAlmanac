@@ -1,3 +1,4 @@
+export * from './calendar';
 export * from './schedule';
 export * from './grades';
 export * from './customEvent';
