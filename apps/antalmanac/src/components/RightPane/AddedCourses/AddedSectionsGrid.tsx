@@ -166,7 +166,7 @@ export function AddedSectionsGrid() {
                         const missingSections = getMissingSections(course);
 
                         return (
-                            <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
+                            <Box key={course.term + course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTable
                                     courseDetails={course}
                                     term={course.term}
