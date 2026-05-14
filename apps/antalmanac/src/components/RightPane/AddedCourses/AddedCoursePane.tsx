@@ -1,14 +1,9 @@
 import { updateScheduleNote } from '$actions/AppStoreActions';
-import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
-import { ClearScheduleButton } from '$components/buttons/Clear';
-import { CopyScheduleButton } from '$components/buttons/Copy';
 import { EmptyState } from '$components/EmptyState';
+import { AddedCoursesToolbar } from '$components/RightPane/AddedCourses/AddedCoursesToolbar';
 import { CustomEventDetailView } from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
-import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
-import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
-import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
@@ -16,25 +11,10 @@ import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
 import { MenuBook } from '@mui/icons-material';
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Chip, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse, SCHEDULE_NOTE_MAX_LENGTH } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-/**
- * All the interactive buttons have the same styles.
- */
-const buttonSx: SxProps = {
-    backgroundColor: 'rgba(236, 236, 236, 1)',
-    marginRight: 1,
-    padding: 1.5,
-    boxShadow: '2',
-    color: 'black',
-    '&:hover': {
-        backgroundColor: 'grey',
-    },
-    pointerEvents: 'auto',
-};
 
 export interface CourseWithTerm extends AACourse {
     term: string;
@@ -282,8 +262,6 @@ function AddedSectionsGrid() {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
-    const isMobile = useIsMobile();
-
     useEffect(() => {
         const handleCoursesChange = () => {
             setCourses(getCourses());
@@ -330,15 +308,13 @@ function AddedSectionsGrid() {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
-                <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-                <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
-                <ColumnToggleDropdown />
-                <NotificationsDialog buttonSx={buttonSx} />
-            </Box>
-            <Box sx={{ marginTop: 7 }}>
-                <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {isMobile && <SelectSchedulePopover />}
+            <AddedCoursesToolbar
+                scheduleNames={scheduleNames}
+                scheduleIndex={scheduleIndex}
+                scheduleUnits={scheduleUnits}
+            />
+            <Box>
+                <Typography variant="h6">{scheduleName}</Typography>
                 {courses.length === 0 && (
                     <EmptyState
                         Icon={MenuBook}

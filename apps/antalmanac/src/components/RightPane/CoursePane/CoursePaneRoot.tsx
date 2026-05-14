@@ -1,6 +1,6 @@
-import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
+import { SearchResultsToolbar } from '$components/RightPane/CoursePane/SearchResultsToolbar';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpcReact';
@@ -60,11 +60,9 @@ export function CoursePaneRoot() {
 
     return (
         <Box sx={{ height: 0, flexGrow: 1 }}>
-            <CoursePaneButtonRow
-                showSearch={!searchFormIsDisplayed}
-                onDismissSearchResults={displaySearch}
-                onRefreshSearch={refreshSearch}
-            />
+            {!searchFormIsDisplayed && (
+                <SearchResultsToolbar onDismissSearchResults={displaySearch} onRefreshSearch={refreshSearch} />
+            )}
             {searchFormIsDisplayed ? (
                 <SearchForm toggleSearch={handleSearch} />
             ) : (

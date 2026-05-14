@@ -66,7 +66,7 @@ const COLUMN_LABEL_ENTRIES = Object.entries(columnLabels);
  *
  * e.g. show/hide the section code, instructors, etc.
  */
-export function ColumnToggleDropdown() {
+export function ColumnToggleDropdown({ buttonSx: overrideSx }: { buttonSx?: SxProps } = {}) {
     const [selectedColumns, setSelectedColumns] = useColumnStore((store) => [
         store.selectedColumns,
         store.setSelectedColumns,
@@ -105,8 +105,8 @@ export function ColumnToggleDropdown() {
     return (
         <>
             <Tooltip title="Show/Hide Columns">
-                <IconButton onClick={handleClick} sx={buttonSx}>
-                    <Visibility />
+                <IconButton onClick={handleClick} sx={overrideSx} size="medium">
+                    <Visibility fontSize="small" />
                 </IconButton>
             </Tooltip>
 
