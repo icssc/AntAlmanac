@@ -4,6 +4,7 @@ import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enro
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import type { AATerm } from '@packages/antalmanac-types';
 import type { WebsocSectionType } from '@packages/anteater-api/types';
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -21,7 +22,7 @@ interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
-    term: string;
+    term: AATerm;
     sectionCode: string;
 }
 
@@ -63,7 +64,7 @@ export function EnrollmentHistoryPopover({
             }
         }
         const matchIndex = enrollmentHistory.findIndex(
-            (e) => `${e.year} ${e.quarter}` === term && e.sectionCode === sectionCode
+            (e) => e.year === term.year && e.quarter === term.quarter && e.sectionCode === sectionCode
         );
         return matchIndex >= 0 ? matchIndex : enrollmentHistory.length - 1;
     }, [enrollmentHistory, sectionCode, selectedGraphKey, term]);

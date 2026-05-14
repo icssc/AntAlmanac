@@ -16,7 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
     section: AASection;
-    term: AATerm['shortName'];
+    term: AATerm;
     courseDetails: CourseDetails;
     scheduleConflict: boolean;
     addedCourse: boolean;
@@ -32,10 +32,10 @@ export const ActionCell = memo(
         const initialized = useNotificationStore(useShallow((state) => state.initialized));
         const isMobile = useIsMobile();
 
-        const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term));
+        const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term.shortName));
 
         const updateColor = useCallback(() => {
-            setSectionColor(getSectionColor(section.sectionCode, term));
+            setSectionColor(getSectionColor(section.sectionCode, term.shortName));
         }, [section.sectionCode, term]);
 
         useEffect(() => {
@@ -89,7 +89,7 @@ export const ActionCell = memo(
                                 color={sectionColor}
                                 analyticsCategory={analyticsEnum.addedClasses}
                                 isCustomEvent={false}
-                                term={term}
+                                term={term.shortName}
                                 sectionCode={section.sectionCode}
                             />
                         ) : (

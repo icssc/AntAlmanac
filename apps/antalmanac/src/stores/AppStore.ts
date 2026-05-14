@@ -28,6 +28,7 @@ import type {
     ScheduleSaveState,
     RepeatingCustomEvent,
     CustomEventId,
+    AATerm,
 } from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
@@ -424,7 +425,7 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    termsInSchedule = (term: string) =>
+    termsInSchedule = (term: AATerm['shortName']) =>
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
 
     getPreviousStates = () => this.schedule.getPreviousStates();

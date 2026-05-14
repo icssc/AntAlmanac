@@ -12,7 +12,7 @@ import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import { Box, Collapse, IconButton, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
+import { AACourse, AATerm } from '@packages/antalmanac-types';
 import { useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
 
@@ -39,7 +39,7 @@ const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 interface SectionTableProps {
     courseDetails: AACourse;
-    term: string;
+    term: AATerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: AnalyticsCategory;

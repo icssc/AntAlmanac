@@ -70,7 +70,7 @@ function buildSectionCodesQuery(year: string, quarter: string): string {
 async function main() {
     console.log('Generating cache for fuzzy search.');
 
-    const activeTerms = termData.filter((t) => canTermEnrollmentChange(t.shortName));
+    const activeTerms = termData.filter((t) => canTermEnrollmentChange(t));
 
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];

@@ -212,7 +212,7 @@ const SectionTableWrapped = (
         const course = courseData[index] as AACourse;
         component = (
             <GeDataFetchProvider
-                term={formData.term.shortName}
+                term={formData.term}
                 courseDetails={course}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
@@ -223,7 +223,7 @@ const SectionTableWrapped = (
         const course = courseData[index] as AACourse;
         component = (
             <SectionTable
-                term={formData.term.shortName}
+                term={formData.term}
                 courseDetails={course}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}

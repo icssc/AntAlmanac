@@ -10,7 +10,7 @@ import { memo, useCallback, useState } from 'react';
 interface SectionActionMenuProps {
     section: AASection;
     courseDetails: CourseDetails;
-    term: AATerm['shortName'];
+    term: AATerm;
     scheduleNames: string[];
 }
 
@@ -32,14 +32,14 @@ export const SectionActionMenu = memo(function SectionActionMenu({
 
     const handleAddToSchedule = useCallback(
         (scheduleIndex: number) => {
-            addCourse(section, courseDetails, term, scheduleIndex);
+            addCourse(section, courseDetails, term.shortName, scheduleIndex);
             handleClose();
         },
         [section, courseDetails, term, handleClose]
     );
 
     const handleAddToAll = useCallback(() => {
-        addCourse(section, courseDetails, term, AppStore.schedule.getNumberOfSchedules());
+        addCourse(section, courseDetails, term.shortName, AppStore.schedule.getNumberOfSchedules());
         handleClose();
     }, [section, courseDetails, term, handleClose]);
 

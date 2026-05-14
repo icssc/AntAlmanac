@@ -260,7 +260,7 @@ export function Import() {
                 sectionCodes: sectionCodes.join(','),
             });
 
-            const sectionsAdded = addCoursesMultiple(courseInfo, term.shortName, currentSchedule);
+            const sectionsAdded = addCoursesMultiple(courseInfo, term, currentSchedule);
 
             logAnalytics(postHog, {
                 category: analyticsEnum.nav,
@@ -302,14 +302,14 @@ export function Import() {
 
     const addCoursesMultiple = (
         courseInfo: { [sectionCode: string]: CourseInfo },
-        term: AATerm['shortName'],
+        term: AATerm,
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {
-            addCourse(section.section, section.courseDetails, term, scheduleIndex, true, postHog);
+            addCourse(section.section, section.courseDetails, term.shortName, scheduleIndex, true, postHog);
         }
 
-        const terms = AppStore.termsInSchedule(term);
+        const terms = AppStore.termsInSchedule(term.shortName);
         if (terms.size > 1) {
             warnMultipleTerms(terms);
         }

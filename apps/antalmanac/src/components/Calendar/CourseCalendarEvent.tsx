@@ -6,6 +6,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
+import { getTermByShortName } from '$lib/term';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
@@ -133,7 +134,8 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
         }
 
         const handleQuickSearch = () => {
-            quickSearch(deptValue, courseNumber, term);
+            const termObj = getTermByShortName(term);
+            if (termObj) quickSearch(deptValue, courseNumber, termObj);
         };
 
         return (

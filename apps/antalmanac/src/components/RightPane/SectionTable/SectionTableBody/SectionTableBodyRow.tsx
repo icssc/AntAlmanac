@@ -14,7 +14,7 @@ import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { TableRow, useTheme } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { AASection, AATerm, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
@@ -22,7 +22,7 @@ import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 interface SectionTableBodyRowProps {
     section: AASection;
     courseDetails: CourseDetails;
-    term: string;
+    term: AATerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
@@ -65,20 +65,20 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(
-        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
+        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
     );
 
     // Stable references to event listeners will synchronize React state with the store.
 
     const updateHighlight = useCallback(() => {
-        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
+        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`));
     }, [section.sectionCode, term]);
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
             setHoveredEvent(undefined);
         } else {
-            setHoveredEvent(section, courseDetails, term);
+            setHoveredEvent(section, courseDetails, term.shortName);
         }
     }, [previewMode, addedCourse, setHoveredEvent, section, courseDetails, term]);
 

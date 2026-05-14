@@ -10,7 +10,7 @@ import { useCallback } from 'react';
 interface AddButtonProps {
     section: AASection;
     courseDetails: CourseDetails;
-    term: AATerm['shortName'];
+    term: AATerm;
     scheduleConflict: boolean;
 }
 
@@ -22,7 +22,7 @@ export function AddButton({ section, courseDetails, term, scheduleConflict }: Ad
                 break;
             }
         }
-        addCourse(section, courseDetails, term, AppStore.getCurrentScheduleIndex());
+        addCourse(section, courseDetails, term.shortName, AppStore.getCurrentScheduleIndex());
     }, [section, courseDetails, term]);
 
     const button = (

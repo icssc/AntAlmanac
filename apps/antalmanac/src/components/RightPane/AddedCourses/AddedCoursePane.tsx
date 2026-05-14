@@ -1,7 +1,7 @@
 import { updateScheduleNote } from '$actions/AppStoreActions';
-import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { EmptyState } from '$components/EmptyState';
 import { CustomEventDetailView } from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
@@ -11,13 +11,14 @@ import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import { getTermByShortName } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
 import { MenuBook } from '@mui/icons-material';
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
-import { AACourse, SCHEDULE_NOTE_MAX_LENGTH } from '@packages/antalmanac-types';
+import { AACourse, AATerm, SCHEDULE_NOTE_MAX_LENGTH } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -37,7 +38,7 @@ const buttonSx: SxProps = {
 };
 
 export interface CourseWithTerm extends AACourse {
-    term: string;
+    term: AATerm;
 }
 
 function getCourses() {
@@ -46,6 +47,9 @@ function getCourses() {
     const formattedCourses: CourseWithTerm[] = [];
 
     for (const course of currentCourses) {
+        const term = getTermByShortName(course.term);
+        if (!term) continue;
+
         let formattedCourse = formattedCourses.find(
             (needleCourse) =>
                 needleCourse.courseNumber === course.courseNumber &&
@@ -62,7 +66,7 @@ function getCourses() {
             formattedCourse.updatedAt = sectionUpdatedAt;
         } else {
             formattedCourse = {
-                term: course.term,
+                term,
                 deptCode: course.deptCode,
                 courseComment: course.courseComment,
                 prerequisiteLink: course.prerequisiteLink,

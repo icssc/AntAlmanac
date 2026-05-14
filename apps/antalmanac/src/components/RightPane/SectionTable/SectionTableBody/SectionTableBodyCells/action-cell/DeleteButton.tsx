@@ -10,14 +10,14 @@ import { memo, useCallback } from 'react';
 
 interface DeleteButtonProps {
     sectionCode: AASection['sectionCode'];
-    term: AATerm['shortName'];
+    term: AATerm;
 }
 
 export const DeleteButton = memo(function DeleteButton({ sectionCode, term }: DeleteButtonProps) {
     const postHog = usePostHog();
 
     const handleClick = useCallback(() => {
-        deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
+        deleteCourse(sectionCode, term.shortName, AppStore.getCurrentScheduleIndex());
 
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,

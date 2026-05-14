@@ -89,10 +89,8 @@ export function isTermAvailable(termShortName: string) {
  * See {@link https://www.reg.uci.edu/enrollment/adc/adcpolicy.html} for full terms and
  * {@link https://summer.uci.edu/faq} for shorter summer terms.
  */
-export function canTermEnrollmentChange(termShortName: AATerm['shortName']) {
-    const term = termData.find((t) => t.shortName === termShortName);
-
-    if (!term || new Date().getFullYear() - term.instructionStart.getFullYear() > 1) {
+export function canTermEnrollmentChange(term: AATerm) {
+    if (new Date().getFullYear() - term.instructionStart.getFullYear() > 1) {
         return false;
     }
 
