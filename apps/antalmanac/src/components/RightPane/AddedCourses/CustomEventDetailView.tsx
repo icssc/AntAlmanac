@@ -24,16 +24,21 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
-        const baseDate = new Date(2000, 0, 1);
-        const startTime = set(baseDate, {
-            hours: parseInt(start.slice(0, 2)),
-            minutes: parseInt(start.slice(3, 5)),
-        });
+        const startHours = parseInt(start.slice(0, 2));
+        const startMinutes = parseInt(start.slice(3, 5));
+        const endHours = parseInt(end.slice(0, 2));
+        const endMinutes = parseInt(end.slice(3, 5));
 
-        const endTime = set(baseDate, {
-            hours: parseInt(end.slice(0, 2)),
-            minutes: parseInt(end.slice(3, 5)),
-        });
+        // Guard against malformed time strings (e.g. from third-party imports).
+        // Passing NaN to date-fns set() produces an Invalid Date, and the subsequent
+        // format() call would throw RangeError: Invalid time value at Date.toISOString.
+        if (isNaN(startHours) || isNaN(startMinutes) || isNaN(endHours) || isNaN(endMinutes)) {
+            return `${start} — ${end}`;
+        }
+
+        const baseDate = new Date(2000, 0, 1);
+        const startTime = set(baseDate, { hours: startHours, minutes: startMinutes });
+        const endTime = set(baseDate, { hours: endHours, minutes: endMinutes });
 
         const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const daysString = days.map((includeDate, index) => (includeDate ? dayAbbreviations[index] : '')).join(' ');
