@@ -169,16 +169,8 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
         const endHour = parseInt(customEvent.end.slice(0, 2), 10);
         const endMin = parseInt(customEvent.end.slice(3, 5), 10);
 
-        // Skip custom events whose start/end time strings are not parseable as HH:mm.
-        // Malformed time strings (e.g. from third-party imports) would produce NaN hours/minutes,
-        // yielding Invalid Date objects that crash react-big-calendar via Date.toISOString().
-        if (isNaN(startHour) || isNaN(startMin) || isNaN(endHour) || isNaN(endMin)) {
-            console.warn(
-                `Skipping custom event "${customEvent.title}" (ID: ${customEvent.customEventID}): ` +
-                    `unparseable time strings (start="${customEvent.start}", end="${customEvent.end}").`
-            );
-            return [];
-        }
+        // Skip events whose time strings are not in HH:mm format (e.g. empty strings from the DB).
+        if (isNaN(startHour) || isNaN(startMin) || isNaN(endHour) || isNaN(endMin)) return [];
 
         const dayIndicesOccurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
         /**

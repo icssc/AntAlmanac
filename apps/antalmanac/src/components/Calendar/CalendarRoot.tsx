@@ -177,15 +177,11 @@ export const ScheduleCalendar = memo(() => {
     }, []);
 
     /**
-     * Finds the earliest start time and returns that or 7AM, whichever is earlier.
-     * Filters out NaN values produced by events with invalid dates (e.g. malformed
-     * custom event time strings) so that the resulting Date is always valid and
-     * react-big-calendar never receives an Invalid Date as its `min` prop.
+     * Finds the earliest start time and returns that or 7AM, whichever is earlier
      */
     const startTime = useMemo(() => {
-        const eventStartHours = events.map((event) => event.start.getHours()).filter((h) => !isNaN(h));
-        const earliestHour = eventStartHours.length > 0 ? Math.min(...eventStartHours) : 7;
-        return new Date(2018, 0, 1, Math.min(7, earliestHour));
+        const validHours = events.map((event) => event.start.getHours()).filter(Number.isFinite);
+        return new Date(2018, 0, 1, Math.min(7, ...validHours, 7));
     }, [events]);
 
     const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {
