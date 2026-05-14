@@ -4,7 +4,7 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
-import type { SearchResult } from '@packages/antalmanac-types';
+import type { AATerm, SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { ComponentProps, useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
@@ -62,12 +62,12 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [pendingRequest, setPendingRequest] = useState<number | undefined>(undefined);
-    const [currentTerm, setCurrentTerm] = useState<string>(RightPaneStore.getFormData().term.shortName);
+    const [currentTerm, setCurrentTerm] = useState<AATerm>(RightPaneStore.getFormData().term);
 
     const requestTimestampRef = useRef<number | undefined>(undefined);
 
-    const getCacheKey = (term: string, query: string): string => {
-        return `${term}:${query}`;
+    const getCacheKey = (term: AATerm, query: string): string => {
+        return `${term.shortName}:${query}`;
     };
 
     const doSearch = (option: SearchOption) => {
@@ -150,7 +150,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
                 .then((result) => {
                     if (!requestIsCurrent(requestTimestamp)) return;
 
-                    const cacheKey = getCacheKey(term.shortName, requestQuery);
+                    const cacheKey = getCacheKey(term, requestQuery);
 
                     setCache((cache) => ({
                         ...cache,
@@ -172,19 +172,19 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
     );
 
     const handleFormDataChange = useCallback(() => {
-        const newTermShortName = RightPaneStore.getFormData().term.shortName;
+        const newTerm = RightPaneStore.getFormData().term;
 
-        if (newTermShortName !== currentTerm && value.length >= MIN_QUERY_LENGTH) {
-            const cacheKey = getCacheKey(newTermShortName, value);
+        if (newTerm !== currentTerm && value.length >= MIN_QUERY_LENGTH) {
+            const cacheKey = getCacheKey(newTerm, value);
 
             if (cache[cacheKey]) {
-                setCurrentTerm(newTermShortName);
+                setCurrentTerm(newTerm);
                 setResults(cache[cacheKey]);
                 setOpen(false);
             } else {
                 const requestTimestamp = Date.now();
 
-                setCurrentTerm(newTermShortName);
+                setCurrentTerm(newTerm);
                 setResults({});
                 setLoading(true);
                 requestTimestampRef.current = requestTimestamp;
@@ -193,8 +193,8 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
                 window.clearTimeout(pendingRequest);
                 maybeDoSearchFactory(requestTimestamp, value)();
             }
-        } else if (newTermShortName !== currentTerm) {
-            setCurrentTerm(newTermShortName);
+        } else if (newTerm !== currentTerm) {
+            setCurrentTerm(newTerm);
         }
     }, [cache, currentTerm, value, maybeDoSearchFactory, pendingRequest]);
 
@@ -255,7 +255,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
             return <Box key={params.key}>{params.children}</Box>;
         }
 
-        const termName = RightPaneStore.getFormData().term.shortName;
+        const termName = RightPaneStore.getFormData().term.longName;
         const label = params.group === groupType.OFFERED ? `Offered in ${termName}` : `Not Offered`;
 
         return (

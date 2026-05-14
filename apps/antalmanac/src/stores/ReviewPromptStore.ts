@@ -1,6 +1,6 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
-import { termData } from '$lib/term';
+import { type AATerm, termData } from '$lib/term';
 import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
 import { create } from 'zustand';
@@ -24,8 +24,7 @@ type ReviewCandidate = {
     courseTitle: string;
     /** Raw WebSOC instructor name, e.g. "PATTIS, R." */
     professorId: string;
-    /** AntAlmanac term shortName, e.g. "Fall 2024" */
-    term: string;
+    term: AATerm['shortName'];
 };
 
 type Step = 'enrollment-confirm' | 'review' | 'hidden';

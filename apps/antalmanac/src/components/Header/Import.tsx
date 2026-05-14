@@ -306,10 +306,10 @@ export function Import() {
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {
-            addCourse(section.section, section.courseDetails, term.shortName, scheduleIndex, true, postHog);
+            addCourse(section.section, section.courseDetails, term, scheduleIndex, true, postHog);
         }
 
-        const terms = AppStore.termsInSchedule(term.shortName);
+        const terms = AppStore.termsInSchedule(term);
         if (terms.size > 1) {
             warnMultipleTerms(terms);
         }

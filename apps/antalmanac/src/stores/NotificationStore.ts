@@ -2,8 +2,8 @@ import trpc from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
-import { type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
-import type { Course } from '@packages/anteater-api/types';
+import { type AATerm, type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
+import type { Course, Quarter } from '@packages/anteater-api/types';
 import { create } from 'zustand';
 
 export type NotifyOn = {
@@ -14,7 +14,8 @@ export type NotifyOn = {
 };
 
 export type Notification = {
-    term: string;
+    year: AATerm['year'];
+    quarter: AATerm['quarter'];
     sectionCode: AASection['sectionCode'];
     units: number;
     sectionNum: string;
@@ -68,7 +69,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             sectionCode,
             units,
             sectionNum,
-            term,
+            year,
+            quarter,
             sectionType,
             status,
             lastUpdatedStatus,
@@ -77,7 +79,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             courseNumber,
             instructors,
         }) => {
-            const key = sectionCode + ' ' + term;
+            const key = `${sectionCode} ${year} ${quarter}`;
 
             set((state) => {
                 const notifications = state.notifications;
@@ -97,7 +99,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                           lastCodes,
                       }
                     : {
-                          term,
+                          year,
+                          quarter,
                           sectionCode,
                           courseTitle,
                           sectionType,
@@ -166,7 +169,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     return;
                 }
 
-                const termGroups = new Map<string, { year: string; quarter: string; sectionCodes: Set<string> }>();
+                const termGroups = new Map<string, { year: string; quarter: Quarter; sectionCodes: Set<string> }>();
 
                 for (const { year, quarter, sectionCode } of existingNotifications) {
                     const key = `${year} ${quarter}`;
@@ -174,13 +177,17 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     if (group) {
                         group.sectionCodes.add(sectionCode.toString());
                     } else {
-                        termGroups.set(key, { year, quarter, sectionCodes: new Set([sectionCode.toString()]) });
+                        termGroups.set(key, {
+                            year,
+                            quarter: quarter as Quarter,
+                            sectionCodes: new Set([sectionCode.toString()]),
+                        });
                     }
                 }
 
                 const courseInfoDict = new Map<
                     string,
-                    { year: string; quarter: string; courseInfo: { [sectionCode: string]: CourseInfo } }
+                    { year: string; quarter: Quarter; courseInfo: { [sectionCode: string]: CourseInfo } }
                 >();
                 await Promise.all(
                     Array.from(termGroups, async ([key, { year, quarter, sectionCodes }]) => {
@@ -195,10 +202,10 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
                 const notifications: Partial<Record<string, Notification>> = {};
 
-                for (const [term, { year, quarter, courseInfo }] of courseInfoDict) {
+                for (const [, { year, quarter, courseInfo }] of courseInfoDict) {
                     for (const sectionCode in courseInfo) {
                         const course = courseInfo[sectionCode];
-                        const key = sectionCode + ' ' + term;
+                        const key = `${sectionCode} ${year} ${quarter}`;
 
                         const existingNotification = existingNotifications.find(
                             (notification: RawNotification) =>
@@ -219,7 +226,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                       : course.section.status;
 
                             notifications[key] = {
-                                term,
+                                year,
+                                quarter,
                                 sectionCode,
                                 courseTitle: course.courseDetails.courseTitle,
                                 sectionType: course.section.sectionType,

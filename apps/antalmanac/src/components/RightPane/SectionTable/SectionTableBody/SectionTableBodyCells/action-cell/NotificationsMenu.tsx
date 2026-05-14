@@ -27,7 +27,7 @@ interface NotificationsMenuProps {
 
 export const NotificationsMenu = memo(
     ({ section, term, courseTitle, deptCode, courseNumber }: NotificationsMenuProps) => {
-        const notificationKey = section.sectionCode + ' ' + term.shortName;
+        const notificationKey = `${section.sectionCode} ${term.year} ${term.quarter}`;
         const [notification, setNotifications] = useNotificationStore(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
         );
@@ -55,7 +55,8 @@ export const NotificationsMenu = memo(
                     sectionType,
                     units: Number(units),
                     sectionNum,
-                    term: term.shortName,
+                    year: term.year,
+                    quarter: term.quarter,
                     status,
                     lastUpdatedStatus: currStatus,
                     lastCodes: restrictions,

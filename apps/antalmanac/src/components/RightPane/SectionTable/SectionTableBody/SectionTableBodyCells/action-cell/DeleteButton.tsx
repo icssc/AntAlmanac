@@ -17,7 +17,7 @@ export const DeleteButton = memo(function DeleteButton({ sectionCode, term }: De
     const postHog = usePostHog();
 
     const handleClick = useCallback(() => {
-        deleteCourse(sectionCode, term.shortName, AppStore.getCurrentScheduleIndex());
+        deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
 
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,

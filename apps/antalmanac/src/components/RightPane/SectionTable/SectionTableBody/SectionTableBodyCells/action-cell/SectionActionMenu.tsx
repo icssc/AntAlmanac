@@ -32,14 +32,14 @@ export const SectionActionMenu = memo(function SectionActionMenu({
 
     const handleAddToSchedule = useCallback(
         (scheduleIndex: number) => {
-            addCourse(section, courseDetails, term.shortName, scheduleIndex);
+            addCourse(section, courseDetails, term, scheduleIndex);
             handleClose();
         },
         [section, courseDetails, term, handleClose]
     );
 
     const handleAddToAll = useCallback(() => {
-        addCourse(section, courseDetails, term.shortName, AppStore.schedule.getNumberOfSchedules());
+        addCourse(section, courseDetails, term, AppStore.schedule.getNumberOfSchedules());
         handleClose();
     }, [section, courseDetails, term, handleClose]);
 

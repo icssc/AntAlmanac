@@ -7,7 +7,14 @@ import { z } from 'zod';
 
 export type { AATerm } from '@packages/antalmanac-types';
 
-const QUARTERS = ['Fall', 'Winter', 'Spring', 'Summer1', 'Summer10wk', 'Summer2'] as const satisfies readonly Quarter[];
+export const QUARTERS = [
+    'Fall',
+    'Winter',
+    'Spring',
+    'Summer1',
+    'Summer10wk',
+    'Summer2',
+] as const satisfies readonly Quarter[];
 
 /**
  * Parse an ISO "YYYY-MM-DD" string into a local-timezone Date,
@@ -65,9 +72,8 @@ const defaultTermIndex = termData.findIndex((term) => !term.isSummerTerm);
  */
 export function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): AATerm {
     for (const event of events) {
-        if (!event.isCustomEvent && event.term) {
-            const match = termData.find((t) => t.shortName === event.term);
-            if (match) return match;
+        if (!event.isCustomEvent) {
+            return event.term;
         }
     }
     return termData[defaultTermIndex];

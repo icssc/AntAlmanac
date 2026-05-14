@@ -78,7 +78,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         if (!previewMode || addedCourse) {
             setHoveredEvent(undefined);
         } else {
-            setHoveredEvent(section, courseDetails, term.shortName);
+            setHoveredEvent(section, courseDetails, term);
         }
     }, [previewMode, addedCourse, setHoveredEvent, section, courseDetails, term]);
 

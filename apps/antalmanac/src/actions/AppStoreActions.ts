@@ -33,7 +33,7 @@ interface AutoSaveScheduleOptions {
 export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
-    term: AATerm['shortName'],
+    term: AATerm,
     scheduleIndex: number,
     quiet?: boolean,
     postHog?: PostHog
@@ -50,9 +50,8 @@ export const addCourse = (
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
-    // The color will be set properly in Schedules
     const newCourse: ScheduleCourse = {
-        term: term,
+        term: term.shortName,
         deptCode: courseDetails.deptCode,
         courseNumber: courseDetails.courseNumber,
         courseTitle: courseDetails.courseTitle,
@@ -420,7 +419,7 @@ export const loginUser = async ({
     }
 };
 
-export const deleteCourse = (sectionCode: string, term: string, scheduleIndex: number) => {
+export const deleteCourse = (sectionCode: string, term: AATerm, scheduleIndex: number) => {
     AppStore.deleteCourse(sectionCode, term, scheduleIndex);
 };
 
@@ -464,7 +463,7 @@ export const changeCustomEventColor = (customEventID: CustomEventId, newColor: s
     AppStore.changeCustomEventColor(customEventID, newColor);
 };
 
-export const changeCourseColor = (sectionCode: string, term: string, newColor: string) => {
+export const changeCourseColor = (sectionCode: string, term: AATerm, newColor: string) => {
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 

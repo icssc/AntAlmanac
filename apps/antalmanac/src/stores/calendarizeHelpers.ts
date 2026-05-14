@@ -15,6 +15,8 @@ function getLocation(location: string): Location {
 
 export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
     return currentCourses.flatMap((course) => {
+        const term = getTermByShortName(course.term) ?? getDefaultTerm();
+
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
             .flatMap((meeting) => {
@@ -48,7 +50,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
                 return dayIndicesOccurring.map((dayIndex) => {
                     return {
                         color: course.section.color,
-                        term: course.term,
+                        term,
                         title: `${course.deptCode} ${course.courseNumber}`,
                         deptValue: course.deptCode,
                         courseNumber: course.courseNumber,
@@ -118,11 +120,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                   ? course.section.meetings[0].bldg.map(getLocation)
                   : [];
 
-            /**
-             * Fallback to January 2018 if no finals start date is available.
-             * finalsDay is handled later by day since it varies by day.
-             */
-            const finalsStartDate = (getTermByShortName(course.term) ?? getDefaultTerm()).finalsStart;
+            const term = getTermByShortName(course.term) ?? getDefaultTerm();
+            const finalsStartDate = term.finalsStart;
 
             return dayIndicesOccurring.map((dayIndex) => {
                 const startDate = new Date(finalsStartDate);
@@ -135,7 +134,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
 
                 return {
                     color: course.section.color,
-                    term: course.term,
+                    term,
                     title: `${course.deptCode} ${course.courseNumber}`,
                     courseTitle: course.courseTitle,
                     locations: locationsWithNoDays.map((location: Location) => {

@@ -22,7 +22,7 @@ export function AddButton({ section, courseDetails, term, scheduleConflict }: Ad
                 break;
             }
         }
-        addCourse(section, courseDetails, term.shortName, AppStore.getCurrentScheduleIndex());
+        addCourse(section, courseDetails, term, AppStore.getCurrentScheduleIndex());
     }, [section, courseDetails, term]);
 
     const button = (

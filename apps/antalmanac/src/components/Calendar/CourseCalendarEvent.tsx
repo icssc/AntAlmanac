@@ -6,14 +6,13 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
-import { getTermByShortName } from '$lib/term';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { CustomEventId } from '@packages/antalmanac-types';
+import { AATerm, CustomEventId } from '@packages/antalmanac-types';
 import { WebsocSectionFinalExam } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
@@ -58,7 +57,7 @@ export interface CourseEvent extends CommonCalendarEvent {
     sectionType: string;
     deptValue: string;
     courseNumber: string;
-    term: string;
+    term: AATerm;
 }
 
 /**
@@ -134,8 +133,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
         }
 
         const handleQuickSearch = () => {
-            const termObj = getTermByShortName(term);
-            if (termObj) quickSearch(deptValue, courseNumber, termObj);
+            quickSearch(deptValue, courseNumber, term);
         };
 
         return (
@@ -193,7 +191,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </tr>
                         <tr>
                             <td style={{ verticalAlign: 'top' }}>Term</td>
-                            <td style={{ textAlign: 'right' }}>{term}</td>
+                            <td style={{ textAlign: 'right' }}>{term.shortName}</td>
                         </tr>
                         <tr>
                             <td style={{ verticalAlign: 'top' }}>Instructors</td>

@@ -23,8 +23,8 @@ interface ActionCellProps {
     scheduleNames: string[];
 }
 
-function getSectionColor(sectionCode: string, term: string): string {
-    return AppStore.schedule.getExistingCourseInSchedule(sectionCode, term)?.section.color ?? '#5ec8e0';
+function getSectionColor(sectionCode: string, term: AATerm): string {
+    return AppStore.schedule.getExistingCourseInSchedule(sectionCode, term.shortName)?.section.color ?? '#5ec8e0';
 }
 
 export const ActionCell = memo(
@@ -32,10 +32,10 @@ export const ActionCell = memo(
         const initialized = useNotificationStore(useShallow((state) => state.initialized));
         const isMobile = useIsMobile();
 
-        const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term.shortName));
+        const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term));
 
         const updateColor = useCallback(() => {
-            setSectionColor(getSectionColor(section.sectionCode, term.shortName));
+            setSectionColor(getSectionColor(section.sectionCode, term));
         }, [section.sectionCode, term]);
 
         useEffect(() => {
@@ -89,7 +89,7 @@ export const ActionCell = memo(
                                 color={sectionColor}
                                 analyticsCategory={analyticsEnum.addedClasses}
                                 isCustomEvent={false}
-                                term={term.shortName}
+                                term={term}
                                 sectionCode={section.sectionCode}
                             />
                         ) : (

@@ -1,6 +1,33 @@
 import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
 import { getEventsFromCourses } from '$lib/download';
+import type { AATerm } from '$lib/term';
 import { describe, test, expect } from 'vitest';
+
+const FALL_2023: AATerm = {
+    year: '2023',
+    quarter: 'Fall',
+    shortName: '2023 Fall',
+    longName: 'Fall 2023',
+    instructionStart: new Date(2023, 8, 28),
+    instructionEnd: new Date(2023, 11, 8),
+    finalsStart: new Date(2023, 11, 9),
+    finalsEnd: new Date(2023, 11, 15),
+    socAvailable: new Date(2023, 4, 1),
+    isSummerTerm: false,
+};
+
+const SPRING_2024: AATerm = {
+    year: '2024',
+    quarter: 'Spring',
+    shortName: '2024 Spring',
+    longName: 'Spring 2024',
+    instructionStart: new Date(2024, 3, 1),
+    instructionEnd: new Date(2024, 5, 7),
+    finalsStart: new Date(2024, 5, 8),
+    finalsEnd: new Date(2024, 5, 14),
+    socAvailable: new Date(2024, 1, 1),
+    isSummerTerm: false,
+};
 
 describe('download-ics', () => {
     test('converts schedule courses to events for the ics library', () => {
@@ -13,8 +40,6 @@ describe('download-ics', () => {
                 title: 'placeholderDeptCode placeholderCourseNumber',
                 locations: [{ building: 'placeholderLocation', room: 'placeholderRoom', days: 'MWF' }],
                 showLocationInfo: true,
-                // We don't use finalExam anymore for calendar file export,
-                // instead, FinalExamEvent is used
                 finalExam: {
                     examStatus: 'SCHEDULED_FINAL',
                     dayOfWeek: 'Mon',
@@ -37,7 +62,7 @@ describe('download-ics', () => {
                 deptValue: 'placeholderDeptCode',
                 courseNumber: 'placeholderCourseNumber',
                 sectionType: 'placeholderSectionType',
-                term: '2023 Fall', // Cannot be a random placeholder; it has to be in `quarterStartDates` otherwise it'll be undefined
+                term: FALL_2023,
             },
             // FinalExamEvent
             {
@@ -69,7 +94,7 @@ describe('download-ics', () => {
                 deptValue: 'placeholderDeptCode',
                 courseNumber: 'placeholderCourseNumber',
                 sectionType: 'Fin',
-                term: '2023 Fall', // Cannot be a random placeholder; it has to be in `quarterStartDates` otherwise it'll be undefined
+                term: FALL_2023,
             },
             // CustomEvent
             {
@@ -84,7 +109,7 @@ describe('download-ics', () => {
             },
         ];
 
-        const result = getEventsFromCourses(courses, '2024 Spring');
+        const result = getEventsFromCourses(courses, SPRING_2024);
 
         expect(result).toMatchSnapshot();
     });

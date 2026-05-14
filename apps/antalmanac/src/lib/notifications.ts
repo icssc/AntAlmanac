@@ -21,7 +21,8 @@ class NotificationsClient {
             return await trpc.notifications.deleteNotification.mutate({
                 userId,
                 sectionCode: notification.sectionCode,
-                term: notification.term,
+                year: notification.year,
+                quarter: notification.quarter,
             });
         }
         console.error('No session found to delete notification successfully.');

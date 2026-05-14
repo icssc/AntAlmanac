@@ -10,7 +10,8 @@ export type notifyOn = {
 };
 
 export type Notification = {
-    term: AATerm['shortName'];
+    year: AATerm['year'];
+    quarter: AATerm['quarter'];
     sectionCode: string;
     courseTitle: string;
     sectionType: WebsocSectionType;

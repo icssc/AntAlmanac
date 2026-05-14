@@ -204,7 +204,7 @@ export class Schedules {
     /**
      * Get course that matches the params across **all** schedules.
      */
-    getExistingCourse(sectionCode: string, term: string) {
+    getExistingCourse(sectionCode: string, term: AATerm['shortName']) {
         for (const course of this.getAllCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return course;
@@ -216,7 +216,7 @@ export class Schedules {
     /**
      * Get a course that matches the params in the **current** schedule.
      */
-    getExistingCourseInSchedule(sectionCode: string, term: string) {
+    getExistingCourseInSchedule(sectionCode: string, term: AATerm['shortName']) {
         for (const course of this.getCurrentCourses()) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return course;
@@ -296,7 +296,7 @@ export class Schedules {
     /**
      * Change courses that match the code and term in all schedules to new color.
      */
-    changeCourseColor(sectionCode: string, term: string, newColor: string) {
+    changeCourseColor(sectionCode: string, term: AATerm['shortName'], newColor: string) {
         this.addUndoState();
 
         const course = this.getExistingCourseInSchedule(sectionCode, term);
@@ -309,7 +309,7 @@ export class Schedules {
     /**
      * Delete a course in current schedule.
      */
-    deleteCourse(sectionCode: string, term: string, scheduleIndex: number) {
+    deleteCourse(sectionCode: string, term: AATerm['shortName'], scheduleIndex: number) {
         this.addUndoState();
         this.setCurrentScheduleIndex(scheduleIndex);
         this.schedules[scheduleIndex].courses = this.schedules[this.currentScheduleIndex].courses.filter((course) => {
@@ -320,7 +320,7 @@ export class Schedules {
     /**
      * Check if a course has already been added to a schedule.
      */
-    doesCourseExistInSchedule(sectionCode: string, term: string, scheduleIndex: number) {
+    doesCourseExistInSchedule(sectionCode: string, term: AATerm['shortName'], scheduleIndex: number) {
         for (const course of this.schedules[scheduleIndex].courses) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return true;

@@ -1,5 +1,5 @@
 import { createClient } from '@packages/anteater-api/client';
-import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api/types';
+import type { Quarter, WebsocAPIResponse, WebsocSection } from '@packages/anteater-api/types';
 import { db } from '@packages/db';
 import { type User as DbUser, users } from '@packages/db/src/schema/auth/user';
 import { type Subscription, subscriptions } from '@packages/db/src/schema/subscription';
@@ -30,7 +30,7 @@ export interface User {
  * @returns A promise that resolves to the WebSoc response, or undefined if an error occurs.
  */
 async function getUpdatedClasses(
-    quarter: string,
+    quarter: Quarter,
     year: string,
     sections: string[]
 ): Promise<WebsocAPIResponse | undefined> {
