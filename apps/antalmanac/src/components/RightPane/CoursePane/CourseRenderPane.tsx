@@ -16,7 +16,6 @@ import {
     isMultiGeSelection,
     queryManualSearchCourses,
 } from '$lib/multiGeSearch';
-import { getTermByShortName } from '$lib/term';
 import type { WebsocSearchInput } from '$src/backend/routers/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -27,7 +26,6 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
-import type { AATerm } from '@packages/antalmanac-types';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { WebsocAPIResponse, WebsocDepartment, WebsocSchool, WebsocSectionType } from '@packages/anteater-api/types';
 import Image from 'next/image';
@@ -214,7 +212,7 @@ const SectionTableWrapped = (
         const course = courseData[index] as AACourse;
         component = (
             <GeDataFetchProvider
-                term={formData.term}
+                term={formData.term.shortName}
                 courseDetails={course}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
@@ -225,7 +223,7 @@ const SectionTableWrapped = (
         const course = courseData[index] as AACourse;
         component = (
             <SectionTable
-                term={formData.term}
+                term={formData.term.shortName}
                 courseDetails={course}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
@@ -310,17 +308,16 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
-    const [searchedTerm, setSearchedTerm] = useState(
-        () => getTermByShortName(RightPaneStore.getFormData().term as AATerm['shortName'])?.longName ?? ''
-    );
+    const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term.longName);
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
     const getQueryParams = useCallback(
         (searchData: CourseSearchParams): WebsocSearchInput => ({
+            year: searchData.term.year,
+            quarter: searchData.term.quarter,
             department: searchData.deptValue,
-            term: searchData.term,
             ge: searchData.ge,
             courseNumber: searchData.courseNumber,
             sectionCodes: searchData.sectionCode,
@@ -348,12 +345,12 @@ export default function CourseRenderPane(props: { id?: number }) {
             let websocJsonResp: WebsocAPIResponse;
             let fetchedSharedCourseKeys = new Set<string>();
             if (multiSearchData.length > 0) {
-                const { year, quarter } = RightPaneStore.getTermParts();
+                const { year, quarter } = RightPaneStore.getFormData().term;
                 const offeredCourses: WebsocSearchInput[] = [];
                 const unofferedCourses: CourseSearchParams[] = [];
                 const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
-                    year: year,
-                    quarter: quarter,
+                    year,
+                    quarter,
                     courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
                 });
                 for (const course of multiSearchData) {
@@ -381,9 +378,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             setCourseData(filteredCourses);
             setSharedCourseKeys(fetchedSharedCourseKeys);
             setAndCourseCount(getFilteredAndCourseCount(filteredCourses, fetchedSharedCourseKeys));
-            setSearchedTerm(
-                getTermByShortName(RightPaneStore.getFormData().term as AATerm['shortName'])?.longName ?? ''
-            );
+            setSearchedTerm(RightPaneStore.getFormData().term.longName);
         } catch (error) {
             console.error(error);
             setError(true);

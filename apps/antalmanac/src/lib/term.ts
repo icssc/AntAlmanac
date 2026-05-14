@@ -1,12 +1,13 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
 import type { AATerm } from '@packages/antalmanac-types';
+import type { Quarter } from '@packages/anteater-api/types';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
 
 export type { AATerm } from '@packages/antalmanac-types';
 
-const QUARTERS = ['Fall', 'Winter', 'Spring', 'Summer1', 'Summer10wk', 'Summer2'] as const;
+const QUARTERS = ['Fall', 'Winter', 'Spring', 'Summer1', 'Summer10wk', 'Summer2'] as const satisfies readonly Quarter[];
 
 /**
  * Parse an ISO "YYYY-MM-DD" string into a local-timezone Date,
@@ -72,11 +73,11 @@ export function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): AATe
     return termData[defaultTermIndex];
 }
 
-export function getTermByShortName(termShortName: AATerm['shortName']): AATerm | undefined {
+export function getTermByShortName(termShortName: string): AATerm | undefined {
     return termData.find((t) => t.shortName === termShortName);
 }
 
-export function isTermAvailable(termShortName: AATerm['shortName']) {
+export function isTermAvailable(termShortName: string) {
     return termData.some((term) => term.shortName === termShortName);
 }
 

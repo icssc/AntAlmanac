@@ -91,7 +91,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             return false;
         }
 
-        const { year, quarter } = RightPaneStore.getTermParts();
+        const { year, quarter } = RightPaneStore.getFormData().term;
         const quarterPlan = getQuarterPlan(roadmap, year, quarter);
         if (!quarterPlan) {
             openSnackbar('error', `The provided roadmap does not contain ${year} ${quarter}`);
@@ -122,7 +122,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     };
 
     const renderGroup: AutocompleteProps['renderGroup'] = (params) => {
-        const term = RightPaneStore.getFormData().term;
+        const termShortName = RightPaneStore.getFormData().term.shortName;
         const includesTerm = params.group === RoadmapTermRelation.IncludesTerm;
         const keyword = includesTerm ? 'Includes' : "Doesn't Include";
 
@@ -130,7 +130,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             <li key={params.key}>
                 <HorizontalRightDivider>
                     <Typography>
-                        {keyword} {term}
+                        {keyword} {termShortName}
                     </Typography>
                 </HorizontalRightDivider>
                 <ul style={{ padding: 0 }}>{params.children}</ul>
@@ -167,7 +167,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     useEffect(() => {
         const updateTermRoadmaps = () => {
-            const { year, quarter } = RightPaneStore.getTermParts();
+            const { year, quarter } = RightPaneStore.getFormData().term;
             const roadmapsWithTerm: typeof termRoadmapGrouping = getDefaultTermRoadmapGrouping();
             for (const roadmap of plannerRoadmaps) {
                 const roadmapTermRelation = getRoadmapTermRelation(roadmap, year, quarter);

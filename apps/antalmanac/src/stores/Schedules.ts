@@ -1,6 +1,7 @@
 import trpc from '$lib/api/trpc';
-import { getDefaultTerm } from '$lib/term';
+import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
+import type { AATerm } from '@packages/antalmanac-types';
 import type {
     Schedule,
     ScheduleCourse,
@@ -608,10 +609,19 @@ export class Schedules {
             // Get the course info for each course
             const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
 
-            const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
+            const websocRequests = Object.entries(courseDict).map(async ([termShortName, courseSet]) => {
+                const term = getTermByShortName(termShortName);
+                if (!term) {
+                    return;
+                }
+
                 const sectionCodes = Array.from(courseSet).join(',');
-                const courseInfo = await trpc.websoc.getCourseInfo.query({ term, sectionCodes });
-                courseInfoDict.set(term, courseInfo);
+                const courseInfo = await trpc.websoc.getCourseInfo.query({
+                    year: term.year,
+                    quarter: term.quarter,
+                    sectionCodes,
+                });
+                courseInfoDict.set(termShortName, courseInfo);
             });
 
             await Promise.all(websocRequests);
@@ -633,6 +643,7 @@ export class Schedules {
                         courses.push({
                             ...shortCourse,
                             ...courseInfo.courseDetails,
+                            term: shortCourse.term as AATerm['shortName'],
                             section: {
                                 ...courseInfo.section,
                                 color: shortCourse.color,

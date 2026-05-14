@@ -89,10 +89,9 @@ const isCourseOffered = (department: string, courseNumber: string, offeredCourse
 
 const searchRouter = router({
     doSearch: procedure
-        .input(z.object({ query: z.string(), term: z.string() }))
+        .input(z.object({ query: z.string(), year: z.string(), quarter: z.string() }))
         .query(async ({ input }): Promise<Record<string, SearchResult>> => {
-            const { query } = input;
-            const [year, quarter] = input.term.split(' ');
+            const { query, year, quarter } = input;
 
             const termSectionCodes = await getTermSectionCodes(year, quarter);
 

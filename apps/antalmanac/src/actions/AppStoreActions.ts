@@ -10,6 +10,7 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
+    AATerm,
     CourseDetails,
     CustomEventId,
     RepeatingCustomEvent,
@@ -32,7 +33,7 @@ interface AutoSaveScheduleOptions {
 export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
-    term: string,
+    term: AATerm['shortName'],
     scheduleIndex: number,
     quiet?: boolean,
     postHog?: PostHog

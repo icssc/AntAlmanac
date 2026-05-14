@@ -129,7 +129,7 @@ async function main() {
             if (i > 0) {
                 await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
             }
-            const [year, quarter] = activeTerms[i].shortName.split(' ');
+            const { year, quarter } = activeTerms[i];
             if (!year || !quarter) throw new Error(`Invalid term format: ${activeTerms[i].shortName}`);
             const websocData = await aapiClient.websoc.query({ year, quarter });
             const chunk = getWebsocCoursesFromResponse(websocData);

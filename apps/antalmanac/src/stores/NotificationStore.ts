@@ -166,34 +166,36 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     return;
                 }
 
-                const courseDict: { [key: string]: Set<string> } = {};
+                const termGroups = new Map<string, { year: string; quarter: string; sectionCodes: Set<string> }>();
 
-                for (const notification of existingNotifications) {
-                    const { year, quarter, sectionCode } = notification;
-                    const term = year + ' ' + quarter;
-
-                    if (term in courseDict) {
-                        courseDict[term].add(sectionCode.toString());
+                for (const { year, quarter, sectionCode } of existingNotifications) {
+                    const key = `${year} ${quarter}`;
+                    const group = termGroups.get(key);
+                    if (group) {
+                        group.sectionCodes.add(sectionCode.toString());
                     } else {
-                        courseDict[term] = new Set([sectionCode.toString()]);
+                        termGroups.set(key, { year, quarter, sectionCodes: new Set([sectionCode.toString()]) });
                     }
                 }
 
-                const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
-                const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
-                    const sectionCodes = Array.from(courseSet).join(',');
-                    const courseInfo = await trpc.websoc.getCourseInfo.query({
-                        term,
-                        sectionCodes,
-                    });
-                    courseInfoDict.set(term, courseInfo);
-                });
-
-                await Promise.all(websocRequests);
+                const courseInfoDict = new Map<
+                    string,
+                    { year: string; quarter: string; courseInfo: { [sectionCode: string]: CourseInfo } }
+                >();
+                await Promise.all(
+                    Array.from(termGroups, async ([key, { year, quarter, sectionCodes }]) => {
+                        const courseInfo = await trpc.websoc.getCourseInfo.query({
+                            year,
+                            quarter,
+                            sectionCodes: Array.from(sectionCodes).join(','),
+                        });
+                        courseInfoDict.set(key, { year, quarter, courseInfo });
+                    })
+                );
 
                 const notifications: Partial<Record<string, Notification>> = {};
 
-                for (const [term, courseInfo] of courseInfoDict.entries()) {
+                for (const [term, { year, quarter, courseInfo }] of courseInfoDict) {
                     for (const sectionCode in courseInfo) {
                         const course = courseInfo[sectionCode];
                         const key = sectionCode + ' ' + term;
@@ -201,8 +203,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                         const existingNotification = existingNotifications.find(
                             (notification: RawNotification) =>
                                 notification.sectionCode === sectionCode &&
-                                notification.year === term.split(' ')[0] &&
-                                notification.quarter === term.split(' ')[1]
+                                notification.year === year &&
+                                notification.quarter === quarter
                         );
 
                         if (existingNotification) {

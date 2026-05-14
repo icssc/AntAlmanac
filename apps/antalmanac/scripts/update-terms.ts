@@ -6,6 +6,7 @@ import { createClient } from '@packages/anteater-api/client';
 import type { WebsocTerm } from '@packages/anteater-api/types';
 import { flattenSections } from '@packages/anteater-api/utils';
 
+import { getTermByShortName } from '../src/lib/term.js';
 import { DEPLOYED_TERMS_FILE } from './lib/paths.js';
 
 interface DeployedTermsData {
@@ -18,8 +19,13 @@ interface DeployedTermsData {
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 async function getSectionCount(term: WebsocTerm) {
-    const [year, quarter] = term.shortName.split(' ');
-    if (!year || !quarter) throw new Error(`Invalid term format: ${term.shortName}`);
+    const aaTerm = getTermByShortName(term.shortName);
+
+    if (!aaTerm) {
+        throw new Error(`Unknown term: ${term.shortName}`);
+    }
+
+    const { year, quarter } = aaTerm;
     console.log(`Checking section count for ${year} ${quarter}...`);
     const response = await aapiClient.websoc.query({ year, quarter });
     return flattenSections(response).length;

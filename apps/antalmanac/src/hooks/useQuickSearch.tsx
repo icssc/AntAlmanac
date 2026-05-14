@@ -1,4 +1,5 @@
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { AATerm, getTermByShortName } from '$lib/term';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';
@@ -11,7 +12,7 @@ export function useQuickSearch() {
     const navigate = useNavigate();
 
     return useCallback(
-        (deptValue: string, courseNumber: string, termValue: string) => {
+        (deptValue: string, courseNumber: string, termValue: AATerm['shortName']) => {
             const queryParams = {
                 term: termValue,
                 deptValue: deptValue,
@@ -25,7 +26,8 @@ export function useQuickSearch() {
             RightPaneStore.resetFormValues();
             RightPaneStore.updateFormValue('deptValue', deptValue);
             RightPaneStore.updateFormValue('courseNumber', courseNumber);
-            RightPaneStore.updateFormValue('term', termValue);
+            const term = getTermByShortName(termValue);
+            if (term) RightPaneStore.setTerm(term);
             navigate(href, { replace: false });
             setActiveTab('search');
             displaySections();

@@ -62,7 +62,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [pendingRequest, setPendingRequest] = useState<number | undefined>(undefined);
-    const [currentTerm, setCurrentTerm] = useState<string>(RightPaneStore.getFormData().term);
+    const [currentTerm, setCurrentTerm] = useState<string>(RightPaneStore.getFormData().term.shortName);
 
     const requestTimestampRef = useRef<number | undefined>(undefined);
 
@@ -77,7 +77,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         }
         const term = RightPaneStore.getFormData().term;
         RightPaneStore.resetFormValues();
-        RightPaneStore.updateFormValue('term', term);
+        RightPaneStore.setTerm(term);
         switch (result.type) {
             case resultType.GE_CATEGORY: {
                 const geCode = option.key.split('-')[1].toUpperCase();
@@ -143,14 +143,14 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         (requestTimestamp: number, requestQuery: string) => () => {
             if (!requestIsCurrent(requestTimestamp)) return;
 
-            const requestTerm = RightPaneStore.getFormData().term;
+            const term = RightPaneStore.getFormData().term;
 
             trpc.search.doSearch
-                .query({ query: requestQuery, term: requestTerm })
+                .query({ query: requestQuery, year: term.year, quarter: term.quarter })
                 .then((result) => {
                     if (!requestIsCurrent(requestTimestamp)) return;
 
-                    const cacheKey = getCacheKey(requestTerm, requestQuery);
+                    const cacheKey = getCacheKey(term.shortName, requestQuery);
 
                     setCache((cache) => ({
                         ...cache,
@@ -172,19 +172,19 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
     );
 
     const handleFormDataChange = useCallback(() => {
-        const newTerm = RightPaneStore.getFormData().term;
+        const newTermShortName = RightPaneStore.getFormData().term.shortName;
 
-        if (newTerm !== currentTerm && value.length >= MIN_QUERY_LENGTH) {
-            const cacheKey = getCacheKey(newTerm, value);
+        if (newTermShortName !== currentTerm && value.length >= MIN_QUERY_LENGTH) {
+            const cacheKey = getCacheKey(newTermShortName, value);
 
             if (cache[cacheKey]) {
-                setCurrentTerm(newTerm);
+                setCurrentTerm(newTermShortName);
                 setResults(cache[cacheKey]);
                 setOpen(false);
             } else {
                 const requestTimestamp = Date.now();
 
-                setCurrentTerm(newTerm);
+                setCurrentTerm(newTermShortName);
                 setResults({});
                 setLoading(true);
                 requestTimestampRef.current = requestTimestamp;
@@ -193,8 +193,8 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
                 window.clearTimeout(pendingRequest);
                 maybeDoSearchFactory(requestTimestamp, value)();
             }
-        } else if (newTerm !== currentTerm) {
-            setCurrentTerm(newTerm);
+        } else if (newTermShortName !== currentTerm) {
+            setCurrentTerm(newTermShortName);
         }
     }, [cache, currentTerm, value, maybeDoSearchFactory, pendingRequest]);
 
@@ -255,8 +255,8 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
             return <Box key={params.key}>{params.children}</Box>;
         }
 
-        const term = RightPaneStore.getFormData().term;
-        const label = params.group === groupType.OFFERED ? `Offered in ${term}` : `Not Offered`;
+        const termName = RightPaneStore.getFormData().term.shortName;
+        const label = params.group === groupType.OFFERED ? `Offered in ${termName}` : `Not Offered`;
 
         return (
             <Box key={params.key}>

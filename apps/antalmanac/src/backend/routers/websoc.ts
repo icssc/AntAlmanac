@@ -2,6 +2,7 @@ import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import type { CourseInfo } from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,
+    WebsocQueryParams,
     WebsocSectionType,
     WebsocSyllabiQueryParams,
     WebsocSyllabiResponse,
@@ -11,61 +12,71 @@ import { z } from 'zod';
 
 import { router } from '../trpc';
 
-type WebsocQueryParams = Parameters<typeof aapiClient.websoc.query>[0];
+export const websocSearchInputSchema = z.object({
+    year: z.string(),
+    quarter: z.string(),
+    department: z.string().optional(),
+    ge: z.string().optional(),
+    courseNumber: z.string().optional(),
+    sectionCodes: z.string().optional(),
+    instructorName: z.string().optional(),
+    units: z.string().optional(),
+    endTime: z.string().optional(),
+    startTime: z.string().optional(),
+    fullCourses: z.string().optional(),
+    building: z.string().optional(),
+    room: z.string().optional(),
+    division: z.string().optional(),
+    excludeRestrictionCodes: z.string().optional(),
+    days: z.string().optional(),
+});
 
-function sanitizeWebsocParams(params: Record<string, string>): WebsocQueryParams {
-    const p = { ...params };
-    if ('term' in p) {
-        const [year, quarter] = p.term.split(' ');
-        delete p.term;
-        if (year && quarter) {
-            p.year = year;
-            p.quarter = quarter;
-        }
+export type WebsocSearchInput = z.infer<typeof websocSearchInputSchema>;
+
+function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
+    const { department, courseNumber, ...rest } = params;
+    const sanitized: Record<string, string> = { ...rest };
+    if (department && department.toUpperCase() !== 'ALL') {
+        sanitized.department = department.toUpperCase();
     }
-    if ('department' in p) {
-        if (p.department.toUpperCase() === 'ALL') {
-            delete p.department;
-        } else {
-            p.department = p.department.toUpperCase();
-        }
+    if (courseNumber) {
+        sanitized.courseNumber = courseNumber.toUpperCase();
     }
-    if ('courseNumber' in p) {
-        p.courseNumber = p.courseNumber.toUpperCase();
+    for (const [key, value] of Object.entries(sanitized)) {
+        if (value === '') delete sanitized[key];
     }
-    for (const [key, value] of Object.entries(p)) {
-        if (value === '') delete p[key];
-    }
-    return p as unknown as WebsocQueryParams;
+    return sanitized as WebsocQueryParams;
 }
 
-async function queryWebsoc(rawParams: Record<string, string>): Promise<WebsocAPIResponse> {
+async function queryWebsoc(rawParams: WebsocSearchInput): Promise<WebsocAPIResponse> {
     return sortWebsocResponse(await aapiClient.websoc.query(sanitizeWebsocParams(rawParams)));
 }
 
 const websocRouter = router({
     getOne: aapiProcedure
-        .input(z.record(z.string(), z.string()))
+        .input(websocSearchInputSchema)
         .query(({ input }): Promise<WebsocAPIResponse> => queryWebsoc(input)),
 
     getManyOfField: aapiProcedure
-        .input(z.object({ params: z.record(z.string(), z.string()), fieldName: z.string() }))
+        .input(z.object({ params: websocSearchInputSchema, fieldName: z.string() }))
         .query(({ input }): Promise<WebsocAPIResponse> => {
-            const fields = input.params[input.fieldName].trim().replaceAll(' ', '').split(',');
+            const fieldValue = input.params[input.fieldName as keyof WebsocSearchInput];
+            if (!fieldValue) return queryWebsoc(input.params);
+            const fields = fieldValue.trim().replaceAll(' ', '').split(',');
             return Promise.all(fields.map((field) => queryWebsoc({ ...input.params, [input.fieldName]: field }))).then(
                 combineWebsocResponses
             );
         }),
 
     getMultiple: aapiProcedure
-        .input(z.object({ params: z.array(z.record(z.string(), z.string())) }))
+        .input(z.object({ params: z.array(websocSearchInputSchema) }))
         .query(
             ({ input }): Promise<WebsocAPIResponse> =>
                 Promise.all(input.params.map(queryWebsoc)).then(combineWebsocResponses)
         ),
 
     getCourseInfo: aapiProcedure
-        .input(z.record(z.string(), z.string()))
+        .input(websocSearchInputSchema)
         .query(async ({ input }): Promise<Record<string, CourseInfo>> => {
             const res = await queryWebsoc(input);
 
