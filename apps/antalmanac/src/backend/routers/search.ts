@@ -1,12 +1,10 @@
-import { readFile } from 'fs/promises';
-import { join } from 'node:path';
-
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
+import { getOfferedCourses, getTermSectionCodes } from '../lib/term-section-codes-cache';
 import { procedure, router } from '../trpc';
 
 const departmentSchema = z.object({
@@ -37,8 +35,6 @@ const searchData = searchDataSchema.parse(_searchData);
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
-const termsFolderPath = join(process.cwd(), 'src', 'generated', 'terms');
-
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
 type GECategoryKey = (typeof geCategoryKeys)[number];
@@ -68,21 +64,6 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     geCategories[key],
 ];
 
-async function getTermSectionCodes(year: string, quarter: string): Promise<Record<string, SectionSearchResult>> {
-    const parsedTerm = `${quarter}_${year}`;
-    try {
-        const filePath = join(termsFolderPath, `${parsedTerm}.json`);
-        const fileContent = await readFile(filePath, 'utf-8');
-        return JSON.parse(fileContent);
-    } catch (err) {
-        throw new Error(`Failed to load term data for ${parsedTerm}: ${err}`);
-    }
-}
-
-function getOfferedCourses(termSectionCodes: Awaited<ReturnType<typeof getTermSectionCodes>>) {
-    return new Set(Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`));
-}
-
 const isCourseOffered = (department: string, courseNumber: string, offeredCourseSet: Set<string>): boolean => {
     return offeredCourseSet.has(`${department}-${courseNumber}`);
 };
@@ -94,9 +75,10 @@ const searchRouter = router({
             const { query } = input;
             const [year, quarter] = input.term.split(' ');
 
-            const termSectionCodes = await getTermSectionCodes(year, quarter);
-
-            const offeredCourseSet = getOfferedCourses(termSectionCodes);
+            const [termSectionCodes, offeredCourseSet] = await Promise.all([
+                getTermSectionCodes(year, quarter),
+                getOfferedCourses(year, quarter),
+            ]);
 
             const num = Number(input.query);
             const matchedSections: SectionSearchResult[] = [];
@@ -174,8 +156,7 @@ const searchRouter = router({
         )
         .query(async ({ input }): Promise<Record<BareCourse['department'], Set<BareCourse['courseNumber']>>> => {
             const { courses, year, quarter } = input;
-            const termSectionCodes = await getTermSectionCodes(year, quarter);
-            const offeredCourseSet = getOfferedCourses(termSectionCodes);
+            const offeredCourseSet = await getOfferedCourses(year, quarter);
             const offeredCourses: Record<string, Set<string>> = {};
             for (const course of courses) {
                 if (isCourseOffered(course.department, course.courseNumber, offeredCourseSet)) {
