@@ -149,6 +149,10 @@ export class RDS {
     /**
      * Upserts the given user's schedules and selected schedule index.
      *
+     * Always updates current schedule id to match the save (including null when
+     * the index is out of range or the id is not among saved schedules), so stale pointers
+     * to archived schedules are cleared.
+     *
      * @param db The Drizzle client or transaction object
      * @param userId The internal user ID whose data is being saved
      * @param saveState The schedules and selected index to persist
@@ -162,15 +166,18 @@ export class RDS {
             const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, saveState.schedules);
 
             const scheduleDbIds = Object.values(scheduleIdMap);
-            const scheduleIndex = saveState.scheduleIndex;
-            const currentScheduleId =
-                scheduleIndex === undefined || scheduleIndex >= scheduleDbIds.length
-                    ? null
-                    : scheduleDbIds[scheduleIndex];
+            const { scheduleIndex } = saveState;
+            const activeScheduleIds = new Set(scheduleDbIds);
 
-            if (currentScheduleId !== null) {
-                await tx.update(users).set({ currentScheduleId }).where(eq(users.id, userId));
+            const inRange =
+                typeof scheduleIndex === 'number' && scheduleIndex >= 0 && scheduleIndex < scheduleDbIds.length;
+            let currentScheduleId = inRange ? (scheduleDbIds[scheduleIndex] ?? null) : null;
+
+            if (currentScheduleId !== null && !activeScheduleIds.has(currentScheduleId)) {
+                currentScheduleId = null;
             }
+
+            await tx.update(users).set({ currentScheduleId }).where(eq(users.id, userId));
 
             return { userId, scheduleIdMap };
         });
@@ -436,9 +443,13 @@ export class RDS {
 
         const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-        const scheduleIndex = row.users.currentScheduleId
-            ? userSchedules.findIndex((s) => s.id === row.users.currentScheduleId)
-            : userSchedules.length;
+        let scheduleIndex: number;
+        if (!row.users.currentScheduleId) {
+            scheduleIndex = userSchedules.length;
+        } else {
+            const found = userSchedules.findIndex((s) => s.id === row.users.currentScheduleId);
+            scheduleIndex = found === -1 ? 0 : found;
+        }
 
         return {
             user: { imported: row.users.imported ?? false },
@@ -680,9 +691,14 @@ export class RDS {
 
         const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-        const scheduleIndex = user.currentScheduleId
-            ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-            : userSchedules.length;
+        let scheduleIndex: number;
+        if (!user.currentScheduleId) {
+            scheduleIndex = userSchedules.length;
+        } else {
+            const found = userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId);
+            scheduleIndex = found === -1 ? 0 : found;
+        }
+
         return {
             id: user.id,
             userData: {
