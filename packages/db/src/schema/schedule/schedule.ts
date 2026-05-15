@@ -27,9 +27,16 @@ export const schedules = pgTable('schedules', {
     notes: text('notes'),
 
     /**
-     * Index of the schedule in the user's list of schedules.
+     * When set, the schedule is archived (soft-deleted) and hidden from normal loads.
+     * Null means active.
      */
-    index: integer('index').notNull(),
+    archivedAt: timestamp('archived_at', { withTimezone: true }),
+
+    /**
+     * Index of the schedule in the user's list of schedules.
+     * Null when archived (see DB CHECK schedules_archive_index_consistency).
+     */
+    index: integer('index'),
 
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 
