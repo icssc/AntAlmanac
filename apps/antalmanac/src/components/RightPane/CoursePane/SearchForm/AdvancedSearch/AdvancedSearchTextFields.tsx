@@ -4,25 +4,19 @@ import {
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
+import {
+    CREATE_ROADMAP_TEXT,
+    CreateRoadmapLinkItem,
+} from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { replaceUrlSearchParams, safeUnreachableCase } from '$lib/utils';
-import { PLANNER_LINK } from '$src/globals';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import {
-    MenuItem,
-    Box,
-    type SelectChangeEvent,
-    Checkbox,
-    ListItemText,
-    Tooltip,
-    Typography,
-    Link,
-} from '@mui/material';
+import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
@@ -49,13 +43,7 @@ function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
     }
 
     if (roadmaps.length === 0) {
-        return [
-            <MenuItem key="create" value="">
-                <Link href={PLANNER_LINK} target="_blank">
-                    Create a roadmap!
-                </Link>
-            </MenuItem>,
-        ];
+        return <CreateRoadmapLinkItem verticalPadding={'6px'} />;
     }
 
     return [
@@ -421,6 +409,7 @@ export function AdvancedSearchTextFields() {
                         }
                         selectProps={{
                             value: excludeRoadmapCourses,
+                            renderValue: plannerRoadmaps.length === 0 ? () => CREATE_ROADMAP_TEXT : undefined,
                             onChange: changeHandlerFactory('excludeRoadmapCourses'),
                             displayEmpty: true,
                             sx: {

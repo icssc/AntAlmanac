@@ -1,6 +1,7 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
@@ -16,7 +17,7 @@ import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { OpenInBrowser } from '@mui/icons-material';
-import { Box, IconButton, Link, MenuItem, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useSearchParams } from 'next/navigation';
 import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
@@ -236,21 +237,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 renderOption: renderOption,
                 ...(plannerRoadmaps.length === 0 && {
                     slotProps: { popper: { sx: { '& .MuiAutocomplete-noOptions': { padding: 0 } } } },
-                    noOptionsText: (
-                        <MenuItem sx={{ padding: 0 }}>
-                            <Link
-                                href={PLANNER_LINK}
-                                target="_blank"
-                                sx={{
-                                    padding: 1.5,
-                                    width: '100%',
-                                    height: '100%',
-                                }}
-                            >
-                                Create a roadmap!
-                            </Link>
-                        </MenuItem>
-                    ),
+                    noOptionsText: <CreateRoadmapLinkItem />,
                 }),
             }}
             textFieldProps={{
