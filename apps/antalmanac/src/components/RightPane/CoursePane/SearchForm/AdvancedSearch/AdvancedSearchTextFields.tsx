@@ -4,10 +4,7 @@ import {
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
-import {
-    CREATE_ROADMAP_TEXT,
-    CreateRoadmapLinkItem,
-} from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
+import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
@@ -409,7 +406,6 @@ export function AdvancedSearchTextFields() {
                         }
                         selectProps={{
                             value: excludeRoadmapCourses,
-                            renderValue: plannerRoadmaps.length === 0 ? () => CREATE_ROADMAP_TEXT : undefined,
                             onChange: changeHandlerFactory('excludeRoadmapCourses'),
                             displayEmpty: true,
                             sx: {

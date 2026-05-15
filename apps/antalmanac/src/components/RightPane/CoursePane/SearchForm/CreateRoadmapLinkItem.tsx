@@ -5,8 +5,6 @@ interface CreateRoadmapLinkItemProps {
     verticalPadding?: number | string;
 }
 
-export const CREATE_ROADMAP_TEXT = 'Create a roadmap!';
-
 export const CreateRoadmapLinkItem = ({ verticalPadding }: CreateRoadmapLinkItemProps) => {
     return (
         <MenuItem sx={{ padding: 0 }}>
@@ -21,7 +19,7 @@ export const CreateRoadmapLinkItem = ({ verticalPadding }: CreateRoadmapLinkItem
                     height: '100%',
                 }}
             >
-                {CREATE_ROADMAP_TEXT}
+                Create a roadmap!
             </Link>
         </MenuItem>
     );
