@@ -24,7 +24,7 @@ interface ActionCellProps {
 }
 
 function getSectionColor(sectionCode: string, term: AATerm): string {
-    return AppStore.schedule.getExistingCourseInSchedule(sectionCode, term.shortName)?.section.color ?? '#5ec8e0';
+    return AppStore.schedule.getExistingCourseInSchedule(sectionCode, term)?.section.color ?? '#5ec8e0';
 }
 
 export const ActionCell = memo(

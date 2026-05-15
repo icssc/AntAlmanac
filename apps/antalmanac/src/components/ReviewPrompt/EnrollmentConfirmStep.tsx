@@ -9,7 +9,7 @@ export function EnrollmentConfirmStep() {
     const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
     const courseTitle = useReviewPromptStore((s) => s.candidate?.courseTitle ?? '');
     const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
-    const term = useReviewPromptStore((s) => s.candidate?.term ?? '');
+    const term = useReviewPromptStore((s) => s.candidate?.term ?? null);
     const confirm = useReviewPromptStore((s) => s.confirm);
     const dismiss = useReviewPromptStore((s) => s.dismiss);
 
@@ -18,7 +18,11 @@ export function EnrollmentConfirmStep() {
     const handleDismiss = () => {
         const candidate = dismiss();
         if (candidate) {
-            dismissReview({ professorId: candidate.professorId, courseId: candidate.courseId, term: candidate.term });
+            dismissReview({
+                professorId: candidate.professorId,
+                courseId: candidate.courseId,
+                term: candidate.term.shortName,
+            });
         }
     };
 
@@ -46,7 +50,7 @@ export function EnrollmentConfirmStep() {
                     {courseTitle && <>({courseTitle}) </>}
                     in{' '}
                     <Box component="span" fontWeight={600} color="text.primary">
-                        {term}
+                        {term?.shortName}
                     </Box>{' '}
                     with{' '}
                     <Box component="span" fontWeight={600} color="text.primary">

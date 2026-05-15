@@ -191,7 +191,9 @@ export class Schedules {
      * Get a set of "{sectionCode} {term}" section codes in current schedule.
      */
     getAddedSectionCodes() {
-        return new Set(this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
+        return new Set(
+            this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term.shortName}`)
+        );
     }
 
     /**
@@ -204,9 +206,9 @@ export class Schedules {
     /**
      * Get course that matches the params across **all** schedules.
      */
-    getExistingCourse(sectionCode: string, term: AATerm['shortName']) {
+    getExistingCourse(sectionCode: string, term: AATerm) {
         for (const course of this.getAllCourses()) {
-            if (course.section.sectionCode === sectionCode && term === course.term) {
+            if (course.section.sectionCode === sectionCode && term.shortName === course.term.shortName) {
                 return course;
             }
         }
@@ -216,9 +218,9 @@ export class Schedules {
     /**
      * Get a course that matches the params in the **current** schedule.
      */
-    getExistingCourseInSchedule(sectionCode: string, term: AATerm['shortName']) {
+    getExistingCourseInSchedule(sectionCode: string, term: AATerm) {
         for (const course of this.getCurrentCourses()) {
-            if (course.section.sectionCode === sectionCode && term === course.term) {
+            if (course.section.sectionCode === sectionCode && term.shortName === course.term.shortName) {
                 return course;
             }
         }
@@ -264,7 +266,7 @@ export class Schedules {
                 // New colors are drawn from a Set of unused colors across the newCourse's term
                 color: getColorForNewSection(
                     newCourse,
-                    this.getAllCourses().filter((course) => course.term === newCourse.term)
+                    this.getAllCourses().filter((course) => course.term.shortName === newCourse.term.shortName)
                 ),
             },
         };
@@ -296,7 +298,7 @@ export class Schedules {
     /**
      * Change courses that match the code and term in all schedules to new color.
      */
-    changeCourseColor(sectionCode: string, term: AATerm['shortName'], newColor: string) {
+    changeCourseColor(sectionCode: string, term: AATerm, newColor: string) {
         this.addUndoState();
 
         const course = this.getExistingCourseInSchedule(sectionCode, term);
@@ -309,20 +311,20 @@ export class Schedules {
     /**
      * Delete a course in current schedule.
      */
-    deleteCourse(sectionCode: string, term: AATerm['shortName'], scheduleIndex: number) {
+    deleteCourse(sectionCode: string, term: AATerm, scheduleIndex: number) {
         this.addUndoState();
         this.setCurrentScheduleIndex(scheduleIndex);
         this.schedules[scheduleIndex].courses = this.schedules[this.currentScheduleIndex].courses.filter((course) => {
-            return !(course.section.sectionCode === sectionCode && course.term === term);
+            return !(course.section.sectionCode === sectionCode && course.term.shortName === term.shortName);
         });
     }
 
     /**
      * Check if a course has already been added to a schedule.
      */
-    doesCourseExistInSchedule(sectionCode: string, term: AATerm['shortName'], scheduleIndex: number) {
+    doesCourseExistInSchedule(sectionCode: string, term: AATerm, scheduleIndex: number) {
         for (const course of this.schedules[scheduleIndex].courses) {
-            if (course.section.sectionCode === sectionCode && term === course.term) {
+            if (course.section.sectionCode === sectionCode && term.shortName === course.term.shortName) {
                 return true;
             }
         }
@@ -496,7 +498,7 @@ export class Schedules {
      * Previous states are capped to 50
      */
     addUndoState() {
-        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[]; // Create deep copy of Schedules object
+        const clonedSchedules = structuredClone(this.schedules);
         this.previousStates.push({
             schedules: clonedSchedules,
             scheduleIndex: this.currentScheduleIndex,
@@ -516,7 +518,7 @@ export class Schedules {
         if (state === undefined) {
             return false;
         }
-        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+        const clonedSchedules = structuredClone(this.schedules);
         this.futureStates.push({
             schedules: clonedSchedules,
             scheduleIndex: this.currentScheduleIndex,
@@ -534,7 +536,7 @@ export class Schedules {
         if (state === undefined) {
             return false;
         }
-        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+        const clonedSchedules = structuredClone(this.schedules);
         this.previousStates.push({
             schedules: clonedSchedules,
             scheduleIndex: this.currentScheduleIndex,
@@ -559,7 +561,7 @@ export class Schedules {
                 courses: schedule.courses.map((course) => {
                     return {
                         color: course.section.color,
-                        term: course.term,
+                        term: course.term.shortName,
                         sectionCode: course.section.sectionCode,
                     };
                 }),
@@ -640,10 +642,16 @@ export class Schedules {
                             // Class doesn't exist/was cancelled
                             continue;
                         }
+
+                        const term = getTermByShortName(shortCourse.term);
+                        if (!term) {
+                            continue;
+                        }
+
                         courses.push({
                             ...shortCourse,
                             ...courseInfo.courseDetails,
-                            term: shortCourse.term as AATerm['shortName'],
+                            term,
                             section: {
                                 ...courseInfo.section,
                                 color: shortCourse.color,

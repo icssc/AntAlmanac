@@ -15,7 +15,7 @@ export type ScheduleCourse = {
     deptCode: string;
     prerequisiteLink: string;
     section: AASection;
-    term: AATerm['shortName'];
+    term: AATerm;
     sectionTypes: WebsocSectionType[];
 };
 

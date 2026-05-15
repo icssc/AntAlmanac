@@ -51,7 +51,7 @@ export const addCourse = (
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
     const newCourse: ScheduleCourse = {
-        term: term.shortName,
+        term,
         deptCode: courseDetails.deptCode,
         courseNumber: courseDetails.courseNumber,
         courseTitle: courseDetails.courseTitle,

@@ -209,7 +209,7 @@ function sampleClassFactory({
         courseTitle: courseTitle,
         deptCode: deptCode,
         prerequisiteLink: '',
-        term: CURRENT_TERM.shortName,
+        term: CURRENT_TERM,
         section: {
             color: '#FF0000',
             instructors: instructors,

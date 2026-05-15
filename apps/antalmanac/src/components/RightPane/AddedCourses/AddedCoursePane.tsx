@@ -11,7 +11,6 @@ import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
-import { getTermByShortName } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -47,8 +46,7 @@ function getCourses() {
     const formattedCourses: CourseWithTerm[] = [];
 
     for (const course of currentCourses) {
-        const term = getTermByShortName(course.term);
-        if (!term) continue;
+        const term = course.term;
 
         let formattedCourse = formattedCourses.find(
             (needleCourse) =>

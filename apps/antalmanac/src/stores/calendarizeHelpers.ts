@@ -1,5 +1,4 @@
 import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { getTermByShortName, getDefaultTerm } from '$lib/term';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import type { HourMinute, WebsocSectionFinalExam } from '@packages/anteater-api/types';
@@ -15,7 +14,7 @@ function getLocation(location: string): Location {
 
 export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
     return currentCourses.flatMap((course) => {
-        const term = getTermByShortName(course.term) ?? getDefaultTerm();
+        const term = course.term;
 
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
@@ -120,7 +119,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                   ? course.section.meetings[0].bldg.map(getLocation)
                   : [];
 
-            const term = getTermByShortName(course.term) ?? getDefaultTerm();
+            const term = course.term;
             const finalsStartDate = term.finalsStart;
 
             return dayIndicesOccurring.map((dayIndex) => {

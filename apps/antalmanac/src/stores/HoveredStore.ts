@@ -32,7 +32,7 @@ export const useHoveredStore = create<HoveredStore>((set) => {
                     ...section,
                     color: HOVERED_SECTION_COLOR,
                 },
-                term: term.shortName,
+                term,
             };
 
             set({

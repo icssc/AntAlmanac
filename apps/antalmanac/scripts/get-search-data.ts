@@ -193,7 +193,7 @@ async function main() {
     let requestsMade = 0;
     for (const term of termData) {
         try {
-            const [year, quarter] = term.shortName.split(' ');
+            const { year, quarter } = term;
             const parsedTerm = `${quarter}_${year}`;
             const fileName = join(GENERATED_TERMS_DIR, `${parsedTerm}.json`);
 

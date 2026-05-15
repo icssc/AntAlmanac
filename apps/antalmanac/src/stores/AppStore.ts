@@ -157,7 +157,7 @@ class AppStore extends EventEmitter {
     }
 
     deleteCourse(sectionCode: string, term: AATerm, scheduleIndex: number, triggerUnsavedWarning = true) {
-        this.schedule.deleteCourse(sectionCode, term.shortName, scheduleIndex);
+        this.schedule.deleteCourse(sectionCode, term, scheduleIndex);
         this.unsavedChanges = triggerUnsavedWarning;
         const action: DeleteCourseAction = {
             type: 'deleteCourse',
@@ -407,7 +407,7 @@ class AppStore extends EventEmitter {
     }
 
     changeCourseColor(sectionCode: string, term: AATerm, newColor: string) {
-        this.schedule.changeCourseColor(sectionCode, term.shortName, newColor);
+        this.schedule.changeCourseColor(sectionCode, term, newColor);
         this.unsavedChanges = true;
         const action: ChangeCourseColorAction = {
             type: 'changeCourseColor',
@@ -425,8 +425,16 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    termsInSchedule = (term: AATerm) =>
-        new Set([term.shortName, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+    termsInSchedule = (term: AATerm): Set<AATerm> => {
+        const map = new Map<string, AATerm>();
+        map.set(term.shortName, term);
+        for (const course of this.schedule.getCurrentCourses()) {
+            if (!map.has(course.term.shortName)) {
+                map.set(course.term.shortName, course.term);
+            }
+        }
+        return new Set(map.values());
+    };
 
     getPreviousStates = () => this.schedule.getPreviousStates();
 }

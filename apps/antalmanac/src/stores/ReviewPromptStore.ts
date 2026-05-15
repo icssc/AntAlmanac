@@ -24,7 +24,7 @@ type ReviewCandidate = {
     courseTitle: string;
     /** Raw WebSOC instructor name, e.g. "PATTIS, R." */
     professorId: string;
-    term: AATerm['shortName'];
+    term: AATerm;
 };
 
 type Step = 'enrollment-confirm' | 'review' | 'hidden';
@@ -72,7 +72,7 @@ export const useReviewPromptStore = create(
                 const term = course.term;
                 const sectionType = course.section.sectionType;
 
-                if (!pastTermNames.has(term)) {
+                if (!pastTermNames.has(term.shortName)) {
                     continue;
                 }
 
@@ -92,7 +92,7 @@ export const useReviewPromptStore = create(
                 }
 
                 const courseId = `${course.deptCode} ${course.courseNumber}`;
-                const dedupKey = `${courseId}::${instructor}::${term}`;
+                const dedupKey = `${courseId}::${instructor}::${term.shortName}`;
                 if (seen.has(dedupKey)) {
                     continue;
                 }
@@ -133,7 +133,7 @@ export const useReviewPromptStore = create(
             }
 
             const eligible = candidates.filter((c) => {
-                const key = `${c.courseId}::${c.professorId}::${c.term}`;
+                const key = `${c.courseId}::${c.professorId}::${c.term.shortName}`;
                 return !dismissedSet.has(key) && !reviewedSet.has(key);
             });
 
@@ -150,7 +150,7 @@ export const useReviewPromptStore = create(
                     courseId: candidate.courseId,
                     courseTitle: candidate.courseTitle,
                     professorId: candidate.professorId,
-                    term: candidate.term,
+                    term: candidate.term.shortName,
                 },
             });
         },
@@ -165,7 +165,7 @@ export const useReviewPromptStore = create(
                     customProps: {
                         courseId: candidate.courseId,
                         professorId: candidate.professorId,
-                        term: candidate.term,
+                        term: candidate.term.shortName,
                     },
                 });
             }
@@ -186,7 +186,7 @@ export const useReviewPromptStore = create(
                     customProps: {
                         courseId: candidate.courseId,
                         professorId: candidate.professorId,
-                        term: candidate.term,
+                        term: candidate.term.shortName,
                         dismissedAtStep: step,
                     },
                 });
