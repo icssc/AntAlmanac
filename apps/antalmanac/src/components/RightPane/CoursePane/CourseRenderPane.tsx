@@ -26,8 +26,8 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
-import { AACourse, AASection } from '@packages/antalmanac-types';
-import { WebsocAPIResponse, WebsocDepartment, WebsocSchool, WebsocSectionType } from '@packages/anteater-api/types';
+import { AACourse } from '@packages/antalmanac-types';
+import { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -54,21 +54,14 @@ const flattenSOCObject = (
             accumulator.push(dept);
 
             dept.courses.forEach((course) => {
-                for (const section of course.sections) {
-                    (section as AASection).color = courseColors[section.sectionCode];
-                }
-
-                const sectionTypesSet = new Set<WebsocSectionType>();
-
-                course.sections.forEach((section) => {
-                    sectionTypesSet.add(section.sectionType);
+                accumulator.push({
+                    ...course,
+                    sections: course.sections.map((section) => ({
+                        ...section,
+                        color: courseColors[section.sectionCode],
+                    })),
+                    sectionTypes: Array.from(new Set((course as AACourse).sectionTypes)),
                 });
-
-                const sectionTypes = [...sectionTypesSet];
-
-                (course as AACourse).sectionTypes = sectionTypes;
-
-                accumulator.push(course as AACourse);
             });
         });
 
