@@ -2,7 +2,7 @@ import { AppRouter } from '$src/backend/routers';
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
 
-const trpc = createTRPCClient<AppRouter>({
+export const trpcConfig = {
     links: [
         httpBatchLink({
             url: '/api/trpc',
@@ -17,6 +17,8 @@ const trpc = createTRPCClient<AppRouter>({
             maxURLLength: 8192,
         }),
     ],
-});
+};
+
+const trpc = createTRPCClient<AppRouter>(trpcConfig);
 
 export default trpc;
