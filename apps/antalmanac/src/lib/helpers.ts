@@ -1,4 +1,6 @@
 import { openSnackbar } from '$stores/SnackbarStore';
+import { Theme } from '@mui/material/styles';
+import { SxProps, SystemStyleObject } from '@mui/system';
 import { MouseEvent } from 'react';
 
 export const warnMultipleTerms = (terms: Set<string>) => {
@@ -13,6 +15,20 @@ export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: s
     event.stopPropagation();
     await navigator.clipboard.writeText(sectionCode);
     openSnackbar('success', 'WebsocSection code copied to clipboard');
+}
+
+export function mergeSx(
+    ...sxProps: (SxProps<Theme> | undefined)[]
+): ReadonlyArray<boolean | SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>)> {
+    return sxProps.reduce((acc, sxProp) => {
+        if (Array.isArray(sxProp)) {
+            acc.push(...sxProp);
+        } else if (sxProp != null) {
+            acc.push(sxProp);
+        }
+
+        return acc;
+    }, [] as any);
 }
 
 export const QUARTER_ORDER_IN_YEAR: Record<string, number> = {
