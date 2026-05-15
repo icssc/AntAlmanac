@@ -1,5 +1,5 @@
+import trpc from '$lib/api/trpc';
 import { getDefaultTerm } from '$lib/termData';
-import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type {
     Schedule,
@@ -27,8 +27,6 @@ export class Schedules {
 
     private futureStates: ScheduleUndoState[];
 
-    private skeletonSchedules: ShortCourseSchedule[];
-
     /**
      * We do not want schedule notes to be undone; to avoid this,
      * we keep track of every schedule note in an object where each key
@@ -52,7 +50,6 @@ export class Schedules {
         this.previousStates = [];
         this.futureStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
-        this.skeletonSchedules = [];
     }
 
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
@@ -613,7 +610,7 @@ export class Schedules {
 
             const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
                 const sectionCodes = Array.from(courseSet).join(',');
-                const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
+                const courseInfo = await trpc.websoc.getCourseInfo.query({ term, sectionCodes });
                 courseInfoDict.set(term, courseInfo);
             });
 
@@ -684,17 +681,5 @@ export class Schedules {
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
-    }
-
-    getCurrentSkeletonSchedule(): ShortCourseSchedule {
-        return this.skeletonSchedules[this.currentScheduleIndex];
-    }
-
-    getSkeletonScheduleNames(): string[] {
-        return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
-    }
-
-    setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
-        this.skeletonSchedules = skeletonSchedules;
     }
 }

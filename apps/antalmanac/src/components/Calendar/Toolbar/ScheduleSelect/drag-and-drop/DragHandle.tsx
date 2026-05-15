@@ -1,7 +1,6 @@
 import { SortableItemContext } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
-import { useThemeStore } from '$stores/SettingsStore';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { useContext } from 'react';
 
 interface DragHandleProps {
@@ -10,7 +9,7 @@ interface DragHandleProps {
 
 export function DragHandle({ disabled = false }: DragHandleProps) {
     const { attributes, listeners, ref } = useContext(SortableItemContext);
-    const isDark = useThemeStore((store) => store.isDark);
+    const theme = useTheme();
 
     return (
         <Box
@@ -24,7 +23,7 @@ export function DragHandle({ disabled = false }: DragHandleProps) {
                 cursor: disabled ? 'auto' : 'pointer',
                 borderRadius: 1,
                 '&:hover': {
-                    backgroundColor: disabled ? 'transparent' : 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: disabled ? 'transparent' : theme.palette.action.hover,
                 },
                 '&:focus-visible': {
                     boxShadow: disabled ? 'none' : '0 0 0 2px #4c9ffe',
@@ -33,7 +32,7 @@ export function DragHandle({ disabled = false }: DragHandleProps) {
         >
             <DragIndicatorIcon
                 sx={{
-                    color: disabled ? 'gray' : !isDark ? 'black' : 'white',
+                    color: disabled ? theme.palette.action.disabled : theme.palette.action.active,
                 }}
             />
         </Box>

@@ -21,13 +21,7 @@ function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${s
     return `${year} ${QUARTER_MAP[quarter]}`;
 }
 
-function toLocalDateCode(dateString: string): string {
-    const [year, month, day] = dateString.split('-').map(Number);
-    // 0-indexed months
-    return `new Date(${year}, ${month - 1}, ${day})`;
-}
-
-function serializeTerm(term: CalendarTerm): string {
+function serializeTerm(term: CalendarTerm) {
     const { year, quarter, instructionStart, finalsStart, socAvailable } = term;
 
     if (!instructionStart || !finalsStart || !socAvailable) {
@@ -38,14 +32,14 @@ function serializeTerm(term: CalendarTerm): string {
     const longName = sanitizeTermName(year, quarter);
     const isSummerTerm = quarter.toLowerCase().includes('summer');
 
-    return `    {
-        shortName: ${JSON.stringify(shortName)},
-        longName: ${JSON.stringify(longName)},
-        startDate: ${toLocalDateCode(instructionStart)},
-        finalsStartDate: ${toLocalDateCode(finalsStart)},
-        socAvailable: ${toLocalDateCode(socAvailable)},
-        isSummerTerm: ${isSummerTerm},
-    }`;
+    return {
+        shortName,
+        longName,
+        startDate: instructionStart,
+        finalsStartDate: finalsStart,
+        socAvailable,
+        isSummerTerm,
+    };
 }
 
 async function main() {
@@ -59,16 +53,10 @@ async function main() {
         return dateB - dateA;
     });
 
-    const termEntries = sortedTerms.map(serializeTerm).join(',\n');
-    const fileContent = `import type { Term } from '$lib/termData';
-
-export const terms: Term[] = [
-${termEntries}
-];
-    `;
+    const termEntries = sortedTerms.map(serializeTerm);
 
     await mkdir(GENERATED_DIR, { recursive: true });
-    await writeFile(TERM_DATA_FILE, fileContent);
+    await writeFile(TERM_DATA_FILE, JSON.stringify(termEntries, null, 2));
 
     console.log('Term data generated. Written to ', TERM_DATA_FILE);
 }

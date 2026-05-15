@@ -1,5 +1,5 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import { WebSOC } from '$lib/websoc';
+import { trpcReact } from '$lib/api/trpcReact';
 import { OpenInNew } from '@mui/icons-material';
 import {
     Card,
@@ -12,9 +12,8 @@ import {
     Skeleton,
     Typography,
 } from '@mui/material';
-import type { WebsocSyllabiResponse } from '@packages/anteater-api/types';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 interface PastSyllabiPopoverProps {
     deptCode: string;
@@ -26,21 +25,23 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const isMobile = useIsMobile();
     const { deptCode, courseNumber, courseId } = props;
 
-    const [loading, setLoading] = useState(true);
-    const [syllabi, setSyllabi] = useState<WebsocSyllabiResponse>([]);
+    const { data: syllabi = [], isLoading: loading } = trpcReact.websoc.getSyllabi.useQuery({ courseId });
 
     const width = isMobile ? 250 : 400;
     const height = isMobile ? 150 : 200;
 
     const syllabiByTerm = useMemo(() => {
-        return syllabi.reduce<Record<string, WebsocSyllabiResponse[number][]>>((acc, entry) => {
-            const term = `${entry.year} ${entry.quarter}`;
+        return syllabi.reduce(
+            (acc, entry) => {
+                const term = `${entry.year} ${entry.quarter}`;
 
-            acc[term] ??= [];
-            acc[term].push(entry);
+                acc[term] ??= [];
+                acc[term].push(entry);
 
-            return acc;
-        }, {});
+                return acc;
+            },
+            {} as Record<string, (typeof syllabi)[number][]>
+        );
     }, [syllabi]);
 
     const title = `${deptCode} ${courseNumber}`;
@@ -49,22 +50,6 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     ) : (
         `${syllabi.length} ${syllabi.length === 1 ? 'syllabus' : 'syllabi'} across ${Object.keys(syllabiByTerm).length} ${Object.keys(syllabiByTerm).length === 1 ? 'term' : 'terms'}`
     );
-
-    useEffect(() => {
-        setLoading(true);
-
-        WebSOC.getSyllabi({ courseId })
-            .catch((e) => {
-                console.error(e);
-                return undefined;
-            })
-            .then((result) => {
-                setSyllabi(result ?? []);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, [courseId]);
 
     return (
         <Card>

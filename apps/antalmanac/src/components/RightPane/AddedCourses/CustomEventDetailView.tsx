@@ -5,12 +5,12 @@ import ColorPicker from '$components/ColorPicker';
 import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { format, set } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { format, isValid, set } from 'date-fns';
 
 interface CustomEventDetailViewProps {
     scheduleNames: string[];
@@ -21,31 +21,15 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
     const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
 
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const baseDate = new Date(2000, 0, 1);
-        const startTime = set(baseDate, {
-            hours: parseInt(start.slice(0, 2)),
-            minutes: parseInt(start.slice(3, 5)),
-        });
+        const startTime = set(baseDate, { hours: parseInt(start.slice(0, 2)), minutes: parseInt(start.slice(3, 5)) });
+        const endTime = set(baseDate, { hours: parseInt(end.slice(0, 2)), minutes: parseInt(end.slice(3, 5)) });
 
-        const endTime = set(baseDate, {
-            hours: parseInt(end.slice(0, 2)),
-            minutes: parseInt(end.slice(3, 5)),
-        });
+        // Fall back to raw strings if the time fields can't be parsed (e.g. empty string in DB).
+        if (!isValid(startTime) || !isValid(endTime)) return `${start} — ${end}`;
 
         const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const daysString = days.map((includeDate, index) => (includeDate ? dayAbbreviations[index] : '')).join(' ');
@@ -75,7 +59,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
                 />
             </CardContent>
 
-            {!skeletonMode && (
+            {!fallbackMode && (
                 <CardActions disableSpacing={true}>
                     <ColorPicker
                         color={customEvent.color ?? '#551a8b'}

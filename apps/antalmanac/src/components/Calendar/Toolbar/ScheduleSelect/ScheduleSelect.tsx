@@ -6,6 +6,7 @@ import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelec
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
@@ -49,10 +50,8 @@ export function SelectSchedulePopover() {
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const [skeletonScheduleMapping, setSkeletonScheduleMapping] = useState(
-        getScheduleItems(AppStore.getSkeletonScheduleNames())
-    );
+    const { fallbackMode, getFallbackScheduleNames } = useFallbackStore();
+    const fallbackScheduleMapping = getScheduleItems(getFallbackScheduleNames());
 
     const anchorElementRef = useRef(null);
 
@@ -91,21 +90,15 @@ export function SelectSchedulePopover() {
             }
             setScheduleMapping(getScheduleItems());
         };
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-            setSkeletonScheduleMapping(getScheduleItems(AppStore.getSkeletonScheduleNames()));
-        };
 
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
 
         return () => {
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
     }, []);
 
-    const scheduleMappingToUse = skeletonMode ? skeletonScheduleMapping : scheduleMapping;
+    const scheduleMappingToUse = fallbackMode ? fallbackScheduleMapping : scheduleMapping;
 
     return (
         <Box>
@@ -168,7 +161,7 @@ export function SelectSchedulePopover() {
                                             flexGrow: 1,
                                         }}
                                     >
-                                        <SortableList.DragHandle disabled={skeletonMode} />
+                                        <SortableList.DragHandle disabled={fallbackMode} />
                                         <Box flexGrow={1}>
                                             <Tooltip
                                                 title={item.name}
@@ -216,9 +209,9 @@ export function SelectSchedulePopover() {
                                         </Box>
 
                                         <Box display="flex" alignItems="center" gap={0.5}>
-                                            <CopyScheduleButton index={index} disabled={skeletonMode} />
-                                            <RenameScheduleButton index={index} disabled={skeletonMode} />
-                                            <DeleteScheduleButton index={index} disabled={skeletonMode} />
+                                            <CopyScheduleButton index={index} />
+                                            <RenameScheduleButton index={index} />
+                                            <DeleteScheduleButton index={index} />
                                         </Box>
                                     </Box>
                                 </SortableList.Item>
@@ -226,7 +219,7 @@ export function SelectSchedulePopover() {
                         }}
                     />
                     <Box marginY={1} />
-                    <AddScheduleButton disabled={skeletonMode} />
+                    <AddScheduleButton />
                 </Box>
             </Popover>
         </Box>

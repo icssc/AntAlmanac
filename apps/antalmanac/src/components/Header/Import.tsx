@@ -9,6 +9,8 @@ import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
+import { trpcReact } from '$lib/api/trpcReact';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import {
@@ -18,10 +20,10 @@ import {
     removeLocalStorageOnFirstSignin,
     removeLocalStorageUserId,
 } from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
-import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
+import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useDevModeStore, useThemeStore } from '$stores/SettingsStore';
@@ -74,7 +76,7 @@ export function Import() {
     const [exportSchedules, setExportSchedules] = useState<ShortCourseSchedule[]>([]);
     const [exportSelectedIndices, setExportSelectedIndices] = useState<Set<number>>(new Set());
 
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
     const { sessionIsValid } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
@@ -86,6 +88,7 @@ export function Import() {
     const isDark = useThemeStore((store) => store.isDark);
 
     const postHog = usePostHog();
+    const { mutateAsync: fetchZotcourse } = trpcReact.zotcourse.getUserData.useMutation();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -120,7 +123,17 @@ export function Import() {
         switch (effectiveImportSource) {
             case ImportSource.ZOT_COURSE_IMPORT:
                 try {
-                    const zotcourseImport: ZotcourseResponse = await queryZotcourse(zotcourseScheduleName);
+                    if (!zotcourseScheduleName) {
+                        throw new QueryZotcourseError('Cannot import an empty Zotcourse schedule name');
+                    }
+
+                    const response = await fetchZotcourse({ scheduleName: zotcourseScheduleName });
+
+                    if (!response.success) {
+                        throw new QueryZotcourseError('Cannot import an invalid Zotcourse');
+                    }
+
+                    const zotcourseImport = processZotcourseResponse(response.data);
                     sectionCodes = zotcourseImport.codes;
                     for (const event of zotcourseImport.customEvents) {
                         addCustomEvent(event, [currentSchedule]);
@@ -241,15 +254,12 @@ export function Import() {
     ) => {
         try {
             const term = RightPaneStore.getFormData().term;
-
-            const sectionsAdded = addCoursesMultiple(
-                await WebSOC.getCourseInfo({
-                    term,
-                    sectionCodes: sectionCodes.join(','),
-                }),
+            const courseInfo = await trpc.websoc.getCourseInfo.query({
                 term,
-                currentSchedule
-            );
+                sectionCodes: sectionCodes.join(','),
+            });
+
+            const sectionsAdded = addCoursesMultiple(courseInfo, term, currentSchedule);
 
             logAnalytics(postHog, {
                 category: analyticsEnum.nav,
@@ -644,17 +654,9 @@ export function Import() {
     }, [handleOpen]);
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
         if (sessionIsValid && getLocalStorageDataCache() === null) {
             handleFirstTimeSignin();
         }
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
     }, [handleFirstTimeSignin, sessionIsValid]);
 
     return (
@@ -665,7 +667,7 @@ export function Import() {
                     color="inherit"
                     sx={{ fontSize: 'inherit' }}
                     startIcon={<ContentPasteGo />}
-                    disabled={skeletonMode}
+                    disabled={fallbackMode}
                     id="import-button"
                 >
                     {devMode ? 'Import/Export' : 'Import'}

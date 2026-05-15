@@ -1,5 +1,6 @@
 'use client';
 
+import { trpcReact } from '$lib/api/trpcReact';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { Close } from '@mui/icons-material';
 import { Box, Button, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
@@ -12,6 +13,15 @@ export function EnrollmentConfirmStep() {
     const confirm = useReviewPromptStore((s) => s.confirm);
     const dismiss = useReviewPromptStore((s) => s.dismiss);
 
+    const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
+
+    const handleDismiss = () => {
+        const candidate = dismiss();
+        if (candidate) {
+            dismissReview({ professorId: candidate.professorId, courseId: candidate.courseId, term: candidate.term });
+        }
+    };
+
     return (
         <>
             <CardHeader
@@ -21,7 +31,7 @@ export function EnrollmentConfirmStep() {
                     </Typography>
                 }
                 action={
-                    <IconButton size="small" onClick={dismiss} aria-label="dismiss">
+                    <IconButton size="small" onClick={handleDismiss} aria-label="dismiss">
                         <Close fontSize="small" />
                     </IconButton>
                 }
@@ -47,7 +57,7 @@ export function EnrollmentConfirmStep() {
             </CardContent>
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
-                <Button size="small" color="inherit" onClick={dismiss}>
+                <Button size="small" color="inherit" onClick={handleDismiss}>
                     I did not
                 </Button>
 

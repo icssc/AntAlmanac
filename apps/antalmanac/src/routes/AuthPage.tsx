@@ -2,6 +2,7 @@ import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreAct
 import { LoadingScreen } from '$components/LoadingScreen';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { trpcReact } from '$lib/api/trpcReact';
 import {
     getLocalStorageDataCache,
     getLocalStorageFromLoading,
@@ -23,6 +24,9 @@ export function AuthPage() {
     const [searchParams] = useSearchParams();
     const isAuthenticatingRef = useRef(false);
     const postHog = usePostHog();
+    const { mutateAsync: handleGoogleCallback } = trpcReact.auth.handleGoogleCallback.useMutation();
+    const { mutateAsync: flagImported } = trpcReact.schedule.flagImported.useMutation();
+    const { mutateAsync: saveSchedule } = trpcReact.schedule.save.useMutation();
 
     const handleSearchParamsChange = useCallback(async () => {
         // Prevent race condition: only allow one authentication attempt at a time
@@ -49,7 +53,7 @@ export function AuthPage() {
 
             isAuthenticatingRef.current = true;
 
-            const { userId, providerId, newUser } = await trpc.auth.handleGoogleCallback.mutate({
+            const { userId, providerId, newUser } = await handleGoogleCallback({
                 code: code,
                 state: state,
             });
@@ -96,7 +100,7 @@ export function AuthPage() {
                 const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
                 if (savedUserId !== '') {
-                    await trpc.schedule.flagImported.mutate({ username: savedUserId });
+                    await flagImported({ username: savedUserId });
                     setLocalStorageImportedUser(savedUserId);
                 }
 
@@ -113,7 +117,7 @@ export function AuthPage() {
                     }
                 }
 
-                await trpc.schedule.save.mutate({
+                await saveSchedule({
                     userData: scheduleSaveState,
                 });
             }
@@ -123,7 +127,7 @@ export function AuthPage() {
             clearSsoCookie();
             window.location.href = '/';
         }
-    }, [searchParams, postHog]);
+    }, [searchParams, postHog, handleGoogleCallback, flagImported, saveSchedule]);
 
     useEffect(() => {
         handleSearchParamsChange();
