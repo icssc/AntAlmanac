@@ -1,1 +1,1 @@
-ALTER TABLE "coursesInSchedule" ADD COLUMN "index" integer;
+ALTER TABLE "coursesInSchedule" ADD COLUMN IF NOT EXISTS "index" integer;
