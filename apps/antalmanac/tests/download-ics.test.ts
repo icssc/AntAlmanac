@@ -16,19 +16,6 @@ const FALL_2023: AATerm = {
     isSummerTerm: false,
 };
 
-const SPRING_2024: AATerm = {
-    year: '2024',
-    quarter: 'Spring',
-    shortName: '2024 Spring',
-    longName: 'Spring 2024',
-    instructionStart: new Date(2024, 3, 1),
-    instructionEnd: new Date(2024, 5, 7),
-    finalsStart: new Date(2024, 5, 8),
-    finalsEnd: new Date(2024, 5, 14),
-    socAvailable: new Date(2024, 1, 1),
-    isSummerTerm: false,
-};
-
 describe('download-ics', () => {
     test('converts schedule courses to events for the ics library', () => {
         const courses: CalendarEvent[] = [
@@ -109,7 +96,8 @@ describe('download-ics', () => {
             },
         ];
 
-        const result = getEventsFromCourses(courses, SPRING_2024);
+        // Custom events use getDefaultTerm(events) — first non-custom course term (FALL_2023 here).
+        const result = getEventsFromCourses(courses);
 
         expect(result).toMatchSnapshot();
     });
