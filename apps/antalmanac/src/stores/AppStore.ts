@@ -339,6 +339,7 @@ class AppStore extends EventEmitter {
             nextCourseId: nextCourseId,
         };
         actionTypesStore.autoSaveSchedule(action);
+        this.emit('addedCoursesChange');
     }
 
     private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
