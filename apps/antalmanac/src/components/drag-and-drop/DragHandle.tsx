@@ -1,9 +1,7 @@
 import { SortableItemContext } from '$components/drag-and-drop/SortableItem';
 import { DraggingItemContext } from '$components/drag-and-drop/SortableList';
-import { useThemeStore } from '$stores/SettingsStore';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { Box } from '@mui/material';
-import { SxProps, Theme } from '@mui/material/styles';
+import { Box, SxProps, Theme, useTheme } from '@mui/material';
 import { mergeSx } from '@mui/x-date-pickers/internals';
 import { useContext } from 'react';
 
@@ -17,7 +15,7 @@ export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
     const { attributes, listeners, ref } = useContext(SortableItemContext);
     const draggingState = useContext(DraggingItemContext);
 
-    const isDark = useThemeStore((store) => store.isDark);
+    const theme = useTheme();
 
     return (
         <Box
@@ -33,7 +31,7 @@ export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
                     borderRadius: 1,
                     touchAction: 'none',
                     '&:hover': {
-                        backgroundColor: disabled ? 'transparent' : 'rgba(0, 0, 0, 0.1)',
+                        backgroundColor: disabled ? 'transparent' : theme.palette.action.hover,
                     },
                     '&:focus-visible': {
                         boxShadow: disabled ? 'none' : '0 0 0 2px #4c9ffe',
@@ -45,7 +43,7 @@ export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
             <DragIndicatorIcon
                 sx={mergeSx(
                     {
-                        color: disabled ? 'gray' : isDark ? 'white' : 'black',
+                        color: disabled ? theme.palette.action.disabled : theme.palette.action.active,
                     },
                     iconSx
                 )}

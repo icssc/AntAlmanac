@@ -19,6 +19,11 @@ export type ScheduleCourse = {
 };
 
 export type Schedule = {
+    /**
+     * Optional unique identifier for the schedule.
+     * Present when schedules are loaded from the backend.
+     */
+    id?: string;
     scheduleName: string;
     courses: ScheduleCourse[];
     customEvents: RepeatingCustomEvent[];

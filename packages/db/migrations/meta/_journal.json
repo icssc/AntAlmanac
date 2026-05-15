@@ -124,8 +124,15 @@
     {
       "idx": 17,
       "version": "7",
-      "when": 1778554416169,
-      "tag": "0017_course_indexes",
+      "when": 1778647306204,
+      "tag": "0017_aromatic_outlaw_kid",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1778823534155,
+      "tag": "0018_course_indexes",
       "breakpoints": true
     }
   ]
