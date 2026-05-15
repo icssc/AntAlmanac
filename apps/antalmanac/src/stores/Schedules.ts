@@ -2,6 +2,7 @@ import trpc from '$lib/api/trpc';
 import { getDefaultTerm } from '$lib/termData';
 import { moveArrayElements } from '$lib/utils';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
+import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     Schedule,
     ScheduleCourse,
@@ -200,10 +201,22 @@ export class Schedules {
         const courses = this.schedules[scheduleIndex].courses;
 
         const fromIndex = courses.findIndex((course) => getCourseId(course) === movedCourseId);
+        if (fromIndex === -1) {
+            console.error(`Course id ${movedCourseId} was not found in schedule courses`);
+            openSnackbar('error', 'Could not reorder added courses');
+            return;
+        }
+
         const toIndex =
             nextCourseId !== null
                 ? courses.findIndex((course) => getCourseId(course) === nextCourseId)
                 : courses.length;
+        if (fromIndex === -1) {
+            console.error(`Course id ${toIndex} was not found in schedule courses`);
+            openSnackbar('error', 'Could not reorder added courses');
+            return;
+        }
+
         const sectionCount = courses.findLastIndex((course) => getCourseId(course) === movedCourseId) - fromIndex + 1;
 
         moveArrayElements(courses, fromIndex, toIndex, { elementMoveCount: sectionCount });
