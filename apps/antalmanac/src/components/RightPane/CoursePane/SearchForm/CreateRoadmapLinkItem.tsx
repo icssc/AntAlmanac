@@ -1,4 +1,5 @@
-import { PLANNER_LINK } from '$src/globals';
+import { LIGHT_BLUE, PLANNER_LINK } from '$src/globals';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Link, MenuItem } from '@mui/material';
 
 interface CreateRoadmapLinkItemProps {
@@ -6,6 +7,8 @@ interface CreateRoadmapLinkItemProps {
 }
 
 export const CreateRoadmapLinkItem = ({ verticalPadding }: CreateRoadmapLinkItemProps) => {
+    const isDark = useThemeStore((state) => state.isDark);
+
     return (
         <MenuItem sx={{ padding: 0 }}>
             <Link
@@ -17,6 +20,7 @@ export const CreateRoadmapLinkItem = ({ verticalPadding }: CreateRoadmapLinkItem
                     paddingBottom: verticalPadding,
                     width: '100%',
                     height: '100%',
+                    ...(isDark && { color: LIGHT_BLUE }),
                 }}
             >
                 Create a roadmap!
