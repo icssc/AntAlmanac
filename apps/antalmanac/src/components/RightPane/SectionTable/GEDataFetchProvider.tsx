@@ -1,6 +1,5 @@
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import SectionTable from '$components/RightPane/SectionTable/SectionTable';
-import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
+import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpcReact';
 import AppStore from '$stores/AppStore';
 import type { AACourse } from '@packages/antalmanac-types';

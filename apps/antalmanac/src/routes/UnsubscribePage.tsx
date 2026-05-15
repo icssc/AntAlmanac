@@ -1,4 +1,5 @@
 import { trpcReact } from '$lib/api/trpcReact';
+import { parseQuarter } from '$lib/term';
 import { Box, Button } from '@mui/material';
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -8,7 +9,7 @@ export const Unsubscribe = () => {
     const [searchParams] = useSearchParams();
 
     const sectionCode = searchParams.get('sectionCode');
-    const quarter = searchParams.get('quarter');
+    const _quarter = searchParams.get('quarter');
     const year = searchParams.get('year');
     const deptCode = searchParams.get('deptCode');
     const courseNumber = searchParams.get('courseNumber');
@@ -16,8 +17,6 @@ export const Unsubscribe = () => {
     const unsubscribeAll = searchParams.get('unsubscribeAll');
 
     const [done, setDone] = useState(false);
-
-    const term = `${year} ${quarter}`;
 
     const { mutate: deleteAllNotifications, isPending: isDeletingAll } =
         trpcReact.notifications.deleteAllNotifications.useMutation({
@@ -32,12 +31,16 @@ export const Unsubscribe = () => {
         });
 
     const handleUnsubscribe = () => {
-        if (!userId || !sectionCode || !quarter || !year) return;
+        const quarter = parseQuarter(_quarter);
+
+        if (!userId || !sectionCode || !quarter || !year) {
+            return;
+        }
 
         if (unsubscribeAll === 'true') {
             deleteAllNotifications({ userId });
         } else {
-            deleteNotification({ userId, sectionCode, term });
+            deleteNotification({ userId, sectionCode, year, quarter });
         }
     };
 
