@@ -2,6 +2,7 @@ import { DragHandle } from '$components/drag-and-drop/DragHandle';
 import { SortableItem } from '$components/drag-and-drop/SortableItem';
 import { SortableOverlay } from '$components/drag-and-drop/SortableOverlay';
 import { mergeSx } from '$lib/helpers';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Active, UniqueIdentifier } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
@@ -69,7 +70,11 @@ export function SortableList<T extends BaseItem>({
                 if (over && active.id !== over?.id) {
                     const activeIndex = items.findIndex(({ id }) => id === active.id);
                     const overIndex = items.findIndex(({ id }) => id === over.id);
-                    onChange(arrayMove(items, activeIndex, overIndex), activeIndex, overIndex);
+                    if (activeIndex !== -1 && overIndex !== -1) {
+                        onChange(arrayMove(items, activeIndex, overIndex), activeIndex, overIndex);
+                    } else {
+                        openSnackbar('error', 'Failed to reorder list');
+                    }
                 }
                 setActive(null);
                 document.body.style.cursor = '';
