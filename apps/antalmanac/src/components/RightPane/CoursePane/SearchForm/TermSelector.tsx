@@ -5,7 +5,7 @@ import { ComponentProps, useCallback, useEffect, useState } from 'react';
 
 type TermSelectorProps = Omit<
     ComponentProps<typeof LabeledAutocomplete>,
-    'label' | 'autocompleteProps' | 'textFieldProps'
+    'label' | 'autocompleteProps' | 'textFieldProps' | 'isAligned'
 >;
 
 export function TermSelector(props: TermSelectorProps) {
@@ -53,7 +53,7 @@ export function TermSelector(props: TermSelectorProps) {
             textFieldProps={{
                 fullWidth: true,
             }}
-            isAligned={props?.isAligned ?? true}
+            isAligned
         />
     );
 }

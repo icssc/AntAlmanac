@@ -246,6 +246,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             }}
             labelProps={labelProps}
             loading={isLoadingSearch}
+            isAligned
         />
     );
 

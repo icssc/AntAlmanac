@@ -345,6 +345,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
                 fullWidth: true,
                 onFocus: onFocus,
             }}
+            isAligned
         />
     );
 };
