@@ -14,7 +14,7 @@ interface BaseItem {
     id: UniqueIdentifier;
 }
 
-interface Props<T extends BaseItem> {
+interface SortableListProps<T extends BaseItem> {
     items: T[];
     onChange(items: T[], activeIndex?: number, overIndex?: number): void;
     renderItem(item: T, index: number): ReactNode;
@@ -43,7 +43,7 @@ export function SortableList<T extends BaseItem>({
     sx,
     disableHorizontalScroll = true,
     sortingStrategy,
-}: Props<T>) {
+}: SortableListProps<T>) {
     const [active, setActive] = useState<Active | null>(null);
     const [draggingItemState, setDraggingItemState] = useState<ContextType<typeof DraggingItemContext>>(null);
 
