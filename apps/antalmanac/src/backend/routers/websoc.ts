@@ -5,7 +5,6 @@ import type {
     WebsocAPIResponse,
     WebsocQueryParams,
     WebsocSectionType,
-    WebsocSyllabiQueryParams,
     WebsocSyllabiResponse,
 } from '@packages/anteater-api/types';
 import { combineWebsocResponses, sortWebsocResponse } from '@packages/anteater-api/utils';
@@ -96,10 +95,7 @@ const websocRouter = router({
                 instructor: z.string().optional(),
             })
         )
-        .query(
-            ({ input }): Promise<WebsocSyllabiResponse> =>
-                aapiClient.websoc.getSyllabi(input as WebsocSyllabiQueryParams)
-        ),
+        .query(({ input }): Promise<WebsocSyllabiResponse> => aapiClient.websoc.getSyllabi(input)),
 });
 
 export default websocRouter;

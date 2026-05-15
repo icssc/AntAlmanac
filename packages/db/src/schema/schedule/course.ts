@@ -23,7 +23,7 @@ export const coursesInSchedule = pgTable(
         sectionCode: integer('sectionCode').notNull(),
 
         /**
-         * @example Winter 2024.
+         * AntAlmanac term shortName: `"<year> <quarter>"` (e.g. "2024 Winter").
          */
         term: text('term').notNull(),
 
