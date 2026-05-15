@@ -60,7 +60,7 @@ const flattenSOCObject = (
                         ...section,
                         color: courseColors[section.sectionCode],
                     })),
-                    sectionTypes: Array.from(new Set((course as AACourse).sectionTypes)),
+                    sectionTypes: Array.from(new Set(course.sections.map((section) => section.sectionType))),
                 });
             });
         });
