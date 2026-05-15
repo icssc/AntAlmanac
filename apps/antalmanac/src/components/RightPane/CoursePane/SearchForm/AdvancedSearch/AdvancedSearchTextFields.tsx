@@ -4,6 +4,7 @@ import {
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
@@ -39,11 +40,7 @@ function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
     }
 
     if (roadmaps.length === 0) {
-        return [
-            <MenuItem key="create" value="" onClick={() => window.open('https://antalmanac.com/planner', '_blank')}>
-                Create a roadmap!
-            </MenuItem>,
-        ];
+        return <CreateRoadmapLinkItem verticalPadding={'6px'} />;
     }
 
     return [

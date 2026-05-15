@@ -27,7 +27,12 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
                 >
                     Sign In
                 </Button>
-                <IconButton onClick={handleSettingsOpen} color="inherit">
+                <IconButton
+                    onClick={handleSettingsOpen}
+                    color="inherit"
+                    aria-label="Open settings menu"
+                    aria-haspopup="true"
+                >
                     <Menu sx={{ width: 24, height: 24 }} />
                 </IconButton>
             </>
