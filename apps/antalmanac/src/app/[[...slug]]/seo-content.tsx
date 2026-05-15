@@ -1,3 +1,5 @@
+import { ANTALMANAC_TITLE } from '$src/app/seo-constants';
+
 /**
  * Server-rendered content for search engine indexing and screen readers.
  *
@@ -8,27 +10,29 @@
 export function SeoContent() {
     return (
         <div className="sr-only" role="complementary" aria-label="About AntAlmanac">
-            <h1>AntAlmanac — UCI Course &amp; Schedule Planner</h1>
+            <h1>{ANTALMANAC_TITLE}</h1>
 
             <p>
-                AntAlmanac is UCI&apos;s most-used course and schedule planner, trusted by tens of thousands of UC
-                Irvine students. Search UCI courses across 140+ departments, build your weekly class schedule with
-                conflict detection, and explore grade distributions and enrollment history.
+                AntAlmanac helps you find any UCI course and plan your UCI schedule in one place — a UCI course planner
+                and UCI schedule planner trusted by tens of thousands of UC Irvine students. Search UCI courses across
+                140+ departments, build your UCI schedule with conflict detection and unit counts, and explore grade
+                distributions and enrollment history before you enroll.
             </p>
 
-            <h2>UCI Courses</h2>
+            <h2>UCI course search</h2>
             <p>
-                Search UCI courses in Computer Science, Informatics, Biological Sciences, Mathematics, Economics,
-                Engineering, Psychology, Political Science, and 130+ more departments. Filter by GE category — Writing,
-                Multicultural Studies, Science &amp; Technology, and more — or search by course number, title, or
-                instructor name.
+                Run a UCI course search across Computer Science, Informatics, Biological Sciences, Mathematics,
+                Economics, Engineering, Psychology, Political Science, and 130+ more departments. Filter by GE category
+                — Writing, Multicultural Studies, Science &amp; Technology, and more — or search by course number,
+                title, or instructor name.
             </p>
 
-            <h2>UCI Schedule Builder</h2>
+            <h2>UCI class schedule &amp; weekly planner</h2>
             <p>
-                Add UCI courses to a weekly calendar. AntAlmanac detects time conflicts, tracks your unit count, and
-                lets you save multiple schedule variations to compare before enrolling. Plan your ideal UCI class
-                schedule before enrollment opens.
+                Add UCI courses to a weekly calendar to preview your UCI class schedule. AntAlmanac detects time
+                conflicts, tracks your unit count, and lets you save multiple schedule variations to compare before
+                enrolling. Use it as your UCI schedule planner to finalize your ideal UCI schedule before enrollment
+                opens.
             </p>
 
             <h2>Interactive UCI Campus Map</h2>
