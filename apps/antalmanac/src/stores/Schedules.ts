@@ -211,7 +211,7 @@ export class Schedules {
             nextCourseId !== null
                 ? courses.findIndex((course) => getCourseId(course) === nextCourseId)
                 : courses.length;
-        if (fromIndex === -1) {
+        if (toIndex === -1) {
             console.error(`Course id ${toIndex} was not found in schedule courses`);
             openSnackbar('error', 'Could not reorder added courses');
             return;
