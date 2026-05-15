@@ -29,7 +29,7 @@ import {
     type ConflictUpdatePolicy,
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
-import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray, sql } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, isNull, ne, or, not, notInArray, sql } from 'drizzle-orm';
 import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -196,11 +196,12 @@ export class RDS {
 
         const keepIds = prepared.map((p) => p.dbId);
         await tx
-            .delete(schedules)
+            .update(schedules)
+            .set({ archivedAt: sql`now()`, index: null })
             .where(
                 keepIds.length === 0
-                    ? eq(schedules.userId, userId)
-                    : and(eq(schedules.userId, userId), notInArray(schedules.id, keepIds))
+                    ? and(eq(schedules.userId, userId), isNull(schedules.archivedAt))
+                    : and(eq(schedules.userId, userId), notInArray(schedules.id, keepIds), isNull(schedules.archivedAt))
             );
 
         if (prepared.length > 0) {
@@ -209,6 +210,7 @@ export class RDS {
                 userId: 'keep',
                 name: 'update',
                 notes: 'update',
+                archivedAt: 'update',
                 index: 'update',
                 createdAt: 'keep',
                 lastUpdated: 'update',
@@ -223,6 +225,7 @@ export class RDS {
                         userId,
                         name: schedule.scheduleName,
                         notes: schedule.scheduleNote,
+                        archivedAt: null,
                         index,
                         sharedWithFriends: existingSharingStatuses.get(dbId) ?? true,
                     }))
@@ -355,7 +358,8 @@ export class RDS {
     }
 
     /**
-     * Retrieves a schedule by its ID. All schedules are publicly accessible via their ID.
+     * Retrieves a schedule by its ID. Active schedules are publicly accessible via their ID.
+     * Archived (soft-deleted) schedules are not returned.
      *
      * @param db - The database or transaction object to use for the query.
      * @param scheduleId - The unique identifier of the schedule.
@@ -372,7 +376,7 @@ export class RDS {
                 .where(eq(schedules.id, scheduleId))
                 .then((res) => res[0]);
 
-            if (!schedule) {
+            if (!schedule || schedule.archivedAt != null) {
                 return null;
             }
 
@@ -421,12 +425,12 @@ export class RDS {
             db
                 .select()
                 .from(schedules)
-                .where(eq(schedules.userId, userId))
+                .where(and(eq(schedules.userId, userId), isNull(schedules.archivedAt)))
                 .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
             db
                 .select()
                 .from(schedules)
-                .where(eq(schedules.userId, userId))
+                .where(and(eq(schedules.userId, userId), isNull(schedules.archivedAt)))
                 .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
         ]);
 
@@ -464,7 +468,11 @@ export class RDS {
                 return null;
             }
 
-            const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
+            const sharedCondition = and(
+                eq(schedules.userId, userId),
+                eq(schedules.sharedWithFriends, true),
+                isNull(schedules.archivedAt)
+            );
 
             const sectionResults = await tx
                 .select()
@@ -661,12 +669,12 @@ export class RDS {
             db
                 .select()
                 .from(schedules)
-                .where(eq(schedules.userId, user.id))
+                .where(and(eq(schedules.userId, user.id), isNull(schedules.archivedAt)))
                 .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
             db
                 .select()
                 .from(schedules)
-                .where(eq(schedules.userId, user.id))
+                .where(and(eq(schedules.userId, user.id), isNull(schedules.archivedAt)))
                 .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
         ]);
 
@@ -944,7 +952,7 @@ export class RDS {
         return db
             .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
             .from(schedules)
-            .where(eq(schedules.userId, userId));
+            .where(and(eq(schedules.userId, userId), isNull(schedules.archivedAt)));
     }
 
     /**
@@ -957,10 +965,16 @@ export class RDS {
         scheduleId: string
     ): Promise<{ sharedWithFriends: boolean } | null> {
         return db.transaction(async (tx) => {
+            const activeOwned = and(
+                eq(schedules.id, scheduleId),
+                eq(schedules.userId, userId),
+                isNull(schedules.archivedAt)
+            );
+
             const [schedule] = await tx
                 .select({ sharedWithFriends: schedules.sharedWithFriends })
                 .from(schedules)
-                .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+                .where(activeOwned)
                 .limit(1);
 
             if (!schedule) return null;
@@ -968,7 +982,7 @@ export class RDS {
             const [updated] = await tx
                 .update(schedules)
                 .set({ sharedWithFriends: !schedule.sharedWithFriends })
-                .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+                .where(activeOwned)
                 .returning({ sharedWithFriends: schedules.sharedWithFriends });
 
             return { sharedWithFriends: updated.sharedWithFriends };
