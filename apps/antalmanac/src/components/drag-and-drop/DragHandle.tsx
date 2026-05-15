@@ -1,14 +1,14 @@
 import { SortableItemContext } from '$components/drag-and-drop/SortableItem';
 import { DraggingItemContext } from '$components/drag-and-drop/SortableList';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { Box, SxProps, Theme, useTheme } from '@mui/material';
+import { Box, SxProps, useTheme } from '@mui/material';
 import { mergeSx } from '@mui/x-date-pickers/internals';
 import { useContext } from 'react';
 
 interface DragHandleProps {
     disabled?: boolean;
     sx?: SxProps;
-    iconSx?: SxProps<Theme>;
+    iconSx?: SxProps;
 }
 
 export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
