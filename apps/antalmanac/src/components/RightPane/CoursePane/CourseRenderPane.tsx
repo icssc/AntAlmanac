@@ -367,7 +367,10 @@ export default function CourseRenderPane(props: { id?: number }) {
         [websocResp, courseColors]
     );
 
-    const andCourseCount = useMemo(() => getFilteredAndCourseCount(courseData, sharedCourseKeys), [courseData]);
+    const andCourseCount = useMemo(
+        () => getFilteredAndCourseCount(courseData, sharedCourseKeys),
+        [courseData, sharedCourseKeys]
+    );
 
     const getQueryParams = useCallback(
         (searchData: CourseSearchParams) => ({
