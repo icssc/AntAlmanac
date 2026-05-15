@@ -237,9 +237,19 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 ...(plannerRoadmaps.length === 0 && {
                     slotProps: { popper: { sx: { '& .MuiAutocomplete-noOptions': { padding: 0 } } } },
                     noOptionsText: (
-                        <Link href={PLANNER_LINK} target="_blank">
-                            <MenuItem sx={{ paddingTop: 1.5, paddingBottom: 1.5 }}>Create a roadmap!</MenuItem>
-                        </Link>
+                        <MenuItem sx={{ padding: 0 }}>
+                            <Link
+                                href={PLANNER_LINK}
+                                target="_blank"
+                                sx={{
+                                    padding: 1.5,
+                                    width: '100%',
+                                    height: '100%',
+                                }}
+                            >
+                                Create a roadmap!
+                            </Link>
+                        </MenuItem>
                     ),
                 }),
             }}
