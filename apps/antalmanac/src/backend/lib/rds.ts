@@ -445,10 +445,10 @@ export class RDS {
             schedulesMapping[scheduleId].courses.sort((a, b) => {
                 const aIndex = indexes[a.sectionCode];
                 const bIndex = indexes[b.sectionCode];
-                if (aIndex === null || bIndex === null) {
+                if (typeof aIndex !== 'number' || typeof bIndex !== 'number') {
                     return 0;
                 }
-                return aIndex < bIndex ? -1 : 1;
+                return aIndex - bIndex;
             });
         }
 
