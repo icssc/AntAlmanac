@@ -6,7 +6,7 @@ import { ProjectsButton } from '$components/buttons/ProjectsButton';
 
 export const Footer = () => {
     return (
-        <Stack direction="row" justifyContent="center" color="grey">
+        <Stack direction="row" justifyContent="center" sx={{ color: 'text.secondary' }}>
             <ProjectsButton />
             <GitHubButton />
             <FeedbackButton />
