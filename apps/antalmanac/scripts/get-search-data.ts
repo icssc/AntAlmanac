@@ -3,7 +3,7 @@ import { access, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { canTermEnrollmentChange, termData } from '$lib/term';
-import type { CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
+import type { AATerm, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
@@ -46,9 +46,9 @@ function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
     );
 }
 
-function buildSectionCodesQuery(year: string, quarter: string): string {
+function buildSectionCodesQuery(term: AATerm): string {
     return `{
-        websoc(query: { year: "${year}", quarter: ${quarter} }) {
+        websoc(query: { year: "${term.year}", quarter: ${term.quarter} }) {
             schools {
                 departments {
                     deptCode
@@ -217,7 +217,7 @@ async function main() {
             }
             requestsMade++;
 
-            const query = buildSectionCodesQuery(year, quarter);
+            const query = buildSectionCodesQuery(term);
             const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
             if (!res) {
                 throw new Error(`Error fetching section codes for ${term.shortName}.`);

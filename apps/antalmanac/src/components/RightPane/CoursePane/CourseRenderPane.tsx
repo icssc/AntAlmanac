@@ -345,12 +345,11 @@ export default function CourseRenderPane(props: { id?: number }) {
             let websocJsonResp: WebsocAPIResponse;
             let fetchedSharedCourseKeys = new Set<string>();
             if (multiSearchData.length > 0) {
-                const { year, quarter } = RightPaneStore.getFormData().term;
+                const term = RightPaneStore.getFormData().term;
                 const offeredCourses: WebsocSearchInput[] = [];
                 const unofferedCourses: CourseSearchParams[] = [];
                 const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
-                    year,
-                    quarter,
+                    term,
                     courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
                 });
                 for (const course of multiSearchData) {

@@ -27,7 +27,7 @@ interface EnrollmentHistoryPopoverProps {
 }
 
 function graphKey(enrollment: EnrollmentHistory) {
-    return `${enrollment.year}-${enrollment.quarter}-${enrollment.sectionCode}`;
+    return `${enrollment.sectionCode} ${enrollment.term.shortName}`;
 }
 
 export function EnrollmentHistoryPopover({
@@ -64,7 +64,7 @@ export function EnrollmentHistoryPopover({
             }
         }
         const matchIndex = enrollmentHistory.findIndex(
-            (e) => e.year === term.year && e.quarter === term.quarter && e.sectionCode === sectionCode
+            (e) => e.term.shortName === term.shortName && e.sectionCode === sectionCode
         );
         return matchIndex >= 0 ? matchIndex : enrollmentHistory.length - 1;
     }, [enrollmentHistory, sectionCode, selectedGraphKey, term]);
@@ -73,7 +73,7 @@ export function EnrollmentHistoryPopover({
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
         currEnrollmentHistory != null ? (
-            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
+            `${currEnrollmentHistory.term.shortName} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
         ) : (
             <>&nbsp;</>
         );

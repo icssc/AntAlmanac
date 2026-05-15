@@ -2,17 +2,32 @@ import trpc from '$lib/api/trpc';
 import type { Notification } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 
+function serializeNotification(notification: Notification) {
+    return {
+        year: notification.term.year,
+        quarter: notification.term.quarter,
+        sectionCode: notification.sectionCode,
+        courseTitle: notification.courseTitle,
+        sectionType: notification.sectionType,
+        lastUpdatedStatus: notification.lastUpdatedStatus,
+        lastCodes: notification.lastCodes,
+        notifyOn: notification.notifyOn,
+    };
+}
+
 class NotificationsClient {
     async getNotifications() {
         return await trpc.notifications.get.query();
     }
 
     async setNotifications(notifications: Notification[]) {
-        return await trpc.notifications.set.mutate({ notifications });
+        return await trpc.notifications.set.mutate({ notifications: notifications.map(serializeNotification) });
     }
 
     async updateNotifications(notification: Notification) {
-        return await trpc.notifications.updateNotifications.mutate({ notification });
+        return await trpc.notifications.updateNotifications.mutate({
+            notification: serializeNotification(notification),
+        });
     }
 
     async deleteNotification(notification: Notification) {
@@ -21,8 +36,8 @@ class NotificationsClient {
             return await trpc.notifications.deleteNotification.mutate({
                 userId,
                 sectionCode: notification.sectionCode,
-                year: notification.year,
-                quarter: notification.quarter,
+                year: notification.term.year,
+                quarter: notification.term.quarter,
             });
         }
         console.error('No session found to delete notification successfully.');

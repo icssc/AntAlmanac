@@ -91,10 +91,10 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             return false;
         }
 
-        const { year, quarter } = RightPaneStore.getFormData().term;
-        const quarterPlan = getQuarterPlan(roadmap, year, quarter);
+        const term = RightPaneStore.getFormData().term;
+        const quarterPlan = getQuarterPlan(roadmap, term);
         if (!quarterPlan) {
-            openSnackbar('error', `The provided roadmap does not contain ${year} ${quarter}`);
+            openSnackbar('error', `The provided roadmap does not contain ${term.shortName}`);
             return false;
         }
         try {
@@ -167,10 +167,10 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     useEffect(() => {
         const updateTermRoadmaps = () => {
-            const { year, quarter } = RightPaneStore.getFormData().term;
+            const term = RightPaneStore.getFormData().term;
             const roadmapsWithTerm: typeof termRoadmapGrouping = getDefaultTermRoadmapGrouping();
             for (const roadmap of plannerRoadmaps) {
-                const roadmapTermRelation = getRoadmapTermRelation(roadmap, year, quarter);
+                const roadmapTermRelation = getRoadmapTermRelation(roadmap, term);
                 roadmapsWithTerm[roadmapTermRelation].add(roadmap.id.toString());
             }
             setTermRoadmapGrouping(roadmapsWithTerm);

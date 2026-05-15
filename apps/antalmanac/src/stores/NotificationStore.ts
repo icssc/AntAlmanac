@@ -1,9 +1,10 @@
 import trpc from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
+import { getTermByYearAndQuarter } from '$lib/term';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
 import { type AATerm, type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
-import type { Course, Quarter } from '@packages/anteater-api/types';
+import type { Course } from '@packages/anteater-api/types';
 import { create } from 'zustand';
 
 export type NotifyOn = {
@@ -14,8 +15,7 @@ export type NotifyOn = {
 };
 
 export type Notification = {
-    year: AATerm['year'];
-    quarter: AATerm['quarter'];
+    term: AATerm;
     sectionCode: AASection['sectionCode'];
     units: number;
     sectionNum: string;
@@ -28,12 +28,6 @@ export type Notification = {
     courseNumber?: string;
     instructors?: string[];
 };
-
-interface RawNotification {
-    year: string;
-    quarter: string;
-    sectionCode: string;
-}
 
 interface NotificationStore {
     initialized: boolean;
@@ -69,8 +63,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             sectionCode,
             units,
             sectionNum,
-            year,
-            quarter,
+            term,
             sectionType,
             status,
             lastUpdatedStatus,
@@ -79,7 +72,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             courseNumber,
             instructors,
         }) => {
-            const key = `${sectionCode} ${year} ${quarter}`;
+            const key = `${sectionCode} ${term.shortName}`;
 
             set((state) => {
                 const notifications = state.notifications;
@@ -99,8 +92,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                           lastCodes,
                       }
                     : {
-                          year,
-                          quarter,
+                          term,
                           sectionCode,
                           courseTitle,
                           sectionType,
@@ -169,17 +161,21 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     return;
                 }
 
-                const termGroups = new Map<string, { year: string; quarter: Quarter; sectionCodes: Set<string> }>();
+                const termGroups = new Map<string, { term: AATerm; sectionCodes: Set<string> }>();
 
                 for (const { year, quarter, sectionCode } of existingNotifications) {
-                    const key = `${year} ${quarter}`;
+                    const term = getTermByYearAndQuarter(year, quarter);
+                    if (!term) {
+                        continue;
+                    }
+
+                    const key = term.shortName;
                     const group = termGroups.get(key);
                     if (group) {
                         group.sectionCodes.add(sectionCode.toString());
                     } else {
                         termGroups.set(key, {
-                            year,
-                            quarter: quarter as Quarter,
+                            term,
                             sectionCodes: new Set([sectionCode.toString()]),
                         });
                     }
@@ -187,31 +183,31 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
                 const courseInfoDict = new Map<
                     string,
-                    { year: string; quarter: Quarter; courseInfo: { [sectionCode: string]: CourseInfo } }
+                    { term: AATerm; courseInfo: { [sectionCode: string]: CourseInfo } }
                 >();
                 await Promise.all(
-                    Array.from(termGroups, async ([key, { year, quarter, sectionCodes }]) => {
+                    Array.from(termGroups, async ([key, { term, sectionCodes }]) => {
                         const courseInfo = await trpc.websoc.getCourseInfo.query({
-                            year,
-                            quarter,
+                            year: term.year,
+                            quarter: term.quarter,
                             sectionCodes: Array.from(sectionCodes).join(','),
                         });
-                        courseInfoDict.set(key, { year, quarter, courseInfo });
+                        courseInfoDict.set(key, { term, courseInfo });
                     })
                 );
 
                 const notifications: Partial<Record<string, Notification>> = {};
 
-                for (const [, { year, quarter, courseInfo }] of courseInfoDict) {
+                for (const [, { term, courseInfo }] of courseInfoDict) {
                     for (const sectionCode in courseInfo) {
                         const course = courseInfo[sectionCode];
-                        const key = `${sectionCode} ${year} ${quarter}`;
+                        const key = `${sectionCode} ${term.shortName}`;
 
                         const existingNotification = existingNotifications.find(
-                            (notification: RawNotification) =>
+                            (notification) =>
                                 notification.sectionCode === sectionCode &&
-                                notification.year === year &&
-                                notification.quarter === quarter
+                                notification.year === term.year &&
+                                notification.quarter === term.quarter
                         );
 
                         if (existingNotification) {
@@ -226,8 +222,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                       : course.section.status;
 
                             notifications[key] = {
-                                year,
-                                quarter,
+                                term,
                                 sectionCode,
                                 courseTitle: course.courseDetails.courseTitle,
                                 sectionType: course.section.sectionType,

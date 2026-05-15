@@ -1,7 +1,6 @@
-import { QUARTERS } from '$lib/term';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
-import { WebsocSectionStatusSchema, WebsocSectionTypeSchema } from '@packages/antalmanac-types';
+import { QuarterSchema, WebsocSectionStatusSchema, WebsocSectionTypeSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { z } from 'zod';
 
@@ -14,7 +13,7 @@ const NotifyOnSchema = z.object({
 
 const NotificationSchema = z.object({
     year: z.string(),
-    quarter: z.enum(QUARTERS),
+    quarter: QuarterSchema,
     sectionCode: z.string(),
     courseTitle: z.string(),
     sectionType: WebsocSectionTypeSchema,
@@ -52,7 +51,7 @@ const notificationsRouter = router({
                 userId: z.string(),
                 sectionCode: z.string(),
                 year: z.string(),
-                quarter: z.enum(QUARTERS),
+                quarter: QuarterSchema,
             })
         )
         .mutation(async ({ input }) => {

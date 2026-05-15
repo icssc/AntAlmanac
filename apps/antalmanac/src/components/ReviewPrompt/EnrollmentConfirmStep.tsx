@@ -21,7 +21,7 @@ export function EnrollmentConfirmStep() {
             dismissReview({
                 professorId: candidate.professorId,
                 courseId: candidate.courseId,
-                term: candidate.term.shortName,
+                termShortName: candidate.term.shortName,
             });
         }
     };

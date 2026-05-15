@@ -109,7 +109,7 @@ export function ReviewStep() {
             dismissReview({
                 professorId: dismissedCandidate.professorId,
                 courseId: dismissedCandidate.courseId,
-                term: dismissedCandidate.term.shortName,
+                termShortName: dismissedCandidate.term.shortName,
             });
         }
     };
@@ -122,7 +122,7 @@ export function ReviewStep() {
         submitReview({
             professorId: candidate.professorId,
             courseId: candidate.courseId,
-            quarter: candidate.term.shortName,
+            termShortName: candidate.term.shortName,
             rating,
             difficulty,
             tags: selectedTags,

@@ -146,7 +146,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
             const term = RightPaneStore.getFormData().term;
 
             trpc.search.doSearch
-                .query({ query: requestQuery, year: term.year, quarter: term.quarter })
+                .query({ query: requestQuery, term })
                 .then((result) => {
                     if (!requestIsCurrent(requestTimestamp)) return;
 

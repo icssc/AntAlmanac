@@ -52,6 +52,9 @@ importers:
       '@aws-sdk/client-sqs':
         specifier: ^3.750.0
         version: 3.980.0
+      '@packages/antalmanac-types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@packages/anteater-api':
         specifier: workspace:*
         version: link:../../packages/anteater-api

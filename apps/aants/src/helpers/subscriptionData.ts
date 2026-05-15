@@ -1,3 +1,4 @@
+import { QuarterSchema } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { Quarter, WebsocAPIResponse, WebsocSection } from '@packages/anteater-api/types';
 import { db } from '@packages/db';
@@ -67,13 +68,21 @@ async function getSubscriptionSectionCodes(): Promise<TermGroup[] | undefined> {
         const groupMap = new Map<string, TermGroup>();
 
         for (const { quarter, year, sectionCode } of result) {
-            if (!quarter || !year) continue;
-            const key = `${year} ${quarter}`;
+            if (!quarter || !year) {
+                continue;
+            }
+
+            const parsedQuarter = QuarterSchema.safeParse(quarter);
+            if (!parsedQuarter.success) {
+                continue;
+            }
+
+            const key = `${year} ${parsedQuarter.data}`;
             const group = groupMap.get(key);
             if (group) {
                 group.sectionCodes.push(sectionCode);
             } else {
-                groupMap.set(key, { quarter: quarter as Quarter, year, sectionCodes: [sectionCode] });
+                groupMap.set(key, { quarter: parsedQuarter.data, year, sectionCodes: [sectionCode] });
             }
         }
 

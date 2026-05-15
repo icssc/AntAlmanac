@@ -1,20 +1,10 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
-import type { AATerm } from '@packages/antalmanac-types';
-import type { Quarter } from '@packages/anteater-api/types';
+import { QuarterSchema, QUARTERS, type AATerm } from '@packages/antalmanac-types';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
 
 export type { AATerm } from '@packages/antalmanac-types';
-
-export const QUARTERS = [
-    'Fall',
-    'Winter',
-    'Spring',
-    'Summer1',
-    'Summer10wk',
-    'Summer2',
-] as const satisfies readonly Quarter[];
 
 /**
  * Parse an ISO "YYYY-MM-DD" string into a local-timezone Date,
@@ -28,7 +18,7 @@ function parseLocalDate(dateStr: string): Date {
 const termSchema = z
     .object({
         year: z.string(),
-        quarter: z.enum(QUARTERS),
+        quarter: QuarterSchema,
         shortName: z.string().refine(
             (s): s is `${string} ${(typeof QUARTERS)[number]}` => {
                 const parts = s.split(' ');
@@ -81,6 +71,19 @@ export function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): AATe
 
 export function getTermByShortName(termShortName: string): AATerm | undefined {
     return termData.find((t) => t.shortName === termShortName);
+}
+
+export function parseQuarter(rawQuarter: unknown) {
+    const quarter = QuarterSchema.safeParse(rawQuarter);
+    return quarter.success ? quarter.data : undefined;
+}
+
+export function getTermByYearAndQuarter(year: string, rawQuarter: unknown): AATerm | undefined {
+    const quarter = parseQuarter(rawQuarter);
+    if (!quarter) {
+        return undefined;
+    }
+    return termData.find((term) => term.year === year && term.quarter === quarter);
 }
 
 export function isTermAvailable(termShortName: string) {

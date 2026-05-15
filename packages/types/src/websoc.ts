@@ -7,6 +7,8 @@ import type {
 } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
+import { QuarterSchema } from './calendar';
+
 export const WebsocSectionTypeSchema = z.enum([
     'Act',
     'Col',
@@ -45,7 +47,7 @@ export type AACourse = Omit<WebsocCourse, 'sections'> & AACourseExtendedProperti
 
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
-    quarter: z.string(),
+    quarter: QuarterSchema,
     department: z.string().optional(),
     ge: z.string().optional(),
     courseNumber: z.string().optional(),

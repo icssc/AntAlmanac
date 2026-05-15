@@ -1,5 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import type { CourseInfo } from '@packages/antalmanac-types';
+import { QuarterSchema, type CourseInfo } from '@packages/antalmanac-types';
 import { WebsocSearchInputSchema, type WebsocSearchInput } from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,
@@ -92,7 +92,7 @@ const websocRouter = router({
             z.object({
                 courseId: z.string(),
                 year: z.string().optional(),
-                quarter: z.string().optional(),
+                quarter: QuarterSchema.optional(),
                 instructor: z.string().optional(),
             })
         )

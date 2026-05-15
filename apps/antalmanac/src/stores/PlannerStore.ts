@@ -1,8 +1,7 @@
 import trpc from '$lib/api/trpc';
-import { QUARTER_ORDER_IN_YEAR } from '$lib/helpers';
-import { getDefaultTerm } from '$lib/term';
+import { getDefaultTerm, getTermByYearAndQuarter, parseQuarter, termData } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
-import type { Roadmap } from '@packages/antalmanac-types';
+import type { AATerm, Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 interface PlannerStore {
@@ -15,36 +14,27 @@ interface PlannerStore {
     updateTakenCourses: (selectedRoadmapId: string) => void;
 }
 
-function roadmapQuarterToYearAndQuarter(startYear: number, quarterName: string): { year: number; quarter: string } {
-    const q = quarterName.trim().toLowerCase();
-    const isFall = q === 'fall';
-    const year = isFall ? startYear : startYear + 1;
+function roadmapQuarterToTerm(startYear: number, quarterName: string): AATerm | undefined {
+    const quarter = parseQuarter(quarterName);
+    if (!quarter) {
+        return undefined;
+    }
 
-    const quarterMap: Record<string, string> = {
-        fall: 'Fall',
-        winter: 'Winter',
-        spring: 'Spring',
-        summer1: 'Summer',
-        summer2: 'Summer',
-        summer10wk: 'Summer',
-    };
-
-    const quarter = quarterMap[q];
-    return { year, quarter };
+    const year = quarter === 'Fall' ? startYear : startYear + 1;
+    return getTermByYearAndQuarter(year.toString(), quarter);
 }
 
 function getTakenRoadmapCourses(roadmap: Roadmap): Set<string> {
     const current = getDefaultTerm();
-    const currentYear = parseInt(current.year);
+    const currentTermIndex = termData.findIndex((term) => term.shortName === current.shortName);
     const courses = new Set<string>();
     for (const year of roadmap.content ?? []) {
         for (const q of year.quarters ?? []) {
-            const quarter = roadmapQuarterToYearAndQuarter(year.startYear, q.name);
-            if (
-                quarter.year < currentYear ||
-                (quarter.year === currentYear &&
-                    QUARTER_ORDER_IN_YEAR[quarter.quarter] < QUARTER_ORDER_IN_YEAR[current.quarter])
-            ) {
+            const term = roadmapQuarterToTerm(year.startYear, q.name);
+            if (!term) {
+                continue;
+            }
+            if (termData.findIndex((t) => t.shortName === term.shortName) > currentTermIndex) {
                 q.courses.forEach((c) => courses.add(c.courseId));
             }
         }
