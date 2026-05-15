@@ -1,5 +1,6 @@
 import 'dotenv/config';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, unlink, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { createClient } from '@packages/anteater-api/client';
 import type { CalendarTerm } from '@packages/anteater-api/types';
@@ -55,6 +56,15 @@ async function main() {
 
     await mkdir(GENERATED_DIR, { recursive: true });
     await writeFile(TERM_DATA_FILE, JSON.stringify(termEntries, null, 2));
+
+    /** Old pipelines emitted `termData.ts` here; drop it so Actions cache cannot revive a broken `$lib/termData` import. */
+    try {
+        await unlink(join(GENERATED_DIR, 'termData.ts'));
+    } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+            throw e;
+        }
+    }
 
     console.log('Term data generated. Written to ', TERM_DATA_FILE);
 }
