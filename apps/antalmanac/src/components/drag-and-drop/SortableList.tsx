@@ -1,12 +1,12 @@
 import { DragHandle } from '$components/drag-and-drop/DragHandle';
 import { SortableItem } from '$components/drag-and-drop/SortableItem';
 import { SortableOverlay } from '$components/drag-and-drop/SortableOverlay';
+import { mergeSx } from '$lib/helpers';
 import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Active, UniqueIdentifier } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, SortingStrategy, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { List, SxProps } from '@mui/material';
-import { mergeSx } from '@mui/x-date-pickers/internals';
 import type { ContextType, ReactNode } from 'react';
 import { createContext, Fragment, useMemo, useState } from 'react';
 

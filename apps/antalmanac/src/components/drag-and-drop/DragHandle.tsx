@@ -1,8 +1,8 @@
 import { SortableItemContext } from '$components/drag-and-drop/SortableItem';
 import { DraggingItemContext } from '$components/drag-and-drop/SortableList';
+import { mergeSx } from '$lib/helpers';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box, SxProps, useTheme } from '@mui/material';
-import { mergeSx } from '@mui/x-date-pickers/internals';
 import { useContext } from 'react';
 
 interface DragHandleProps {
