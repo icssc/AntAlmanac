@@ -12,7 +12,7 @@ interface QuickSearchProps {
 export const QuickSearch = ({ toggleSearch, labelProps }: QuickSearchProps) => {
     const postHog = usePostHog();
     const theme = useTheme();
-    const quickSearchStack = `@container quick-search (max-width: ${theme.breakpoints.values.xs}px)`;
+    const quickSearchStack = `@container quick-search (max-width: ${theme.breakpoints.values.sm}px)`;
 
     return (
         <Box
