@@ -53,7 +53,7 @@ export const useReviewPromptStore = create(
             const today = new Date();
 
             // Collect past terms within the window (termData is ordered newest-first
-            // after the filter in term.ts — see its `filter(socAvailable <= today)`).
+            // after the filter in termData.ts — see its `filter(socAvailable <= today)`).
             // We further filter to terms whose finals have already ended.
             const pastTermNames = new Set<string>(
                 termData
