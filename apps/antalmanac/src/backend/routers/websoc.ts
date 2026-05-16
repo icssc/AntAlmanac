@@ -22,7 +22,9 @@ function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
         sanitized.courseNumber = courseNumber.toUpperCase();
     }
     for (const [key, value] of Object.entries(sanitized)) {
-        if (value === '' || value == null) delete sanitized[key];
+        if (value === '' || value === null || value === undefined) {
+            delete sanitized[key];
+        }
     }
     return sanitized as WebsocQueryParams;
 }
