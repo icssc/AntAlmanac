@@ -4,13 +4,14 @@ import { Link, MenuItem } from '@mui/material';
 
 interface CreateRoadmapLinkItemProps {
     verticalPadding?: number | string;
+    value?: string;
 }
 
-export const CreateRoadmapLinkItem = ({ verticalPadding }: CreateRoadmapLinkItemProps) => {
+export const CreateRoadmapLinkItem = ({ verticalPadding, value }: CreateRoadmapLinkItemProps) => {
     const isDark = useThemeStore((state) => state.isDark);
 
     return (
-        <MenuItem sx={{ padding: 0 }}>
+        <MenuItem value={value} sx={{ padding: 0 }}>
             <Link
                 href={PLANNER_LINK}
                 target="_blank"

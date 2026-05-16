@@ -40,7 +40,7 @@ function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
     }
 
     if (roadmaps.length === 0) {
-        return <CreateRoadmapLinkItem verticalPadding={'6px'} />;
+        return <CreateRoadmapLinkItem verticalPadding={'6px'} value="" />;
     }
 
     return [
