@@ -2,6 +2,8 @@ import trpc from '$lib/api/trpc';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type { AATerm } from '@packages/antalmanac-types';
+import { moveArrayElements } from '$lib/utils';
+import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     Schedule,
     ScheduleCourse,
@@ -71,6 +73,10 @@ export class Schedules {
 
     getCurrentScheduleIndex() {
         return this.currentScheduleIndex;
+    }
+
+    getCurrentSchedule() {
+        return this.schedules[this.currentScheduleIndex];
     }
 
     getNumberOfSchedules() {
@@ -173,8 +179,7 @@ export class Schedules {
      */
     reorderSchedule(from: number, to: number) {
         this.addUndoState();
-        const [removed] = this.schedules.splice(from, 1);
-        this.schedules.splice(to, 0, removed);
+        moveArrayElements(this.schedules, from, to, { isShiftAccountedFor: true });
         if (this.currentScheduleIndex === from) {
             this.currentScheduleIndex = to;
         } else if (this.currentScheduleIndex > from && this.currentScheduleIndex <= to) {
@@ -183,6 +188,41 @@ export class Schedules {
             this.currentScheduleIndex += 1;
         }
     }
+
+    /**
+     * Moves a course's sections from one position to another.
+     *
+     * @param scheduleIndex Index of the schedule to reorder courses for.
+     * @param movedCourseId ID of the course whose sections should be moved.
+     * @param nextCourseId ID of the course directly after the moved course after reordering.
+     * Pass `null` if the course is being moved to the end.
+     */
+    reorderAddedCourses(scheduleIndex: number, movedCourseId: string, nextCourseId: string | null) {
+        this.addUndoState();
+        const courses = this.schedules[scheduleIndex].courses;
+
+        const fromIndex = courses.findIndex((course) => getCourseId(course) === movedCourseId);
+        if (fromIndex === -1) {
+            console.error(`Course id ${movedCourseId} was not found in schedule courses`);
+            openSnackbar('error', 'Could not reorder added courses');
+            return;
+        }
+
+        const toIndex =
+            nextCourseId !== null
+                ? courses.findIndex((course) => getCourseId(course) === nextCourseId)
+                : courses.length;
+        if (toIndex === -1) {
+            console.error(`Course id ${toIndex} was not found in schedule courses`);
+            openSnackbar('error', 'Could not reorder added courses');
+            return;
+        }
+
+        const sectionCount = courses.findLastIndex((course) => getCourseId(course) === movedCourseId) - fromIndex + 1;
+
+        moveArrayElements(courses, fromIndex, toIndex, { elementMoveCount: sectionCount });
+    }
+
     getCurrentCourses() {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }

@@ -1,5 +1,7 @@
+import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
 import { Notification, NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { TableCell, Checkbox } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';
 
 type NotificationTableRowCheckboxProps = Omit<Notification, 'notifyOn'> & {
@@ -25,7 +27,14 @@ export const NotificationTableRowCheckbox = memo(
         );
         const setNotifications = useNotificationStore((state) => state.setNotifications);
 
+        const postHog = usePostHog();
+
         const handleClick = useCallback(() => {
+            logAnalytics(postHog, {
+                category: analyticsEnum.aants,
+                action: AANTS_ANALYTICS_ACTIONS[statusKey],
+                customProps: { sectionCode, term, source: 'section_row' },
+            });
             setNotifications({
                 courseTitle,
                 sectionCode,
@@ -48,6 +57,7 @@ export const NotificationTableRowCheckbox = memo(
             lastCodes,
             units,
             sectionNum,
+            postHog,
         ]);
 
         return (

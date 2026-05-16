@@ -12,12 +12,14 @@ interface Props {
 interface Context {
     attributes: DraggableAttributes | null;
     listeners: DraggableSyntheticListeners;
+    isDragging: boolean;
     ref(node: HTMLElement | null): void;
 }
 
 export const SortableItemContext = createContext<Context>({
     attributes: null,
     listeners: undefined,
+    isDragging: false,
     ref: (_node: HTMLElement | null) => {
         // Intentionally left blank
     },
@@ -31,9 +33,10 @@ export function SortableItem({ children, id }: PropsWithChildren<Props>) {
         () => ({
             attributes,
             listeners,
+            isDragging,
             ref: setActivatorNodeRef,
         }),
-        [attributes, listeners, setActivatorNodeRef]
+        [attributes, listeners, isDragging, setActivatorNodeRef]
     );
     const style: CSSProperties = {
         opacity: isDragging ? 0.4 : undefined,
