@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
+import { QuarterSchema } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { WebsocTerm } from '@packages/anteater-api/types';
 import { flattenSections } from '@packages/anteater-api/utils';
@@ -18,7 +19,9 @@ interface DeployedTermsData {
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 async function getSectionCount(term: WebsocTerm) {
-    const { year, quarter, shortName } = term;
+    const { shortName } = term;
+    const [year, rawQuarter] = shortName.split(' ');
+    const quarter = QuarterSchema.parse(rawQuarter);
     console.log(`Checking section count for ${shortName}...`);
     const response = await aapiClient.websoc.query({ year, quarter });
     return flattenSections(response).length;
