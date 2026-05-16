@@ -261,13 +261,11 @@ export const SearchWithPlanner = () => {
             endIcon={<KeyboardArrowDown sx={{ flexShrink: 0 }} />}
             aria-haspopup="true"
             aria-expanded={menuOpen ? 'true' : undefined}
-            sx={[
-                QUICK_SEARCH_SHORTCUT_PILL_SX,
-                {
-                    width: '100%',
-                    '& .MuiButton-endIcon': { marginLeft: 'auto', flexShrink: 0 },
-                },
-            ]}
+            sx={{
+                ...QUICK_SEARCH_SHORTCUT_PILL_SX,
+                width: '100%',
+                '& .MuiButton-endIcon': { marginLeft: 'auto', flexShrink: 0 },
+            }}
         >
             <Typography
                 component="span"

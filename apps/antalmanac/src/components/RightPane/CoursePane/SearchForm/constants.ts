@@ -1,4 +1,5 @@
-import type { SxProps, Theme } from '@mui/material/styles';
+import type { Theme } from '@mui/material/styles';
+import type { SystemStyleObject } from '@mui/system';
 
 export const BASIC_SEARCH_PARAMS = ['term'] as const;
 
@@ -50,7 +51,7 @@ export const GE_LIST = [
 export const ANY_GE = GE_LIST[0].value;
 
 /** Shared layout for quick-search shortcut pills (Roadmap, department, GE). */
-export const QUICK_SEARCH_SHORTCUT_PILL_SX: SxProps<Theme> = {
+export const QUICK_SEARCH_SHORTCUT_PILL_SX: SystemStyleObject<Theme> = {
     flex: '1 1 0',
     minWidth: 0,
     maxWidth: '100%',
