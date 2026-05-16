@@ -80,6 +80,16 @@ async function main() {
     await mkdir(GENERATED_DIR, { recursive: true });
     await writeFile(TERM_DATA_FILE, JSON.stringify(termEntries, null, 2));
 
+    /** Old pipelines emitted `termData.ts` under `src/generated`; Actions cache restores that tree, so remove it (see icssc/AntAlmanac@3ad7c407). */
+    const staleGeneratedTermDataTs = join(GENERATED_DIR, 'termData.ts');
+    try {
+        await rm(staleGeneratedTermDataTs);
+    } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+            throw e;
+        }
+    }
+
     console.log('Term data generated. Written to ', TERM_DATA_FILE);
 }
 
