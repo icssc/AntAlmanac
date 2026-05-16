@@ -5,4 +5,6 @@ export type CalendarAllAPIResult =
 
 export type CalendarTerm = paths['/v2/rest/calendar']['get']['responses'][200]['content']['application/json']['data'];
 
+export type Year = CalendarTerm['year'];
+
 export type Quarter = CalendarTerm['quarter'];

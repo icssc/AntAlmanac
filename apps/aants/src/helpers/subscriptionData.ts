@@ -1,6 +1,6 @@
 import { QuarterSchema } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
-import type { Quarter, WebsocAPIResponse, WebsocSection } from '@packages/anteater-api/types';
+import type { Quarter, WebsocAPIResponse, WebsocSection, Year } from '@packages/anteater-api/types';
 import { db } from '@packages/db';
 import { type User as DbUser, users } from '@packages/db/src/schema/auth/user';
 import { type Subscription, subscriptions } from '@packages/db/src/schema/subscription';
@@ -10,7 +10,7 @@ const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 export interface TermGroup {
     quarter: Quarter;
-    year: string;
+    year: Year;
     sectionCodes: string[];
 }
 
@@ -34,7 +34,7 @@ export interface User {
  */
 async function getUpdatedClasses(
     quarter: Quarter,
-    year: string,
+    year: Year,
     sections: string[]
 ): Promise<WebsocAPIResponse | undefined> {
     try {
@@ -101,7 +101,7 @@ async function getSubscriptionSectionCodes(): Promise<TermGroup[] | undefined> {
  * @param lastCodes - The new restriction codes of the class.
  */
 async function updateSubscriptionStatus(
-    year: string,
+    year: Year,
     quarter: Quarter,
     sectionCode: string,
     lastUpdatedStatus: WebsocSection['status'],
@@ -133,7 +133,7 @@ async function updateSubscriptionStatus(
  * @returns A map of sectionCode -> ClassStatus.
  */
 async function getLastUpdatedStatus(
-    year: string,
+    year: Year,
     quarter: Quarter,
     sectionCodes: string[]
 ): Promise<Map<string, ClassStatus>> {
@@ -188,7 +188,7 @@ export type SubscriptionWithUser = Pick<
  * @returns Map of sectionCode -> array of subscriptions with user info and notification preferences.
  */
 async function getSubscriptionsForSections(
-    year: string,
+    year: Year,
     quarter: Quarter,
     sectionCodes: string[]
 ): Promise<Map<string, SubscriptionWithUser[]>> {

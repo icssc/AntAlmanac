@@ -1,6 +1,7 @@
 import type {
     HourMinute,
     Quarter,
+    Year,
     WebsocCourse,
     WebsocSection,
     WebsocSectionMeeting,
@@ -50,7 +51,7 @@ async function processSection(
     section: WebsocSection,
     course: WebsocCourse,
     quarter: Quarter,
-    year: string,
+    year: Year,
     previousState: PreviousState | undefined,
     sectionSubscriptions: SubscriptionWithUser[]
 ) {
@@ -108,7 +109,7 @@ async function processSection(
 /**
  * Processes a batch of section codes and sends notifications to users if the status and/or restriction codes have changed.
  */
-async function processBatch(batch: string[], quarter: Quarter, year: string) {
+async function processBatch(batch: string[], quarter: Quarter, year: Year) {
     console.log(`[BATCH] Processing ${batch.length} section codes for ${quarter} ${year}`);
     const response = (await getUpdatedClasses(quarter, year, batch)) ?? { schools: [] };
 
