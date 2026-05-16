@@ -1,11 +1,19 @@
 import 'dotenv/config';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { AATerm } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { CalendarTerm, Quarter, Year } from '@packages/anteater-api/types';
 
 import { GENERATED_DIR, TERM_DATA_FILE } from './lib/paths.js';
+
+/** Package root: derive from this file (`…/scripts/fetch-term-data.ts`), not `paths.ts`, so tooling cannot point `import.meta.url` at a different tree than `apps/antalmanac`. */
+const ANTALMANAC_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
+const LEGACY_TERM_DATA_FILES = ['termData.ts', 'termData.js', 'termData.d.ts'].map((name) =>
+    join(ANTALMANAC_ROOT, 'src/lib', name)
+);
 
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
@@ -41,7 +49,22 @@ function serializeTerm(term: CalendarTerm) {
     };
 }
 
+async function removeLegacyTermDataFiles() {
+    for (const filePath of LEGACY_TERM_DATA_FILES) {
+        try {
+            await rm(filePath);
+            console.log(`Removed legacy ${filePath} (replaced by term.ts + generated termData.json).`);
+        } catch (e) {
+            if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+                throw e;
+            }
+        }
+    }
+}
+
 async function main() {
+    await removeLegacyTermDataFiles();
+
     console.log('Fetching all calendar terms from Anteater API...');
     const calendarTerms = await aapiClient.calendar.all();
     console.log(`Fetched ${calendarTerms.length} calendar terms.`);
