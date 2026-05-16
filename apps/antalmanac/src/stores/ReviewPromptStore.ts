@@ -229,6 +229,10 @@ export const useReviewPromptStore = create(
                 }
             },
 
+            onSubmitSuccess: () => {
+                toStep('success', { rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
+            },
+
             setRating: (rating: number) => set({ rating }),
 
             setDifficulty: (difficulty: number) => set({ difficulty }),

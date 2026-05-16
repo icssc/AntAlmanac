@@ -68,15 +68,13 @@ export function ReviewStep() {
     const setTextReview = useReviewPromptStore((s) => s.setTextReview);
     const toggleTag = useReviewPromptStore((s) => s.toggleTag);
     const dismiss = useReviewPromptStore((s) => s.dismiss);
-
-    const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
+    const onSubmitSuccess = useReviewPromptStore((s) => s.onSubmitSuccess);
 
     const { mutate: submitReview, isPending: isSubmitting } = trpcReact.review.submitReview.useMutation({
         onSuccess: () => {
             if (!candidate) {
                 return;
             }
-
             logAnalytics(postHog, {
                 category: analyticsEnum.review,
                 action: analyticsEnum.review.actions.SUBMITTED,
@@ -89,13 +87,7 @@ export function ReviewStep() {
                     tags: selectedTags,
                 },
             });
-            useReviewPromptStore.setState({
-                step: 'success',
-                rating: 0,
-                difficulty: 0,
-                selectedTags: [],
-                textReview: '',
-            });
+            onSubmitSuccess();
         },
         onError: () => {
             openSnackbar('error', 'Failed to submit review. Please try again.');
@@ -106,22 +98,13 @@ export function ReviewStep() {
         if (isSubmitting) {
             return;
         }
-
         dismiss();
-        if (candidate) {
-            dismissReview({
-                professorId: candidate.professorId,
-                courseId: candidate.courseId,
-                term: candidate.term,
-            });
-        }
     };
 
     const handleSubmit = () => {
         if (!candidate || rating === 0 || difficulty === 0) {
             return;
         }
-
         submitReview({
             professorId: candidate.professorId,
             courseId: candidate.courseId,
