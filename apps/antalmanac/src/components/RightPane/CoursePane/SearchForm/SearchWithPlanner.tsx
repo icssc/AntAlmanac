@@ -1,5 +1,8 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
+import {
+    PLANNER_SEARCH_PARAM,
+    QUICK_SEARCH_SHORTCUT_PILL_SX,
+} from '$components/RightPane/CoursePane/SearchForm/constants';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
@@ -14,7 +17,7 @@ import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { KeyboardArrowDown, OpenInBrowser } from '@mui/icons-material';
+import { EventNote, KeyboardArrowDown, OpenInBrowser } from '@mui/icons-material';
 import { Box, Button, IconButton, ListSubheader, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useSearchParams } from 'next/navigation';
@@ -254,12 +257,26 @@ export const SearchWithPlanner = () => {
             color="secondary"
             disabled={isLoadingSearch}
             onClick={handleRoadmapButtonClick}
-            endIcon={<KeyboardArrowDown />}
+            startIcon={<EventNote fontSize="small" />}
+            endIcon={<KeyboardArrowDown sx={{ flexShrink: 0 }} />}
             aria-haspopup="true"
             aria-expanded={menuOpen ? 'true' : undefined}
-            sx={{ flex: '1 1 0', minWidth: 'min(100%, 140px)', maxWidth: '100%' }}
+            sx={[
+                QUICK_SEARCH_SHORTCUT_PILL_SX,
+                {
+                    width: '100%',
+                    '& .MuiButton-endIcon': { marginLeft: 'auto', flexShrink: 0 },
+                },
+            ]}
         >
-            {isLoadingSearch ? 'Loading…' : isPlannerLoading ? 'Roadmaps…' : 'Roadmap'}
+            <Typography
+                component="span"
+                variant="body2"
+                noWrap
+                sx={{ flex: '1 1 auto', minWidth: 0, textAlign: 'left' }}
+            >
+                {isLoadingSearch ? 'Loading…' : isPlannerLoading ? 'Roadmaps…' : 'Roadmap'}
+            </Typography>
         </Button>
     );
 
