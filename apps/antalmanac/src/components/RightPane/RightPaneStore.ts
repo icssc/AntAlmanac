@@ -4,9 +4,15 @@ import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/Co
 import { normalizeGeSelection } from '$lib/multiGeSearch';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
-import type { AATerm } from '@packages/antalmanac-types';
+import type { AATerm, WebsocFullCourses, WebsocDivision } from '@packages/antalmanac-types';
+import { WebsocDivisionSchema, WebsocFullCoursesSchema } from '@packages/antalmanac-types';
 
-const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
+export type CourseDivisionFormValue = '' | Exclude<WebsocDivision, 'ANY'>;
+
+const defaultAdvancedSearchValues: Omit<Record<AdvancedSearchParam, string>, 'coursesFull' | 'division'> & {
+    coursesFull: WebsocFullCourses;
+    division: CourseDivisionFormValue;
+} = {
     instructor: '',
     units: '',
     endTime: '',
@@ -20,9 +26,12 @@ const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
     days: '',
 };
 
-export interface CourseSearchParams extends Record<Exclude<ManualSearchParam, 'term'>, string> {
+export type CourseSearchParams = {
     term: AATerm;
-}
+} & Omit<Record<Exclude<ManualSearchParam, 'term'>, string>, 'coursesFull' | 'division'> & {
+        coursesFull: WebsocFullCourses;
+        division: CourseDivisionFormValue;
+    };
 
 type SearchParamKey = Exclude<keyof CourseSearchParams, 'term'>;
 
@@ -113,9 +122,28 @@ class RightPaneStore extends EventEmitter {
         const stringFields = Object.keys(defaultFormValues).filter((k): k is SearchParamKey => k !== 'term');
         for (const field of stringFields) {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
-            if (paramValue !== null) {
-                this.formData[field] = field === 'ge' ? normalizeGeSelection(paramValue) : paramValue;
+            if (paramValue === null) continue;
+
+            if (field === 'ge') {
+                this.formData.ge = normalizeGeSelection(paramValue);
+                continue;
             }
+            if (field === 'coursesFull') {
+                const parsed = WebsocFullCoursesSchema.safeParse(paramValue);
+                this.formData.coursesFull = parsed.success ? parsed.data : defaultAdvancedSearchValues.coursesFull;
+                continue;
+            }
+            if (field === 'division') {
+                if (paramValue === '') {
+                    this.formData.division = '';
+                    continue;
+                }
+                const parsed = WebsocDivisionSchema.safeParse(paramValue);
+                this.formData.division = !parsed.success || parsed.data === 'ANY' ? '' : parsed.data;
+                continue;
+            }
+
+            this.formData[field] = paramValue;
         }
 
         this.emit('formDataChange');
@@ -140,7 +168,19 @@ class RightPaneStore extends EventEmitter {
     getWarningMessages = () => this.warningMessages;
 
     updateFormValue = (field: SearchParamKey, value: string) => {
-        this.formData[field] = value;
+        if (field === 'coursesFull') {
+            const parsed = WebsocFullCoursesSchema.safeParse(value);
+            this.formData.coursesFull = parsed.success ? parsed.data : 'ANY';
+        } else if (field === 'division') {
+            if (value === '') {
+                this.formData.division = '';
+            } else {
+                const parsed = WebsocDivisionSchema.safeParse(value);
+                this.formData.division = !parsed.success || parsed.data === 'ANY' ? '' : parsed.data;
+            }
+        } else {
+            this.formData[field] = value;
+        }
         this.emit('formDataChange');
     };
 

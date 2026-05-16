@@ -379,7 +379,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             fullCourses: searchData.coursesFull,
             building: searchData.building,
             room: searchData.room,
-            division: searchData.division,
+            division: searchData.division === '' ? undefined : searchData.division,
             excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','),
             days: searchData.days.split(/(?=[A-Z])/).join(','),
         }),

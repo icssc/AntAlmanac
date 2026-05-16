@@ -28,7 +28,7 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             fullCourses: formData.coursesFull,
             building: formData.building,
             room: formData.room,
-            division: formData.division,
+            division: formData.division === '' ? undefined : formData.division,
             excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
             days: formData.days.split(/(?=[A-Z])/).join(','),
         };

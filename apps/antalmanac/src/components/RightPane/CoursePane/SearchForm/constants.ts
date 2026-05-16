@@ -1,3 +1,5 @@
+import type { WebsocGe } from '@packages/antalmanac-types';
+
 export const BASIC_SEARCH_PARAMS = ['term'] as const;
 
 export type BasicSearchParam = (typeof BASIC_SEARCH_PARAMS)[number];
@@ -43,6 +45,6 @@ export const GE_LIST = [
     { value: 'GE-6', label: 'GE VI (6): Language other than English', shortLabel: 'GE VI (6)' },
     { value: 'GE-7', label: 'GE VII (7): Multicultural Studies', shortLabel: 'GE VII (7)' },
     { value: 'GE-8', label: 'GE VIII (8): International/Global Issues', shortLabel: 'GE VIII (8)' },
-] as const;
+] as const satisfies readonly { value: WebsocGe; label: string; shortLabel: string }[];
 
 export const ANY_GE = GE_LIST[0].value;
