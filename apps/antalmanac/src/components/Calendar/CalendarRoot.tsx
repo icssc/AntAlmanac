@@ -180,8 +180,8 @@ export const ScheduleCalendar = memo(() => {
      * Finds the earliest start time and returns that or 7AM, whichever is earlier
      */
     const startTime = useMemo(() => {
-        const eventStartHours = events.map((event) => event.start.getHours());
-        return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
+        const validHours = events.map((event) => event.start.getHours()).filter(Number.isFinite);
+        return new Date(2018, 0, 1, Math.min(7, ...validHours, 7));
     }, [events]);
 
     const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {

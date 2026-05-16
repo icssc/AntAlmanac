@@ -10,7 +10,7 @@ import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { format, set } from 'date-fns';
+import { format, isValid, set } from 'date-fns';
 
 interface CustomEventDetailViewProps {
     scheduleNames: string[];
@@ -25,15 +25,11 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const baseDate = new Date(2000, 0, 1);
-        const startTime = set(baseDate, {
-            hours: parseInt(start.slice(0, 2)),
-            minutes: parseInt(start.slice(3, 5)),
-        });
+        const startTime = set(baseDate, { hours: parseInt(start.slice(0, 2)), minutes: parseInt(start.slice(3, 5)) });
+        const endTime = set(baseDate, { hours: parseInt(end.slice(0, 2)), minutes: parseInt(end.slice(3, 5)) });
 
-        const endTime = set(baseDate, {
-            hours: parseInt(end.slice(0, 2)),
-            minutes: parseInt(end.slice(3, 5)),
-        });
+        // Fall back to raw strings if the time fields can't be parsed (e.g. empty string in DB).
+        if (!isValid(startTime) || !isValid(endTime)) return `${start} — ${end}`;
 
         const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const daysString = days.map((includeDate, index) => (includeDate ? dayAbbreviations[index] : '')).join(' ');

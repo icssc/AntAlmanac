@@ -1,8 +1,9 @@
-import { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCoursePane';
-import { WebsocSectionType } from '@packages/anteater-api/types';
+import { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedSectionsGrid';
+
+type SectionType = NonNullable<CourseWithTerm['sectionTypes']>[number];
 
 export const getMissingSections = (userCourses: CourseWithTerm): string[] => {
-    const requiredTypes = new Set<WebsocSectionType>(userCourses.sectionTypes ?? []);
+    const requiredTypes = new Set<SectionType>(userCourses.sectionTypes ?? []);
 
     if (requiredTypes.size === 0) {
         return [];

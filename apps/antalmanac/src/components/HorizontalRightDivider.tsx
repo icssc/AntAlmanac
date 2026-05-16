@@ -1,5 +1,5 @@
+import { mergeSx } from '$lib/helpers';
 import { Divider, SxProps, Theme } from '@mui/material';
-import { mergeSx } from '@mui/x-date-pickers/internals';
 import { ReactNode } from 'react';
 
 interface HorizontalRightDividerProps {

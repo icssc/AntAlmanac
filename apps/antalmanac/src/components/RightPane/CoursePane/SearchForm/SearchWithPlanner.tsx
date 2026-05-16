@@ -1,6 +1,7 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
@@ -140,19 +141,33 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
         const menuItem = (
-            <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ paddingRight: 1 }}>
+            <Box
+                key={roadmap.id}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ paddingRight: 1 }}
+            >
                 <MenuItem
                     {...props}
                     key={roadmap.id}
                     onClick={() => search(roadmap.id)}
                     disabled={!doesRoadmapIncludeTerm(roadmap.id)}
+                    sx={{ width: '100%' }}
                 >
-                    <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
+                    <Typography
+                        sx={{ marginLeft: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                        title={roadmap.name}
+                    >
+                        {roadmap.name}
+                    </Typography>
                 </MenuItem>
 
-                <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
-                    <OpenInBrowser fontSize="small" />
-                </IconButton>
+                <Tooltip title="Open Planner">
+                    <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
+                        <OpenInBrowser fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             </Box>
         );
         if (termRoadmapGrouping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
@@ -222,15 +237,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 renderOption: renderOption,
                 ...(plannerRoadmaps.length === 0 && {
                     slotProps: { popper: { sx: { '& .MuiAutocomplete-noOptions': { padding: 0 } } } },
-                    noOptionsText: (
-                        <MenuItem
-                            component="a"
-                            href={PLANNER_LINK}
-                            sx={(theme) => ({ color: theme.palette.text.primary, paddingTop: 1.5, paddingBottom: 1.5 })}
-                        >
-                            Create a roadmap!
-                        </MenuItem>
-                    ),
+                    noOptionsText: <CreateRoadmapLinkItem />,
                 }),
             }}
             textFieldProps={{
