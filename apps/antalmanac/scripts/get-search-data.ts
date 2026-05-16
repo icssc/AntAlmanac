@@ -2,8 +2,8 @@ import 'dotenv/config';
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { canTermEnrollmentChange, termData } from '$lib/termData';
-import type { CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
+import { canTermEnrollmentChange, termData } from '$lib/term';
+import type { AATerm, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
@@ -46,9 +46,9 @@ function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
     );
 }
 
-function buildSectionCodesQuery(year: string, quarter: string): string {
+function buildSectionCodesQuery(term: AATerm): string {
     return `{
-        websoc(query: { year: "${year}", quarter: ${quarter} }) {
+        websoc(query: { year: "${term.year}", quarter: ${term.quarter} }) {
             schools {
                 departments {
                     deptCode
@@ -70,7 +70,7 @@ function buildSectionCodesQuery(year: string, quarter: string): string {
 async function main() {
     console.log('Generating cache for fuzzy search.');
 
-    const activeTerms = termData.filter((t) => canTermEnrollmentChange(t.shortName));
+    const activeTerms = termData.filter((t) => canTermEnrollmentChange(t));
 
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];
@@ -129,8 +129,8 @@ async function main() {
             if (i > 0) {
                 await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
             }
-            const [year, quarter] = activeTerms[i].shortName.split(' ');
-            if (!year || !quarter) throw new Error(`Invalid term format: ${activeTerms[i].shortName}`);
+            const { year, quarter } = activeTerms[i];
+
             const websocData = await aapiClient.websoc.query({ year, quarter });
             const chunk = getWebsocCoursesFromResponse(websocData);
             for (const [key, course] of chunk) {
@@ -193,7 +193,7 @@ async function main() {
     let requestsMade = 0;
     for (const term of termData) {
         try {
-            const [year, quarter] = term.shortName.split(' ');
+            const { year, quarter } = term;
             const parsedTerm = `${quarter}_${year}`;
             const fileName = join(GENERATED_TERMS_DIR, `${parsedTerm}.json`);
 
@@ -217,7 +217,7 @@ async function main() {
             }
             requestsMade++;
 
-            const query = buildSectionCodesQuery(year, quarter);
+            const query = buildSectionCodesQuery(term);
             const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
             if (!res) {
                 throw new Error(`Error fetching section codes for ${term.shortName}.`);

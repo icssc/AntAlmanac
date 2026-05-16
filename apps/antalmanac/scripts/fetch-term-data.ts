@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';
 
+import { AATerm } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
-import type { CalendarTerm } from '@packages/anteater-api/types';
+import type { CalendarTerm, Quarter, Year } from '@packages/anteater-api/types';
 
 import { GENERATED_DIR, TERM_DATA_FILE } from './lib/paths.js';
 
@@ -15,9 +16,9 @@ const QUARTER_MAP = {
     Fall: 'Fall Quarter',
     Winter: 'Winter Quarter',
     Spring: 'Spring Quarter',
-} as const;
+} as const satisfies Record<Quarter, string>;
 
-function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${string} ${string}` {
+function sanitizeTermName(year: Year, quarter: Quarter): AATerm['longName'] {
     return `${year} ${QUARTER_MAP[quarter]}`;
 }
 
@@ -33,11 +34,9 @@ function serializeTerm(term: CalendarTerm) {
     const isSummerTerm = quarter.toLowerCase().includes('summer');
 
     return {
+        ...term,
         shortName,
         longName,
-        startDate: instructionStart,
-        finalsStartDate: finalsStart,
-        socAvailable,
         isSummerTerm,
     };
 }

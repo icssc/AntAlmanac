@@ -16,7 +16,7 @@ import {
     removeLocalStorageSkeletonBlueprint,
     setLocalStorageSkeletonBlueprint,
 } from '$lib/localStorage';
-import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
+import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -252,11 +252,8 @@ export const ScheduleCalendar = memo(() => {
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h a';
 
-    const finalsDate = hoveredCalendarizedFinal
-        ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
-        : onlyCourseEvents.length > 0
-          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-          : getDefaultFinalsStartDate();
+    const finalsTerm = hoveredCalendarizedFinal?.term ?? onlyCourseEvents[0]?.term;
+    const finalsDate = (finalsTerm ?? getDefaultTerm()).finalsStart;
 
     const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
 

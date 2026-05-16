@@ -1,12 +1,14 @@
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Theme } from '@mui/material/styles';
 import { SxProps, SystemStyleObject } from '@mui/system';
+import type { AATerm } from '@packages/antalmanac-types';
 import { MouseEvent } from 'react';
 
-export const warnMultipleTerms = (terms: Set<string>) => {
+export const warnMultipleTerms = (terms: Set<AATerm>) => {
+    const names = [...terms].map((t) => t.shortName).sort();
     openSnackbar(
         'warning',
-        `Course added from different term.\nSchedule now contains courses from ${[...terms].sort().join(', ')}.`,
+        `Course added from different term.\nSchedule now contains courses from ${names.join(', ')}.`,
         { style: { whiteSpace: 'pre-line' } }
     );
 };

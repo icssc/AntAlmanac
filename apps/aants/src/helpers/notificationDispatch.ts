@@ -1,4 +1,4 @@
-import { WebsocSection } from '@packages/anteater-api/types';
+import type { Quarter, WebsocSection, Year } from '@packages/anteater-api/types';
 import { render, toPlainText } from '@react-email/render';
 
 import { CourseNotificationEmail } from '../emails/CourseNotificationEmail';
@@ -19,8 +19,8 @@ export interface CourseDetails {
     courseNumber: string;
     courseTitle: string;
     courseType: string;
-    quarter: string;
-    year: string;
+    quarter: Quarter;
+    year: Year;
 }
 
 const BATCH_SIZE = 450;

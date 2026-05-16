@@ -4,6 +4,7 @@ import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enro
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import type { AATerm } from '@packages/antalmanac-types';
 import type { WebsocSectionType } from '@packages/anteater-api/types';
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -21,12 +22,12 @@ interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
-    term: string;
+    term: AATerm;
     sectionCode: string;
 }
 
 function graphKey(enrollment: EnrollmentHistory) {
-    return `${enrollment.year}-${enrollment.quarter}-${enrollment.sectionCode}`;
+    return `${enrollment.sectionCode} ${enrollment.term.shortName}`;
 }
 
 export function EnrollmentHistoryPopover({
@@ -63,7 +64,7 @@ export function EnrollmentHistoryPopover({
             }
         }
         const matchIndex = enrollmentHistory.findIndex(
-            (e) => `${e.year} ${e.quarter}` === term && e.sectionCode === sectionCode
+            (e) => e.term.shortName === term.shortName && e.sectionCode === sectionCode
         );
         return matchIndex >= 0 ? matchIndex : enrollmentHistory.length - 1;
     }, [enrollmentHistory, sectionCode, selectedGraphKey, term]);
@@ -72,7 +73,7 @@ export function EnrollmentHistoryPopover({
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
         currEnrollmentHistory != null ? (
-            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
+            `${currEnrollmentHistory.term.shortName} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
         ) : (
             <>&nbsp;</>
         );

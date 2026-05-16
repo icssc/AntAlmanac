@@ -6,6 +6,7 @@ import type {
     Notification,
     ScheduleSaveState,
 } from '@packages/antalmanac-types';
+import type { Quarter, Year } from '@packages/anteater-api/types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
 import {
@@ -1058,8 +1059,8 @@ export class RDS {
             .values({
                 userId,
                 sectionCode: notification.sectionCode,
-                year: notification.term.split(' ')[0],
-                quarter: notification.term.split(' ')[1],
+                year: notification.year,
+                quarter: notification.quarter,
                 notifyOnOpen: notification.notifyOn.notifyOnOpen,
                 notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
                 notifyOnFull: notification.notifyOn.notifyOnFull,
@@ -1112,8 +1113,8 @@ export class RDS {
             .where(
                 and(
                     eq(subscriptions.sectionCode, notification.sectionCode),
-                    eq(subscriptions.year, notification.term.split(' ')[0]),
-                    eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                    eq(subscriptions.year, notification.year),
+                    eq(subscriptions.quarter, notification.quarter),
                     eq(subscriptions.environment, environment)
                 )
             );
@@ -1131,7 +1132,8 @@ export class RDS {
         db: DatabaseOrTransaction,
         userId: string,
         sectionCode: string,
-        term: string,
+        year: Year,
+        quarter: Quarter,
         environment: string
     ) {
         return db
@@ -1140,8 +1142,8 @@ export class RDS {
                 and(
                     eq(subscriptions.userId, userId),
                     eq(subscriptions.sectionCode, sectionCode),
-                    eq(subscriptions.year, term.split(' ')[0]),
-                    eq(subscriptions.quarter, term.split(' ')[1]),
+                    eq(subscriptions.year, year),
+                    eq(subscriptions.quarter, quarter),
                     eq(subscriptions.environment, environment)
                 )
             );

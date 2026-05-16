@@ -12,7 +12,7 @@ import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { CustomEventId } from '@packages/antalmanac-types';
+import { AATerm, CustomEventId } from '@packages/antalmanac-types';
 import { WebsocSectionFinalExam } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
@@ -57,7 +57,7 @@ export interface CourseEvent extends CommonCalendarEvent {
     sectionType: string;
     deptValue: string;
     courseNumber: string;
-    term: string;
+    term: AATerm;
 }
 
 /**
@@ -191,7 +191,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </tr>
                         <tr>
                             <td style={{ verticalAlign: 'top' }}>Term</td>
-                            <td style={{ textAlign: 'right' }}>{term}</td>
+                            <td style={{ textAlign: 'right' }}>{term.shortName}</td>
                         </tr>
                         <tr>
                             <td style={{ verticalAlign: 'top' }}>Instructors</td>

@@ -14,6 +14,7 @@
     "dependencies": {
         "@aws-sdk/client-sesv2": "^3.750.0",
         "@aws-sdk/client-sqs": "^3.750.0",
+        "@packages/antalmanac-types": "workspace:*",
         "@packages/anteater-api": "workspace:*",
         "@packages/db": "workspace:*",
         "@react-email/components": "^1.0.8",

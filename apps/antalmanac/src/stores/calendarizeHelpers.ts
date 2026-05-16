@@ -1,5 +1,4 @@
 import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { getFinalsStartDateForTerm } from '$lib/termData';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import type { HourMinute, WebsocSectionFinalExam } from '@packages/anteater-api/types';
@@ -15,6 +14,8 @@ function getLocation(location: string): Location {
 
 export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
     return currentCourses.flatMap((course) => {
+        const term = course.term;
+
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
             .flatMap((meeting) => {
@@ -48,7 +49,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
                 return dayIndicesOccurring.map((dayIndex) => {
                     return {
                         color: course.section.color,
-                        term: course.term,
+                        term,
                         title: `${course.deptCode} ${course.courseNumber}`,
                         deptValue: course.deptCode,
                         courseNumber: course.courseNumber,
@@ -118,11 +119,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                   ? course.section.meetings[0].bldg.map(getLocation)
                   : [];
 
-            /**
-             * Fallback to January 2018 if no finals start date is available.
-             * finalsDay is handled later by day since it varies by day.
-             */
-            const finalsStartDate = getFinalsStartDateForTerm(course.term);
+            const term = course.term;
+            const finalsStartDate = term.finalsStart;
 
             return dayIndicesOccurring.map((dayIndex) => {
                 const startDate = new Date(finalsStartDate);
@@ -135,7 +133,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
 
                 return {
                     color: course.section.color,
-                    term: course.term,
+                    term,
                     title: `${course.deptCode} ${course.courseNumber}`,
                     courseTitle: course.courseTitle,
                     locations: locationsWithNoDays.map((location: Location) => {

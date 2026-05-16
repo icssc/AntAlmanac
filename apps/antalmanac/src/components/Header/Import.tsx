@@ -52,7 +52,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { AATerm, CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -255,7 +255,8 @@ export function Import() {
         try {
             const term = RightPaneStore.getFormData().term;
             const courseInfo = await trpc.websoc.getCourseInfo.query({
-                term,
+                year: term.year,
+                quarter: term.quarter,
                 sectionCodes: sectionCodes.join(','),
             });
 
@@ -301,7 +302,7 @@ export function Import() {
 
     const addCoursesMultiple = (
         courseInfo: { [sectionCode: string]: CourseInfo },
-        term: string,
+        term: AATerm,
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {

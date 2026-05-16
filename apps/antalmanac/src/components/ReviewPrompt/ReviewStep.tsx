@@ -85,7 +85,7 @@ export function ReviewStep() {
                 customProps: {
                     courseId: candidate.courseId,
                     professorId: candidate.professorId,
-                    term: candidate.term,
+                    term: candidate.term.shortName,
                     rating,
                     difficulty,
                     tags: selectedTags,
@@ -109,7 +109,7 @@ export function ReviewStep() {
             dismissReview({
                 professorId: dismissedCandidate.professorId,
                 courseId: dismissedCandidate.courseId,
-                term: dismissedCandidate.term,
+                termShortName: dismissedCandidate.term.shortName,
             });
         }
     };
@@ -122,7 +122,7 @@ export function ReviewStep() {
         submitReview({
             professorId: candidate.professorId,
             courseId: candidate.courseId,
-            quarter: candidate.term,
+            termShortName: candidate.term.shortName,
             rating,
             difficulty,
             tags: selectedTags,

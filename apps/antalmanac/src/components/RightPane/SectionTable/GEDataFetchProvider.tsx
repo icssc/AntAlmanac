@@ -15,8 +15,9 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
     const params = useMemo(() => {
         const formData = RightPaneStore.getFormData();
         return {
+            year: formData.term.year,
+            quarter: formData.term.quarter,
             department: props.courseDetails.deptCode,
-            term: formData.term,
             ge: 'ANY',
             courseNumber: props.courseDetails.courseNumber,
             courseTitle: props.courseDetails.courseTitle,

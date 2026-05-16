@@ -4,7 +4,7 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
-import type { SearchResult } from '@packages/antalmanac-types';
+import type { AATerm, SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { ComponentProps, useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
@@ -62,12 +62,12 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [pendingRequest, setPendingRequest] = useState<number | undefined>(undefined);
-    const [currentTerm, setCurrentTerm] = useState<string>(RightPaneStore.getFormData().term);
+    const [currentTerm, setCurrentTerm] = useState<AATerm>(RightPaneStore.getFormData().term);
 
     const requestTimestampRef = useRef<number | undefined>(undefined);
 
-    const getCacheKey = (term: string, query: string): string => {
-        return `${term}:${query}`;
+    const getCacheKey = (term: AATerm, query: string): string => {
+        return `${term.shortName}:${query}`;
     };
 
     const doSearch = (option: SearchOption) => {
@@ -77,7 +77,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         }
         const term = RightPaneStore.getFormData().term;
         RightPaneStore.resetFormValues();
-        RightPaneStore.updateFormValue('term', term);
+        RightPaneStore.setTerm(term);
         switch (result.type) {
             case resultType.GE_CATEGORY: {
                 const geCode = option.key.split('-')[1].toUpperCase();
@@ -143,14 +143,14 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         (requestTimestamp: number, requestQuery: string) => () => {
             if (!requestIsCurrent(requestTimestamp)) return;
 
-            const requestTerm = RightPaneStore.getFormData().term;
+            const term = RightPaneStore.getFormData().term;
 
             trpc.search.doSearch
-                .query({ query: requestQuery, term: requestTerm })
+                .query({ query: requestQuery, term })
                 .then((result) => {
                     if (!requestIsCurrent(requestTimestamp)) return;
 
-                    const cacheKey = getCacheKey(requestTerm, requestQuery);
+                    const cacheKey = getCacheKey(term, requestQuery);
 
                     setCache((cache) => ({
                         ...cache,
@@ -255,8 +255,8 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
             return <Box key={params.key}>{params.children}</Box>;
         }
 
-        const term = RightPaneStore.getFormData().term;
-        const label = params.group === groupType.OFFERED ? `Offered in ${term}` : `Not Offered`;
+        const termName = RightPaneStore.getFormData().term.longName;
+        const label = params.group === groupType.OFFERED ? `Offered in ${termName}` : `Not Offered`;
 
         return (
             <Box key={params.key}>
