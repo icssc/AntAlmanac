@@ -9,7 +9,7 @@ export const Unsubscribe = () => {
     const [searchParams] = useSearchParams();
 
     const sectionCode = searchParams.get('sectionCode');
-    const _quarter = searchParams.get('quarter');
+    const searchParamQuarter = searchParams.get('quarter');
     const year = searchParams.get('year');
     const deptCode = searchParams.get('deptCode');
     const courseNumber = searchParams.get('courseNumber');
@@ -31,7 +31,7 @@ export const Unsubscribe = () => {
         });
 
     const handleUnsubscribe = () => {
-        const quarter = parseQuarter(_quarter);
+        const quarter = parseQuarter(searchParamQuarter);
 
         if (!userId || !sectionCode || !quarter || !year) {
             return;

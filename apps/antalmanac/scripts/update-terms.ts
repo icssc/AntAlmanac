@@ -25,8 +25,8 @@ async function getSectionCount(term: WebsocTerm) {
         throw new Error(`Unknown term: ${term.shortName}`);
     }
 
-    const { year, quarter } = aaTerm;
-    console.log(`Checking section count for ${year} ${quarter}...`);
+    const { year, quarter, shortName } = aaTerm;
+    console.log(`Checking section count for ${shortName}...`);
     const response = await aapiClient.websoc.query({ year, quarter });
     return flattenSections(response).length;
 }

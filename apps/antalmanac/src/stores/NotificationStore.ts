@@ -170,15 +170,12 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     }
 
                     const key = term.shortName;
-                    const group = termGroups.get(key);
-                    if (group) {
-                        group.sectionCodes.add(sectionCode.toString());
-                    } else {
-                        termGroups.set(key, {
-                            term,
-                            sectionCodes: new Set([sectionCode.toString()]),
-                        });
+                    let group = termGroups.get(key);
+                    if (!group) {
+                        group = { term, sectionCodes: new Set() };
+                        termGroups.set(key, group);
                     }
+                    group.sectionCodes.add(sectionCode.toString());
                 }
 
                 const courseInfoDict = new Map<
@@ -198,7 +195,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
                 const notifications: Partial<Record<string, Notification>> = {};
 
-                for (const [, { term, courseInfo }] of courseInfoDict) {
+                for (const { term, courseInfo } of courseInfoDict.values()) {
                     for (const sectionCode in courseInfo) {
                         const course = courseInfo[sectionCode];
                         const key = `${sectionCode} ${term.shortName}`;

@@ -3,15 +3,12 @@ import type { Notification } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 
 function serializeNotification(notification: Notification) {
+    const { term, ...rest } = notification;
+
     return {
-        year: notification.term.year,
-        quarter: notification.term.quarter,
-        sectionCode: notification.sectionCode,
-        courseTitle: notification.courseTitle,
-        sectionType: notification.sectionType,
-        lastUpdatedStatus: notification.lastUpdatedStatus,
-        lastCodes: notification.lastCodes,
-        notifyOn: notification.notifyOn,
+        ...rest,
+        year: term.year,
+        quarter: term.quarter,
     };
 }
 

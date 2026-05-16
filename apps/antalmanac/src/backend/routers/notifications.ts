@@ -21,6 +21,7 @@ const NotificationSchema = z.object({
     lastCodes: z.string(),
     notifyOn: NotifyOnSchema,
 });
+export type Notification = z.infer<typeof NotificationSchema>;
 
 const getStage = () => process.env.STAGE?.trim() || 'production';
 

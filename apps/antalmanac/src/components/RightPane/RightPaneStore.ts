@@ -24,7 +24,7 @@ export interface CourseSearchParams extends Record<Exclude<ManualSearchParam, 't
     term: AATerm;
 }
 
-type StringSearchParamKey = Exclude<keyof CourseSearchParams, 'term'>;
+type SearchParamKey = Exclude<keyof CourseSearchParams, 'term'>;
 
 const defaultFormValues: CourseSearchParams = {
     term: getDefaultTerm(),
@@ -110,7 +110,7 @@ class RightPaneStore extends EventEmitter {
             }
         }
 
-        const stringFields = Object.keys(defaultFormValues).filter((k): k is StringSearchParamKey => k !== 'term');
+        const stringFields = Object.keys(defaultFormValues).filter((k): k is SearchParamKey => k !== 'term');
         for (const field of stringFields) {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
             if (paramValue !== null) {
@@ -139,7 +139,7 @@ class RightPaneStore extends EventEmitter {
 
     getWarningMessages = () => this.warningMessages;
 
-    updateFormValue = (field: StringSearchParamKey, value: string) => {
+    updateFormValue = (field: SearchParamKey, value: string) => {
         this.formData[field] = value;
         this.emit('formDataChange');
     };

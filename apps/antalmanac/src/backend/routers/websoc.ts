@@ -14,18 +14,23 @@ import { router } from '../trpc';
 
 function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
     const { department, courseNumber, ...rest } = params;
-    const sanitized: Record<string, string | null | undefined> = { ...rest };
+    const sanitized: typeof params = { ...rest };
+
     if (department && department.toUpperCase() !== 'ALL') {
         sanitized.department = department.toUpperCase();
     }
+
     if (courseNumber) {
         sanitized.courseNumber = courseNumber.toUpperCase();
     }
-    for (const [key, value] of Object.entries(sanitized)) {
+
+    for (const key of Object.keys(sanitized) as (keyof typeof sanitized)[]) {
+        const value = sanitized[key];
         if (value === '' || value === null || value === undefined) {
             delete sanitized[key];
         }
     }
+
     return sanitized as WebsocQueryParams;
 }
 
