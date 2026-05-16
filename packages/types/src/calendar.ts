@@ -1,4 +1,4 @@
-import type { Quarter } from '@packages/anteater-api/types';
+import type { Quarter, Year } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
 export const QUARTERS = [
@@ -13,9 +13,9 @@ export const QUARTERS = [
 export const QuarterSchema = z.enum(QUARTERS);
 
 export type AATerm = {
-    year: string;
+    year: Year;
     quarter: Quarter;
-    shortName: `${string} ${Quarter}`;
+    shortName: `${Year} ${Quarter}`;
     longName: string;
     instructionStart: Date;
     instructionEnd: Date;

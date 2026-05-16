@@ -1,6 +1,7 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
 import { QuarterSchema, QUARTERS, type AATerm } from '@packages/antalmanac-types';
+import { Year } from '@packages/anteater-api/types';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
 
@@ -79,7 +80,7 @@ export function parseQuarter(rawQuarter: unknown) {
     return quarter.success ? quarter.data : undefined;
 }
 
-export function getTermByYearAndQuarter(year: string, rawQuarter: unknown): AATerm | undefined {
+export function getTermByYearAndQuarter(year: Year, rawQuarter: unknown): AATerm | undefined {
     const quarter = parseQuarter(rawQuarter);
     if (!quarter) {
         return undefined;
