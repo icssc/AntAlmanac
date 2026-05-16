@@ -178,7 +178,7 @@ export const Signin = () => {
                                     <AlertTitle>
                                         Note: Existing schedules saved to a unique user ID can no longer be updated.
                                     </AlertTitle>
-                                    Please sign up with your Google account to save your schedules.
+                                    Please sign up with an account to save your schedules.
                                 </Alert>
 
                                 <TextField
@@ -245,7 +245,7 @@ export const Signin = () => {
             </Popover>
             <SignInAlertDialog
                 open={openAlert}
-                title="This schedule was previously imported to a Google account. Did you want to sign in with Google?"
+                title="This schedule was previously imported to an account. Did you want to sign in?"
                 onClose={() => setOpenalert(false)}
             />
         </div>

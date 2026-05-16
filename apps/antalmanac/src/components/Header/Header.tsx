@@ -87,7 +87,7 @@ export function Header() {
                         severity="success"
                         onClose={handleCloseSuccessfulSaved}
                     >
-                        NOTE: All changes made to your schedules will be saved to your Google account
+                        NOTE: All changes made to your schedules will be saved to your account
                     </AlertDialog>
                     <AlertDialog
                         open={openSignoutDialog}
