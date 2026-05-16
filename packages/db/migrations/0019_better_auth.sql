@@ -1,5 +1,5 @@
 CREATE TABLE "verifications" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"identifier" text NOT NULL,
 	"value" text NOT NULL,
 	"expires_at" timestamp (6) with time zone NOT NULL,
@@ -7,7 +7,8 @@ CREATE TABLE "verifications" (
 	"updated_at" timestamp (6) with time zone NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "accounts" ADD COLUMN "id" text;--> statement-breakpoint
+ALTER TABLE "accounts" DROP CONSTRAINT "accounts_user_id_account_type_pk";--> statement-breakpoint
+ALTER TABLE "accounts" ADD COLUMN "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL;--> statement-breakpoint
 ALTER TABLE "accounts" ADD COLUMN "provider_id" text;--> statement-breakpoint
 ALTER TABLE "accounts" ADD COLUMN "access_token" text;--> statement-breakpoint
 ALTER TABLE "accounts" ADD COLUMN "refresh_token" text;--> statement-breakpoint
@@ -18,5 +19,5 @@ ALTER TABLE "accounts" ADD COLUMN "scope" text;--> statement-breakpoint
 ALTER TABLE "sessions" ADD COLUMN "ip_address" text;--> statement-breakpoint
 ALTER TABLE "sessions" ADD COLUMN "user_agent" text;--> statement-breakpoint
 ALTER TABLE "users" ADD COLUMN "email_verified" boolean DEFAULT false NOT NULL;--> statement-breakpoint
-CREATE INDEX "session_userId_idx" ON "sessions" USING btree ("user_id");
+CREATE INDEX "session_userId_idx" ON "sessions" USING btree ("user_id");--> statement-breakpoint
 UPDATE accounts SET provider_id = 'icssc' WHERE account_type = 'OIDC' OR account_type = 'GOOGLE' OR account_type = 'APPLE';

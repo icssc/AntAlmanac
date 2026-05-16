@@ -37,6 +37,11 @@ export const auth = betterAuth({
         }),
         nextCookies(),
     ],
+    advanced: {
+        database: {
+            generateId: 'uuid',
+        },
+    },
     hooks: {
         after: createAuthMiddleware(async (ctx) => {
             if (ctx.path === '/oauth2/callback/:providerId') {

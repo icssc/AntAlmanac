@@ -1,5 +1,5 @@
 {
-  "id": "fbdaa86b-a3f3-491c-9a77-38e8e4cd1fc3",
+  "id": "ab6a0259-8b11-460a-b432-c6ab1f326abf",
   "prevId": "13f815ee-b9d3-41e1-9b83-3a0343d67492",
   "version": "7",
   "dialect": "postgresql",
@@ -10,9 +10,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "user_id": {
           "name": "user_id",
@@ -106,15 +107,7 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {
-        "accounts_user_id_account_type_pk": {
-          "name": "accounts_user_id_account_type_pk",
-          "columns": [
-            "user_id",
-            "account_type"
-          ]
-        }
-      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -310,9 +303,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "identifier": {
           "name": "identifier",
