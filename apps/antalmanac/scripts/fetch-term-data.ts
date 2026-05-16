@@ -1,11 +1,19 @@
 import 'dotenv/config';
-import { mkdir, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { AATerm } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { CalendarTerm, Quarter, Year } from '@packages/anteater-api/types';
 
-import { GENERATED_DIR, LEGACY_TERM_DATA_TS, TERM_DATA_FILE } from './lib/paths.js';
+import { GENERATED_DIR, TERM_DATA_FILE } from './lib/paths.js';
+
+/** Package root: derive from this file (`…/scripts/fetch-term-data.ts`), not `paths.ts`, so tooling cannot point `import.meta.url` at a different tree than `apps/antalmanac`. */
+const ANTALMANAC_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
+const LEGACY_TERM_DATA_FILES = ['termData.ts', 'termData.js', 'termData.d.ts'].map((name) =>
+    join(ANTALMANAC_ROOT, 'src/lib', name)
+);
 
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
@@ -41,19 +49,21 @@ function serializeTerm(term: CalendarTerm) {
     };
 }
 
-async function removeLegacyTermDataTs() {
-    try {
-        await unlink(LEGACY_TERM_DATA_TS);
-        console.log(`Removed legacy ${LEGACY_TERM_DATA_TS} (replaced by term.ts + generated termData.json).`);
-    } catch (e) {
-        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
-            throw e;
+async function removeLegacyTermDataFiles() {
+    for (const filePath of LEGACY_TERM_DATA_FILES) {
+        try {
+            await rm(filePath);
+            console.log(`Removed legacy ${filePath} (replaced by term.ts + generated termData.json).`);
+        } catch (e) {
+            if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+                throw e;
+            }
         }
     }
 }
 
 async function main() {
-    await removeLegacyTermDataTs();
+    await removeLegacyTermDataFiles();
 
     console.log('Fetching all calendar terms from Anteater API...');
     const calendarTerms = await aapiClient.calendar.all();
@@ -69,6 +79,16 @@ async function main() {
 
     await mkdir(GENERATED_DIR, { recursive: true });
     await writeFile(TERM_DATA_FILE, JSON.stringify(termEntries, null, 2));
+
+    /** Old pipelines emitted `termData.ts` under `src/generated`; Actions cache restores that tree, so remove it (see icssc/AntAlmanac@3ad7c407). */
+    const staleGeneratedTermDataTs = join(GENERATED_DIR, 'termData.ts');
+    try {
+        await rm(staleGeneratedTermDataTs);
+    } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+            throw e;
+        }
+    }
 
     console.log('Term data generated. Written to ', TERM_DATA_FILE);
 }
