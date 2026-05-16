@@ -1,5 +1,6 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
+import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
 import { canTermEnrollmentChange, type Term } from '$lib/termData';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -7,6 +8,7 @@ import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-ma
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 import type { Course } from '@packages/anteater-api/types';
+import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -32,6 +34,8 @@ export const NotificationsMenu = memo(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
         );
 
+        const postHog = usePostHog();
+
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
         const [signInOpen, setSignInOpen] = useState(false);
 
@@ -49,6 +53,11 @@ export const NotificationsMenu = memo(
             (status: keyof NotifyOn) => {
                 const { sectionType, sectionCode, restrictions, units, sectionNum, instructors } = section;
                 const currStatus = section.status;
+                logAnalytics(postHog, {
+                    category: analyticsEnum.aants,
+                    action: AANTS_ANALYTICS_ACTIONS[status],
+                    customProps: { sectionCode, term, source: 'menu' },
+                });
                 setNotifications({
                     courseTitle,
                     sectionCode,
@@ -64,7 +73,7 @@ export const NotificationsMenu = memo(
                     instructors,
                 });
             },
-            [courseTitle, section, setNotifications, term, deptCode, courseNumber]
+            [courseTitle, section, setNotifications, term, deptCode, courseNumber, postHog]
         );
 
         const handleClose = useCallback(() => {
@@ -77,9 +86,14 @@ export const NotificationsMenu = memo(
                     setSignInOpen(true);
                     return;
                 }
+                logAnalytics(postHog, {
+                    category: analyticsEnum.aants,
+                    action: analyticsEnum.aants.actions.OPEN_SECTION_NOTIFICATIONS,
+                    customProps: { sectionCode: section.sectionCode, term },
+                });
                 setAnchorEl(event.currentTarget);
             },
-            [sessionIsValid]
+            [sessionIsValid, postHog, section.sectionCode, term]
         );
 
         const handleSignInClose = useCallback(() => {

@@ -1,6 +1,7 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -16,6 +17,7 @@ import {
     type SxProps,
     Tooltip,
 } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -28,6 +30,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const isDark = useThemeStore((store) => store.isDark);
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
+    const postHog = usePostHog();
 
     const { sessionIsValid } = useSessionStore(
         useShallow((state) => ({
@@ -37,15 +40,23 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
 
     const handleOpen = useCallback(() => {
         if (sessionIsValid) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.aants,
+                action: analyticsEnum.aants.actions.OPEN_MANAGE_NOTIFICATIONS,
+            });
             setOpen(true);
         } else {
             setSignInOpen(true);
         }
-    }, [sessionIsValid]);
+    }, [sessionIsValid, postHog]);
 
     const handleClose = useCallback(() => {
+        logAnalytics(postHog, {
+            category: analyticsEnum.aants,
+            action: analyticsEnum.aants.actions.CLOSE_MANAGE_NOTIFICATIONS,
+        });
         setOpen(false);
-    }, []);
+    }, [postHog]);
 
     const handleSignInClose = useCallback(() => {
         setSignInOpen(false);
