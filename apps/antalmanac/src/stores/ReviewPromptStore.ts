@@ -229,6 +229,10 @@ export const useReviewPromptStore = create(
                 return candidate;
             },
 
+            onSubmitSuccess: () => {
+                toStep('success', { rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
+            },
+
             resetReview: () =>
                 set({
                     step: 'hidden',
