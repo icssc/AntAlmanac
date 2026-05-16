@@ -19,8 +19,9 @@ const termSchema = z
     .object({
         year: z.string(),
         quarter: QuarterSchema,
+        // TODO(zod-v4): Replace refine with z.literal.template() once we upgrade to Zod v4.
         shortName: z.string().refine(
-            (s): s is `${string} ${(typeof QUARTERS)[number]}` => {
+            (s): s is AATerm['shortName'] => {
                 const parts = s.split(' ');
                 return parts.length === 2 && (QUARTERS as readonly string[]).includes(parts[1]);
             },
