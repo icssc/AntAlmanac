@@ -3,8 +3,7 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpcReact';
 import { postHog } from '$providers/PostHog';
-import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
-import { useReviewPromptStore } from '$stores/ReviewPromptStore';
+import { REVIEW_TAGS, useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import {
@@ -69,16 +68,13 @@ export function ReviewStep() {
     const setTextReview = useReviewPromptStore((s) => s.setTextReview);
     const toggleTag = useReviewPromptStore((s) => s.toggleTag);
     const dismiss = useReviewPromptStore((s) => s.dismiss);
-    const resetReview = useReviewPromptStore((s) => s.resetReview);
-
-    const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
+    const onSubmitSuccess = useReviewPromptStore((s) => s.onSubmitSuccess);
 
     const { mutate: submitReview, isPending: isSubmitting } = trpcReact.review.submitReview.useMutation({
         onSuccess: () => {
             if (!candidate) {
                 return;
             }
-
             logAnalytics(postHog, {
                 category: analyticsEnum.review,
                 action: analyticsEnum.review.actions.SUBMITTED,
@@ -91,8 +87,7 @@ export function ReviewStep() {
                     tags: selectedTags,
                 },
             });
-            resetReview();
-            openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
+            onSubmitSuccess();
         },
         onError: () => {
             openSnackbar('error', 'Failed to submit review. Please try again.');
@@ -103,22 +98,13 @@ export function ReviewStep() {
         if (isSubmitting) {
             return;
         }
-
-        const dismissedCandidate = dismiss();
-        if (dismissedCandidate) {
-            dismissReview({
-                professorId: dismissedCandidate.professorId,
-                courseId: dismissedCandidate.courseId,
-                term: dismissedCandidate.term,
-            });
-        }
+        dismiss();
     };
 
     const handleSubmit = () => {
         if (!candidate || rating === 0 || difficulty === 0) {
             return;
         }
-
         submitReview({
             professorId: candidate.professorId,
             courseId: candidate.courseId,
@@ -213,7 +199,7 @@ export function ReviewStep() {
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button size="small" color="inherit" onClick={handleDismiss}>
-                    Skip
+                    Cancel
                 </Button>
 
                 <Button

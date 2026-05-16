@@ -2,6 +2,7 @@
 
 import { EnrollmentConfirmStep } from '$components/ReviewPrompt/EnrollmentConfirmStep';
 import { ReviewStep } from '$components/ReviewPrompt/ReviewStep';
+import { SuccessStep } from '$components/ReviewPrompt/SuccessStep';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Paper, Snackbar } from '@mui/material';
@@ -39,9 +40,10 @@ export function ReviewPrompt() {
 
     return (
         <Snackbar open={open} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-            <Paper>
+            <Paper sx={{ width: 500 }}>
                 {step === 'enrollment-confirm' && candidate && <EnrollmentConfirmStep />}
                 {step === 'review' && candidate && <ReviewStep />}
+                {step === 'success' && candidate && <SuccessStep />}
             </Paper>
         </Snackbar>
     );
