@@ -56,7 +56,7 @@ export const NotificationsMenu = memo(
                 logAnalytics(postHog, {
                     category: analyticsEnum.aants,
                     action: AANTS_ANALYTICS_ACTIONS[status],
-                    customProps: { sectionCode, term, source: 'menu' },
+                    customProps: { sectionCode, term: term.shortName, source: 'menu' },
                 });
                 setNotifications({
                     courseTitle,
@@ -89,7 +89,7 @@ export const NotificationsMenu = memo(
                 logAnalytics(postHog, {
                     category: analyticsEnum.aants,
                     action: analyticsEnum.aants.actions.OPEN_SECTION_NOTIFICATIONS,
-                    customProps: { sectionCode: section.sectionCode, term },
+                    customProps: { sectionCode: section.sectionCode, term: term.shortName },
                 });
                 setAnchorEl(event.currentTarget);
             },
