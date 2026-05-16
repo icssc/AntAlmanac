@@ -17,6 +17,11 @@ export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: s
     openSnackbar('success', 'WebsocSection code copied to clipboard');
 }
 
+/**
+ * Merges MUI sx props. Later styles override earlier ones.
+ *
+ * Taken from [MUI internals](https://github.com/mui/mui-x/blob/master/packages/x-date-pickers/src/internals/utils/utils.ts)
+ */
 export function mergeSx(
     ...sxProps: (SxProps<Theme> | undefined)[]
 ): ReadonlyArray<boolean | SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>)> {
