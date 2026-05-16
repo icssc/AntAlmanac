@@ -48,15 +48,15 @@ export function SuccessStep() {
             </CardContent>
 
             <CardActions sx={{ justifyContent: 'flex-end', gap: 1 }}>
-                <Button size="small" color="inherit" onClick={() => finishReviewing()}>
-                    Done
-                </Button>
-
                 {hasMore && (
-                    <Button size="small" variant="contained" onClick={advanceToNext}>
+                    <Button size="small" color="inherit" onClick={advanceToNext}>
                         Review another course
                     </Button>
                 )}
+
+                <Button size="small" variant="contained" onClick={() => finishReviewing()}>
+                    Done
+                </Button>
             </CardActions>
         </>
     );

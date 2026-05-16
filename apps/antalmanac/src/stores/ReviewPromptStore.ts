@@ -42,14 +42,25 @@ const PAST_TERMS_WINDOW = 4;
 /** Min time between review prompts after the user last dismissed, skipped, or submitted. */
 const REVIEW_PROMPT_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 
-const initialState = {
-    candidate: null as ReviewCandidate | null,
-    eligibleCandidates: [] as ReviewCandidate[],
+type ReviewPromptState = {
+    candidate: ReviewCandidate | null;
+    eligibleCandidates: ReviewCandidate[];
+    eligibleIndex: number;
+    step: Step;
+    rating: number;
+    difficulty: number;
+    selectedTags: ReviewTag[];
+    textReview: string;
+};
+
+const initialState: ReviewPromptState = {
+    candidate: null,
+    eligibleCandidates: [],
     eligibleIndex: 0,
-    step: 'hidden' as Step,
+    step: 'hidden',
     rating: 0,
     difficulty: 0,
-    selectedTags: [] as ReviewTag[],
+    selectedTags: [],
     textReview: '',
 };
 
@@ -58,7 +69,7 @@ const { step: _step, ...RESET_STATE } = initialState;
 
 export const useReviewPromptStore = create(
     combine(initialState, (set, get) => {
-        const toStep = (next: Step, updates: Partial<typeof initialState> = {}) => {
+        const toStep = (next: Step, updates: Partial<Omit<ReviewPromptState, 'step'>> = {}) => {
             const { step } = get();
             if (!VALID_TRANSITIONS[step].has(next)) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -258,40 +269,6 @@ export const useReviewPromptStore = create(
                         ? selectedTags.filter((t) => t !== tag)
                         : [...selectedTags, tag],
                 });
-            },
-
-            submitReview: async () => {
-                const { candidate, rating, difficulty, selectedTags, textReview } = get();
-                if (!candidate || rating === 0 || difficulty === 0) return;
-
-                const trimmedReview = textReview.trim();
-
-                try {
-                    await trpc.review.submitReview.mutate({
-                        professorId: candidate.professorId,
-                        courseId: candidate.courseId,
-                        termShortName: candidate.term.shortName,
-                        rating,
-                        difficulty,
-                        tags: selectedTags,
-                        content: trimmedReview || undefined,
-                    });
-                    toStep('success', { rating: 0, difficulty: 0, selectedTags: [], textReview: '' });
-                    logAnalytics(postHog, {
-                        category: analyticsEnum.review,
-                        action: analyticsEnum.review.actions.SUBMITTED,
-                        customProps: {
-                            courseId: candidate.courseId,
-                            professorId: candidate.professorId,
-                            term: candidate.term.shortName,
-                            rating,
-                            difficulty,
-                            tags: selectedTags,
-                        },
-                    });
-                } catch {
-                    openSnackbar('error', 'Failed to submit review. Please try again.');
-                }
             },
 
             advanceToNext: () => {

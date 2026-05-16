@@ -26,6 +26,7 @@ export function EnrollmentConfirmStep() {
         }
     };
 
+
     return (
         <>
             <CardHeader
@@ -62,11 +63,11 @@ export function EnrollmentConfirmStep() {
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button size="small" color="inherit" onClick={handleDismiss}>
-                    Nope
+                    No, I did not
                 </Button>
 
                 <Button size="small" variant="contained" onClick={confirm}>
-                    Yes, continue!
+                    Yes, continue
                 </Button>
             </CardActions>
         </>
