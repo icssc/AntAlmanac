@@ -29,19 +29,19 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
 
-    const { isGoogleUser } = useSessionStore(
+    const { sessionIsValid } = useSessionStore(
         useShallow((state) => ({
-            isGoogleUser: state.isGoogleUser,
+            sessionIsValid: state.sessionIsValid,
         }))
     );
 
     const handleOpen = useCallback(() => {
-        if (isGoogleUser) {
+        if (sessionIsValid) {
             setOpen(true);
         } else {
             setSignInOpen(true);
         }
-    }, [isGoogleUser]);
+    }, [sessionIsValid]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
@@ -53,11 +53,11 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
 
     return (
         <>
-            <Tooltip title={isGoogleUser ? 'Notifications Menu' : 'Sign in to access notifications'}>
+            <Tooltip title={sessionIsValid ? 'Notifications Menu' : 'Sign in to access notifications'}>
                 <IconButton
                     sx={{
                         ...buttonSx,
-                        opacity: isGoogleUser ? 1 : 0.5,
+                        opacity: sessionIsValid ? 1 : 0.5,
                     }}
                     onClick={handleOpen}
                     size="small"

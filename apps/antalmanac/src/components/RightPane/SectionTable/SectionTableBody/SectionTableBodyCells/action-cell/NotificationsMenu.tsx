@@ -35,9 +35,9 @@ export const NotificationsMenu = memo(
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
         const [signInOpen, setSignInOpen] = useState(false);
 
-        const { isGoogleUser } = useSessionStore(
+        const { sessionIsValid } = useSessionStore(
             useShallow((state) => ({
-                isGoogleUser: state.isGoogleUser,
+                sessionIsValid: state.sessionIsValid,
             }))
         );
 
@@ -73,13 +73,13 @@ export const NotificationsMenu = memo(
 
         const handleNotificationClick = useCallback(
             (event: React.MouseEvent<HTMLButtonElement>) => {
-                if (!isGoogleUser) {
+                if (!sessionIsValid) {
                     setSignInOpen(true);
                     return;
                 }
                 setAnchorEl(event.currentTarget);
             },
-            [isGoogleUser]
+            [sessionIsValid]
         );
 
         const handleSignInClose = useCallback(() => {
@@ -88,7 +88,7 @@ export const NotificationsMenu = memo(
 
         const tooltipText = !isTermCurrent
             ? "Notifications are only available for the current enrollment period's courses"
-            : !isGoogleUser
+            : !sessionIsValid
               ? 'Sign in to access notifications'
               : null;
 
@@ -97,7 +97,7 @@ export const NotificationsMenu = memo(
                 <Tooltip title={tooltipText}>
                     <span>
                         <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent} sx={{ p: 0.5 }}>
-                            {isGoogleUser ? (
+                            {sessionIsValid ? (
                                 hasNotifications ? (
                                     <EditNotifications fontSize="small" />
                                 ) : (

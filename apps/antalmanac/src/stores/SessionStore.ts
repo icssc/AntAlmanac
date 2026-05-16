@@ -6,7 +6,6 @@ interface SessionState {
     sessionId: string | null;
     user: SessionData['user'] | null;
     userId: string | null;
-    isGoogleUser: boolean;
     email: string | null;
     name: string | null;
     avatar: string | null;
@@ -29,7 +28,6 @@ export const useSessionStore = create<SessionState>((set) => {
         sessionId: null,
         user: null,
         userId: null,
-        isGoogleUser: false,
         email: null,
         name: null,
         avatar: null,
@@ -42,10 +40,9 @@ export const useSessionStore = create<SessionState>((set) => {
             set({
                 session: sessionData.session,
                 sessionId: sessionData.session.id,
-                sessionIsValid: true,
                 user: sessionData.user,
                 userId: sessionData.user.id,
-                isGoogleUser: true,
+                sessionIsValid: true,
                 email: sessionData.user.email,
                 name: sessionData.user.name,
                 avatar: sessionData.user.avatar,

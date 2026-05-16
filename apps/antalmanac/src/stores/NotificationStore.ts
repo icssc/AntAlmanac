@@ -153,8 +153,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             });
         },
         loadNotifications: async () => {
-            const { isGoogleUser } = useSessionStore.getState();
-            if (!isGoogleUser) {
+            const { sessionIsValid } = useSessionStore.getState();
+            if (!sessionIsValid) {
                 set({ notifications: {}, initialized: true });
                 return;
             }
