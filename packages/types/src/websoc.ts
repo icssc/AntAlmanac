@@ -66,6 +66,10 @@ export const WebsocSearchInputSchema = z.object({
     endTime: z.string().optional(),
     excludeRestrictionCodes: z.string().optional(),
     includeRelatedCourses: z.string().nullable().optional(),
-}) satisfies z.ZodType<{ [K in keyof WebsocQueryParams]: unknown }>;
+}) satisfies z.ZodType<{
+    [K in keyof WebsocQueryParams]: NonNullable<WebsocQueryParams[K]> extends string
+        ? string | WebsocQueryParams[K]
+        : WebsocQueryParams[K];
+}>;
 
 export type WebsocSearchInput = z.infer<typeof WebsocSearchInputSchema>;
