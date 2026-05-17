@@ -362,7 +362,8 @@ export class RDS {
                 .select()
                 .from(schedules)
                 .where(condition)
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId))
+                .orderBy(coursesInSchedule.index),
             db
                 .select()
                 .from(schedules)
@@ -382,8 +383,6 @@ export class RDS {
     ): (ShortCourseSchedule & { id: string; index: number })[] {
         // Map from schedule ID to schedule data
         const schedulesMapping: Record<string, ShortCourseSchedule & { id: string; index: number }> = {};
-
-        const courseIndexes: Record<Schedule['id'], Record<ShortCourse['sectionCode'], CourseInSchedule['index']>> = {};
 
         // Add courses to schedules
         sectionResults.forEach(({ schedules: schedule, coursesInSchedule: course }) => {
@@ -405,28 +404,10 @@ export class RDS {
                     term: course.term,
                     color: course.color,
                 });
-
-                if (course.index !== null) {
-                    if (!courseIndexes[scheduleId]) {
-                        courseIndexes[scheduleId] = {};
-                    }
-                    courseIndexes[scheduleId][sectionCode] = course.index;
-                }
             }
 
             schedulesMapping[scheduleId] = scheduleAggregate;
         });
-
-        for (const [scheduleId, indexes] of Object.entries(courseIndexes)) {
-            schedulesMapping[scheduleId].courses.sort((a, b) => {
-                const aIndex = indexes[a.sectionCode];
-                const bIndex = indexes[b.sectionCode];
-                if (typeof aIndex !== 'number' || typeof bIndex !== 'number') {
-                    return 0;
-                }
-                return aIndex - bIndex;
-            });
-        }
 
         // Add custom events to schedules
         customEventResults.forEach(({ schedules: schedule, customEvents: customEvent }) => {
