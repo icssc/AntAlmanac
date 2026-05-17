@@ -30,7 +30,7 @@ import {
     type ConflictUpdatePolicy,
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
-import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray, sql } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray, sql, SQL } from 'drizzle-orm';
 import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -356,6 +356,23 @@ export class RDS {
             });
     }
 
+    private static async getUserData(db: DatabaseOrTransaction, condition: SQL<unknown> | undefined) {
+        const [sectionResults, customEventResults] = await Promise.all([
+            db
+                .select()
+                .from(schedules)
+                .where(condition)
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+            db
+                .select()
+                .from(schedules)
+                .where(condition)
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
+        ]);
+
+        return RDS.aggregateUserData(sectionResults, customEventResults);
+    }
+
     /**
      * Retrieves a schedule by its ID. All schedules are publicly accessible via their ID.
      *
@@ -378,19 +395,7 @@ export class RDS {
                 return null;
             }
 
-            const sectionResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.id, scheduleId))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-            const customEventResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.id, scheduleId))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
-
-            const scheduleArray = RDS.aggregateUserData(sectionResults, customEventResults);
+            const scheduleArray = await RDS.getUserData(tx, eq(schedules.id, scheduleId));
             const result = scheduleArray[0];
             if (!result) return null;
             return { ...result, userId: schedule.userId };
@@ -419,20 +424,7 @@ export class RDS {
 
         const userId = row.users.id;
 
-        const [sectionResults, customEventResults] = await Promise.all([
-            db
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
-            db
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
-        ]);
-
-        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+        const userSchedules = await RDS.getUserData(db, eq(schedules.userId, userId));
 
         const scheduleIndex = row.users.currentScheduleId
             ? userSchedules.findIndex((s) => s.id === row.users.currentScheduleId)
@@ -466,21 +458,10 @@ export class RDS {
                 return null;
             }
 
-            const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
-
-            const sectionResults = await tx
-                .select()
-                .from(schedules)
-                .where(sharedCondition)
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-            const customEventResults = await tx
-                .select()
-                .from(schedules)
-                .where(sharedCondition)
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
-
-            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+            const userSchedules = await RDS.getUserData(
+                tx,
+                and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true))
+            );
 
             return {
                 id: userId,
@@ -680,20 +661,7 @@ export class RDS {
             return null;
         }
 
-        const [sectionResults, customEventResults] = await Promise.all([
-            db
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, user.id))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
-            db
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, user.id))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
-        ]);
-
-        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+        const userSchedules = await RDS.getUserData(db, eq(schedules.userId, user.id));
 
         const scheduleIndex = user.currentScheduleId
             ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
