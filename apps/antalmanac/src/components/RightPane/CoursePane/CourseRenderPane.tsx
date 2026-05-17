@@ -10,12 +10,7 @@ import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
-import {
-    getMultiGeCourseKey,
-    getMultiGeOrBannerIdx,
-    isMultiGeSelection,
-    queryManualSearchCourses,
-} from '$lib/multiGeSearch';
+import { isMultiGeSelection, queryManualSearchCourses } from '$lib/multiGeSearch';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -73,6 +68,10 @@ function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item i
     return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
 }
 
+type CoursePaneSearchData =
+    | { kind: 'single'; response: WebsocAPIResponse }
+    | { kind: 'split'; intersect: WebsocAPIResponse; rest: WebsocAPIResponse };
+
 function cleanHeaders(
     items: (WebsocSchool | WebsocDepartment | AACourse)[]
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
@@ -119,14 +118,6 @@ function getFilteredCourses(
     }
     return allCourses;
 }
-
-const getFilteredAndCourseCount = (
-    flattenedCourseData: (WebsocSchool | WebsocDepartment | AACourse)[],
-    sharedCourseKeys: Set<string>
-) =>
-    flattenedCourseData.filter(
-        (item) => 'sections' in item && sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
-    ).length;
 
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
@@ -296,73 +287,12 @@ const ErrorMessage = () => {
 
 export default function CourseRenderPane(props: { id?: number }) {
     const [courseColors, setCourseColors] = useState(getColors);
-    const [sharedCourseKeys, setSharedCourseKeys] = useState<Set<string>>(new Set<string>());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term.longName);
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
-
-    const {
-        data: websocResp,
-        isLoading,
-        isError,
-    } = useQuery({
-        staleTime: 5 * 60 * 1000,
-        queryKey: ['searchResults', RightPaneStore.getFormData(), RightPaneStore.getMultiSearchData()],
-        queryFn: async (): Promise<WebsocAPIResponse | null> => {
-            setUnofferedCourses([]);
-
-            try {
-                const multiSearchData = RightPaneStore.getMultiSearchData();
-                let websocJsonResp;
-                let fetchedSharedCourseKeys = new Set<string>();
-                if (multiSearchData.length > 0) {
-                    const { year, quarter } = RightPaneStore.getFormData().term;
-                    const offeredCourses: WebsocSearchInput[] = [];
-                    const unofferedCourses: CourseSearchParams[] = [];
-                    const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
-                        term: { year, quarter },
-                        courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
-                    });
-                    for (const course of multiSearchData) {
-                        if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
-                            const websocQueryParams = getQueryParams(course);
-                            offeredCourses.push(websocQueryParams);
-                        } else {
-                            unofferedCourses.push(course);
-                        }
-                    }
-                    setUnofferedCourses(unofferedCourses);
-                    websocJsonResp = await trpc.websoc.getMultiple.query({ params: offeredCourses });
-                } else {
-                    const formData = RightPaneStore.getFormData();
-                    const websocQueryParams = getQueryParams(formData);
-                    const { response, sharedCourseKeys } = await queryManualSearchCourses(websocQueryParams);
-                    websocJsonResp = response;
-                    fetchedSharedCourseKeys = sharedCourseKeys;
-                }
-                setSharedCourseKeys(fetchedSharedCourseKeys);
-                setSearchedTerm(RightPaneStore.getFormData().term.longName);
-                return websocJsonResp;
-            } catch (error) {
-                console.error(error);
-                openSnackbar('error', 'We ran into an error while looking up class info');
-                return null;
-            }
-        },
-    });
-
-    const courseData = useMemo(
-        () => (websocResp ? getFilteredCourses(flattenSOCObject(websocResp, courseColors)) : []),
-        [websocResp, courseColors]
-    );
-
-    const andCourseCount = useMemo(
-        () => getFilteredAndCourseCount(courseData, sharedCourseKeys),
-        [courseData, sharedCourseKeys]
-    );
 
     const getQueryParams = useCallback(
         (searchData: CourseSearchParams): WebsocSearchInput => ({
@@ -386,11 +316,72 @@ export default function CourseRenderPane(props: { id?: number }) {
         []
     );
 
+    const {
+        data: searchData,
+        isLoading,
+        isError,
+    } = useQuery({
+        staleTime: 5 * 60 * 1000,
+        queryKey: ['searchResults', RightPaneStore.getFormData(), RightPaneStore.getMultiSearchData()],
+        queryFn: async (): Promise<CoursePaneSearchData | null> => {
+            setUnofferedCourses([]);
+
+            try {
+                const multiSearchData = RightPaneStore.getMultiSearchData();
+                if (multiSearchData.length > 0) {
+                    const { year, quarter } = RightPaneStore.getFormData().term;
+                    const offeredCourses: WebsocSearchInput[] = [];
+                    const unofferedCourses: CourseSearchParams[] = [];
+                    const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
+                        term: { year, quarter },
+                        courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
+                    });
+                    for (const course of multiSearchData) {
+                        if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
+                            const websocQueryParams = getQueryParams(course);
+                            offeredCourses.push(websocQueryParams);
+                        } else {
+                            unofferedCourses.push(course);
+                        }
+                    }
+                    setUnofferedCourses(unofferedCourses);
+                    const response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
+                    setSearchedTerm(RightPaneStore.getFormData().term.longName);
+                    return { kind: 'single', response };
+                }
+                const websocQueryParams = getQueryParams(RightPaneStore.getFormData());
+                const { intersect, rest } = await queryManualSearchCourses(websocQueryParams);
+                setSearchedTerm(RightPaneStore.getFormData().term.longName);
+                return { kind: 'split', intersect, rest };
+            } catch (error) {
+                console.error(error);
+                openSnackbar('error', 'We ran into an error while looking up class info');
+                return null;
+            }
+        },
+    });
+
+    const { intersectCourseData, restCourseData } = useMemo(() => {
+        if (!searchData) {
+            return { intersectCourseData: [], restCourseData: [] };
+        }
+        if (searchData.kind === 'single') {
+            const flat = getFilteredCourses(flattenSOCObject(searchData.response, courseColors));
+            return { intersectCourseData: flat, restCourseData: [] };
+        }
+        return {
+            intersectCourseData: getFilteredCourses(flattenSOCObject(searchData.intersect, courseColors)),
+            restCourseData: getFilteredCourses(flattenSOCObject(searchData.rest, courseColors)),
+        };
+    }, [searchData, courseColors]);
+
+    const andCourseCount = useMemo(() => intersectCourseData.filter(isCourseEntry).length, [intersectCourseData]);
+
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
     };
 
-    const hasRenderableCourseResults = courseData.some(isCourseEntry);
+    const hasRenderableCourseResults = intersectCourseData.some(isCourseEntry) || restCourseData.some(isCourseEntry);
 
     useEffect(() => {
         const changeColors = () => {
@@ -420,8 +411,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const ge = RightPaneStore.getFormData().ge;
     const isMultiGeSearch = isMultiGeSelection(ge);
     const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
-    const orBannerIdx =
-        isMultiGeSearch && !showNoIntersection ? getMultiGeOrBannerIdx(courseData, sharedCourseKeys) : -1;
+    const showOrSectionBanner = isMultiGeSearch && !showNoIntersection && restCourseData.some(isCourseEntry);
 
     return (
         <>
@@ -473,29 +463,49 @@ export default function CourseRenderPane(props: { id?: number }) {
                                 No courses fulfill all selected GEs. The results below fulfill at least one selected GE.
                             </Alert>
                         )}
-                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                        {intersectCourseData.map((_, index) => {
                             let heightEstimate = 200;
-                            if ((courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            if ((intersectCourseData[index] as AACourse).sections !== undefined)
+                                heightEstimate =
+                                    (intersectCourseData[index] as AACourse).sections.length * 60 + 20 + 40;
                             return (
-                                <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
-                                    {index === orBannerIdx && (
-                                        <Alert
-                                            severity="warning"
-                                            sx={{
-                                                mb: 1,
-                                                fontSize: '1rem',
-                                                '& .MuiAlert-message': {
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                },
-                                            }}
-                                        >
-                                            The courses below satisfy at least one of the selected GEs.
-                                        </Alert>
-                                    )}
+                                <LazyLoad
+                                    once
+                                    key={`intersect-${index}`}
+                                    overflow
+                                    height={heightEstimate}
+                                    offset={1000}
+                                >
                                     {SectionTableWrapped(index, {
-                                        courseData: courseData,
+                                        courseData: intersectCourseData,
+                                        scheduleNames: scheduleNames,
+                                    })}
+                                </LazyLoad>
+                            );
+                        })}
+                        {showOrSectionBanner && (
+                            <Alert
+                                severity="warning"
+                                sx={{
+                                    mb: 1,
+                                    fontSize: '1rem',
+                                    '& .MuiAlert-message': {
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                    },
+                                }}
+                            >
+                                The courses below satisfy at least one of the selected GEs.
+                            </Alert>
+                        )}
+                        {restCourseData.map((_, index) => {
+                            let heightEstimate = 200;
+                            if ((restCourseData[index] as AACourse).sections !== undefined)
+                                heightEstimate = (restCourseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            return (
+                                <LazyLoad once key={`rest-${index}`} overflow height={heightEstimate} offset={1000}>
+                                    {SectionTableWrapped(index, {
+                                        courseData: restCourseData,
                                         scheduleNames: scheduleNames,
                                     })}
                                 </LazyLoad>

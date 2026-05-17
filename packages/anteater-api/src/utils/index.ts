@@ -95,24 +95,24 @@ export function mergeWebsocUnion(responses: WebsocAPIResponse[]): WebsocAPIRespo
 }
 
 /**
- * Build one WebSOC-shaped result for “matches **all** queries, then matches **some only**” UIs.
+ * Splits several WebSOC responses into two trees for “all queries” vs “some only” UIs.
  *
- * The returned `response.schools` is two blocks concatenated:
- * 1. Courses that appear in **every** input response—tree shape copied from the **first**
- *    response only; section data is **not** merged across responses.
- * 2. Courses that appear in **at least one** response but **not** in all, deduped by
- *    {@link websocCourseKey} (first occurrence wins).
+ * - {@link intersect}: courses that appear in **every** response (layout from the **first**
+ *   response). Sections are **not** merged across responses.
+ * - {@link rest}: courses that appear in **some** but not all responses, deduped by
+ *   {@link websocCourseKey} (first occurrence wins).
  *
- * Also returns `intersectionCourseKeys` for highlighting or banners. For a deep union of
- * courses and sections, use {@link mergeWebsocUnion} instead.
+ * Each value is a full {@link WebsocAPIResponse} (same non-`schools` fields as the first
+ * response) so callers can flatten/render independently. For a single merged tree, use
+ * {@link mergeWebsocUnion}; for one concatenated list (legacy), combine `schools` yourself.
  */
-export function mergeWebsocIntersectThenRest(responses: WebsocAPIResponse[]): {
-    response: WebsocAPIResponse;
-    intersectionCourseKeys: Set<string>;
+export function splitWebsocIntersectAndRest(responses: WebsocAPIResponse[]): {
+    intersect: WebsocAPIResponse;
+    rest: WebsocAPIResponse;
 } {
     const first = responses[0];
     if (!first) {
-        return { response: { schools: [] }, intersectionCourseKeys: new Set() };
+        return { intersect: { schools: [] }, rest: { schools: [] } };
     }
 
     const perResponseKeys = responses.map((response) => {
@@ -140,7 +140,7 @@ export function mergeWebsocIntersectThenRest(responses: WebsocAPIResponse[]): {
         }
     }
 
-    const intersectBlock = first.schools
+    const intersectSchools = first.schools
         .map((school) => ({
             ...school,
             departments: school.departments
@@ -155,7 +155,7 @@ export function mergeWebsocIntersectThenRest(responses: WebsocAPIResponse[]): {
         .filter((school) => school.departments.length > 0);
 
     const assigned = new Set<string>(intersectionCourseKeys);
-    const restBlock: WebsocSchool[] = [];
+    const restSchools: WebsocSchool[] = [];
     const schoolByName = new Map<string, WebsocSchool>();
     const deptByKey = new Map<string, WebsocDepartment>();
 
@@ -170,7 +170,7 @@ export function mergeWebsocIntersectThenRest(responses: WebsocAPIResponse[]): {
                     let targetSchool = schoolByName.get(school.schoolName);
                     if (!targetSchool) {
                         targetSchool = { ...school, departments: [] };
-                        restBlock.push(targetSchool);
+                        restSchools.push(targetSchool);
                         schoolByName.set(school.schoolName, targetSchool);
                     }
 
@@ -189,8 +189,8 @@ export function mergeWebsocIntersectThenRest(responses: WebsocAPIResponse[]): {
     }
 
     return {
-        response: { ...first, schools: [...intersectBlock, ...restBlock] },
-        intersectionCourseKeys,
+        intersect: { ...first, schools: intersectSchools },
+        rest: { ...first, schools: restSchools },
     };
 }
 
