@@ -1,5 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { QuarterSchema, type CourseInfo } from '@packages/antalmanac-types';
+import { QuarterSchema, WebsocSearchInputKeysSchema, type CourseInfo } from '@packages/antalmanac-types';
 import { WebsocSearchInputSchema, type WebsocSearchInput } from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,
@@ -44,14 +44,25 @@ const websocRouter = router({
         .query(({ input }): Promise<WebsocAPIResponse> => queryWebsoc(input)),
 
     getManyOfField: aapiProcedure
-        .input(z.object({ params: WebsocSearchInputSchema, fieldName: z.string() }))
-        .query(({ input }): Promise<WebsocAPIResponse> => {
-            const fieldValue = input.params[input.fieldName as keyof WebsocSearchInput];
-            if (!fieldValue) return queryWebsoc(input.params);
-            const fields = fieldValue.trim().replaceAll(' ', '').split(',');
-            return Promise.all(fields.map((field) => queryWebsoc({ ...input.params, [input.fieldName]: field }))).then(
-                combineWebsocResponses
-            );
+        .input(
+            z.object({
+                params: WebsocSearchInputSchema,
+                fieldName: z.enum([WebsocSearchInputKeysSchema.enum.ge]),
+            })
+        )
+        .query(async ({ input }): Promise<WebsocAPIResponse[]> => {
+            const { fieldName, params } = input;
+            const fieldValue = params[fieldName]
+                ?.trim()
+                .replaceAll(' ', '')
+                .split(',')
+                .filter((value) => value.length > 0);
+
+            if (!fieldValue?.length) {
+                return [await queryWebsoc(params)];
+            }
+
+            return Promise.all(fieldValue.map((value) => queryWebsoc({ ...params, [fieldName]: value })));
         }),
 
     getMultiple: aapiProcedure

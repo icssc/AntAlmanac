@@ -252,7 +252,7 @@ export function AdvancedSearchTextFields() {
                             value: units,
                             onChange: changeHandlerFactory('units'),
                             type: 'search',
-                            placeholder: 'ex. 3, 4, or VAR',
+                            placeholder: 'ex. 4 or VAR',
                             fullWidth: true,
                         }}
                     />

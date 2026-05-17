@@ -45,6 +45,29 @@ type AACourseExtendedProperties = {
 
 export type AACourse = Omit<WebsocCourse, 'sections'> & AACourseExtendedProperties;
 
+export const WebsocSearchInputKeysSchema = z.enum([
+    'year',
+    'quarter',
+    'department',
+    'ge',
+    'courseNumber',
+    'courseTitle',
+    'sectionCodes',
+    'instructorName',
+    'days',
+    'building',
+    'room',
+    'division',
+    'sectionType',
+    'fullCourses',
+    'cancelledCourses',
+    'units',
+    'startTime',
+    'endTime',
+    'excludeRestrictionCodes',
+    'includeRelatedCourses',
+] as const satisfies readonly (keyof WebsocSearchInput)[]);
+
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,

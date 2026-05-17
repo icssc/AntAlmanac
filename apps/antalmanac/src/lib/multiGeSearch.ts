@@ -33,11 +33,6 @@ const getCourseKeys = (response: WebsocAPIResponse) =>
         )
     );
 
-const queryWebsoc = (params: WebsocSearchInput) =>
-    params.units?.includes(',')
-        ? trpc.websoc.getManyOfField.query({ params, fieldName: 'units' })
-        : trpc.websoc.getOne.query(params);
-
 const getSharedCourseKeys = (responses: WebsocAPIResponse[]) => {
     const [firstResponse, ...restResponses] = responses;
     let sharedCourseKeys = getCourseKeys(firstResponse);
@@ -107,14 +102,10 @@ const buildOr = (responses: WebsocAPIResponse[], sharedCourseKeys: Set<string>) 
 export async function queryManualSearchCourses(params: WebsocSearchInput) {
     const selectedGEs = getSelectedGEs(params.ge ?? '');
 
-    if (selectedGEs.length <= 1) {
-        return {
-            response: await queryWebsoc(params),
-            sharedCourseKeys: new Set<string>(),
-        };
-    }
-
-    const responses = await Promise.all(selectedGEs.map((ge) => queryWebsoc({ ...params, ge })));
+    const responses = await trpc.websoc.getManyOfField.query({
+        params: { ...params, ge: selectedGEs.join(',') },
+        fieldName: 'ge',
+    });
     const [firstResponse] = responses;
     const sharedCourseKeys = getSharedCourseKeys(responses);
     const andCourses = buildAnd(firstResponse, sharedCourseKeys);
