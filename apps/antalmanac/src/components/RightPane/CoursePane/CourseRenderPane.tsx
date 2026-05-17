@@ -1,8 +1,8 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
-import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
+import darkNoResults from '$components/RightPane/CoursePane/static/dark-no_results.png';
+import noResults from '$components/RightPane/CoursePane/static/no_results.png';
 import RightPaneStore, { CourseSearchParams, CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
@@ -286,7 +286,7 @@ const ErrorMessage = () => {
             ) : null}
 
             <Image
-                src={isDark ? darkNoNothing : noNothing}
+                src={isDark ? darkNoResults : noResults}
                 alt="No Results Found"
                 style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
             />
