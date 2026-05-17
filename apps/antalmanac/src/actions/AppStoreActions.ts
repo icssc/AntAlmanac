@@ -3,6 +3,7 @@ import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
+import { isScheduleContentEmpty } from '$lib/scheduleContentEmpty';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -65,21 +66,13 @@ export const addCourse = (
 };
 
 export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
-    for (const schedule of schedules) {
-        if (schedule.courses.length > 0) {
-            return false;
-        }
-
-        if (schedule.customEvents.length > 0) {
-            return false;
-        }
-
-        if (schedule.scheduleNote !== '') {
-            return false;
-        }
-    }
-
-    return true;
+    return schedules.every((schedule) =>
+        isScheduleContentEmpty({
+            courses: schedule.courses,
+            customEvents: schedule.customEvents,
+            scheduleNote: schedule.scheduleNote ?? '',
+        })
+    );
 }
 
 export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {

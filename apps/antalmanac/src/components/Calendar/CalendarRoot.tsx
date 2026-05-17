@@ -101,7 +101,9 @@ function createSkeletonEvents(): SkeletonEvent[] {
 
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
-    const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
+    const [currentScheduleIsEmpty, setCurrentScheduleIsEmpty] = useState(() =>
+        AppStore.schedule.isCurrentScheduleEmpty()
+    );
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
@@ -240,12 +242,8 @@ export const ScheduleCalendar = memo(() => {
     };
 
     const showEmptyState = useMemo(
-        () =>
-            !loadingSchedule &&
-            !showFinalsSchedule &&
-            !hoveredCalendarizedCourses &&
-            currentScheduleCourses.length === 0,
-        [loadingSchedule, showFinalsSchedule, hoveredCalendarizedCourses, currentScheduleCourses.length]
+        () => !loadingSchedule && !hoveredCalendarizedCourses && !hoveredCalendarizedFinal && currentScheduleIsEmpty,
+        [loadingSchedule, hoveredCalendarizedCourses, hoveredCalendarizedFinal, currentScheduleIsEmpty]
     );
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
@@ -296,7 +294,7 @@ export const ScheduleCalendar = memo(() => {
             setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
-            setCurrentScheduleCourses(AppStore.schedule.getCurrentCourses());
+            setCurrentScheduleIsEmpty(AppStore.schedule.isCurrentScheduleEmpty());
         };
 
         const updateScheduleNames = () => {
@@ -307,6 +305,7 @@ export const ScheduleCalendar = memo(() => {
         AppStore.on('customEventsChange', updateEventsInCalendar);
         AppStore.on('colorChange', updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', updateEventsInCalendar);
+        AppStore.on('scheduleNotesChange', updateEventsInCalendar);
         AppStore.on('scheduleNamesChange', updateScheduleNames);
 
         return () => {
@@ -314,6 +313,7 @@ export const ScheduleCalendar = memo(() => {
             AppStore.off('customEventsChange', updateEventsInCalendar);
             AppStore.off('colorChange', updateEventsInCalendar);
             AppStore.off('currentScheduleIndexChange', updateEventsInCalendar);
+            AppStore.off('scheduleNotesChange', updateEventsInCalendar);
             AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
     }, []);

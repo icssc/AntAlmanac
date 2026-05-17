@@ -1,9 +1,10 @@
 import trpc from '$lib/api/trpc';
+import { isScheduleContentEmpty } from '$lib/scheduleContentEmpty';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
-import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
-import type { AATerm } from '@packages/antalmanac-types';
 import { moveArrayElements } from '$lib/utils';
+import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
+import type { AATerm } from '@packages/antalmanac-types';
 import type {
     Schedule,
     ScheduleCourse,
@@ -373,6 +374,19 @@ export class Schedules {
 
     getCurrentCustomEvents() {
         return this.schedules[this.currentScheduleIndex]?.customEvents || [];
+    }
+
+    /**
+     * Whether the active schedule has no courses, custom events, or note.
+     * Calendar empty state uses this (not calendarized events) so TBA meetings or
+     * non-scheduled finals do not look like an empty schedule.
+     */
+    isCurrentScheduleEmpty(): boolean {
+        return isScheduleContentEmpty({
+            courses: this.getCurrentCourses(),
+            customEvents: this.getCurrentCustomEvents(),
+            scheduleNote: this.getCurrentScheduleNote(),
+        });
     }
 
     /**
