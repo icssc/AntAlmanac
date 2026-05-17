@@ -2,11 +2,10 @@ import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/con
 import trpc from '$lib/api/trpc';
 import type { WebsocSearchInput } from '@packages/antalmanac-types';
 import { AACourse } from '@packages/antalmanac-types';
-import { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
+import { WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
+import { mergeWebsocIntersectThenRest, websocCourseKey } from '@packages/anteater-api/utils';
 
 const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
-
-const getCourseKey = (deptCode: string, courseNumber: string) => `${deptCode}::${courseNumber}`.replace(/\s+/g, '');
 
 const parseSelectedGEs = (ge: string) => {
     const validGEs = ge
@@ -24,81 +23,6 @@ export const normalizeGeSelection = (ge: string) => {
 };
 export const isMultiGeSelection = (ge: string) => parseSelectedGEs(ge).length > 1;
 
-const getCourseKeys = (response: WebsocAPIResponse) =>
-    new Set(
-        response.schools.flatMap((school) =>
-            school.departments.flatMap((department) =>
-                department.courses.map((course) => getCourseKey(course.deptCode, course.courseNumber))
-            )
-        )
-    );
-
-const getSharedCourseKeys = (responses: WebsocAPIResponse[]) => {
-    const [firstResponse, ...restResponses] = responses;
-    let sharedCourseKeys = getCourseKeys(firstResponse);
-
-    for (const response of restResponses) {
-        const keys = getCourseKeys(response);
-        sharedCourseKeys = new Set([...sharedCourseKeys].filter((key) => keys.has(key)));
-    }
-
-    return sharedCourseKeys;
-};
-
-const buildAnd = (firstResponse: WebsocAPIResponse, sharedCourseKeys: Set<string>) =>
-    firstResponse.schools
-        .map((school) => ({
-            ...school,
-            departments: school.departments
-                .map((department) => ({
-                    ...department,
-                    courses: department.courses.filter((course) =>
-                        sharedCourseKeys.has(getCourseKey(course.deptCode, course.courseNumber))
-                    ),
-                }))
-                .filter((department) => department.courses.length > 0),
-        }))
-        .filter((school) => school.departments.length > 0);
-
-const buildOr = (responses: WebsocAPIResponse[], sharedCourseKeys: Set<string>) => {
-    const seenCourseKeys = new Set(sharedCourseKeys);
-    const orBlock: WebsocSchool[] = [];
-    const schoolMap = new Map<string, WebsocSchool>();
-    const deptMap = new Map<string, WebsocDepartment>();
-
-    for (const response of responses) {
-        for (const school of response.schools) {
-            for (const department of school.departments) {
-                for (const course of department.courses) {
-                    const courseKey = getCourseKey(course.deptCode, course.courseNumber);
-                    if (seenCourseKeys.has(courseKey)) continue;
-
-                    seenCourseKeys.add(courseKey);
-
-                    let orSchool = schoolMap.get(school.schoolName);
-                    if (!orSchool) {
-                        orSchool = { ...school, departments: [] };
-                        orBlock.push(orSchool);
-                        schoolMap.set(school.schoolName, orSchool);
-                    }
-
-                    const deptKey = `${school.schoolName}::${department.deptCode}`;
-                    let orDepartment = deptMap.get(deptKey);
-                    if (!orDepartment) {
-                        orDepartment = { ...department, courses: [] };
-                        orSchool.departments.push(orDepartment);
-                        deptMap.set(deptKey, orDepartment);
-                    }
-
-                    orDepartment.courses.push(course);
-                }
-            }
-        }
-    }
-
-    return orBlock;
-};
-
 export async function queryManualSearchCourses(params: WebsocSearchInput) {
     const selectedGEs = getSelectedGEs(params.ge ?? '');
 
@@ -106,21 +30,15 @@ export async function queryManualSearchCourses(params: WebsocSearchInput) {
         params: { ...params, ge: selectedGEs.join(',') },
         fieldName: 'ge',
     });
-    const [firstResponse] = responses;
-    const sharedCourseKeys = getSharedCourseKeys(responses);
-    const andCourses = buildAnd(firstResponse, sharedCourseKeys);
-    const orCourses = buildOr(responses, sharedCourseKeys);
+    const { response, intersectionCourseKeys } = mergeWebsocIntersectThenRest(responses);
 
     return {
-        response: {
-            ...firstResponse,
-            schools: [...andCourses, ...orCourses],
-        },
-        sharedCourseKeys,
+        response,
+        sharedCourseKeys: intersectionCourseKeys,
     };
 }
 
-export const getMultiGeCourseKey = getCourseKey;
+export const getMultiGeCourseKey = websocCourseKey;
 
 export function getMultiGeOrBannerIdx(
     courseData: (WebsocSchool | WebsocDepartment | AACourse)[],
@@ -138,7 +56,7 @@ export function getMultiGeOrBannerIdx(
             }
             currSchoolIdx = i;
             schoolIsAnd = false;
-        } else if ('sections' in item && sharedCourseKeys.has(getCourseKey(item.deptCode, item.courseNumber))) {
+        } else if ('sections' in item && sharedCourseKeys.has(websocCourseKey(item.deptCode, item.courseNumber))) {
             schoolIsAnd = true;
         }
     }
