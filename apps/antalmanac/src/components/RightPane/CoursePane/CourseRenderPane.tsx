@@ -10,7 +10,7 @@ import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
-import { isMultiGeSelection, queryManualSearchCourses } from '$lib/multiGeSearch';
+import { getSelectedGEs } from '$lib/multiGeSearch';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -23,6 +23,7 @@ import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
 import type { WebsocSearchInput } from '@packages/antalmanac-types';
 import { AACourse } from '@packages/antalmanac-types';
 import { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
+import { splitWebsocIntersectAndRest } from '@packages/anteater-api/utils';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -349,8 +350,14 @@ export default function CourseRenderPane(props: { id?: number }) {
                     setSearchedTerm(RightPaneStore.getFormData().term.longName);
                     return { kind: 'single', response };
                 }
+
                 const websocQueryParams = getQueryParams(RightPaneStore.getFormData());
-                const { intersect, rest } = await queryManualSearchCourses(websocQueryParams);
+                const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
+                const responses = await trpc.websoc.getManyOfField.query({
+                    params: { ...websocQueryParams, ge: selectedGEs.join(',') },
+                    fieldName: 'ge',
+                });
+                const { intersect, rest } = splitWebsocIntersectAndRest(responses);
                 setSearchedTerm(RightPaneStore.getFormData().term.longName);
                 return { kind: 'split', intersect, rest };
             } catch (error) {
@@ -408,10 +415,8 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [setHoveredEvent]);
 
-    const ge = RightPaneStore.getFormData().ge;
-    const isMultiGeSearch = isMultiGeSelection(ge);
-    const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
-    const showOrSectionBanner = isMultiGeSearch && !showNoIntersection && restCourseData.some(isCourseEntry);
+    const showNoIntersection = andCourseCount === 0;
+    const showOrSectionBanner = !showNoIntersection && restCourseData.some(isCourseEntry);
 
     return (
         <>
