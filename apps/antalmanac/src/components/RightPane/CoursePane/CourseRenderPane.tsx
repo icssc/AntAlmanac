@@ -69,6 +69,14 @@ const flattenSOCObject = (
     }, []);
 };
 
+function isSchoolEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is WebsocSchool {
+    return 'departments' in item;
+}
+
+function isDepartmentEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is WebsocDepartment {
+    return 'courses' in item;
+}
+
 function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is AACourse {
     return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
 }
@@ -81,11 +89,11 @@ function cleanHeaders(
     let pendingDept: WebsocDepartment | null = null;
 
     for (const item of items) {
-        if ('departments' in item) {
-            pendingSchool = item as WebsocSchool;
+        if (isSchoolEntry(item)) {
+            pendingSchool = item;
             pendingDept = null;
-        } else if ('courses' in item) {
-            pendingDept = item as WebsocDepartment;
+        } else if (isDepartmentEntry(item)) {
+            pendingDept = item;
         } else {
             if (pendingSchool) {
                 result.push(pendingSchool);
@@ -184,42 +192,35 @@ const RecruitmentBanner = () => {
     );
 };
 
-/* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
- *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
- *  If you can find a way to make this cleaner, do it.
- */
 const SectionTableWrapped = (
     index: number,
     data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
 ) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
+    const item = courseData[index];
 
     let component;
 
-    if ((courseData[index] as WebsocSchool).departments !== undefined) {
-        const school = courseData[index] as WebsocSchool;
-        component = <SchoolDeptCard comment={school.schoolComment} type={'school'} name={school.schoolName} />;
-    } else if ((courseData[index] as WebsocDepartment).courses !== undefined) {
-        const dept = courseData[index] as WebsocDepartment;
-        component = <SchoolDeptCard name={`Department of ${dept.deptName}`} comment={dept.deptComment} type={'dept'} />;
+    if (isSchoolEntry(item)) {
+        component = <SchoolDeptCard comment={item.schoolComment} type={'school'} name={item.schoolName} />;
+    } else if (isDepartmentEntry(item)) {
+        component = <SchoolDeptCard name={`Department of ${item.deptName}`} comment={item.deptComment} type={'dept'} />;
     } else if (formData.ge !== 'ANY') {
-        const course = courseData[index] as AACourse;
         component = (
             <GeDataFetchProvider
                 term={formData.term}
-                courseDetails={course}
+                courseDetails={item}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch}
             />
         );
     } else {
-        const course = courseData[index] as AACourse;
         component = (
             <SectionTable
                 term={formData.term}
-                courseDetails={course}
+                courseDetails={item}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch}
@@ -473,10 +474,9 @@ export default function CourseRenderPane(props: { id?: number }) {
                                 No courses fulfill all selected GEs. The results below fulfill at least one selected GE.
                             </Alert>
                         )}
-                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                        {courseData.map((item: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
-                            if ((courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            if (isCourseEntry(item)) heightEstimate = item.sections.length * 60 + 20 + 40;
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
                                     {index === orBannerIdx && (
