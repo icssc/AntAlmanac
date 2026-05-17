@@ -2,7 +2,7 @@ import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/con
 import trpc from '$lib/api/trpc';
 import type { WebsocSearchInput } from '@packages/antalmanac-types';
 import { AACourse } from '@packages/antalmanac-types';
-import { GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
+import { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
 
 const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
 
@@ -23,9 +23,6 @@ export const normalizeGeSelection = (ge: string) => {
     return selectedGEs.length > 0 ? selectedGEs.join(',') : ANY_GE;
 };
 export const isMultiGeSelection = (ge: string) => parseSelectedGEs(ge).length > 1;
-
-export const gradesGeForManualSearch = (ge: string): GE =>
-    ge !== ANY_GE && !ge.includes(',') ? (ge as GE) : (ANY_GE as GE);
 
 const getCourseKeys = (response: WebsocAPIResponse) =>
     new Set(
