@@ -203,7 +203,7 @@ const SectionTableWrapped = (
     let component;
 
     if (isSchoolEntry(item)) {
-        component = <SchoolDeptCard comment={item.schoolComment} type={'school'} name={item.schoolName} />;
+        component = <SchoolDeptCard name={item.schoolName} comment={item.schoolComment} type={'school'} />;
     } else if (isDepartmentEntry(item)) {
         component = <SchoolDeptCard name={`Department of ${item.deptName}`} comment={item.deptComment} type={'dept'} />;
     } else if (formData.ge !== 'ANY') {
