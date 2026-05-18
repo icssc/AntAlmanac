@@ -2,7 +2,6 @@ import { mergeSx } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
 import { InputLabel, SxProps, Theme } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { useShallow } from 'zustand/react/shallow';
 
 interface CustomInputLabelProps {
     label: React.ReactNode;
@@ -12,7 +11,7 @@ interface CustomInputLabelProps {
 }
 
 export const CustomInputLabel = ({ label, id, isAligned, sx }: CustomInputLabelProps) => {
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
 
     return (
         <InputLabel

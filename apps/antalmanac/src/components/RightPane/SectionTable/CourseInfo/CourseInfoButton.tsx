@@ -4,7 +4,6 @@ import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Box, Button, Paper, Popover, useTheme } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface CourseInfoButtonProps {
     text: string;
@@ -29,7 +28,7 @@ export const CourseInfoButton = ({
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-    const scheduleManagementWidth = useScheduleManagementStore(useShallow((state) => state.scheduleManagementWidth));
+    const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
     const compact = isMobile || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
     const handleClick = useCallback(

@@ -29,7 +29,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         }))
     );
     const postHog = usePostHog();
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
 
     const user = useMemo<Pick<User, 'name' | 'avatar' | 'email'> | null>(
         () =>

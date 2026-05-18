@@ -5,7 +5,6 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { Chip, SxProps, TableCellProps, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface CourseCodeCellProps extends TableCellProps {
     sectionCode: string;
@@ -13,7 +12,7 @@ interface CourseCodeCellProps extends TableCellProps {
 }
 
 export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps) => {
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
     const [isHovered, setIsHovered] = useState(false);
 
     const postHog = usePostHog();

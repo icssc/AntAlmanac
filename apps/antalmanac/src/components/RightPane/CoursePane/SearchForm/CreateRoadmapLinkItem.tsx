@@ -1,7 +1,6 @@
 import { LIGHT_BLUE, PLANNER_LINK } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Link, MenuItem } from '@mui/material';
-import { useShallow } from 'zustand/react/shallow';
 
 interface CreateRoadmapLinkItemProps {
     verticalPadding?: number | string;
@@ -9,7 +8,7 @@ interface CreateRoadmapLinkItemProps {
 }
 
 export const CreateRoadmapLinkItem = ({ verticalPadding, value }: CreateRoadmapLinkItemProps) => {
-    const isDark = useThemeStore(useShallow((state) => state.isDark));
+    const isDark = useThemeStore((state) => state.isDark);
 
     return (
         <MenuItem value={value} sx={{ padding: 0 }}>

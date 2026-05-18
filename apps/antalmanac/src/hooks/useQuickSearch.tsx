@@ -4,12 +4,11 @@ import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useShallow } from 'zustand/react/shallow';
 
 export function useQuickSearch() {
-    const displaySections = useCoursePaneStore(useShallow((s) => s.displaySections));
-    const forceUpdate = useCoursePaneStore(useShallow((s) => s.forceUpdate));
-    const setActiveTab = useTabStore(useShallow((s) => s.setActiveTab));
+    const displaySections = useCoursePaneStore((s) => s.displaySections);
+    const forceUpdate = useCoursePaneStore((s) => s.forceUpdate);
+    const setActiveTab = useTabStore((s) => s.setActiveTab);
     const navigate = useNavigate();
 
     return useCallback(

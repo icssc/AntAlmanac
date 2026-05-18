@@ -5,10 +5,9 @@ import { Info } from '@mui/icons-material';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 export const AboutButton = () => {
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
     const [open, setOpen] = useState(false);
     const postHog = usePostHog();
 

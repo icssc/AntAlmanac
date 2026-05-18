@@ -4,14 +4,13 @@ import { useFallbackStore } from '$stores/FallbackStore';
 import { Clear as ClearIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface DeleteScheduleButtonProps {
     index: number;
 }
 
 export function DeleteScheduleButton({ index }: DeleteScheduleButtonProps) {
-    const fallbackMode = useFallbackStore(useShallow((state) => state.fallbackMode));
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {

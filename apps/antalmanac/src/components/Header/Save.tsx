@@ -16,13 +16,12 @@ import { Stack, Snackbar, Alert, Link, IconButton } from '@mui/material';
 import { TRPCClientError } from '@trpc/client';
 import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
-    const { sessionIsValid } = useSessionStore(useShallow((store) => ({ sessionIsValid: store.sessionIsValid })));
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [autoSaving, setAutoSaving] = useState(false);
-    const fallbackMode = useFallbackStore(useShallow((state) => state.fallbackMode));
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
     const postHog = usePostHog();
 

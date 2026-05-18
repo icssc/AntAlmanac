@@ -3,7 +3,6 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { useTabStore } from '$stores/TabStore';
 import { Tab } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useShallow } from 'zustand/react/shallow';
 
 interface ScheduleManagementTabProps {
     tab: ScheduleManagementTabInfo;
@@ -11,7 +10,7 @@ interface ScheduleManagementTabProps {
 }
 
 export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
-    const { setActiveTabValue } = useTabStore(useShallow((store) => ({ setActiveTabValue: store.setActiveTabValue })));
+    const setActiveTabValue = useTabStore((store) => store.setActiveTabValue);
     const isMobile = useIsMobile();
 
     const handleClick = () => {

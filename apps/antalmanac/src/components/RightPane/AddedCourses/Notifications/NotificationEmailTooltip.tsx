@@ -2,10 +2,9 @@ import { useSessionStore } from '$stores/SessionStore';
 import { HelpOutline } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { memo } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 export const NotificationEmailTooltip = memo(() => {
-    const email = useSessionStore(useShallow((state) => state.email));
+    const email = useSessionStore((state) => state.email);
 
     if (!email) {
         return null;

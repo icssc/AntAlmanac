@@ -4,7 +4,6 @@ import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface SignInDialogProps {
     open: boolean;
@@ -14,7 +13,7 @@ interface SignInDialogProps {
 
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, open } = props;
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 
     const handleClose = () => {

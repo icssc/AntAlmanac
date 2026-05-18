@@ -20,7 +20,6 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { useShallow } from 'zustand/react/shallow';
 
 function ratingLabel(rating: number): string {
     // Aligned with RMP
@@ -58,19 +57,19 @@ function difficultyLabel(difficulty: number): string {
 }
 
 export function ReviewStep() {
-    const candidate = useReviewPromptStore(useShallow((s) => s.candidate));
+    const candidate = useReviewPromptStore((s) => s.candidate);
     const courseId = candidate?.courseId ?? '';
     const professorId = candidate?.professorId ?? '';
-    const rating = useReviewPromptStore(useShallow((s) => s.rating));
-    const difficulty = useReviewPromptStore(useShallow((s) => s.difficulty));
-    const selectedTags = useReviewPromptStore(useShallow((s) => s.selectedTags));
-    const setRating = useReviewPromptStore(useShallow((s) => s.setRating));
-    const setDifficulty = useReviewPromptStore(useShallow((s) => s.setDifficulty));
-    const textReview = useReviewPromptStore(useShallow((s) => s.textReview));
-    const setTextReview = useReviewPromptStore(useShallow((s) => s.setTextReview));
-    const toggleTag = useReviewPromptStore(useShallow((s) => s.toggleTag));
-    const dismiss = useReviewPromptStore(useShallow((s) => s.dismiss));
-    const resetReview = useReviewPromptStore(useShallow((s) => s.resetReview));
+    const rating = useReviewPromptStore((s) => s.rating);
+    const difficulty = useReviewPromptStore((s) => s.difficulty);
+    const selectedTags = useReviewPromptStore((s) => s.selectedTags);
+    const setRating = useReviewPromptStore((s) => s.setRating);
+    const setDifficulty = useReviewPromptStore((s) => s.setDifficulty);
+    const textReview = useReviewPromptStore((s) => s.textReview);
+    const setTextReview = useReviewPromptStore((s) => s.setTextReview);
+    const toggleTag = useReviewPromptStore((s) => s.toggleTag);
+    const dismiss = useReviewPromptStore((s) => s.dismiss);
+    const resetReview = useReviewPromptStore((s) => s.resetReview);
 
     const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
 

@@ -13,7 +13,7 @@ export function ExperimentalMenu() {
         useShallow((store) => [store.previewMode, store.setPreviewMode])
     );
     const [autoSave, setAutoSave] = useAutoSaveStore(useShallow((store) => [store.autoSave, store.setAutoSave]));
-    const { sessionIsValid } = useSessionStore(useShallow((store) => ({ sessionIsValid: store.sessionIsValid })));
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
     const [devMode, setDevMode] = useDevModeStore(useShallow((store) => [store.devMode, store.setDevMode]));
     const postHog = usePostHog();

@@ -5,7 +5,6 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { Chip, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface SectionCodeCellProps {
     sectionCode: string;
@@ -13,7 +12,7 @@ interface SectionCodeCellProps {
 }
 
 export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeCellProps) => {
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
     const [isHovered, setIsHovered] = useState(false);
 
     const postHog = usePostHog();

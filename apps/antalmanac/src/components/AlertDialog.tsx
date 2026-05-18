@@ -1,7 +1,6 @@
 import { LIGHT_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Alert, Box, Dialog, DialogContent, AlertColor, DialogActions, Button } from '@mui/material';
-import { useShallow } from 'zustand/react/shallow';
 
 interface AlertDialogProps {
     open: boolean;
@@ -12,7 +11,7 @@ interface AlertDialogProps {
     onClose?: () => void;
 }
 export const AlertDialog = ({ open, title, children, severity = 'info', onClose }: AlertDialogProps) => {
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogContent

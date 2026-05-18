@@ -32,7 +32,6 @@ import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import LazyLoad from 'react-lazyload';
-import { useShallow } from 'zustand/react/shallow';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -232,7 +231,7 @@ const SectionTableWrapped = (
 };
 
 const LoadingMessage = () => {
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" unoptimized />
@@ -241,7 +240,7 @@ const LoadingMessage = () => {
 };
 
 const ErrorMessage = () => {
-    const { isDark } = useThemeStore(useShallow((store) => ({ isDark: store.isDark })));
+    const isDark = useThemeStore((store) => store.isDark);
 
     const formData = RightPaneStore.getFormData();
     const multiSearchData = RightPaneStore.getMultiSearchData();
@@ -302,8 +301,8 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term.longName);
 
-    const setHoveredEvent = useHoveredStore(useShallow((store) => store.setHoveredEvent));
-    const filterTakenCourses = usePlannerStore(useShallow((store) => store.filterTakenCourses));
+    const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
+    const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
     const {
         data: websocResp,

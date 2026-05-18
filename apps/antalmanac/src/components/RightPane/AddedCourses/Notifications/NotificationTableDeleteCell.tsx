@@ -4,14 +4,13 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { Delete } from '@mui/icons-material';
 import { IconButton, Box } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface DeleteNotificationButtonProps {
     notificationKey: string;
 }
 
 export const NotificationTableDeleteCell = ({ notificationKey }: DeleteNotificationButtonProps) => {
-    const deleteNotification = useNotificationStore(useShallow((state) => state.deleteNotification));
+    const deleteNotification = useNotificationStore((state) => state.deleteNotification);
     const postHog = usePostHog();
 
     const handleDelete = () => {

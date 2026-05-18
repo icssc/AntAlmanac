@@ -11,7 +11,6 @@ import { Delete } from '@mui/icons-material';
 import { Card, CardActions, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { format, isValid, set } from 'date-fns';
-import { useShallow } from 'zustand/react/shallow';
 
 interface CustomEventDetailViewProps {
     scheduleNames: string[];
@@ -20,9 +19,9 @@ interface CustomEventDetailViewProps {
 
 export function CustomEventDetailView(props: CustomEventDetailViewProps) {
     const { customEvent } = props;
-    const { isMilitaryTime } = useTimeFormatStore(useShallow((store) => ({ isMilitaryTime: store.isMilitaryTime })));
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
-    const fallbackMode = useFallbackStore(useShallow((state) => state.fallbackMode));
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const baseDate = new Date(2000, 0, 1);

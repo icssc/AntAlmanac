@@ -14,7 +14,7 @@ export function AdvancedSearch() {
             toggleAdvancedSearch: store.toggleAdvancedSearch,
         }))
     );
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
 
     const handleExpand = () => {
         toggleAdvancedSearch();

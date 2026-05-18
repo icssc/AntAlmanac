@@ -5,7 +5,6 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
@@ -13,8 +12,8 @@ import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 const UCIMap = lazy(() => import('../Map/Map'));
 
 export function ScheduleManagementContent() {
-    const { activeTab } = useTabStore(useShallow((store) => ({ activeTab: store.activeTab })));
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const activeTab = useTabStore((store) => store.activeTab);
+    const isDark = useThemeStore((store) => store.isDark);
 
     switch (activeTab) {
         case 0:

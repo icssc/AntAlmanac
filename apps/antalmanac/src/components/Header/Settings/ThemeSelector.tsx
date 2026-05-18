@@ -19,7 +19,7 @@ export function ThemeSelector() {
 
     const [themeSetting, setTheme] = useThemeStore(useShallow((store) => [store.themeSetting, store.setAppTheme]));
 
-    const { forceUpdate } = useCoursePaneStore(useShallow((store) => ({ forceUpdate: store.forceUpdate })));
+    const forceUpdate = useCoursePaneStore((store) => store.forceUpdate);
     const postHog = usePostHog();
 
     const handleThemeChange = (value: 'light' | 'dark' | 'system') => {

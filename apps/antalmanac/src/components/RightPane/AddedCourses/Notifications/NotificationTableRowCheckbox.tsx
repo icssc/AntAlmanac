@@ -3,7 +3,6 @@ import { Notification, NotifyOn, useNotificationStore } from '$stores/Notificati
 import { TableCell, Checkbox } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 type NotificationTableRowCheckboxProps = Omit<Notification, 'notifyOn'> & {
     notificationKey: string;
@@ -24,9 +23,9 @@ export const NotificationTableRowCheckbox = memo(
         lastCodes,
     }: NotificationTableRowCheckboxProps) => {
         const status = useNotificationStore(
-            useShallow((state) => state.notifications[notificationKey]?.notifyOn[statusKey] ?? false)
+            (state) => state.notifications[notificationKey]?.notifyOn[statusKey] ?? false
         );
-        const setNotifications = useNotificationStore(useShallow((state) => state.setNotifications));
+        const setNotifications = useNotificationStore((state) => state.setNotifications);
 
         const postHog = usePostHog();
 

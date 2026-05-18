@@ -3,14 +3,13 @@ import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Box } from '@mui/material';
 import { WebsocSectionMeeting } from '@packages/anteater-api/types';
-import { useShallow } from 'zustand/react/shallow';
 
 interface DayAndTimeCellProps {
     meetings: WebsocSectionMeeting[];
 }
 
 export const DayAndTimeCell = ({ meetings }: DayAndTimeCellProps) => {
-    const { isMilitaryTime } = useTimeFormatStore(useShallow((store) => ({ isMilitaryTime: store.isMilitaryTime })));
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     return (
         <TableBodyCellContainer>

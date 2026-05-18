@@ -1,7 +1,6 @@
 import { useThemeStore } from '$stores/SettingsStore';
 import { Apple as AppleIcon } from '@mui/icons-material';
 import { Button } from '@mui/material';
-import { useShallow } from 'zustand/react/shallow';
 
 interface AppleSignInButtonProps {
     onClick: () => void;
@@ -21,7 +20,7 @@ interface AppleSignInButtonProps {
  * Light mode → black style: #000000 bg, #FFFFFF text, #1A1A1A on hover.
  */
 export const AppleSignInButton = ({ onClick, fullWidth }: AppleSignInButtonProps) => {
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Button
             onClick={onClick}

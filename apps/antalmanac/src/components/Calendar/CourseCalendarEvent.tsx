@@ -17,7 +17,6 @@ import { WebsocSectionFinalExam } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
-import { useShallow } from 'zustand/react/shallow';
 
 interface CommonCalendarEvent extends Event {
     color: string;
@@ -93,7 +92,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
-    const { isMilitaryTime } = useTimeFormatStore(useShallow((store) => ({ isMilitaryTime: store.isMilitaryTime })));
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const postHog = usePostHog();
 

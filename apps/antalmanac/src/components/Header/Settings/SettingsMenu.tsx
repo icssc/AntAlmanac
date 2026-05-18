@@ -7,14 +7,13 @@ import { AccountCircle } from '@mui/icons-material';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import Image from 'next/image';
-import { useShallow } from 'zustand/react/shallow';
 
 interface UserProfileSectionProps {
     user: Pick<User, 'name' | 'avatar' | 'email'> | null;
 }
 
 function UserProfileSection({ user }: UserProfileSectionProps) {
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
 
     if (!user) {
         return null;

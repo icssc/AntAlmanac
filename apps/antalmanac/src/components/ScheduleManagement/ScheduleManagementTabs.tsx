@@ -2,7 +2,6 @@ import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleMa
 import { useTabStore } from '$stores/TabStore';
 import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
 import { Paper, Tabs } from '@mui/material';
-import { useShallow } from 'zustand/react/shallow';
 
 /**
  * Information about the tab navigation buttons.
@@ -63,7 +62,7 @@ const scheduleManagementTabs: Array<ScheduleManagementTabInfo> = [
 ];
 
 export function ScheduleManagementTabs() {
-    const { activeTab } = useTabStore(useShallow((store) => ({ activeTab: store.activeTab })));
+    const activeTab = useTabStore((store) => store.activeTab);
 
     return (
         <Paper

@@ -7,7 +7,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Roboto } from 'next/font/google';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -120,8 +119,8 @@ declare module '@mui/material/styles' {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
-    const setAppTheme = useThemeStore(useShallow((store) => store.setAppTheme));
+    const isDark = useThemeStore((store) => store.isDark);
+    const setAppTheme = useThemeStore((store) => store.setAppTheme);
     const postHog = usePostHog();
 
     useEffect(() => {

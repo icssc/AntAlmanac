@@ -55,7 +55,6 @@ import { AATerm, CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-ty
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useShallow } from 'zustand/react/shallow';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -76,16 +75,16 @@ export function Import() {
     const [exportSchedules, setExportSchedules] = useState<ShortCourseSchedule[]>([]);
     const [exportSelectedIndices, setExportSelectedIndices] = useState<Set<number>>(new Set());
 
-    const fallbackMode = useFallbackStore(useShallow((state) => state.fallbackMode));
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
-    const { sessionIsValid } = useSessionStore(useShallow((store) => ({ sessionIsValid: store.sessionIsValid })));
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
-    const devMode = useDevModeStore(useShallow((store) => store.devMode));
+    const devMode = useDevModeStore((store) => store.devMode);
 
     const effectiveImportSource =
         !devMode && importSource === ImportSource.JSON_IMPORT ? ImportSource.STUDY_LIST_IMPORT : importSource;
 
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
 
     const postHog = usePostHog();
     const { mutateAsync: fetchZotcourse } = trpcReact.zotcourse.getUserData.useMutation();

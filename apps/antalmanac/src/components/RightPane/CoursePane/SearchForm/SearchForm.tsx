@@ -24,7 +24,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
             toggleManualSearch: store.toggleManualSearch,
         }))
     );
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 
     const onFormSubmit = useCallback(
