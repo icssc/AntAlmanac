@@ -13,6 +13,7 @@ import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { TourProvider } from '@reactour/tour';
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v6';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
@@ -144,7 +145,9 @@ export default function App() {
                                 }),
                             }}
                         >
-                            <RouterProvider router={ROUTER} />
+                            <NuqsAdapter>
+                                <RouterProvider router={ROUTER} />
+                            </NuqsAdapter>
                         </TourProvider>
                     </AppQueryProvider>
                 </AppPostHogProvider>
