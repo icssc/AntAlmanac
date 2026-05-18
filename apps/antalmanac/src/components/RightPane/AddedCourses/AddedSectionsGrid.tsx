@@ -146,9 +146,9 @@ export function AddedSectionsGrid() {
             return;
         }
 
-        // Measure after the browser has laid out the rendered SectionTables so
-        // the persisted height matches what the user actually sees.
-        const handle = requestAnimationFrame(() => {
+        // Re-measure on layout changes (window/pane resize) so the persisted
+        // blueprint matches what the user actually sees on the next load.
+        const persist = () => {
             const blueprint = courses.map((course) => {
                 const el = courseRefs.current.get(course.id);
                 return {
@@ -159,9 +159,21 @@ export function AddedSectionsGrid() {
                 };
             });
             setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(blueprint));
-        });
+        };
 
-        return () => cancelAnimationFrame(handle);
+        const observer = new ResizeObserver(persist);
+        for (const el of courseRefs.current.values()) {
+            if (el) observer.observe(el);
+        }
+
+        // Initial measurement after first layout — ResizeObserver also fires
+        // once on observe, but call explicitly in case nothing is observed yet.
+        const handle = requestAnimationFrame(persist);
+
+        return () => {
+            cancelAnimationFrame(handle);
+            observer.disconnect();
+        };
     }, [courses, loadingSchedule]);
 
     const scheduleUnits = useMemo(() => {

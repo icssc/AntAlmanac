@@ -1,6 +1,8 @@
+import { useIsMobile } from '$hooks/useIsMobile';
 import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage';
-import { DragIndicator, HistoryEdu, InfoOutlined, Route, Search } from '@mui/icons-material';
-import { Box, Button, Skeleton } from '@mui/material';
+import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
+import { DragIndicator, ExpandLess, HistoryEdu, InfoOutlined, Route, Search } from '@mui/icons-material';
+import { Box, Button, IconButton, Skeleton, useTheme } from '@mui/material';
 
 export interface AddedCourseSkeletonEntry {
     deptCode: string;
@@ -14,13 +16,33 @@ export interface AddedCourseSkeletonEntry {
  * Mirrors a `SectionTable` instance during loading. The container is pinned to
  * the measured `entry.height`; the button row renders at its natural height
  * (matched to the real row via children-aware Skeletons), and the body
- * Skeleton stretches to fill the remainder. This makes the skeleton total
- * height exact and the per-button widths exact, leaving no layout shift when
- * the real table renders.
+ * Skeleton stretches to fill the remainder. This keeps the skeleton total
+ * height exact and the per-button widths exact, so no layout shift when the
+ * real table renders.
+ *
+ * The hidden Button children below must mirror what `SectionTable` renders —
+ * including conditional bits like `CourseInfoBar`'s isMobile startIcon and
+ * `CourseInfoButton`'s compact mode — because MUI sizes each Skeleton to the
+ * (visibility: hidden) child it wraps.
  */
 function SectionTableSkeleton({ entry }: { entry: AddedCourseSkeletonEntry }) {
+    const isMobile = useIsMobile();
+    const theme = useTheme();
+    const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
+    const compact =
+        isMobile || (scheduleManagementWidth !== null && scheduleManagementWidth < theme.breakpoints.values.xs);
+
+    const renderButtonInfoText = (text: string, icon: React.ReactElement) => (
+        <span style={{ display: 'flex', gap: 4 }}>
+            {icon}
+            {compact ? null : (
+                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{text}</span>
+            )}
+        </span>
+    );
+
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: entry.height }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: entry.height, overflow: 'hidden' }}>
             <Box sx={{ display: 'flex', gap: '4px', mb: 1, mt: 0.5 }}>
                 <Skeleton variant="rounded">
                     <Button variant="contained" color="secondary" sx={{ padding: 0, minWidth: 0, minHeight: 0 }}>
@@ -29,7 +51,12 @@ function SectionTableSkeleton({ entry }: { entry: AddedCourseSkeletonEntry }) {
                 </Skeleton>
 
                 <Skeleton variant="rounded">
-                    <Button variant="contained" color="secondary" size="small" startIcon={<InfoOutlined />}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                        startIcon={!isMobile && <InfoOutlined />}
+                    >
                         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {`${entry.deptCode} ${entry.courseNumber} | ${entry.courseTitle}`}
                         </span>
@@ -37,27 +64,27 @@ function SectionTableSkeleton({ entry }: { entry: AddedCourseSkeletonEntry }) {
                 </Skeleton>
 
                 <Skeleton variant="rounded">
-                    <Button variant="contained" size="small" style={{ minWidth: 'fit-content' }}>
+                    <Button variant="contained" size="small" color="primary" style={{ minWidth: 'fit-content' }}>
                         <Search />
                     </Button>
                 </Skeleton>
 
                 <Skeleton variant="rounded">
-                    <Button variant="contained" size="small">
-                        <span style={{ display: 'flex', gap: 4 }}>
-                            <Route />
-                            <span>Planner</span>
-                        </span>
+                    <Button variant="contained" size="small" color="primary">
+                        {renderButtonInfoText('Planner', <Route />)}
                     </Button>
                 </Skeleton>
 
                 <Skeleton variant="rounded">
-                    <Button variant="contained" size="small">
-                        <span style={{ display: 'flex', gap: 4 }}>
-                            <HistoryEdu />
-                            <span>Past Syllabi</span>
-                        </span>
+                    <Button variant="contained" size="small" color="primary">
+                        {renderButtonInfoText('Past Syllabi', <HistoryEdu />)}
                     </Button>
+                </Skeleton>
+
+                <Skeleton variant="circular" sx={{ ml: 'auto', mr: 0.5 }}>
+                    <IconButton size="small" sx={{ padding: '4px' }}>
+                        <ExpandLess />
+                    </IconButton>
                 </Skeleton>
             </Box>
 
