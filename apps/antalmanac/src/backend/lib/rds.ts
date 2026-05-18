@@ -356,18 +356,18 @@ export class RDS {
             });
     }
 
-    private static async getUserData(db: DatabaseOrTransaction, condition: SQL<unknown> | undefined) {
+    private static async getUserData(db: DatabaseOrTransaction, scheduleSelectCondition: SQL<unknown> | undefined) {
         const [sectionResults, customEventResults] = await Promise.all([
             db
                 .select()
                 .from(schedules)
-                .where(condition)
+                .where(scheduleSelectCondition)
                 .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId))
                 .orderBy(coursesInSchedule.index),
             db
                 .select()
                 .from(schedules)
-                .where(condition)
+                .where(scheduleSelectCondition)
                 .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
         ]);
 
