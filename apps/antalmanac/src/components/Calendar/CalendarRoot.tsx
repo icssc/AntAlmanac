@@ -102,6 +102,9 @@ function createSkeletonEvents(): SkeletonEvent[] {
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
+    const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
+        AppStore.schedule.getCurrentCustomEvents()
+    );
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
@@ -242,10 +245,17 @@ export const ScheduleCalendar = memo(() => {
     const showEmptyState = useMemo(
         () =>
             !loadingSchedule &&
-            !showFinalsSchedule &&
             !hoveredCalendarizedCourses &&
-            currentScheduleCourses.length === 0,
-        [loadingSchedule, showFinalsSchedule, hoveredCalendarizedCourses, currentScheduleCourses.length]
+            !hoveredCalendarizedFinal &&
+            currentScheduleCourses.length === 0 &&
+            currentScheduleCustomEvents.length === 0,
+        [
+            loadingSchedule,
+            hoveredCalendarizedCourses,
+            hoveredCalendarizedFinal,
+            currentScheduleCourses.length,
+            currentScheduleCustomEvents.length,
+        ]
     );
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
@@ -297,6 +307,7 @@ export const ScheduleCalendar = memo(() => {
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
             setCurrentScheduleCourses(AppStore.schedule.getCurrentCourses());
+            setCurrentScheduleCustomEvents(AppStore.schedule.getCurrentCustomEvents());
         };
 
         const updateScheduleNames = () => {
@@ -334,47 +345,43 @@ export const ScheduleCalendar = memo(() => {
                     backgroundColor: 'rgba(0, 0, 0, 0.1)',
                     zIndex: theme.zIndex.drawer + 1,
                     position: 'absolute',
-                    padding: ' 0',
+                    padding: 0,
                 })}
                 open={loadingSchedule}
             />
+
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
+
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
                 <TbaCalendarCard />
                 <CalendarEventPopover />
 
-                {showEmptyState && (
-                    <Box
-                        data-html2canvas-ignore
-                        position="absolute"
-                        top={0}
-                        left={0}
-                        right={0}
-                        bottom={0}
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        zIndex={1}
-                        sx={{
-                            backgroundColor: isDark ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
+                <Backdrop
+                    open={showEmptyState}
+                    data-html2canvas-ignore
+                    sx={(theme) => ({
+                        color: '#ffff',
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        zIndex: theme.zIndex.drawer + 1,
+                        position: 'absolute',
+                        padding: 0,
+                    })}
+                >
+                    <EmptyState
+                        Icon={CalendarMonth}
+                        title="Your schedule is empty"
+                        description="Search for courses to start building your schedule."
+                        primaryAction={{
+                            label: 'Search for Courses',
+                            onClick: () => useTabStore.getState().setActiveTab('search'),
                         }}
-                    >
-                        <EmptyState
-                            Icon={CalendarMonth}
-                            title="Your schedule is empty"
-                            description="Search for courses to start building your schedule."
-                            primaryAction={{
-                                label: 'Search for Courses',
-                                onClick: () => useTabStore.getState().setActiveTab('search'),
-                            }}
-                        />
-                    </Box>
-                )}
+                    />
+                </Backdrop>
 
                 <Calendar<CalendarEvent, object>
                     key={`${culture}-${calendarView}`}
