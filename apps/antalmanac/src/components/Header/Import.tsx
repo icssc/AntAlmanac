@@ -10,15 +10,16 @@ import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSe
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
+import {
+    getLegacyGuestUserIdForImport,
+    getPendingScheduleMerge,
+    hasPendingFirstSigninImport,
+    removeLegacyGuestUserIdForImport,
+    removePendingFirstSigninImport,
+} from '$lib/authSessionStorage';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
-import {
-    getLocalStorageDataCache,
-    getLocalStorageOnFirstSignin,
-    getLocalStorageUserId,
-    removeLocalStorageOnFirstSignin,
-    removeLocalStorageUserId,
-} from '$lib/localStorage';
+import { removeLocalStorageUserId } from '$lib/localStorage';
 import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -642,19 +643,19 @@ export function Import() {
     );
 
     const handleFirstTimeSignin = useCallback(async () => {
-        const newUserFlag = getLocalStorageOnFirstSignin() ?? '';
-        if (newUserFlag !== '') {
-            const savedUserId = getLocalStorageUserId();
+        if (hasPendingFirstSigninImport()) {
+            const savedUserId = getLegacyGuestUserIdForImport();
             if (savedUserId) setAAUsername(savedUserId);
             handleOpen();
-            removeLocalStorageOnFirstSignin();
+            removePendingFirstSigninImport();
+            removeLegacyGuestUserIdForImport();
             removeLocalStorageUserId();
             setImportSource(ImportSource.AA_USERNAME_IMPORT);
         }
     }, [handleOpen]);
 
     useEffect(() => {
-        if (sessionIsValid && getLocalStorageDataCache() === null) {
+        if (sessionIsValid && getPendingScheduleMerge() === null) {
             handleFirstTimeSignin();
         }
     }, [handleFirstTimeSignin, sessionIsValid]);

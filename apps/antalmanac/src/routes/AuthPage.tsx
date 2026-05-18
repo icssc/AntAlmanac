@@ -3,16 +3,14 @@ import { LoadingScreen } from '$components/LoadingScreen';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
 import {
-    getLocalStorageDataCache,
-    getLocalStorageFromLoading,
-    setLocalStorageImportedUser,
-    getLocalStorageUserId,
-    removeLocalStorageUserId,
-    removeLocalStorageImportedUser,
-    removeLocalStorageDataCache,
-    removeLocalStorageFromLoading,
-    setLocalStorageOnFirstSignin,
-} from '$lib/localStorage';
+    clearAuthSessionHandoff,
+    getPendingScheduleMerge,
+    removePendingScheduleMerge,
+    setImportedGuestUsername,
+    setLegacyGuestUserIdForImport,
+    setPendingFirstSigninImport,
+} from '$lib/authSessionStorage';
+import { getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
 import { usePostHog } from 'posthog-js/react';
@@ -59,12 +57,14 @@ export function AuthPage() {
 
             analyticsIdentifyUser(postHog, userId);
 
-            const fromLoading = getLocalStorageFromLoading() ?? '';
-            const savedUserId = getLocalStorageUserId() ?? '';
-            const savedData = getLocalStorageDataCache() ?? '';
+            const legacyGuestUserId = getLocalStorageUserId() ?? '';
+            const pendingScheduleMerge = getPendingScheduleMerge() ?? '';
 
             if (newUser) {
-                setLocalStorageOnFirstSignin('true');
+                setPendingFirstSigninImport();
+                if (legacyGuestUserId !== '') {
+                    setLegacyGuestUserIdForImport(legacyGuestUserId);
+                }
             } else {
                 removeLocalStorageUserId();
             }
@@ -76,54 +76,42 @@ export function AuthPage() {
 
             setSsoCookie();
 
-            // load schedule without saving any changes
-            if (fromLoading !== '') {
-                removeLocalStorageFromLoading();
-                removeLocalStorageDataCache();
-                removeLocalStorageImportedUser();
+            if (pendingScheduleMerge === '') {
+                clearAuthSessionHandoff();
                 window.location.href = returnUrl;
                 return;
             }
 
-            // no changes to save
-            if (savedUserId === '' && savedData === '') {
-                removeLocalStorageDataCache();
-                removeLocalStorageImportedUser();
-                window.location.href = returnUrl;
-                return;
+            const userData = await trpc.schedule.get.query();
+            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+            if (legacyGuestUserId !== '') {
+                await flagImported({ username: legacyGuestUserId });
+                setImportedGuestUsername(legacyGuestUserId);
             }
 
-            // handle unsaved changes
-            if (savedData !== '') {
-                const userData = await trpc.schedule.get.query();
-                const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+            const data = JSON.parse(pendingScheduleMerge);
 
-                if (savedUserId !== '') {
-                    await flagImported({ username: savedUserId });
-                    setLocalStorageImportedUser(savedUserId);
+            if (userData !== null && isEmptySchedule(userData.userData.schedules)) {
+                scheduleSaveState.schedules = data;
+            } else {
+                const saveState = userData && 'userData' in userData ? userData.userData : userData;
+                if (saveState !== null) {
+                    mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
+                    scheduleSaveState.schedules = saveState.schedules;
+                    scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
                 }
-
-                const data = JSON.parse(savedData);
-
-                if (userData !== null && isEmptySchedule(userData.userData.schedules)) {
-                    scheduleSaveState.schedules = data;
-                } else {
-                    const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                    if (saveState !== null) {
-                        mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
-                        scheduleSaveState.schedules = saveState.schedules;
-                        scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
-                    }
-                }
-
-                await saveSchedule({
-                    userData: scheduleSaveState,
-                });
             }
+
+            await saveSchedule({
+                userData: scheduleSaveState,
+            });
+            removePendingScheduleMerge();
             window.location.href = returnUrl;
         } catch (error) {
             console.error('Error during authentication', error);
             clearSsoCookie();
+            clearAuthSessionHandoff();
             window.location.href = '/';
         }
     }, [searchParams, postHog, handleGoogleCallback, flagImported, saveSchedule]);

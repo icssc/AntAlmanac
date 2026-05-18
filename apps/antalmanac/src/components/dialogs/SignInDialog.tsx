@@ -57,8 +57,12 @@ export function SignInDialog(props: SignInDialogProps) {
                             All changes made will be saved to your account
                         </Alert>
                     )}
-                    <GoogleSignInButton onClick={() => loginUser({ provider: 'google', postHog })} />
-                    <AppleSignInButton onClick={() => loginUser({ provider: 'apple', postHog })} />
+                    <GoogleSignInButton
+                        onClick={() => loginUser({ provider: 'google', postHog, mergeScheduleOnAuth: true })}
+                    />
+                    <AppleSignInButton
+                        onClick={() => loginUser({ provider: 'apple', postHog, mergeScheduleOnAuth: true })}
+                    />
                 </Stack>
             </DialogContent>
         </Dialog>
