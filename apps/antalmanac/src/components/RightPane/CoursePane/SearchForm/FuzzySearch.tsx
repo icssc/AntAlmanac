@@ -268,12 +268,9 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         );
     };
 
-    const renderOption = (
-        componentProps: React.HTMLAttributes<HTMLLIElement> & { key: string },
-        option: SearchOption
-    ) => {
+    const renderOption = (props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key }, option: SearchOption) => {
         const object = option.result;
-        const { key, ...restProps } = componentProps;
+        const { key, ...restProps } = props;
         if (!object)
             return (
                 <Box component="li" key={key} {...restProps}>
