@@ -2,7 +2,7 @@ import actionTypesStore from '$actions/ActionTypesStore';
 import { isEmptySchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';

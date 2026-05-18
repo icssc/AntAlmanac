@@ -9,8 +9,7 @@ import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpc, trpcReact } from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import {

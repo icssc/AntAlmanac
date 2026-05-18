@@ -2,7 +2,7 @@ import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import type { AATerm, SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';

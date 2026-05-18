@@ -1,5 +1,5 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';

@@ -8,7 +8,7 @@ import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchP
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import {
     getMultiGeCourseKey,
