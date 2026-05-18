@@ -1,5 +1,5 @@
 import { trpc } from '$lib/api/trpc';
-import { setWasLoggedIn } from '$lib/localStorage';
+import { migrateStaleAuthLocalStorageKeys, setPreviouslyLoggedIn } from '$lib/authSessionStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { TRPCClientError } from '@trpc/client';
@@ -21,6 +21,7 @@ interface SessionState {
 export const useSessionStore = create<SessionState>((set) => {
     // Clean up stale localStorage token from before the cookie migration
     window.localStorage.removeItem('sessionId');
+    migrateStaleAuthLocalStorageKeys();
 
     return {
         userId: null,
@@ -47,7 +48,7 @@ export const useSessionStore = create<SessionState>((set) => {
 
                 usePlannerStore.getState().loadPlannerRoadmaps();
 
-                setWasLoggedIn(true);
+                setPreviouslyLoggedIn(true);
                 return true;
             } catch (error) {
                 const isUnauthorized = error instanceof TRPCClientError && error.data?.code === 'UNAUTHORIZED';
@@ -70,7 +71,7 @@ export const useSessionStore = create<SessionState>((set) => {
         },
 
         clearSession: () => {
-            setWasLoggedIn(false);
+            setPreviouslyLoggedIn(false);
             clearSsoCookie();
             set({
                 userId: null,

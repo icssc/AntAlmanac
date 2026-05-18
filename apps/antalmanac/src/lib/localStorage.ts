@@ -16,64 +16,21 @@ enum LocalStorageKeys {
     pwaDismissalTime = 'pwaDismissalTime',
     /** @deprecated Session token is now stored in an HttpOnly cookie (aa_session). */
     sessionId = 'sessionId',
-    wasLoggedIn = 'wasLoggedIn',
-    dataCache = 'dataCache',
-    newUser = 'newUser',
-    importedUser = 'importedUser',
+    /** @deprecated Auth handoff flag removed in favor of skipping schedule cache on header sign-in. */
     fromLoading = 'fromLoading',
+    /** @deprecated OAuth schedule merge payload moved to sessionStorage (see authSessionStorage). */
+    dataCache = 'dataCache',
+    /** @deprecated First-sign-in import prompt moved to sessionStorage (see authSessionStorage). */
+    newUser = 'newUser',
+    /** @deprecated Post-import success dialog username moved to sessionStorage (see authSessionStorage). */
+    importedUser = 'importedUser',
+    /** @deprecated Replaced by sessionStorage via authSessionStorage.previouslyLoggedIn. */
+    wasLoggedIn = 'wasLoggedIn',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
 }
 
 const LSK = LocalStorageKeys;
-
-export function setLocalStorageFromLoading(value: string) {
-    window.localStorage.setItem(LSK.fromLoading, value);
-}
-
-export function getLocalStorageFromLoading() {
-    return window.localStorage.getItem(LSK.fromLoading);
-}
-
-export function removeLocalStorageFromLoading() {
-    window.localStorage.removeItem(LSK.fromLoading);
-}
-
-export function setLocalStorageImportedUser(value: string) {
-    window.localStorage.setItem(LSK.importedUser, value);
-}
-
-export function getLocalStorageImportedUser() {
-    return window.localStorage.getItem(LSK.importedUser);
-}
-
-export function removeLocalStorageImportedUser() {
-    window.localStorage.removeItem(LSK.importedUser);
-}
-
-export function setLocalStorageOnFirstSignin(value: string) {
-    window.localStorage.setItem(LSK.newUser, value);
-}
-
-export function getLocalStorageOnFirstSignin() {
-    return window.localStorage.getItem(LSK.newUser);
-}
-
-export function removeLocalStorageOnFirstSignin() {
-    window.localStorage.removeItem(LSK.newUser);
-}
-
-export function setLocalStorageDataCache(value: string) {
-    window.localStorage.setItem(LSK.dataCache, value);
-}
-
-export function getLocalStorageDataCache() {
-    return window.localStorage.getItem(LSK.dataCache);
-}
-
-export function removeLocalStorageDataCache() {
-    window.localStorage.removeItem(LSK.dataCache);
-}
 
 export function setLocalStorageUserId(value: string) {
     window.localStorage.setItem(LSK.userId, value);
@@ -85,18 +42,6 @@ export function getLocalStorageUserId() {
 
 export function removeLocalStorageUserId() {
     window.localStorage.removeItem(LSK.userId);
-}
-
-export function getWasLoggedIn(): boolean {
-    return window.localStorage.getItem(LSK.wasLoggedIn) === 'true';
-}
-
-export function setWasLoggedIn(value: boolean) {
-    if (value) {
-        window.localStorage.setItem(LSK.wasLoggedIn, 'true');
-    } else {
-        window.localStorage.removeItem(LSK.wasLoggedIn);
-    }
 }
 
 // Helper functions for patchNotesKey

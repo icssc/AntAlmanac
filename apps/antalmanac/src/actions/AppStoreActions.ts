@@ -1,7 +1,8 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
+import { setPendingScheduleMerge } from '$lib/authSessionStorage';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { setLocalStorageUserId } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
@@ -381,17 +382,18 @@ export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions)
     }
 };
 
-const cacheSchedule = () => {
+const cacheScheduleForAuthMerge = () => {
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
     if (!isEmptySchedule(scheduleSaveState)) {
-        setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
+        setPendingScheduleMerge(JSON.stringify(scheduleSaveState));
     }
 };
 
 export const loginUser = async ({
     provider = 'google',
     postHog,
-}: { provider?: 'google' | 'apple'; postHog?: PostHog } = {}) => {
+    mergeScheduleOnAuth = false,
+}: { provider?: 'google' | 'apple'; postHog?: PostHog; mergeScheduleOnAuth?: boolean } = {}) => {
     try {
         const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
         const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -405,7 +407,9 @@ export const loginUser = async ({
                 category: analyticsEnum.auth,
                 action: analyticsEnum.auth.actions.SIGN_IN,
             });
-            cacheSchedule();
+            if (mergeScheduleOnAuth) {
+                cacheScheduleForAuthMerge();
+            }
             window.location.href = authUrl.toString();
         }
     } catch (error) {

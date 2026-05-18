@@ -5,11 +5,11 @@ import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import {
-    getLocalStorageDataCache,
-    getLocalStorageImportedUser,
-    removeLocalStorageDataCache,
-    removeLocalStorageImportedUser,
-} from '$lib/localStorage';
+    getImportedGuestUsername,
+    getPendingScheduleMerge,
+    removeImportedGuestUsername,
+    removePendingScheduleMerge,
+} from '$lib/authSessionStorage';
 import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
@@ -20,13 +20,13 @@ import { useCallback, useEffect, useState } from 'react';
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
-    const importedUser = getLocalStorageImportedUser() ?? '';
+    const importedUser = getImportedGuestUsername() ?? '';
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const isMobile = useIsMobile();
 
     const clearStorage = useCallback(() => {
-        removeLocalStorageImportedUser();
-        removeLocalStorageDataCache();
+        removeImportedGuestUsername();
+        removePendingScheduleMerge();
     }, []);
 
     const handleCloseSuccessfulSaved = () => {
@@ -44,11 +44,11 @@ export function Header() {
     };
 
     useEffect(() => {
-        const dataCache = getLocalStorageDataCache() ?? '';
+        const pendingScheduleMerge = getPendingScheduleMerge() ?? '';
 
         if (importedUser !== '' && sessionIsValid) {
             setOpenSuccessfulSaved(true);
-        } else if (dataCache !== '' && sessionIsValid) {
+        } else if (pendingScheduleMerge !== '' && sessionIsValid) {
             openSnackbar('success', `Unsaved changes have been saved to your account!`);
             clearStorage();
         }

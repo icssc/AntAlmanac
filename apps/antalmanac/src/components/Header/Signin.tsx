@@ -6,7 +6,8 @@ import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { trpc } from '$lib/api/trpc';
-import { getLocalStorageUserId, getWasLoggedIn, setLocalStorageFromLoading } from '$lib/localStorage';
+import { getPreviouslyLoggedIn } from '$lib/authSessionStorage';
+import { getLocalStorageUserId } from '$lib/localStorage';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -112,7 +113,7 @@ export const Signin = () => {
 
             if (validSession) {
                 await loadSchedule({ prefetched: prefetchedUserData, postHog });
-            } else if (getWasLoggedIn()) {
+            } else if (getPreviouslyLoggedIn()) {
                 setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
                 setOpenalert(true);
             } else if (userID && userID !== '') {
@@ -129,7 +130,6 @@ export const Signin = () => {
 
     const handleLogin = (provider: 'google' | 'apple' = 'google') => {
         loginUser({ provider, postHog });
-        setLocalStorageFromLoading('true');
     };
 
     const enterEvent = useCallback(
