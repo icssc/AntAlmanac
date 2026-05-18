@@ -30,13 +30,22 @@ echo "==> Starting PostgreSQL via docker compose"
 docker compose up -d --build
 
 echo "==> Waiting for PostgreSQL to be ready"
+db_ready=false
 for _ in {1..30}; do
     if docker compose exec -T db pg_isready -U postgres >/dev/null 2>&1; then
+        db_ready=true
         echo "    PostgreSQL is ready"
         break
     fi
     sleep 1
 done
+
+if [ "$db_ready" = false ]; then
+    echo "    PostgreSQL did not become ready within 30s — skipping migrations and data fetch."
+    echo "    Check 'docker compose logs db', then rerun 'pnpm db:migrate' and"
+    echo "    '(cd apps/antalmanac && pnpm get-data)' once the database is up."
+    exit 0
+fi
 
 echo "==> Running database migrations"
 pnpm db:migrate || echo "    db:migrate failed — you can rerun it manually"
