@@ -33,72 +33,87 @@ const OUTAGE = false;
 
 const HOME_PAGE = <Home />;
 
-const BROWSER_ROUTER = createBrowserRouter([
-    {
-        element: <RouteLayout />,
-        children: [
-            {
-                path: '/',
-                element: HOME_PAGE,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/unsubscribe/:userId',
-                element: <Unsubscribe />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/:tab',
-                element: HOME_PAGE,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/feedback',
-                element: <Feedback />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/auth',
-                element: <AuthPage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                // OAuth callback sink for the native iOS wrapper. In the happy
-                // path ASWebAuthenticationSession intercepts this URL via the
-                // AASA association and never actually loads it in any web view.
-                // This route exists as defense-in-depth: if the URL is ever
-                // navigated to directly (e.g. Universal Link delivered to the
-                // WKWebView via SceneDelegate, or a browser that hits this URL
-                // outside any native flow), AuthPage still completes the PKCE
-                // exchange using the cookies set on antalmanac.com.
-                path: '/auth/native',
-                element: <AuthPage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '*',
-                element: <Navigate to="/" replace />,
-            },
-        ],
-    },
-]);
+const ROUTER_FUTURE_FLAGS = {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true,
+    v7_fetcherPersist: true,
+    v7_normalizeFormMethod: true,
+    v7_partialHydration: true,
+    v7_skipActionErrorRevalidation: true,
+} as const;
 
-const OUTAGE_ROUTER = createBrowserRouter([
-    {
-        element: <RouteLayout />,
-        children: [
-            {
-                path: '/outage',
-                element: <OutagePage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '*',
-                element: <Navigate to="/outage" replace />,
-            },
-        ],
-    },
-]);
+const BROWSER_ROUTER = createBrowserRouter(
+    [
+        {
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/',
+                    element: HOME_PAGE,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/unsubscribe/:userId',
+                    element: <Unsubscribe />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/:tab',
+                    element: HOME_PAGE,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/feedback',
+                    element: <Feedback />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/auth',
+                    element: <AuthPage />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    // OAuth callback sink for the native iOS wrapper. In the happy
+                    // path ASWebAuthenticationSession intercepts this URL via the
+                    // AASA association and never actually loads it in any web view.
+                    // This route exists as defense-in-depth: if the URL is ever
+                    // navigated to directly (e.g. Universal Link delivered to the
+                    // WKWebView via SceneDelegate, or a browser that hits this URL
+                    // outside any native flow), AuthPage still completes the PKCE
+                    // exchange using the cookies set on antalmanac.com.
+                    path: '/auth/native',
+                    element: <AuthPage />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/" replace />,
+                },
+            ],
+        },
+    ],
+    { future: ROUTER_FUTURE_FLAGS }
+);
+
+const OUTAGE_ROUTER = createBrowserRouter(
+    [
+        {
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/outage',
+                    element: <OutagePage />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/outage" replace />,
+                },
+            ],
+        },
+    ],
+    { future: ROUTER_FUTURE_FLAGS }
+);
 
 const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 
@@ -144,7 +159,7 @@ export default function App() {
                                 }),
                             }}
                         >
-                            <RouterProvider router={ROUTER} />
+                            <RouterProvider router={ROUTER} future={{ v7_startTransition: true }} />
                         </TourProvider>
                     </AppQueryProvider>
                 </AppPostHogProvider>
