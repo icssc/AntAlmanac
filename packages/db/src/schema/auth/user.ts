@@ -57,3 +57,4 @@ export const users = pgTable('users', {
 });
 
 export type User = typeof users.$inferSelect;
+export type UserProfile = Pick<User, 'name' | 'avatar' | 'email'>;

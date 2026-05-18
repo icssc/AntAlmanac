@@ -8,7 +8,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
-import type { User } from '@packages/antalmanac-types';
+import type { UserProfile } from '@packages/db/src/schema/auth/user';
 import { usePostHog } from 'posthog-js/react';
 import { type MouseEvent, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -31,13 +31,13 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
 
-    const user = useMemo<Pick<User, 'name' | 'avatar' | 'email'> | null>(
+    const user = useMemo<UserProfile | null>(
         () =>
             sessionIsValid
                 ? {
-                      name: name ?? undefined,
-                      avatar: avatar ?? undefined,
-                      email: email ?? undefined,
+                      name: name ?? null,
+                      avatar: avatar ?? null,
+                      email: email ?? null,
                   }
                 : null,
         [sessionIsValid, name, avatar, email]
