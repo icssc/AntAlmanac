@@ -1,7 +1,7 @@
 import { isEmptySchedule, loadSchedule, mergeShortCourseSchedules, UserData } from '$actions/AppStoreActions';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { authClient, signOut } from '$lib/auth/authClient';
 import {
     getLocalStorageDataCache,

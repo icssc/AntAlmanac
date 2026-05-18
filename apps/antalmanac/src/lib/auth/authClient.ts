@@ -1,5 +1,5 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { AuthAdditionalData, Provider } from '$lib/auth/authTypes';
 import { getProviderIcsscName } from '$lib/auth/authUtils';
