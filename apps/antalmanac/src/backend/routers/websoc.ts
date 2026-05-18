@@ -52,17 +52,14 @@ const websocRouter = router({
         )
         .query(async ({ input }): Promise<WebsocAPIResponse[]> => {
             const { fieldName, params } = input;
-            const fieldValue = params[fieldName]
-                ?.trim()
-                .replaceAll(' ', '')
-                .split(',')
-                .filter((value) => value.length > 0);
+            const fieldValue = params[fieldName]?.trim().replaceAll(' ', '');
+            const fields = fieldValue?.split(',').filter((value) => value.length > 0);
 
-            if (!fieldValue?.length) {
+            if (!fields?.length) {
                 return [await queryWebsoc(params)];
             }
 
-            return Promise.all(fieldValue.map((value) => queryWebsoc({ ...params, [fieldName]: value })));
+            return Promise.all(fields.map((value) => queryWebsoc({ ...params, [fieldName]: value })));
         }),
 
     getMultiple: aapiProcedure
