@@ -45,7 +45,12 @@ const buttonSx: SxProps = {
 
 function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
     if (courses.length > 0) {
-        const blueprint = courses.map((course) => ({ sectionCount: course.sections.length }));
+        const blueprint = courses.map((course) => ({
+            deptCode: course.deptCode,
+            courseNumber: course.courseNumber,
+            courseTitle: course.courseTitle,
+            sectionCount: course.sections.length,
+        }));
         setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(blueprint));
     } else {
         removeLocalStorageAddedCoursesSkeletonBlueprint();
