@@ -246,9 +246,16 @@ export const ScheduleCalendar = memo(() => {
         () =>
             !loadingSchedule &&
             !hoveredCalendarizedCourses &&
+            !hoveredCalendarizedFinal &&
             currentScheduleCourses.length === 0 &&
             currentScheduleCustomEvents.length === 0,
-        [loadingSchedule, hoveredCalendarizedCourses, currentScheduleCourses.length, currentScheduleCustomEvents.length]
+        [
+            loadingSchedule,
+            hoveredCalendarizedCourses,
+            hoveredCalendarizedFinal,
+            currentScheduleCourses.length,
+            currentScheduleCustomEvents.length,
+        ]
     );
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
