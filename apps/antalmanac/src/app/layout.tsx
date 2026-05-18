@@ -84,18 +84,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify([webAppSchema, siteSchema]) }}
                 />
-                {process.env.NODE_ENV === 'development' && (
-                    <Script id="dev-console-filter" strategy="beforeInteractive">
-                        {`(() => {
-                            const originalError = console.error;
-                            console.error = (...args) => {
-                                const first = args[0];
-                                if (typeof first === 'string' && first.includes('outdated JSX transform')) return;
-                                originalError.apply(console, args);
-                            };
-                        })();`}
-                    </Script>
-                )}
                 <Script>
                     {`console.log(
                         '%cInterested in improving AntAlmanac?\\n - Check out the project on GitHub: https://github.com/icssc/antalmanac\\n - Join our Discord: https://discord.gg/GzF76D7UhY\\n - Leave feedback: https://antalmanac.com/feedback',
