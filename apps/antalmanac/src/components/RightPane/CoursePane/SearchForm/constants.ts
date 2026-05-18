@@ -1,3 +1,6 @@
+import type { Theme } from '@mui/material/styles';
+import type { SystemStyleObject } from '@mui/system';
+
 export const BASIC_SEARCH_PARAMS = ['term'] as const;
 
 export type BasicSearchParam = (typeof BASIC_SEARCH_PARAMS)[number];
@@ -46,3 +49,23 @@ export const GE_LIST = [
 ] as const;
 
 export const ANY_GE = GE_LIST[0].value;
+
+/** Shared layout for quick-search shortcut pills (Roadmap, department, GE). */
+export const QUICK_SEARCH_SHORTCUT_PILL_SX: SystemStyleObject<Theme> = {
+    flex: '1 1 0',
+    minWidth: 0,
+    maxWidth: '100%',
+    borderRadius: 9999,
+    px: 1.25,
+    py: 0.5,
+    textTransform: 'none',
+    justifyContent: 'flex-start',
+    '& .MuiButton-label': {
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        minWidth: 0,
+        gap: 0.5,
+    },
+    '& .MuiButton-startIcon': { marginRight: 0 },
+};
