@@ -24,3 +24,9 @@ vi.mock('$lib/auth/auth', () => {
         // This module can only run on the server
     };
 });
+
+vi.mock('$lib/auth/authActions', () => {
+    return {
+        // This module can only run on the server
+    };
+});
