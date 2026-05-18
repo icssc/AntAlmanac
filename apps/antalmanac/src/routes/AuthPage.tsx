@@ -1,8 +1,7 @@
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { trpcReact } from '$lib/api/trpcReact';
+import trpc, { trpcReact } from '$lib/api/trpc';
 import {
     getLocalStorageDataCache,
     getLocalStorageFromLoading,

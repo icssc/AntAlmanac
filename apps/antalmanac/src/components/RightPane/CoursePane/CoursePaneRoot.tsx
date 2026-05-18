@@ -3,7 +3,7 @@ import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane'
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
