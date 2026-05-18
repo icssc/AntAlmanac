@@ -12,7 +12,7 @@ import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { getCourseId } from '$stores/scheduleHelpers';
 import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -170,7 +170,7 @@ export function AddedSectionsGrid() {
                         }}
                         secondaryAction={{
                             label: 'Import Schedule',
-                            onClick: () => scheduleComponentsToggleStore.getState().setOpenImportDialog(true),
+                            onClick: () => useScheduleComponentsToggleStore.getState().setOpenImportDialog(true),
                         }}
                     />
                 )}

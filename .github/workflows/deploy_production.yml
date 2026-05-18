@@ -19,9 +19,10 @@ env:
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
     OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
     OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
-    GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
     NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
     PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
+    BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+    BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
 
 jobs:
     deploy-production:
@@ -52,7 +53,7 @@ jobs:
             - name: Generate termData
               uses: ./.github/actions/cache-generated-data
               with:
-                api-key: ${{ secrets.ANTEATER_API_KEY }}
+                  api-key: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: Deploy SST (production)
               env:
