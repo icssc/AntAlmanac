@@ -33,6 +33,20 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
+type CourseListEntry = WebsocSchool | WebsocDepartment | AACourse;
+
+function isSchoolEntry(item: CourseListEntry): item is WebsocSchool {
+    return 'departments' in item;
+}
+
+function isDepartmentEntry(item: CourseListEntry): item is WebsocDepartment {
+    return 'courses' in item;
+}
+
+function isCourseEntry(item: CourseListEntry): item is AACourse {
+    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
+}
+
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
     const courseColors = currentCourses.reduce<Record<string, string>>((accumulator, { section }) => {
@@ -42,8 +56,6 @@ function getColors() {
 
     return courseColors;
 }
-
-type CourseListEntry = WebsocSchool | WebsocDepartment | AACourse;
 
 const flattenSOCObject = (
     SOCObject: WebsocAPIResponse,
@@ -70,18 +82,6 @@ const flattenSOCObject = (
         return accumulator;
     }, []);
 };
-
-function isSchoolEntry(item: CourseListEntry): item is WebsocSchool {
-    return 'departments' in item;
-}
-
-function isDepartmentEntry(item: CourseListEntry): item is WebsocDepartment {
-    return 'courses' in item;
-}
-
-function isCourseEntry(item: CourseListEntry): item is AACourse {
-    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
-}
 
 function cleanHeaders(items: CourseListEntry[]): CourseListEntry[] {
     const result: CourseListEntry[] = [];
