@@ -92,6 +92,27 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 # Development Environment
 
+## Quickest Start: GitHub Codespaces
+
+You can develop AntAlmanac entirely in the browser (or your local VS Code)
+without installing Node, pnpm, or Docker on your machine.
+
+1. On the [repository page](https://github.com/icssc/AntAlmanac), click
+   **Code → Codespaces → Create codespace on main** (or on your branch).
+2. Wait for the container to build. On first launch the post-create script
+   will install dependencies, start the local PostgreSQL database, run
+   migrations, and fetch the static course data.
+3. Once setup finishes, run:
+
+    ```bash
+    pnpm dev
+    ```
+
+4. Open the forwarded port `3000` (Codespaces will offer a preview link).
+
+Everything below is for setting up a development environment on your own
+machine.
+
 ## Pre-requisites
 
 1. Install `Node.js` (version 22 or higher). This allows you to run JavaScript on your computer (outside of a browser).
