@@ -3,6 +3,7 @@ import trpc from '$lib/api/trpc';
 import { type AATerm, termData } from '$lib/term';
 import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
+import type { WebsocSectionType } from '@packages/anteater-api/types';
 import { create } from 'zustand';
 import { combine } from 'zustand/middleware';
 
@@ -28,6 +29,21 @@ type ReviewCandidate = {
 };
 
 type Step = 'enrollment-confirm' | 'review' | 'hidden';
+
+/**
+ * When several schedule rows refer to the same course in the same term (e.g. Lec + Lab),
+ * lower rank wins so we prompt for the lecture instructor instead of a lab TA. Pure-lab
+ * courses only have Lab rows, so they still surface normally.
+ */
+function reviewPromptSectionRank(sectionType: WebsocSectionType): number {
+    if (sectionType === 'Lec') {
+        return 0;
+    }
+    if (sectionType === 'Lab') {
+        return 2;
+    }
+    return 1;
+}
 
 const PAST_TERMS_WINDOW = 4;
 
@@ -65,8 +81,16 @@ export const useReviewPromptStore = create(
             if (pastTermNames.size === 0) return;
 
             const allCourses = AppStore.schedule.getAllCourses();
-            const seen = new Set<string>();
-            const candidates: ReviewCandidate[] = [];
+            const bestByCourseTerm = new Map<
+                string,
+                {
+                    courseId: string;
+                    courseTitle: string;
+                    professorId: string;
+                    term: AATerm;
+                    sectionType: WebsocSectionType;
+                }
+            >();
 
             for (const course of allCourses) {
                 const term = course.term;
@@ -92,17 +116,33 @@ export const useReviewPromptStore = create(
                 }
 
                 const courseId = `${course.deptCode} ${course.courseNumber}`;
-                const dedupKey = `${courseId}::${instructor}::${term.shortName}`;
-                if (seen.has(dedupKey)) {
-                    continue;
-                }
-                seen.add(dedupKey);
-
-                candidates.push({
+                const groupKey = `${courseId}::${term.shortName}`;
+                const next = {
                     courseId,
                     courseTitle: course.courseTitle,
                     professorId: instructor,
                     term,
+                    sectionType,
+                };
+                const prev = bestByCourseTerm.get(groupKey);
+                if (!prev || reviewPromptSectionRank(sectionType) < reviewPromptSectionRank(prev.sectionType)) {
+                    bestByCourseTerm.set(groupKey, next);
+                }
+            }
+
+            const seenCombo = new Set<string>();
+            const candidates: ReviewCandidate[] = [];
+            for (const row of bestByCourseTerm.values()) {
+                const dedupKey = `${row.courseId}::${row.professorId}::${row.term.shortName}`;
+                if (seenCombo.has(dedupKey)) {
+                    continue;
+                }
+                seenCombo.add(dedupKey);
+                candidates.push({
+                    courseId: row.courseId,
+                    courseTitle: row.courseTitle,
+                    professorId: row.professorId,
+                    term: row.term,
                 });
             }
 
