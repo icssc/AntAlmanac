@@ -18,7 +18,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect } from 'react';
 
 export const Save = () => {
-    const { sessionIsValid } = useSessionStore();
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [autoSaving, setAutoSaving] = useState(false);
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);

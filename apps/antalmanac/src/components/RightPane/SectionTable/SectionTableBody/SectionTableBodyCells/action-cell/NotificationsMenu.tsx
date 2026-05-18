@@ -39,11 +39,7 @@ export const NotificationsMenu = memo(
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
         const [signInOpen, setSignInOpen] = useState(false);
 
-        const { isGoogleUser } = useSessionStore(
-            useShallow((state) => ({
-                isGoogleUser: state.isGoogleUser,
-            }))
-        );
+        const isGoogleUser = useSessionStore((state) => state.isGoogleUser);
 
         const isTermCurrent = canTermEnrollmentChange(term);
         const notifyOn = notification?.notifyOn;

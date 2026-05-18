@@ -77,7 +77,7 @@ export function Import() {
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
-    const { sessionIsValid } = useSessionStore();
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
     const devMode = useDevModeStore((store) => store.devMode);
 

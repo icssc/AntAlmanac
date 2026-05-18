@@ -74,10 +74,10 @@ function SectionTable({
 
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
 
-    const { isMilitaryTime } = useTimeFormatStore();
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
-    const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
-    const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const activeColumns = useColumnStore((store) => store.activeColumns);
+    const activeTab = useTabStore((store) => store.activeTab);
     const isMobile = useIsMobile();
 
     const handleToggleExpand = () => {

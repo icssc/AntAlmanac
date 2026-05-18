@@ -19,7 +19,6 @@ import {
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface NotificationsDialogProps {
     disabled?: boolean;
@@ -32,11 +31,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
     const postHog = usePostHog();
 
-    const { isGoogleUser } = useSessionStore(
-        useShallow((state) => ({
-            isGoogleUser: state.isGoogleUser,
-        }))
-    );
+    const isGoogleUser = useSessionStore((state) => state.isGoogleUser);
 
     const handleOpen = useCallback(() => {
         if (isGoogleUser) {

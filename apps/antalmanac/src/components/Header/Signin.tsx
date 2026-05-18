@@ -47,7 +47,7 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { loadSession } = useSessionStore();
+    const loadSession = useSessionStore((store) => store.loadSession);
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
     const [openAlert, setOpenalert] = useState(false);
