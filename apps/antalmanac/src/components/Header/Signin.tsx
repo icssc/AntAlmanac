@@ -80,7 +80,7 @@ export const Signin = () => {
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
             const res = await trpc.schedule.getGuest.query({ username: userID });
-            if (res.user.imported) {
+            if (res.imported) {
                 setAlertMessage(ALERT_MESSAGES.SCHEDULE_IMPORTED);
                 setOpenalert(true);
             }

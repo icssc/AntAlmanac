@@ -198,7 +198,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
     });
 
-    if (!skipImportedCheck && incoming.user.imported) {
+    if (!skipImportedCheck && incoming.imported) {
         return { imported: true, error: null };
     }
 

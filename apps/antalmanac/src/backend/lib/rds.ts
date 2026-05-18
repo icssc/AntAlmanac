@@ -1,7 +1,6 @@
 import type {
     ShortCourse,
     ShortCourseSchedule,
-    User,
     RepeatingCustomEvent,
     Notification,
     ScheduleSaveState,
@@ -23,6 +22,7 @@ import {
     Session,
     friendships,
     subscriptions,
+    User,
 } from '@packages/db/src/schema';
 import {
     buildConflictUpdateSet,
@@ -404,7 +404,7 @@ export class RDS {
     static async getGuestScheduleByUsername(
         db: DatabaseOrTransaction,
         username: string
-    ): Promise<{ user: { imported: boolean }; userData: User['userData'] } | null> {
+    ): Promise<(User & { userData: ScheduleSaveState }) | null> {
         const row = await db
             .select()
             .from(accounts)
@@ -439,7 +439,7 @@ export class RDS {
             : userSchedules.length;
 
         return {
-            user: { imported: row.users.imported ?? false },
+            ...row.users,
             userData: {
                 schedules: userSchedules,
                 scheduleIndex,
@@ -454,7 +454,10 @@ export class RDS {
      * @param userId - The unique identifier of the friend.
      * @returns A promise that resolves to a User object containing only the shared schedules, or null if not found.
      */
-    static async getUserFriendDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+    static async getUserFriendDataByUid(
+        db: DatabaseOrTransaction,
+        userId: string
+    ): Promise<(User & { userData: ScheduleSaveState }) | null> {
         return db.transaction(async (tx) => {
             const user = await tx
                 .select()
@@ -483,10 +486,7 @@ export class RDS {
             const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
             return {
-                id: userId,
-                name: user.name ?? undefined,
-                email: user.email ?? undefined,
-                avatar: user.avatar ?? undefined,
+                ...user,
                 userData: {
                     schedules: userSchedules,
                     scheduleIndex: 0,
