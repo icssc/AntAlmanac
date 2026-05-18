@@ -24,7 +24,7 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { Box, SxProps, Typography } from '@mui/material';
 import { AACourse, AATerm } from '@packages/antalmanac-types';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export interface CourseWithTerm extends AACourse {
     term: AATerm;
@@ -42,20 +42,6 @@ const buttonSx: SxProps = {
     },
     pointerEvents: 'auto',
 };
-
-function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
-    if (courses.length > 0) {
-        const blueprint = courses.map((course) => ({
-            deptCode: course.deptCode,
-            courseNumber: course.courseNumber,
-            courseTitle: course.courseTitle,
-            sectionCount: course.sections.length,
-        }));
-        setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(blueprint));
-    } else {
-        removeLocalStorageAddedCoursesSkeletonBlueprint();
-    }
-}
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -108,6 +94,7 @@ export function AddedSectionsGrid() {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const loadingSchedule = scheduleComponentsToggleStore((state) => state.openLoadingSchedule);
+    const courseRefs = useRef(new Map<string, HTMLDivElement | null>());
 
     const isMobile = useIsMobile();
 
@@ -126,9 +113,7 @@ export function AddedSectionsGrid() {
 
     useEffect(() => {
         const handleCoursesChange = () => {
-            const nextCourses = getCourses();
-            setCourses(nextCourses);
-            persistSkeletonBlueprint(nextCourses);
+            setCourses(getCourses());
         };
 
         const handleScheduleNamesChange = () => {
@@ -151,6 +136,33 @@ export function AddedSectionsGrid() {
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
+
+    useEffect(() => {
+        if (loadingSchedule) return;
+
+        if (courses.length === 0) {
+            removeLocalStorageAddedCoursesSkeletonBlueprint();
+            courseRefs.current.clear();
+            return;
+        }
+
+        // Measure after the browser has laid out the rendered SectionTables so
+        // the persisted height matches what the user actually sees.
+        const handle = requestAnimationFrame(() => {
+            const blueprint = courses.map((course) => {
+                const el = courseRefs.current.get(course.id);
+                return {
+                    deptCode: course.deptCode,
+                    courseNumber: course.courseNumber,
+                    courseTitle: course.courseTitle,
+                    height: el ? Math.round(el.getBoundingClientRect().height) : 0,
+                };
+            });
+            setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(blueprint));
+        });
+
+        return () => cancelAnimationFrame(handle);
+    }, [courses, loadingSchedule]);
 
     const scheduleUnits = useMemo(() => {
         let result = 0;
@@ -209,15 +221,22 @@ export function AddedSectionsGrid() {
 
                             return (
                                 <SortableList.Item id={course.id}>
-                                    <SectionTable
-                                        sortable
-                                        courseDetails={course}
-                                        term={course.term}
-                                        allowHighlight={false}
-                                        analyticsCategory={analyticsEnum.addedClasses}
-                                        scheduleNames={scheduleNames}
-                                        missingSections={missingSections}
-                                    />
+                                    <Box
+                                        ref={(el: HTMLDivElement | null) => {
+                                            if (el) courseRefs.current.set(course.id, el);
+                                            else courseRefs.current.delete(course.id);
+                                        }}
+                                    >
+                                        <SectionTable
+                                            sortable
+                                            courseDetails={course}
+                                            term={course.term}
+                                            allowHighlight={false}
+                                            analyticsCategory={analyticsEnum.addedClasses}
+                                            scheduleNames={scheduleNames}
+                                            missingSections={missingSections}
+                                        />
+                                    </Box>
                                 </SortableList.Item>
                             );
                         }}

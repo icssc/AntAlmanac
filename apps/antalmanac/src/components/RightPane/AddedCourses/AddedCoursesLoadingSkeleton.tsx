@@ -6,22 +6,21 @@ export interface AddedCourseSkeletonEntry {
     deptCode: string;
     courseNumber: string;
     courseTitle: string;
-    sectionCount: number;
+    /** Measured total height of the rendered SectionTable, in pixels. */
+    height: number;
 }
 
-const SECTION_ROW_HEIGHT = 33;
-const TABLE_HEADER_HEIGHT = 33;
-
 /**
- * Mirrors the button row of `SectionTable` so MUI's children-aware Skeleton
- * sizes each placeholder to the exact width the real button will occupy. The
- * children render with `visibility: hidden`, contributing layout only.
+ * Mirrors a `SectionTable` instance during loading. The container is pinned to
+ * the measured `entry.height`; the button row renders at its natural height
+ * (matched to the real row via children-aware Skeletons), and the body
+ * Skeleton stretches to fill the remainder. This makes the skeleton total
+ * height exact and the per-button widths exact, leaving no layout shift when
+ * the real table renders.
  */
 function SectionTableSkeleton({ entry }: { entry: AddedCourseSkeletonEntry }) {
-    const tableHeight = entry.sectionCount * SECTION_ROW_HEIGHT + TABLE_HEADER_HEIGHT;
-
     return (
-        <Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: entry.height }}>
             <Box sx={{ display: 'flex', gap: '4px', mb: 1, mt: 0.5 }}>
                 <Skeleton variant="rounded">
                     <Button variant="contained" color="secondary" sx={{ padding: 0, minWidth: 0, minHeight: 0 }}>
@@ -62,7 +61,7 @@ function SectionTableSkeleton({ entry }: { entry: AddedCourseSkeletonEntry }) {
                 </Skeleton>
             </Box>
 
-            <Skeleton variant="rounded" width="100%" height={tableHeight} sx={{ mb: 1 }} />
+            <Skeleton variant="rounded" sx={{ flex: 1, width: '100%' }} />
         </Box>
     );
 }
@@ -74,12 +73,18 @@ function readBlueprint(): AddedCourseSkeletonEntry[] | null {
     try {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed.map((entry) => ({
-                deptCode: typeof entry?.deptCode === 'string' ? entry.deptCode : '',
-                courseNumber: typeof entry?.courseNumber === 'string' ? entry.courseNumber : '',
-                courseTitle: typeof entry?.courseTitle === 'string' ? entry.courseTitle : '',
-                sectionCount: typeof entry?.sectionCount === 'number' ? entry.sectionCount : 1,
-            }));
+            const entries = parsed.flatMap((entry): AddedCourseSkeletonEntry[] => {
+                if (typeof entry?.height !== 'number' || entry.height <= 0) return [];
+                return [
+                    {
+                        deptCode: typeof entry.deptCode === 'string' ? entry.deptCode : '',
+                        courseNumber: typeof entry.courseNumber === 'string' ? entry.courseNumber : '',
+                        courseTitle: typeof entry.courseTitle === 'string' ? entry.courseTitle : '',
+                        height: entry.height,
+                    },
+                ];
+            });
+            return entries.length > 0 ? entries : null;
         }
     } catch {
         // ignore malformed data
