@@ -26,7 +26,7 @@ import { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/ant
 import { splitWebsocIntersectAndRest } from '@packages/anteater-api/utils';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import LazyLoad from 'react-lazyload';
 
 function getColors() {
@@ -68,6 +68,19 @@ const flattenSOCObject = (
 function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is AACourse {
     return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
 }
+
+function estimateCoursePaneLazyHeight(entry: WebsocSchool | WebsocDepartment | AACourse): number {
+    return isCourseEntry(entry) ? entry.sections.length * 60 + 20 + 40 : 200;
+}
+
+type CoursePaneLazyRow =
+    | { kind: 'alert'; key: string; children: ReactNode }
+    | {
+          kind: 'lazy-course';
+          key: string;
+          courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
+          index: number;
+      };
 
 type CoursePaneSearchData =
     | { kind: 'single'; response: WebsocAPIResponse }
@@ -418,6 +431,38 @@ export default function CourseRenderPane(props: { id?: number }) {
     const showNoIntersection = andCourseCount === 0;
     const showOrSectionBanner = !showNoIntersection && restCourseData.some(isCourseEntry);
 
+    const coursePaneLazyRows: CoursePaneLazyRow[] = [];
+    if (showNoIntersection) {
+        coursePaneLazyRows.push({
+            kind: 'alert',
+            key: 'ge-no-intersection',
+            children: 'No courses fulfill all selected GEs. The results below fulfill at least one selected GE.',
+        });
+    }
+    for (let index = 0; index < intersectCourseData.length; index++) {
+        coursePaneLazyRows.push({
+            kind: 'lazy-course',
+            key: `intersect-${index}`,
+            courseData: intersectCourseData,
+            index,
+        });
+    }
+    if (showOrSectionBanner) {
+        coursePaneLazyRows.push({
+            kind: 'alert',
+            key: 'ge-or-section',
+            children: 'The courses below satisfy at least one of the selected GEs.',
+        });
+    }
+    for (let index = 0; index < restCourseData.length; index++) {
+        coursePaneLazyRows.push({
+            kind: 'lazy-course',
+            key: `rest-${index}`,
+            courseData: restCourseData,
+            index,
+        });
+    }
+
     return (
         <>
             <Box sx={{ height: '56px' }} />
@@ -453,69 +498,24 @@ export default function CourseRenderPane(props: { id?: number }) {
                 <>
                     <RecruitmentBanner />
                     <Box>
-                        {showNoIntersection && (
-                            <Alert
-                                severity="warning"
-                                sx={{
-                                    mb: 1,
-                                    fontSize: '1rem',
-                                    '& .MuiAlert-message': {
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                    },
-                                }}
-                            >
-                                No courses fulfill all selected GEs. The results below fulfill at least one selected GE.
-                            </Alert>
-                        )}
-                        {intersectCourseData.map((_, index) => {
-                            let heightEstimate = 200;
-                            if ((intersectCourseData[index] as AACourse).sections !== undefined)
-                                heightEstimate =
-                                    (intersectCourseData[index] as AACourse).sections.length * 60 + 20 + 40;
-                            return (
+                        {coursePaneLazyRows.map((row) =>
+                            row.kind === 'alert' ? (
+                                <WarningAlert key={row.key}>{row.children}</WarningAlert>
+                            ) : (
                                 <LazyLoad
                                     once
-                                    key={`intersect-${index}`}
+                                    key={row.key}
                                     overflow
-                                    height={heightEstimate}
+                                    height={estimateCoursePaneLazyHeight(row.courseData[row.index])}
                                     offset={1000}
                                 >
-                                    {SectionTableWrapped(index, {
-                                        courseData: intersectCourseData,
+                                    {SectionTableWrapped(row.index, {
+                                        courseData: row.courseData,
                                         scheduleNames: scheduleNames,
                                     })}
                                 </LazyLoad>
-                            );
-                        })}
-                        {showOrSectionBanner && (
-                            <Alert
-                                severity="warning"
-                                sx={{
-                                    mb: 1,
-                                    fontSize: '1rem',
-                                    '& .MuiAlert-message': {
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                    },
-                                }}
-                            >
-                                The courses below satisfy at least one of the selected GEs.
-                            </Alert>
+                            )
                         )}
-                        {restCourseData.map((_, index) => {
-                            let heightEstimate = 200;
-                            if ((restCourseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (restCourseData[index] as AACourse).sections.length * 60 + 20 + 40;
-                            return (
-                                <LazyLoad once key={`rest-${index}`} overflow height={heightEstimate} offset={1000}>
-                                    {SectionTableWrapped(index, {
-                                        courseData: restCourseData,
-                                        scheduleNames: scheduleNames,
-                                    })}
-                                </LazyLoad>
-                            );
-                        })}
                     </Box>
                 </>
             )}
