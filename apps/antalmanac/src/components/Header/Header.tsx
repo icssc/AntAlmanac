@@ -15,7 +15,7 @@ export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
-    const { sessionIsValid } = useSessionStore();
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const isMobile = useIsMobile();
 
     const clearStorage = () => {

@@ -4,7 +4,7 @@ import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchFor
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import {
     getQuarterPlan,
     getRoadmapTermRelation,
@@ -92,10 +92,10 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             return false;
         }
 
-        const { year, quarter } = RightPaneStore.getTermParts();
-        const quarterPlan = getQuarterPlan(roadmap, year, quarter);
+        const term = RightPaneStore.getFormData().term;
+        const quarterPlan = getQuarterPlan(roadmap, term);
         if (!quarterPlan) {
-            openSnackbar('error', `The provided roadmap does not contain ${year} ${quarter}`);
+            openSnackbar('error', `The provided roadmap does not contain ${term.shortName}`);
             return false;
         }
         try {
@@ -123,7 +123,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     };
 
     const renderGroup: AutocompleteProps['renderGroup'] = (params) => {
-        const term = RightPaneStore.getFormData().term;
+        const termShortName = RightPaneStore.getFormData().term.shortName;
         const includesTerm = params.group === RoadmapTermRelation.IncludesTerm;
         const keyword = includesTerm ? 'Includes' : "Doesn't Include";
 
@@ -131,7 +131,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             <li key={params.key}>
                 <HorizontalRightDivider>
                     <Typography>
-                        {keyword} {term}
+                        {keyword} {termShortName}
                     </Typography>
                 </HorizontalRightDivider>
                 <ul style={{ padding: 0 }}>{params.children}</ul>
@@ -182,10 +182,10 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     useEffect(() => {
         const updateTermRoadmaps = () => {
-            const { year, quarter } = RightPaneStore.getTermParts();
+            const term = RightPaneStore.getFormData().term;
             const roadmapsWithTerm: typeof termRoadmapGrouping = getDefaultTermRoadmapGrouping();
             for (const roadmap of plannerRoadmaps) {
-                const roadmapTermRelation = getRoadmapTermRelation(roadmap, year, quarter);
+                const roadmapTermRelation = getRoadmapTermRelation(roadmap, term);
                 roadmapsWithTerm[roadmapTermRelation].add(roadmap.id.toString());
             }
             setTermRoadmapGrouping(roadmapsWithTerm);

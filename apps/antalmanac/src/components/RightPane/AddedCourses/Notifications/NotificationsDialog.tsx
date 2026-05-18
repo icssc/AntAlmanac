@@ -19,7 +19,6 @@ import {
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface NotificationsDialogProps {
     disabled?: boolean;
@@ -32,11 +31,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
     const postHog = usePostHog();
 
-    const { sessionIsValid } = useSessionStore(
-        useShallow((state) => ({
-            sessionIsValid: state.sessionIsValid,
-        }))
-    );
+    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
 
     const handleOpen = useCallback(() => {
         if (sessionIsValid) {

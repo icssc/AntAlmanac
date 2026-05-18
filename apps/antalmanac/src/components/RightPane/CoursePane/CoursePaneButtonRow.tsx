@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 /**
  * All the interactive buttons have the same styles.
@@ -67,10 +68,9 @@ const COLUMN_LABEL_ENTRIES = Object.entries(columnLabels);
  * e.g. show/hide the section code, instructors, etc.
  */
 export function ColumnToggleDropdown() {
-    const [selectedColumns, setSelectedColumns] = useColumnStore((store) => [
-        store.selectedColumns,
-        store.setSelectedColumns,
-    ]);
+    const [selectedColumns, setSelectedColumns] = useColumnStore(
+        useShallow((store) => [store.selectedColumns, store.setSelectedColumns])
+    );
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
     const open = Boolean(anchorEl);
 

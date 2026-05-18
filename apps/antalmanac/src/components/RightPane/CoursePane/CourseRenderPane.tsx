@@ -1,14 +1,14 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
-import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
+import darkNoResults from '$components/RightPane/CoursePane/static/dark-no_results.png';
+import noResults from '$components/RightPane/CoursePane/static/no_results.png';
 import RightPaneStore, { CourseSearchParams, CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import {
     getMultiGeCourseKey,
@@ -16,7 +16,6 @@ import {
     isMultiGeSelection,
     queryManualSearchCourses,
 } from '$lib/multiGeSearch';
-import { getTermLongName } from '$lib/termData';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -26,6 +25,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
+import type { WebsocSearchInput } from '@packages/antalmanac-types';
 import { AACourse } from '@packages/antalmanac-types';
 import { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
 import { useQuery } from '@tanstack/react-query';
@@ -240,7 +240,7 @@ const LoadingMessage = () => {
 };
 
 const ErrorMessage = () => {
-    const { isDark } = useThemeStore();
+    const isDark = useThemeStore((store) => store.isDark);
 
     const formData = RightPaneStore.getFormData();
     const multiSearchData = RightPaneStore.getMultiSearchData();
@@ -286,7 +286,7 @@ const ErrorMessage = () => {
             ) : null}
 
             <Image
-                src={isDark ? darkNoNothing : noNothing}
+                src={isDark ? darkNoResults : noResults}
                 alt="No Results Found"
                 style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
             />
@@ -299,7 +299,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [sharedCourseKeys, setSharedCourseKeys] = useState<Set<string>>(new Set<string>());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
-    const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
+    const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term.longName);
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
@@ -319,12 +319,11 @@ export default function CourseRenderPane(props: { id?: number }) {
                 let websocJsonResp;
                 let fetchedSharedCourseKeys = new Set<string>();
                 if (multiSearchData.length > 0) {
-                    const { year, quarter } = RightPaneStore.getTermParts();
-                    const offeredCourses: Record<string, string>[] = [];
+                    const { year, quarter } = RightPaneStore.getFormData().term;
+                    const offeredCourses: WebsocSearchInput[] = [];
                     const unofferedCourses: CourseSearchParams[] = [];
                     const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
-                        year: year,
-                        quarter: quarter,
+                        term: { year, quarter },
                         courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
                     });
                     for (const course of multiSearchData) {
@@ -345,7 +344,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     fetchedSharedCourseKeys = sharedCourseKeys;
                 }
                 setSharedCourseKeys(fetchedSharedCourseKeys);
-                setSearchedTerm(getTermLongName(RightPaneStore.getFormData().term));
+                setSearchedTerm(RightPaneStore.getFormData().term.longName);
                 return websocJsonResp;
             } catch (error) {
                 console.error(error);
@@ -366,9 +365,10 @@ export default function CourseRenderPane(props: { id?: number }) {
     );
 
     const getQueryParams = useCallback(
-        (searchData: CourseSearchParams) => ({
+        (searchData: CourseSearchParams): WebsocSearchInput => ({
+            year: searchData.term.year,
+            quarter: searchData.term.quarter,
             department: searchData.deptValue,
-            term: searchData.term,
             ge: searchData.ge,
             courseNumber: searchData.courseNumber,
             sectionCodes: searchData.sectionCode,
@@ -380,8 +380,8 @@ export default function CourseRenderPane(props: { id?: number }) {
             building: searchData.building,
             room: searchData.room,
             division: searchData.division,
-            excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
-            days: searchData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
+            excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','),
+            days: searchData.days.split(/(?=[A-Z])/).join(','),
         }),
         []
     );

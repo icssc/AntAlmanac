@@ -56,7 +56,12 @@ export function SelectSchedulePopover() {
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
-    const { fallbackMode, getFallbackScheduleNames } = useFallbackStore();
+    const { fallbackMode, getFallbackScheduleNames } = useFallbackStore(
+        useShallow((store) => ({
+            fallbackMode: store.fallbackMode,
+            getFallbackScheduleNames: store.getFallbackScheduleNames,
+        }))
+    );
     const fallbackScheduleMapping = getScheduleItems(getFallbackScheduleNames());
 
     const anchorElementRef = useRef(null);

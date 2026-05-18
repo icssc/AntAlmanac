@@ -3,16 +3,26 @@ import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane'
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
-        useCoursePaneStore();
+        useCoursePaneStore(
+            useShallow((store) => ({
+                key: store.key,
+                forceUpdate: store.forceUpdate,
+                searchFormIsDisplayed: store.searchFormIsDisplayed,
+                displaySearch: store.displaySearch,
+                displaySections: store.displaySections,
+                advancedSearchEnabled: store.advancedSearchEnabled,
+            }))
+        );
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
 

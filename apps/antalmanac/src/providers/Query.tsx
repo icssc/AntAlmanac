@@ -1,5 +1,4 @@
-import { trpcConfig } from '$lib/api/trpc';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcConfig, trpcReact } from '$lib/api/trpc';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 

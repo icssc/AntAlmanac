@@ -1,6 +1,6 @@
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import type { AACourse } from '@packages/antalmanac-types';
 import { flattenCourses } from '@packages/anteater-api/utils';
@@ -15,8 +15,9 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
     const params = useMemo(() => {
         const formData = RightPaneStore.getFormData();
         return {
+            year: formData.term.year,
+            quarter: formData.term.quarter,
             department: props.courseDetails.deptCode,
-            term: formData.term,
             ge: 'ANY',
             courseNumber: props.courseDetails.courseNumber,
             courseTitle: props.courseDetails.courseTitle,

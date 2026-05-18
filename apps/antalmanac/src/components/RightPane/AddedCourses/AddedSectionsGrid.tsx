@@ -18,11 +18,11 @@ import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { Box, SxProps, Typography } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
+import { AACourse, AATerm } from '@packages/antalmanac-types';
 import { useEffect, useMemo, useState } from 'react';
 
 export interface CourseWithTerm extends AACourse {
-    term: string;
+    term: AATerm;
     id: string;
 }
 
@@ -45,7 +45,7 @@ function getCourses() {
 
     for (const course of currentCourses) {
         const courseId = getCourseId(course);
-        let formattedCourse = formattedCourses.find((needleCourse) => getCourseId(needleCourse) === courseId);
+        let formattedCourse = formattedCourses.find((formattedCourse) => getCourseId(formattedCourse) === courseId);
 
         const sectionUpdatedAt = course.section?.updatedAt ?? null;
 

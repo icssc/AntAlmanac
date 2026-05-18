@@ -5,11 +5,11 @@ import { TimeSelector } from '$components/Header/Settings/TimeSelector';
 import { useThemeStore } from '$stores/SettingsStore';
 import { AccountCircle } from '@mui/icons-material';
 import { Box, Divider, Stack, Typography } from '@mui/material';
-import { User } from '@packages/antalmanac-types';
+import type { UserProfile } from '@packages/db/src/schema/auth/user';
 import Image from 'next/image';
 
 interface UserProfileSectionProps {
-    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
+    user: UserProfile | null;
 }
 
 function UserProfileSection({ user }: UserProfileSectionProps) {
@@ -66,7 +66,7 @@ function UserProfileSection({ user }: UserProfileSectionProps) {
 }
 
 interface SettingsMenuProps {
-    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
+    user: UserProfile | null;
     onClose?: () => void;
 }
 

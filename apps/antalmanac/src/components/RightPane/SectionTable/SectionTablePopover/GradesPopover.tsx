@@ -1,4 +1,4 @@
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import {
     Box,
     ToggleButton,

@@ -4,7 +4,7 @@ import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -68,7 +68,7 @@ export const Signin = () => {
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
             const res = await trpc.schedule.getGuest.query({ username: userID });
-            if (res.user.imported) {
+            if (res.imported) {
                 setOpenalert(true);
             }
             return res;

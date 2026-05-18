@@ -2,6 +2,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTablePopover/EnrollmentHistoryPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import type { AATerm } from '@packages/antalmanac-types';
 import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/anteater-api/types';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -9,7 +10,7 @@ interface EnrollmentCellProps {
     sectionType: WebsocSectionType;
     deptCode: string;
     courseNumber: string;
-    term: string;
+    term: AATerm;
     sectionCode: string;
     numCurrentlyEnrolled: WebsocSectionEnrollment;
     maxCapacity: number;

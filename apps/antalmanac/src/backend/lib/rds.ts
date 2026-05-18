@@ -1,11 +1,11 @@
 import type {
     ShortCourse,
     ShortCourseSchedule,
-    User,
     RepeatingCustomEvent,
     Notification,
     ScheduleSaveState,
 } from '@packages/antalmanac-types';
+import type { Quarter, Year } from '@packages/anteater-api/types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
 import {
@@ -21,6 +21,7 @@ import {
     Account,
     friendships,
     subscriptions,
+    User,
 } from '@packages/db/src/schema';
 import {
     buildConflictUpdateSet,
@@ -322,7 +323,7 @@ export class RDS {
     static async getGuestScheduleByUsername(
         db: DatabaseOrTransaction,
         username: string
-    ): Promise<{ user: { imported: boolean }; userData: User['userData'] } | null> {
+    ): Promise<(User & { userData: ScheduleSaveState }) | null> {
         const row = await db
             .select()
             .from(accounts)
@@ -357,7 +358,7 @@ export class RDS {
             : userSchedules.length;
 
         return {
-            user: { imported: row.users.imported ?? false },
+            ...row.users,
             userData: {
                 schedules: userSchedules,
                 scheduleIndex,
@@ -372,7 +373,10 @@ export class RDS {
      * @param userId - The unique identifier of the friend.
      * @returns A promise that resolves to a User object containing only the shared schedules, or null if not found.
      */
-    static async getUserFriendDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+    static async getUserFriendDataByUid(
+        db: DatabaseOrTransaction,
+        userId: string
+    ): Promise<(User & { userData: ScheduleSaveState }) | null> {
         return db.transaction(async (tx) => {
             const user = await tx
                 .select()
@@ -401,10 +405,7 @@ export class RDS {
             const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
             return {
-                id: userId,
-                name: user.name ?? undefined,
-                email: user.email ?? undefined,
-                avatar: user.avatar ?? undefined,
+                ...user,
                 userData: {
                     schedules: userSchedules,
                     scheduleIndex: 0,
@@ -890,8 +891,8 @@ export class RDS {
             .values({
                 userId,
                 sectionCode: notification.sectionCode,
-                year: notification.term.split(' ')[0],
-                quarter: notification.term.split(' ')[1],
+                year: notification.year,
+                quarter: notification.quarter,
                 notifyOnOpen: notification.notifyOn.notifyOnOpen,
                 notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
                 notifyOnFull: notification.notifyOn.notifyOnFull,
@@ -944,8 +945,8 @@ export class RDS {
             .where(
                 and(
                     eq(subscriptions.sectionCode, notification.sectionCode),
-                    eq(subscriptions.year, notification.term.split(' ')[0]),
-                    eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                    eq(subscriptions.year, notification.year),
+                    eq(subscriptions.quarter, notification.quarter),
                     eq(subscriptions.environment, environment)
                 )
             );
@@ -963,7 +964,8 @@ export class RDS {
         db: DatabaseOrTransaction,
         userId: string,
         sectionCode: string,
-        term: string,
+        year: Year,
+        quarter: Quarter,
         environment: string
     ) {
         return db
@@ -972,8 +974,8 @@ export class RDS {
                 and(
                     eq(subscriptions.userId, userId),
                     eq(subscriptions.sectionCode, sectionCode),
-                    eq(subscriptions.year, term.split(' ')[0]),
-                    eq(subscriptions.quarter, term.split(' ')[1]),
+                    eq(subscriptions.year, year),
+                    eq(subscriptions.quarter, quarter),
                     eq(subscriptions.environment, environment)
                 )
             );

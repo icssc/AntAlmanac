@@ -1,7 +1,7 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
-import { canTermEnrollmentChange, type Term } from '$lib/termData';
+import { canTermEnrollmentChange, type AATerm } from '$lib/term';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
@@ -21,7 +21,7 @@ const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
 
 interface NotificationsMenuProps {
     section: AASection;
-    term: Term['shortName'];
+    term: AATerm;
     courseTitle: Course['title'];
     deptCode?: string;
     courseNumber?: string;
@@ -29,7 +29,7 @@ interface NotificationsMenuProps {
 
 export const NotificationsMenu = memo(
     ({ section, term, courseTitle, deptCode, courseNumber }: NotificationsMenuProps) => {
-        const notificationKey = section.sectionCode + ' ' + term;
+        const notificationKey = `${section.sectionCode} ${term.shortName}`;
         const [notification, setNotifications] = useNotificationStore(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
         );
@@ -39,11 +39,7 @@ export const NotificationsMenu = memo(
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
         const [signInOpen, setSignInOpen] = useState(false);
 
-        const { sessionIsValid } = useSessionStore(
-            useShallow((state) => ({
-                sessionIsValid: state.sessionIsValid,
-            }))
-        );
+        const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
 
         const isTermCurrent = canTermEnrollmentChange(term);
         const notifyOn = notification?.notifyOn;
@@ -56,7 +52,7 @@ export const NotificationsMenu = memo(
                 logAnalytics(postHog, {
                     category: analyticsEnum.aants,
                     action: AANTS_ANALYTICS_ACTIONS[status],
-                    customProps: { sectionCode, term, source: 'menu' },
+                    customProps: { sectionCode, term: term.shortName, source: 'menu' },
                 });
                 setNotifications({
                     courseTitle,
@@ -89,7 +85,7 @@ export const NotificationsMenu = memo(
                 logAnalytics(postHog, {
                     category: analyticsEnum.aants,
                     action: analyticsEnum.aants.actions.OPEN_SECTION_NOTIFICATIONS,
-                    customProps: { sectionCode: section.sectionCode, term },
+                    customProps: { sectionCode: section.sectionCode, term: term.shortName },
                 });
                 setAnchorEl(event.currentTarget);
             },

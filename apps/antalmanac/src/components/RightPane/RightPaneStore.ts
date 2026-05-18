@@ -1,17 +1,10 @@
 import { EventEmitter } from 'events';
 
-import {
-    AdvancedSearchParam,
-    BasicSearchParam,
-    ManualSearchParam,
-} from '$components/RightPane/CoursePane/SearchForm/constants';
+import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { normalizeGeSelection } from '$lib/multiGeSearch';
-import { getDefaultTerm, isTermAvailable } from '$lib/termData';
+import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
-
-const defaultBasicSearchValues: Record<BasicSearchParam, string> = {
-    term: getDefaultTerm().shortName,
-};
+import type { AATerm } from '@packages/antalmanac-types';
 
 const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
     instructor: '',
@@ -27,17 +20,20 @@ const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
     days: '',
 };
 
-const defaultFormValues: Record<ManualSearchParam, string> = {
+export interface CourseSearchParams extends Record<Exclude<ManualSearchParam, 'term'>, string> {
+    term: AATerm;
+}
+
+type SearchParamKey = Exclude<keyof CourseSearchParams, 'term'>;
+
+const defaultFormValues: CourseSearchParams = {
+    term: getDefaultTerm(),
     deptValue: 'ALL',
     ge: 'ANY',
     courseNumber: '',
     sectionCode: '',
-    ...defaultBasicSearchValues,
     ...defaultAdvancedSearchValues,
 };
-
-export type CourseSearchParams = typeof defaultFormValues;
-type CourseSearchParamKey = keyof CourseSearchParams;
 
 export enum CourseSearchWarningType {
     TermUnavailable = 'termUnavailable',
@@ -99,25 +95,27 @@ class RightPaneStore extends EventEmitter {
     }
 
     updateFormDataFromURL = (search: URLSearchParams) => {
-        const formFields = Object.keys(defaultFormValues) as CourseSearchParamKey[];
+        const paramTerm = search.get('term') || search.get('TERM');
+        if (paramTerm) {
+            const term = getTermByShortName(paramTerm);
+            if (term) {
+                this.formData.term = term;
+            } else {
+                const fallback = getDefaultTerm();
+                const message = `${paramTerm} is unavailable, falling back to ${fallback.shortName}`;
+                openSnackbar('error', message);
+                console.error('Error setting term from URL:', message);
+                this.formData.term = fallback;
+                this.setWarningMessages(CourseSearchWarningType.TermUnavailable, [message]);
+            }
+        }
 
-        formFields.forEach((field) => {
+        const stringFields = Object.keys(defaultFormValues).filter((k): k is SearchParamKey => k !== 'term');
+        for (const field of stringFields) {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
-
             if (paramValue !== null) {
                 this.formData[field] = field === 'ge' ? normalizeGeSelection(paramValue) : paramValue;
             }
-        });
-
-        if (this.formData.term !== null && !isTermAvailable(this.formData.term)) {
-            const fallbackTerm = getDefaultTerm().shortName;
-            const message = `${this.formData.term} is currently unavailable, falling back to ${fallbackTerm}`;
-            openSnackbar('error', message);
-            console.error('Error setting term from URL:', message);
-
-            this.formData.term = getDefaultTerm().shortName;
-
-            this.setWarningMessages(CourseSearchWarningType.TermUnavailable, [message]);
         }
 
         this.emit('formDataChange');
@@ -141,8 +139,13 @@ class RightPaneStore extends EventEmitter {
 
     getWarningMessages = () => this.warningMessages;
 
-    updateFormValue = (field: CourseSearchParamKey, value: string) => {
+    updateFormValue = (field: SearchParamKey, value: string) => {
         this.formData[field] = value;
+        this.emit('formDataChange');
+    };
+
+    setTerm = (term: AATerm) => {
+        this.formData.term = term;
         this.emit('formDataChange');
     };
 
@@ -188,11 +191,6 @@ class RightPaneStore extends EventEmitter {
     formDataHasAdvancedSearch = () => {
         const formFields = Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[];
         return formFields.some((key) => this.formData[key] !== defaultAdvancedSearchValues[key]);
-    };
-
-    getTermParts = (): { year: string; quarter: string } => {
-        const [year, quarter] = this.formData.term.split(' ');
-        return { year, quarter };
     };
 
     setWarningMessages = (warningType: CourseSearchWarningType, messages: string[]) => {

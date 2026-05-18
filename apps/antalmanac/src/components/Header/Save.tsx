@@ -2,7 +2,7 @@ import actionTypesStore from '$actions/ActionTypesStore';
 import { isEmptySchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -19,7 +19,7 @@ import { useState, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
-    const { sessionIsValid } = useSessionStore();
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [autoSaving, setAutoSaving] = useState(false);
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);

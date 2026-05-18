@@ -49,11 +49,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
     return {
         websoc: {
             async query(
-                // `quarter` is widened to `string` so callers aren't forced to use the API's literal union type.
-                // The API validates the value itself.
-                params: Omit<NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']>, 'quarter'> & {
-                    quarter: string;
-                }
+                params: NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']>
             ): Promise<WebsocAPIResponse> {
                 const { data, error, response } = await http.GET('/v2/rest/websoc', {
                     params: { query: params as NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']> },

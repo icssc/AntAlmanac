@@ -40,3 +40,5 @@ export type WebsocSyllabiAPIResult =
     paths['/v2/rest/websoc/syllabi']['get']['responses'][200]['content']['application/json'];
 
 export type WebsocSyllabiResponse = WebsocSyllabiAPIResult['data'];
+
+export type WebsocQueryParams = NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']>;

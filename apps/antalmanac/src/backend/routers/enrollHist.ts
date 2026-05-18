@@ -14,7 +14,6 @@ const enrollHistRouter = router({
                 sectionType: WebsocSectionTypeSchema,
             })
         )
-
         .query(async ({ input }): Promise<EnrollmentHistoryEntry[]> => {
             const data = await aapiClient.enrollmentHistory.get(input);
 

@@ -33,7 +33,7 @@ export const NotificationTableRowCheckbox = memo(
             logAnalytics(postHog, {
                 category: analyticsEnum.aants,
                 action: AANTS_ANALYTICS_ACTIONS[statusKey],
-                customProps: { sectionCode, term, source: 'section_row' },
+                customProps: { sectionCode, term: term.shortName, source: 'section_row' },
             });
             setNotifications({
                 courseTitle,
