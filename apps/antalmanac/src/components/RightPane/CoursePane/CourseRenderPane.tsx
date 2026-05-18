@@ -43,11 +43,13 @@ function getColors() {
     return courseColors;
 }
 
+type CourseListEntry = WebsocSchool | WebsocDepartment | AACourse;
+
 const flattenSOCObject = (
     SOCObject: WebsocAPIResponse,
     courseColors: ReturnType<typeof getColors>
-): (WebsocSchool | WebsocDepartment | AACourse)[] => {
-    return SOCObject.schools.reduce((accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
+): CourseListEntry[] => {
+    return SOCObject.schools.reduce((accumulator: CourseListEntry[], school) => {
         accumulator.push(school);
 
         school.departments.forEach((dept) => {
@@ -69,22 +71,20 @@ const flattenSOCObject = (
     }, []);
 };
 
-function isSchoolEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is WebsocSchool {
+function isSchoolEntry(item: CourseListEntry): item is WebsocSchool {
     return 'departments' in item;
 }
 
-function isDepartmentEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is WebsocDepartment {
+function isDepartmentEntry(item: CourseListEntry): item is WebsocDepartment {
     return 'courses' in item;
 }
 
-function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is AACourse {
+function isCourseEntry(item: CourseListEntry): item is AACourse {
     return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
 }
 
-function cleanHeaders(
-    items: (WebsocSchool | WebsocDepartment | AACourse)[]
-): (WebsocSchool | WebsocDepartment | AACourse)[] {
-    const result: (WebsocSchool | WebsocDepartment | AACourse)[] = [];
+function cleanHeaders(items: CourseListEntry[]): CourseListEntry[] {
+    const result: CourseListEntry[] = [];
     let pendingSchool: WebsocSchool | null = null;
     let pendingDept: WebsocDepartment | null = null;
 
@@ -110,9 +110,7 @@ function cleanHeaders(
     return result;
 }
 
-function getFilteredCourses(
-    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
-): (WebsocSchool | WebsocDepartment | AACourse)[] {
+function getFilteredCourses(allCourses: CourseListEntry[]): CourseListEntry[] {
     const { manualSearchEnabled } = useCoursePaneStore.getState();
     const { filterTakenCourses, userTakenCourses } = usePlannerStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
@@ -128,12 +126,9 @@ function getFilteredCourses(
     return allCourses;
 }
 
-const getFilteredAndCourseCount = (
-    flattenedCourseData: (WebsocSchool | WebsocDepartment | AACourse)[],
-    sharedCourseKeys: Set<string>
-) =>
+const getFilteredAndCourseCount = (flattenedCourseData: CourseListEntry[], sharedCourseKeys: Set<string>) =>
     flattenedCourseData.filter(
-        (item) => 'sections' in item && sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
+        (item) => isCourseEntry(item) && sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
     ).length;
 
 const RecruitmentBanner = () => {
@@ -192,10 +187,7 @@ const RecruitmentBanner = () => {
     );
 };
 
-const SectionTableWrapped = (
-    index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
-) => {
+const SectionTableWrapped = (index: number, data: { scheduleNames: string[]; courseData: CourseListEntry[] }) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
     const item = courseData[index];
@@ -474,7 +466,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                                 No courses fulfill all selected GEs. The results below fulfill at least one selected GE.
                             </Alert>
                         )}
-                        {courseData.map((item: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                        {courseData.map((item: CourseListEntry, index: number) => {
                             let heightEstimate = 200;
                             if (isCourseEntry(item)) heightEstimate = item.sections.length * 60 + 20 + 40;
                             return (
