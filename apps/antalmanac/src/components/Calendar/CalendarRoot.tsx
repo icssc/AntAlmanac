@@ -69,7 +69,7 @@ function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
     end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
 
     return {
-        color: '#6d6d6d',
+        color: '#9d9d9d',
         start,
         end,
         title: '',
