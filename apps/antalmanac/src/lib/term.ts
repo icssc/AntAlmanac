@@ -1,11 +1,10 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import termJson from '$generated/termData.json';
+import { parseTermShortName } from '$lib/termHelpers';
 import { QuarterSchema, type AATerm } from '@packages/antalmanac-types';
 import { Year } from '@packages/anteater-api/types';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
-
-import { parseTermShortName } from './termHelpers';
 
 export type { AATerm } from '@packages/antalmanac-types';
 
@@ -23,11 +22,9 @@ const termSchema = z
         year: z.string(),
         quarter: QuarterSchema,
         // TODO(zod-v4): Replace refine with z.literal.template() once we upgrade to Zod v4.
-        shortName: z
-            .string()
-            .refine((s): s is AATerm['shortName'] => parseTermShortName(s) !== undefined, {
-                message: 'shortName must be "<year> <quarter>"',
-            }),
+        shortName: z.string().refine((s): s is AATerm['shortName'] => parseTermShortName(s) !== undefined, {
+            message: 'shortName must be "<year> <quarter>"',
+        }),
         longName: z.string(),
         instructionStart: z.string().date(),
         instructionEnd: z.string().date(),
