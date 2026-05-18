@@ -1,10 +1,9 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
-import { getSignInUrl } from '$lib/auth/authClient';
+import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -405,35 +404,34 @@ export const loginUser = async (
     provider: Provider,
     { silent = false, signInUrl = '', postHog }: LoginUserOptions = {}
 ) => {
-    let authUrl;
-    if (signInUrl !== '') {
-        authUrl = signInUrl;
-    } else {
-        const { url, error } = await getSignInUrl(provider, {
-            redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined,
-            authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
-        });
-        if (error || !url) {
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SIGN_IN_FAIL,
-                error: getErrorMessage(error),
+    try {
+        let authUrl: string;
+        if (signInUrl !== '') {
+            authUrl = signInUrl;
+        } else {
+            authUrl = await getSignInUrl(provider, {
+                authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
+                returnUrl: `${window.location.pathname}${window.location.search}${window.location.hash}`,
             });
-            if (!silent) {
-                console.error('Error during login initiation', error);
-                openSnackbar('error', 'Error during login initiation. Please Try Again.');
-            }
-            return;
         }
-        authUrl = url;
-    }
 
-    logAnalytics(postHog, {
-        category: analyticsEnum.auth,
-        action: analyticsEnum.auth.actions.SIGN_IN,
-    });
-    cacheSchedule();
-    window.location.href = authUrl;
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SIGN_IN,
+        });
+        cacheSchedule();
+        window.location.href = authUrl;
+    } catch (error) {
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SIGN_IN_FAIL,
+            error: getErrorMessage(error),
+        });
+        if (!silent) {
+            console.error('Error during login initiation', error);
+            openSnackbar('error', 'Error during login initiation. Please Try Again.');
+        }
+    }
 };
 
 export const deleteCourse = (sectionCode: string, term: AATerm, scheduleIndex: number) => {
