@@ -94,8 +94,8 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 ## Quickest Start: GitHub Codespaces
 
-You can develop AntAlmanac entirely in the browser (or your local VS Code)
-without installing Node, pnpm, or Docker on your machine.
+GitHub Codespaces gives you a fully-configured AntAlmanac dev environment
+in the browser, with no setup required on your own machine.
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=icssc/AntAlmanac)
 
