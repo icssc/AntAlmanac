@@ -1,5 +1,5 @@
 import { trpcReact } from '$lib/api/trpc';
-import { parseQuarter } from '$lib/term';
+import { parseQuarter } from '$lib/termHelpers';
 import { Box, Button } from '@mui/material';
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
