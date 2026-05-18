@@ -3,7 +3,7 @@ import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-import { Box, Skeleton } from '@mui/material';
+import { Box } from '@mui/material';
 import { Component, type ReactNode } from 'react';
 
 /**
@@ -53,10 +53,12 @@ function readCachedCourses(): CourseWithTerm[] | null {
 }
 
 /**
- * Renders the previous schedule's `SectionTable`s wrapped in MUI's
- * children-aware `Skeleton`. The hidden table inside contributes layout, so
- * each Skeleton block sizes exactly to the real table — no height tracking,
- * no per-button replicas, no responsive logic to keep in sync.
+ * Renders the previous schedule's `SectionTable`s with `skeleton={true}`,
+ * which wraps each interactive element (buttons + table) in its own MUI
+ * children-aware `Skeleton`. The hidden real children inside each Skeleton
+ * contribute layout, so every placeholder sizes exactly to the real element
+ * it will be replaced by — no height tracking, no responsive logic to keep
+ * in sync.
  */
 export function AddedCoursesLoadingSkeleton() {
     const courses = readCachedCourses();
@@ -69,16 +71,16 @@ export function AddedCoursesLoadingSkeleton() {
         <SkeletonErrorBoundary>
             <Box display="flex" flexDirection="column" gap={1}>
                 {courses.map((course) => (
-                    <Skeleton key={course.id} variant="rounded" component="div">
-                        <SectionTable
-                            sortable
-                            courseDetails={course}
-                            term={course.term}
-                            allowHighlight={false}
-                            analyticsCategory={analyticsEnum.addedClasses}
-                            scheduleNames={scheduleNames}
-                        />
-                    </Skeleton>
+                    <SectionTable
+                        key={course.id}
+                        skeleton
+                        sortable
+                        courseDetails={course}
+                        term={course.term}
+                        allowHighlight={false}
+                        analyticsCategory={analyticsEnum.addedClasses}
+                        scheduleNames={scheduleNames}
+                    />
                 ))}
             </Box>
         </SkeletonErrorBoundary>

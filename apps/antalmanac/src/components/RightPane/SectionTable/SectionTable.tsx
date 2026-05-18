@@ -19,6 +19,7 @@ import {
     Collapse,
     IconButton,
     Paper,
+    Skeleton,
     Table,
     TableCell,
     TableContainer,
@@ -59,6 +60,12 @@ export interface SectionTableProps {
     updatedAt?: string;
     missingSections?: string[];
     sortable?: boolean;
+    /**
+     * Wraps each interactive element (each button, the table) in MUI's
+     * children-aware Skeleton, so the component still renders at the
+     * correct dimensions while displaying as a set of loading placeholders.
+     */
+    skeleton?: boolean;
 }
 
 function SectionTable({
@@ -69,6 +76,7 @@ function SectionTable({
     analyticsCategory,
     missingSections = [],
     sortable = false,
+    skeleton = false,
 }: SectionTableProps) {
     const draggingState = useDraggingItemState(() => ({ isCollapsed: !openContent }));
 
@@ -123,6 +131,15 @@ function SectionTable({
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [activeColumns]);
 
+    const wrapSkeleton = (children: React.ReactNode) =>
+        skeleton ? (
+            <Skeleton variant="rounded" component="div">
+                {children}
+            </Skeleton>
+        ) : (
+            children
+        );
+
     return (
         <Box sx={{ overflow: 'hidden' }}>
             <Box
@@ -133,109 +150,133 @@ function SectionTable({
                     marginTop: '4px',
                 }}
             >
-                {sortable ? (
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        sx={{ padding: 0, minWidth: 0, minHeight: 0, cursor: 'inherit' }}
+                {sortable
+                    ? wrapSkeleton(
+                          <Button
+                              variant="contained"
+                              color="secondary"
+                              sx={{ padding: 0, minWidth: 0, minHeight: 0, cursor: 'inherit' }}
+                          >
+                              <SortableList.DragHandle sx={{ height: '100%' }} iconSx={{ color: 'inherit' }} />
+                          </Button>
+                      )
+                    : null}
+
+                {wrapSkeleton(
+                    <CourseInfoBar
+                        deptCode={courseDetails.deptCode}
+                        courseTitle={courseDetails.courseTitle}
+                        courseNumber={courseDetails.courseNumber}
+                        prerequisiteLink={courseDetails.prerequisiteLink}
+                        analyticsCategory={analyticsCategory}
+                    />
+                )}
+
+                {activeTab !== 2
+                    ? null
+                    : wrapSkeleton(<CourseInfoSearchButton courseDetails={courseDetails} term={term} />)}
+
+                {wrapSkeleton(
+                    <CourseInfoButton
+                        analyticsCategory={analyticsCategory}
+                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
+                        text="Planner"
+                        icon={<Route />}
+                        redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
+                    />
+                )}
+
+                {wrapSkeleton(
+                    <CourseInfoButton
+                        analyticsCategory={analyticsCategory}
+                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
+                        text="Past Syllabi"
+                        icon={<HistoryEdu />}
+                        popupContent={
+                            <PastSyllabiPopover
+                                courseId={courseId}
+                                deptCode={courseDetails.deptCode}
+                                courseNumber={courseDetails.courseNumber}
+                            />
+                        }
+                    />
+                )}
+
+                {skeleton ? (
+                    <Skeleton variant="circular" component="div" sx={{ ml: 'auto', mr: 0.5 }}>
+                        <IconButton size="small" sx={{ padding: '4px' }}>
+                            <ExpandLess />
+                        </IconButton>
+                    </Skeleton>
+                ) : (
+                    <IconButton
+                        title={`${openContent ? 'Collapse' : 'Expand'} courses`}
+                        onClick={handleToggleExpand}
+                        size="small"
+                        sx={{ padding: '4px', marginLeft: 'auto', marginRight: 0.5 }}
                     >
-                        <SortableList.DragHandle sx={{ height: '100%' }} iconSx={{ color: 'inherit' }} />
-                    </Button>
-                ) : null}
-
-                <CourseInfoBar
-                    deptCode={courseDetails.deptCode}
-                    courseTitle={courseDetails.courseTitle}
-                    courseNumber={courseDetails.courseNumber}
-                    prerequisiteLink={courseDetails.prerequisiteLink}
-                    analyticsCategory={analyticsCategory}
-                />
-
-                {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
-
-                <CourseInfoButton
-                    analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
-                    text="Planner"
-                    icon={<Route />}
-                    redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
-                />
-
-                <CourseInfoButton
-                    analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
-                    text="Past Syllabi"
-                    icon={<HistoryEdu />}
-                    popupContent={
-                        <PastSyllabiPopover
-                            courseId={courseId}
-                            deptCode={courseDetails.deptCode}
-                            courseNumber={courseDetails.courseNumber}
-                        />
-                    }
-                />
-
-                <IconButton
-                    title={`${openContent ? 'Collapse' : 'Expand'} courses`}
-                    onClick={handleToggleExpand}
-                    size="small"
-                    sx={{ padding: '4px', marginLeft: 'auto', marginRight: 0.5 }}
-                >
-                    {openContent ? <ExpandLess /> : <ExpandMore />}
-                </IconButton>
+                        {openContent ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                )}
             </Box>
 
             <Collapse in={openContent} onExited={handleCollapseExit}>
                 {missingSections?.length > 0 && (
                     <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
                 )}
-                <TableContainer
-                    component={Paper}
-                    sx={{ margin: '0px 0px 8px 0px', width: '100%' }}
-                    elevation={0}
-                    variant="outlined"
-                >
-                    <Table
-                        size="small"
-                        sx={{
-                            minWidth: `${tableMinWidth}px`,
-                            width: '100%',
-                            tableLayout: 'fixed',
-                        }}
+                {wrapSkeleton(
+                    <TableContainer
+                        component={Paper}
+                        sx={{ margin: '0px 0px 8px 0px', width: '100%' }}
+                        elevation={0}
+                        variant="outlined"
                     >
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
-                                {(() => {
-                                    const visible = tableHeaderColumnEntries.filter(([column]) =>
-                                        activeColumns.includes(column as SectionTableColumn)
-                                    );
-                                    const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
-                                    return visible.map(([column, { label, weight }]) => (
-                                        <TableCell
-                                            key={column}
-                                            sx={{
-                                                width: `${(weight / totalWeight) * 100}%`,
-                                                padding: 0,
-                                            }}
-                                        >
-                                            {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
-                                        </TableCell>
-                                    ));
-                                })()}
-                            </TableRow>
-                        </TableHead>
+                        <Table
+                            size="small"
+                            sx={{
+                                minWidth: `${tableMinWidth}px`,
+                                width: '100%',
+                                tableLayout: 'fixed',
+                            }}
+                        >
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
+                                    {(() => {
+                                        const visible = tableHeaderColumnEntries.filter(([column]) =>
+                                            activeColumns.includes(column as SectionTableColumn)
+                                        );
+                                        const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
+                                        return visible.map(([column, { label, weight }]) => (
+                                            <TableCell
+                                                key={column}
+                                                sx={{
+                                                    width: `${(weight / totalWeight) * 100}%`,
+                                                    padding: 0,
+                                                }}
+                                            >
+                                                {label === 'Enrollment' ? (
+                                                    <EnrollmentColumnHeader label={label} />
+                                                ) : (
+                                                    label
+                                                )}
+                                            </TableCell>
+                                        ));
+                                    })()}
+                                </TableRow>
+                            </TableHead>
 
-                        <SectionTableBody
-                            courseDetails={courseDetails}
-                            term={term}
-                            allowHighlight={allowHighlight}
-                            scheduleNames={scheduleNames}
-                            analyticsCategory={analyticsCategory}
-                            formattedTime={formattedTime}
-                        />
-                    </Table>
-                </TableContainer>
+                            <SectionTableBody
+                                courseDetails={courseDetails}
+                                term={term}
+                                allowHighlight={allowHighlight}
+                                scheduleNames={scheduleNames}
+                                analyticsCategory={analyticsCategory}
+                                formattedTime={formattedTime}
+                            />
+                        </Table>
+                    </TableContainer>
+                )}
             </Collapse>
         </Box>
     );

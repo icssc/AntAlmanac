@@ -124,6 +124,15 @@ export function AddedSectionsGrid() {
     };
 
     useEffect(() => {
+        // Persist whatever courses are already in AppStore at mount, in case
+        // AppStore was populated before this component mounted and no
+        // addedCoursesChange event fires later. Skip when empty so a stale
+        // blueprint from a previous session isn't cleared before loadSchedule
+        // has a chance to populate AppStore.
+        if (courses.length > 0) {
+            persistSkeletonBlueprint(courses);
+        }
+
         const handleCoursesChange = () => {
             const nextCourses = getCourses();
             setCourses(nextCourses);
