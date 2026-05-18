@@ -65,17 +65,15 @@ export const useReviewPromptStore = create(
             if (pastTermNames.size === 0) return;
 
             const allCourses = AppStore.schedule.getAllCourses();
-            const seen = new Set<string>();
-            const candidates: ReviewCandidate[] = [];
+            const courseGroups = new Map<string, (typeof allCourses)[number][]>();
 
             for (const course of allCourses) {
                 const term = course.term;
-                const sectionType = course.section.sectionType;
-
                 if (!pastTermNames.has(term.shortName)) {
                     continue;
                 }
 
+                const sectionType = course.section.sectionType;
                 if (
                     sectionType === 'Act' ||
                     sectionType === 'Col' ||
@@ -93,16 +91,27 @@ export const useReviewPromptStore = create(
 
                 const courseId = `${course.deptCode} ${course.courseNumber}`;
                 const dedupKey = `${courseId}::${instructor}::${term.shortName}`;
-                if (seen.has(dedupKey)) {
+                const group = courseGroups.get(dedupKey);
+                if (group) {
+                    group.push(course);
+                } else {
+                    courseGroups.set(dedupKey, [course]);
+                }
+            }
+
+            const candidates: ReviewCandidate[] = [];
+            for (const courses of courseGroups.values()) {
+                const picked = courses.find((c) => c.section.sectionType === 'Lec') ?? courses.at(0);
+                const instructor = picked?.section.instructors.at(0)?.trim();
+                if (!instructor || !picked) {
                     continue;
                 }
-                seen.add(dedupKey);
 
                 candidates.push({
-                    courseId,
-                    courseTitle: course.courseTitle,
+                    courseId: `${picked.deptCode} ${picked.courseNumber}`,
+                    courseTitle: picked.courseTitle,
                     professorId: instructor,
-                    term,
+                    term: picked.term,
                 });
             }
 
