@@ -15,13 +15,16 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
+import { useShallow } from 'zustand/react/shallow';
 
 function MobileHome() {
     return <ScheduleManagement />;
 }
 
 function DesktopHome() {
-    const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
+    const setScheduleManagementWidth = useScheduleManagementStore(
+        useShallow((state) => state.setScheduleManagementWidth)
+    );
 
     const scheduleManagementRef = useRef<HTMLDivElement>(null);
 

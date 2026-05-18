@@ -5,13 +5,14 @@ import { IconButton, Tooltip } from '@mui/material';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import { usePostHog } from 'posthog-js/react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface ScreenshotButtonProps {
     onScreenshot?: () => void;
 }
 
 const ScreenshotButton = ({ onScreenshot }: ScreenshotButtonProps) => {
-    const { isDark } = useThemeStore();
+    const { isDark } = useThemeStore(useShallow((store) => ({ isDark: store.isDark })));
     const postHog = usePostHog();
 
     const handleClick = () => {

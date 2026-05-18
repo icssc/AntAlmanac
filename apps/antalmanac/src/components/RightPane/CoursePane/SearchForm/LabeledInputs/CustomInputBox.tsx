@@ -1,6 +1,7 @@
 import { useThemeStore } from '$stores/SettingsStore';
 import { Box, BoxProps, useTheme } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import { useShallow } from 'zustand/react/shallow';
 
 interface CustomInputBoxProps {
     children: React.ReactNode;
@@ -8,7 +9,7 @@ interface CustomInputBoxProps {
 }
 
 export const CustomInputBox = ({ children, boxProps }: CustomInputBoxProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
     const theme = useTheme();
     const secondaryColor = theme.palette.secondary.main;
     return (

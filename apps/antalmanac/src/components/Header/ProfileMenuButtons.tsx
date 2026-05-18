@@ -3,6 +3,7 @@ import { AccountCircle, Menu } from '@mui/icons-material';
 import { Button, IconButton, CircularProgress } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import Image from 'next/image';
+import { useShallow } from 'zustand/react/shallow';
 
 interface ProfileMenuButtonsProps {
     user: Pick<User, 'name' | 'avatar' | 'email'> | null;
@@ -12,7 +13,7 @@ interface ProfileMenuButtonsProps {
 }
 
 export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loading = false }: ProfileMenuButtonsProps) {
-    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
+    const fallbackMode = useFallbackStore(useShallow((state) => state.fallbackMode));
 
     if (!user) {
         return (

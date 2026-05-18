@@ -11,6 +11,7 @@ import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/mat
 import type { User } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { type MouseEvent, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -18,9 +19,17 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore();
+    const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore(
+        useShallow((store) => ({
+            sessionIsValid: store.sessionIsValid,
+            clearSession: store.clearSession,
+            name: store.name,
+            avatar: store.avatar,
+            email: store.email,
+        }))
+    );
     const postHog = usePostHog();
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
 
     const user = useMemo<Pick<User, 'name' | 'avatar' | 'email'> | null>(
         () =>

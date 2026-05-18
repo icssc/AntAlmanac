@@ -34,6 +34,7 @@ import {
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useState, useCallback, memo, useRef } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface CalendarPaneToolbarProps {
     scheduleNames: string[];
@@ -48,9 +49,9 @@ interface CalendarPaneToolbarProps {
  */
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
-    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
+    const fallbackMode = useFallbackStore(useShallow((state) => state.fallbackMode));
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
     const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);

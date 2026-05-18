@@ -3,12 +3,13 @@ import { useFallbackStore } from '$stores/FallbackStore';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Box, Button, Typography } from '@mui/material';
 import { useCallback, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 /**
  * MenuItem nested in the select menu to add a new schedule through a dialog.
  */
 export function AddScheduleButton() {
-    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
+    const fallbackMode = useFallbackStore(useShallow((state) => state.fallbackMode));
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {

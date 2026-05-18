@@ -5,6 +5,7 @@ import { DeleteOutline } from '@mui/icons-material';
 import { IconButton, SxProps, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface ClearScheduleButtonProps {
     buttonSx?: SxProps;
@@ -14,7 +15,7 @@ interface ClearScheduleButtonProps {
 }
 
 export function ClearScheduleButton({ buttonSx, size, fontSize, analyticsCategory }: ClearScheduleButtonProps) {
-    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
+    const fallbackMode = useFallbackStore(useShallow((state) => state.fallbackMode));
     const postHog = usePostHog();
 
     const handleClick = useCallback(() => {

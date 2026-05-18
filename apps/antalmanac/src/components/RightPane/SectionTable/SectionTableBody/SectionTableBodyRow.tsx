@@ -16,6 +16,7 @@ import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { TableRow, useTheme } from '@mui/material';
 import { AASection, AATerm, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
@@ -59,10 +60,10 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     } = props;
 
     const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
-    const activeColumns = useColumnStore((store) => store.activeColumns);
-    const previewMode = usePreviewStore((store) => store.previewMode);
-    const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const activeColumns = useColumnStore(useShallow((store) => store.activeColumns));
+    const previewMode = usePreviewStore(useShallow((store) => store.previewMode));
+    const setHoveredEvent = useHoveredStore(useShallow((store) => store.setHoveredEvent));
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)

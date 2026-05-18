@@ -16,12 +16,13 @@ import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { AppBar, Box, Stack } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
-    const { sessionIsValid } = useSessionStore();
+    const { sessionIsValid } = useSessionStore(useShallow((store) => ({ sessionIsValid: store.sessionIsValid })));
     const isMobile = useIsMobile();
 
     const clearStorage = useCallback(() => {

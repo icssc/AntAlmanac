@@ -5,6 +5,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { Close, InfoOutlined } from '@mui/icons-material';
 import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface TbaSection {
     deptCode: string;
@@ -46,7 +47,7 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
 
 function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[]; onToggle: () => void }) {
     const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
     const isMobile = useIsMobile();
     return (
         <Alert

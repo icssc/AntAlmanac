@@ -10,13 +10,16 @@ import { useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 
 /**
  * List of interactive tab buttons with their accompanying content.
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
-    const { activeTab, setActiveTab } = useTabStore();
+    const { activeTab, setActiveTab } = useTabStore(
+        useShallow((store) => ({ activeTab: store.activeTab, setActiveTab: store.setActiveTab }))
+    );
     const { tab } = useParams();
     const isMobile = useIsMobile();
 

@@ -111,7 +111,7 @@ export const ScheduleCalendar = memo(() => {
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const theme = useTheme();
-    const { isMilitaryTime } = useTimeFormatStore();
+    const { isMilitaryTime } = useTimeFormatStore(useShallow((store) => ({ isMilitaryTime: store.isMilitaryTime })));
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );

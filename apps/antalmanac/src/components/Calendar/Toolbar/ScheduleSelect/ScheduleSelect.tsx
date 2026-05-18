@@ -12,6 +12,7 @@ import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
 const scheduleSelectButtonMinWidth = 100;
@@ -50,7 +51,12 @@ export function SelectSchedulePopover() {
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
-    const { fallbackMode, getFallbackScheduleNames } = useFallbackStore();
+    const { fallbackMode, getFallbackScheduleNames } = useFallbackStore(
+        useShallow((store) => ({
+            fallbackMode: store.fallbackMode,
+            getFallbackScheduleNames: store.getFallbackScheduleNames,
+        }))
+    );
     const fallbackScheduleMapping = getScheduleItems(getFallbackScheduleNames());
 
     const anchorElementRef = useRef(null);

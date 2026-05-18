@@ -27,7 +27,7 @@ interface NotificationsDialogProps {
 }
 
 export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogProps) {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
     const postHog = usePostHog();

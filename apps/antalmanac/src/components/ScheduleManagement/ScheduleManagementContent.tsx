@@ -1,20 +1,20 @@
-import Image from 'next/image';
-import { lazy, Suspense } from 'react';
-
-import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
+import Image from 'next/image';
+import { lazy, Suspense } from 'react';
+import { useShallow } from 'zustand/react/shallow';
+
+import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
+import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 
 const UCIMap = lazy(() => import('../Map/Map'));
 
 export function ScheduleManagementContent() {
-    const { activeTab } = useTabStore();
-    const isDark = useThemeStore((store) => store.isDark);
+    const { activeTab } = useTabStore(useShallow((store) => ({ activeTab: store.activeTab })));
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
 
     switch (activeTab) {
         case 0:

@@ -1,7 +1,7 @@
+import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
-
-import { useTabStore } from '$stores/TabStore';
+import { useShallow } from 'zustand/react/shallow';
 
 interface MapLinkProps {
     buildingId: number;
@@ -9,7 +9,7 @@ interface MapLinkProps {
 }
 
 export const MapLink = ({ buildingId, room }: MapLinkProps) => {
-    const { setActiveTab } = useTabStore();
+    const { setActiveTab } = useTabStore(useShallow((store) => ({ setActiveTab: store.setActiveTab })));
 
     const focusMap = useCallback(() => {
         setActiveTab('map');

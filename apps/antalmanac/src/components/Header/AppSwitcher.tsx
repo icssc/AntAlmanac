@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import type { MouseEventHandler } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 type AppSwitcherProps = {
     isMobile: boolean;
@@ -36,7 +37,7 @@ const darkMenuSx = {
 export function AppSwitcher({ isMobile }: AppSwitcherProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [plannerLoading, setPlannerLoading] = useState(false);
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
 
     const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 

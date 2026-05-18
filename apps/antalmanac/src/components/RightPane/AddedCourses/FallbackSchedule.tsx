@@ -8,9 +8,12 @@ import { Box, Chip, Paper, Tooltip, Typography } from '@mui/material';
 import { ShortCourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export function FallbackSchedule() {
-    const { getCurrentFallbackSchedule } = useFallbackStore();
+    const { getCurrentFallbackSchedule } = useFallbackStore(
+        useShallow((store) => ({ getCurrentFallbackSchedule: store.getCurrentFallbackSchedule }))
+    );
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const postHog = usePostHog();
 

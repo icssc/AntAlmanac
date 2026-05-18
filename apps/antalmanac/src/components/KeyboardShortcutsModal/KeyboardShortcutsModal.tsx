@@ -11,11 +11,12 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { ChatBubbleOutlineOutlined, Close, Keyboard, SearchOutlined, SettingsOutlined } from '@mui/icons-material';
 import { Box, Dialog, IconButton, Stack, Typography, useMediaQuery, useTheme, alpha } from '@mui/material';
 import { useCallback, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 /** Accent blue: theme maps light → primary (BLUE), dark → secondary (LIGHT_BLUE) — matches links & app chrome */
 function useShortcutsAccentColor() {
     const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
     return isDark ? theme.palette.secondary.main : theme.palette.primary.main;
 }
 
@@ -33,7 +34,7 @@ function SectionHeaderIcon({ icon }: { icon: ShortcutSectionIcon }) {
 }
 
 function Kbd({ children }: { children: React.ReactNode }) {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
     return (
         <Box
             component="kbd"
@@ -182,7 +183,7 @@ interface KeyboardShortcutsModalProps {
  */
 export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModalProps) {
     const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
     const isFullScreenLayout = useMediaQuery(theme.breakpoints.down('md'));
     const mac = isMacPlatform();
     const accent = isDark ? theme.palette.secondary.main : theme.palette.primary.main;

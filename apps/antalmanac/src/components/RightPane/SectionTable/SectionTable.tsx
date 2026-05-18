@@ -28,6 +28,7 @@ import {
 import { AACourse, AATerm } from '@packages/antalmanac-types';
 import { useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
+import { useShallow } from 'zustand/react/shallow';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -74,10 +75,10 @@ function SectionTable({
 
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
 
-    const { isMilitaryTime } = useTimeFormatStore();
+    const { isMilitaryTime } = useTimeFormatStore(useShallow((store) => ({ isMilitaryTime: store.isMilitaryTime })));
 
-    const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
-    const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const [activeColumns] = useColumnStore(useShallow((store) => [store.activeColumns]));
+    const [activeTab] = useTabStore(useShallow((store) => [store.activeTab]));
     const isMobile = useIsMobile();
 
     const handleToggleExpand = () => {
