@@ -40,7 +40,6 @@ interface LoadScheduleOptions {
 
 interface LoginUserOptions {
     silent?: boolean;
-    signInUrl?: string;
     postHog?: PostHog;
 }
 
@@ -396,24 +395,14 @@ const cacheSchedule = () => {
 };
 
 /**
- * If `signInUrl` is not provided, {@link getSignInUrl} with default params will be used.
- *
  * @param options.silent Sign in silently with `prompt: none` and suppress errors?
  */
-export const loginUser = async (
-    provider: Provider,
-    { silent = false, signInUrl = '', postHog }: LoginUserOptions = {}
-) => {
+export const loginUser = async (provider: Provider, { silent = false, postHog }: LoginUserOptions = {}) => {
     try {
-        let authUrl: string;
-        if (signInUrl !== '') {
-            authUrl = signInUrl;
-        } else {
-            authUrl = await getSignInUrl(provider, {
-                authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
-                returnUrl: `${window.location.pathname}${window.location.search}${window.location.hash}`,
-            });
-        }
+        const authUrl = await getSignInUrl(provider, {
+            authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
+            returnUrl: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+        });
 
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
