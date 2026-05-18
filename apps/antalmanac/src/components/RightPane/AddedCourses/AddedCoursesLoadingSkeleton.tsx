@@ -4,6 +4,38 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { Box, Skeleton } from '@mui/material';
+import { Component, type ReactNode } from 'react';
+
+/**
+ * Renders nothing if the wrapped tree throws. The skeleton renders the real
+ * SectionTable using cached schedule data, and any shape drift in that cache
+ * (e.g. fields added or removed in future updates) shouldn't break the page.
+ */
+class SkeletonErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+    state = { hasError: false };
+
+    static getDerivedStateFromError() {
+        return { hasError: true };
+    }
+
+    render() {
+        return this.state.hasError ? null : this.props.children;
+    }
+}
+
+function isValidCachedCourse(value: unknown): value is CourseWithTerm {
+    if (typeof value !== 'object' || value === null) return false;
+    const course = value as Partial<CourseWithTerm>;
+    return (
+        typeof course.id === 'string' &&
+        typeof course.deptCode === 'string' &&
+        typeof course.courseNumber === 'string' &&
+        typeof course.courseTitle === 'string' &&
+        Array.isArray(course.sections) &&
+        typeof course.term === 'object' &&
+        course.term !== null
+    );
+}
 
 function readCachedCourses(): CourseWithTerm[] | null {
     const raw = getLocalStorageAddedCoursesSkeletonBlueprint();
@@ -11,8 +43,8 @@ function readCachedCourses(): CourseWithTerm[] | null {
 
     try {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed as CourseWithTerm[];
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed.every(isValidCachedCourse)) {
+            return parsed;
         }
     } catch {
         // ignore malformed data
@@ -34,19 +66,21 @@ export function AddedCoursesLoadingSkeleton() {
     const scheduleNames = AppStore.getScheduleNames();
 
     return (
-        <Box display="flex" flexDirection="column" gap={1}>
-            {courses.map((course) => (
-                <Skeleton key={course.id} variant="rounded" component="div">
-                    <SectionTable
-                        sortable
-                        courseDetails={course}
-                        term={course.term}
-                        allowHighlight={false}
-                        analyticsCategory={analyticsEnum.addedClasses}
-                        scheduleNames={scheduleNames}
-                    />
-                </Skeleton>
-            ))}
-        </Box>
+        <SkeletonErrorBoundary>
+            <Box display="flex" flexDirection="column" gap={1}>
+                {courses.map((course) => (
+                    <Skeleton key={course.id} variant="rounded" component="div">
+                        <SectionTable
+                            sortable
+                            courseDetails={course}
+                            term={course.term}
+                            allowHighlight={false}
+                            analyticsCategory={analyticsEnum.addedClasses}
+                            scheduleNames={scheduleNames}
+                        />
+                    </Skeleton>
+                ))}
+            </Box>
+        </SkeletonErrorBoundary>
     );
 }
