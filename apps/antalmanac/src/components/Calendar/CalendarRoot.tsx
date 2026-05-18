@@ -102,6 +102,9 @@ function createSkeletonEvents(): SkeletonEvent[] {
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
+    const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
+        AppStore.schedule.getCurrentCustomEvents()
+    );
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
@@ -242,10 +245,10 @@ export const ScheduleCalendar = memo(() => {
     const showEmptyState = useMemo(
         () =>
             !loadingSchedule &&
-            !showFinalsSchedule &&
             !hoveredCalendarizedCourses &&
-            currentScheduleCourses.length === 0,
-        [loadingSchedule, showFinalsSchedule, hoveredCalendarizedCourses, currentScheduleCourses.length]
+            currentScheduleCourses.length === 0 &&
+            currentScheduleCustomEvents.length === 0,
+        [loadingSchedule, hoveredCalendarizedCourses, currentScheduleCourses.length, currentScheduleCustomEvents.length]
     );
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
@@ -297,6 +300,7 @@ export const ScheduleCalendar = memo(() => {
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
             setCurrentScheduleCourses(AppStore.schedule.getCurrentCourses());
+            setCurrentScheduleCustomEvents(AppStore.schedule.getCurrentCustomEvents());
         };
 
         const updateScheduleNames = () => {
