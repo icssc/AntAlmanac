@@ -24,7 +24,7 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { Box, SxProps, Typography } from '@mui/material';
 import { AACourse, AATerm } from '@packages/antalmanac-types';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface CourseWithTerm extends AACourse {
     term: AATerm;
@@ -42,6 +42,19 @@ const buttonSx: SxProps = {
     },
     pointerEvents: 'auto',
 };
+
+/**
+ * Save the rendered schedule as JSON so the skeleton on the next load can
+ * render the actual previous schedule (wrapped in MUI Skeleton) and inherit
+ * its dimensions exactly.
+ */
+function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
+    if (courses.length > 0) {
+        setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(courses));
+    } else {
+        removeLocalStorageAddedCoursesSkeletonBlueprint();
+    }
+}
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -94,7 +107,6 @@ export function AddedSectionsGrid() {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const loadingSchedule = scheduleComponentsToggleStore((state) => state.openLoadingSchedule);
-    const courseRefs = useRef(new Map<string, HTMLDivElement | null>());
 
     const isMobile = useIsMobile();
 
@@ -113,7 +125,9 @@ export function AddedSectionsGrid() {
 
     useEffect(() => {
         const handleCoursesChange = () => {
-            setCourses(getCourses());
+            const nextCourses = getCourses();
+            setCourses(nextCourses);
+            persistSkeletonBlueprint(nextCourses);
         };
 
         const handleScheduleNamesChange = () => {
@@ -136,45 +150,6 @@ export function AddedSectionsGrid() {
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
-
-    useEffect(() => {
-        if (loadingSchedule) return;
-
-        if (courses.length === 0) {
-            removeLocalStorageAddedCoursesSkeletonBlueprint();
-            courseRefs.current.clear();
-            return;
-        }
-
-        // Re-measure on layout changes (window/pane resize) so the persisted
-        // blueprint matches what the user actually sees on the next load.
-        const persist = () => {
-            const blueprint = courses.map((course) => {
-                const el = courseRefs.current.get(course.id);
-                return {
-                    deptCode: course.deptCode,
-                    courseNumber: course.courseNumber,
-                    courseTitle: course.courseTitle,
-                    height: el ? Math.round(el.getBoundingClientRect().height) : 0,
-                };
-            });
-            setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(blueprint));
-        };
-
-        const observer = new ResizeObserver(persist);
-        for (const el of courseRefs.current.values()) {
-            if (el) observer.observe(el);
-        }
-
-        // Initial measurement after first layout — ResizeObserver also fires
-        // once on observe, but call explicitly in case nothing is observed yet.
-        const handle = requestAnimationFrame(persist);
-
-        return () => {
-            cancelAnimationFrame(handle);
-            observer.disconnect();
-        };
-    }, [courses, loadingSchedule]);
 
     const scheduleUnits = useMemo(() => {
         let result = 0;
@@ -233,22 +208,15 @@ export function AddedSectionsGrid() {
 
                             return (
                                 <SortableList.Item id={course.id}>
-                                    <Box
-                                        ref={(el: HTMLDivElement | null) => {
-                                            if (el) courseRefs.current.set(course.id, el);
-                                            else courseRefs.current.delete(course.id);
-                                        }}
-                                    >
-                                        <SectionTable
-                                            sortable
-                                            courseDetails={course}
-                                            term={course.term}
-                                            allowHighlight={false}
-                                            analyticsCategory={analyticsEnum.addedClasses}
-                                            scheduleNames={scheduleNames}
-                                            missingSections={missingSections}
-                                        />
-                                    </Box>
+                                    <SectionTable
+                                        sortable
+                                        courseDetails={course}
+                                        term={course.term}
+                                        allowHighlight={false}
+                                        analyticsCategory={analyticsEnum.addedClasses}
+                                        scheduleNames={scheduleNames}
+                                        missingSections={missingSections}
+                                    />
                                 </SortableList.Item>
                             );
                         }}
