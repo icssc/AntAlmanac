@@ -1,4 +1,4 @@
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import type { Notification } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 

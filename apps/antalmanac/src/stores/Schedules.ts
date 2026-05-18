@@ -1,9 +1,9 @@
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
-import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
-import type { AATerm } from '@packages/antalmanac-types';
 import { moveArrayElements } from '$lib/utils';
+import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
+import type { AATerm } from '@packages/antalmanac-types';
 import type {
     Schedule,
     ScheduleCourse,

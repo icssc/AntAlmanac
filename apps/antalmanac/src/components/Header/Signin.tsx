@@ -5,7 +5,7 @@ import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { getLocalStorageUserId, getWasLoggedIn, setLocalStorageFromLoading } from '$lib/localStorage';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';

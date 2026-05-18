@@ -22,6 +22,4 @@ export const trpcConfig = {
     ],
 };
 
-const trpc = createTRPCClient<AppRouter>(trpcConfig);
-
-export default trpc;
+export const trpc = createTRPCClient<AppRouter>(trpcConfig);
