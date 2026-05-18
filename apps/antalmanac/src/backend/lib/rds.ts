@@ -30,7 +30,7 @@ import {
     type ConflictUpdatePolicy,
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
-import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray, sql } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray, sql, SQL } from 'drizzle-orm';
 import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -356,6 +356,88 @@ export class RDS {
             });
     }
 
+    private static async getUserData(db: DatabaseOrTransaction, scheduleSelectCondition: SQL<unknown> | undefined) {
+        const [sectionResults, customEventResults] = await Promise.all([
+            db
+                .select()
+                .from(schedules)
+                .where(scheduleSelectCondition)
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId))
+                .orderBy(coursesInSchedule.index),
+            db
+                .select()
+                .from(schedules)
+                .where(scheduleSelectCondition)
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
+        ]);
+
+        return RDS.aggregateUserData(sectionResults, customEventResults);
+    }
+
+    /**
+     * Aggregates the user's schedule data from the results of two queries.
+     */
+    private static aggregateUserData(
+        sectionResults: { schedules: Schedule; coursesInSchedule: CourseInSchedule | null }[],
+        customEventResults: { schedules: Schedule; customEvents: CustomEvent | null }[]
+    ): (ShortCourseSchedule & { id: string; index: number })[] {
+        // Map from schedule ID to schedule data
+        const schedulesMapping: Record<string, ShortCourseSchedule & { id: string; index: number }> = {};
+
+        // Add courses to schedules
+        sectionResults.forEach(({ schedules: schedule, coursesInSchedule: course }) => {
+            const scheduleId = schedule.id;
+
+            const scheduleAggregate = schedulesMapping[scheduleId] || {
+                id: scheduleId,
+                scheduleName: schedule.name,
+                scheduleNote: schedule.notes,
+                courses: [],
+                customEvents: [],
+                index: schedule.index,
+            };
+
+            if (course) {
+                const sectionCode = course.sectionCode.toString();
+                scheduleAggregate.courses.push({
+                    sectionCode: sectionCode,
+                    term: course.term,
+                    color: course.color,
+                });
+            }
+
+            schedulesMapping[scheduleId] = scheduleAggregate;
+        });
+
+        // Add custom events to schedules
+        customEventResults.forEach(({ schedules: schedule, customEvents: customEvent }) => {
+            const scheduleId = schedule.id;
+            const scheduleAggregate = schedulesMapping[scheduleId] || {
+                scheduleName: schedule.name,
+                scheduleNote: schedule.notes,
+                courses: [],
+                customEvents: [],
+            };
+
+            if (customEvent) {
+                scheduleAggregate.customEvents.push({
+                    customEventID: customEvent.id,
+                    title: customEvent.title,
+                    start: customEvent.start,
+                    end: customEvent.end,
+                    days: customEvent.days.split('').map((day) => day === '1'),
+                    color: customEvent.color ?? '#551a8b',
+                    building: customEvent.building ?? undefined,
+                });
+            }
+
+            schedulesMapping[scheduleId] = scheduleAggregate;
+        });
+
+        // Sort schedules by index
+        return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
+    }
+
     /**
      * Retrieves a schedule by its ID. All schedules are publicly accessible via their ID.
      *
@@ -378,19 +460,7 @@ export class RDS {
                 return null;
             }
 
-            const sectionResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.id, scheduleId))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-            const customEventResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.id, scheduleId))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
-
-            const scheduleArray = RDS.aggregateUserData(sectionResults, customEventResults);
+            const scheduleArray = await RDS.getUserData(tx, eq(schedules.id, scheduleId));
             const result = scheduleArray[0];
             if (!result) return null;
             return { ...result, userId: schedule.userId };
@@ -419,20 +489,7 @@ export class RDS {
 
         const userId = row.users.id;
 
-        const [sectionResults, customEventResults] = await Promise.all([
-            db
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
-            db
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
-        ]);
-
-        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+        const userSchedules = await RDS.getUserData(db, eq(schedules.userId, userId));
 
         const scheduleIndex = row.users.currentScheduleId
             ? userSchedules.findIndex((s) => s.id === row.users.currentScheduleId)
@@ -469,21 +526,10 @@ export class RDS {
                 return null;
             }
 
-            const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
-
-            const sectionResults = await tx
-                .select()
-                .from(schedules)
-                .where(sharedCondition)
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-            const customEventResults = await tx
-                .select()
-                .from(schedules)
-                .where(sharedCondition)
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
-
-            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+            const userSchedules = await RDS.getUserData(
+                tx,
+                and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true))
+            );
 
             return {
                 ...user,
@@ -493,90 +539,6 @@ export class RDS {
                 },
             };
         });
-    }
-
-    /**
-     * Aggregates the user's schedule data from the results of two queries.
-     */
-    private static aggregateUserData(
-        sectionResults: { schedules: Schedule; coursesInSchedule: CourseInSchedule | null }[],
-        customEventResults: { schedules: Schedule; customEvents: CustomEvent | null }[]
-    ): (ShortCourseSchedule & { id: string; index: number })[] {
-        // Map from schedule ID to schedule data
-        const schedulesMapping: Record<string, ShortCourseSchedule & { id: string; index: number }> = {};
-
-        const courseIndexes: Record<Schedule['id'], Record<ShortCourse['sectionCode'], CourseInSchedule['index']>> = {};
-
-        // Add courses to schedules
-        sectionResults.forEach(({ schedules: schedule, coursesInSchedule: course }) => {
-            const scheduleId = schedule.id;
-
-            const scheduleAggregate = schedulesMapping[scheduleId] || {
-                id: scheduleId,
-                scheduleName: schedule.name,
-                scheduleNote: schedule.notes,
-                courses: [],
-                customEvents: [],
-                index: schedule.index,
-            };
-
-            if (course) {
-                const sectionCode = course.sectionCode.toString();
-                scheduleAggregate.courses.push({
-                    sectionCode: sectionCode,
-                    term: course.term,
-                    color: course.color,
-                });
-
-                if (course.index !== null) {
-                    if (!courseIndexes[scheduleId]) {
-                        courseIndexes[scheduleId] = {};
-                    }
-                    courseIndexes[scheduleId][sectionCode] = course.index;
-                }
-            }
-
-            schedulesMapping[scheduleId] = scheduleAggregate;
-        });
-
-        for (const [scheduleId, indexes] of Object.entries(courseIndexes)) {
-            schedulesMapping[scheduleId].courses.sort((a, b) => {
-                const aIndex = indexes[a.sectionCode];
-                const bIndex = indexes[b.sectionCode];
-                if (typeof aIndex !== 'number' || typeof bIndex !== 'number') {
-                    return 0;
-                }
-                return aIndex - bIndex;
-            });
-        }
-
-        // Add custom events to schedules
-        customEventResults.forEach(({ schedules: schedule, customEvents: customEvent }) => {
-            const scheduleId = schedule.id;
-            const scheduleAggregate = schedulesMapping[scheduleId] || {
-                scheduleName: schedule.name,
-                scheduleNote: schedule.notes,
-                courses: [],
-                customEvents: [],
-            };
-
-            if (customEvent) {
-                scheduleAggregate.customEvents.push({
-                    customEventID: customEvent.id,
-                    title: customEvent.title,
-                    start: customEvent.start,
-                    end: customEvent.end,
-                    days: customEvent.days.split('').map((day) => day === '1'),
-                    color: customEvent.color ?? '#551a8b',
-                    building: customEvent.building ?? undefined,
-                });
-            }
-
-            schedulesMapping[scheduleId] = scheduleAggregate;
-        });
-
-        // Sort schedules by index
-        return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
     }
 
     /**
@@ -680,20 +642,7 @@ export class RDS {
             return null;
         }
 
-        const [sectionResults, customEventResults] = await Promise.all([
-            db
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, user.id))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
-            db
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, user.id))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
-        ]);
-
-        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+        const userSchedules = await RDS.getUserData(db, eq(schedules.userId, user.id));
 
         const scheduleIndex = user.currentScheduleId
             ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
