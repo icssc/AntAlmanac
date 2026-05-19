@@ -4,6 +4,7 @@ import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { getErrorMessage } from '$lib/utils';
 import type { auth } from '$src/lib/auth/auth';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { genericOAuthClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import { PostHog } from 'posthog-js';
@@ -30,6 +31,7 @@ export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}
             error: getErrorMessage(error),
         });
         console.error('Error getting logout URL', error);
+        openSnackbar('error', 'Error occurred while getting logout URL');
     }
 
     clearSsoCookie();
