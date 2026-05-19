@@ -1,9 +1,8 @@
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { SearchWithPlanner } from '$components/RightPane/CoursePane/SearchForm/SearchWithPlanner';
-import { getSignOutUrl } from '$lib/auth/authActions';
 import { Box, Stack, Typography, useTheme } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { ComponentProps, useEffect, useState } from 'react';
+import { ComponentProps } from 'react';
 
 interface QuickSearchProps {
     toggleSearch: ComponentProps<typeof FuzzySearch>['toggleSearch'];
@@ -14,14 +13,6 @@ export const QuickSearch = ({ toggleSearch, labelProps }: QuickSearchProps) => {
     const postHog = usePostHog();
     const theme = useTheme();
     const quickSearchStack = `@container quick-search (max-width: ${theme.breakpoints.values.sm}px)`;
-
-    const [test, setTest] = useState('');
-
-    useEffect(() => {
-        (async () => {
-            setTest(await getSignOutUrl(window.location.origin));
-        })();
-    }, []);
 
     return (
         <Box
@@ -69,7 +60,6 @@ export const QuickSearch = ({ toggleSearch, labelProps }: QuickSearchProps) => {
                 >
                     <SearchWithPlanner labelProps={labelProps} />
                 </Box>
-                {test}
             </Stack>
         </Box>
     );
