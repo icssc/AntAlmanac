@@ -47,7 +47,7 @@ function DesktopHome() {
 
     return (
         <Split
-            sizes={[45, 55]}
+            sizes={[42.5, 57.5]}
             minSize={400}
             expandToMin={false}
             gutterSize={10}

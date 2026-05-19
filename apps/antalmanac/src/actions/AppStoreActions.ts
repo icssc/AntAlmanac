@@ -1,5 +1,5 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
@@ -10,6 +10,7 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
+    AATerm,
     CourseDetails,
     CustomEventId,
     RepeatingCustomEvent,
@@ -32,7 +33,7 @@ interface AutoSaveScheduleOptions {
 export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
-    term: string,
+    term: AATerm,
     scheduleIndex: number,
     quiet?: boolean,
     postHog?: PostHog
@@ -49,9 +50,8 @@ export const addCourse = (
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
-    // The color will be set properly in Schedules
     const newCourse: ScheduleCourse = {
-        term: term,
+        term,
         deptCode: courseDetails.deptCode,
         courseNumber: courseDetails.courseNumber,
         courseTitle: courseDetails.courseTitle,
@@ -198,7 +198,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
     });
 
-    if (!skipImportedCheck && incoming.user.imported) {
+    if (!skipImportedCheck && incoming.imported) {
         return { imported: true, error: null };
     }
 
@@ -419,7 +419,7 @@ export const loginUser = async ({
     }
 };
 
-export const deleteCourse = (sectionCode: string, term: string, scheduleIndex: number) => {
+export const deleteCourse = (sectionCode: string, term: AATerm, scheduleIndex: number) => {
     AppStore.deleteCourse(sectionCode, term, scheduleIndex);
 };
 
@@ -463,7 +463,7 @@ export const changeCustomEventColor = (customEventID: CustomEventId, newColor: s
     AppStore.changeCustomEventColor(customEventID, newColor);
 };
 
-export const changeCourseColor = (sectionCode: string, term: string, newColor: string) => {
+export const changeCourseColor = (sectionCode: string, term: AATerm, newColor: string) => {
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 

@@ -5,7 +5,7 @@ import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { getLocalStorageUserId, getWasLoggedIn, setLocalStorageFromLoading } from '$lib/localStorage';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -47,7 +47,7 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { loadSession } = useSessionStore();
+    const loadSession = useSessionStore((store) => store.loadSession);
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
     const [openAlert, setOpenalert] = useState(false);
@@ -80,7 +80,7 @@ export const Signin = () => {
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
             const res = await trpc.schedule.getGuest.query({ username: userID });
-            if (res.user.imported) {
+            if (res.imported) {
                 setAlertMessage(ALERT_MESSAGES.SCHEDULE_IMPORTED);
                 setOpenalert(true);
             }

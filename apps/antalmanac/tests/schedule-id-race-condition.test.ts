@@ -25,14 +25,25 @@ vi.mock('@paralleldrive/cuid2', () => ({
     createId: () => `cuid-${++cuidCounter}`,
 }));
 
-// termData touches the DOM / fetch for term filtering; stub it out.
-vi.mock('$lib/termData', () => ({
-    getDefaultTerm: () => ({ shortName: 'Fall 2024' }),
-    getDefaultFinalsStartDate: () => new Date(),
-    getFinalsStartDateForTerm: () => new Date(),
-    termData: [],
-    defaultTerm: 0,
-}));
+vi.mock('$lib/term', () => {
+    const stubTerm = {
+        year: '2024',
+        quarter: 'Fall' as const,
+        shortName: '2024 Fall' as const,
+        longName: '2024 Fall Quarter',
+        instructionStart: new Date(0),
+        instructionEnd: new Date(0),
+        finalsStart: new Date(0),
+        finalsEnd: new Date(0),
+        socAvailable: new Date(0),
+        isSummerTerm: false,
+    };
+    return {
+        getDefaultTerm: () => stubTerm,
+        getTermByShortName: () => undefined,
+        termData: [],
+    };
+});
 
 // WebSOC is only used by fromScheduleSaveState which we don't call here.
 vi.mock('$lib/websoc', () => ({ WebSOC: { getCourseInfo: vi.fn() } }));

@@ -76,7 +76,7 @@ export const instructorReviews = pgTable(
 
         /**
          * The academic quarter the course was taken.
-         * Stored as the AntAlmanac term shortName (e.g. "Fall 2024").
+         * Stored as the AntAlmanac term shortName (e.g. "2024 Fall").
          */
         quarter: text('quarter').notNull(),
 

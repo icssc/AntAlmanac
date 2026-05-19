@@ -9,8 +9,7 @@ import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpc, trpcReact } from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import {
@@ -52,7 +51,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { AATerm, CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -78,7 +77,7 @@ export function Import() {
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
-    const { sessionIsValid } = useSessionStore();
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
     const devMode = useDevModeStore((store) => store.devMode);
 
@@ -255,7 +254,8 @@ export function Import() {
         try {
             const term = RightPaneStore.getFormData().term;
             const courseInfo = await trpc.websoc.getCourseInfo.query({
-                term,
+                year: term.year,
+                quarter: term.quarter,
                 sectionCodes: sectionCodes.join(','),
             });
 
@@ -301,7 +301,7 @@ export function Import() {
 
     const addCoursesMultiple = (
         courseInfo: { [sectionCode: string]: CourseInfo },
-        term: string,
+        term: AATerm,
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {

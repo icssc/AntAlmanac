@@ -1,3 +1,4 @@
+import type { NotifyOn } from '$stores/NotificationStore';
 import { PostHog } from 'posthog-js/react';
 /**
  * This is an enum that stores all the
@@ -8,13 +9,14 @@ export interface AnalyticsCategory {
     actions: Record<string, string>;
 }
 
-interface AnalyticsEnum {
+export interface AnalyticsEnum {
     calendar: AnalyticsCategory;
     auth: AnalyticsCategory;
     nav: AnalyticsCategory;
     classSearch: AnalyticsCategory;
     addedClasses: AnalyticsCategory;
     map: AnalyticsCategory;
+    aants: AnalyticsCategory;
     review: AnalyticsCategory;
 }
 
@@ -102,6 +104,19 @@ const analyticsEnum: AnalyticsEnum = {
             CLICK_PIN: 'Click on Pin',
         },
     },
+    aants: {
+        title: 'AANTS',
+        actions: {
+            OPEN_MANAGE_NOTIFICATIONS: 'Open Manage Notifications Dialog',
+            CLOSE_MANAGE_NOTIFICATIONS: 'Close Manage Notifications Dialog',
+            OPEN_SECTION_NOTIFICATIONS: 'Open Section Notifications Dropdown',
+            TOGGLE_NOTIFY_OPEN: 'Toggle Notify on Open',
+            TOGGLE_NOTIFY_WAITLIST: 'Toggle Notify on Waitlist',
+            TOGGLE_NOTIFY_FULL: 'Toggle Notify on Full',
+            TOGGLE_NOTIFY_RESTRICTION: 'Toggle Notify on Restriction Changes',
+            DELETE_NOTIFICATION: 'Delete Notification',
+        },
+    },
     review: {
         title: 'Review Prompt',
         actions: {
@@ -117,7 +132,14 @@ export default analyticsEnum;
 
 // There is no explicit type for what PostHog accepts as a property value
 // A list of accepted types: https://posthog.com/docs/data/events#event-properties
-type PostHogPropertyValue = string | number | boolean | Date | PostHogPropertyValue[];
+export type PostHogPropertyValue = string | number | boolean | Date | PostHogPropertyValue[];
+
+export const AANTS_ANALYTICS_ACTIONS: Record<keyof NotifyOn, string> = {
+    notifyOnOpen: analyticsEnum.aants.actions.TOGGLE_NOTIFY_OPEN,
+    notifyOnWaitlist: analyticsEnum.aants.actions.TOGGLE_NOTIFY_WAITLIST,
+    notifyOnFull: analyticsEnum.aants.actions.TOGGLE_NOTIFY_FULL,
+    notifyOnRestriction: analyticsEnum.aants.actions.TOGGLE_NOTIFY_RESTRICTION,
+};
 
 interface AnalyticsProps {
     category: AnalyticsCategory;

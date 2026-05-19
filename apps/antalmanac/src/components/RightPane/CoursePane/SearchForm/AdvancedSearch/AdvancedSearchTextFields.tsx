@@ -4,6 +4,7 @@ import {
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
@@ -14,7 +15,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
-import { format, parse } from 'date-fns';
+import { format, isValid, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -39,11 +40,7 @@ function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
     }
 
     if (roadmaps.length === 0) {
-        return [
-            <MenuItem key="create" value="" onClick={() => window.open('https://antalmanac.com/planner', '_blank')}>
-                Create a roadmap!
-            </MenuItem>,
-        ];
+        return <CreateRoadmapLinkItem verticalPadding={'6px'} value="" />;
     }
 
     return [
@@ -78,7 +75,7 @@ export function AdvancedSearchTextFields() {
     const { plannerRoadmaps, updateTakenCourses } = usePlannerStore(
         useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, updateTakenCourses: s.updateTakenCourses }))
     );
-    const { sessionIsValid } = useSessionStore(useShallow((s) => ({ sessionIsValid: s.sessionIsValid })));
+    const sessionIsValid = useSessionStore((s) => s.sessionIsValid);
     const [signInOpen, setSignInOpen] = useState(false);
 
     const syncFieldStates = useCallback(() => {
@@ -122,7 +119,9 @@ export function AdvancedSearchTextFields() {
         if (name === 'startTime' || name === 'endTime') {
             // time picker event is Date | null
             if (event instanceof Date || event === null) {
-                const stringTime = event ? format(event, 'HH:mm') : '';
+                // Guard against Invalid Date (e.g. user typing a partial time in the picker).
+                // Calling format() on an Invalid Date throws RangeError: Invalid time value.
+                const stringTime = event && isValid(event) ? format(event, 'HH:mm') : '';
                 if (name === 'startTime') {
                     setStartTime(stringTime);
                 } else {
@@ -253,7 +252,7 @@ export function AdvancedSearchTextFields() {
                             value: units,
                             onChange: changeHandlerFactory('units'),
                             type: 'search',
-                            placeholder: 'ex. 3, 4, or VAR',
+                            placeholder: 'ex. 4 or VAR',
                             fullWidth: true,
                         }}
                     />

@@ -1,8 +1,9 @@
+import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { ScheduleCourse } from '@packages/antalmanac-types';
 import { HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/anteater-api/types';
 
-const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
+const CURRENT_TERM = getDefaultTerm();
 let sampleClassesSectionCodes: Array<string> = [];
 
 const finalsDaysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;

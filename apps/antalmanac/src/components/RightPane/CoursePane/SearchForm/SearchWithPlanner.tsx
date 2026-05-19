@@ -1,9 +1,10 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import {
     getQuarterPlan,
     getRoadmapTermRelation,
@@ -91,10 +92,10 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             return false;
         }
 
-        const { year, quarter } = RightPaneStore.getTermParts();
-        const quarterPlan = getQuarterPlan(roadmap, year, quarter);
+        const term = RightPaneStore.getFormData().term;
+        const quarterPlan = getQuarterPlan(roadmap, term);
         if (!quarterPlan) {
-            openSnackbar('error', `The provided roadmap does not contain ${year} ${quarter}`);
+            openSnackbar('error', `The provided roadmap does not contain ${term.shortName}`);
             return false;
         }
         try {
@@ -122,7 +123,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     };
 
     const renderGroup: AutocompleteProps['renderGroup'] = (params) => {
-        const term = RightPaneStore.getFormData().term;
+        const termShortName = RightPaneStore.getFormData().term.shortName;
         const includesTerm = params.group === RoadmapTermRelation.IncludesTerm;
         const keyword = includesTerm ? 'Includes' : "Doesn't Include";
 
@@ -130,7 +131,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             <li key={params.key}>
                 <HorizontalRightDivider>
                     <Typography>
-                        {keyword} {term}
+                        {keyword} {termShortName}
                     </Typography>
                 </HorizontalRightDivider>
                 <ul style={{ padding: 0 }}>{params.children}</ul>
@@ -140,19 +141,33 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
         const menuItem = (
-            <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ paddingRight: 1 }}>
+            <Box
+                key={roadmap.id}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ paddingRight: 1 }}
+            >
                 <MenuItem
                     {...props}
                     key={roadmap.id}
                     onClick={() => search(roadmap.id)}
                     disabled={!doesRoadmapIncludeTerm(roadmap.id)}
+                    sx={{ width: '100%' }}
                 >
-                    <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
+                    <Typography
+                        sx={{ marginLeft: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+                        title={roadmap.name}
+                    >
+                        {roadmap.name}
+                    </Typography>
                 </MenuItem>
 
-                <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
-                    <OpenInBrowser fontSize="small" />
-                </IconButton>
+                <Tooltip title="Open Planner">
+                    <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
+                        <OpenInBrowser fontSize="small" />
+                    </IconButton>
+                </Tooltip>
             </Box>
         );
         if (termRoadmapGrouping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
@@ -167,10 +182,10 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     useEffect(() => {
         const updateTermRoadmaps = () => {
-            const { year, quarter } = RightPaneStore.getTermParts();
+            const term = RightPaneStore.getFormData().term;
             const roadmapsWithTerm: typeof termRoadmapGrouping = getDefaultTermRoadmapGrouping();
             for (const roadmap of plannerRoadmaps) {
-                const roadmapTermRelation = getRoadmapTermRelation(roadmap, year, quarter);
+                const roadmapTermRelation = getRoadmapTermRelation(roadmap, term);
                 roadmapsWithTerm[roadmapTermRelation].add(roadmap.id.toString());
             }
             setTermRoadmapGrouping(roadmapsWithTerm);
@@ -222,15 +237,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 renderOption: renderOption,
                 ...(plannerRoadmaps.length === 0 && {
                     slotProps: { popper: { sx: { '& .MuiAutocomplete-noOptions': { padding: 0 } } } },
-                    noOptionsText: (
-                        <MenuItem
-                            component="a"
-                            href={PLANNER_LINK}
-                            sx={(theme) => ({ color: theme.palette.text.primary, paddingTop: 1.5, paddingBottom: 1.5 })}
-                        >
-                            Create a roadmap!
-                        </MenuItem>
-                    ),
+                    noOptionsText: <CreateRoadmapLinkItem />,
                 }),
             }}
             textFieldProps={{

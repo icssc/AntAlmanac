@@ -1,0 +1,1 @@
+ALTER TABLE "coursesInSchedule" ADD COLUMN "index" integer;

@@ -2,6 +2,11 @@
     "postman.settings.dotenv-detection-notification-visibility": false,
 
     "editor.defaultFormatter": "oxc.oxc-vscode",
+
+    "oxc.useExecPath": true,
+    "oxc.path.oxfmt": "node_modules/oxfmt/dist/cli.js",
+    "oxc.path.oxlint": "node_modules/oxlint/dist/cli.js",
+
     "editor.formatOnSave": false,
     "editor.formatOnSaveMode": "file",
     "editor.codeActionsOnSave": {

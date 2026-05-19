@@ -2,7 +2,7 @@ import actionTypesStore from '$actions/ActionTypesStore';
 import { isEmptySchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -11,13 +11,14 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
-import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Stack, Snackbar, Alert, Link, IconButton } from '@mui/material';
 import { TRPCClientError } from '@trpc/client';
 import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect } from 'react';
 
 export const Save = () => {
-    const { sessionIsValid } = useSessionStore();
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [autoSaving, setAutoSaving] = useState(false);
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -107,7 +108,7 @@ export const Save = () => {
 
     return (
         <Stack direction="row">
-            <Button
+            <LoadingButton
                 id="save-button"
                 color="inherit"
                 startIcon={<SaveIcon />}
@@ -118,7 +119,7 @@ export const Save = () => {
                 loading={saving}
             >
                 Save
-            </Button>
+            </LoadingButton>
 
             <Snackbar open={openAutoSaveWarning} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
                 <Alert

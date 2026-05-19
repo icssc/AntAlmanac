@@ -1,4 +1,4 @@
-/** Builds absolute URLs for legacy REST proxies (e.g. Mapbox). Data API calls use `getEndpoint()` in `$lib/api/trpc`. */
+/** Builds absolute URLs for legacy REST proxies (e.g. Mapbox). tRPC calls use the client in `$lib/api/trpc`. */
 function endpointTransform(path: string) {
     if (process.env.NEXT_PUBLIC_ENDPOINT) {
         return `https://${process.env.NEXT_PUBLIC_ENDPOINT}.api.antalmanac.com${path}`;

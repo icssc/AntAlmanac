@@ -1,14 +1,12 @@
+import { ANTALMANAC_DESCRIPTION, ANTALMANAC_TITLE } from '$src/app/seo-constants';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import type { WebApplication, WebSite, WithContext } from 'schema-dts';
 
 import './globals.css';
 
-const ANTALMANAC_DESCRIPTION =
-    'Search UCI courses across 140+ departments and build your class schedule with AntAlmanac. Check grade distributions, view classes on a campus map, and plan your ideal quarter.';
-
 export const metadata: Metadata = {
-    title: 'AntAlmanac — UCI Course & Schedule Planner',
+    title: ANTALMANAC_TITLE,
     description: ANTALMANAC_DESCRIPTION,
     manifest: '/manifest.json',
     metadataBase: new URL('https://antalmanac.com'),
@@ -25,12 +23,12 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'AntAlmanac — UCI Course & Schedule Planner',
+        title: ANTALMANAC_TITLE,
         description: ANTALMANAC_DESCRIPTION,
         images: '/og-image.png',
     },
     openGraph: {
-        title: 'AntAlmanac — UCI Course & Schedule Planner',
+        title: ANTALMANAC_TITLE,
         description: ANTALMANAC_DESCRIPTION,
         url: 'https://antalmanac.com',
         siteName: 'AntAlmanac',
@@ -41,22 +39,6 @@ export const metadata: Metadata = {
         statusBarStyle: 'black-translucent',
         capable: true,
     },
-    keywords: [
-        'UCI',
-        'UC Irvine',
-        'Anteater',
-        'UCI courses',
-        'UCI course search',
-        'UCI schedule',
-        'UCI class schedule',
-        'UCI schedule planner',
-        'course planner',
-        'WebSOC alternative',
-        'UCI enrollment',
-        'UCI GE requirements',
-        'grade distributions',
-        'antalmanac',
-    ],
 };
 
 export const viewport: Viewport = {
@@ -75,7 +57,8 @@ const webAppSchema: WithContext<WebApplication> = {
     applicationCategory: 'EducationalApplication',
     operatingSystem: 'Web',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    description: 'UCI course and schedule planner for UC Irvine students.',
+    description:
+        'UCI course search and UCI schedule planner for UC Irvine: build weekly class schedules with conflict detection, search UCI courses across departments, explore grade distributions, and use the interactive campus map.',
     featureList: 'Course search, Schedule builder, Grade distributions, Campus map, 4-year planner',
     author: { '@type': 'Organization', name: 'ICS Student Council', url: 'https://icssc.club' },
 };

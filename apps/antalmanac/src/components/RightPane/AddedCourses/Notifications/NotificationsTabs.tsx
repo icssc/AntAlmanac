@@ -1,27 +1,29 @@
 import { NotificationsTable } from '$components/RightPane/AddedCourses/Notifications/NotificationsTable';
-import { useNotificationStore } from '$stores/NotificationStore';
+import { type Notification, useNotificationStore } from '$stores/NotificationStore';
 import { NotificationAddOutlined } from '@mui/icons-material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Tab, Paper, CircularProgress, Typography, useTheme } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
-function groupNotificationsByTerm(notifications: Record<string, unknown>) {
-    return Object.keys(notifications).reduce<Record<string, string[]>>((groups, key) => {
-        const parts = key.split(' ');
-        const term = parts.slice(-2).join(' ');
-        if (!groups[term]) {
-            groups[term] = [];
+function groupNotificationsByTerm(notifications: Partial<Record<string, Notification>>) {
+    return Object.entries(notifications).reduce<Record<string, string[]>>((groups, [key, notification]) => {
+        if (!notification) {
+            return groups;
         }
-        groups[term].push(key);
+
+        const termName = notification.term.shortName;
+        if (!groups[termName]) {
+            groups[termName] = [];
+        }
+        groups[termName].push(key);
         return groups;
     }, {});
 }
 
 export function NotificationsTabs() {
     const theme = useTheme();
-    const initialized = useNotificationStore(useShallow((store) => store.initialized));
-    const notifications = useNotificationStore(useShallow((store) => store.notifications));
+    const initialized = useNotificationStore((store) => store.initialized);
+    const notifications = useNotificationStore((store) => store.notifications);
 
     const groups = useMemo(() => groupNotificationsByTerm(notifications), [notifications]);
     const sortedTerms = useMemo(() => Object.keys(groups).sort(), [groups]);

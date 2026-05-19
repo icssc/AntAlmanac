@@ -1,5 +1,6 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { ColorLens } from '@mui/icons-material';
@@ -17,7 +18,7 @@ interface ColorPickerProps {
     /**Not undefined when isCustomEvent is true */
     customEventID?: CustomEventId;
     /**Not undefined  when isCustomEvent is false */
-    term?: string;
+    term?: AATerm;
     /**Not undefined  when isCustomEvent is false */
     sectionCode?: string;
 }

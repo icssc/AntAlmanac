@@ -1,4 +1,11 @@
-import type { HourMinute, WebsocCourse, WebsocSection, WebsocSectionMeeting } from '@packages/anteater-api/types';
+import type {
+    HourMinute,
+    Quarter,
+    Year,
+    WebsocCourse,
+    WebsocSection,
+    WebsocSectionMeeting,
+} from '@packages/anteater-api/types';
 import { flattenSectionsWithCourse } from '@packages/anteater-api/utils';
 
 import type { CourseDetails } from './helpers/notificationDispatch';
@@ -43,8 +50,8 @@ interface PreviousState {
 async function processSection(
     section: WebsocSection,
     course: WebsocCourse,
-    quarter: string,
-    year: string,
+    quarter: Quarter,
+    year: Year,
     previousState: PreviousState | undefined,
     sectionSubscriptions: SubscriptionWithUser[]
 ) {
@@ -102,7 +109,7 @@ async function processSection(
 /**
  * Processes a batch of section codes and sends notifications to users if the status and/or restriction codes have changed.
  */
-async function processBatch(batch: string[], quarter: string, year: string) {
+async function processBatch(batch: string[], quarter: Quarter, year: Year) {
     console.log(`[BATCH] Processing ${batch.length} section codes for ${quarter} ${year}`);
     const response = (await getUpdatedClasses(quarter, year, batch)) ?? { schools: [] };
 
@@ -138,27 +145,21 @@ export async function scanAndNotify() {
     try {
         console.log('[SCAN] Starting subscription scan...');
         const subscriptions = await getSubscriptionSectionCodes();
-        if (!subscriptions) {
+        if (!subscriptions || subscriptions.length === 0) {
             console.log('[SCAN] No subscriptions found');
             return;
         }
 
-        const termCounts = Object.entries(subscriptions).map(([term, sectionCodes]) => {
-            const [quarter, year] = term.split('-');
-            return { term, quarter, year, count: sectionCodes.length };
-        });
-
-        console.log(`[SCAN] Found subscriptions for ${termCounts.length} term(s):`);
-        termCounts.forEach(({ term, count }) => {
-            console.log(`  ${term}: ${count} section code(s)`);
-        });
+        console.log(`[SCAN] Found subscriptions for ${subscriptions.length} term(s):`);
+        for (const { quarter, year, sectionCodes } of subscriptions) {
+            console.log(`  ${quarter} ${year}: ${sectionCodes.length} section code(s)`);
+        }
 
         await Promise.all(
-            Object.entries(subscriptions).map(([term, sectionCodes]) => {
-                const [quarter, year] = term.split('-');
+            subscriptions.map(({ quarter, year, sectionCodes }) => {
                 const batches = batchCourseCodes(sectionCodes.map(String));
                 console.log(
-                    `[SCAN] Processing ${term}: ${sectionCodes.length} sections in ${batches.length} batch(es)`
+                    `[SCAN] Processing ${quarter} ${year}: ${sectionCodes.length} sections in ${batches.length} batch(es)`
                 );
                 return Promise.all(batches.map((batch) => processBatch(batch, quarter, year)));
             })
