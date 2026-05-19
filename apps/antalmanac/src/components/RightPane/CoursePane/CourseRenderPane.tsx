@@ -373,10 +373,6 @@ export default function CourseRenderPane(props: { id?: number }) {
         return getFilteredCourses(flattenSOCObject(searchResponse, courseColors));
     }, [searchResponse, courseColors]);
 
-    const selectedGECount = getSelectedGEs(RightPaneStore.getFormData().ge).length;
-    const showEmptyGeIntersectionWarning =
-        selectedGECount > 1 && !isLoading && !isError && !courseData.some(isCourseEntry);
-
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
     };
@@ -425,7 +421,6 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </WarningAlert>
                 ));
             })}
-            {showEmptyGeIntersectionWarning && <WarningAlert>No courses fulfill all selected GEs.</WarningAlert>}
             {filterTakenCourses && !hasRenderableCourseResults && (
                 <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
             )}
