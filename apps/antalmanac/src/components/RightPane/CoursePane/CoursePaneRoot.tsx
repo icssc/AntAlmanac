@@ -12,13 +12,14 @@ import {
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
 import { parseAsString, useQueryState } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export function CoursePaneRoot() {
     const {
@@ -31,7 +32,19 @@ export function CoursePaneRoot() {
         enableAdvancedSearch,
         disableAdvancedSearch,
         initializeSearchUi,
-    } = useCoursePaneStore();
+    } = useCoursePaneStore(
+        useShallow((store) => ({
+            key: store.key,
+            forceUpdate: store.forceUpdate,
+            searchFormIsDisplayed: store.searchFormIsDisplayed,
+            displaySearch: store.displaySearch,
+            displaySections: store.displaySections,
+            advancedSearchEnabled: store.advancedSearchEnabled,
+            enableAdvancedSearch: store.enableAdvancedSearch,
+            disableAdvancedSearch: store.disableAdvancedSearch,
+            initializeSearchUi: store.initializeSearchUi,
+        }))
+    );
     const { formData, resetAdvanced, setFields } = useCourseSearchUrlState();
     const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString.withOptions({ history: 'replace' }));
     const postHog = usePostHog();

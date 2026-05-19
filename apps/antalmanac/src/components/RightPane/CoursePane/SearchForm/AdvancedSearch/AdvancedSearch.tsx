@@ -3,9 +3,15 @@ import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Button, Collapse, Typography } from '@mui/material';
+import { useShallow } from 'zustand/react/shallow';
 
 export function AdvancedSearch() {
-    const { advancedSearchEnabled, toggleAdvancedSearch } = useCoursePaneStore();
+    const { advancedSearchEnabled, toggleAdvancedSearch } = useCoursePaneStore(
+        useShallow((store) => ({
+            advancedSearchEnabled: store.advancedSearchEnabled,
+            toggleAdvancedSearch: store.toggleAdvancedSearch,
+        }))
+    );
     const isDark = useThemeStore((store) => store.isDark);
 
     const handleExpand = () => {

@@ -146,16 +146,12 @@ export function TbaCalendarCard() {
         };
 
         AppStore.on('addedCoursesChange', updateTbaSections);
-        AppStore.on('removedCoursesChange', updateTbaSections);
-        AppStore.on('clearSchedule', updateTbaSections);
         AppStore.on('currentScheduleIndexChange', updateTbaSections);
 
         updateTbaSections();
 
         return () => {
             AppStore.off('addedCoursesChange', updateTbaSections);
-            AppStore.off('removedCoursesChange', updateTbaSections);
-            AppStore.off('clearSchedule', updateTbaSections);
             AppStore.off('currentScheduleIndexChange', updateTbaSections);
         };
     }, []);

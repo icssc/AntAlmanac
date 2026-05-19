@@ -11,7 +11,7 @@ interface ScreenshotButtonProps {
 }
 
 const ScreenshotButton = ({ onScreenshot }: ScreenshotButtonProps) => {
-    const { isDark } = useThemeStore();
+    const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 
     const handleClick = () => {

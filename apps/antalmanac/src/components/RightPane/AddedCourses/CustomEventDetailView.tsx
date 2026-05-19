@@ -19,7 +19,7 @@ interface CustomEventDetailViewProps {
 
 export function CustomEventDetailView(props: CustomEventDetailViewProps) {
     const { customEvent } = props;
-    const { isMilitaryTime } = useTimeFormatStore();
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 

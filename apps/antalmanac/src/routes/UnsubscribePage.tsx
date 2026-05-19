@@ -1,4 +1,4 @@
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { parseQuarter } from '$lib/term';
 import { Box, Button } from '@mui/material';
 import { useState } from 'react';

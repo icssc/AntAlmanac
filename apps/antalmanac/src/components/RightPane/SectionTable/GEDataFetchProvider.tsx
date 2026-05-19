@@ -1,6 +1,6 @@
 import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import type { AACourse } from '@packages/antalmanac-types';
 import { flattenCourses } from '@packages/anteater-api/utils';

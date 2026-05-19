@@ -92,7 +92,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
-    const { isMilitaryTime } = useTimeFormatStore();
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const postHog = usePostHog();
 

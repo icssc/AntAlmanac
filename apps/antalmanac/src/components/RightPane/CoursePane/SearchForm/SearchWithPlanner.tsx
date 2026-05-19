@@ -5,7 +5,7 @@ import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchFo
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';

@@ -7,7 +7,7 @@ import type {
     WebsocSectionType,
     WebsocSyllabiResponse,
 } from '@packages/anteater-api/types';
-import { mergeWebsocUnion, sortWebsocResponse } from '@packages/anteater-api/utils';
+import { sortWebsocResponse, unionWebsocResponses } from '@packages/anteater-api/utils';
 import { z } from 'zod';
 
 import { router } from '../trpc';
@@ -65,7 +65,8 @@ const websocRouter = router({
     getMultiple: aapiProcedure
         .input(z.object({ params: z.array(WebsocSearchInputSchema) }))
         .query(
-            ({ input }): Promise<WebsocAPIResponse> => Promise.all(input.params.map(queryWebsoc)).then(mergeWebsocUnion)
+            ({ input }): Promise<WebsocAPIResponse> =>
+                Promise.all(input.params.map(queryWebsoc)).then(unionWebsocResponses)
         ),
 
     getCourseInfo: aapiProcedure
@@ -88,6 +89,8 @@ const websocRouter = router({
                                             courseTitle: course.courseTitle,
                                             courseComment: course.courseComment,
                                             prerequisiteLink: course.prerequisiteLink,
+                                            sections: course.sections,
+                                            updatedAt: course.updatedAt,
                                             sectionTypes,
                                         },
                                         section,

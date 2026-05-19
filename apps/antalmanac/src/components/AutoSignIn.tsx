@@ -1,4 +1,4 @@
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { hasSsoCookie } from '$lib/ssoCookie';
 import { useSessionStore } from '$stores/SessionStore';
 import { useEffect, useRef } from 'react';

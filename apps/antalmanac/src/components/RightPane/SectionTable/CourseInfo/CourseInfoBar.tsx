@@ -1,7 +1,7 @@
 import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { InfoOutlined } from '@mui/icons-material';
 import { Box, Button, Popover, Skeleton } from '@mui/material';
 import type { PrerequisiteTree } from '@packages/anteater-api/types';

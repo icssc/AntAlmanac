@@ -4,9 +4,15 @@ import { useFallbackStore } from '$stores/FallbackStore';
 import { Box, Typography } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export function CustomEventsBox() {
-    const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore();
+    const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore(
+        useShallow((store) => ({
+            fallbackMode: store.fallbackMode,
+            getCurrentFallbackSchedule: store.getCurrentFallbackSchedule,
+        }))
+    );
     const currentScheduleIndex = AppStore.getCurrentScheduleIndex();
 
     const [customEvents, setCustomEvents] = useState<RepeatingCustomEvent[]>(
