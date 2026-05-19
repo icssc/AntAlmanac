@@ -24,7 +24,7 @@ import { SketchPicker } from 'react-color';
 
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
-function getSectionScheduleColor(section: AASection, term: string): string {
+function getSectionScheduleColor(section: AASection, term: AATerm): string {
     return (
         AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term)?.section.color ??
         section.color ??
