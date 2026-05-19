@@ -1,13 +1,13 @@
 import { ShortCourse, VisibilityState } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
-export type { VisibilityState };
+export { VisibilityState };
 type VisibilityMap = Record<string, Record<string, VisibilityState>>;
 
 const NEXT_VISIBILITY: Record<VisibilityState, VisibilityState> = {
-    visible: 'outlined',
-    outlined: 'disappeared',
-    disappeared: 'visible',
+    [VisibilityState.Visible]: VisibilityState.Outlined,
+    [VisibilityState.Outlined]: VisibilityState.Disappeared,
+    [VisibilityState.Disappeared]: VisibilityState.Visible,
 };
 
 interface HiddenCoursesStore {
@@ -21,16 +21,16 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
     visibilityMap: {},
 
     getVisibility: (scheduleId, sectionCode) => {
-        return get().visibilityMap[scheduleId]?.[sectionCode] ?? 'visible';
+        return get().visibilityMap[scheduleId]?.[sectionCode] ?? VisibilityState.Visible;
     },
 
     cycleVisibility: (scheduleId, sectionCode) => {
         const current = get().visibilityMap;
-        const currentState: VisibilityState = current[scheduleId]?.[sectionCode] ?? 'visible';
+        const currentState: VisibilityState = current[scheduleId]?.[sectionCode] ?? VisibilityState.Visible;
         const nextState = NEXT_VISIBILITY[currentState];
 
         const scheduleMap = { ...current[scheduleId] };
-        if (nextState === 'visible') {
+        if (nextState === VisibilityState.Visible) {
             delete scheduleMap[sectionCode];
         } else {
             scheduleMap[sectionCode] = nextState;
@@ -51,8 +51,8 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
         for (const schedule of schedules) {
             if (!schedule.id) continue;
             for (const course of schedule.courses) {
-                const visibility = course.visibility ?? 'visible';
-                if (visibility !== 'visible') {
+                const visibility = course.visibility ?? VisibilityState.Visible;
+                if (visibility !== VisibilityState.Visible) {
                     newMap[schedule.id] ??= {};
                     newMap[schedule.id][course.sectionCode] = visibility;
                 }

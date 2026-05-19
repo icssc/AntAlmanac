@@ -18,7 +18,7 @@ import {
 } from '$lib/localStorage';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
-import { useHiddenCoursesStore, type VisibilityState } from '$stores/HiddenCoursesStore';
+import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
@@ -141,8 +141,8 @@ export const ScheduleCalendar = memo(() => {
             if ('isCustomEvent' in e && e.isCustomEvent) return true;
             if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
             const visibility: VisibilityState =
-                visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? 'visible';
-            return visibility !== 'disappeared';
+                visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? VisibilityState.Visible;
+            return visibility !== VisibilityState.Disappeared;
         });
     }, [
         eventsInCalendar,
@@ -204,13 +204,14 @@ export const ScheduleCalendar = memo(() => {
 
             const visibility: VisibilityState =
                 !isSkeletonEvent && !('isCustomEvent' in event && event.isCustomEvent)
-                    ? (visibilityMap[currentScheduleId]?.[(event as CourseEvent).sectionCode] ?? 'visible')
-                    : 'visible';
+                    ? (visibilityMap[currentScheduleId]?.[(event as CourseEvent).sectionCode] ??
+                      VisibilityState.Visible)
+                    : VisibilityState.Visible;
 
             const isSelected = event === selectedEvent;
 
             const style =
-                visibility === 'outlined'
+                visibility === VisibilityState.Outlined
                     ? {
                           backgroundColor: theme.palette.background.default,
                           border: `2px solid ${event.color}`,

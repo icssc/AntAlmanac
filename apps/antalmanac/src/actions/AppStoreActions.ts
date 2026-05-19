@@ -10,13 +10,13 @@ import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { VisibilityState } from '@packages/antalmanac-types';
 import type {
     CourseDetails,
     CustomEventId,
     RepeatingCustomEvent,
     ScheduleCourse,
     ShortCourseSchedule,
-    VisibilityState,
 } from '@packages/antalmanac-types';
 import type { WebsocSection } from '@packages/anteater-api/types';
 import { TRPCClientError } from '@trpc/client';
@@ -92,7 +92,7 @@ function enrichSaveStateWithVisibility(saveState: ReturnType<typeof AppStore.sch
             ...schedule,
             courses: schedule.courses.map((course) => ({
                 ...course,
-                visibility: visibilityMap[schedule.id!]?.[course.sectionCode] ?? ('visible' satisfies VisibilityState),
+                visibility: visibilityMap[schedule.id!]?.[course.sectionCode] ?? VisibilityState.Visible,
             })),
         })),
     };

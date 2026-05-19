@@ -6,7 +6,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { useIsMobile } from '$hooks/useIsMobile';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
-import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
+import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
 import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
@@ -57,18 +57,18 @@ export const ActionCell = memo(
                     {addedCourse && (
                         <Tooltip
                             title={
-                                classVisibility === 'visible'
+                                classVisibility === VisibilityState.Visible
                                     ? 'Outline class in calendar'
-                                    : classVisibility === 'outlined'
+                                    : classVisibility === VisibilityState.Outlined
                                       ? 'Hide class in calendar'
                                       : 'Show class in calendar'
                             }
                             disableInteractive
                         >
                             <IconButton onClick={handleVisibilityToggle} size="small" sx={{ p: 0.5 }}>
-                                {classVisibility === 'visible' ? (
+                                {classVisibility === VisibilityState.Visible ? (
                                     <Visibility fontSize="small" />
-                                ) : classVisibility === 'outlined' ? (
+                                ) : classVisibility === VisibilityState.Outlined ? (
                                     <VisibilityOutlined fontSize="small" />
                                 ) : (
                                     <VisibilityOff fontSize="small" />

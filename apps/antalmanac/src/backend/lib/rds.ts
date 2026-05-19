@@ -5,9 +5,8 @@ import type {
     RepeatingCustomEvent,
     Notification,
     ScheduleSaveState,
-    VisibilityState,
 } from '@packages/antalmanac-types';
-import { VISIBILITY_STATES } from '@packages/antalmanac-types';
+import { VISIBILITY_STATES, VisibilityState } from '@packages/antalmanac-types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
 import {
@@ -259,7 +258,7 @@ export class RDS {
                     sectionCode,
                     term: course.term,
                     color: course.color,
-                    visibility: course.visibility ?? ('visible' satisfies VisibilityState),
+                    visibility: course.visibility ?? VisibilityState.Visible,
                 });
             }
         }
@@ -434,7 +433,7 @@ export class RDS {
                     color: course.color,
                     visibility: VISIBILITY_STATES.includes(course.visibility as VisibilityState)
                         ? (course.visibility as VisibilityState)
-                        : ('visible' satisfies VisibilityState),
+                        : VisibilityState.Visible,
                 });
             }
 
