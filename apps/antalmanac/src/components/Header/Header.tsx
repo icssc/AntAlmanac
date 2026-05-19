@@ -5,7 +5,6 @@ import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import { getLocalStorageImportedUser, removeLocalStorageImportedUser } from '$lib/localStorage';
-import { isNativeIosApp } from '$lib/platform';
 import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
@@ -72,7 +71,6 @@ export function Header() {
                         alignItems: 'center',
                     }}
                 >
-                    {isNativeIosApp()}
                     <Stack direction="row" alignItems="center" gap={1}>
                         <AppSwitcher isMobile={isMobile} />
                     </Stack>

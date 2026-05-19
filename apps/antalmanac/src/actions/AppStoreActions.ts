@@ -4,6 +4,7 @@ import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { isNativeIosApp } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -398,6 +399,7 @@ const cacheSchedule = () => {
  * @param options.silent Sign in silently with `prompt: none` and suppress errors?
  */
 export const loginUser = async (provider: Provider, { silent = false, postHog }: LoginUserOptions = {}) => {
+    openSnackbar('info', `${isNativeIosApp()}`);
     try {
         const authUrl = await getSignInUrl(provider, {
             authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
