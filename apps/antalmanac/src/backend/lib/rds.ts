@@ -5,6 +5,7 @@ import type {
     Notification,
     ScheduleSaveState,
 } from '@packages/antalmanac-types';
+import { VISIBILITY_STATES, VisibilityState } from '@packages/antalmanac-types';
 import type { Quarter, Year } from '@packages/anteater-api/types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
@@ -176,12 +177,17 @@ export class RDS {
     }
 
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
-        const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string }>();
+        const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string; visibility: string }>();
         for (const course of courses) {
             const sectionCode = parseInt(course.sectionCode);
             const key = `${sectionCode}-${course.term}`;
             if (!uniqueByKey.has(key)) {
-                uniqueByKey.set(key, { sectionCode, term: course.term, color: course.color });
+                uniqueByKey.set(key, {
+                    sectionCode,
+                    term: course.term,
+                    color: course.color,
+                    visibility: course.visibility ?? VisibilityState.Visible,
+                });
             }
         }
         const incoming = [...uniqueByKey.values()];
@@ -207,6 +213,7 @@ export class RDS {
             sectionCode: 'keep',
             term: 'keep',
             color: 'update',
+            visibility: 'update',
             index: 'update',
             createdAt: 'keep',
             lastUpdated: 'update',
@@ -445,6 +452,9 @@ export class RDS {
                     sectionCode: sectionCode,
                     term: course.term,
                     color: course.color,
+                    visibility: VISIBILITY_STATES.includes(course.visibility as VisibilityState)
+                        ? (course.visibility as VisibilityState)
+                        : VisibilityState.Visible,
                 });
 
                 if (course.index !== null) {

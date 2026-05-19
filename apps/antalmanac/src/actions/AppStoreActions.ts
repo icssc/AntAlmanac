@@ -6,10 +6,12 @@ import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { VisibilityState } from '@packages/antalmanac-types';
 import type {
     AATerm,
     CourseDetails,
@@ -95,8 +97,22 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
+function enrichSaveStateWithVisibility(saveState: ReturnType<typeof AppStore.schedule.getScheduleAsSaveState>) {
+    const visibilityMap = useHiddenCoursesStore.getState().visibilityMap;
+    return {
+        ...saveState,
+        schedules: saveState.schedules.map((schedule) => ({
+            ...schedule,
+            courses: schedule.courses.map((course) => ({
+                ...course,
+                visibility: visibilityMap[schedule.id!]?.[course.sectionCode] ?? VisibilityState.Visible,
+            })),
+        })),
+    };
+}
+
 export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
-    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+    const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
 
     if (
         isEmptySchedule(scheduleSaveState.schedules) &&
@@ -144,7 +160,7 @@ export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
 };
 
 export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
-    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+    const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
     try {
         const result = await trpc.schedule.save.mutate({
             userData: scheduleSaveState,
@@ -353,6 +369,7 @@ export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions)
             analyticsErrorMessage = 'Schedule data not found';
             openSnackbar('error', `Couldn't find schedules for this account`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+            useHiddenCoursesStore.getState().hydrateFromSchedules(scheduleSaveState.schedules);
             analyticsIdentifyUser(postHog, userId);
             openSnackbar('success', `Schedule loaded.`);
             logAnalytics(postHog, {
