@@ -227,7 +227,7 @@ const LoadingMessage = () => {
 };
 
 const ErrorMessage = () => {
-    const { isDark } = useThemeStore();
+    const isDark = useThemeStore((store) => store.isDark);
 
     const formData = RightPaneStore.getFormData();
     const multiSearchData = RightPaneStore.getMultiSearchData();
