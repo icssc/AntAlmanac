@@ -3,35 +3,6 @@ import type { Quarter, Year } from '@packages/anteater-api/types';
 import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
 
-export function parseTermShortName(shortName: string): { year: Year; quarter: Quarter } | undefined {
-    const parts = shortName.split(' ');
-    if (parts.length !== 2) {
-        return undefined;
-    }
-
-    const [year, rawQuarter] = parts;
-    const result = QuarterSchema.safeParse(rawQuarter);
-    if (!result.success) {
-        return undefined;
-    }
-
-    return { year, quarter: result.data };
-}
-
-/**
- * Parse an ISO "YYYY-MM-DD" string into a local-timezone Date,
- * avoiding UTC-vs-local shifts from `new Date(isoString)`.
- */
-export function parseLocalDate(dateStr: string): Date {
-    const [y, month, day] = dateStr.split('-').map(Number);
-    return new Date(y, month - 1, day);
-}
-
-export function parseQuarter(rawQuarter: unknown) {
-    const quarter = QuarterSchema.safeParse(rawQuarter);
-    return quarter.success ? quarter.data : undefined;
-}
-
 export const termSchema = z
     .object({
         year: z.string(),
@@ -62,6 +33,35 @@ export const termSchema = z
             isSummerTerm: t.isSummerTerm,
         })
     );
+
+export function parseTermShortName(shortName: string): { year: Year; quarter: Quarter } | undefined {
+    const parts = shortName.split(' ');
+    if (parts.length !== 2) {
+        return undefined;
+    }
+
+    const [year, rawQuarter] = parts;
+    const result = QuarterSchema.safeParse(rawQuarter);
+    if (!result.success) {
+        return undefined;
+    }
+
+    return { year, quarter: result.data };
+}
+
+/**
+ * Parse an ISO "YYYY-MM-DD" string into a local-timezone Date,
+ * avoiding UTC-vs-local shifts from `new Date(isoString)`.
+ */
+function parseLocalDate(dateStr: string): Date {
+    const [y, month, day] = dateStr.split('-').map(Number);
+    return new Date(y, month - 1, day);
+}
+
+export function parseQuarter(rawQuarter: unknown) {
+    const quarter = QuarterSchema.safeParse(rawQuarter);
+    return quarter.success ? quarter.data : undefined;
+}
 
 /**
  * Enrollment can change until the drop deadline, i.e. when enrollment closes.
