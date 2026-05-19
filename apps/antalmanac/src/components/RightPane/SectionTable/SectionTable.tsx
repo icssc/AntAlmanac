@@ -21,7 +21,6 @@ import {
     Paper,
     Skeleton,
     Table,
-    TableBody,
     TableCell,
     TableContainer,
     TableHead,
@@ -277,26 +276,14 @@ function SectionTable({
                                 </TableRow>
                             </TableHead>
 
-                            {skeleton ? (
-                                <TableBody>
-                                    {courseDetails.sections.map((_, i) => (
-                                        <TableRow key={i}>
-                                            <TableCell>
-                                                <Skeleton variant="text" />
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            ) : (
-                                <SectionTableBody
-                                    courseDetails={courseDetails}
-                                    term={term}
-                                    allowHighlight={allowHighlight}
-                                    scheduleNames={scheduleNames}
-                                    analyticsCategory={analyticsCategory}
-                                    formattedTime={formattedTime}
-                                />
-                            )}
+                            <SectionTableBody
+                                courseDetails={courseDetails}
+                                term={term}
+                                allowHighlight={allowHighlight}
+                                scheduleNames={scheduleNames}
+                                analyticsCategory={analyticsCategory}
+                                formattedTime={formattedTime}
+                            />
                         </Table>
                     </TableContainer>,
                     skeleton

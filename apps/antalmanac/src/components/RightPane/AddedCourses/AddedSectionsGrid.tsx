@@ -45,14 +45,15 @@ const buttonSx: SxProps = {
 
 /**
  * Save the rendered schedule as JSON so the skeleton on the next load can
- * render the previous schedule's shape. The skeleton only renders the button
- * row + stub table rows, so most fields can be dropped:
+ * render the previous schedule via `<SectionTable skeleton>` — the real
+ * SectionTableBody renders for sizing (hidden under MUI's children-aware
+ * Skeleton), which is what keeps row heights accurate for sections with
+ * multiple instructors / multi-line meetings.
  *
- *   - Sections are stripped to empty objects (only `sections.length` matters
- *     for sizing the table body).
- *   - `courseComment` and `prerequisiteLink` aren't read by the visible parts
- *     of `<SectionTable skeleton>`; the prereq popover never opens during
- *     loading. Dropping them keeps localStorage small.
+ * `courseComment` and `prerequisiteLink` are dropped (kept as empty strings
+ * so the parsed shape still satisfies CourseWithTerm). They're the heaviest
+ * fields and neither is read by the visible parts of the skeleton — the
+ * prereq popover never opens during loading.
  */
 function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
     if (courses.length === 0) {
@@ -61,11 +62,8 @@ function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
     }
     const slim = courses.map((course) => ({
         ...course,
-        // Skeleton never displays these — replace with empty strings instead
-        // of dropping them so the parsed shape still satisfies CourseWithTerm.
         courseComment: '',
         prerequisiteLink: '',
-        sections: course.sections.map(() => ({})),
     }));
     setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(slim));
 }
