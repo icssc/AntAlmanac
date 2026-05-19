@@ -3,6 +3,7 @@ import { CopyScheduleButton } from '$components/buttons/Copy';
 import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { SortableList } from '$components/drag-and-drop/SortableList';
 import { EmptyState } from '$components/EmptyState';
+import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/AddedCoursesLoadingSkeleton';
 import { CustomEventsBox } from '$components/RightPane/AddedCourses/CustomEventsBox';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
@@ -11,6 +12,10 @@ import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePan
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
+import {
+    removeLocalStorageAddedCoursesSkeletonBlueprint,
+    setLocalStorageAddedCoursesSkeletonBlueprint,
+} from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { getCourseId } from '$stores/scheduleHelpers';
@@ -37,6 +42,31 @@ const buttonSx: SxProps = {
     },
     pointerEvents: 'auto',
 };
+
+/**
+ * Save the rendered schedule as JSON so the skeleton on the next load can
+ * render the previous schedule via `<SectionTable skeleton>` — the real
+ * SectionTableBody renders for sizing (hidden under MUI's children-aware
+ * Skeleton), which is what keeps row heights accurate for sections with
+ * multiple instructors / multi-line meetings.
+ *
+ * `courseComment` and `prerequisiteLink` are dropped (kept as empty strings
+ * so the parsed shape still satisfies CourseWithTerm). They're the heaviest
+ * fields and neither is read by the visible parts of the skeleton — the
+ * prereq popover never opens during loading.
+ */
+function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
+    if (courses.length === 0) {
+        removeLocalStorageAddedCoursesSkeletonBlueprint();
+        return;
+    }
+    const slim = courses.map((course) => ({
+        ...course,
+        courseComment: '',
+        prerequisiteLink: '',
+    }));
+    setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(slim));
+}
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -88,6 +118,7 @@ export function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const loadingSchedule = scheduleComponentsToggleStore((state) => state.openLoadingSchedule);
 
     const isMobile = useIsMobile();
 
@@ -105,8 +136,19 @@ export function AddedSectionsGrid() {
     };
 
     useEffect(() => {
+        // Persist whatever courses are already in AppStore at mount, in case
+        // AppStore was populated before this component mounted and no
+        // addedCoursesChange event fires later. Skip when empty so a stale
+        // blueprint from a previous session isn't cleared before loadSchedule
+        // has a chance to populate AppStore.
+        if (courses.length > 0) {
+            persistSkeletonBlueprint(courses);
+        }
+
         const handleCoursesChange = () => {
-            setCourses(getCourses());
+            const nextCourses = getCourses();
+            setCourses(nextCourses);
+            persistSkeletonBlueprint(nextCourses);
         };
 
         const handleScheduleNamesChange = () => {
@@ -159,7 +201,9 @@ export function AddedSectionsGrid() {
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {isMobile && <SelectSchedulePopover />}
-                {courses.length === 0 && (
+                {loadingSchedule ? (
+                    <AddedCoursesLoadingSkeleton />
+                ) : courses.length === 0 ? (
                     <EmptyState
                         Icon={MenuBook}
                         title="No Courses Added Yet"
@@ -173,31 +217,32 @@ export function AddedSectionsGrid() {
                             onClick: () => scheduleComponentsToggleStore.getState().setOpenImportDialog(true),
                         }}
                     />
-                )}
-                <SortableList
-                    disableHorizontalScroll
-                    items={courses}
-                    onChange={handleCourseOrderChange}
-                    sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
-                    sortingStrategy={verticalListSortingStrategy}
-                    renderItem={(course: CourseWithTerm) => {
-                        const missingSections = getMissingSections(course);
+                ) : (
+                    <SortableList
+                        disableHorizontalScroll
+                        items={courses}
+                        onChange={handleCourseOrderChange}
+                        sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
+                        sortingStrategy={verticalListSortingStrategy}
+                        renderItem={(course: CourseWithTerm) => {
+                            const missingSections = getMissingSections(course);
 
-                        return (
-                            <SortableList.Item id={course.id}>
-                                <SectionTable
-                                    sortable
-                                    courseDetails={course}
-                                    term={course.term}
-                                    allowHighlight={false}
-                                    analyticsCategory={analyticsEnum.addedClasses}
-                                    scheduleNames={scheduleNames}
-                                    missingSections={missingSections}
-                                />
-                            </SortableList.Item>
-                        );
-                    }}
-                />
+                            return (
+                                <SortableList.Item id={course.id}>
+                                    <SectionTable
+                                        sortable
+                                        courseDetails={course}
+                                        term={course.term}
+                                        allowHighlight={false}
+                                        analyticsCategory={analyticsEnum.addedClasses}
+                                        scheduleNames={scheduleNames}
+                                        missingSections={missingSections}
+                                    />
+                                </SortableList.Item>
+                            );
+                        }}
+                    />
+                )}
             </Box>
 
             <CustomEventsBox />
