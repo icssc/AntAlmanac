@@ -130,6 +130,7 @@ const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
     const theme = useTheme();
 
+    // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
     const dismissedRecently =
         recruitmentDismissalTime !== null &&
@@ -324,6 +325,8 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             try {
                 const multiSearchData = RightPaneStore.getMultiSearchData();
+                let response: WebsocAPIResponse;
+
                 if (multiSearchData.length > 0) {
                     const { year, quarter } = RightPaneStore.getFormData().term;
                     const offeredCourses: WebsocSearchInput[] = [];
@@ -340,22 +343,21 @@ export default function CourseRenderPane(props: { id?: number }) {
                         }
                     }
                     setUnofferedCourses(unofferedCourses);
-                    const response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
-                    setSearchedTerm(RightPaneStore.getFormData().term.longName);
-                    return response;
+                    response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
+                } else {
+                    const websocQueryParams = getQueryParams(RightPaneStore.getFormData());
+                    const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
+                    response =
+                        selectedGEs.length > 1
+                            ? intersectWebsocResponses(
+                                  await trpc.websoc.getManyOfField.query({
+                                      params: { ...websocQueryParams, ge: selectedGEs.join(',') },
+                                      fieldName: 'ge',
+                                  })
+                              )
+                            : await trpc.websoc.getOne.query(websocQueryParams);
                 }
 
-                const websocQueryParams = getQueryParams(RightPaneStore.getFormData());
-                const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
-                const response =
-                    selectedGEs.length > 1
-                        ? intersectWebsocResponses(
-                              await trpc.websoc.getManyOfField.query({
-                                  params: { ...websocQueryParams, ge: selectedGEs.join(',') },
-                                  fieldName: 'ge',
-                              })
-                          )
-                        : await trpc.websoc.getOne.query(websocQueryParams);
                 setSearchedTerm(RightPaneStore.getFormData().term.longName);
                 return response;
             } catch (error) {
@@ -439,12 +441,12 @@ export default function CourseRenderPane(props: { id?: number }) {
                 <>
                     <RecruitmentBanner />
                     <Box>
-                        {courseData.map((_, index) => (
+                        {courseData.map((data, index) => (
                             <LazyLoad
                                 once
                                 key={index}
                                 overflow
-                                height={estimateCoursePaneLazyHeight(courseData[index])}
+                                height={estimateCoursePaneLazyHeight(data)}
                                 offset={1000}
                             >
                                 {SectionTableWrapped(index, {

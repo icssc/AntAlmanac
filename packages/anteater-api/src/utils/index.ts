@@ -88,7 +88,7 @@ export function unionWebsocResponses(responses: WebsocAPIResponse[]): WebsocAPIR
     return combined;
 }
 
-/** Courses that appear in every response (layout from the first). Sections are not merged. */
+/** Courses that appear in every response. Sections are not merged. */
 export function intersectWebsocResponses(responses: WebsocAPIResponse[]): WebsocAPIResponse {
     const first = responses[0];
     if (first === undefined) {

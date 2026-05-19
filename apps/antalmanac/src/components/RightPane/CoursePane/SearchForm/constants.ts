@@ -49,7 +49,7 @@ export const ANY_GE = GE_LIST[0].value;
 
 const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
 
-const parseSelectedGEs = (ge: string) => {
+export const getSelectedGEs = (ge: string) => {
     const validGEs = ge
         .split(',')
         .map((value) => value.trim().toUpperCase())
@@ -58,9 +58,7 @@ const parseSelectedGEs = (ge: string) => {
     return validGEs.length === 0 ? [] : [...new Set(validGEs)];
 };
 
-export const getSelectedGEs = (ge: string) => parseSelectedGEs(ge);
-
 export const normalizeGeSelection = (ge: string) => {
-    const selectedGEs = parseSelectedGEs(ge);
+    const selectedGEs = getSelectedGEs(ge);
     return selectedGEs.length > 0 ? selectedGEs.join(',') : ANY_GE;
 };
