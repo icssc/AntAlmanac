@@ -1,10 +1,10 @@
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { LightMode, SettingsBrightness, DarkMode } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
-
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useShallow } from 'zustand/react/shallow';
 
 const THEME_OPTIONS = [
     { value: 'light', label: 'Light', icon: <LightMode fontSize="medium" /> },
@@ -17,9 +17,9 @@ export function ThemeSelector() {
     const accentColor = theme.palette.secondary.main;
     const segment = theme.palette.settingsSegment;
 
-    const [themeSetting, setTheme] = useThemeStore((store) => [store.themeSetting, store.setAppTheme]);
+    const [themeSetting, setTheme] = useThemeStore(useShallow((store) => [store.themeSetting, store.setAppTheme]));
 
-    const { forceUpdate } = useCoursePaneStore();
+    const forceUpdate = useCoursePaneStore((store) => store.forceUpdate);
     const postHog = usePostHog();
 
     const handleThemeChange = (value: 'light' | 'dark' | 'system') => {

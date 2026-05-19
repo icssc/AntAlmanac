@@ -1,4 +1,4 @@
-import type { User } from '@packages/db/src/schema/auth/user';
+import type { User, UserProfile } from '@packages/db/src/schema/auth/user';
 
-export type Friend = Pick<User, 'id' | 'name' | 'email' | 'avatar'>;
+export type Friend = Pick<User, 'id'> & UserProfile;
 export type FriendRequest = Friend;

@@ -75,7 +75,7 @@ export function AdvancedSearchTextFields() {
     const { plannerRoadmaps, updateTakenCourses } = usePlannerStore(
         useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, updateTakenCourses: s.updateTakenCourses }))
     );
-    const { sessionIsValid } = useSessionStore(useShallow((s) => ({ sessionIsValid: s.sessionIsValid })));
+    const sessionIsValid = useSessionStore((s) => s.sessionIsValid);
     const [signInOpen, setSignInOpen] = useState(false);
 
     const syncFieldStates = useCallback(() => {
@@ -252,7 +252,7 @@ export function AdvancedSearchTextFields() {
                             value: units,
                             onChange: changeHandlerFactory('units'),
                             type: 'search',
-                            placeholder: 'ex. 3, 4, or VAR',
+                            placeholder: 'ex. 4 or VAR',
                             fullWidth: true,
                         }}
                     />

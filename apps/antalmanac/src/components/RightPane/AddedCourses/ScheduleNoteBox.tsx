@@ -4,9 +4,15 @@ import { useFallbackStore } from '$stores/FallbackStore';
 import { Box, TextField, Typography } from '@mui/material';
 import { SCHEDULE_NOTE_MAX_LENGTH } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export function ScheduleNoteBox() {
-    const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore();
+    const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore(
+        useShallow((store) => ({
+            fallbackMode: store.fallbackMode,
+            getCurrentFallbackSchedule: store.getCurrentFallbackSchedule,
+        }))
+    );
     const [scheduleNote, setScheduleNote] = useState(
         fallbackMode
             ? getCurrentFallbackSchedule(AppStore.getCurrentScheduleIndex()).scheduleNote

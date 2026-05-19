@@ -1,5 +1,6 @@
-import trpc from '$lib/api/trpc';
-import { getDefaultTerm, getTermByYearAndQuarter, parseQuarter, termData } from '$lib/term';
+import { trpc } from '$lib/api/trpc';
+import { getDefaultTerm, getTermByYearAndQuarter, termData } from '$lib/term';
+import { parseQuarter } from '$lib/termHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type { AATerm, Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';

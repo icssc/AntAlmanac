@@ -18,8 +18,10 @@ import {
 } from '$lib/localStorage';
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
+import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
@@ -102,17 +104,23 @@ function createSkeletonEvents(): SkeletonEvent[] {
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
+    const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
+        AppStore.schedule.getCurrentCustomEvents()
+    );
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
+    const [currentScheduleId, setCurrentScheduleId] = useState(() => AppStore.getCurrentScheduleId());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const theme = useTheme();
-    const { isMilitaryTime } = useTimeFormatStore();
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
-    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const isDark = useThemeStore((store) => store.isDark);
+    const visibilityMap = useHiddenCoursesStore((state) => state.visibilityMap);
+    const selectedEvent = useSelectedEventStore((state) => state.selectedEvent);
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
     const hasHadEventsRef = useRef(false);
@@ -125,19 +133,29 @@ export const ScheduleCalendar = memo(() => {
     );
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
-        return showFinalsSchedule
+        const raw = showFinalsSchedule
             ? hoveredCalendarizedFinal
                 ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
                 : finalsEventsInCalendar
             : hoveredCalendarizedCourses
               ? [...eventsInCalendar, ...hoveredCalendarizedCourses]
               : eventsInCalendar;
+
+        return raw.filter((e) => {
+            if ('isCustomEvent' in e && e.isCustomEvent) return true;
+            if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
+            const visibility: VisibilityState =
+                visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? VisibilityState.Visible;
+            return visibility !== VisibilityState.Disappeared;
+        });
     }, [
         eventsInCalendar,
         finalsEventsInCalendar,
         hoveredCalendarizedCourses,
         hoveredCalendarizedFinal,
         showFinalsSchedule,
+        currentScheduleId,
+        visibilityMap,
     ]);
 
     useEffect(() => {
@@ -184,19 +202,41 @@ export const ScheduleCalendar = memo(() => {
         return new Date(2018, 0, 1, Math.min(7, ...validHours, 7));
     }, [events]);
 
-    const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {
-        const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
+    const eventStyleGetter = useCallback(
+        (event: CalendarEvent | SkeletonEvent) => {
+            const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
 
-        const style = {
-            backgroundColor: event.color,
-            cursor: 'pointer',
-            borderStyle: 'none',
-            borderRadius: '4px',
-            color: colorContrastSufficient(event.color) ? 'white' : 'black',
-        };
+            const visibility: VisibilityState =
+                !isSkeletonEvent && !('isCustomEvent' in event && event.isCustomEvent)
+                    ? (visibilityMap[currentScheduleId]?.[(event as CourseEvent).sectionCode] ??
+                      VisibilityState.Visible)
+                    : VisibilityState.Visible;
 
-        return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
-    }, []);
+            const isSelected = event === selectedEvent;
+
+            const style =
+                visibility === VisibilityState.Outlined
+                    ? {
+                          backgroundColor: theme.palette.background.default,
+                          border: `2px solid ${event.color}`,
+                          borderRadius: '4px',
+                          color: event.color,
+                          cursor: 'pointer',
+                          ...(isSelected && { zIndex: 10 }),
+                      }
+                    : {
+                          backgroundColor: event.color,
+                          cursor: 'pointer',
+                          border: '2px solid transparent',
+                          borderRadius: '4px',
+                          color: colorContrastSufficient(event.color) ? 'white' : 'black',
+                          ...(isSelected && { zIndex: 10 }),
+                      };
+
+            return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
+        },
+        [currentScheduleId, selectedEvent, theme, visibilityMap]
+    );
 
     /**
      * This prop getter overrides `react-big-calendar`'s built-in `.rbc-today` style which applies a light blue coloring on both light and dark mode.
@@ -242,10 +282,17 @@ export const ScheduleCalendar = memo(() => {
     const showEmptyState = useMemo(
         () =>
             !loadingSchedule &&
-            !showFinalsSchedule &&
             !hoveredCalendarizedCourses &&
-            currentScheduleCourses.length === 0,
-        [loadingSchedule, showFinalsSchedule, hoveredCalendarizedCourses, currentScheduleCourses.length]
+            !hoveredCalendarizedFinal &&
+            currentScheduleCourses.length === 0 &&
+            currentScheduleCustomEvents.length === 0,
+        [
+            loadingSchedule,
+            hoveredCalendarizedCourses,
+            hoveredCalendarizedFinal,
+            currentScheduleCourses.length,
+            currentScheduleCustomEvents.length,
+        ]
     );
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
@@ -294,9 +341,11 @@ export const ScheduleCalendar = memo(() => {
     useEffect(() => {
         const updateEventsInCalendar = () => {
             setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
+            setCurrentScheduleId(AppStore.getCurrentScheduleId());
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
             setCurrentScheduleCourses(AppStore.schedule.getCurrentCourses());
+            setCurrentScheduleCustomEvents(AppStore.schedule.getCurrentCustomEvents());
         };
 
         const updateScheduleNames = () => {
@@ -334,47 +383,43 @@ export const ScheduleCalendar = memo(() => {
                     backgroundColor: 'rgba(0, 0, 0, 0.1)',
                     zIndex: theme.zIndex.drawer + 1,
                     position: 'absolute',
-                    padding: ' 0',
+                    padding: 0,
                 })}
                 open={loadingSchedule}
             />
+
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
+
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
                 <TbaCalendarCard />
                 <CalendarEventPopover />
 
-                {showEmptyState && (
-                    <Box
-                        data-html2canvas-ignore
-                        position="absolute"
-                        top={0}
-                        left={0}
-                        right={0}
-                        bottom={0}
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        zIndex={1}
-                        sx={{
-                            backgroundColor: isDark ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
+                <Backdrop
+                    open={showEmptyState}
+                    data-html2canvas-ignore
+                    sx={(theme) => ({
+                        color: '#ffff',
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        zIndex: theme.zIndex.drawer + 1,
+                        position: 'absolute',
+                        padding: 0,
+                    })}
+                >
+                    <EmptyState
+                        Icon={CalendarMonth}
+                        title="Your schedule is empty"
+                        description="Search for courses to start building your schedule."
+                        primaryAction={{
+                            label: 'Search for Courses',
+                            onClick: () => useTabStore.getState().setActiveTab('search'),
                         }}
-                    >
-                        <EmptyState
-                            Icon={CalendarMonth}
-                            title="Your schedule is empty"
-                            description="Search for courses to start building your schedule."
-                            primaryAction={{
-                                label: 'Search for Courses',
-                                onClick: () => useTabStore.getState().setActiveTab('search'),
-                            }}
-                        />
-                    </Box>
-                )}
+                    />
+                </Backdrop>
 
                 <Calendar<CalendarEvent, object>
                     key={`${culture}-${calendarView}`}
