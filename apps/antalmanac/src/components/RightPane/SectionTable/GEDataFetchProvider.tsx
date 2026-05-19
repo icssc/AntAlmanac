@@ -1,4 +1,4 @@
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpcReact';
 import AppStore from '$stores/AppStore';
@@ -12,8 +12,8 @@ import { useMemo } from 'react';
  * GE criteria will miss them.
  */
 const GeDataFetchProvider = (props: SectionTableProps) => {
+    const { formData } = useCourseSearchUrlState();
     const params = useMemo(() => {
-        const formData = RightPaneStore.getFormData();
         return {
             year: formData.term.year,
             quarter: formData.term.quarter,
@@ -32,8 +32,7 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
             days: formData.days.split(/(?=[A-Z])/).join(','),
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [formData, props.courseDetails.courseNumber, props.courseDetails.courseTitle, props.courseDetails.deptCode]);
 
     const { data } = trpcReact.websoc.getOne.useQuery(params);
 

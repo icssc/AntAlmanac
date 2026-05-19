@@ -108,7 +108,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                     courseNumber,
                 }));
 
-                RightPaneStore.setMultiSearchData(searchData);
+                RightPaneStore.setMultiSearchData(searchData, term);
                 displaySections();
             } catch (error) {
                 console.error('Something went wrong while searching with Planner:', error);

@@ -1,9 +1,13 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
+import {
+    type CourseSearchParams,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
 import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
-import RightPaneStore, { CourseSearchParams, CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
+import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
@@ -133,7 +137,7 @@ function getFilteredCourses(
     return allCourses;
 }
 
-const RecruitmentBanner = () => {
+const RecruitmentBanner = ({ deptValue }: { deptValue: string }) => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
     const theme = useTheme();
 
@@ -143,7 +147,7 @@ const RecruitmentBanner = () => {
         recruitmentDismissalTime !== null &&
         Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
     const isRelevantDept = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS', 'CSE', 'EECS', 'SWE', 'GDIM', 'COGS'].includes(
-        RightPaneStore.getFormData().deptValue.toUpperCase()
+        deptValue.toUpperCase()
     );
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isRelevantDept;
 
@@ -195,10 +199,13 @@ const RecruitmentBanner = () => {
  */
 const SectionTableWrapped = (
     index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
+    data: {
+        scheduleNames: string[];
+        courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
+        formData: CourseSearchParams;
+    }
 ) => {
-    const { courseData, scheduleNames } = data;
-    const formData = RightPaneStore.getFormData();
+    const { courseData, formData, scheduleNames } = data;
 
     let component;
 
@@ -244,10 +251,8 @@ const LoadingMessage = () => {
     );
 };
 
-const ErrorMessage = () => {
+const ErrorMessage = ({ formData }: { formData: CourseSearchParams }) => {
     const { isDark } = useThemeStore();
-
-    const formData = RightPaneStore.getFormData();
     const multiSearchData = RightPaneStore.getMultiSearchData();
     const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
     const courseNumber = formData.courseNumber.replace(/\s+/g, '').toUpperCase() || null;
@@ -300,10 +305,12 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
+    const { formData } = useCourseSearchUrlState();
     const [courseColors, setCourseColors] = useState(getColors);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
-    const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term.longName);
+    const [searchedTerm, setSearchedTerm] = useState(() => formData.term.longName);
+    const multiSearchData = RightPaneStore.getMultiSearchData();
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
@@ -336,14 +343,13 @@ export default function CourseRenderPane(props: { id?: number }) {
         isError,
     } = useQuery({
         staleTime: 5 * 60 * 1000,
-        queryKey: ['searchResults', RightPaneStore.getFormData(), RightPaneStore.getMultiSearchData()],
+        queryKey: ['searchResults', formData, multiSearchData],
         queryFn: async (): Promise<CoursePaneSearchData | null> => {
             setUnofferedCourses([]);
 
             try {
-                const multiSearchData = RightPaneStore.getMultiSearchData();
                 if (multiSearchData.length > 0) {
-                    const { year, quarter } = RightPaneStore.getFormData().term;
+                    const { year, quarter } = formData.term;
                     const offeredCourses: WebsocSearchInput[] = [];
                     const unofferedCourses: CourseSearchParams[] = [];
                     const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
@@ -360,18 +366,18 @@ export default function CourseRenderPane(props: { id?: number }) {
                     }
                     setUnofferedCourses(unofferedCourses);
                     const response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
-                    setSearchedTerm(RightPaneStore.getFormData().term.longName);
+                    setSearchedTerm(formData.term.longName);
                     return { kind: 'single', response };
                 }
 
-                const websocQueryParams = getQueryParams(RightPaneStore.getFormData());
+                const websocQueryParams = getQueryParams(formData);
                 const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
                 const responses = await trpc.websoc.getManyOfField.query({
                     params: { ...websocQueryParams, ge: selectedGEs.join(',') },
                     fieldName: 'ge',
                 });
                 const { intersect, rest } = splitWebsocIntersectAndRest(responses);
-                setSearchedTerm(RightPaneStore.getFormData().term.longName);
+                setSearchedTerm(formData.term.longName);
                 return { kind: 'split', intersect, rest };
             } catch (error) {
                 console.error(error);
@@ -493,10 +499,10 @@ export default function CourseRenderPane(props: { id?: number }) {
             {isLoading ? (
                 <LoadingMessage />
             ) : isError || !hasRenderableCourseResults ? (
-                <ErrorMessage />
+                <ErrorMessage formData={formData} />
             ) : (
                 <>
-                    <RecruitmentBanner />
+                    <RecruitmentBanner deptValue={formData.deptValue} />
                     <Box>
                         {coursePaneLazyRows.map((row) =>
                             row.kind === 'alert' ? (
@@ -511,6 +517,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                                 >
                                     {SectionTableWrapped(row.index, {
                                         courseData: row.courseData,
+                                        formData,
                                         scheduleNames: scheduleNames,
                                     })}
                                 </LazyLoad>

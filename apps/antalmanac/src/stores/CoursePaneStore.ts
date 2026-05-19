@@ -1,6 +1,3 @@
-import { MANUAL_SEARCH_PARAMS } from '$components/RightPane/CoursePane/SearchForm/constants';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import { create } from 'zustand';
 
 interface CoursePaneStore {
@@ -10,6 +7,9 @@ interface CoursePaneStore {
     displaySearch: () => void;
     /** Switch to the classes view */
     displaySections: () => void;
+    initializeSearchUi: (
+        searchUiState: Pick<CoursePaneStore, 'searchFormIsDisplayed' | 'manualSearchEnabled' | 'advancedSearchEnabled'>
+    ) => void;
 
     manualSearchEnabled: boolean;
     enableManualSearch: () => void;
@@ -28,29 +28,17 @@ interface CoursePaneStore {
     forceUpdate: () => void;
 }
 
-export function paramsAreInURL() {
-    const search = new URLSearchParams(window.location.search);
-    return MANUAL_SEARCH_PARAMS.some((param) => search.get(param) !== null);
-}
-
-function requiredParamsAreInURL() {
-    const search = new URLSearchParams(window.location.search);
-
-    const searchParams = ['sectionCode', 'courseNumber', 'ge', 'deptValue'];
-
-    return searchParams.some((param) => search.get(param) !== null);
-}
-
 export const useCoursePaneStore = create<CoursePaneStore>((set) => {
     return {
-        searchFormIsDisplayed: !requiredParamsAreInURL() || !RightPaneStore.formDataIsValid(),
+        searchFormIsDisplayed: true,
+        initializeSearchUi: (searchUiState) => set(searchUiState),
 
-        manualSearchEnabled: paramsAreInURL() && !shouldSearchPlannerFromParams(),
+        manualSearchEnabled: false,
         enableManualSearch: () => set({ manualSearchEnabled: true }),
         disableManualSearch: () => set({ manualSearchEnabled: false }),
         toggleManualSearch: () => set((state) => ({ manualSearchEnabled: !state.manualSearchEnabled })),
 
-        advancedSearchEnabled: RightPaneStore.formDataHasAdvancedSearch(),
+        advancedSearchEnabled: false,
         enableAdvancedSearch: () => set({ advancedSearchEnabled: true }),
         disableAdvancedSearch: () => set({ advancedSearchEnabled: false }),
         toggleAdvancedSearch: () => set((state) => ({ advancedSearchEnabled: !state.advancedSearchEnabled })),
@@ -59,9 +47,7 @@ export const useCoursePaneStore = create<CoursePaneStore>((set) => {
         setHasSearchedWithUrlParams: (hasSearchedWithUrlParams: boolean) => set({ hasSearchedWithUrlParams }),
 
         displaySearch: () => {
-            RightPaneStore.restorePrevFormData();
             set({ searchFormIsDisplayed: true });
-            set({ advancedSearchEnabled: RightPaneStore.formDataHasAdvancedSearch() });
         },
         displaySections: () => {
             set({ searchFormIsDisplayed: false });

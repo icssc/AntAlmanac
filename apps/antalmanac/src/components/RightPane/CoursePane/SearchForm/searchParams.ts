@@ -1,3 +1,4 @@
+import { type AdvancedSearchParam, MANUAL_SEARCH_PARAMS } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { normalizeGeSelection } from '$lib/multiGeSearch';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import type { AATerm } from '@packages/antalmanac-types';
@@ -11,6 +12,7 @@ const COURSES_FULL_OPTIONS = ['ANY', 'SkipFullWaitlist', 'SkipFull', 'FullOnly',
 export type CoursesFullOption = (typeof COURSES_FULL_OPTIONS)[number];
 
 type AdvancedSearchDefaults = Omit<CourseSearchParams, 'term' | 'deptValue' | 'ge' | 'courseNumber' | 'sectionCode'>;
+type SearchField = keyof CourseSearchParams;
 
 const defaultTerm = getDefaultTerm();
 
@@ -119,6 +121,26 @@ export function courseSearchFormDataIsValid(formData: CourseSearchParams) {
 export function courseSearchFormDataHasAdvancedSearch(formData: CourseSearchParams) {
     const formFields = Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[];
     return formFields.some((key) => formData[key] !== defaultAdvancedSearchValues[key]);
+}
+
+export function courseSearchFormDataHasManualSearch(formData: CourseSearchParams) {
+    const formFields = MANUAL_SEARCH_PARAMS as readonly SearchField[];
+    return formFields.some((key) => {
+        if (key === 'term') {
+            return formData.term.shortName !== defaultCourseSearchFormValues.term.shortName;
+        }
+
+        return formData[key] !== defaultCourseSearchFormValues[key];
+    });
+}
+
+export function courseSearchFormDataHasRequiredSearchParams(formData: CourseSearchParams) {
+    return (
+        formData.sectionCode !== '' ||
+        formData.courseNumber !== '' ||
+        formData.ge !== 'ANY' ||
+        formData.deptValue !== 'ALL'
+    );
 }
 
 export function useCourseSearchUrlState() {
