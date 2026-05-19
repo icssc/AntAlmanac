@@ -90,11 +90,10 @@ export function unionWebsocResponses(responses: WebsocAPIResponse[]): WebsocAPIR
 
 /** Courses that appear in every response (layout from the first). Sections are not merged. */
 export function intersectWebsocResponses(responses: WebsocAPIResponse[]): WebsocAPIResponse {
-    if (responses.length === 0) {
+    const first = responses[0];
+    if (first === undefined) {
         return { schools: [] };
     }
-
-    const first = responses[0]!;
 
     let intersectionCourseKeys: Set<string> | null = null;
 
