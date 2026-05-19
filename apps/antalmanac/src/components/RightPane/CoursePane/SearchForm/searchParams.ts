@@ -111,6 +111,16 @@ export function buildCourseSearchFormData(
     };
 }
 
+export function courseSearchFormDataIsValid(formData: CourseSearchParams) {
+    const { ge, deptValue, sectionCode, instructor } = formData;
+    return ge.toUpperCase() !== 'ANY' || deptValue.toUpperCase() !== 'ALL' || sectionCode !== '' || instructor !== '';
+}
+
+export function courseSearchFormDataHasAdvancedSearch(formData: CourseSearchParams) {
+    const formFields = Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[];
+    return formFields.some((key) => formData[key] !== defaultAdvancedSearchValues[key]);
+}
+
 export function useCourseSearchUrlState() {
     const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
 

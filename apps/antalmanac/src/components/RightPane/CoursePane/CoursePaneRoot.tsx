@@ -1,7 +1,11 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import {
+    courseSearchFormDataIsValid,
+    defaultAdvancedSearchValues,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpcReact';
@@ -14,17 +18,20 @@ import { useCallback, useEffect } from 'react';
 export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
         useCoursePaneStore();
-    const { formData } = useCourseSearchUrlState();
+    const { formData, resetAdvanced } = useCourseSearchUrlState();
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
 
     const handleSearch = useCallback(() => {
+        const nextFormData = advancedSearchEnabled ? formData : { ...formData, ...defaultAdvancedSearchValues };
+
         if (!advancedSearchEnabled) {
             RightPaneStore.storePrevFormData();
-            RightPaneStore.resetAdvancedSearchValues();
+            RightPaneStore.setFormData(nextFormData);
+            void resetAdvanced();
         }
 
-        if (RightPaneStore.formDataIsValid()) {
+        if (courseSearchFormDataIsValid(nextFormData)) {
             displaySections();
             forceUpdate();
         } else {
@@ -33,7 +40,7 @@ export function CoursePaneRoot() {
                 `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
             );
         }
-    }, [advancedSearchEnabled, displaySections, forceUpdate]);
+    }, [advancedSearchEnabled, displaySections, forceUpdate, formData, resetAdvanced]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {

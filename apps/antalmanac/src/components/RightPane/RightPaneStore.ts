@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
 
-import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import {
+    courseSearchFormDataHasAdvancedSearch,
+    courseSearchFormDataIsValid,
     type CourseSearchField,
     type CourseSearchParams,
-    defaultAdvancedSearchValues,
     defaultCourseSearchFormValues,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import type { AATerm } from '@packages/antalmanac-types';
@@ -88,21 +88,12 @@ class RightPaneStore extends EventEmitter {
         this.emit('formReset');
     };
 
-    resetAdvancedSearchValues = () => {
-        Object.assign(this.formData, defaultAdvancedSearchValues);
-        this.emit('formDataChange');
-    };
-
     formDataIsValid = () => {
-        const { ge, deptValue, sectionCode, instructor } = this.formData;
-        return (
-            ge.toUpperCase() !== 'ANY' || deptValue.toUpperCase() !== 'ALL' || sectionCode !== '' || instructor !== ''
-        );
+        return courseSearchFormDataIsValid(this.formData);
     };
 
     formDataHasAdvancedSearch = () => {
-        const formFields = Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[];
-        return formFields.some((key) => this.formData[key] !== defaultAdvancedSearchValues[key]);
+        return courseSearchFormDataHasAdvancedSearch(this.formData);
     };
 
     setWarningMessages = (warningType: CourseSearchWarningType, messages: string[]) => {
