@@ -11,7 +11,7 @@ interface GetSignInUrlOptions {
     returnUrl?: string;
 }
 
-const { BETTER_AUTH_URL } = oidcOAuthEnvSchema.parse(process.env);
+const { BETTER_AUTH_URL, OIDC_ISSUER_URL } = oidcOAuthEnvSchema.parse(process.env);
 
 export async function getSignInUrl(
     provider: Provider,
@@ -35,4 +35,11 @@ export async function getSignInUrl(
     }
     authUrl.searchParams.set('provider', getProviderIcsscName(provider));
     return authUrl.toString();
+}
+
+export async function getSignOutUrl(redirectUrl: string) {
+    const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
+    const redirectTo = redirectUrl || BETTER_AUTH_URL;
+    oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
+    return oidcLogoutUrl.toString();
 }

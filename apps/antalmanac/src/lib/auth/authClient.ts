@@ -1,5 +1,5 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpc } from '$lib/api/trpc';
+import { getSignOutUrl } from '$lib/auth/authActions';
 import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { getErrorMessage } from '$lib/utils';
@@ -20,11 +20,9 @@ export const authClient = createAuthClient({
 export type SessionData = typeof authClient.$Infer.Session;
 
 export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}) {
-    let logoutUrl;
+    let logoutUrl: string | null = null;
     try {
-        logoutUrl = await trpc.auth.getLogoutUrl.query({
-            redirectUrl: window.location.origin,
-        });
+        logoutUrl = await getSignOutUrl(window.location.origin);
     } catch (error) {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,

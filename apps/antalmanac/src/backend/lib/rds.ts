@@ -553,19 +553,6 @@ export class RDS {
         };
     }
 
-    static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
-        return db
-            .select()
-            .from(sessions)
-            .innerJoin(users, eq(sessions.userId, users.id))
-            .innerJoin(accounts, eq(users.id, accounts.userId))
-            .where(eq(sessions.refreshToken, refreshToken))
-            .execute()
-            .then((res) => {
-                return { users: res[0].users, accounts: res[0].accounts };
-            });
-    }
-
     /**
      * Returns all friendship rows between two users regardless of direction.
      * There can be up to two rows (e.g. DECLINED + BLOCKED after a block).
