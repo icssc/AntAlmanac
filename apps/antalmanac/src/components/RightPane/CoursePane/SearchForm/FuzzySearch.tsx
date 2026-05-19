@@ -1,6 +1,9 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import {
+    defaultCourseSearchFormValues,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
@@ -56,13 +59,14 @@ interface SearchOption {
 }
 
 const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) => {
+    const { formData, setFields } = useCourseSearchUrlState();
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
     const [open, setOpen] = useState<boolean>(false);
     const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [pendingRequest, setPendingRequest] = useState<number | undefined>(undefined);
-    const [currentTerm, setCurrentTerm] = useState<AATerm>(RightPaneStore.getFormData().term);
+    const [currentTerm, setCurrentTerm] = useState<AATerm>(formData.term);
 
     const requestTimestampRef = useRef<number | undefined>(undefined);
 
@@ -75,26 +79,23 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         if (!result) {
             return;
         }
-        const term = RightPaneStore.getFormData().term;
-        RightPaneStore.resetFormValues();
-        RightPaneStore.setTerm(term);
+        const nextFields = { ...defaultCourseSearchFormValues, term: formData.term };
         switch (result.type) {
             case resultType.GE_CATEGORY: {
                 const geCode = option.key.split('-')[1].toUpperCase();
-                RightPaneStore.updateFormValue('ge', `GE-${geCode}`);
+                void setFields({ ...nextFields, ge: `GE-${geCode}` });
                 break;
             }
             case resultType.DEPARTMENT:
-                RightPaneStore.updateFormValue('deptValue', option.key);
+                void setFields({ ...nextFields, deptValue: option.key });
                 break;
             case resultType.COURSE: {
                 const { department, number } = result.metadata;
-                RightPaneStore.updateFormValue('deptValue', department);
-                RightPaneStore.updateFormValue('courseNumber', number);
+                void setFields({ ...nextFields, deptValue: department, courseNumber: number });
                 break;
             }
             case resultType.SECTION: {
-                RightPaneStore.updateFormValue('sectionCode', result.sectionCode);
+                void setFields({ ...nextFields, sectionCode: result.sectionCode });
                 break;
             }
             default:
@@ -143,7 +144,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         (requestTimestamp: number, requestQuery: string) => () => {
             if (!requestIsCurrent(requestTimestamp)) return;
 
-            const term = RightPaneStore.getFormData().term;
+            const term = formData.term;
 
             trpc.search.doSearch
                 .query({ query: requestQuery, term })
@@ -168,11 +169,11 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
                     console.error(e);
                 });
         },
-        [requestIsCurrent]
+        [formData.term, requestIsCurrent]
     );
 
     const handleFormDataChange = useCallback(() => {
-        const newTerm = RightPaneStore.getFormData().term;
+        const newTerm = formData.term;
 
         if (newTerm !== currentTerm && value.length >= MIN_QUERY_LENGTH) {
             const cacheKey = getCacheKey(newTerm, value);
@@ -196,7 +197,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         } else if (newTerm !== currentTerm) {
             setCurrentTerm(newTerm);
         }
-    }, [cache, currentTerm, value, maybeDoSearchFactory, pendingRequest]);
+    }, [cache, currentTerm, formData.term, value, maybeDoSearchFactory, pendingRequest]);
 
     const onInputChange = (_event: unknown, inputValue: string, reason: AutocompleteInputChangeReason) => {
         const lowerCaseValue = inputValue.toLowerCase().trim();
@@ -255,7 +256,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
             return <Box key={params.key}>{params.children}</Box>;
         }
 
-        const termName = RightPaneStore.getFormData().term.longName;
+        const termName = formData.term.longName;
         const label = params.group === groupType.OFFERED ? `Offered in ${termName}` : `Not Offered`;
 
         return (
@@ -309,11 +310,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
     };
 
     useEffect(() => {
-        RightPaneStore.on('formDataChange', handleFormDataChange);
-
-        return () => {
-            RightPaneStore.off('formDataChange', handleFormDataChange);
-        };
+        handleFormDataChange();
     }, [handleFormDataChange]);
 
     return (
