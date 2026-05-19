@@ -1,5 +1,5 @@
 {
-  "id": "45f1ccb7-6b3c-4425-b048-088659630867",
+  "id": "0998c9c0-3b4b-4c6c-869f-5cf8102f9d1b",
   "prevId": "8a5021a4-3ed3-4d05-a580-c5f6f07f6d5e",
   "version": "7",
   "dialect": "postgresql",
@@ -555,6 +555,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "shared_with_friends": {
+          "name": "shared_with_friends",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
         }
       },
       "indexes": {},
@@ -606,13 +613,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "visibility": {
-          "name": "visibility",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'visible'"
         },
         "created_at": {
           "name": "created_at",
@@ -880,6 +880,109 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.friendships": {
+      "name": "friendships",
+      "schema": "",
+      "columns": {
+        "requester_id": {
+          "name": "requester_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "addressee_id": {
+          "name": "addressee_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "friendship_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "addressee_idx": {
+          "name": "addressee_idx",
+          "columns": [
+            {
+              "expression": "addressee_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "friendships_requester_id_users_id_fk": {
+          "name": "friendships_requester_id_users_id_fk",
+          "tableFrom": "friendships",
+          "tableTo": "users",
+          "columnsFrom": [
+            "requester_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "friendships_addressee_id_users_id_fk": {
+          "name": "friendships_addressee_id_users_id_fk",
+          "tableFrom": "friendships",
+          "tableTo": "users",
+          "columnsFrom": [
+            "addressee_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "friendships_requester_id_addressee_id_pk": {
+          "name": "friendships_requester_id_addressee_id_pk",
+          "columns": [
+            "requester_id",
+            "addressee_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "friendships_no_self_friend": {
+          "name": "friendships_no_self_friend",
+          "value": "\"friendships\".\"requester_id\" <> \"friendships\".\"addressee_id\""
+        }
+      },
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -891,6 +994,16 @@
         "GUEST",
         "OIDC",
         "APPLE"
+      ]
+    },
+    "public.friendship_status": {
+      "name": "friendship_status",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "ACCEPTED",
+        "DECLINED",
+        "BLOCKED"
       ]
     }
   },

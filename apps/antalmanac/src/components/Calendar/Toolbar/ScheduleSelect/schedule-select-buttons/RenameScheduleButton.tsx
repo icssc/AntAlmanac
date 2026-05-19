@@ -1,15 +1,15 @@
+import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
-
 interface RenameScheduleButtonProps {
     index: number;
-    disabled?: boolean;
 }
 
-export function RenameScheduleButton({ index, disabled }: RenameScheduleButtonProps) {
+export function RenameScheduleButton({ index }: RenameScheduleButtonProps) {
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {
@@ -24,7 +24,7 @@ export function RenameScheduleButton({ index, disabled }: RenameScheduleButtonPr
         <>
             <Tooltip title="Rename Schedule" disableInteractive>
                 <span>
-                    <IconButton onClick={handleOpen} size="small" disabled={disabled}>
+                    <IconButton onClick={handleOpen} size="small" disabled={fallbackMode}>
                         <EditIcon />
                     </IconButton>
                 </span>

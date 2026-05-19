@@ -1,10 +1,11 @@
 import 'dotenv/config';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, unlink, writeFile } from 'node:fs/promises';
 
+import { AATerm } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
-import type { CalendarTerm } from '@packages/anteater-api/types';
+import type { CalendarTerm, Quarter, Year } from '@packages/anteater-api/types';
 
-import { GENERATED_DIR, TERM_DATA_FILE } from './lib/paths.js';
+import { GENERATED_DIR, LEGACY_TERM_DATA_TS, TERM_DATA_FILE } from './lib/paths.js';
 
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
@@ -15,19 +16,13 @@ const QUARTER_MAP = {
     Fall: 'Fall Quarter',
     Winter: 'Winter Quarter',
     Spring: 'Spring Quarter',
-} as const;
+} as const satisfies Record<Quarter, string>;
 
-function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${string} ${string}` {
+function sanitizeTermName(year: Year, quarter: Quarter): AATerm['longName'] {
     return `${year} ${QUARTER_MAP[quarter]}`;
 }
 
-function toLocalDateCode(dateString: string): string {
-    const [year, month, day] = dateString.split('-').map(Number);
-    // 0-indexed months
-    return `new Date(${year}, ${month - 1}, ${day})`;
-}
-
-function serializeTerm(term: CalendarTerm): string {
+function serializeTerm(term: CalendarTerm) {
     const { year, quarter, instructionStart, finalsStart, socAvailable } = term;
 
     if (!instructionStart || !finalsStart || !socAvailable) {
@@ -38,17 +33,28 @@ function serializeTerm(term: CalendarTerm): string {
     const longName = sanitizeTermName(year, quarter);
     const isSummerTerm = quarter.toLowerCase().includes('summer');
 
-    return `    {
-        shortName: ${JSON.stringify(shortName)},
-        longName: ${JSON.stringify(longName)},
-        startDate: ${toLocalDateCode(instructionStart)},
-        finalsStartDate: ${toLocalDateCode(finalsStart)},
-        socAvailable: ${toLocalDateCode(socAvailable)},
-        isSummerTerm: ${isSummerTerm},
-    }`;
+    return {
+        ...term,
+        shortName,
+        longName,
+        isSummerTerm,
+    };
+}
+
+async function removeLegacyTermDataTs() {
+    try {
+        await unlink(LEGACY_TERM_DATA_TS);
+        console.log(`Removed legacy ${LEGACY_TERM_DATA_TS} (replaced by term.ts + generated termData.json).`);
+    } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+            throw e;
+        }
+    }
 }
 
 async function main() {
+    await removeLegacyTermDataTs();
+
     console.log('Fetching all calendar terms from Anteater API...');
     const calendarTerms = await aapiClient.calendar.all();
     console.log(`Fetched ${calendarTerms.length} calendar terms.`);
@@ -59,16 +65,10 @@ async function main() {
         return dateB - dateA;
     });
 
-    const termEntries = sortedTerms.map(serializeTerm).join(',\n');
-    const fileContent = `import type { Term } from '$lib/termData';
-
-export const terms: Term[] = [
-${termEntries}
-];
-    `;
+    const termEntries = sortedTerms.map(serializeTerm);
 
     await mkdir(GENERATED_DIR, { recursive: true });
-    await writeFile(TERM_DATA_FILE, fileContent);
+    await writeFile(TERM_DATA_FILE, JSON.stringify(termEntries, null, 2));
 
     console.log('Term data generated. Written to ', TERM_DATA_FILE);
 }

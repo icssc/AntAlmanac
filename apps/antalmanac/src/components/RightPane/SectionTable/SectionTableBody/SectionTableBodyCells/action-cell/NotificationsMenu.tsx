@@ -1,12 +1,14 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
-import { canTermEnrollmentChange, type Term } from '$lib/termData';
+import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
+import { canTermEnrollmentChange, type AATerm } from '$lib/term';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 import type { Course } from '@packages/anteater-api/types';
+import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -19,7 +21,7 @@ const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
 
 interface NotificationsMenuProps {
     section: AASection;
-    term: Term['shortName'];
+    term: AATerm;
     courseTitle: Course['title'];
     deptCode?: string;
     courseNumber?: string;
@@ -27,19 +29,17 @@ interface NotificationsMenuProps {
 
 export const NotificationsMenu = memo(
     ({ section, term, courseTitle, deptCode, courseNumber }: NotificationsMenuProps) => {
-        const notificationKey = section.sectionCode + ' ' + term;
+        const notificationKey = `${section.sectionCode} ${term.shortName}`;
         const [notification, setNotifications] = useNotificationStore(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
         );
 
+        const postHog = usePostHog();
+
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
         const [signInOpen, setSignInOpen] = useState(false);
 
-        const { isGoogleUser } = useSessionStore(
-            useShallow((state) => ({
-                isGoogleUser: state.isGoogleUser,
-            }))
-        );
+        const isGoogleUser = useSessionStore((state) => state.isGoogleUser);
 
         const isTermCurrent = canTermEnrollmentChange(term);
         const notifyOn = notification?.notifyOn;
@@ -49,6 +49,11 @@ export const NotificationsMenu = memo(
             (status: keyof NotifyOn) => {
                 const { sectionType, sectionCode, restrictions, units, sectionNum, instructors } = section;
                 const currStatus = section.status;
+                logAnalytics(postHog, {
+                    category: analyticsEnum.aants,
+                    action: AANTS_ANALYTICS_ACTIONS[status],
+                    customProps: { sectionCode, term: term.shortName, source: 'menu' },
+                });
                 setNotifications({
                     courseTitle,
                     sectionCode,
@@ -64,7 +69,7 @@ export const NotificationsMenu = memo(
                     instructors,
                 });
             },
-            [courseTitle, section, setNotifications, term, deptCode, courseNumber]
+            [courseTitle, section, setNotifications, term, deptCode, courseNumber, postHog]
         );
 
         const handleClose = useCallback(() => {
@@ -77,9 +82,14 @@ export const NotificationsMenu = memo(
                     setSignInOpen(true);
                     return;
                 }
+                logAnalytics(postHog, {
+                    category: analyticsEnum.aants,
+                    action: analyticsEnum.aants.actions.OPEN_SECTION_NOTIFICATIONS,
+                    customProps: { sectionCode: section.sectionCode, term: term.shortName },
+                });
                 setAnchorEl(event.currentTarget);
             },
-            [isGoogleUser]
+            [isGoogleUser, postHog, section.sectionCode, term]
         );
 
         const handleSignInClose = useCallback(() => {

@@ -11,13 +11,19 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface SearchFormProps {
     toggleSearch: () => void;
 }
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
-    const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
+    const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore(
+        useShallow((store) => ({
+            manualSearchEnabled: store.manualSearchEnabled,
+            toggleManualSearch: store.toggleManualSearch,
+        }))
+    );
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 

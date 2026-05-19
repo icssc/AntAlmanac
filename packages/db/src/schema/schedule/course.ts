@@ -24,7 +24,7 @@ export const coursesInSchedule = pgTable(
         sectionCode: integer('sectionCode').notNull(),
 
         /**
-         * @example Winter 2024.
+         * AntAlmanac term shortName: `"<year> <quarter>"` (e.g. "2024 Winter").
          */
         term: text('term').notNull(),
 
@@ -38,6 +38,7 @@ export const coursesInSchedule = pgTable(
          * @see VisibilityState
          */
         visibility: text('visibility').notNull().default('visible'),
+        index: integer(),
 
         createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 

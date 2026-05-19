@@ -1,32 +1,18 @@
+import { useFallbackStore } from '$stores/FallbackStore';
 import { AccountCircle, Menu } from '@mui/icons-material';
 import { Button, IconButton, CircularProgress } from '@mui/material';
-import { User } from '@packages/antalmanac-types';
+import type { UserProfile } from '@packages/db/src/schema/auth/user';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-
-import AppStore from '$stores/AppStore';
 
 interface ProfileMenuButtonsProps {
-    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
+    user: UserProfile | null;
     handleOpen: (event: React.MouseEvent<HTMLElement>) => void;
     handleSettingsOpen: (event: React.MouseEvent<HTMLElement>) => void;
     loading?: boolean;
 }
 
 export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loading = false }: ProfileMenuButtonsProps) {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
     if (!user) {
         return (
@@ -36,12 +22,17 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
                     startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <AccountCircle />}
                     color="inherit"
                     onClick={handleOpen}
-                    disabled={skeletonMode}
+                    disabled={fallbackMode}
                     sx={{ fontSize: 'inherit' }}
                 >
                     Sign In
                 </Button>
-                <IconButton onClick={handleSettingsOpen} color="inherit">
+                <IconButton
+                    onClick={handleSettingsOpen}
+                    color="inherit"
+                    aria-label="Open settings menu"
+                    aria-haspopup="true"
+                >
                     <Menu sx={{ width: 24, height: 24 }} />
                 </IconButton>
             </>
@@ -63,7 +54,7 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
             onClick={handleOpen}
             variant="text"
             color="inherit"
-            disabled={skeletonMode}
+            disabled={fallbackMode}
         >
             {avatar ? (
                 <Image

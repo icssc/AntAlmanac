@@ -2,6 +2,7 @@ import { router } from '../trpc';
 import authRouter from './auth';
 import courseRouter from './course';
 import enrollHistRouter from './enrollHist';
+import friendsRouter from './friends';
 import gradesRouter from './grades';
 import notificationsRouter from './notifications';
 import reviewRouter from './review';
@@ -15,6 +16,7 @@ const appRouter = router({
     auth: authRouter,
     course: courseRouter,
     enrollHist: enrollHistRouter,
+    friends: friendsRouter,
     grades: gradesRouter,
     notifications: notificationsRouter,
     review: reviewRouter,

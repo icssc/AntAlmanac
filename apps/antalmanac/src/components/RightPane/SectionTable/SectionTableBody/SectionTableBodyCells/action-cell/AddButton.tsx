@@ -1,5 +1,5 @@
 import { addCourse } from '$actions/AppStoreActions';
-import { Term } from '$lib/termData';
+import { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Add } from '@mui/icons-material';
@@ -10,7 +10,7 @@ import { useCallback } from 'react';
 interface AddButtonProps {
     section: AASection;
     courseDetails: CourseDetails;
-    term: Term['shortName'];
+    term: AATerm;
     scheduleConflict: boolean;
 }
 

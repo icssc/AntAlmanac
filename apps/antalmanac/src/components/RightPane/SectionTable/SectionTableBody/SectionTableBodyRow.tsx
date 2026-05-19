@@ -18,7 +18,7 @@ import { useHoveredStore } from '$stores/HoveredStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { Popover, PopoverProps, TableRow, useTheme } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { AASection, AATerm, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
@@ -35,7 +35,7 @@ function getSectionScheduleColor(section: AASection, term: string): string {
 interface SectionTableBodyRowProps {
     section: AASection;
     courseDetails: CourseDetails;
-    term: string;
+    term: AATerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
@@ -79,14 +79,14 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(
-        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
+        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
     );
 
     const [currColor, setCurrColor] = useState(() => getSectionScheduleColor(section, term));
     const [colorPopoverAnchorEl, setColorPopoverAnchorEl] = useState<PopoverProps['anchorEl']>(null);
 
     const updateHighlight = useCallback(() => {
-        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
+        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`));
     }, [section.sectionCode, term]);
 
     const updateColorFromSchedule = useCallback(() => {

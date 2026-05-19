@@ -1,3 +1,4 @@
+import { SortableList } from '$components/drag-and-drop/SortableList';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
@@ -6,13 +7,25 @@ import { STRIP_SLOT_PX } from '$components/RightPane/SectionTable/SectionTableBo
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { WarningAlert } from '$components/WarningAlert';
+import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
-import { Box, Collapse, IconButton, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
+import {
+    Box,
+    Button,
+    Collapse,
+    IconButton,
+    Paper,
+    Table,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+} from '@mui/material';
+import { AACourse, AATerm } from '@packages/antalmanac-types';
 import { useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
 
@@ -37,24 +50,34 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
-interface SectionTableProps {
+export interface SectionTableProps {
     courseDetails: AACourse;
-    term: string;
+    term: AATerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: AnalyticsCategory;
     updatedAt?: string;
     missingSections?: string[];
+    sortable?: boolean;
 }
 
-function SectionTable(props: SectionTableProps) {
-    const [openContent, setOpenContent] = useState(true);
+function SectionTable({
+    courseDetails,
+    term,
+    allowHighlight,
+    scheduleNames,
+    analyticsCategory,
+    missingSections = [],
+    sortable = false,
+}: SectionTableProps) {
+    const draggingState = useDraggingItemState(() => ({ isCollapsed: !openContent }));
 
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
-    const { isMilitaryTime } = useTimeFormatStore();
+    const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
 
-    const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
-    const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
+
+    const activeColumns = useColumnStore((store) => store.activeColumns);
+    const activeTab = useTabStore((store) => store.activeTab);
 
     const handleToggleExpand = () => {
         setOpenContent(!openContent);
@@ -100,7 +123,7 @@ function SectionTable(props: SectionTableProps) {
     }, [activeColumns]);
 
     return (
-        <>
+        <Box sx={{ overflow: 'hidden' }}>
             <Box
                 sx={{
                     display: 'flex',
@@ -109,6 +132,22 @@ function SectionTable(props: SectionTableProps) {
                     marginTop: '4px',
                 }}
             >
+                {sortable ? (
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        sx={{
+                            padding: 0,
+                            minWidth: 0,
+                            minHeight: 0,
+                            cursor: 'inherit',
+                            flexShrink: 0,
+                        }}
+                    >
+                        <SortableList.DragHandle sx={{ height: '100%' }} iconSx={{ color: 'inherit' }} />
+                    </Button>
+                ) : null}
+
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -151,10 +190,10 @@ function SectionTable(props: SectionTableProps) {
                 </IconButton>
             </Box>
 
-            {missingSections?.length > 0 && (
-                <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
-            )}
             <Collapse in={openContent} onExited={handleCollapseExit}>
+                {missingSections?.length > 0 && (
+                    <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
+                )}
                 <TableContainer
                     component={Paper}
                     sx={{ margin: '0px 0px 8px 0px', width: '100%' }}
@@ -204,7 +243,7 @@ function SectionTable(props: SectionTableProps) {
                     </Table>
                 </TableContainer>
             </Collapse>
-        </>
+        </Box>
     );
 }
 

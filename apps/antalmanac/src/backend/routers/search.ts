@@ -2,12 +2,43 @@ import { readFile } from 'fs/promises';
 import { join } from 'node:path';
 
 // eslint-disable-next-line import/no-unresolved
-import * as searchData from '$generated/searchData';
-import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
+import _searchData from '$generated/searchData.json';
+import {
+    type GESearchResult,
+    type SearchResult,
+    type SectionSearchResult,
+    WebsocSearchInputSchema,
+} from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
+
+const departmentSchema = z.object({
+    id: z.string(),
+    type: z.literal('DEPARTMENT'),
+    name: z.string(),
+    alias: z.string().optional(),
+});
+
+const courseSchema = z.object({
+    id: z.string(),
+    type: z.literal('COURSE'),
+    name: z.string(),
+    alias: z.string().optional(),
+    metadata: z.object({
+        department: z.string(),
+        number: z.string(),
+    }),
+    isOffered: z.boolean().optional(),
+});
+
+const searchDataSchema = z.object({
+    departments: z.array(departmentSchema),
+    courses: z.array(courseSchema),
+});
+
+const searchData = searchDataSchema.parse(_searchData);
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
@@ -23,6 +54,9 @@ const bareCourseSchema = z.object({
 });
 
 type BareCourse = z.infer<typeof bareCourseSchema>;
+
+const termInputSchema = WebsocSearchInputSchema.pick({ year: true, quarter: true });
+type SearchTermInput = z.infer<typeof termInputSchema>;
 
 const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge1a: { type: 'GE_CATEGORY', name: 'Lower Division Writing' },
@@ -42,8 +76,9 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     geCategories[key],
 ];
 
-async function getTermSectionCodes(year: string, quarter: string): Promise<Record<string, SectionSearchResult>> {
-    const parsedTerm = `${quarter}_${year}`;
+async function getTermSectionCodes(term: SearchTermInput): Promise<Record<string, SectionSearchResult>> {
+    const parsedTerm = `${term.quarter}_${term.year}`;
+
     try {
         const filePath = join(termsFolderPath, `${parsedTerm}.json`);
         const fileContent = await readFile(filePath, 'utf-8');
@@ -63,12 +98,11 @@ const isCourseOffered = (department: string, courseNumber: string, offeredCourse
 
 const searchRouter = router({
     doSearch: procedure
-        .input(z.object({ query: z.string(), term: z.string() }))
+        .input(z.object({ query: z.string(), term: termInputSchema }))
         .query(async ({ input }): Promise<Record<string, SearchResult>> => {
-            const { query } = input;
-            const [year, quarter] = input.term.split(' ');
+            const { query, term } = input;
 
-            const termSectionCodes = await getTermSectionCodes(year, quarter);
+            const termSectionCodes = await getTermSectionCodes(term);
 
             const offeredCourseSet = getOfferedCourses(termSectionCodes);
 
@@ -142,13 +176,12 @@ const searchRouter = router({
         .input(
             z.object({
                 courses: z.array(bareCourseSchema),
-                year: z.string(),
-                quarter: z.string(),
+                term: termInputSchema,
             })
         )
         .query(async ({ input }): Promise<Record<BareCourse['department'], Set<BareCourse['courseNumber']>>> => {
-            const { courses, year, quarter } = input;
-            const termSectionCodes = await getTermSectionCodes(year, quarter);
+            const { courses, term } = input;
+            const termSectionCodes = await getTermSectionCodes(term);
             const offeredCourseSet = getOfferedCourses(termSectionCodes);
             const offeredCourses: Record<string, Set<string>> = {};
             for (const course of courses) {

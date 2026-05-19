@@ -16,9 +16,11 @@ import type {
     ChangeCourseColorAction,
     UndoRedoAction,
     AddScheduleAction,
+    ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
@@ -27,6 +29,7 @@ import type {
     ScheduleSaveState,
     RepeatingCustomEvent,
     CustomEventId,
+    AATerm,
 } from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
@@ -42,8 +45,6 @@ class AppStore extends EventEmitter {
 
     unsavedChanges: boolean;
 
-    skeletonMode: boolean;
-
     constructor() {
         super();
         this.setMaxListeners(300);
@@ -53,7 +54,6 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
-        this.skeletonMode = false;
 
         if (typeof window !== 'undefined') {
             window.addEventListener('beforeunload', (event) => {
@@ -76,6 +76,10 @@ class AppStore extends EventEmitter {
         return this.schedule.getCurrentScheduleIndex();
     }
 
+    getCurrentSchedule() {
+        return this.schedule.getCurrentSchedule();
+    }
+
     getScheduleNames() {
         return this.schedule.getScheduleNames();
     }
@@ -90,14 +94,6 @@ class AppStore extends EventEmitter {
 
     getCustomEvents() {
         return this.schedule.getAllCustomEvents();
-    }
-
-    getCurrentSkeletonSchedule() {
-        return this.schedule.getCurrentSkeletonSchedule();
-    }
-
-    getSkeletonScheduleNames() {
-        return this.schedule.getSkeletonScheduleNames();
     }
 
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
@@ -147,10 +143,6 @@ class AppStore extends EventEmitter {
         return this.schedule.getCurrentScheduleNote();
     }
 
-    getSkeletonMode() {
-        return this.skeletonMode;
-    }
-
     hasUnsavedChanges() {
         return this.unsavedChanges;
     }
@@ -173,7 +165,7 @@ class AppStore extends EventEmitter {
         }
     }
 
-    deleteCourse(sectionCode: string, term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+    deleteCourse(sectionCode: string, term: AATerm, scheduleIndex: number, triggerUnsavedWarning = true) {
         this.schedule.deleteCourse(sectionCode, term, scheduleIndex);
         this.unsavedChanges = triggerUnsavedWarning;
         const action: DeleteCourseAction = {
@@ -186,7 +178,7 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
     }
 
-    deleteCourses(sectionCodes: string[], term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+    deleteCourses(sectionCodes: string[], term: AATerm, scheduleIndex: number, triggerUnsavedWarning = true) {
         sectionCodes.forEach((sectionCode) =>
             this.deleteCourse(sectionCode, term, scheduleIndex, triggerUnsavedWarning)
         );
@@ -342,6 +334,19 @@ class AppStore extends EventEmitter {
         this.emit('reorderSchedule');
     }
 
+    reorderAddedCourses(scheduleIndex: number, movedCourseId: string, nextCourseId: string | null) {
+        this.schedule.reorderAddedCourses(scheduleIndex, movedCourseId, nextCourseId);
+        this.unsavedChanges = true;
+        const action: ReorderAddedCoursesAction = {
+            type: 'reorderAddedCourses',
+            scheduleIndex: scheduleIndex,
+            movedCourseId: movedCourseId,
+            nextCourseId: nextCourseId,
+        };
+        actionTypesStore.autoSaveSchedule(action);
+        this.emit('addedCoursesChange');
+    }
+
     private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);
@@ -377,17 +382,14 @@ class AppStore extends EventEmitter {
         return true;
     }
 
-    loadSkeletonSchedule(savedSchedule: ScheduleSaveState) {
-        this.schedule.setSkeletonSchedules(savedSchedule.schedules);
-        this.skeletonMode = true;
+    loadFallbackSchedule(savedSchedule: ScheduleSaveState) {
+        useFallbackStore.getState().loadFallbackSchedules(savedSchedule.schedules);
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
-
-        this.emit('skeletonModeChange');
 
         // Switch to added courses tab since Anteater API can't be reached anyway
         useTabStore.getState().setActiveTab('added');
@@ -426,7 +428,7 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    changeCourseColor(sectionCode: string, term: string, newColor: string) {
+    changeCourseColor(sectionCode: string, term: AATerm, newColor: string) {
         this.schedule.changeCourseColor(sectionCode, term, newColor);
         this.unsavedChanges = true;
         const action: ChangeCourseColorAction = {
@@ -445,8 +447,16 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    termsInSchedule = (term: string) =>
-        new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+    termsInSchedule = (term: AATerm): Set<AATerm> => {
+        const map = new Map<string, AATerm>();
+        map.set(term.shortName, term);
+        for (const course of this.schedule.getCurrentCourses()) {
+            if (!map.has(course.term.shortName)) {
+                map.set(course.term.shortName, course.term);
+            }
+        }
+        return new Set(map.values());
+    };
 
     getPreviousStates = () => this.schedule.getPreviousStates();
 }

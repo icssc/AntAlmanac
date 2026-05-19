@@ -1,12 +1,23 @@
 'use client';
 
 import { useIsMobile } from '$hooks/useIsMobile';
+import { mergeSx } from '$lib/helpers';
 import { useSnackbarStore } from '$stores/SnackbarStore';
 import { Alert, Snackbar, SnackbarCloseReason } from '@mui/material';
-import { mergeSx } from '@mui/x-date-pickers/internals';
+import { useShallow } from 'zustand/react/shallow';
 
 export const NotificationSnackbar = () => {
-    const { open, snackbarClosed, message, severity, durationSeconds, position, style } = useSnackbarStore();
+    const { open, snackbarClosed, message, severity, durationSeconds, position, style } = useSnackbarStore(
+        useShallow((store) => ({
+            open: store.open,
+            snackbarClosed: store.snackbarClosed,
+            message: store.message,
+            severity: store.severity,
+            durationSeconds: store.durationSeconds,
+            position: store.position,
+            style: store.style,
+        }))
+    );
 
     const isMobile = useIsMobile();
 

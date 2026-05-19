@@ -1,6 +1,7 @@
-import { WebsocSectionType } from '@packages/anteater-api/types';
+import type { WebsocSectionType } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
+import type { AATerm } from './calendar';
 import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customEvent';
 import { AASection } from './websoc';
 
@@ -14,11 +15,16 @@ export type ScheduleCourse = {
     deptCode: string;
     prerequisiteLink: string;
     section: AASection;
-    term: string;
+    term: AATerm;
     sectionTypes: WebsocSectionType[];
 };
 
 export type Schedule = {
+    /**
+     * Optional unique identifier for the schedule.
+     * Present when schedules are loaded from the backend.
+     */
+    id?: string;
     scheduleName: string;
     courses: ScheduleCourse[];
     customEvents: RepeatingCustomEvent[];

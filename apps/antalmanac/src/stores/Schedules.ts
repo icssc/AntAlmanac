@@ -1,6 +1,9 @@
-import { getDefaultTerm } from '$lib/termData';
-import { WebSOC } from '$lib/websoc';
+import { trpc } from '$lib/api/trpc';
+import { getDefaultTerm, getTermByShortName } from '$lib/term';
+import { moveArrayElements } from '$lib/utils';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
+import { openSnackbar } from '$stores/SnackbarStore';
+import type { AATerm } from '@packages/antalmanac-types';
 import type {
     Schedule,
     ScheduleCourse,
@@ -28,8 +31,6 @@ export class Schedules {
 
     private futureStates: ScheduleUndoState[];
 
-    private skeletonSchedules: ShortCourseSchedule[];
-
     /**
      * We do not want schedule notes to be undone; to avoid this,
      * we keep track of every schedule note in an object where each key
@@ -42,7 +43,7 @@ export class Schedules {
 
         this.schedules = [
             {
-                scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
+                scheduleName: getDefaultTerm().shortName,
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
@@ -53,7 +54,6 @@ export class Schedules {
         this.previousStates = [];
         this.futureStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
-        this.skeletonSchedules = [];
     }
 
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
@@ -69,11 +69,15 @@ export class Schedules {
     }
 
     getDefaultScheduleName() {
-        return getDefaultTerm().shortName.replaceAll(' ', '-');
+        return getDefaultTerm().shortName;
     }
 
     getCurrentScheduleIndex() {
         return this.currentScheduleIndex;
+    }
+
+    getCurrentSchedule() {
+        return this.schedules[this.currentScheduleIndex];
     }
 
     getNumberOfSchedules() {
@@ -180,8 +184,7 @@ export class Schedules {
      */
     reorderSchedule(from: number, to: number) {
         this.addUndoState();
-        const [removed] = this.schedules.splice(from, 1);
-        this.schedules.splice(to, 0, removed);
+        moveArrayElements(this.schedules, from, to, { isShiftAccountedFor: true });
         if (this.currentScheduleIndex === from) {
             this.currentScheduleIndex = to;
         } else if (this.currentScheduleIndex > from && this.currentScheduleIndex <= to) {
@@ -190,6 +193,41 @@ export class Schedules {
             this.currentScheduleIndex += 1;
         }
     }
+
+    /**
+     * Moves a course's sections from one position to another.
+     *
+     * @param scheduleIndex Index of the schedule to reorder courses for.
+     * @param movedCourseId ID of the course whose sections should be moved.
+     * @param nextCourseId ID of the course directly after the moved course after reordering.
+     * Pass `null` if the course is being moved to the end.
+     */
+    reorderAddedCourses(scheduleIndex: number, movedCourseId: string, nextCourseId: string | null) {
+        this.addUndoState();
+        const courses = this.schedules[scheduleIndex].courses;
+
+        const fromIndex = courses.findIndex((course) => getCourseId(course) === movedCourseId);
+        if (fromIndex === -1) {
+            console.error(`Course id ${movedCourseId} was not found in schedule courses`);
+            openSnackbar('error', 'Could not reorder added courses');
+            return;
+        }
+
+        const toIndex =
+            nextCourseId !== null
+                ? courses.findIndex((course) => getCourseId(course) === nextCourseId)
+                : courses.length;
+        if (toIndex === -1) {
+            console.error(`Course id ${toIndex} was not found in schedule courses`);
+            openSnackbar('error', 'Could not reorder added courses');
+            return;
+        }
+
+        const sectionCount = courses.findLastIndex((course) => getCourseId(course) === movedCourseId) - fromIndex + 1;
+
+        moveArrayElements(courses, fromIndex, toIndex, { elementMoveCount: sectionCount });
+    }
+
     getCurrentCourses() {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
@@ -198,7 +236,9 @@ export class Schedules {
      * Get a set of "{sectionCode} {term}" section codes in current schedule.
      */
     getAddedSectionCodes() {
-        return new Set(this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
+        return new Set(
+            this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term.shortName}`)
+        );
     }
 
     /**
@@ -211,9 +251,9 @@ export class Schedules {
     /**
      * Get course that matches the params across **all** schedules.
      */
-    getExistingCourse(sectionCode: string, term: string) {
+    getExistingCourse(sectionCode: string, term: AATerm) {
         for (const course of this.getAllCourses()) {
-            if (course.section.sectionCode === sectionCode && term === course.term) {
+            if (course.section.sectionCode === sectionCode && term.shortName === course.term.shortName) {
                 return course;
             }
         }
@@ -223,9 +263,9 @@ export class Schedules {
     /**
      * Get a course that matches the params in the **current** schedule.
      */
-    getExistingCourseInSchedule(sectionCode: string, term: string) {
+    getExistingCourseInSchedule(sectionCode: string, term: AATerm) {
         for (const course of this.getCurrentCourses()) {
-            if (course.section.sectionCode === sectionCode && term === course.term) {
+            if (course.section.sectionCode === sectionCode && term.shortName === course.term.shortName) {
                 return course;
             }
         }
@@ -271,7 +311,7 @@ export class Schedules {
                 // New colors are drawn from a Set of unused colors across the newCourse's term
                 color: getColorForNewSection(
                     newCourse,
-                    this.getAllCourses().filter((course) => course.term === newCourse.term)
+                    this.getAllCourses().filter((course) => course.term.shortName === newCourse.term.shortName)
                 ),
             },
         };
@@ -303,7 +343,7 @@ export class Schedules {
     /**
      * Change courses that match the code and term in all schedules to new color.
      */
-    changeCourseColor(sectionCode: string, term: string, newColor: string) {
+    changeCourseColor(sectionCode: string, term: AATerm, newColor: string) {
         this.addUndoState();
 
         const course = this.getExistingCourseInSchedule(sectionCode, term);
@@ -316,20 +356,20 @@ export class Schedules {
     /**
      * Delete a course in current schedule.
      */
-    deleteCourse(sectionCode: string, term: string, scheduleIndex: number) {
+    deleteCourse(sectionCode: string, term: AATerm, scheduleIndex: number) {
         this.addUndoState();
         this.setCurrentScheduleIndex(scheduleIndex);
         this.schedules[scheduleIndex].courses = this.schedules[this.currentScheduleIndex].courses.filter((course) => {
-            return !(course.section.sectionCode === sectionCode && course.term === term);
+            return !(course.section.sectionCode === sectionCode && course.term.shortName === term.shortName);
         });
     }
 
     /**
      * Check if a course has already been added to a schedule.
      */
-    doesCourseExistInSchedule(sectionCode: string, term: string, scheduleIndex: number) {
+    doesCourseExistInSchedule(sectionCode: string, term: AATerm, scheduleIndex: number) {
         for (const course of this.schedules[scheduleIndex].courses) {
-            if (course.section.sectionCode === sectionCode && term === course.term) {
+            if (course.section.sectionCode === sectionCode && term.shortName === course.term.shortName) {
                 return true;
             }
         }
@@ -503,7 +543,7 @@ export class Schedules {
      * Previous states are capped to 50
      */
     addUndoState() {
-        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[]; // Create deep copy of Schedules object
+        const clonedSchedules = structuredClone(this.schedules);
         this.previousStates.push({
             schedules: clonedSchedules,
             scheduleIndex: this.currentScheduleIndex,
@@ -523,7 +563,7 @@ export class Schedules {
         if (state === undefined) {
             return false;
         }
-        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+        const clonedSchedules = structuredClone(this.schedules);
         this.futureStates.push({
             schedules: clonedSchedules,
             scheduleIndex: this.currentScheduleIndex,
@@ -541,7 +581,7 @@ export class Schedules {
         if (state === undefined) {
             return false;
         }
-        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+        const clonedSchedules = structuredClone(this.schedules);
         this.previousStates.push({
             schedules: clonedSchedules,
             scheduleIndex: this.currentScheduleIndex,
@@ -567,7 +607,7 @@ export class Schedules {
                 courses: schedule.courses.map((course) => {
                     return {
                         color: course.section.color,
-                        term: course.term,
+                        term: course.term.shortName,
                         sectionCode: course.section.sectionCode,
                         visibility: getVisibility(schedule.scheduleId, course.section.sectionCode),
                     };
@@ -618,10 +658,19 @@ export class Schedules {
             // Get the course info for each course
             const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
 
-            const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
+            const websocRequests = Object.entries(courseDict).map(async ([termShortName, courseSet]) => {
+                const term = getTermByShortName(termShortName);
+                if (!term) {
+                    return;
+                }
+
                 const sectionCodes = Array.from(courseSet).join(',');
-                const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
-                courseInfoDict.set(term, courseInfo);
+                const courseInfo = await trpc.websoc.getCourseInfo.query({
+                    year: term.year,
+                    quarter: term.quarter,
+                    sectionCodes,
+                });
+                courseInfoDict.set(termShortName, courseInfo);
             });
 
             await Promise.all(websocRequests);
@@ -640,9 +689,16 @@ export class Schedules {
                             // Class doesn't exist/was cancelled
                             continue;
                         }
+
+                        const term = getTermByShortName(shortCourse.term);
+                        if (!term) {
+                            continue;
+                        }
+
                         courses.push({
                             ...shortCourse,
                             ...courseInfo.courseDetails,
+                            term,
                             section: {
                                 ...courseInfo.section,
                                 color: shortCourse.color,
@@ -691,17 +747,5 @@ export class Schedules {
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
-    }
-
-    getCurrentSkeletonSchedule(): ShortCourseSchedule {
-        return this.skeletonSchedules[this.currentScheduleIndex];
-    }
-
-    getSkeletonScheduleNames(): string[] {
-        return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
-    }
-
-    setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
-        this.skeletonSchedules = skeletonSchedules;
     }
 }

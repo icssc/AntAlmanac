@@ -2,14 +2,16 @@ import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { trpcReact } from '$lib/api/trpc';
 import { getErrorMessage } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
-import type { User } from '@packages/antalmanac-types';
+import type { UserProfile } from '@packages/db/src/schema/auth/user';
 import { usePostHog } from 'posthog-js/react';
 import { type MouseEvent, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -17,34 +19,34 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore();
+    const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore(
+        useShallow((store) => ({
+            sessionIsValid: store.sessionIsValid,
+            clearSession: store.clearSession,
+            name: store.name,
+            avatar: store.avatar,
+            email: store.email,
+        }))
+    );
     const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
 
-    const user = useMemo<Pick<User, 'name' | 'avatar' | 'email'> | null>(
+    const user = useMemo<UserProfile | null>(
         () =>
             sessionIsValid
                 ? {
-                      name: name ?? undefined,
-                      avatar: avatar ?? undefined,
-                      email: email ?? undefined,
+                      name: name ?? null,
+                      avatar: avatar ?? null,
+                      email: email ?? null,
                   }
                 : null,
         [sessionIsValid, name, avatar, email]
     );
 
-    const open = Boolean(anchorEl);
-    const handleClick = (event: MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleLogout = async () => {
-        setAnchorEl(null);
-
-        try {
-            const logoutUrl = await clearSession();
+    const { mutate: logout } = trpcReact.auth.logout.useMutation({
+        onSuccess: ({ logoutUrl }) => {
+            clearSession();
             onLogoutComplete?.();
-
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
                 action: analyticsEnum.auth.actions.SIGN_OUT,
@@ -53,8 +55,10 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             if (logoutUrl) {
                 window.location.href = logoutUrl;
             }
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error('Error during logout', error);
+            clearSession();
             onLogoutComplete?.();
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
@@ -62,16 +66,26 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 error: getErrorMessage(error),
             });
             window.location.reload();
-        } finally {
+        },
+        onSettled: () => {
             postHog?.reset();
-        }
+        },
+    });
+
+    const handleClick = (event: MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleLogout = () => {
+        setAnchorEl(null);
+        logout({ redirectUrl: window.location.origin });
     };
 
     return (
         <div id="load-save-container">
             <ProfileMenuButtons user={user} handleOpen={handleClick} handleSettingsOpen={handleClick} />
             <Popover
-                open={open}
+                open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
                 onClose={() => setAnchorEl(null)}
                 anchorOrigin={{

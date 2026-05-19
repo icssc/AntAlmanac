@@ -1,5 +1,6 @@
 import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { WebSOC } from '$lib/websoc';
+import { trpc } from '$lib/api/trpc';
+import type { WebsocSearchInput } from '@packages/antalmanac-types';
 import { AACourse } from '@packages/antalmanac-types';
 import { GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
 
@@ -35,8 +36,10 @@ const getCourseKeys = (response: WebsocAPIResponse) =>
         )
     );
 
-const queryWebsoc = (params: Record<string, string>) =>
-    params.units.includes(',') ? WebSOC.queryMultipleOfField(params, 'units') : WebSOC.query(params);
+const queryWebsoc = (params: WebsocSearchInput) =>
+    params.units?.includes(',')
+        ? trpc.websoc.getManyOfField.query({ params, fieldName: 'units' })
+        : trpc.websoc.getOne.query(params);
 
 const getSharedCourseKeys = (responses: WebsocAPIResponse[]) => {
     const [firstResponse, ...restResponses] = responses;
@@ -104,8 +107,8 @@ const buildOr = (responses: WebsocAPIResponse[], sharedCourseKeys: Set<string>) 
     return orBlock;
 };
 
-export async function queryManualSearchCourses(params: Record<string, string>) {
-    const selectedGEs = getSelectedGEs(params.ge);
+export async function queryManualSearchCourses(params: WebsocSearchInput) {
+    const selectedGEs = getSelectedGEs(params.ge ?? '');
 
     if (selectedGEs.length <= 1) {
         return {

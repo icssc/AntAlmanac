@@ -9,6 +9,7 @@ import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { trpc, trpcReact } from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import {
@@ -18,10 +19,10 @@ import {
     removeLocalStorageOnFirstSignin,
     removeLocalStorageUserId,
 } from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
-import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
+import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useDevModeStore, useThemeStore } from '$stores/SettingsStore';
@@ -50,7 +51,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { AATerm, CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -74,9 +75,9 @@ export function Import() {
     const [exportSchedules, setExportSchedules] = useState<ShortCourseSchedule[]>([]);
     const [exportSelectedIndices, setExportSelectedIndices] = useState<Set<number>>(new Set());
 
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
-    const { sessionIsValid } = useSessionStore();
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
     const devMode = useDevModeStore((store) => store.devMode);
 
@@ -86,6 +87,7 @@ export function Import() {
     const isDark = useThemeStore((store) => store.isDark);
 
     const postHog = usePostHog();
+    const { mutateAsync: fetchZotcourse } = trpcReact.zotcourse.getUserData.useMutation();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -120,7 +122,17 @@ export function Import() {
         switch (effectiveImportSource) {
             case ImportSource.ZOT_COURSE_IMPORT:
                 try {
-                    const zotcourseImport: ZotcourseResponse = await queryZotcourse(zotcourseScheduleName);
+                    if (!zotcourseScheduleName) {
+                        throw new QueryZotcourseError('Cannot import an empty Zotcourse schedule name');
+                    }
+
+                    const response = await fetchZotcourse({ scheduleName: zotcourseScheduleName });
+
+                    if (!response.success) {
+                        throw new QueryZotcourseError('Cannot import an invalid Zotcourse');
+                    }
+
+                    const zotcourseImport = processZotcourseResponse(response.data);
                     sectionCodes = zotcourseImport.codes;
                     for (const event of zotcourseImport.customEvents) {
                         addCustomEvent(event, [currentSchedule]);
@@ -241,15 +253,13 @@ export function Import() {
     ) => {
         try {
             const term = RightPaneStore.getFormData().term;
+            const courseInfo = await trpc.websoc.getCourseInfo.query({
+                year: term.year,
+                quarter: term.quarter,
+                sectionCodes: sectionCodes.join(','),
+            });
 
-            const sectionsAdded = addCoursesMultiple(
-                await WebSOC.getCourseInfo({
-                    term,
-                    sectionCodes: sectionCodes.join(','),
-                }),
-                term,
-                currentSchedule
-            );
+            const sectionsAdded = addCoursesMultiple(courseInfo, term, currentSchedule);
 
             logAnalytics(postHog, {
                 category: analyticsEnum.nav,
@@ -291,7 +301,7 @@ export function Import() {
 
     const addCoursesMultiple = (
         courseInfo: { [sectionCode: string]: CourseInfo },
-        term: string,
+        term: AATerm,
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {
@@ -644,17 +654,9 @@ export function Import() {
     }, [handleOpen]);
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
         if (sessionIsValid && getLocalStorageDataCache() === null) {
             handleFirstTimeSignin();
         }
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
     }, [handleFirstTimeSignin, sessionIsValid]);
 
     return (
@@ -665,7 +667,7 @@ export function Import() {
                     color="inherit"
                     sx={{ fontSize: 'inherit' }}
                     startIcon={<ContentPasteGo />}
-                    disabled={skeletonMode}
+                    disabled={fallbackMode}
                     id="import-button"
                 >
                     {devMode ? 'Import/Export' : 'Import'}

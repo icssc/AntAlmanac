@@ -4,19 +4,18 @@ import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTab
 import { SectionActionMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/SectionActionMenu';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { Term } from '$lib/termData';
+import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
 import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import type { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
     section: AASection;
-    term: Term['shortName'];
+    term: AATerm;
     courseDetails: CourseDetails;
     scheduleConflict: boolean;
     addedCourse: boolean;
@@ -25,11 +24,12 @@ interface ActionCellProps {
 
 export const ActionCell = memo(
     ({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
-        const initialized = useNotificationStore(useShallow((state) => state.initialized));
+        const initialized = useNotificationStore((state) => state.initialized);
         const cycleVisibility = useHiddenCoursesStore((state) => state.cycleVisibility);
         const classVisibility = useHiddenCoursesStore((state) =>
             state.getVisibility(AppStore.getCurrentScheduleId(), section.sectionCode)
         );
+
         const isMobile = useIsMobile();
         const handleVisibilityToggle = useCallback(() => {
             cycleVisibility(AppStore.getCurrentScheduleId(), section.sectionCode);

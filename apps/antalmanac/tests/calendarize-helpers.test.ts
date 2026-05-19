@@ -1,7 +1,20 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
-import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { AATerm, Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { describe, test, expect } from 'vitest';
+
+const WINTER_2024: AATerm = {
+    year: '2024',
+    quarter: 'Winter',
+    shortName: '2024 Winter',
+    longName: 'Winter 2024',
+    instructionStart: new Date(2024, 0, 8),
+    instructionEnd: new Date(2024, 2, 15),
+    finalsStart: new Date(2024, 2, 16),
+    finalsEnd: new Date(2024, 2, 22),
+    socAvailable: new Date(2023, 9, 1),
+    isSummerTerm: false,
+};
 
 describe('calendarize-helpers', () => {
     const courses: Schedule['courses'] = [
@@ -62,7 +75,8 @@ describe('calendarize-helpers', () => {
                 sectionComment: 'placeholderSectionComment',
                 updatedAt: 'placeholderUpdatedAt',
             },
-            term: '2024 Winter',
+            term: WINTER_2024,
+            sectionTypes: ['Lec'],
         },
     ];
 
@@ -71,7 +85,7 @@ describe('calendarize-helpers', () => {
         {
             locations: [],
             color: 'placeholderColor',
-            term: '2024 Winter',
+            term: WINTER_2024,
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
@@ -102,7 +116,7 @@ describe('calendarize-helpers', () => {
         {
             locations: [],
             color: 'placeholderColor',
-            term: '2024 Winter',
+            term: WINTER_2024,
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
@@ -133,7 +147,7 @@ describe('calendarize-helpers', () => {
         {
             locations: [],
             color: 'placeholderColor',
-            term: '2024 Winter',
+            term: WINTER_2024,
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
@@ -167,7 +181,7 @@ describe('calendarize-helpers', () => {
         {
             locations: [],
             color: 'placeholderColor',
-            term: '2024 Winter',
+            term: WINTER_2024,
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseNumber: 'placeholderCourseNumber',
             deptValue: 'placeholderDeptCode',
