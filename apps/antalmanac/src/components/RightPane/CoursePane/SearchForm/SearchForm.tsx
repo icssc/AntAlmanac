@@ -2,8 +2,8 @@ import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -18,6 +18,7 @@ interface SearchFormProps {
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
+    const { resetAll } = useCourseSearchUrlState();
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 
@@ -78,7 +79,9 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                                     action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
                                 });
                             }}
-                            onReset={RightPaneStore.resetFormValues}
+                            onReset={() => {
+                                void resetAll();
+                            }}
                         />
                     )}
                 </Stack>

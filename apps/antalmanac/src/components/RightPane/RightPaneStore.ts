@@ -1,39 +1,16 @@
 import { EventEmitter } from 'events';
 
-import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { normalizeGeSelection } from '$lib/multiGeSearch';
-import { getDefaultTerm, getTermByShortName } from '$lib/term';
-import { openSnackbar } from '$stores/SnackbarStore';
+import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
+import {
+    type CourseSearchField,
+    type CourseSearchParams,
+    defaultAdvancedSearchValues,
+    defaultCourseSearchFormValues,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import type { AATerm } from '@packages/antalmanac-types';
+export type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 
-const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
-    instructor: '',
-    units: '',
-    endTime: '',
-    startTime: '',
-    coursesFull: 'ANY',
-    building: '',
-    room: '',
-    division: '',
-    excludeRoadmapCourses: '',
-    excludeRestrictionCodes: '',
-    days: '',
-};
-
-export interface CourseSearchParams extends Record<Exclude<ManualSearchParam, 'term'>, string> {
-    term: AATerm;
-}
-
-type SearchParamKey = Exclude<keyof CourseSearchParams, 'term'>;
-
-const defaultFormValues: CourseSearchParams = {
-    term: getDefaultTerm(),
-    deptValue: 'ALL',
-    ge: 'ANY',
-    courseNumber: '',
-    sectionCode: '',
-    ...defaultAdvancedSearchValues,
-};
+type SearchParamKey = CourseSearchField;
 
 export enum CourseSearchWarningType {
     TermUnavailable = 'termUnavailable',
@@ -44,102 +21,33 @@ class RightPaneStore extends EventEmitter {
     private prevFormData?: CourseSearchParams;
     private multiSearchData: CourseSearchParams[];
     private warningMessages: Record<CourseSearchWarningType, string[]>;
-    private urlSectionCodeValue: string;
-    private urlTermValue: string;
-    private urlGEValue: string;
-    private urlCourseNumValue: string;
-    private urlDeptValue: string;
-
-    private normalizeGeQueryParam = (search: URLSearchParams) => {
-        const rawGeValue = search.get('ge') ?? search.get('GE');
-        if (rawGeValue == null) {
-            return;
-        }
-
-        const normalizedGe = normalizeGeSelection(rawGeValue);
-        const currentGe = search.get('ge');
-        const hadUppercaseGeParam = search.has('GE');
-
-        search.delete('GE');
-        if (normalizedGe === 'ANY') {
-            search.delete('ge');
-        } else {
-            search.set('ge', normalizedGe);
-        }
-
-        const wasChanged = (currentGe ?? '') !== (normalizedGe === 'ANY' ? '' : normalizedGe) || hadUppercaseGeParam;
-        if (!wasChanged) {
-            return;
-        }
-
-        const nextQuery = search.toString();
-        const nextURL = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
-        history.replaceState({ url: 'url' }, 'url', nextURL);
-    };
 
     constructor() {
         super();
         this.setMaxListeners(15);
-        this.formData = structuredClone(defaultFormValues);
-        const search = new URLSearchParams(window.location.search);
-        this.normalizeGeQueryParam(search);
+        this.formData = structuredClone(defaultCourseSearchFormValues);
         this.multiSearchData = [];
         this.warningMessages = { [CourseSearchWarningType.TermUnavailable]: [] };
-        this.urlSectionCodeValue = search.get('sectionCode') || '';
-        this.urlTermValue = search.get('term') || '';
-        this.urlGEValue = search.get('ge') || '';
-        this.urlCourseNumValue = search.get('courseNumber') || '';
-        this.urlDeptValue = search.get('deptValue') || '';
-
-        this.updateFormDataFromURL(search);
     }
-
-    updateFormDataFromURL = (search: URLSearchParams) => {
-        const paramTerm = search.get('term') || search.get('TERM');
-        if (paramTerm) {
-            const term = getTermByShortName(paramTerm);
-            if (term) {
-                this.formData.term = term;
-            } else {
-                const fallback = getDefaultTerm();
-                const message = `${paramTerm} is unavailable, falling back to ${fallback.shortName}`;
-                openSnackbar('error', message);
-                console.error('Error setting term from URL:', message);
-                this.formData.term = fallback;
-                this.setWarningMessages(CourseSearchWarningType.TermUnavailable, [message]);
-            }
-        }
-
-        const stringFields = Object.keys(defaultFormValues).filter((k): k is SearchParamKey => k !== 'term');
-        for (const field of stringFields) {
-            const paramValue = search.get(field) || search.get(field.toUpperCase());
-            if (paramValue !== null) {
-                this.formData[field] = field === 'ge' ? normalizeGeSelection(paramValue) : paramValue;
-            }
-        }
-
-        this.emit('formDataChange');
-    };
 
     getFormData = () => {
         return this.formData;
     };
 
     getDefaultFormData = () => {
-        return defaultFormValues;
+        return defaultCourseSearchFormValues;
     };
 
     getMultiSearchData = () => this.multiSearchData;
 
-    getUrlSectionCodeValue = () => this.urlSectionCodeValue;
-    getUrlTermValue = () => this.urlTermValue;
-    getUrlGEValue = () => this.urlGEValue;
-    getUrlCourseNumValue = () => this.urlCourseNumValue;
-    getUrlDeptValue = () => this.urlDeptValue;
-
     getWarningMessages = () => this.warningMessages;
 
-    updateFormValue = (field: SearchParamKey, value: string) => {
+    setFormData = (formData: CourseSearchParams) => {
+        this.formData = structuredClone(formData);
+        this.emit('formDataChange');
+    };
+
+    updateFormValue = <Field extends SearchParamKey>(field: Field, value: CourseSearchParams[Field]) => {
         this.formData[field] = value;
         this.emit('formDataChange');
     };
@@ -150,7 +58,11 @@ class RightPaneStore extends EventEmitter {
     };
 
     setMultiSearchData = (data: Partial<(typeof this.multiSearchData)[number]>[]) => {
-        this.multiSearchData = data.map((params) => ({ ...defaultFormValues, ...params, term: this.formData.term }));
+        this.multiSearchData = data.map((params) => ({
+            ...defaultCourseSearchFormValues,
+            ...params,
+            term: this.formData.term,
+        }));
     };
 
     clearMultiSearchData = () => {
@@ -172,7 +84,7 @@ class RightPaneStore extends EventEmitter {
     };
 
     resetFormValues = () => {
-        this.formData = structuredClone(defaultFormValues);
+        this.formData = structuredClone(defaultCourseSearchFormValues);
         this.emit('formReset');
     };
 

@@ -1,17 +1,15 @@
 import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { getSelectedGEs, normalizeGeSelection } from '$lib/multiGeSearch';
-import { replaceUrlSearchParams } from '$lib/utils';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
-import { useEffect, useCallback, useState } from 'react';
 
 const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
 const getShortLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.shortLabel ?? value;
 
 export function GeSelector() {
-    const [ge, setGe] = useState(() => RightPaneStore.getFormData().ge);
-    const selectedGEs = getSelectedGEs(ge);
+    const { formData, setField } = useCourseSearchUrlState();
+    const selectedGEs = getSelectedGEs(formData.ge);
 
     const handleChange = (event: SelectChangeEvent<string[]>) => {
         const value = event.target.value;
@@ -19,28 +17,8 @@ export function GeSelector() {
         const selectedValues = values.includes(ANY_GE) ? [] : values.filter((currentValue) => currentValue !== ANY_GE);
         const searchValue = normalizeGeSelection(selectedValues.join(','));
 
-        setGe(searchValue);
-        RightPaneStore.updateFormValue('ge', searchValue);
-
-        replaceUrlSearchParams((params) => {
-            params.delete('ge');
-            if (searchValue !== ANY_GE) {
-                params.set('ge', searchValue);
-            }
-        });
+        void setField('ge', searchValue);
     };
-
-    const resetField = useCallback(() => {
-        setGe(normalizeGeSelection(RightPaneStore.getFormData().ge));
-    }, []);
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.off('formReset', resetField);
-        };
-    }, [resetField]);
 
     return (
         <LabeledSelect

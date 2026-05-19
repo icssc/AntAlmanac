@@ -1,8 +1,9 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import { getDefaultTerm, termData } from '$lib/term';
 import type { AATerm } from '@packages/antalmanac-types';
-import { ComponentProps, useCallback, useEffect, useState } from 'react';
+import { ComponentProps } from 'react';
 
 type TermSelectorProps = Omit<
     ComponentProps<typeof LabeledAutocomplete>,
@@ -10,40 +11,22 @@ type TermSelectorProps = Omit<
 >;
 
 export function TermSelector(props: TermSelectorProps) {
-    const [term, setTerm] = useState<AATerm>(() => RightPaneStore.getFormData().term);
+    const { formData, setTerm } = useCourseSearchUrlState();
 
     const handleChange = (_: unknown, option: AATerm | null) => {
         const value = option ?? getDefaultTerm();
 
-        setTerm(value);
-
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('term', value.shortName);
-        history.replaceState({ url: 'url' }, 'url', `/?${urlParams}`);
-
-        RightPaneStore.setTerm(value);
+        void setTerm(value);
 
         RightPaneStore.clearWarningMessages(CourseSearchWarningType.TermUnavailable);
     };
-
-    const resetField = useCallback(() => {
-        setTerm(RightPaneStore.getFormData().term);
-    }, []);
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.off('formReset', resetField);
-        };
-    }, [resetField]);
 
     return (
         <LabeledAutocomplete
             {...props}
             label="Term"
             autocompleteProps={{
-                value: term,
+                value: formData.term,
                 options: termData,
                 getOptionLabel: (term: AATerm) => term.longName,
                 isOptionEqualToValue: (option: AATerm, value: AATerm) => option.shortName === value.shortName,

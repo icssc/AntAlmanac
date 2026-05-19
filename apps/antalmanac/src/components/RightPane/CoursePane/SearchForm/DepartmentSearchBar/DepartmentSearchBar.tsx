@@ -1,5 +1,5 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import generatedDepartments from '$generated/departments.json';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 import { useCallback, useEffect, useState } from 'react';
@@ -31,32 +31,14 @@ const parseLocalStorageRecentlySearched = (): string[] => {
 export function DepartmentSearchBar() {
     const options = Object.keys(ALL_DEPARTMENTS);
 
-    const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
+    const { formData, setField } = useCourseSearchUrlState();
     const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageRecentlySearched());
-
-    const resetField = useCallback(() => {
-        setValue(() => RightPaneStore.getFormData().deptValue);
-    }, []);
 
     const handleChange = useCallback(
         (_: unknown, option: string | null) => {
             const newValue = option ?? options[0]; // options[0] corresponds to `ALL`
 
-            setValue(newValue);
-            RightPaneStore.updateFormValue('deptValue', newValue);
-
-            const stateObj = { url: 'url' };
-            const url = new URL(window.location.href);
-            const urlParam = new URLSearchParams(url.search);
-
-            urlParam.delete('deptValue');
-
-            if (newValue != 'ALL') {
-                urlParam.append('deptValue', newValue);
-            }
-            const param = urlParam.toString();
-            const new_url = `${param.trim() ? '?' : ''}${param}`;
-            history.replaceState(stateObj, 'url', '/' + new_url);
+            void setField('deptValue', newValue);
 
             if (newValue === 'ALL') return;
 
@@ -70,16 +52,8 @@ export function DepartmentSearchBar() {
                 setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
             }
         },
-        [recentSearches, options]
+        [options, recentSearches, setField]
     );
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.off('formReset', resetField);
-        };
-    }, [resetField]);
 
     useEffect(() => {
         setLocalStorageRecentlySearched(JSON.stringify(recentSearches));
@@ -89,7 +63,7 @@ export function DepartmentSearchBar() {
         <LabeledAutocomplete
             label="Department"
             autocompleteProps={{
-                value,
+                value: formData.deptValue,
                 options: Array.from(new Set([...recentSearches, ...options])),
                 autoHighlight: true,
                 openOnFocus: true,

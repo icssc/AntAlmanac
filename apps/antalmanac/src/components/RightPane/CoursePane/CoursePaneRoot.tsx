@@ -1,6 +1,7 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpcReact';
@@ -13,6 +14,7 @@ import { useCallback, useEffect } from 'react';
 export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
         useCoursePaneStore();
+    const { formData } = useCourseSearchUrlState();
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
 
@@ -49,6 +51,10 @@ export function CoursePaneRoot() {
         },
         [displaySearch]
     );
+
+    useEffect(() => {
+        RightPaneStore.setFormData(formData);
+    }, [formData]);
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeydown, false);
