@@ -72,9 +72,9 @@ export function Header() {
                         alignItems: 'center',
                     }}
                 >
-                    {isNativeIosApp()}
                     <Stack direction="row" alignItems="center" gap={1}>
                         <AppSwitcher isMobile={isMobile} />
+                        {`${isNativeIosApp()}`}
                     </Stack>
 
                     <Stack direction="row" alignItems="center">
