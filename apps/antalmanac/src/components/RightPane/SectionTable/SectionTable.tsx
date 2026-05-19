@@ -74,10 +74,10 @@ function SectionTable({
 
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
 
-    const { isMilitaryTime } = useTimeFormatStore();
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
-    const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
-    const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const activeColumns = useColumnStore((store) => store.activeColumns);
+    const activeTab = useTabStore((store) => store.activeTab);
     const isMobile = useIsMobile();
 
     const handleToggleExpand = () => {
@@ -137,7 +137,13 @@ function SectionTable({
                     <Button
                         variant="contained"
                         color="secondary"
-                        sx={{ padding: 0, minWidth: 0, minHeight: 0, cursor: 'inherit' }}
+                        sx={{
+                            padding: 0,
+                            minWidth: 0,
+                            minHeight: 0,
+                            cursor: 'inherit',
+                            flexShrink: 0,
+                        }}
                     >
                         <SortableList.DragHandle sx={{ height: '100%' }} iconSx={{ color: 'inherit' }} />
                     </Button>

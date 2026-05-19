@@ -1,7 +1,7 @@
 'use client';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { postHog } from '$providers/PostHog';
 import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';

@@ -2,7 +2,7 @@ import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import type { AATerm, SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
@@ -268,12 +268,9 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         );
     };
 
-    const renderOption = (
-        componentProps: React.HTMLAttributes<HTMLLIElement> & { key: string },
-        option: SearchOption
-    ) => {
+    const renderOption = (props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key }, option: SearchOption) => {
         const object = option.result;
-        const { key, ...restProps } = componentProps;
+        const { key, ...restProps } = props;
         if (!object)
             return (
                 <Box component="li" key={key} {...restProps}>

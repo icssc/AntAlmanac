@@ -12,7 +12,6 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { Box, CircularProgress, IconButton } from '@mui/material';
 import type { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
     section: AASection;
@@ -29,7 +28,7 @@ function getSectionColor(sectionCode: string, term: AATerm): string {
 
 export const ActionCell = memo(
     ({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
-        const initialized = useNotificationStore(useShallow((state) => state.initialized));
+        const initialized = useNotificationStore((state) => state.initialized);
         const isMobile = useIsMobile();
 
         const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term));

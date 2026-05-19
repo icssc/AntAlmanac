@@ -1,6 +1,6 @@
 'use client';
 
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { Close } from '@mui/icons-material';
 import { Box, Button, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material';

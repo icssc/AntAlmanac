@@ -1,5 +1,5 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { OpenInNew } from '@mui/icons-material';
 import {
     Card,

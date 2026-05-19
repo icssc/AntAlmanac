@@ -1,8 +1,8 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
-import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
+import darkNoResults from '$components/RightPane/CoursePane/static/dark-no_results.png';
+import noResults from '$components/RightPane/CoursePane/static/no_results.png';
 import RightPaneStore, { CourseSearchParams, CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
@@ -29,18 +29,32 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import LazyLoad from 'react-lazyload';
 
+type CourseListEntry = WebsocSchool | WebsocDepartment | AACourse;
+
 type CoursePaneLazyRow =
     | { kind: 'alert'; key: string; children: ReactNode }
     | {
           kind: 'lazy-course';
           key: string;
-          courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
+          courseData: CourseListEntry[];
           index: number;
       };
 
 type CoursePaneSearchData =
     | { kind: 'single'; response: WebsocAPIResponse }
     | { kind: 'split'; intersect: WebsocAPIResponse; rest: WebsocAPIResponse };
+
+function isSchoolEntry(item: CourseListEntry): item is WebsocSchool {
+    return 'departments' in item;
+}
+
+function isDepartmentEntry(item: CourseListEntry): item is WebsocDepartment {
+    return 'courses' in item;
+}
+
+function isCourseEntry(item: CourseListEntry): item is AACourse {
+    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
+}
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -55,8 +69,8 @@ function getColors() {
 const flattenSOCObject = (
     SOCObject: WebsocAPIResponse,
     courseColors: ReturnType<typeof getColors>
-): (WebsocSchool | WebsocDepartment | AACourse)[] => {
-    return SOCObject.schools.reduce((accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
+): CourseListEntry[] => {
+    return SOCObject.schools.reduce((accumulator: CourseListEntry[], school) => {
         accumulator.push(school);
 
         school.departments.forEach((dept) => {
@@ -78,27 +92,21 @@ const flattenSOCObject = (
     }, []);
 };
 
-function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is AACourse {
-    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
-}
-
-function estimateCoursePaneLazyHeight(entry: WebsocSchool | WebsocDepartment | AACourse): number {
+function estimateCoursePaneLazyHeight(entry: CourseListEntry): number {
     return isCourseEntry(entry) ? entry.sections.length * 60 + 20 + 40 : 200;
 }
 
-function cleanHeaders(
-    items: (WebsocSchool | WebsocDepartment | AACourse)[]
-): (WebsocSchool | WebsocDepartment | AACourse)[] {
-    const result: (WebsocSchool | WebsocDepartment | AACourse)[] = [];
+function cleanHeaders(items: CourseListEntry[]): CourseListEntry[] {
+    const result: CourseListEntry[] = [];
     let pendingSchool: WebsocSchool | null = null;
     let pendingDept: WebsocDepartment | null = null;
 
     for (const item of items) {
-        if ('departments' in item) {
-            pendingSchool = item as WebsocSchool;
+        if (isSchoolEntry(item)) {
+            pendingSchool = item;
             pendingDept = null;
-        } else if ('courses' in item) {
-            pendingDept = item as WebsocDepartment;
+        } else if (isDepartmentEntry(item)) {
+            pendingDept = item;
         } else {
             if (pendingSchool) {
                 result.push(pendingSchool);
@@ -115,9 +123,7 @@ function cleanHeaders(
     return result;
 }
 
-function getFilteredCourses(
-    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
-): (WebsocSchool | WebsocDepartment | AACourse)[] {
+function getFilteredCourses(allCourses: CourseListEntry[]): CourseListEntry[] {
     const { manualSearchEnabled } = useCoursePaneStore.getState();
     const { filterTakenCourses, userTakenCourses } = usePlannerStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
@@ -189,42 +195,32 @@ const RecruitmentBanner = () => {
     );
 };
 
-/* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
- *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
- *  If you can find a way to make this cleaner, do it.
- */
-const SectionTableWrapped = (
-    index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
-) => {
+const SectionTableWrapped = (index: number, data: { scheduleNames: string[]; courseData: CourseListEntry[] }) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
+    const item = courseData[index];
 
     let component;
 
-    if ((courseData[index] as WebsocSchool).departments !== undefined) {
-        const school = courseData[index] as WebsocSchool;
-        component = <SchoolDeptCard comment={school.schoolComment} type={'school'} name={school.schoolName} />;
-    } else if ((courseData[index] as WebsocDepartment).courses !== undefined) {
-        const dept = courseData[index] as WebsocDepartment;
-        component = <SchoolDeptCard name={`Department of ${dept.deptName}`} comment={dept.deptComment} type={'dept'} />;
+    if (isSchoolEntry(item)) {
+        component = <SchoolDeptCard name={item.schoolName} comment={item.schoolComment} type={'school'} />;
+    } else if (isDepartmentEntry(item)) {
+        component = <SchoolDeptCard name={`Department of ${item.deptName}`} comment={item.deptComment} type={'dept'} />;
     } else if (formData.ge !== 'ANY') {
-        const course = courseData[index] as AACourse;
         component = (
             <GeDataFetchProvider
                 term={formData.term}
-                courseDetails={course}
+                courseDetails={item}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch}
             />
         );
     } else {
-        const course = courseData[index] as AACourse;
         component = (
             <SectionTable
                 term={formData.term}
-                courseDetails={course}
+                courseDetails={item}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch}
@@ -291,7 +287,7 @@ const ErrorMessage = () => {
             ) : null}
 
             <Image
-                src={isDark ? darkNoNothing : noNothing}
+                src={isDark ? darkNoResults : noResults}
                 alt="No Results Found"
                 style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
             />

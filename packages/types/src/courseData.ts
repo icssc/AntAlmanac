@@ -1,11 +1,6 @@
-import type { WebsocSection, WebsocSectionType } from '@packages/anteater-api/types';
+import type { WebsocCourse, WebsocDepartment, WebsocSection, WebsocSectionType } from '@packages/anteater-api/types';
 
-export interface CourseDetails {
-    deptCode: string;
-    courseNumber: string;
-    courseTitle: string;
-    courseComment: string;
-    prerequisiteLink: string;
+export interface CourseDetails extends Pick<WebsocDepartment, 'deptCode'>, WebsocCourse {
     sectionTypes: WebsocSectionType[];
 }
 

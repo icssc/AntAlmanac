@@ -10,7 +10,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo, useState } from 'react';
 
 export function FallbackSchedule() {
-    const { getCurrentFallbackSchedule } = useFallbackStore();
+    const getCurrentFallbackSchedule = useFallbackStore((store) => store.getCurrentFallbackSchedule);
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const postHog = usePostHog();
 
