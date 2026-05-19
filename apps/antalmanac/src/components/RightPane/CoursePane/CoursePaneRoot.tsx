@@ -7,8 +7,6 @@ import {
     courseSearchFormDataHasManualSearch,
     courseSearchFormDataHasRequiredSearchParams,
     courseSearchFormDataIsValid,
-    defaultAdvancedSearchValues,
-    type CourseSearchParams,
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -22,45 +20,25 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export function CoursePaneRoot() {
-    const {
-        key,
-        forceUpdate,
-        searchFormIsDisplayed,
-        displaySearch,
-        displaySections,
-        advancedSearchEnabled,
-        enableAdvancedSearch,
-        disableAdvancedSearch,
-        initializeSearchUi,
-    } = useCoursePaneStore(
-        useShallow((store) => ({
-            key: store.key,
-            forceUpdate: store.forceUpdate,
-            searchFormIsDisplayed: store.searchFormIsDisplayed,
-            displaySearch: store.displaySearch,
-            displaySections: store.displaySections,
-            advancedSearchEnabled: store.advancedSearchEnabled,
-            enableAdvancedSearch: store.enableAdvancedSearch,
-            disableAdvancedSearch: store.disableAdvancedSearch,
-            initializeSearchUi: store.initializeSearchUi,
-        }))
-    );
-    const { formData, resetAdvanced, setFields } = useCourseSearchUrlState();
+    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, initializeSearchUi } =
+        useCoursePaneStore(
+            useShallow((store) => ({
+                key: store.key,
+                forceUpdate: store.forceUpdate,
+                searchFormIsDisplayed: store.searchFormIsDisplayed,
+                displaySearch: store.displaySearch,
+                displaySections: store.displaySections,
+                initializeSearchUi: store.initializeSearchUi,
+            }))
+        );
+    const { formData } = useCourseSearchUrlState();
     const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString.withOptions({ history: 'replace' }));
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
     const hasInitializedSearchUi = useRef(false);
-    const prevFormDataRef = useRef<CourseSearchParams | null>(null);
 
     const handleSearch = useCallback(() => {
-        const nextFormData = advancedSearchEnabled ? formData : { ...formData, ...defaultAdvancedSearchValues };
-
-        if (!advancedSearchEnabled) {
-            prevFormDataRef.current = formData;
-            void resetAdvanced();
-        }
-
-        if (courseSearchFormDataIsValid(nextFormData)) {
+        if (courseSearchFormDataIsValid(formData)) {
             displaySections();
             forceUpdate();
         } else {
@@ -69,23 +47,11 @@ export function CoursePaneRoot() {
                 `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
             );
         }
-    }, [advancedSearchEnabled, displaySections, forceUpdate, formData, resetAdvanced]);
+    }, [displaySections, forceUpdate, formData]);
 
     const handleDisplaySearch = useCallback(() => {
-        const prevFormData = prevFormDataRef.current;
-
-        if (prevFormData) {
-            void setFields(prevFormData);
-            prevFormDataRef.current = null;
-            if (courseSearchFormDataHasAdvancedSearch(prevFormData)) {
-                enableAdvancedSearch();
-            } else {
-                disableAdvancedSearch();
-            }
-        }
-
         displaySearch();
-    }, [disableAdvancedSearch, displaySearch, enableAdvancedSearch, setFields]);
+    }, [displaySearch]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {
