@@ -46,3 +46,24 @@ export const GE_LIST = [
 ] as const;
 
 export const ANY_GE = GE_LIST[0].value;
+
+/** Delimiter for multi-GE AND selections in form state and URL query params. */
+export const GE_SELECTION_DELIMITER = ' and ';
+
+const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
+
+const parseSelectedGEs = (ge: string) => {
+    const validGEs = ge
+        .split(/\s+and\s+|,/i)
+        .map((value) => value.trim().toUpperCase())
+        .filter((value) => VALID_GES.has(value));
+
+    return validGEs.length === 0 ? [] : [...new Set(validGEs)];
+};
+
+export const getSelectedGEs = (ge: string) => parseSelectedGEs(ge);
+
+export const normalizeGeSelection = (ge: string) => {
+    const selectedGEs = parseSelectedGEs(ge);
+    return selectedGEs.length > 0 ? selectedGEs.join(GE_SELECTION_DELIMITER) : ANY_GE;
+};

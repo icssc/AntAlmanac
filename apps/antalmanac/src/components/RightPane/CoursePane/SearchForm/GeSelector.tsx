@@ -1,7 +1,12 @@
-import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/constants';
+import {
+    ANY_GE,
+    GE_LIST,
+    GE_SELECTION_DELIMITER,
+    getSelectedGEs,
+    normalizeGeSelection,
+} from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { getSelectedGEs, normalizeGeSelection } from '$lib/multiGeSearch';
 import { replaceUrlSearchParams } from '$lib/utils';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
@@ -17,7 +22,7 @@ export function GeSelector() {
         const value = event.target.value;
         const values = (typeof value === 'string' ? value.split(',') : value).filter(Boolean);
         const selectedValues = values.includes(ANY_GE) ? [] : values.filter((currentValue) => currentValue !== ANY_GE);
-        const searchValue = normalizeGeSelection(selectedValues.join(','));
+        const searchValue = normalizeGeSelection(selectedValues.join(GE_SELECTION_DELIMITER));
 
         setGe(searchValue);
         RightPaneStore.updateFormValue('ge', searchValue);
@@ -54,7 +59,7 @@ export function GeSelector() {
                     const values = selected as string[];
                     if (values.length === 0) return getLabel(ANY_GE);
                     if (values.length === 1) return getLabel(values[0]);
-                    return values.map((value) => getShortLabel(value)).join(', ');
+                    return values.map((value) => getShortLabel(value)).join(GE_SELECTION_DELIMITER);
                 },
                 sx: {
                     width: '100%',
