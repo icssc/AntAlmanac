@@ -55,7 +55,7 @@ export function websocCourseKey(deptCode: string, courseNumber: string): string 
  * - Each course appears at most once per department; if it shows up in more than one
  *   response, section lists are combined and deduped by section code.
  */
-export function mergeWebsocUnion(responses: WebsocAPIResponse[]): WebsocAPIResponse {
+export function unionWebsocResponses(responses: WebsocAPIResponse[]): WebsocAPIResponse {
     const combined: WebsocAPIResponse = { schools: [] };
 
     for (const res of responses) {
@@ -102,18 +102,19 @@ export function mergeWebsocUnion(responses: WebsocAPIResponse[]): WebsocAPIRespo
  * - {@link rest}: courses that appear in **some** but not all responses, deduped by
  *   {@link websocCourseKey} (first occurrence wins).
  *
- * Each value is a full {@link WebsocAPIResponse} (same non-`schools` fields as the first
- * response) so callers can flatten/render independently. For a single merged tree, use
- * {@link mergeWebsocUnion}; for one concatenated list (legacy), combine `schools` yourself.
+ * Each value is a {@link WebsocAPIResponse} with a rebuilt `schools` tree so callers can
+ * flatten/render independently. For a single merged tree, use {@link unionWebsocResponses};
+ * for one concatenated list (legacy), combine `schools` yourself.
  */
 export function splitWebsocIntersectAndRest(responses: WebsocAPIResponse[]): {
     intersect: WebsocAPIResponse;
     rest: WebsocAPIResponse;
 } {
-    const first = responses[0];
-    if (!first) {
+    if (responses.length === 0) {
         return { intersect: { schools: [] }, rest: { schools: [] } };
     }
+
+    const first = responses[0]!;
 
     const perResponseKeys = responses.map((response) => {
         const keys = new Set<string>();
@@ -189,8 +190,8 @@ export function splitWebsocIntersectAndRest(responses: WebsocAPIResponse[]): {
     }
 
     return {
-        intersect: { ...first, schools: intersectSchools },
-        rest: { ...first, schools: restSchools },
+        intersect: { schools: intersectSchools },
+        rest: { schools: restSchools },
     };
 }
 

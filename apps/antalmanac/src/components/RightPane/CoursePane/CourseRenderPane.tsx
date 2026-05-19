@@ -29,6 +29,19 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import LazyLoad from 'react-lazyload';
 
+type CoursePaneLazyRow =
+    | { kind: 'alert'; key: string; children: ReactNode }
+    | {
+          kind: 'lazy-course';
+          key: string;
+          courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
+          index: number;
+      };
+
+type CoursePaneSearchData =
+    | { kind: 'single'; response: WebsocAPIResponse }
+    | { kind: 'split'; intersect: WebsocAPIResponse; rest: WebsocAPIResponse };
+
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
     const courseColors = currentCourses.reduce<Record<string, string>>((accumulator, { section }) => {
@@ -72,19 +85,6 @@ function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item i
 function estimateCoursePaneLazyHeight(entry: WebsocSchool | WebsocDepartment | AACourse): number {
     return isCourseEntry(entry) ? entry.sections.length * 60 + 20 + 40 : 200;
 }
-
-type CoursePaneLazyRow =
-    | { kind: 'alert'; key: string; children: ReactNode }
-    | {
-          kind: 'lazy-course';
-          key: string;
-          courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
-          index: number;
-      };
-
-type CoursePaneSearchData =
-    | { kind: 'single'; response: WebsocAPIResponse }
-    | { kind: 'split'; intersect: WebsocAPIResponse; rest: WebsocAPIResponse };
 
 function cleanHeaders(
     items: (WebsocSchool | WebsocDepartment | AACourse)[]
@@ -395,7 +395,10 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [searchData, courseColors]);
 
-    const andCourseCount = useMemo(() => intersectCourseData.filter(isCourseEntry).length, [intersectCourseData]);
+    const intersectCourseCount = useMemo(
+        () => intersectCourseData.filter(isCourseEntry).length,
+        [intersectCourseData]
+    );
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
@@ -428,7 +431,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [setHoveredEvent]);
 
-    const showNoIntersection = andCourseCount === 0;
+    const showNoIntersection = intersectCourseCount === 0;
     const showOrSectionBanner = !showNoIntersection && restCourseData.some(isCourseEntry);
 
     const coursePaneLazyRows: CoursePaneLazyRow[] = [];
