@@ -45,11 +45,14 @@ const buttonSx: SxProps = {
 
 /**
  * Save the rendered schedule as JSON so the skeleton on the next load can
- * render the previous schedule's shape. Sections are stripped to empty
- * objects: the skeleton only needs `sections.length` to size the table body
- * (SectionTable's skeleton mode renders stub rows), so persisting their full
- * contents (meetings, instructors, enrollment counts, etc.) would balloon
- * localStorage for no rendering benefit.
+ * render the previous schedule's shape. The skeleton only renders the button
+ * row + stub table rows, so most fields can be dropped:
+ *
+ *   - Sections are stripped to empty objects (only `sections.length` matters
+ *     for sizing the table body).
+ *   - `courseComment` and `prerequisiteLink` aren't read by the visible parts
+ *     of `<SectionTable skeleton>`; the prereq popover never opens during
+ *     loading. Dropping them keeps localStorage small.
  */
 function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
     if (courses.length === 0) {
@@ -58,6 +61,10 @@ function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
     }
     const slim = courses.map((course) => ({
         ...course,
+        // Skeleton never displays these — replace with empty strings instead
+        // of dropping them so the parsed shape still satisfies CourseWithTerm.
+        courseComment: '',
+        prerequisiteLink: '',
         sections: course.sections.map(() => ({})),
     }));
     setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(slim));

@@ -54,7 +54,7 @@ const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 const wrapSkeleton = (children: React.ReactNode, skeleton: boolean) =>
     skeleton ? (
-        <Skeleton variant="rounded" component="div">
+        <Skeleton variant="rounded" component="div" sx={{ pointerEvents: 'none' }}>
             {children}
         </Skeleton>
     ) : (
@@ -214,7 +214,7 @@ function SectionTable({
                 )}
 
                 {skeleton ? (
-                    <Skeleton variant="circular" component="div" sx={{ ml: 'auto', mr: 0.5 }}>
+                    <Skeleton variant="circular" component="div" sx={{ ml: 'auto', mr: 0.5, pointerEvents: 'none' }}>
                         <IconButton size="small" sx={{ padding: '4px' }}>
                             <ExpandLess />
                         </IconButton>

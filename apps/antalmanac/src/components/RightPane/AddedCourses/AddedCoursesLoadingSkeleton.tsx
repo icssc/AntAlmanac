@@ -61,7 +61,9 @@ function readCachedCourses(): CourseWithTerm[] | null {
  * in sync.
  */
 export function AddedCoursesLoadingSkeleton() {
-    const courses = readCachedCourses();
+    // Read once on mount — the cache doesn't change while the skeleton is
+    // visible (the real schedule reload is what eventually unmounts us).
+    const [courses] = useState(readCachedCourses);
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     useEffect(() => {

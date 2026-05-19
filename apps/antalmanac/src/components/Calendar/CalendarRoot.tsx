@@ -192,9 +192,7 @@ export const ScheduleCalendar = memo(() => {
     const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {
         const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
 
-        // Skeleton events have empty titles, so text color is irrelevant. Skip
-        // colorContrastSufficient since the theme-derived color is rgba() and
-        // would fail its hex-only regex.
+        // Skeleton text is empty so contrast doesn't matter — skip the check.
         const style = {
             backgroundColor: event.color,
             cursor: 'pointer',
