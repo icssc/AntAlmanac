@@ -23,6 +23,7 @@ import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
 import type { WebsocSearchInput } from '@packages/antalmanac-types';
 import { AACourse } from '@packages/antalmanac-types';
 import { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
+import { intersectWebsocResponses } from '@packages/anteater-api/utils';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -348,7 +349,12 @@ export default function CourseRenderPane(props: { id?: number }) {
                 const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
                 const response =
                     selectedGEs.length > 1
-                        ? await trpc.websoc.getGeIntersection.query({ params: websocQueryParams, ges: selectedGEs })
+                        ? intersectWebsocResponses(
+                              await trpc.websoc.getManyOfField.query({
+                                  params: { ...websocQueryParams, ge: selectedGEs.join(',') },
+                                  fieldName: 'ge',
+                              })
+                          )
                         : await trpc.websoc.getOne.query(websocQueryParams);
                 setSearchedTerm(RightPaneStore.getFormData().term.longName);
                 return response;
