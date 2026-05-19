@@ -190,10 +190,11 @@ function SectionTable({
                 </IconButton>
             </Box>
 
+            {missingSections?.length > 0 && (
+                <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
+            )}
+
             <Collapse in={openContent} onExited={handleCollapseExit}>
-                {missingSections?.length > 0 && (
-                    <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
-                )}
                 <TableContainer
                     component={Paper}
                     sx={{ margin: '0px 0px 8px 0px', width: '100%' }}
