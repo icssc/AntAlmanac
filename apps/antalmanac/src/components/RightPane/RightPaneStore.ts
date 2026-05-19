@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { normalizeGeSelection } from '$lib/multiGeSearch';
+import { normalizeGeSelection } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type { AATerm } from '@packages/antalmanac-types';
