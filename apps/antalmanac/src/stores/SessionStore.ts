@@ -1,4 +1,4 @@
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { usePlannerStore } from '$stores/PlannerStore';

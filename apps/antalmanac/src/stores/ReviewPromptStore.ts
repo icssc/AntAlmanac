@@ -1,5 +1,5 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { type AATerm, termData } from '$lib/term';
 import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';

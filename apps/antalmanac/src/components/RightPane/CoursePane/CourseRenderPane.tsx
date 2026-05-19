@@ -8,7 +8,7 @@ import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchP
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import {
     getMultiGeCourseKey,
@@ -33,6 +33,20 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
+type CourseListEntry = WebsocSchool | WebsocDepartment | AACourse;
+
+function isSchoolEntry(item: CourseListEntry): item is WebsocSchool {
+    return 'departments' in item;
+}
+
+function isDepartmentEntry(item: CourseListEntry): item is WebsocDepartment {
+    return 'courses' in item;
+}
+
+function isCourseEntry(item: CourseListEntry): item is AACourse {
+    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
+}
+
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
     const courseColors = currentCourses.reduce<Record<string, string>>((accumulator, { section }) => {
@@ -46,8 +60,8 @@ function getColors() {
 const flattenSOCObject = (
     SOCObject: WebsocAPIResponse,
     courseColors: ReturnType<typeof getColors>
-): (WebsocSchool | WebsocDepartment | AACourse)[] => {
-    return SOCObject.schools.reduce((accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
+): CourseListEntry[] => {
+    return SOCObject.schools.reduce((accumulator: CourseListEntry[], school) => {
         accumulator.push(school);
 
         school.departments.forEach((dept) => {
@@ -69,23 +83,17 @@ const flattenSOCObject = (
     }, []);
 };
 
-function isCourseEntry(item: WebsocSchool | WebsocDepartment | AACourse): item is AACourse {
-    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
-}
-
-function cleanHeaders(
-    items: (WebsocSchool | WebsocDepartment | AACourse)[]
-): (WebsocSchool | WebsocDepartment | AACourse)[] {
-    const result: (WebsocSchool | WebsocDepartment | AACourse)[] = [];
+function cleanHeaders(items: CourseListEntry[]): CourseListEntry[] {
+    const result: CourseListEntry[] = [];
     let pendingSchool: WebsocSchool | null = null;
     let pendingDept: WebsocDepartment | null = null;
 
     for (const item of items) {
-        if ('departments' in item) {
-            pendingSchool = item as WebsocSchool;
+        if (isSchoolEntry(item)) {
+            pendingSchool = item;
             pendingDept = null;
-        } else if ('courses' in item) {
-            pendingDept = item as WebsocDepartment;
+        } else if (isDepartmentEntry(item)) {
+            pendingDept = item;
         } else {
             if (pendingSchool) {
                 result.push(pendingSchool);
@@ -102,9 +110,7 @@ function cleanHeaders(
     return result;
 }
 
-function getFilteredCourses(
-    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
-): (WebsocSchool | WebsocDepartment | AACourse)[] {
+function getFilteredCourses(allCourses: CourseListEntry[]): CourseListEntry[] {
     const { manualSearchEnabled } = useCoursePaneStore.getState();
     const { filterTakenCourses, userTakenCourses } = usePlannerStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
@@ -120,12 +126,9 @@ function getFilteredCourses(
     return allCourses;
 }
 
-const getFilteredAndCourseCount = (
-    flattenedCourseData: (WebsocSchool | WebsocDepartment | AACourse)[],
-    sharedCourseKeys: Set<string>
-) =>
+const getFilteredAndCourseCount = (flattenedCourseData: CourseListEntry[], sharedCourseKeys: Set<string>) =>
     flattenedCourseData.filter(
-        (item) => 'sections' in item && sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
+        (item) => isCourseEntry(item) && sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
     ).length;
 
 const RecruitmentBanner = () => {
@@ -184,42 +187,32 @@ const RecruitmentBanner = () => {
     );
 };
 
-/* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
- *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
- *  If you can find a way to make this cleaner, do it.
- */
-const SectionTableWrapped = (
-    index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
-) => {
+const SectionTableWrapped = (index: number, data: { scheduleNames: string[]; courseData: CourseListEntry[] }) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
+    const item = courseData[index];
 
     let component;
 
-    if ((courseData[index] as WebsocSchool).departments !== undefined) {
-        const school = courseData[index] as WebsocSchool;
-        component = <SchoolDeptCard comment={school.schoolComment} type={'school'} name={school.schoolName} />;
-    } else if ((courseData[index] as WebsocDepartment).courses !== undefined) {
-        const dept = courseData[index] as WebsocDepartment;
-        component = <SchoolDeptCard name={`Department of ${dept.deptName}`} comment={dept.deptComment} type={'dept'} />;
+    if (isSchoolEntry(item)) {
+        component = <SchoolDeptCard name={item.schoolName} comment={item.schoolComment} type={'school'} />;
+    } else if (isDepartmentEntry(item)) {
+        component = <SchoolDeptCard name={`Department of ${item.deptName}`} comment={item.deptComment} type={'dept'} />;
     } else if (formData.ge !== 'ANY') {
-        const course = courseData[index] as AACourse;
         component = (
             <GeDataFetchProvider
                 term={formData.term}
-                courseDetails={course}
+                courseDetails={item}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch}
             />
         );
     } else {
-        const course = courseData[index] as AACourse;
         component = (
             <SectionTable
                 term={formData.term}
-                courseDetails={course}
+                courseDetails={item}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch}
@@ -240,7 +233,7 @@ const LoadingMessage = () => {
 };
 
 const ErrorMessage = () => {
-    const { isDark } = useThemeStore();
+    const isDark = useThemeStore((store) => store.isDark);
 
     const formData = RightPaneStore.getFormData();
     const multiSearchData = RightPaneStore.getMultiSearchData();
@@ -473,10 +466,9 @@ export default function CourseRenderPane(props: { id?: number }) {
                                 No courses fulfill all selected GEs. The results below fulfill at least one selected GE.
                             </Alert>
                         )}
-                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                        {courseData.map((item: CourseListEntry, index: number) => {
                             let heightEstimate = 200;
-                            if ((courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            if (isCourseEntry(item)) heightEstimate = item.sections.length * 60 + 20 + 40;
                             return (
                                 <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
                                     {index === orBannerIdx && (

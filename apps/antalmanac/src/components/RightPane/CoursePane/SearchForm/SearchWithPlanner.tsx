@@ -4,7 +4,7 @@ import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchFor
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import {
     getQuarterPlan,
     getRoadmapTermRelation,

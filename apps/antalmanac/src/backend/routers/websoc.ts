@@ -81,6 +81,8 @@ const websocRouter = router({
                                             courseTitle: course.courseTitle,
                                             courseComment: course.courseComment,
                                             prerequisiteLink: course.prerequisiteLink,
+                                            sections: course.sections,
+                                            updatedAt: course.updatedAt,
                                             sectionTypes,
                                         },
                                         section,

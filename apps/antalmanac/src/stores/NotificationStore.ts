@@ -1,4 +1,4 @@
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
 import { getTermByYearAndQuarter } from '$lib/term';
 import { useSessionStore } from '$stores/SessionStore';

@@ -6,7 +6,6 @@ import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { cloneElement, isValidElement, memo, useCallback } from 'react';
 import type { EventWrapperProps } from 'react-big-calendar';
-import { useShallow } from 'zustand/react/shallow';
 
 interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEvent> {
     children?: React.ReactElement<{ onClick: (e: React.MouseEvent) => void }>;
@@ -21,7 +20,7 @@ export const CalendarCourseEventWrapper = memo(function CalendarCourseEventWrapp
 }: CalendarCourseEventWrapperProps) {
     const quickSearch = useQuickSearch();
 
-    const setSelectedEvent = useSelectedEventStore(useShallow((state) => state.setSelectedEvent));
+    const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent);
 
     const handleClick = useCallback(
         (e: React.MouseEvent) => {

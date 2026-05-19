@@ -3,8 +3,6 @@ export * from './schedule';
 export * from './grades';
 export * from './customEvent';
 export * from './courseData';
-export * from './user';
-export * from './legacy';
 export * from './search';
 export * from './websoc';
 export * from './planner';

@@ -1,5 +1,5 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
@@ -198,7 +198,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
     });
 
-    if (!skipImportedCheck && incoming.user.imported) {
+    if (!skipImportedCheck && incoming.imported) {
         return { imported: true, error: null };
     }
 
