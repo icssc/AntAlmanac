@@ -1,12 +1,12 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
-import { canTermEnrollmentChange, type AATerm } from '$lib/term';
+import { canTermEnrollmentChange } from '$lib/termHelpers';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
-import type { AASection } from '@packages/antalmanac-types';
+import type { AASection, AATerm } from '@packages/antalmanac-types';
 import type { Course } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useState } from 'react';
