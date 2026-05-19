@@ -1,4 +1,11 @@
-import { RDS } from '$src/backend/lib/rds';
+import { areFriends } from '$src/backend/lib/rds/friendships';
+import { getScheduleById, upsertUserData } from '$src/backend/lib/rds/schedules';
+import {
+    fetchUserDataWithSession,
+    flagImportedUser,
+    getGuestScheduleByUsername,
+    getUserFriendDataByUid,
+} from '$src/backend/lib/rds/users';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
 import { type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
@@ -7,7 +14,7 @@ import { z } from 'zod';
 
 const scheduleRouter = router({
     get: protectedProcedure.query(async ({ ctx }) => {
-        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
+        return await fetchUserDataWithSession(db, ctx.sessionToken);
     }),
 
     save: protectedProcedure
@@ -24,7 +31,7 @@ const scheduleRouter = router({
             const userData = result.data;
 
             try {
-                return await RDS.upsertUserData(db, ctx.userId, userData);
+                return await upsertUserData(db, ctx.userId, userData);
             } catch (error) {
                 console.error('RDS Failed to upsert user data:', error);
                 throw new TRPCError({
@@ -40,15 +47,15 @@ const scheduleRouter = router({
      * @returns The friend's shared schedule data.
      */
     getFriendUserData: protectedProcedure.input(z.object({ userId: z.string() })).query(async ({ input, ctx }) => {
-        const allowed = await RDS.areFriends(db, ctx.userId, input.userId);
+        const allowed = await areFriends(db, ctx.userId, input.userId);
         if (!allowed) {
             throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not friends with this user.' });
         }
-        return await RDS.getUserFriendDataByUid(db, input.userId);
+        return await getUserFriendDataByUid(db, input.userId);
     }),
 
     getGuest: procedure.input(z.object({ username: z.string() })).query(async ({ input }) => {
-        const result = await RDS.getGuestScheduleByUsername(db, input.username);
+        const result = await getGuestScheduleByUsername(db, input.username);
         if (!result) {
             throw new TRPCError({
                 code: 'NOT_FOUND',
@@ -65,7 +72,7 @@ const scheduleRouter = router({
      * @returns The schedule data associated with the schedule ID, or throws NOT_FOUND if not found.
      */
     getSharedSchedule: procedure.input(z.object({ scheduleId: z.string() })).query(async ({ input }) => {
-        const schedule = await RDS.getScheduleById(db, input.scheduleId);
+        const schedule = await getScheduleById(db, input.scheduleId);
         if (!schedule) {
             throw new TRPCError({
                 code: 'NOT_FOUND',
@@ -76,7 +83,7 @@ const scheduleRouter = router({
     }),
 
     flagImported: protectedProcedure.input(z.object({ username: z.string() })).mutation(async ({ input }) => {
-        return await RDS.flagImportedUser(db, input.username);
+        return await flagImportedUser(db, input.username);
     }),
 });
 

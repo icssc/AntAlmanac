@@ -1,5 +1,5 @@
 import { plannerEnvSchema } from '$src/backend/env';
-import { RDS } from '$src/backend/lib/rds';
+import { getUserById } from '$src/backend/lib/rds/users';
 import { protectedProcedure, router } from '$src/backend/trpc';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
@@ -37,7 +37,7 @@ function getPlannerApiDomain(domain: string) {
 
 const roadmapRouter = router({
     fetchUserPlannerRoadmaps: protectedProcedure.query(async ({ ctx }): Promise<Roadmap[]> => {
-        const user = await RDS.getUserById(db, ctx.userId);
+        const user = await getUserById(db, ctx.userId);
 
         if (!user?.email) {
             return [];

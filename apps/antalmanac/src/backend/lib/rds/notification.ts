@@ -1,4 +1,5 @@
 import type { Notification } from '@packages/antalmanac-types';
+import type { Quarter, Year } from '@packages/anteater-api/types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
 import { subscriptions } from '@packages/db/src/schema';
@@ -33,8 +34,8 @@ export async function upsertNotification(
         .values({
             userId,
             sectionCode: notification.sectionCode,
-            year: notification.term.split(' ')[0],
-            quarter: notification.term.split(' ')[1],
+            year: notification.year,
+            quarter: notification.quarter,
             notifyOnOpen: notification.notifyOn.notifyOnOpen,
             notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
             notifyOnFull: notification.notifyOn.notifyOnFull,
@@ -87,8 +88,8 @@ export async function updateAllNotifications(
         .where(
             and(
                 eq(subscriptions.sectionCode, notification.sectionCode),
-                eq(subscriptions.year, notification.term.split(' ')[0]),
-                eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                eq(subscriptions.year, notification.year),
+                eq(subscriptions.quarter, notification.quarter),
                 eq(subscriptions.environment, environment)
             )
         );
@@ -101,7 +102,8 @@ export async function deleteNotification(
     db: DatabaseOrTransaction,
     userId: string,
     sectionCode: string,
-    term: string,
+    year: Year,
+    quarter: Quarter,
     environment: string
 ) {
     return db
@@ -110,8 +112,8 @@ export async function deleteNotification(
             and(
                 eq(subscriptions.userId, userId),
                 eq(subscriptions.sectionCode, sectionCode),
-                eq(subscriptions.year, term.split(' ')[0]),
-                eq(subscriptions.quarter, term.split(' ')[1]),
+                eq(subscriptions.year, year),
+                eq(subscriptions.quarter, quarter),
                 eq(subscriptions.environment, environment)
             )
         );

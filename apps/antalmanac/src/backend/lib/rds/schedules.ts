@@ -23,10 +23,6 @@ type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
 
 /**
  * Upserts the given user's schedules and selected schedule index.
- *
- * @param db The Drizzle client or transaction object
- * @param userId The internal user ID whose data is being saved
- * @param saveState The schedules and selected index to persist
  */
 export async function upsertUserData(
     db: DatabaseOrTransaction,
@@ -54,8 +50,12 @@ async function upsertSchedulesAndContents(
     userId: string,
     scheduleArray: ShortCourseSchedule[]
 ): Promise<Record<string, string>> {
-    const existingRows = await tx.select({ id: schedules.id }).from(schedules).where(eq(schedules.userId, userId));
+    const existingRows = await tx
+        .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
+        .from(schedules)
+        .where(eq(schedules.userId, userId));
     const existingIds = new Set(existingRows.map((s) => s.id));
+    const existingSharingStatuses = new Map(existingRows.map((s) => [s.id, s.sharedWithFriends]));
 
     const prepared = scheduleArray.map((schedule, index) => ({
         schedule,
@@ -81,6 +81,7 @@ async function upsertSchedulesAndContents(
             index: 'update',
             createdAt: 'keep',
             lastUpdated: 'update',
+            sharedWithFriends: 'keep',
         } satisfies ConflictUpdatePolicy<typeof schedules>;
 
         await tx
@@ -92,6 +93,7 @@ async function upsertSchedulesAndContents(
                     name: schedule.scheduleName,
                     notes: schedule.scheduleNote,
                     index,
+                    sharedWithFriends: existingSharingStatuses.get(dbId) ?? true,
                 }))
             )
             .onConflictDoUpdate({
@@ -154,13 +156,14 @@ async function upsertCourses(tx: Transaction, scheduleId: string, courses: Short
         sectionCode: 'keep',
         term: 'keep',
         color: 'update',
+        index: 'update',
         createdAt: 'keep',
         lastUpdated: 'update',
     } satisfies ConflictUpdatePolicy<typeof coursesInSchedule>;
 
     await tx
         .insert(coursesInSchedule)
-        .values(incoming.map((course) => ({ scheduleId, ...course })))
+        .values(incoming.map((course, index) => ({ scheduleId, ...course, index })))
         .onConflictDoUpdate({
             target: [coursesInSchedule.scheduleId, coursesInSchedule.sectionCode, coursesInSchedule.term],
             set: buildConflictUpdateSet(coursesInSchedule, courseUpdatePolicy),
@@ -251,5 +254,43 @@ export async function getScheduleById(
         const result = scheduleArray[0];
         if (!result) return null;
         return { ...result, userId: schedule.userId };
+    });
+}
+
+/**
+ * Returns the sharedWithFriends status for all schedules owned by the given user.
+ */
+export async function getScheduleSharingStatuses(db: DatabaseOrTransaction, userId: string) {
+    return db
+        .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
+        .from(schedules)
+        .where(eq(schedules.userId, userId));
+}
+
+/**
+ * Toggles the sharedWithFriends flag on a schedule owned by the given user.
+ * Returns the updated value, or null if the schedule was not found.
+ */
+export async function toggleScheduleSharing(
+    db: DatabaseOrTransaction,
+    userId: string,
+    scheduleId: string
+): Promise<{ sharedWithFriends: boolean } | null> {
+    return db.transaction(async (tx) => {
+        const [schedule] = await tx
+            .select({ sharedWithFriends: schedules.sharedWithFriends })
+            .from(schedules)
+            .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+            .limit(1);
+
+        if (!schedule) return null;
+
+        const [updated] = await tx
+            .update(schedules)
+            .set({ sharedWithFriends: !schedule.sharedWithFriends })
+            .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+            .returning({ sharedWithFriends: schedules.sharedWithFriends });
+
+        return { sharedWithFriends: updated.sharedWithFriends };
     });
 }

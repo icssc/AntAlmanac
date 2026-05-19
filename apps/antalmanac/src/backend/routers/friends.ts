@@ -1,11 +1,25 @@
-import { RDS } from '$src/backend/lib/rds';
+import {
+    acceptFriendRequest,
+    areFriends,
+    blockUser,
+    deleteFriendship,
+    getFriends,
+    getFriendshipsBetween,
+    getBlockedUsers,
+    getPendingFriendRequests,
+    getSentPendingRequests,
+    insertFriendRequest,
+    unblockUser,
+} from '$src/backend/lib/rds/friendships';
+import { getScheduleSharingStatuses, toggleScheduleSharing } from '$src/backend/lib/rds/schedules';
+import { getUserByEmail } from '$src/backend/lib/rds/users';
 import { protectedProcedure, router } from '$src/backend/trpc';
 import { db } from '@packages/db/src';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 async function validateAndSendFriendRequest(requesterId: string, addresseeId: string) {
-    const rows = await RDS.getFriendshipsBetween(db, requesterId, addresseeId);
+    const rows = await getFriendshipsBetween(db, requesterId, addresseeId);
 
     if (rows.some((r) => r.status === 'ACCEPTED')) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'You are already friends with this user.' });
@@ -34,7 +48,7 @@ async function validateAndSendFriendRequest(requesterId: string, addresseeId: st
         });
     }
 
-    return RDS.insertFriendRequest(db, requesterId, addresseeId);
+    return insertFriendRequest(db, requesterId, addresseeId);
 }
 
 /**
@@ -51,7 +65,7 @@ const friendsRouter = router({
     sendFriendRequestByEmail: protectedProcedure
         .input(z.object({ email: z.string().email() }))
         .mutation(async ({ input, ctx }) => {
-            const addressee = await RDS.getUserByEmail(db, input.email);
+            const addressee = await getUserByEmail(db, input.email);
 
             if (!addressee) {
                 throw new TRPCError({
@@ -92,7 +106,7 @@ const friendsRouter = router({
     acceptFriendRequest: protectedProcedure
         .input(z.object({ requesterId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            const result = await RDS.acceptFriendRequest(db, input.requesterId, ctx.userId);
+            const result = await acceptFriendRequest(db, input.requesterId, ctx.userId);
             if (result.length === 0) {
                 throw new TRPCError({
                     code: 'NOT_FOUND',
@@ -106,63 +120,63 @@ const friendsRouter = router({
      * Returns all accepted friends for the authenticated user.
      */
     getFriends: protectedProcedure.query(async ({ ctx }) => {
-        return RDS.getFriends(db, ctx.userId);
+        return getFriends(db, ctx.userId);
     }),
 
     /**
      * Returns true if an ACCEPTED friendship exists between the viewer and the target user.
      */
     areFriends: protectedProcedure.input(z.object({ targetUserId: z.string() })).query(async ({ input, ctx }) => {
-        return RDS.areFriends(db, ctx.userId, input.targetUserId);
+        return areFriends(db, ctx.userId, input.targetUserId);
     }),
 
     /**
      * Returns all pending friend requests received by the authenticated user.
      */
     getPendingRequests: protectedProcedure.query(async ({ ctx }) => {
-        return RDS.getPendingFriendRequests(db, ctx.userId);
+        return getPendingFriendRequests(db, ctx.userId);
     }),
 
     /**
      * Returns all pending friend requests sent by the authenticated user.
      */
     getSentRequests: protectedProcedure.query(async ({ ctx }) => {
-        return RDS.getSentPendingRequests(db, ctx.userId);
+        return getSentPendingRequests(db, ctx.userId);
     }),
 
     /**
      * Removes an existing friendship or declines a pending friend request.
      */
     removeFriend: protectedProcedure.input(z.object({ friendId: z.string() })).mutation(async ({ input, ctx }) => {
-        return RDS.deleteFriendship(db, ctx.userId, input.friendId);
+        return deleteFriendship(db, ctx.userId, input.friendId);
     }),
 
     /**
      * Blocks a user by removing any existing friendship and inserting a BLOCKED record.
      */
     blockUser: protectedProcedure.input(z.object({ blockId: z.string() })).mutation(async ({ input, ctx }) => {
-        return RDS.blockUser(db, ctx.userId, input.blockId);
+        return blockUser(db, ctx.userId, input.blockId);
     }),
 
     /**
      * Returns all blocked users for the authenticated user.
      */
     getBlockedUsers: protectedProcedure.query(async ({ ctx }) => {
-        return RDS.getBlockedUsers(db, ctx.userId);
+        return getBlockedUsers(db, ctx.userId);
     }),
 
     /**
      * Unblocks a user.
      */
     unblockUser: protectedProcedure.input(z.object({ blockId: z.string() })).mutation(async ({ input, ctx }) => {
-        return RDS.unblockUser(db, ctx.userId, input.blockId);
+        return unblockUser(db, ctx.userId, input.blockId);
     }),
 
     /**
      * Get the sharing status (sharedWithFriends) for all schedules owned by the authenticated user.
      */
     getScheduleSharingStatuses: protectedProcedure.query(async ({ ctx }) => {
-        return RDS.getScheduleSharingStatuses(db, ctx.userId);
+        return getScheduleSharingStatuses(db, ctx.userId);
     }),
 
     /**
@@ -171,7 +185,7 @@ const friendsRouter = router({
     toggleScheduleSharing: protectedProcedure
         .input(z.object({ scheduleId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            const result = await RDS.toggleScheduleSharing(db, ctx.userId, input.scheduleId);
+            const result = await toggleScheduleSharing(db, ctx.userId, input.scheduleId);
             if (!result) {
                 throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found.' });
             }

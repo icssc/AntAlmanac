@@ -91,6 +91,50 @@ export async function getGuestScheduleByUsername(
 }
 
 /**
+ * Retrieves a friend's user data, filtered to only schedules they have chosen to share with friends.
+ */
+export async function getUserFriendDataByUid(
+    db: DatabaseOrTransaction,
+    userId: string
+): Promise<(User & { userData: ScheduleSaveState }) | null> {
+    return db.transaction(async (tx) => {
+        const user = await tx
+            .select()
+            .from(users)
+            .where(eq(users.id, userId))
+            .then((res) => res[0]);
+
+        if (!user) {
+            return null;
+        }
+
+        const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
+
+        const sectionResults = await tx
+            .select()
+            .from(schedules)
+            .where(sharedCondition)
+            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+        const customEventResults = await tx
+            .select()
+            .from(schedules)
+            .where(sharedCondition)
+            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+        const userSchedules = aggregateUserData(sectionResults, customEventResults);
+
+        return {
+            ...user,
+            userData: {
+                schedules: userSchedules,
+                scheduleIndex: 0,
+            },
+        };
+    });
+}
+
+/**
  * Resolves a session token to a userId, verifying the session is valid and not expired.
  * Returns null if the session is invalid or expired.
  */
@@ -180,6 +224,8 @@ export function aggregateUserData(
 ): (ShortCourseSchedule & { id: string; index: number })[] {
     const schedulesMapping: Record<string, ShortCourseSchedule & { id: string; index: number }> = {};
 
+    const courseIndexes: Record<Schedule['id'], Record<string, CourseInSchedule['index']>> = {};
+
     sectionResults.forEach(({ schedules: schedule, coursesInSchedule: course }) => {
         const scheduleId = schedule.id;
 
@@ -193,23 +239,44 @@ export function aggregateUserData(
         };
 
         if (course) {
+            const sectionCode = course.sectionCode.toString();
             scheduleAggregate.courses.push({
-                sectionCode: course.sectionCode.toString(),
+                sectionCode,
                 term: course.term,
                 color: course.color,
             });
+
+            if (course.index !== null) {
+                if (!courseIndexes[scheduleId]) {
+                    courseIndexes[scheduleId] = {};
+                }
+                courseIndexes[scheduleId][`${sectionCode}-${course.term}`] = course.index;
+            }
         }
 
         schedulesMapping[scheduleId] = scheduleAggregate;
     });
 
+    for (const [scheduleId, indexes] of Object.entries(courseIndexes)) {
+        schedulesMapping[scheduleId].courses.sort((a, b) => {
+            const aIndex = indexes[`${a.sectionCode}-${a.term}`];
+            const bIndex = indexes[`${b.sectionCode}-${b.term}`];
+            if (typeof aIndex !== 'number' || typeof bIndex !== 'number') {
+                return 0;
+            }
+            return aIndex - bIndex;
+        });
+    }
+
     customEventResults.forEach(({ schedules: schedule, customEvents: customEvent }) => {
         const scheduleId = schedule.id;
         const scheduleAggregate = schedulesMapping[scheduleId] || {
+            id: scheduleId,
             scheduleName: schedule.name,
             scheduleNote: schedule.notes,
             courses: [],
             customEvents: [],
+            index: schedule.index,
         };
 
         if (customEvent) {

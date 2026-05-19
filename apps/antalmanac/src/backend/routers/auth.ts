@@ -2,7 +2,8 @@ import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { getCookiesFromHeader, getSafeAuthRedirectPath } from '$src/backend/lib/helpers';
-import { RDS } from '$src/backend/lib/rds';
+import { getUserAndAccountBySessionToken, registerUserAccount } from '$src/backend/lib/rds/accounts';
+import { getCurrentSession, removeSession, upsertSession } from '$src/backend/lib/rds/sessions';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
@@ -26,7 +27,7 @@ function accountTypeFromSub(sub: string): 'OIDC' | 'APPLE' {
 
 const authRouter = router({
     getUserAndAccount: protectedProcedure.query(async ({ ctx }) => {
-        return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
+        return await getUserAndAccountBySessionToken(db, ctx.sessionToken);
     }),
 
     /**
@@ -168,20 +169,13 @@ const authRouter = router({
                 const picture = claims.picture;
 
                 const accountType = accountTypeFromSub(oauthUserId);
-                const account = await RDS.registerUserAccount(
-                    db,
-                    accountType,
-                    oauthUserId,
-                    username,
-                    email,
-                    picture ?? ''
-                );
+                const account = await registerUserAccount(db, accountType, oauthUserId, username, email, picture ?? '');
 
                 const userId: string = account.userId;
 
                 if (userId.length > 0) {
                     // Create session with OIDC and Google tokens
-                    const session = await RDS.upsertSession(db, userId, oidcRefreshToken ?? '');
+                    const session = await upsertSession(db, userId, oidcRefreshToken ?? '');
 
                     if (!session?.refreshToken) {
                         throw new TRPCError({
@@ -236,9 +230,9 @@ const authRouter = router({
 
         if (ctx.sessionToken) {
             try {
-                const session = await RDS.getCurrentSession(db, ctx.sessionToken);
+                const session = await getCurrentSession(db, ctx.sessionToken);
                 if (session) {
-                    await RDS.removeSession(db, session.userId, session.refreshToken);
+                    await removeSession(db, session.userId, session.refreshToken);
                 }
             } catch (error) {
                 console.error('Failed to remove session during logout:', error);

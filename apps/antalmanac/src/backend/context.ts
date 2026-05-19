@@ -1,4 +1,4 @@
-import { RDS } from '$src/backend/lib/rds';
+import { getCurrentSession } from '$src/backend/lib/rds/sessions';
 import { db } from '@packages/db';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 
@@ -11,7 +11,7 @@ export const createContext = async (opts: FetchCreateContextFnOptions) => {
 
     let userId: string | null = null;
     if (sessionToken) {
-        const session = await RDS.getCurrentSession(db, sessionToken);
+        const session = await getCurrentSession(db, sessionToken);
         if (session && session.expires > new Date()) {
             userId = session.userId;
         }
