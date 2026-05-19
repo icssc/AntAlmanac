@@ -96,7 +96,9 @@ export function intersectWebsocResponses(responses: WebsocAPIResponse[]): Websoc
 
     const first = responses[0]!;
 
-    const perResponseKeys = responses.map((response) => {
+    let intersectionCourseKeys: Set<string> | null = null;
+
+    for (const response of responses) {
         const keys = new Set<string>();
         for (const school of response.schools) {
             for (const dept of school.departments) {
@@ -105,20 +107,19 @@ export function intersectWebsocResponses(responses: WebsocAPIResponse[]): Websoc
                 }
             }
         }
-        return keys;
-    });
 
-    let intersectionCourseKeys = perResponseKeys[0]!;
-    for (let i = 1; i < perResponseKeys.length; i++) {
-        const nextKeys = perResponseKeys[i]!;
-        const [smaller, larger] =
-            intersectionCourseKeys.size <= nextKeys.size
-                ? [intersectionCourseKeys, nextKeys]
-                : [nextKeys, intersectionCourseKeys];
-        intersectionCourseKeys = new Set([...smaller].filter((k) => larger.has(k)));
-        if (intersectionCourseKeys.size === 0) {
-            break;
+        if (intersectionCourseKeys === null) {
+            intersectionCourseKeys = keys;
+        } else {
+            intersectionCourseKeys = intersectionCourseKeys.intersection(keys);
+            if (intersectionCourseKeys.size === 0) {
+                return { schools: [] };
+            }
         }
+    }
+
+    if (intersectionCourseKeys === null) {
+        return { schools: [] };
     }
 
     const schools = first.schools
