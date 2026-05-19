@@ -1,7 +1,6 @@
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { getSignOutUrl } from '$lib/auth/authActions';
 import { signOut } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -9,7 +8,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
 import type { UserProfile } from '@packages/db/src/schema/auth/user';
 import { usePostHog } from 'posthog-js/react';
-import { type MouseEvent, useEffect, useMemo, useState } from 'react';
+import { type MouseEvent, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 interface SignoutProps {
@@ -51,17 +50,8 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         signOut({ onLogoutComplete, postHog });
     };
 
-    const [test, setTest] = useState('');
-
-    useEffect(() => {
-        (async () => {
-            setTest(await getSignOutUrl(window.location.origin));
-        })();
-    }, []);
-
     return (
         <div id="load-save-container">
-            {test}
             <ProfileMenuButtons user={user} handleOpen={handleClick} handleSettingsOpen={handleClick} />
             <Popover
                 open={Boolean(anchorEl)}
