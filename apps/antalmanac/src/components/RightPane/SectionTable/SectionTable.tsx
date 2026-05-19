@@ -21,6 +21,7 @@ import {
     Paper,
     Skeleton,
     Table,
+    TableBody,
     TableCell,
     TableContainer,
     TableHead,
@@ -50,6 +51,15 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
     syllabus: { label: 'Syllabus', weight: 5 },
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
+
+const wrapSkeleton = (children: React.ReactNode, skeleton: boolean) =>
+    skeleton ? (
+        <Skeleton variant="rounded" component="div">
+            {children}
+        </Skeleton>
+    ) : (
+        children
+    );
 
 export interface SectionTableProps {
     courseDetails: AACourse;
@@ -131,15 +141,6 @@ function SectionTable({
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [activeColumns]);
 
-    const wrapSkeleton = (children: React.ReactNode) =>
-        skeleton ? (
-            <Skeleton variant="rounded" component="div">
-                {children}
-            </Skeleton>
-        ) : (
-            children
-        );
-
     return (
         <Box sx={{ overflow: 'hidden' }}>
             <Box
@@ -164,7 +165,8 @@ function SectionTable({
                               }}
                           >
                               <SortableList.DragHandle sx={{ height: '100%' }} iconSx={{ color: 'inherit' }} />
-                          </Button>
+                          </Button>,
+                          skeleton
                       )
                     : null}
 
@@ -175,12 +177,13 @@ function SectionTable({
                         courseNumber={courseDetails.courseNumber}
                         prerequisiteLink={courseDetails.prerequisiteLink}
                         analyticsCategory={analyticsCategory}
-                    />
+                    />,
+                    skeleton
                 )}
 
                 {activeTab !== 2
                     ? null
-                    : wrapSkeleton(<CourseInfoSearchButton courseDetails={courseDetails} term={term} />)}
+                    : wrapSkeleton(<CourseInfoSearchButton courseDetails={courseDetails} term={term} />, skeleton)}
 
                 {wrapSkeleton(
                     <CourseInfoButton
@@ -189,7 +192,8 @@ function SectionTable({
                         text="Planner"
                         icon={<Route />}
                         redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
-                    />
+                    />,
+                    skeleton
                 )}
 
                 {wrapSkeleton(
@@ -205,7 +209,8 @@ function SectionTable({
                                 courseNumber={courseDetails.courseNumber}
                             />
                         }
-                    />
+                    />,
+                    skeleton
                 )}
 
                 {skeleton ? (
@@ -272,16 +277,29 @@ function SectionTable({
                                 </TableRow>
                             </TableHead>
 
-                            <SectionTableBody
-                                courseDetails={courseDetails}
-                                term={term}
-                                allowHighlight={allowHighlight}
-                                scheduleNames={scheduleNames}
-                                analyticsCategory={analyticsCategory}
-                                formattedTime={formattedTime}
-                            />
+                            {skeleton ? (
+                                <TableBody>
+                                    {courseDetails.sections.map((_, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell>
+                                                <Skeleton variant="text" />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            ) : (
+                                <SectionTableBody
+                                    courseDetails={courseDetails}
+                                    term={term}
+                                    allowHighlight={allowHighlight}
+                                    scheduleNames={scheduleNames}
+                                    analyticsCategory={analyticsCategory}
+                                    formattedTime={formattedTime}
+                                />
+                            )}
                         </Table>
-                    </TableContainer>
+                    </TableContainer>,
+                    skeleton
                 )}
             </Collapse>
         </Box>

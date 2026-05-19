@@ -4,7 +4,7 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { Box } from '@mui/material';
-import { Component, type ReactNode } from 'react';
+import { Component, type ReactNode, useEffect, useState } from 'react';
 
 /**
  * Renders nothing if the wrapped tree throws. The skeleton renders the real
@@ -62,10 +62,17 @@ function readCachedCourses(): CourseWithTerm[] | null {
  */
 export function AddedCoursesLoadingSkeleton() {
     const courses = readCachedCourses();
+    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+
+    useEffect(() => {
+        const handler = () => setScheduleNames([...AppStore.getScheduleNames()]);
+        AppStore.on('scheduleNamesChange', handler);
+        return () => {
+            AppStore.off('scheduleNamesChange', handler);
+        };
+    }, []);
 
     if (!courses) return null;
-
-    const scheduleNames = AppStore.getScheduleNames();
 
     return (
         <SkeletonErrorBoundary>

@@ -60,7 +60,7 @@ interface SkeletonBlueprint {
     endMinute: number;
 }
 
-function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
+function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint, color: string): SkeletonEvent {
     const start = new Date(BASE_DATE);
     start.setDate(start.getDate() + blueprint.dayOffset);
     start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
@@ -69,7 +69,7 @@ function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
     end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
 
     return {
-        color: '#9d9d9d',
+        color,
         start,
         end,
         title: '',
@@ -77,7 +77,7 @@ function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
     } as SkeletonEvent;
 }
 
-function createSkeletonEvents(): SkeletonEvent[] {
+function createSkeletonEvents(color: string): SkeletonEvent[] {
     const savedDataString = getLocalStorageSkeletonBlueprint();
 
     let skeletonBlueprints: SkeletonBlueprint[] | null = null;
@@ -90,13 +90,13 @@ function createSkeletonEvents(): SkeletonEvent[] {
     }
 
     if (skeletonBlueprints) {
-        return skeletonBlueprints.map(blueprintToSkeletonEvent);
+        return skeletonBlueprints.map((b) => blueprintToSkeletonEvent(b, color));
     }
 
     const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
     const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
 
-    return fallbackBlueprints.map(blueprintToSkeletonEvent);
+    return fallbackBlueprints.map((b) => blueprintToSkeletonEvent(b, color));
 }
 
 export const ScheduleCalendar = memo(() => {
@@ -170,9 +170,11 @@ export const ScheduleCalendar = memo(() => {
         }
     }, [eventsInCalendar, loadingSchedule]);
 
+    const skeletonColor = theme.palette.action.disabledBackground;
+
     const events = useMemo(
-        () => (loadingSchedule ? createSkeletonEvents() : getEventsForCalendar()),
-        [loadingSchedule, getEventsForCalendar]
+        () => (loadingSchedule ? createSkeletonEvents(skeletonColor) : getEventsForCalendar()),
+        [loadingSchedule, getEventsForCalendar, skeletonColor]
     );
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
@@ -190,12 +192,15 @@ export const ScheduleCalendar = memo(() => {
     const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {
         const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
 
+        // Skeleton events have empty titles, so text color is irrelevant. Skip
+        // colorContrastSufficient since the theme-derived color is rgba() and
+        // would fail its hex-only regex.
         const style = {
             backgroundColor: event.color,
             cursor: 'pointer',
             borderStyle: 'none',
             borderRadius: '4px',
-            color: colorContrastSufficient(event.color) ? 'white' : 'black',
+            color: isSkeletonEvent ? 'transparent' : colorContrastSufficient(event.color) ? 'white' : 'black',
         };
 
         return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };

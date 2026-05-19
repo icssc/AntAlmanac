@@ -45,15 +45,22 @@ const buttonSx: SxProps = {
 
 /**
  * Save the rendered schedule as JSON so the skeleton on the next load can
- * render the actual previous schedule (wrapped in MUI Skeleton) and inherit
- * its dimensions exactly.
+ * render the previous schedule's shape. Sections are stripped to empty
+ * objects: the skeleton only needs `sections.length` to size the table body
+ * (SectionTable's skeleton mode renders stub rows), so persisting their full
+ * contents (meetings, instructors, enrollment counts, etc.) would balloon
+ * localStorage for no rendering benefit.
  */
 function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
-    if (courses.length > 0) {
-        setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(courses));
-    } else {
+    if (courses.length === 0) {
         removeLocalStorageAddedCoursesSkeletonBlueprint();
+        return;
     }
+    const slim = courses.map((course) => ({
+        ...course,
+        sections: course.sections.map(() => ({})),
+    }));
+    setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(slim));
 }
 
 function getCourses() {
