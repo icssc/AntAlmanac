@@ -2,16 +2,17 @@ import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import {
+    useCoursePaneUrlState,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface SearchFormProps {
     toggleSearch: () => void;
@@ -19,12 +20,7 @@ interface SearchFormProps {
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { resetAll } = useCourseSearchUrlState();
-    const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore(
-        useShallow((store) => ({
-            manualSearchEnabled: store.manualSearchEnabled,
-            toggleManualSearch: store.toggleManualSearch,
-        }))
-    );
+    const { manualSearchEnabled, setManualSearchEnabled } = useCoursePaneUrlState();
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 
@@ -39,7 +35,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const toggleSearchMode = (event: React.MouseEvent<HTMLElement>, value: string) => {
         event.preventDefault();
         if (!value) return;
-        toggleManualSearch();
+        void setManualSearchEnabled(value === 'manual');
     };
 
     return (

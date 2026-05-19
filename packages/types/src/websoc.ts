@@ -4,6 +4,7 @@ import type {
     WebsocQueryParams,
     WebsocSectionStatus,
     WebsocSectionType,
+    WebsocFullCoursesOption,
 } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
@@ -31,6 +32,14 @@ export const WebsocSectionStatusSchema = z.enum([
     'FULL',
     'NewOnly',
 ] as const satisfies readonly WebsocSectionStatus[]);
+
+export const WebsocFullCoursesOptionSchema = z.enum([
+    'ANY',
+    'SkipFullWaitlist',
+    'SkipFull',
+    'FullOnly',
+    'Overenrolled',
+] as const satisfies readonly WebsocFullCoursesOption[]);
 
 type AASectionExtendedProperties = {
     color: string;

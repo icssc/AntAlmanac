@@ -1,21 +1,15 @@
 import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useCoursePaneUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Button, Collapse, Typography } from '@mui/material';
-import { useShallow } from 'zustand/react/shallow';
 
 export function AdvancedSearch() {
-    const { advancedSearchEnabled, toggleAdvancedSearch } = useCoursePaneStore(
-        useShallow((store) => ({
-            advancedSearchEnabled: store.advancedSearchEnabled,
-            toggleAdvancedSearch: store.toggleAdvancedSearch,
-        }))
-    );
+    const { advancedSearchEnabled, setAdvancedSearchEnabled } = useCoursePaneUrlState();
     const isDark = useThemeStore((store) => store.isDark);
 
     const handleExpand = () => {
-        toggleAdvancedSearch();
+        void setAdvancedSearchEnabled(!advancedSearchEnabled);
     };
 
     return (

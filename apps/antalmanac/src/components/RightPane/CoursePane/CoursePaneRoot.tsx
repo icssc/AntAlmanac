@@ -1,56 +1,35 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
-import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import {
-    courseSearchFormDataHasAdvancedSearch,
-    courseSearchFormDataHasManualSearch,
-    courseSearchFormDataHasRequiredSearchParams,
     courseSearchFormDataIsValid,
-    useCourseSearchUrlState,
+    useCoursePaneUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
-import { parseAsString, useQueryState } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useRef } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useCallback, useEffect } from 'react';
 
 export function CoursePaneRoot() {
-    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, initializeSearchUi } =
-        useCoursePaneStore(
-            useShallow((store) => ({
-                key: store.key,
-                forceUpdate: store.forceUpdate,
-                searchFormIsDisplayed: store.searchFormIsDisplayed,
-                displaySearch: store.displaySearch,
-                displaySections: store.displaySections,
-                initializeSearchUi: store.initializeSearchUi,
-            }))
-        );
-    const { formData } = useCourseSearchUrlState();
-    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString.withOptions({ history: 'replace' }));
+    const { formData, searchFormIsDisplayed, displaySearch, displaySections } = useCoursePaneUrlState();
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
-    const hasInitializedSearchUi = useRef(false);
 
     const handleSearch = useCallback(() => {
         if (courseSearchFormDataIsValid(formData)) {
-            displaySections();
-            forceUpdate();
+            void displaySections();
         } else {
             openSnackbar(
                 'error',
                 `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
             );
         }
-    }, [displaySections, forceUpdate, formData]);
+    }, [displaySections, formData]);
 
     const handleDisplaySearch = useCallback(() => {
-        displaySearch();
+        void displaySearch();
     }, [displaySearch]);
 
     const refreshSearch = useCallback(() => {
@@ -60,8 +39,7 @@ export function CoursePaneRoot() {
         });
         utils.websoc.invalidate();
         utils.grades.invalidate();
-        forceUpdate();
-    }, [forceUpdate, postHog, utils]);
+    }, [postHog, utils]);
 
     const handleKeydown = useCallback(
         (event: KeyboardEvent) => {
@@ -78,20 +56,6 @@ export function CoursePaneRoot() {
         };
     }, [handleKeydown]);
 
-    useEffect(() => {
-        if (hasInitializedSearchUi.current) {
-            return;
-        }
-
-        initializeSearchUi({
-            searchFormIsDisplayed:
-                !courseSearchFormDataHasRequiredSearchParams(formData) || !courseSearchFormDataIsValid(formData),
-            manualSearchEnabled: courseSearchFormDataHasManualSearch(formData) && plannerSearchParam === null,
-            advancedSearchEnabled: courseSearchFormDataHasAdvancedSearch(formData),
-        });
-        hasInitializedSearchUi.current = true;
-    }, [formData, initializeSearchUi, plannerSearchParam]);
-
     return (
         <Box sx={{ height: 0, flexGrow: 1 }}>
             <CoursePaneButtonRow
@@ -99,11 +63,7 @@ export function CoursePaneRoot() {
                 onDismissSearchResults={handleDisplaySearch}
                 onRefreshSearch={refreshSearch}
             />
-            {searchFormIsDisplayed ? (
-                <SearchForm toggleSearch={handleSearch} />
-            ) : (
-                <CourseRenderPane key={key} id={key} />
-            )}
+            {searchFormIsDisplayed ? <SearchForm toggleSearch={handleSearch} /> : <CourseRenderPane />}
         </Box>
     );
 }

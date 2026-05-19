@@ -3,6 +3,7 @@ import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import {
     type CourseSearchParams,
+    useCoursePaneUrlState,
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import darkNoResults from '$components/RightPane/CoursePane/static/dark-no_results.png';
@@ -17,7 +18,6 @@ import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDism
 import { getSelectedGEs } from '$lib/multiGeSearch';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -127,8 +127,7 @@ function cleanHeaders(items: CourseListEntry[]): CourseListEntry[] {
     return result;
 }
 
-function getFilteredCourses(allCourses: CourseListEntry[]): CourseListEntry[] {
-    const { manualSearchEnabled } = useCoursePaneStore.getState();
+function getFilteredCourses(allCourses: CourseListEntry[], manualSearchEnabled: boolean): CourseListEntry[] {
     const { filterTakenCourses, userTakenCourses } = usePlannerStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
         const filtered = allCourses.filter((item) => {
@@ -303,8 +302,9 @@ const ErrorMessage = ({ formData }: { formData: CourseSearchParams }) => {
     );
 };
 
-export default function CourseRenderPane(props: { id?: number }) {
+export default function CourseRenderPane() {
     const { formData } = useCourseSearchUrlState();
+    const { manualSearchEnabled } = useCoursePaneUrlState();
     const [courseColors, setCourseColors] = useState(getColors);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
@@ -391,12 +391,15 @@ export default function CourseRenderPane(props: { id?: number }) {
             return { intersectCourseData: [], restCourseData: [] };
         }
         if (searchData.kind === 'single') {
-            const flat = getFilteredCourses(flattenSOCObject(searchData.response, courseColors));
+            const flat = getFilteredCourses(flattenSOCObject(searchData.response, courseColors), manualSearchEnabled);
             return { intersectCourseData: flat, restCourseData: [] };
         }
         return {
-            intersectCourseData: getFilteredCourses(flattenSOCObject(searchData.intersect, courseColors)),
-            restCourseData: getFilteredCourses(flattenSOCObject(searchData.rest, courseColors)),
+            intersectCourseData: getFilteredCourses(
+                flattenSOCObject(searchData.intersect, courseColors),
+                manualSearchEnabled
+            ),
+            restCourseData: getFilteredCourses(flattenSOCObject(searchData.rest, courseColors), manualSearchEnabled),
         };
     }, [searchData, courseColors]);
 
@@ -420,7 +423,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
             AppStore.off('currentScheduleIndexChange', changeColors);
         };
-    }, [props.id]);
+    }, []);
 
     /**
      * Removes hovered course when component unmounts

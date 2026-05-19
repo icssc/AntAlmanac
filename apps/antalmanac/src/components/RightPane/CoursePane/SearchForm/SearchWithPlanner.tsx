@@ -3,12 +3,14 @@ import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import {
+    useCoursePaneUrlState,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -16,7 +18,7 @@ import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { parseAsString, useQueryState } from 'nuqs';
-import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
+import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 interface SearchWithPlannerProps {
@@ -45,6 +47,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     const [termRoadmapGrouping, setTermRoadmapGrouping] = useState<TermRoadmapGrouping>(getDefaultTermRoadmapGrouping);
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
+    const hasSearchedWithUrlParamsRef = useRef(false);
 
     const { sessionIsValid, hasCheckedAuth } = useSessionStore(
         useShallow((state) => ({
@@ -58,13 +61,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
         useShallow((state) => ({ isPlannerLoading: state.isPlannerLoading, plannerRoadmaps: state.plannerRoadmaps }))
     );
 
-    const { displaySections, hasSearchedWithUrlParams, setHasSearchedWithUrlParams } = useCoursePaneStore(
-        useShallow((state) => ({
-            displaySections: state.displaySections,
-            hasSearchedWithUrlParams: state.hasSearchedWithUrlParams,
-            setHasSearchedWithUrlParams: state.setHasSearchedWithUrlParams,
-        }))
-    );
+    const { displaySections } = useCoursePaneUrlState();
     const doesRoadmapIncludeTerm = useCallback(
         (roadmapId: Roadmap['id']) => {
             return termRoadmapGrouping[RoadmapTermRelation.IncludesTerm].has(roadmapId.toString());
@@ -109,7 +106,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 }));
 
                 RightPaneStore.setMultiSearchData(searchData, term);
-                displaySections();
+                void displaySections();
             } catch (error) {
                 console.error('Something went wrong while searching with Planner:', error);
                 openSnackbar('error', 'Something went wrong while searching with Planner.');
@@ -198,7 +195,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     }, [formData.term, plannerRoadmaps]);
 
     useEffect(() => {
-        if (plannerRoadmaps.length === 0 || hasSearchedWithUrlParams) {
+        if (plannerRoadmaps.length === 0 || hasSearchedWithUrlParamsRef.current) {
             return;
         }
 
@@ -206,19 +203,12 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             (async () => {
                 const success = await search(plannerSearchParam);
                 if (success) {
-                    setHasSearchedWithUrlParams(true);
+                    hasSearchedWithUrlParamsRef.current = true;
                     void setPlannerSearchParam(null);
                 }
             })();
         }
-    }, [
-        plannerSearchParam,
-        plannerRoadmaps,
-        hasSearchedWithUrlParams,
-        search,
-        setHasSearchedWithUrlParams,
-        setPlannerSearchParam,
-    ]);
+    }, [plannerSearchParam, plannerRoadmaps, search, setPlannerSearchParam]);
 
     useEffect(() => {
         if (hasCheckedAuth && !sessionIsValid && plannerSearchParam !== null) {
