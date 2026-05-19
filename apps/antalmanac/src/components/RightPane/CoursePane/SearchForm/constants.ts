@@ -47,9 +47,6 @@ export const GE_LIST = [
 
 export const ANY_GE = GE_LIST[0].value;
 
-/** Shown in the GE selector when multiple categories are selected (not used in URLs or stored values). */
-export const GE_DISPLAY_DELIMITER = ' and ';
-
 const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
 
 const parseSelectedGEs = (ge: string) => {
