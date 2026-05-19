@@ -131,8 +131,15 @@
     {
       "idx": 18,
       "version": "7",
-      "when": 1778647306205,
-      "tag": "0018_schedule_soft_delete",
+      "when": 1778823534155,
+      "tag": "0018_course_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1778823534156,
+      "tag": "0019_schedule_soft_delete",
       "breakpoints": true
     }
   ]

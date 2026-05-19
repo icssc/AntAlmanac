@@ -1,6 +1,6 @@
 {
-  "id": "13f815ee-b9d3-41e1-9b83-3a0343d67492",
-  "prevId": "0998c9c0-3b4b-4c6c-869f-5cf8102f9d1b",
+  "id": "2ac7b8ba-0a22-45b4-8505-80e6030f822e",
+  "prevId": "13f815ee-b9d3-41e1-9b83-3a0343d67492",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -536,11 +536,17 @@
           "primaryKey": false,
           "notNull": false
         },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "index": {
           "name": "index",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -583,7 +589,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "schedules_archive_index_consistency": {
+          "name": "schedules_archive_index_consistency",
+          "value": "(\"schedules\".\"archived_at\" IS NULL AND \"schedules\".\"index\" IS NOT NULL) OR (\"schedules\".\"archived_at\" IS NOT NULL AND \"schedules\".\"index\" IS NULL)"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.coursesInSchedule": {
