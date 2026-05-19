@@ -70,6 +70,8 @@ export function ReviewStep() {
     const dismiss = useReviewPromptStore((s) => s.dismiss);
     const onSubmitSuccess = useReviewPromptStore((s) => s.onSubmitSuccess);
 
+    const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
+
     const { mutate: submitReview, isPending: isSubmitting } = trpcReact.review.submitReview.useMutation({
         onSuccess: () => {
             if (!candidate) {

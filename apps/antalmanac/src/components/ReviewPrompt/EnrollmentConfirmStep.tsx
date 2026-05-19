@@ -26,7 +26,6 @@ export function EnrollmentConfirmStep() {
         }
     };
 
-
     return (
         <>
             <CardHeader
