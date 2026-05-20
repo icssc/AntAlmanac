@@ -19,23 +19,29 @@ export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: s
     openSnackbar('success', 'WebsocSection code copied to clipboard');
 }
 
-type MergedSxItem = boolean | SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>);
-
 /**
  * Merges MUI sx props. Later styles override earlier ones.
  *
  * Taken from [MUI internals](https://github.com/mui/mui-x/blob/master/packages/x-date-pickers/src/internals/utils/utils.ts)
  */
-export function mergeSx(...sxProps: (SxProps<Theme> | undefined)[]): ReadonlyArray<MergedSxItem> {
-    return sxProps.reduce<MergedSxItem[]>((acc, sxProp) => {
-        if (Array.isArray(sxProp)) {
-            acc.push(...sxProp);
-        } else if (sxProp != null) {
-            acc.push(sxProp as MergedSxItem);
-        }
+export function mergeSx(
+    ...sxProps: (SxProps<Theme> | undefined)[]
+): ReadonlyArray<boolean | SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>)> {
+    const isFlattenedSxArray = (
+        value: SxProps<Theme>
+    ): value is ReadonlyArray<boolean | SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>)> =>
+        Array.isArray(value);
 
-        return acc;
-    }, []);
+    const acc: (boolean | SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>))[] = [];
+    for (const sxProp of sxProps) {
+        if (sxProp == null) continue;
+        if (isFlattenedSxArray(sxProp)) {
+            acc.push(...sxProp);
+        } else {
+            acc.push(sxProp);
+        }
+    }
+    return acc;
 }
 
 export const QUARTER_ORDER_IN_YEAR: Record<string, number> = {
