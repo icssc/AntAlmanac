@@ -12,6 +12,7 @@ import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-materi
 import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import type { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
     section: AASection;
@@ -25,9 +26,11 @@ interface ActionCellProps {
 export const ActionCell = memo(
     ({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
         const initialized = useNotificationStore((state) => state.initialized);
-        const cycleVisibility = useHiddenCoursesStore((state) => state.cycleVisibility);
-        const classVisibility = useHiddenCoursesStore((state) =>
-            state.getVisibility(AppStore.getCurrentScheduleId(), section.sectionCode)
+        const [cycleVisibility, classVisibility] = useHiddenCoursesStore(
+            useShallow((state) => [
+                state.cycleVisibility,
+                state.getVisibility(AppStore.getCurrentScheduleId(), section.sectionCode),
+            ])
         );
 
         const isMobile = useIsMobile();
