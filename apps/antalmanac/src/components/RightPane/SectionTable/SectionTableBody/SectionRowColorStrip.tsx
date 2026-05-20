@@ -50,7 +50,7 @@ export function SectionRowColorStrip({ color, visible, clickable, onOpenPicker }
 
     return (
         <TableCell sx={cellSx}>
-            <Tooltip title="Change Color" placement="bottom" arrow open={hovered}>
+            <Tooltip title="Change Color" placement="bottom" open={hovered}>
                 <Box
                     component="button"
                     type="button"

@@ -92,6 +92,10 @@ export class Schedules {
         return this.schedules[this.currentScheduleIndex].scheduleId;
     }
 
+    getScheduleId(scheduleIndex: number) {
+        return this.schedules[scheduleIndex]?.scheduleId;
+    }
+
     /**
      * Get the name of schedule.
      */

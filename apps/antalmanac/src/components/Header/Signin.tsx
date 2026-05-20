@@ -28,7 +28,7 @@ import {
     TextField,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState, type KeyboardEvent } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Signin = () => {
@@ -88,49 +88,27 @@ export const Signin = () => {
         [setOpenLoadingSchedule, validateImportedUser, postHog]
     );
 
-    const enterEvent = useCallback(
-        (event: KeyboardEvent) => {
-            if (!showLegacyLogin) return;
-
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                setIsOpen(false);
-                document.removeEventListener('keydown', enterEvent, false);
-                void loadScheduleAndSetLoading(userID, rememberMe);
-                setUserID('');
-                return false;
-            }
-        },
-        [showLegacyLogin, loadScheduleAndSetLoading, userID, rememberMe]
-    );
-
     const handleClose = useCallback(
         (wasCancelled: boolean) => {
-            if (wasCancelled) {
-                setIsOpen(false);
-                document.removeEventListener('keydown', enterEvent, false);
-                setUserID('');
-            } else {
-                setIsOpen(false);
-                document.removeEventListener('keydown', enterEvent, false);
+            setIsOpen(false);
+            setUserID('');
+            if (!wasCancelled) {
                 void loadScheduleAndSetLoading(userID, rememberMe);
-                setUserID('');
             }
         },
-        [loadScheduleAndSetLoading, userID, rememberMe, enterEvent]
+        [loadScheduleAndSetLoading, userID, rememberMe]
     );
 
-    useEffect(() => {
-        if (isOpen) {
-            document.addEventListener('keydown', enterEvent, false);
-        } else {
-            document.removeEventListener('keydown', enterEvent, false);
-        }
-
-        return () => {
-            document.removeEventListener('keydown', enterEvent, false);
-        };
-    }, [isOpen, enterEvent]);
+    const handleDialogKeyDown = useCallback(
+        (event: KeyboardEvent) => {
+            if (!showLegacyLogin || event.key !== 'Enter') {
+                return;
+            }
+            event.preventDefault();
+            handleClose(false);
+        },
+        [showLegacyLogin, handleClose]
+    );
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
@@ -141,7 +119,7 @@ export const Signin = () => {
                 loading={openLoadingSchedule}
             />
 
-            <Dialog open={isOpen} onClose={() => handleClose(true)}>
+            <Dialog open={isOpen} onClose={() => handleClose(true)} onKeyDown={handleDialogKeyDown}>
                 <DialogContent>
                     <Stack spacing={1}>
                         <SignInButtons />
