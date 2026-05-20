@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Splash drawable rendered by androidbrowserhelper between
+  LauncherActivity.onCreate and Chrome's first paint. Bubblewrap normally
+  rasterises this from `iconUrl` in twa-manifest.json into multiple
+  density-specific PNGs under drawable-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/;
+  the vector placeholder here is a stand-in so the build is green before
+  `bubblewrap update` is run.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="192dp"
+    android:height="192dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#305DB7"
+        android:pathData="M54,18 L78,90 L66,90 L60,72 L48,72 L42,90 L30,90 Z M54,42 L51,60 L57,60 Z" />
+</vector>

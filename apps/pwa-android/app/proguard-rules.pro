@@ -1,12 +1,8 @@
-# JavaScript interface methods invoked from the WebView via @JavascriptInterface
-# would otherwise be stripped by R8 in release builds, breaking the push
-# notification + print bridges. Mirrors the @objc / WKScriptMessageHandler
-# surface on iOS (PushNotifications.swift).
--keepclassmembers class com.icssc.antalmanac.JsBridge {
-    @android.webkit.JavascriptInterface <methods>;
-}
+# Bubblewrap-generated TWAs ship without R8/Proguard enabled by default
+# (see app/build.gradle.kts: isMinifyEnabled = false). Rules below apply
+# only if release builds opt back in.
 
-# Keep the entry points referenced from AndroidManifest.xml even if R8 thinks
-# they're unused. (Android already does this for activities, but Firebase
-# services often slip past without help.)
--keep class com.icssc.antalmanac.AntAlmanacMessagingService { *; }
+# Keep the launcher + delegation classes referenced from
+# AndroidManifest.xml so a future minify pass doesn't strip them out.
+-keep class com.icssc.antalmanac.LauncherActivity
+-keep class com.icssc.antalmanac.DelegationService

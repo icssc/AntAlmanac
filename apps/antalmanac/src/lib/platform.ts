@@ -1,5 +1,15 @@
 const NATIVE_IOS_COOKIE = 'app-platform=iOS App Store';
-const NATIVE_ANDROID_COOKIE = 'app-platform=Google Play';
+
+/**
+ * Bubblewrap / PWABuilder defaults the TWA package ID to `com.icssc.antalmanac`.
+ * Chrome sets `document.referrer` to `android-app://<package>/` when the TWA
+ * launches its start URL, which is the canonical "am I running inside the
+ * TWA?" signal. (See https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/android_app_referrer.md.)
+ *
+ * No analogue of the iOS platform cookie exists, because a TWA *is* Chrome —
+ * the wrapper has no opportunity to seed cookies before the page loads.
+ */
+const ANDROID_TWA_REFERRER_PREFIX = 'android-app://com.icssc.antalmanac';
 
 export function isNativeIosApp(): boolean {
     if (typeof document === 'undefined') {
@@ -14,7 +24,7 @@ export function isNativeAndroidApp(): boolean {
         return false;
     }
 
-    return document.cookie.includes(NATIVE_ANDROID_COOKIE);
+    return document.referrer.startsWith(ANDROID_TWA_REFERRER_PREFIX);
 }
 
 export function isNativeApp(): boolean {
@@ -37,24 +47,7 @@ export function isNativeApp(): boolean {
  */
 export const NATIVE_IOS_REDIRECT_URI = 'https://antalmanac.com/auth/native';
 
-/**
- * OAuth redirect URI used when signing in from inside the native Android wrapper.
- *
- * The Android equivalent of iOS Universal Links is Android App Links — an https
- * URL backed by the Digital Asset Links file at
- * https://antalmanac.com/.well-known/assetlinks.json. When the device verifier
- * confirms the association, intents for this URL route to the AntAlmanac app's
- * AppLinkRedirectActivity instead of opening a browser. The Custom Tab launched
- * by `MainActivity` for OAuth thus terminates back inside the app, where the
- * `/native` suffix is stripped and the cookie-bearing WKWebView equivalent
- * (the in-app WebView) completes the code exchange.
- *
- * Custom URL schemes (`antalmanac://`) are spoofable across apps on the same
- * device and are intentionally not used.
- *
- * The matching redirect URI must be registered on the OIDC provider
- * (auth.icssc.club) for the AntAlmanac OAuth client, and the path must be
- * listed in the assetlinks.json file's `target` declarations alongside the
- * Android package name and SHA-256 cert fingerprint.
- */
-export const NATIVE_ANDROID_REDIRECT_URI = 'https://antalmanac.com/auth/native';
+// The Android TWA delegates OAuth to the user's default Chrome instance
+// (it *is* a Chrome instance), so Google's embedded-webview rejection
+// doesn't apply and no Android-specific redirect URI is needed — the
+// regular `/auth` callback works.

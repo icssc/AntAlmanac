@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  FileProvider paths used by androidbrowserhelper's share-target handling.
+  `cache_path` and `files_path` cover the directories the library writes
+  shared content into before exposing it to Chrome as `content://` URIs.
+-->
+<paths>
+    <cache-path name="shared_cache" path="." />
+    <files-path name="shared_files" path="." />
+</paths>

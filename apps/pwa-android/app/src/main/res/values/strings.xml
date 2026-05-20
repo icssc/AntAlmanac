@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  The bool here gates the notification DelegationService in
+  AndroidManifest.xml. Disabling it (`false`) removes the service entirely
+  from the merged manifest — same effect as
+  twa-manifest.json `enableNotifications: false`.
+-->
 <resources>
     <string name="app_name">AntAlmanac</string>
-    <string name="connection_problem">Connection problem</string>
-
-    <string name="default_notification_channel_id">antalmanac_default</string>
-    <string name="default_notification_channel_name">AntAlmanac Notifications</string>
-    <string name="default_notification_channel_description">Updates and reminders from AntAlmanac.</string>
+    <bool name="enableNotification">true</bool>
+    <integer name="splashScreenFadeOutDuration">300</integer>
 </resources>

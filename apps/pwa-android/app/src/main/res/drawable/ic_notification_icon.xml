@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Monochrome notification icon. Android requires alpha-only icons for the
-  status bar; tinted by the system. Mirrors the iOS notification icon
-  rendered from the app's primary glyph.
+  Notification icon used by the DelegationService when forwarding
+  Web Push notifications from the PWA's Service Worker to Android. Must be
+  alpha-only — Android tints it with the channel colour. Bubblewrap names
+  this file `ic_notification_icon`, referenced from AndroidManifest.xml.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"

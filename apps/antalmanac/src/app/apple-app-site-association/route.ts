@@ -69,8 +69,7 @@ const aasa = {
                     // `apps/pwa/src/AntAlmanac/ViewController.swift` startAuthSession.
                     {
                         '/': '/auth/native',
-                        comment:
-                            'AntAlmanac iOS OAuth callback (ASWebAuthenticationSession). Shared with the Android wrapper via assetlinks.json — see src/app/assetlinks.json/route.ts.',
+                        comment: 'AntAlmanac iOS OAuth callback (ASWebAuthenticationSession)',
                     },
                     {
                         '/': '/planner/api/users/auth/google/callback/native',

@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-    <!--
-      Real app theme used after the splash screen. DayNight so the
-      light/dark Material colour roles flip with the system. Roughly maps
-      to the iOS `adaptiveUIStyle` toggle, except the actual decision lives
-      with the OS rather than per-page.
-    -->
-    <style name="Theme.AntAlmanac" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/brand_primary</item>
-        <item name="colorPrimaryDark">@color/brand_primary_dark</item>
-        <item name="android:statusBarColor">@color/brand_primary_dark</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowBackground">@color/launch_background</item>
+<!--
+  The activity uses Theme.AntAlmanac.Starting between cold launch and the
+  first Chrome paint, then androidbrowserhelper swaps the splash drawable
+  out. The theme is intentionally bare — no toolbar, no action bar — to
+  avoid a frame of Android system chrome before Chrome takes over.
+-->
+<resources>
+    <style name="Theme.AntAlmanac.Starting" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/navigationColor</item>
     </style>
-
-    <!--
-      Splash screen theme. The cold-launch UI before the WebView produces
-      anything visible. Matches the iOS LaunchScreen.storyboard intent —
-      a single brand-coloured screen with the AntAlmanac logo. The
-      AndroidX SplashScreen library would let us specialise this further
-      (lifting the icon into a Lottie / animated drawable, etc.); for
-      parity with iOS we keep the static brand background.
-    -->
-    <style name="Theme.AntAlmanac.SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/brand_primary</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
-        <item name="postSplashScreenTheme">@style/Theme.AntAlmanac</item>
-    </style>
-
 </resources>

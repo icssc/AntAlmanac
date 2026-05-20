@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Colour palette consumed by AndroidManifest meta-data. Bubblewrap maps
+  every twa-manifest.json colour field to a resource here so a single
+  `bubblewrap update` regenerates the whole palette consistently.
+
+  - colorPrimary           ->  themeColor       (status bar tint in light mode)
+  - colorPrimaryDark       ->  themeColorDark   (status bar tint in dark mode)
+  - navigationColor        ->  navigationColor  (system nav-bar tint)
+  - backgroundColor        ->  backgroundColor  (splash screen behind the icon)
+-->
 <resources>
-    <!--
-      Brand colour pulled from apps/antalmanac/public/manifest.json
-      (`theme_color: #305db7`). Keep in sync with the web manifest so the
-      splash screen + system UI tint don't diverge from the PWA.
-    -->
-    <color name="brand_primary">#305DB7</color>
-    <color name="brand_primary_dark">#1F3F7F</color>
-    <color name="launch_background">#FFFFFF</color>
-    <color name="launch_background_dark">#121212</color>
+    <color name="colorPrimary">#305DB7</color>
+    <color name="colorPrimaryDark">#1F3F7F</color>
+    <color name="navigationColor">#305DB7</color>
+    <color name="navigationColorDark">#000000</color>
+    <color name="navigationDividerColor">#000000</color>
+    <color name="navigationDividerColorDark">#000000</color>
+    <color name="backgroundColor">#FFFFFF</color>
 </resources>

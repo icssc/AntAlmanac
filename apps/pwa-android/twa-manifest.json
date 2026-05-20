@@ -1,0 +1,52 @@
+{
+    "packageId": "com.icssc.antalmanac",
+    "host": "antalmanac.com",
+    "name": "AntAlmanac",
+    "launcherName": "AntAlmanac",
+    "display": "standalone",
+    "themeColor": "#305DB7",
+    "themeColorDark": "#000000",
+    "navigationColor": "#305DB7",
+    "navigationColorDark": "#000000",
+    "navigationDividerColor": "#000000",
+    "navigationDividerColorDark": "#000000",
+    "backgroundColor": "#FFFFFF",
+    "enableNotifications": true,
+    "startUrl": "/",
+    "iconUrl": "https://antalmanac.com/web-app-manifest-512x512.png",
+    "maskableIconUrl": "https://antalmanac.com/web-app-manifest-512x512.png",
+    "monochromeIconUrl": null,
+    "appVersion": "1.0.0",
+    "appVersionCode": 1,
+    "appVersionName": "1.0.0",
+    "shortcuts": [],
+    "signingKey": {
+        "path": "./android.keystore",
+        "alias": "android"
+    },
+    "splashScreenFadeOutDuration": 300,
+    "shareTarget": null,
+    "orientation": "default",
+    "fingerprints": [],
+    "additionalTrustedOrigins": [],
+    "retainedBundles": [],
+    "webManifestUrl": "https://antalmanac.com/manifest.json",
+    "fallbackType": "customtabs",
+    "features": {
+        "locationDelegation": {
+            "enabled": true
+        },
+        "playBilling": {
+            "enabled": false
+        }
+    },
+    "alphaDependencies": {
+        "enabled": false
+    },
+    "enableSiteSettingsShortcut": true,
+    "isChromeOSOnly": false,
+    "isMetaQuest": false,
+    "fullScopeUrl": "https://antalmanac.com/",
+    "minSdkVersion": 23,
+    "generatorApp": "bubblewrap-cli"
+}

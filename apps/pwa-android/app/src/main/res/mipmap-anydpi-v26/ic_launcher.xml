@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Adaptive launcher icon. Background = brand colour, foreground = the same
-  placeholder mark used by the splash screen. Replace the foreground with
-  the AntAlmanac ant logo at 108dp (with a 72dp safe zone) before shipping.
+  Adaptive launcher icon. Background = the brand colour from
+  twa-manifest.json `themeColor`, foreground reuses the splash drawable as
+  a stand-in. `bubblewrap update` overwrites this from `maskableIconUrl`
+  with a density-specific PNG layered behind a coloured background.
 -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/brand_primary" />
-    <foreground android:drawable="@drawable/ic_splash" />
-    <monochrome android:drawable="@drawable/ic_splash" />
+    <background android:drawable="@color/colorPrimary" />
+    <foreground android:drawable="@drawable/splash" />
+    <monochrome android:drawable="@drawable/splash" />
 </adaptive-icon>

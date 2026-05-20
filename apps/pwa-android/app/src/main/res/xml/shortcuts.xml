@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  App shortcuts for the launcher long-press menu. Bubblewrap mirrors the
+  `shortcuts` array in twa-manifest.json (and ultimately the PWA's
+  web-manifest `shortcuts` field) into entries here.
+
+  Empty stanza for now — `twa-manifest.json` lists no shortcuts.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android" />

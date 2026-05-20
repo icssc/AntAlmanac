@@ -13,3 +13,12 @@ captures/
 *.aab
 *.keystore
 google-services.json
+
+# Keystore Bubblewrap creates on `bubblewrap init` — store in 1Password
+# or the CI secret manager rather than checking it in.
+android.keystore
+
+# Build outputs Bubblewrap drops at the project root.
+app-release-bundle.aab
+app-release-signed.apk
+app-debug.apk

@@ -1,13 +1,11 @@
-// Top-level build file. Mirrors the multi-module layout of the iOS Xcode
-// project (apps/pwa/src/AntAlmanac.xcodeproj). All actual configuration lives
-// in app/build.gradle.kts — this file just declares the plugin versions used
-// across modules.
+// Top-level Gradle build file. Mirrors the file Bubblewrap (the
+// PWABuilder Android generator) emits at the project root.
+//
+// Source of truth for everything in this directory is `twa-manifest.json`:
+// running `bubblewrap update` regenerates Gradle config, manifest, and
+// resources from it. Hand-edits below `// MANAGED BY BUBBLEWRAP` markers
+// will survive that regeneration; edits above will be clobbered.
 
 plugins {
     id("com.android.application") version "8.5.2" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.24" apply false
-    // Google Services plugin is required if FCM (PushNotifications.kt) is
-    // enabled. Apply via `apply true` in app/build.gradle.kts once a
-    // google-services.json is committed.
-    id("com.google.gms.google-services") version "4.4.2" apply false
 }
