@@ -82,23 +82,18 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
     );
 
-    const [colorOverride, setColorOverride] = useState<string | null>(null);
-    const [, bumpScheduleColor] = useState(0);
+    const [currColor, setCurrColor] = useState(() => getSectionScheduleColor(section, term));
     const [colorPopoverAnchorEl, setColorPopoverAnchorEl] = useState<PopoverProps['anchorEl']>(null);
-
-    const scheduleColor = getSectionScheduleColor(section, term);
-    const currColor = colorOverride ?? scheduleColor;
 
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`));
     }, [section.sectionCode, term]);
 
     const updateColorFromSchedule = useCallback(() => {
-        setColorOverride(null);
-        bumpScheduleColor((n) => n + 1);
-    }, []);
+        setCurrColor(getSectionScheduleColor(section, term));
+    }, [section.sectionCode, section.color, term]);
     const updateColorFromPicker = useCallback((newColor: string) => {
-        setColorOverride(newColor);
+        setCurrColor(newColor);
     }, []);
 
     const handleMouseEnter = useCallback(() => {
@@ -123,7 +118,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 
     const handleColorChange = useCallback(
         (newColor: { hex: string }) => {
-            setColorOverride(newColor.hex);
+            setCurrColor(newColor.hex);
             changeCourseColor(section.sectionCode, term, newColor.hex);
         },
         [section.sectionCode, term]
@@ -139,6 +134,10 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
         };
     }, [updateHighlight]);
+
+    useEffect(() => {
+        setCurrColor(getSectionScheduleColor(section, term));
+    }, [section.sectionCode, section.color, term]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateColorFromSchedule);
