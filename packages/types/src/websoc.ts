@@ -71,5 +71,6 @@ export const WebsocSearchInputSchema = z.object({
         ? string | WebsocQueryParams[K]
         : WebsocQueryParams[K];
 }>;
-
 export type WebsocSearchInput = z.infer<typeof WebsocSearchInputSchema>;
+
+export const WebsocSearchInputKeysSchema = WebsocSearchInputSchema.keyof();

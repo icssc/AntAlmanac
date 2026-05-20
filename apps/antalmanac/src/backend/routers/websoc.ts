@@ -1,5 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { QuarterSchema, type CourseInfo } from '@packages/antalmanac-types';
+import { QuarterSchema, WebsocSearchInputKeysSchema, type CourseInfo } from '@packages/antalmanac-types';
 import { WebsocSearchInputSchema, type WebsocSearchInput } from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,
@@ -7,7 +7,7 @@ import type {
     WebsocSectionType,
     WebsocSyllabiResponse,
 } from '@packages/anteater-api/types';
-import { combineWebsocResponses, sortWebsocResponse } from '@packages/anteater-api/utils';
+import { sortWebsocResponse, unionWebsocResponses } from '@packages/anteater-api/utils';
 import { z } from 'zod';
 
 import { router } from '../trpc';
@@ -44,21 +44,29 @@ const websocRouter = router({
         .query(({ input }): Promise<WebsocAPIResponse> => queryWebsoc(input)),
 
     getManyOfField: aapiProcedure
-        .input(z.object({ params: WebsocSearchInputSchema, fieldName: z.string() }))
-        .query(({ input }): Promise<WebsocAPIResponse> => {
-            const fieldValue = input.params[input.fieldName as keyof WebsocSearchInput];
-            if (!fieldValue) return queryWebsoc(input.params);
-            const fields = fieldValue.trim().replaceAll(' ', '').split(',');
-            return Promise.all(fields.map((field) => queryWebsoc({ ...input.params, [input.fieldName]: field }))).then(
-                combineWebsocResponses
-            );
+        .input(
+            z.object({
+                params: WebsocSearchInputSchema,
+                fieldName: z.enum([WebsocSearchInputKeysSchema.enum.ge]),
+            })
+        )
+        .query(async ({ input }): Promise<WebsocAPIResponse[]> => {
+            const { fieldName, params } = input;
+            const fieldValue = params[fieldName]?.trim().replaceAll(' ', '');
+            const fields = fieldValue?.split(',').filter((value) => value.length > 0);
+
+            if (!fields?.length) {
+                return [await queryWebsoc(params)];
+            }
+
+            return Promise.all(fields.map((value) => queryWebsoc({ ...params, [fieldName]: value })));
         }),
 
     getMultiple: aapiProcedure
         .input(z.object({ params: z.array(WebsocSearchInputSchema) }))
         .query(
             ({ input }): Promise<WebsocAPIResponse> =>
-                Promise.all(input.params.map(queryWebsoc)).then(combineWebsocResponses)
+                Promise.all(input.params.map(queryWebsoc)).then(unionWebsocResponses)
         ),
 
     getCourseInfo: aapiProcedure
