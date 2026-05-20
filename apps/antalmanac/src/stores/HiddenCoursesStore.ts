@@ -14,6 +14,8 @@ interface HiddenCoursesStore {
     visibilityMap: VisibilityMap;
     getVisibility: (scheduleId: string, sectionCode: string) => VisibilityState;
     cycleVisibility: (scheduleId: string, sectionCode: string) => void;
+    clearCourseVisibility: (scheduleId: string, sectionCode: string) => void;
+    clearScheduleVisibility: (scheduleId: string) => void;
     hydrateFromSchedules: (schedules: Array<{ id?: string; courses: ShortCourse[] }>) => void;
 }
 
@@ -25,24 +27,48 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
     },
 
     cycleVisibility: (scheduleId, sectionCode) => {
-        const current = get().visibilityMap;
-        const currentState: VisibilityState = current[scheduleId]?.[sectionCode] ?? VisibilityState.Visible;
-        const nextState = NEXT_VISIBILITY[currentState];
+        const visibilityMap = get().visibilityMap;
+        const currentVisibility: VisibilityState = visibilityMap[scheduleId]?.[sectionCode] ?? VisibilityState.Visible;
+        const nextVisibility = NEXT_VISIBILITY[currentVisibility];
 
-        const scheduleMap = { ...current[scheduleId] };
-        if (nextState === VisibilityState.Visible) {
+        const scheduleMap = { ...visibilityMap[scheduleId] };
+        if (nextVisibility === VisibilityState.Visible) {
             delete scheduleMap[sectionCode];
         } else {
-            scheduleMap[sectionCode] = nextState;
+            scheduleMap[sectionCode] = nextVisibility;
         }
+
+        const newVisibilityMap = { ...visibilityMap };
+        if (Object.keys(scheduleMap).length === 0) {
+            delete newVisibilityMap[scheduleId];
+        } else {
+            newVisibilityMap[scheduleId] = scheduleMap;
+        }
+        console.log('newVisibilityMap', newVisibilityMap);
+        set({ visibilityMap: newVisibilityMap });
+    },
+
+    clearCourseVisibility: (scheduleId, sectionCode) => {
+        const visibilityMap = get().visibilityMap;
+        if (visibilityMap[scheduleId]?.[sectionCode]) {
+            const scheduleMap = { ...visibilityMap[scheduleId] };
+            delete scheduleMap[sectionCode];
+            const newVisibilityMap = { ...visibilityMap };
+            if (Object.keys(scheduleMap).length === 0) {
+                delete newVisibilityMap[scheduleId];
+            } else {
+                newVisibilityMap[scheduleId] = scheduleMap;
+            }
+            set({ visibilityMap: newVisibilityMap });
+        }
+    },
+
+    clearScheduleVisibility: (scheduleId) => {
+        const current = get().visibilityMap;
+        if (!current[scheduleId]) return;
 
         const newMap = { ...current };
-        if (Object.keys(scheduleMap).length === 0) {
-            delete newMap[scheduleId];
-        } else {
-            newMap[scheduleId] = scheduleMap;
-        }
-
+        delete newMap[scheduleId];
         set({ visibilityMap: newMap });
     },
 
