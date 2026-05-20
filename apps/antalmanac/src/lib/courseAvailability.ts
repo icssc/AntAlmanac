@@ -1,21 +1,13 @@
-export function isSectionCancelled(section: { isCancelled?: boolean }) {
-    return section.isCancelled === true;
-}
+import { AASection } from '@packages/antalmanac-types';
 
-export function getCourseCancellationWarning(
-    sections: Iterable<{
-        sectionCode: string;
-        isCancelled?: boolean;
-    }>
-) {
-    const sectionList = [...sections];
-    const cancelledSections = sectionList.filter(isSectionCancelled);
+export function getCourseCancellationWarning(sections: AASection[]) {
+    const cancelledSections = sections.filter((section) => section.isCancelled);
 
     if (cancelledSections.length === 0) {
         return undefined;
     }
 
-    if (cancelledSections.length === sectionList.length) {
+    if (cancelledSections.length === sections.length) {
         return 'This class has been cancelled.';
     }
 
