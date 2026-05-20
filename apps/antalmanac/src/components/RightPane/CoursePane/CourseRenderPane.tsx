@@ -290,6 +290,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term.longName);
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
+    const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
     const getQueryParams = useCallback(
         (searchData: CourseSearchParams): WebsocSearchInput => ({
@@ -423,6 +424,9 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </WarningAlert>
                 ));
             })}
+            {filterTakenCourses && !hasRenderableCourseResults && (
+                <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
+            )}
             {unofferedCourses.map((course) => {
                 return (
                     <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
