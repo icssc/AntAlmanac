@@ -279,6 +279,7 @@ const ErrorMessage = () => {
             <Image
                 src={isDark ? darkNoResults : noResults}
                 alt="No Results Found"
+                unoptimized
                 style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
             />
         </Box>
