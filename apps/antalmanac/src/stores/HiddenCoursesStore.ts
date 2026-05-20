@@ -44,7 +44,6 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
         } else {
             newVisibilityMap[scheduleId] = scheduleMap;
         }
-        console.log('newVisibilityMap', newVisibilityMap);
         set({ visibilityMap: newVisibilityMap });
     },
 
