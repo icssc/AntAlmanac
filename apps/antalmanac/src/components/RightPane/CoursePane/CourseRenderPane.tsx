@@ -110,9 +110,12 @@ function cleanHeaders(items: CourseListEntry[]): CourseListEntry[] {
     return result;
 }
 
-function getFilteredCourses(allCourses: CourseListEntry[]): CourseListEntry[] {
-    const { manualSearchEnabled } = useCoursePaneStore.getState();
-    const { filterTakenCourses, userTakenCourses } = usePlannerStore.getState();
+function getFilteredCourses(
+    allCourses: CourseListEntry[],
+    manualSearchEnabled: boolean,
+    filterTakenCourses: boolean,
+    userTakenCourses: Set<string>
+): CourseListEntry[] {
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
         const filtered = allCourses.filter((item) => {
             if (isCourseEntry(item)) {
@@ -290,6 +293,8 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
+    const userTakenCourses = usePlannerStore((store) => store.userTakenCourses);
+    const manualSearchEnabled = useCoursePaneStore((store) => store.manualSearchEnabled);
 
     const getQueryParams = useCallback(
         (searchData: CourseSearchParams): WebsocSearchInput => ({
@@ -372,8 +377,13 @@ export default function CourseRenderPane(props: { id?: number }) {
         if (!searchResponse) {
             return [];
         }
-        return getFilteredCourses(flattenSOCObject(searchResponse, courseColors));
-    }, [searchResponse, courseColors]);
+        return getFilteredCourses(
+            flattenSOCObject(searchResponse, courseColors),
+            manualSearchEnabled,
+            filterTakenCourses,
+            userTakenCourses
+        );
+    }, [searchResponse, courseColors, manualSearchEnabled, filterTakenCourses, userTakenCourses]);
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
@@ -423,9 +433,6 @@ export default function CourseRenderPane(props: { id?: number }) {
                     </WarningAlert>
                 ));
             })}
-            {filterTakenCourses && !hasRenderableCourseResults && (
-                <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
-            )}
             {unofferedCourses.map((course) => {
                 return (
                     <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
