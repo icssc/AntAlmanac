@@ -3,14 +3,12 @@ import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import {
-    useCoursePaneUrlState,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -40,6 +38,7 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
 
 export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     const { formData } = useCourseSearchUrlState();
+    const setSearchFormIsDisplayed = useCoursePaneStore((store) => store.setSearchFormIsDisplayed);
     const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
         PLANNER_SEARCH_PARAM,
         parseAsString.withOptions({ history: 'replace' })
@@ -61,7 +60,6 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
         useShallow((state) => ({ isPlannerLoading: state.isPlannerLoading, plannerRoadmaps: state.plannerRoadmaps }))
     );
 
-    const { displaySections } = useCoursePaneUrlState();
     const doesRoadmapIncludeTerm = useCallback(
         (roadmapId: Roadmap['id']) => {
             return termRoadmapGrouping[RoadmapTermRelation.IncludesTerm].has(roadmapId.toString());
@@ -106,7 +104,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 }));
 
                 RightPaneStore.setMultiSearchData(searchData, term);
-                void displaySections();
+                setSearchFormIsDisplayed(false);
             } catch (error) {
                 console.error('Something went wrong while searching with Planner:', error);
                 openSnackbar('error', 'Something went wrong while searching with Planner.');
@@ -116,7 +114,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             }
             return true;
         },
-        [displaySections, formData.term, plannerRoadmaps]
+        [formData.term, plannerRoadmaps, setSearchFormIsDisplayed]
     );
 
     const groupBy = (option: Roadmap) => {

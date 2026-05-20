@@ -1,10 +1,10 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import {
     type CourseSearchParams,
-    useCoursePaneUrlState,
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import darkNoResults from '$components/RightPane/CoursePane/static/dark-no_results.png';
@@ -30,6 +30,7 @@ import { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/ant
 import { intersectWebsocResponses } from '@packages/anteater-api/utils';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
+import { parseAsString, useQueryState } from 'nuqs';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
@@ -291,8 +292,9 @@ const ErrorMessage = ({ formData }: { formData: CourseSearchParams }) => {
 };
 
 export default function CourseRenderPane() {
-    const { formData } = useCourseSearchUrlState();
-    const { manualSearchEnabled } = useCoursePaneUrlState();
+    const { formData, searchMode } = useCourseSearchUrlState();
+    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString.withOptions({ history: 'replace' }));
+    const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
     const [courseColors, setCourseColors] = useState(getColors);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);

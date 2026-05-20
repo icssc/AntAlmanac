@@ -1,16 +1,16 @@
 import {
     defaultCourseSearchFormValues,
-    useCoursePaneUrlState,
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { AATerm } from '$lib/term';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';
 
 export function useQuickSearch() {
     const setActiveTab = useTabStore((s) => s.setActiveTab);
     const { setFields, setSearchMode } = useCourseSearchUrlState();
-    const { displaySections } = useCoursePaneUrlState();
+    const setSearchFormIsDisplayed = useCoursePaneStore((store) => store.setSearchFormIsDisplayed);
 
     return useCallback(
         (deptValue: string, courseNumber: string, term: AATerm) => {
@@ -22,8 +22,8 @@ export function useQuickSearch() {
                 courseNumber,
             });
             setActiveTab('search');
-            void displaySections();
+            setSearchFormIsDisplayed(false);
         },
-        [displaySections, setActiveTab, setFields, setSearchMode]
+        [setActiveTab, setFields, setSearchFormIsDisplayed, setSearchMode]
     );
 }

@@ -1,36 +1,76 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
+import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import {
     courseSearchFormDataIsValid,
-    useCoursePaneUrlState,
+    courseSearchFormDataHasAdvancedSearch,
+    courseSearchFormDataHasRequiredSearchParams,
+    useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
+import { parseAsString, useQueryState } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export function CoursePaneRoot() {
-    const { formData, searchFormIsDisplayed, displaySearch, displaySections } = useCoursePaneUrlState();
+    const { formData, searchMode, setSearchMode, resetAllPreservingTerm } = useCourseSearchUrlState();
+    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString.withOptions({ history: 'replace' }));
+    const { searchFormIsDisplayed, initialized, initialize, setSearchFormIsDisplayed, setAdvancedSearchEnabled } =
+        useCoursePaneStore(
+            useShallow((store) => ({
+                searchFormIsDisplayed: store.searchFormIsDisplayed,
+                initialized: store.initialized,
+                initialize: store.initialize,
+                setSearchFormIsDisplayed: store.setSearchFormIsDisplayed,
+                setAdvancedSearchEnabled: store.setAdvancedSearchEnabled,
+            }))
+        );
+
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
+    const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
+    const derivedAdvancedSearchEnabled = courseSearchFormDataHasAdvancedSearch(formData);
+    const shouldShowSearchForm =
+        !courseSearchFormDataHasRequiredSearchParams(formData) || !courseSearchFormDataIsValid(formData);
 
     const handleSearch = useCallback(() => {
         if (courseSearchFormDataIsValid(formData)) {
-            void displaySections();
+            setSearchFormIsDisplayed(false);
         } else {
             openSnackbar(
                 'error',
                 `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
             );
         }
-    }, [displaySections, formData]);
+    }, [formData, setSearchFormIsDisplayed]);
 
     const handleDisplaySearch = useCallback(() => {
-        void displaySearch();
-    }, [displaySearch]);
+        setSearchFormIsDisplayed(true);
+
+        if (manualSearchEnabled) {
+            if (derivedAdvancedSearchEnabled) {
+                setAdvancedSearchEnabled(true);
+            }
+            return;
+        }
+
+        setAdvancedSearchEnabled(false);
+        void setSearchMode('quick');
+        void resetAllPreservingTerm();
+    }, [
+        derivedAdvancedSearchEnabled,
+        manualSearchEnabled,
+        resetAllPreservingTerm,
+        setAdvancedSearchEnabled,
+        setSearchFormIsDisplayed,
+        setSearchMode,
+    ]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {
@@ -47,6 +87,12 @@ export function CoursePaneRoot() {
         },
         [handleDisplaySearch]
     );
+
+    useEffect(() => {
+        if (!initialized) {
+            initialize(shouldShowSearchForm, manualSearchEnabled && derivedAdvancedSearchEnabled);
+        }
+    }, [derivedAdvancedSearchEnabled, initialize, initialized, manualSearchEnabled, shouldShowSearchForm]);
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeydown, false);

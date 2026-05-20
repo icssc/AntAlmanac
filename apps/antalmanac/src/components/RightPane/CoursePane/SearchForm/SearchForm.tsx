@@ -2,13 +2,11 @@ import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
-import {
-    useCoursePaneUrlState,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
@@ -19,10 +17,11 @@ interface SearchFormProps {
 }
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
-    const { resetAllPreservingTerm } = useCourseSearchUrlState();
-    const { manualSearchEnabled, setManualSearchEnabled } = useCoursePaneUrlState();
+    const { resetAllPreservingTerm, searchMode, setSearchMode } = useCourseSearchUrlState();
+    const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
+    const manualSearchEnabled = searchMode === 'manual';
 
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -35,7 +34,14 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const toggleSearchMode = (event: React.MouseEvent<HTMLElement>, value: string) => {
         event.preventDefault();
         if (!value) return;
-        void setManualSearchEnabled(value === 'manual');
+        if (value === 'manual') {
+            void setSearchMode('manual');
+            return;
+        }
+
+        setAdvancedSearchEnabled(false);
+        void setSearchMode('quick');
+        void resetAllPreservingTerm();
     };
 
     return (
