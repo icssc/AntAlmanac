@@ -57,15 +57,17 @@ const ColorPicker = memo(function ColorPicker({
         };
     }, [isCustomEvent, customEventID, sectionCode, updateColor]);
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
-        event.stopPropagation();
-
-        setAnchorEl(event.currentTarget);
-
+    const openPicker = (target: HTMLElement, postHog?: PostHog) => {
+        setAnchorEl(target);
         logAnalytics(postHog, {
             category: analyticsCategory,
             action: analyticsCategory.actions.CHANGE_COURSE_COLOR,
         });
+    };
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
+        event.stopPropagation();
+        openPicker(event.currentTarget, postHog);
     };
 
     const handleClose = (event: Event) => {

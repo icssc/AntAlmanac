@@ -1,17 +1,18 @@
-import ColorPicker from '$components/ColorPicker';
 import { AddButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/AddButton';
 import { DeleteButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteButton';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { SectionActionMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/SectionActionMenu';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum from '$lib/analytics/analytics';
 import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
+import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
-import { Box, CircularProgress, IconButton } from '@mui/material';
+import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
+import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import type { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
     section: AASection;
@@ -22,32 +23,20 @@ interface ActionCellProps {
     scheduleNames: string[];
 }
 
-function getSectionColor(sectionCode: string, term: AATerm): string {
-    return AppStore.schedule.getExistingCourseInSchedule(sectionCode, term)?.section.color ?? '#5ec8e0';
-}
-
 export const ActionCell = memo(
     ({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
         const initialized = useNotificationStore((state) => state.initialized);
+        const [cycleVisibility, classVisibility] = useHiddenCoursesStore(
+            useShallow((state) => [
+                state.cycleVisibility,
+                state.getVisibility(AppStore.getCurrentScheduleId(), section.sectionCode),
+            ])
+        );
+
         const isMobile = useIsMobile();
-
-        const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term));
-
-        const updateColor = useCallback(() => {
-            setSectionColor(getSectionColor(section.sectionCode, term));
-        }, [section.sectionCode, term]);
-
-        useEffect(() => {
-            AppStore.on('addedCoursesChange', updateColor);
-            AppStore.on('colorChange', updateColor);
-            AppStore.on('currentScheduleIndexChange', updateColor);
-
-            return () => {
-                AppStore.removeListener('addedCoursesChange', updateColor);
-                AppStore.removeListener('colorChange', updateColor);
-                AppStore.removeListener('currentScheduleIndexChange', updateColor);
-            };
-        }, [updateColor]);
+        const handleVisibilityToggle = useCallback(() => {
+            cycleVisibility(AppStore.getCurrentScheduleId(), section.sectionCode);
+        }, [section.sectionCode, cycleVisibility]);
 
         return (
             <TableBodyCellContainer sx={{ paddingX: 0.5 }}>
@@ -68,6 +57,29 @@ export const ActionCell = memo(
                         />
                     )}
 
+                    {addedCourse && (
+                        <Tooltip
+                            title={
+                                classVisibility === VisibilityState.Visible
+                                    ? 'Outline class in calendar'
+                                    : classVisibility === VisibilityState.Outlined
+                                      ? 'Hide class in calendar'
+                                      : 'Show class in calendar'
+                            }
+                            disableInteractive
+                        >
+                            <IconButton onClick={handleVisibilityToggle} size="small" sx={{ p: 0.5 }}>
+                                {classVisibility === VisibilityState.Visible ? (
+                                    <Visibility fontSize="small" />
+                                ) : classVisibility === VisibilityState.Outlined ? (
+                                    <VisibilityOutlined fontSize="small" />
+                                ) : (
+                                    <VisibilityOff fontSize="small" />
+                                )}
+                            </IconButton>
+                        </Tooltip>
+                    )}
+
                     {initialized ? (
                         <NotificationsMenu
                             section={section}
@@ -82,23 +94,14 @@ export const ActionCell = memo(
                         </IconButton>
                     )}
 
-                    {!isMobile &&
-                        (addedCourse ? (
-                            <ColorPicker
-                                color={sectionColor}
-                                analyticsCategory={analyticsEnum.addedClasses}
-                                isCustomEvent={false}
-                                term={term}
-                                sectionCode={section.sectionCode}
-                            />
-                        ) : (
-                            <SectionActionMenu
-                                section={section}
-                                courseDetails={courseDetails}
-                                term={term}
-                                scheduleNames={scheduleNames}
-                            />
-                        ))}
+                    {!isMobile && !addedCourse && (
+                        <SectionActionMenu
+                            section={section}
+                            courseDetails={courseDetails}
+                            term={term}
+                            scheduleNames={scheduleNames}
+                        />
+                    )}
                 </Box>
             </TableBodyCellContainer>
         );
