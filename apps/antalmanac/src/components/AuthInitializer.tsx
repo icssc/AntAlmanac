@@ -47,6 +47,11 @@ export const AuthInitializer = () => {
 
     const postHog = usePostHog();
 
+    const handleAuthChecked = () => {
+        setOpenLoadingSchedule(false);
+        loadNotifications();
+    };
+
     const loadUnsavedChanges = useEffectEvent(async (userData: UserData) => {
         if (!sessionData) {
             return;
@@ -112,8 +117,6 @@ export const AuthInitializer = () => {
                 }
                 isInitializingRef.current = true;
                 try {
-                    setOpenLoadingSchedule(true);
-
                     await updateSession(sessionData);
 
                     loadPlannerRoadmaps();
@@ -138,16 +141,14 @@ export const AuthInitializer = () => {
                 }
 
                 isInitializingRef.current = false;
-                setOpenLoadingSchedule(false);
-
-                loadNotifications();
+                handleAuthChecked();
             })();
         } else {
             if (getWasLoggedIn()) {
                 setOpenAlert(true);
             }
             setHasCheckedAuth(true);
-            loadNotifications();
+            handleAuthChecked();
         }
     }, [
         sessionData,

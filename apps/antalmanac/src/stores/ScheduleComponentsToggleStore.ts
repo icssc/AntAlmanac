@@ -14,7 +14,7 @@ interface ScheduleComponentsToggleState {
 
 export const useScheduleComponentsToggleStore = create<ScheduleComponentsToggleState>((set) => ({
     openScheduleSelect: false,
-    openLoadingSchedule: false,
+    openLoadingSchedule: true,
     openImportDialog: false,
     openAutoSaveWarning: false,
     setOpenScheduleSelect: (open) => set({ openScheduleSelect: open }),
