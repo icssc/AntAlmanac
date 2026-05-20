@@ -60,15 +60,14 @@ export function DepartmentSearchBar() {
 
             if (newValue === 'ALL') return;
 
-            if (recentSearches.includes(newValue)) {
-                setRecentSearches((prev) =>
-                    prev.sort((a, b) => {
-                        return a === newValue ? -1 : b === newValue ? 1 : 0;
-                    })
-                );
-            } else {
-                setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
-            }
+            const nextRecentSearches = recentSearches.includes(newValue)
+                ? [...recentSearches].sort((a, b) => {
+                      return a === newValue ? -1 : b === newValue ? 1 : 0;
+                  })
+                : [newValue, ...recentSearches].slice(0, 5);
+
+            setRecentSearches(nextRecentSearches);
+            setLocalStorageRecentlySearched(JSON.stringify(nextRecentSearches));
         },
         [recentSearches, options]
     );
@@ -80,10 +79,6 @@ export function DepartmentSearchBar() {
             RightPaneStore.off('formReset', resetField);
         };
     }, [resetField]);
-
-    useEffect(() => {
-        setLocalStorageRecentlySearched(JSON.stringify(recentSearches));
-    }, [recentSearches]);
 
     return (
         <LabeledAutocomplete
