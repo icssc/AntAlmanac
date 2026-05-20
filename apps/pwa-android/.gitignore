@@ -3,6 +3,10 @@
 *.iml
 .gradle/
 local.properties
+
+# Gradle / Android build artifacts
+build/
+.gradle/
 .idea/
 .kotlin/
 build/

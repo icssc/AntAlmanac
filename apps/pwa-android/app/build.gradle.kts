@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.icssc.antalmanac"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.icssc.antalmanac"
@@ -18,7 +18,7 @@ android {
         // itself requires 19+, but 23 is the floor where TWA works
         // reliably with stable Chrome.
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
 
@@ -67,9 +67,11 @@ dependencies {
     // handling, status-bar tinting, share intent forwarding, and all the
     // other plumbing that makes a TWA feel native. Maintained by the
     // Chrome team.
-    implementation("com.google.androidbrowserhelper:androidbrowserhelper:2.6.0")
+    implementation("com.google.androidbrowserhelper:androidbrowserhelper:2.7.1")
     // Lets the PWA call navigator.geolocation without a permission prompt
     // by delegating to Android's location provider. Pulled in because
     // twa-manifest.json sets `features.locationDelegation.enabled = true`.
-    implementation("com.google.androidbrowserhelper:locationdelegation:2.6.0")
+    // Versioned independently of the core library — 1.1.2 is the latest
+    // release.
+    implementation("com.google.androidbrowserhelper:locationdelegation:1.1.2")
 }
