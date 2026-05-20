@@ -17,6 +17,7 @@ import type {
 import { createId } from '@paralleldrive/cuid2';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
+import { useHiddenCoursesStore } from './HiddenCoursesStore';
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.
@@ -85,6 +86,14 @@ export class Schedules {
 
     getCurrentScheduleName() {
         return this.schedules[this.currentScheduleIndex].scheduleName;
+    }
+
+    getCurrentScheduleId() {
+        return this.schedules[this.currentScheduleIndex].scheduleId;
+    }
+
+    getScheduleId(scheduleIndex: number) {
+        return this.schedules[scheduleIndex]?.scheduleId;
     }
 
     /**
@@ -593,6 +602,7 @@ export class Schedules {
      * Convert schedule to shortened schedule (no course info) for saving.
      */
     getScheduleAsSaveState(): ScheduleSaveState {
+        const { getVisibility } = useHiddenCoursesStore.getState();
         const shortSchedules: ShortCourseSchedule[] = this.schedules.map((schedule) => {
             return {
                 id: schedule.scheduleId,
@@ -603,6 +613,7 @@ export class Schedules {
                         color: course.section.color,
                         term: course.term.shortName,
                         sectionCode: course.section.sectionCode,
+                        visibility: getVisibility(schedule.scheduleId, course.section.sectionCode),
                     };
                 }),
                 scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],

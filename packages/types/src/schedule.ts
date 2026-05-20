@@ -32,22 +32,34 @@ export type Schedule = {
     scheduleId: string;
 };
 
+export enum VisibilityState {
+    Visible = 'visible',
+    Outlined = 'outlined',
+    Disappeared = 'disappeared',
+}
+
+export const VISIBILITY_STATES = Object.values(VisibilityState) as [VisibilityState, ...VisibilityState[]];
+
 export const ShortCourseSchema = z.object({
     color: z.string(),
     term: z.string(),
     sectionCode: z.string(),
+    visibility: z.enum(VISIBILITY_STATES).optional().default(VisibilityState.Visible),
 });
 export type ShortCourse = z.infer<typeof ShortCourseSchema>;
 
-export const ShortCourseScheduleSchema = z
-    .object({
-        scheduleName: z.string(),
-        courses: z.array(ShortCourseSchema),
-        customEvents: z.array(RepeatingCustomEventSchema),
-        scheduleNote: z.string().max(SCHEDULE_NOTE_MAX_LENGTH).optional(),
-        id: z.string().optional(),
-    })
-    .transform((schedule) => ({ scheduleNote: '', ...schedule }));
+const ShortCourseScheduleFieldsSchema = z.object({
+    scheduleName: z.string(),
+    courses: z.array(ShortCourseSchema),
+    customEvents: z.array(RepeatingCustomEventSchema),
+    scheduleNote: z.string().max(SCHEDULE_NOTE_MAX_LENGTH).optional(),
+    id: z.string().optional(),
+});
+
+export const ShortCourseScheduleSchema = ShortCourseScheduleFieldsSchema.transform((schedule) => ({
+    scheduleNote: '',
+    ...schedule,
+}));
 export type ShortCourseSchedule = z.infer<typeof ShortCourseScheduleSchema>;
 
 export const ScheduleSaveStateSchema = z.object({

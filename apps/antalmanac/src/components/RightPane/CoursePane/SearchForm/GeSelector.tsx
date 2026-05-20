@@ -1,7 +1,11 @@
-import { ANY_GE, GE_LIST } from '$components/RightPane/CoursePane/SearchForm/constants';
+import {
+    ANY_GE,
+    GE_LIST,
+    getSelectedGEs,
+    normalizeGeSelection,
+} from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
-import { getSelectedGEs, normalizeGeSelection } from '$lib/multiGeSearch';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 
 const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
@@ -32,7 +36,7 @@ export function GeSelector() {
                     const values = selected as string[];
                     if (values.length === 0) return getLabel(ANY_GE);
                     if (values.length === 1) return getLabel(values[0]);
-                    return values.map((value) => getShortLabel(value)).join(', ');
+                    return values.map((value) => getShortLabel(value)).join(' and ');
                 },
                 sx: {
                     width: '100%',

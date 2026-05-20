@@ -2,7 +2,7 @@ import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm
 import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import generatedDepartments from '$generated/departments.json';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const ALL_DEPARTMENTS: Record<string, string> = {
     ALL: 'ALL: Include All Departments',
@@ -42,22 +42,17 @@ export function DepartmentSearchBar() {
 
             if (newValue === 'ALL') return;
 
-            if (recentSearches.includes(newValue)) {
-                setRecentSearches((prev) =>
-                    prev.sort((a, b) => {
-                        return a === newValue ? -1 : b === newValue ? 1 : 0;
-                    })
-                );
-            } else {
-                setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
-            }
+            const nextRecentSearches = recentSearches.includes(newValue)
+                ? [...recentSearches].sort((a, b) => {
+                      return a === newValue ? -1 : b === newValue ? 1 : 0;
+                  })
+                : [newValue, ...recentSearches].slice(0, 5);
+
+            setRecentSearches(nextRecentSearches);
+            setLocalStorageRecentlySearched(JSON.stringify(nextRecentSearches));
         },
         [options, recentSearches, setField]
     );
-
-    useEffect(() => {
-        setLocalStorageRecentlySearched(JSON.stringify(recentSearches));
-    }, [recentSearches]);
 
     return (
         <LabeledAutocomplete
