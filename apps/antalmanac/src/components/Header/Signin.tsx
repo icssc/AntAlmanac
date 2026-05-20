@@ -204,7 +204,9 @@ export const Signin = () => {
                 }}
             >
                 <SettingsMenu user={null} onClose={() => setSettingsAnchorEl(null)} />
+
                 <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
+
                 <MenuItem onClick={handleOpen} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
                         <AccountCircle />
@@ -221,6 +223,7 @@ export const Signin = () => {
                     />
                 </MenuItem>
             </Popover>
+
             <SignInAlertDialog
                 open={openAlert}
                 title="This schedule was previously imported to an account. Did you want to sign in?"
