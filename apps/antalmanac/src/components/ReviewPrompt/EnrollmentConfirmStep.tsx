@@ -4,14 +4,16 @@ import { trpcReact } from '$lib/api/trpc';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { Close } from '@mui/icons-material';
 import { Box, Button, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
+import { useShallow } from 'zustand/react/shallow';
 
 export function EnrollmentConfirmStep() {
-    const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
-    const courseTitle = useReviewPromptStore((s) => s.candidate?.courseTitle ?? '');
-    const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
-    const term = useReviewPromptStore((s) => s.candidate?.term ?? null);
-    const confirm = useReviewPromptStore((s) => s.confirm);
-    const dismiss = useReviewPromptStore((s) => s.dismiss);
+    const { candidate, confirm, dismiss } = useReviewPromptStore(
+        useShallow((s) => ({ candidate: s.candidate, confirm: s.confirm, dismiss: s.dismiss }))
+    );
+    const courseId = candidate?.courseId ?? '';
+    const courseTitle = candidate?.courseTitle ?? '';
+    const professorId = candidate?.professorId ?? '';
+    const term = candidate?.term ?? null;
 
     const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
 

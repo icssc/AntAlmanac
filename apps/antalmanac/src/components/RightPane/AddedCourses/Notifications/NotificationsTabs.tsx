@@ -4,6 +4,7 @@ import { NotificationAddOutlined } from '@mui/icons-material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Tab, Paper, CircularProgress, Typography, useTheme } from '@mui/material';
 import { useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 function groupNotificationsByTerm(notifications: Partial<Record<string, Notification>>) {
     return Object.entries(notifications).reduce<Record<string, string[]>>((groups, [key, notification]) => {
@@ -22,8 +23,9 @@ function groupNotificationsByTerm(notifications: Partial<Record<string, Notifica
 
 export function NotificationsTabs() {
     const theme = useTheme();
-    const initialized = useNotificationStore((store) => store.initialized);
-    const notifications = useNotificationStore((store) => store.notifications);
+    const { initialized, notifications } = useNotificationStore(
+        useShallow((store) => ({ initialized: store.initialized, notifications: store.notifications }))
+    );
 
     const groups = useMemo(() => groupNotificationsByTerm(notifications), [notifications]);
     const sortedTerms = useMemo(() => Object.keys(groups).sort(), [groups]);
