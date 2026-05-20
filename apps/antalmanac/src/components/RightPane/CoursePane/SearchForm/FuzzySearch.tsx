@@ -1,7 +1,9 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import {
+    type CourseSearchParams,
     defaultCourseSearchFormValues,
+    useCourseSearchSubmit,
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -48,7 +50,6 @@ const isIpad = () => {
 };
 
 interface FuzzySearchProps {
-    toggleSearch: () => void;
     postHog?: PostHog;
     labelProps?: ComponentProps<typeof LabeledAutocomplete>['labelProps'];
 }
@@ -58,8 +59,9 @@ interface SearchOption {
     result: SearchResult;
 }
 
-const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) => {
+const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
     const { formData, setFields, setSearchMode } = useCourseSearchUrlState();
+    const submitSearch = useCourseSearchSubmit();
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
     const [open, setOpen] = useState<boolean>(false);
     const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});
@@ -80,32 +82,39 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
             return;
         }
 
-        void setSearchMode('quick');
-        void setFields({ ...defaultCourseSearchFormValues, term: formData.term });
+        const baseFormData: CourseSearchParams = {
+            ...defaultCourseSearchFormValues,
+            term: formData.term,
+        };
+
+        let nextFormData: CourseSearchParams;
         switch (result.type) {
             case resultType.GE_CATEGORY: {
                 const geCode = option.key.split('-')[1].toUpperCase();
-                void setFields({ ge: `GE-${geCode}` });
+                nextFormData = { ...baseFormData, ge: `GE-${geCode}` };
                 break;
             }
             case resultType.DEPARTMENT: {
-                void setFields({ deptValue: option.key });
+                nextFormData = { ...baseFormData, deptValue: option.key };
                 break;
             }
             case resultType.COURSE: {
                 const { department, number } = result.metadata;
-                void setFields({ deptValue: department, courseNumber: number });
+                nextFormData = { ...baseFormData, deptValue: department, courseNumber: number };
                 break;
             }
             case resultType.SECTION: {
-                void setFields({ sectionCode: result.sectionCode });
+                nextFormData = { ...baseFormData, sectionCode: result.sectionCode };
                 break;
             }
             default:
+                nextFormData = baseFormData;
                 break;
         }
 
-        toggleSearch();
+        void setSearchMode('quick');
+        void setFields(nextFormData);
+        submitSearch(nextFormData);
         logAnalytics(postHog, {
             category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,

@@ -3,15 +3,14 @@ import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane'
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import {
-    courseSearchFormDataIsValid,
     courseSearchFormDataHasAdvancedSearch,
     courseSearchFormDataHasRequiredSearchParams,
+    courseSearchFormDataIsValid,
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
 import { parseAsString, useQueryState } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
@@ -38,17 +37,6 @@ export function CoursePaneRoot() {
     const derivedAdvancedSearchEnabled = courseSearchFormDataHasAdvancedSearch(formData);
     const shouldShowSearchForm =
         !courseSearchFormDataHasRequiredSearchParams(formData) || !courseSearchFormDataIsValid(formData);
-
-    const handleSearch = useCallback(() => {
-        if (courseSearchFormDataIsValid(formData)) {
-            setSearchFormIsDisplayed(false);
-        } else {
-            openSnackbar(
-                'error',
-                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
-            );
-        }
-    }, [formData, setSearchFormIsDisplayed]);
 
     const handleDisplaySearch = useCallback(() => {
         setSearchFormIsDisplayed(true);
@@ -109,7 +97,7 @@ export function CoursePaneRoot() {
                 onDismissSearchResults={handleDisplaySearch}
                 onRefreshSearch={refreshSearch}
             />
-            {searchFormIsDisplayed ? <SearchForm toggleSearch={handleSearch} /> : <CourseRenderPane />}
+            {searchFormIsDisplayed ? <SearchForm /> : <CourseRenderPane />}
         </Box>
     );
 }

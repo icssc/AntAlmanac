@@ -8,10 +8,7 @@ import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchFo
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
-import {
-    type CoursesFullOption,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { safeUnreachableCase } from '$lib/utils';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -96,10 +93,8 @@ export function AdvancedSearchTextFields() {
             case 'excludeRoadmapCourses':
             case 'excludeRestrictionCodes':
             case 'days':
-                void setField(name, stringValue);
-                break;
             case 'coursesFull':
-                void setField(name, stringValue as CoursesFullOption);
+                void setField(name, stringValue);
                 break;
             case 'startTime':
             case 'endTime':

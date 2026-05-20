@@ -5,11 +5,10 @@ import { usePostHog } from 'posthog-js/react';
 import { ComponentProps } from 'react';
 
 interface QuickSearchProps {
-    toggleSearch: ComponentProps<typeof FuzzySearch>['toggleSearch'];
     labelProps?: ComponentProps<typeof FuzzySearch>['labelProps'];
 }
 
-export const QuickSearch = ({ toggleSearch, labelProps }: QuickSearchProps) => {
+export const QuickSearch = ({ labelProps }: QuickSearchProps) => {
     const postHog = usePostHog();
     const theme = useTheme();
     const quickSearchStack = `@container quick-search (max-width: ${theme.breakpoints.values.sm}px)`;
@@ -34,7 +33,7 @@ export const QuickSearch = ({ toggleSearch, labelProps }: QuickSearchProps) => {
                         },
                     }}
                 >
-                    <FuzzySearch toggleSearch={toggleSearch} postHog={postHog} labelProps={labelProps} />
+                    <FuzzySearch postHog={postHog} labelProps={labelProps} />
                 </Box>
                 <Typography
                     component="span"

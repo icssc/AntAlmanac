@@ -2,7 +2,10 @@ import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import {
+    useCourseSearchSubmit,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
@@ -12,12 +15,9 @@ import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/materia
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
-interface SearchFormProps {
-    toggleSearch: () => void;
-}
-
-export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
-    const { resetAllPreservingTerm, searchMode, setSearchMode } = useCourseSearchUrlState();
+export const SearchForm = () => {
+    const { formData, resetAllPreservingTerm, searchMode, setSearchMode } = useCourseSearchUrlState();
+    const submitSearch = useCourseSearchSubmit();
     const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
@@ -26,9 +26,12 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            toggleSearch();
+            if (!manualSearchEnabled) {
+                return;
+            }
+            submitSearch(formData);
         },
-        [toggleSearch]
+        [formData, manualSearchEnabled, submitSearch]
     );
 
     const toggleSearchMode = (event: React.MouseEvent<HTMLElement>, value: string) => {
@@ -78,7 +81,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <QuickSearch toggleSearch={toggleSearch} />
+                        <QuickSearch />
                     ) : (
                         <ManualSearch
                             onSubmit={() => {

@@ -4,6 +4,8 @@ import {
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
 import { createParser, createSerializer, parseAsString, useQueryState, useQueryStates } from 'nuqs';
 import { useCallback } from 'react';
@@ -205,4 +207,24 @@ export function useCourseSearchUrlState() {
         resetAdvanced,
         defaultFormData: defaultCourseSearchFormValues,
     };
+}
+
+export function useCourseSearchSubmit() {
+    const setSearchFormIsDisplayed = useCoursePaneStore((store) => store.setSearchFormIsDisplayed);
+
+    return useCallback(
+        (formData: CourseSearchParams) => {
+            if (courseSearchFormDataIsValid(formData)) {
+                setSearchFormIsDisplayed(false);
+                return true;
+            }
+
+            openSnackbar(
+                'error',
+                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
+            );
+            return false;
+        },
+        [setSearchFormIsDisplayed]
+    );
 }
