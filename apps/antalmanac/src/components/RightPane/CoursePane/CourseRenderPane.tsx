@@ -110,12 +110,9 @@ function cleanHeaders(items: CourseListEntry[]): CourseListEntry[] {
     return result;
 }
 
-function getFilteredCourses(
-    allCourses: CourseListEntry[],
-    manualSearchEnabled: boolean,
-    filterTakenCourses: boolean,
-    userTakenCourses: Set<string>
-): CourseListEntry[] {
+function getFilteredCourses(allCourses: CourseListEntry[]): CourseListEntry[] {
+    const { manualSearchEnabled } = useCoursePaneStore.getState();
+    const { filterTakenCourses, userTakenCourses } = usePlannerStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
         const filtered = allCourses.filter((item) => {
             if (isCourseEntry(item)) {
@@ -293,9 +290,6 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term.longName);
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
-    const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
-    const userTakenCourses = usePlannerStore((store) => store.userTakenCourses);
-    const manualSearchEnabled = useCoursePaneStore((store) => store.manualSearchEnabled);
 
     const getQueryParams = useCallback(
         (searchData: CourseSearchParams): WebsocSearchInput => ({
@@ -378,13 +372,8 @@ export default function CourseRenderPane(props: { id?: number }) {
         if (!searchResponse) {
             return [];
         }
-        return getFilteredCourses(
-            flattenSOCObject(searchResponse, courseColors),
-            manualSearchEnabled,
-            filterTakenCourses,
-            userTakenCourses
-        );
-    }, [searchResponse, courseColors, manualSearchEnabled, filterTakenCourses, userTakenCourses]);
+        return getFilteredCourses(flattenSOCObject(searchResponse, courseColors));
+    }, [searchResponse, courseColors]);
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
