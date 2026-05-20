@@ -6,10 +6,7 @@ import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';
 import { AuthPage } from '$routes/AuthPage';
 import { ErrorPage } from '$routes/ErrorPage';
-import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
-import { OutagePage } from '$routes/OutagePage';
-import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { TourProvider } from '@reactour/tour';
@@ -43,18 +40,8 @@ const BROWSER_ROUTER = createBrowserRouter([
                 errorElement: <ErrorPage />,
             },
             {
-                path: '/unsubscribe/:userId',
-                element: <Unsubscribe />,
-                errorElement: <ErrorPage />,
-            },
-            {
                 path: '/:tab',
                 element: HOME_PAGE,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/feedback',
-                element: <Feedback />,
                 errorElement: <ErrorPage />,
             },
             {
@@ -75,10 +62,6 @@ const BROWSER_ROUTER = createBrowserRouter([
                 element: <AuthPage />,
                 errorElement: <ErrorPage />,
             },
-            {
-                path: '*',
-                element: <Navigate to="/" replace />,
-            },
         ],
     },
 ]);
@@ -87,11 +70,6 @@ const OUTAGE_ROUTER = createBrowserRouter([
     {
         element: <RouteLayout />,
         children: [
-            {
-                path: '/outage',
-                element: <OutagePage />,
-                errorElement: <ErrorPage />,
-            },
             {
                 path: '*',
                 element: <Navigate to="/outage" replace />,

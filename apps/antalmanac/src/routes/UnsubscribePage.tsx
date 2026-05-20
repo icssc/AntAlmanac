@@ -1,12 +1,15 @@
+'use client';
+
 import { trpcReact } from '$lib/api/trpc';
 import { parseQuarter } from '$lib/termHelpers';
 import { Box, Button } from '@mui/material';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
 
 export const Unsubscribe = () => {
-    const { userId } = useParams();
-    const [searchParams] = useSearchParams();
+    const params = useParams();
+    const userId = typeof params.userId === 'string' ? params.userId : params.userId?.[0];
+    const searchParams = useSearchParams();
 
     const sectionCode = searchParams.get('sectionCode');
     const searchParamQuarter = searchParams.get('quarter');
