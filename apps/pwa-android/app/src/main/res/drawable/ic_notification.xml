@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Monochrome notification icon. Android requires alpha-only icons for the
+  status bar; tinted by the system. Mirrors the iOS notification icon
+  rendered from the app's primary glyph.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,2 L18,18 L15,18 L13.5,14 L10.5,14 L9,18 L6,18 Z M12,8 L11,12 L13,12 Z" />
+</vector>

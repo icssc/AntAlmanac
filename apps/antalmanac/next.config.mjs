@@ -22,6 +22,14 @@ const nextConfig = {
                 source: '/.well-known/apple-app-site-association',
                 destination: '/apple-app-site-association',
             },
+            // Android's Intent Filter Verifier fetches the Digital Asset
+            // Links file from this exact path. Route to the Next.js handler
+            // at src/app/assetlinks.json/route.ts, which emits the file with
+            // Content-Type: application/json.
+            {
+                source: '/.well-known/assetlinks.json',
+                destination: '/assetlinks.json',
+            },
         ];
     },
 };

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Brand colour pulled from apps/antalmanac/public/manifest.json
+      (`theme_color: #305db7`). Keep in sync with the web manifest so the
+      splash screen + system UI tint don't diverge from the PWA.
+    -->
+    <color name="brand_primary">#305DB7</color>
+    <color name="brand_primary_dark">#1F3F7F</color>
+    <color name="launch_background">#FFFFFF</color>
+    <color name="launch_background_dark">#121212</color>
+</resources>

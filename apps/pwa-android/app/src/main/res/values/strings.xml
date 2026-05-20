@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AntAlmanac</string>
+    <string name="connection_problem">Connection problem</string>
+
+    <string name="default_notification_channel_id">antalmanac_default</string>
+    <string name="default_notification_channel_name">AntAlmanac Notifications</string>
+    <string name="default_notification_channel_description">Updates and reminders from AntAlmanac.</string>
+</resources>

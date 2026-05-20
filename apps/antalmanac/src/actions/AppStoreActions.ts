@@ -2,7 +2,12 @@ import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analyti
 import { trpc } from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
+import {
+    isNativeAndroidApp,
+    isNativeIosApp,
+    NATIVE_ANDROID_REDIRECT_URI,
+    NATIVE_IOS_REDIRECT_URI,
+} from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -410,7 +415,11 @@ export const loginUser = async ({
     postHog,
 }: { provider?: 'google' | 'apple'; postHog?: PostHog } = {}) => {
     try {
-        const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
+        const redirectUri = isNativeIosApp()
+            ? NATIVE_IOS_REDIRECT_URI
+            : isNativeAndroidApp()
+              ? NATIVE_ANDROID_REDIRECT_URI
+              : undefined;
         const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
         const authUrl = await trpc.auth.getAuthUrl.query({
             ...(redirectUri ? { redirectUri } : {}),

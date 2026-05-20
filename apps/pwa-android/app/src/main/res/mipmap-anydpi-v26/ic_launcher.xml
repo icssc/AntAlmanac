@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive launcher icon. Background = brand colour, foreground = the same
+  placeholder mark used by the splash screen. Replace the foreground with
+  the AntAlmanac ant logo at 108dp (with a 72dp safe zone) before shipping.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/brand_primary" />
+    <foreground android:drawable="@drawable/ic_splash" />
+    <monochrome android:drawable="@drawable/ic_splash" />
+</adaptive-icon>
