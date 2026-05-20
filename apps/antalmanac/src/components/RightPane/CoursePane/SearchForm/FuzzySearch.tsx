@@ -59,7 +59,7 @@ interface SearchOption {
 }
 
 const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) => {
-    const { formData, setFields } = useCourseSearchUrlState();
+    const { formData, setFields, setSearchMode } = useCourseSearchUrlState();
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
     const [open, setOpen] = useState<boolean>(false);
     const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});
@@ -79,28 +79,32 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         if (!result) {
             return;
         }
-        const nextFields = { ...defaultCourseSearchFormValues, term: formData.term };
+
+        void setSearchMode('quick');
+        void setFields({ ...defaultCourseSearchFormValues, term: formData.term });
         switch (result.type) {
             case resultType.GE_CATEGORY: {
                 const geCode = option.key.split('-')[1].toUpperCase();
-                void setFields({ ...nextFields, ge: `GE-${geCode}` });
+                void setFields({ ge: `GE-${geCode}` });
                 break;
             }
-            case resultType.DEPARTMENT:
-                void setFields({ ...nextFields, deptValue: option.key });
+            case resultType.DEPARTMENT: {
+                void setFields({ deptValue: option.key });
                 break;
+            }
             case resultType.COURSE: {
                 const { department, number } = result.metadata;
-                void setFields({ ...nextFields, deptValue: department, courseNumber: number });
+                void setFields({ deptValue: department, courseNumber: number });
                 break;
             }
             case resultType.SECTION: {
-                void setFields({ ...nextFields, sectionCode: result.sectionCode });
+                void setFields({ sectionCode: result.sectionCode });
                 break;
             }
             default:
                 break;
         }
+
         toggleSearch();
         logAnalytics(postHog, {
             category: analyticsEnum.classSearch,

@@ -2,12 +2,13 @@ import {
     PLANNER_SEARCH_PARAM,
     type AdvancedSearchParam,
     MANUAL_SEARCH_PARAMS,
+    normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { normalizeGeSelection } from '$lib/multiGeSearch';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
 import { createParser, createSerializer, parseAsString, useQueryState, useQueryStates } from 'nuqs';
 import { useCallback, useEffect } from 'react';
+import { create } from 'zustand';
 
 const REPLACE_HISTORY_OPTIONS = { history: 'replace' as const };
 
@@ -50,7 +51,9 @@ export interface CourseSearchParams {
 
 export type CourseSearchField = Exclude<keyof CourseSearchParams, 'term'>;
 
-interface CoursePaneUrlState {
+type CourseSearchMode = 'quick' | 'manual';
+
+interface CoursePaneUiState {
     manualSearchEnabled: boolean;
     advancedSearchEnabled: boolean;
     searchFormIsDisplayed: boolean;
@@ -84,16 +87,6 @@ const parseAsNormalizedGe = createParser<string>({
     .withOptions(REPLACE_HISTORY_OPTIONS)
     .withDefault(defaultCourseSearchFormValues.ge);
 
-const parseAsOptionalBoolean = createParser<boolean>({
-    parse: (value) => {
-        if (value === 'true') return true;
-        if (value === 'false') return false;
-        return null;
-    },
-    serialize: (value) => (value ? 'true' : 'false'),
-    eq: (a, b) => a === b,
-}).withOptions(REPLACE_HISTORY_OPTIONS);
-
 export const courseSearchParamParsers = {
     term: parseAsCourseSearchTerm,
     deptValue: createStringParser(defaultCourseSearchFormValues.deptValue),
@@ -111,12 +104,6 @@ export const courseSearchParamParsers = {
     excludeRoadmapCourses: createStringParser(defaultAdvancedSearchValues.excludeRoadmapCourses),
     excludeRestrictionCodes: createStringParser(defaultAdvancedSearchValues.excludeRestrictionCodes),
     days: createStringParser(defaultAdvancedSearchValues.days),
-};
-
-const coursePaneUiParamParsers = {
-    manual: parseAsOptionalBoolean,
-    advanced: parseAsOptionalBoolean,
-    showSearch: parseAsOptionalBoolean,
 };
 
 export const serializeCourseSearchParams = createSerializer(courseSearchParamParsers);
@@ -162,8 +149,35 @@ export function courseSearchFormDataHasRequiredSearchParams(formData: CourseSear
     );
 }
 
+const parseAsManualSearchMode = createParser<'manual'>({
+    parse: (value) => (value === 'manual' ? 'manual' : null),
+    serialize: (value) => value,
+    eq: (a, b) => a === b,
+}).withOptions(REPLACE_HISTORY_OPTIONS);
+
+interface CoursePaneStoreState {
+    searchFormIsDisplayed: boolean;
+    advancedSearchEnabled: boolean;
+    initialized: boolean;
+    initialize: (searchFormIsDisplayed: boolean, advancedSearchEnabled: boolean) => void;
+    setSearchFormIsDisplayed: (value: boolean) => void;
+    setAdvancedSearchEnabled: (value: boolean) => void;
+}
+
+const useCoursePaneStore = create<CoursePaneStoreState>((set) => ({
+    searchFormIsDisplayed: true,
+    advancedSearchEnabled: false,
+    initialized: false,
+    initialize: (searchFormIsDisplayed, advancedSearchEnabled) =>
+        set({ searchFormIsDisplayed, advancedSearchEnabled, initialized: true }),
+    setSearchFormIsDisplayed: (searchFormIsDisplayed) => set({ searchFormIsDisplayed }),
+    setAdvancedSearchEnabled: (advancedSearchEnabled) => set({ advancedSearchEnabled }),
+}));
+
 export function useCourseSearchUrlState() {
     const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
+    const [searchModeParam, setSearchModeParam] = useQueryState('search', parseAsManualSearchMode);
+    const searchMode: CourseSearchMode = searchModeParam === 'manual' ? 'manual' : 'quick';
 
     const setField = useCallback(
         <Field extends CourseSearchField>(field: Field, value: CourseSearchParams[Field]) => {
@@ -190,103 +204,109 @@ export function useCourseSearchUrlState() {
         return setFormData(defaultCourseSearchFormValues);
     }, [setFormData]);
 
+    const resetAllPreservingTerm = useCallback(() => {
+        return setFormData({ ...defaultCourseSearchFormValues, term: formData.term });
+    }, [formData.term, setFormData]);
+
     const resetAdvanced = useCallback(() => {
         return setFormData(defaultAdvancedSearchValues);
     }, [setFormData]);
 
+    const setSearchMode = useCallback(
+        (mode: CourseSearchMode) => {
+            return setSearchModeParam(mode === 'manual' ? 'manual' : null);
+        },
+        [setSearchModeParam]
+    );
+
     return {
         formData,
+        searchMode,
         setField,
         setFields,
         setFormData,
         setTerm,
+        setSearchMode,
         resetAll,
+        resetAllPreservingTerm,
         resetAdvanced,
         defaultFormData: defaultCourseSearchFormValues,
     };
 }
 
 export function useCoursePaneUrlState() {
-    const { formData } = useCourseSearchUrlState();
+    const { formData, searchMode, setSearchMode, resetAllPreservingTerm } = useCourseSearchUrlState();
     const [plannerSearchParam] = useQueryState(
         PLANNER_SEARCH_PARAM,
         parseAsString.withOptions(REPLACE_HISTORY_OPTIONS)
     );
-    const [paneState, setPaneState] = useQueryStates(coursePaneUiParamParsers);
+    const { searchFormIsDisplayed, advancedSearchEnabled, initialized, initialize } = useCoursePaneStore();
 
-    const derivedManualSearchEnabled = courseSearchFormDataHasManualSearch(formData) && plannerSearchParam === null;
+    const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
     const derivedAdvancedSearchEnabled = courseSearchFormDataHasAdvancedSearch(formData);
-    const derivedSearchFormIsDisplayed =
+    const shouldShowSearchForm =
         !courseSearchFormDataHasRequiredSearchParams(formData) || !courseSearchFormDataIsValid(formData);
 
-    const manualSearchEnabled = paneState.manual ?? derivedManualSearchEnabled;
-    const advancedSearchEnabled = paneState.advanced ?? derivedAdvancedSearchEnabled;
-    const searchFormIsDisplayed = paneState.showSearch ?? derivedSearchFormIsDisplayed;
-
     useEffect(() => {
-        const nextState: Partial<typeof paneState> = {};
-
-        if (paneState.manual === null) {
-            nextState.manual = derivedManualSearchEnabled;
+        if (!initialized) {
+            initialize(shouldShowSearchForm, manualSearchEnabled && derivedAdvancedSearchEnabled);
         }
-        if (paneState.advanced === null) {
-            nextState.advanced = derivedAdvancedSearchEnabled;
-        }
-        if (paneState.showSearch === null) {
-            nextState.showSearch = derivedSearchFormIsDisplayed;
-        }
-
-        if (Object.keys(nextState).length > 0) {
-            void setPaneState(nextState);
-        }
-    }, [
-        derivedAdvancedSearchEnabled,
-        derivedManualSearchEnabled,
-        derivedSearchFormIsDisplayed,
-        paneState.advanced,
-        paneState.manual,
-        paneState.showSearch,
-        setPaneState,
-    ]);
+    }, [derivedAdvancedSearchEnabled, initialize, initialized, manualSearchEnabled, shouldShowSearchForm]);
 
     const setManualSearchEnabled = useCallback(
-        (value: boolean) => {
-            return setPaneState({ manual: value });
+        async (value: boolean) => {
+            if (value) {
+                return setSearchMode('manual');
+            }
+
+            useCoursePaneStore.getState().setAdvancedSearchEnabled(false);
+            await setSearchMode('quick');
+            return resetAllPreservingTerm();
         },
-        [setPaneState]
+        [resetAllPreservingTerm, setSearchMode]
     );
 
-    const setAdvancedSearchEnabled = useCallback(
-        (value: boolean) => {
-            return setPaneState({ advanced: value });
-        },
-        [setPaneState]
-    );
+    const setAdvancedSearchEnabled = useCallback((value: boolean) => {
+        useCoursePaneStore.getState().setAdvancedSearchEnabled(value);
+        return Promise.resolve(new URLSearchParams(window.location.search));
+    }, []);
 
     const setSearchFormIsDisplayed = useCallback(
-        (value: boolean) => {
-            return setPaneState({ showSearch: value });
+        async (value: boolean) => {
+            useCoursePaneStore.getState().setSearchFormIsDisplayed(value);
+
+            if (value && !manualSearchEnabled) {
+                useCoursePaneStore.getState().setAdvancedSearchEnabled(false);
+                await setSearchMode('quick');
+                return resetAllPreservingTerm();
+            }
+
+            if (value && derivedAdvancedSearchEnabled) {
+                useCoursePaneStore.getState().setAdvancedSearchEnabled(true);
+            }
+
+            return new URLSearchParams(window.location.search);
         },
-        [setPaneState]
+        [derivedAdvancedSearchEnabled, manualSearchEnabled, resetAllPreservingTerm, setSearchMode]
     );
 
     return {
-        ...paneState,
         formData,
         manualSearchEnabled,
         advancedSearchEnabled,
         searchFormIsDisplayed,
+        searchMode,
         setManualSearchEnabled,
         setAdvancedSearchEnabled,
+        setSearchFormIsDisplayed,
         displaySearch: () => setSearchFormIsDisplayed(true),
         displaySections: () => setSearchFormIsDisplayed(false),
-    } satisfies CoursePaneUrlState & {
-        manual: boolean | null;
-        advanced: boolean | null;
-        showSearch: boolean | null;
+    } satisfies CoursePaneUiState & {
         formData: CourseSearchParams;
+        searchMode: CourseSearchMode;
         setManualSearchEnabled: (value: boolean) => Promise<URLSearchParams>;
         setAdvancedSearchEnabled: (value: boolean) => Promise<URLSearchParams>;
+        setSearchFormIsDisplayed: (value: boolean) => Promise<URLSearchParams>;
         displaySearch: () => Promise<URLSearchParams>;
         displaySections: () => Promise<URLSearchParams>;
     };

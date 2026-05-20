@@ -19,7 +19,7 @@ interface SearchFormProps {
 }
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
-    const { resetAll } = useCourseSearchUrlState();
+    const { resetAllPreservingTerm } = useCourseSearchUrlState();
     const { manualSearchEnabled, setManualSearchEnabled } = useCoursePaneUrlState();
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
@@ -82,7 +82,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                                 });
                             }}
                             onReset={() => {
-                                void resetAll();
+                                void resetAllPreservingTerm();
                             }}
                         />
                     )}
