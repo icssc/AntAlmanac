@@ -1,15 +1,18 @@
 import type { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedSectionsGrid';
+import { CustomEventDetailView } from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { Component, type ReactNode, useEffect, useState } from 'react';
 
 /**
- * Renders nothing if the wrapped tree throws. The skeleton renders the real
- * SectionTable using cached schedule data, and any shape drift in that cache
- * (e.g. fields added or removed in future updates) shouldn't break the page.
+ * Renders nothing if the wrapped tree throws. The skeleton renders real
+ * SectionTables / CustomEventDetailViews using cached schedule data, and any
+ * shape drift in that cache (e.g. fields added or removed in future updates)
+ * shouldn't break the page.
  */
 class SkeletonErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
     state = { hasError: false };
@@ -21,6 +24,11 @@ class SkeletonErrorBoundary extends Component<{ children: ReactNode }, { hasErro
     render() {
         return this.state.hasError ? null : this.props.children;
     }
+}
+
+interface CachedBlueprint {
+    courses: CourseWithTerm[];
+    customEvents: RepeatingCustomEvent[];
 }
 
 function isValidCachedCourse(value: unknown): value is CourseWithTerm {
@@ -37,14 +45,39 @@ function isValidCachedCourse(value: unknown): value is CourseWithTerm {
     );
 }
 
-function readCachedCourses(): CourseWithTerm[] | null {
+function isValidCachedCustomEvent(value: unknown): value is RepeatingCustomEvent {
+    if (typeof value !== 'object' || value === null) return false;
+    const ev = value as Partial<RepeatingCustomEvent>;
+    return (
+        typeof ev.title === 'string' &&
+        typeof ev.start === 'string' &&
+        typeof ev.end === 'string' &&
+        Array.isArray(ev.days) &&
+        (typeof ev.customEventID === 'string' || typeof ev.customEventID === 'number')
+    );
+}
+
+function readCachedBlueprint(): CachedBlueprint | null {
     const raw = getLocalStorageAddedCoursesSkeletonBlueprint();
     if (!raw) return null;
 
     try {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0 && parsed.every(isValidCachedCourse)) {
-            return parsed;
+
+        // Legacy format: just an array of courses.
+        if (Array.isArray(parsed)) {
+            const courses = parsed.filter(isValidCachedCourse);
+            return courses.length > 0 ? { courses, customEvents: [] } : null;
+        }
+
+        // Current format: { courses, customEvents }.
+        if (parsed && typeof parsed === 'object') {
+            const courses = Array.isArray(parsed.courses) ? parsed.courses.filter(isValidCachedCourse) : [];
+            const customEvents = Array.isArray(parsed.customEvents)
+                ? parsed.customEvents.filter(isValidCachedCustomEvent)
+                : [];
+            if (courses.length === 0 && customEvents.length === 0) return null;
+            return { courses, customEvents };
         }
     } catch {
         // ignore malformed data
@@ -53,17 +86,16 @@ function readCachedCourses(): CourseWithTerm[] | null {
 }
 
 /**
- * Renders the previous schedule's `SectionTable`s with `skeleton={true}`,
- * which wraps each interactive element (buttons + table) in its own MUI
+ * Renders the previous schedule's `SectionTable`s and `CustomEventDetailView`s
+ * with `skeleton={true}`, which wraps each interactive element in its own MUI
  * children-aware `Skeleton`. The hidden real children inside each Skeleton
  * contribute layout, so every placeholder sizes exactly to the real element
- * it will be replaced by — no height tracking, no responsive logic to keep
- * in sync.
+ * it will be replaced by.
  */
 export function AddedCoursesLoadingSkeleton() {
     // Read once on mount — the cache doesn't change while the skeleton is
     // visible (the real schedule reload is what eventually unmounts us).
-    const [courses] = useState(readCachedCourses);
+    const [blueprint] = useState(readCachedBlueprint);
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     useEffect(() => {
@@ -74,12 +106,12 @@ export function AddedCoursesLoadingSkeleton() {
         };
     }, []);
 
-    if (!courses) return null;
+    if (!blueprint) return null;
 
     return (
         <SkeletonErrorBoundary>
             <Box display="flex" flexDirection="column" gap={1}>
-                {courses.map((course) => (
+                {blueprint.courses.map((course) => (
                     <SectionTable
                         key={course.id}
                         skeleton
@@ -91,6 +123,22 @@ export function AddedCoursesLoadingSkeleton() {
                         scheduleNames={scheduleNames}
                     />
                 ))}
+
+                {blueprint.customEvents.length > 0 && (
+                    <>
+                        <Typography variant="h6">Custom Events</Typography>
+                        <Box display="flex" flexDirection="column" gap={1}>
+                            {blueprint.customEvents.map((customEvent) => (
+                                <CustomEventDetailView
+                                    key={customEvent.customEventID}
+                                    skeleton
+                                    customEvent={customEvent}
+                                    scheduleNames={scheduleNames}
+                                />
+                            ))}
+                        </Box>
+                    </>
+                )}
             </Box>
         </SkeletonErrorBoundary>
     );

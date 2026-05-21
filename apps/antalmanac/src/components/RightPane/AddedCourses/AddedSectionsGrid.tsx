@@ -23,7 +23,7 @@ import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { Box, SxProps, Typography } from '@mui/material';
-import { AACourse, AATerm } from '@packages/antalmanac-types';
+import { AACourse, AATerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useEffect, useMemo, useState } from 'react';
 
 export interface CourseWithTerm extends AACourse {
@@ -44,28 +44,33 @@ const buttonSx: SxProps = {
 };
 
 /**
- * Save the rendered schedule as JSON so the skeleton on the next load can
- * render the previous schedule via `<SectionTable skeleton>` — the real
- * SectionTableBody renders for sizing (hidden under MUI's children-aware
- * Skeleton), which is what keeps row heights accurate for sections with
- * multiple instructors / multi-line meetings.
+ * Save the rendered schedule (courses + custom events) as JSON so the
+ * skeleton on the next load can render the previous shape via
+ * `<SectionTable skeleton>` and `<CustomEventDetailView skeleton>`.
  *
- * `courseComment` and `prerequisiteLink` are dropped (kept as empty strings
- * so the parsed shape still satisfies CourseWithTerm). They're the heaviest
- * fields and neither is read by the visible parts of the skeleton — the
- * prereq popover never opens during loading.
+ * For courses, `courseComment` and `prerequisiteLink` are dropped (kept as
+ * empty strings so the parsed shape still satisfies CourseWithTerm). They're
+ * the heaviest fields and neither is read by the visible parts of the
+ * skeleton — the prereq popover never opens during loading.
  */
-function persistSkeletonBlueprint(courses: CourseWithTerm[]) {
-    if (courses.length === 0) {
+function persistSkeletonBlueprint(courses: CourseWithTerm[], customEvents: RepeatingCustomEvent[]) {
+    if (courses.length === 0 && customEvents.length === 0) {
         removeLocalStorageAddedCoursesSkeletonBlueprint();
         return;
     }
-    const slim = courses.map((course) => ({
-        ...course,
-        courseComment: '',
-        prerequisiteLink: '',
-    }));
+    const slim = {
+        courses: courses.map((course) => ({
+            ...course,
+            courseComment: '',
+            prerequisiteLink: '',
+        })),
+        customEvents,
+    };
     setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(slim));
+}
+
+function persistFromAppStore() {
+    persistSkeletonBlueprint(getCourses(), AppStore.schedule.getCurrentCustomEvents());
 }
 
 function getCourses() {
@@ -136,19 +141,23 @@ export function AddedSectionsGrid() {
     };
 
     useEffect(() => {
-        // Persist whatever courses are already in AppStore at mount, in case
-        // AppStore was populated before this component mounted and no
-        // addedCoursesChange event fires later. Skip when empty so a stale
-        // blueprint from a previous session isn't cleared before loadSchedule
-        // has a chance to populate AppStore.
-        if (courses.length > 0) {
-            persistSkeletonBlueprint(courses);
+        // Persist whatever's already in AppStore at mount, in case it was
+        // populated before this component mounted and no change event fires
+        // later. Skip when both lists are empty so a stale blueprint from a
+        // previous session isn't cleared before loadSchedule has a chance to
+        // populate AppStore.
+        if (courses.length > 0 || AppStore.schedule.getCurrentCustomEvents().length > 0) {
+            persistFromAppStore();
         }
 
         const handleCoursesChange = () => {
             const nextCourses = getCourses();
             setCourses(nextCourses);
-            persistSkeletonBlueprint(nextCourses);
+            persistFromAppStore();
+        };
+
+        const handleCustomEventsChange = () => {
+            persistFromAppStore();
         };
 
         const handleScheduleNamesChange = () => {
@@ -161,12 +170,14 @@ export function AddedSectionsGrid() {
 
         AppStore.on('addedCoursesChange', handleCoursesChange);
         AppStore.on('currentScheduleIndexChange', handleCoursesChange);
+        AppStore.on('customEventsChange', handleCustomEventsChange);
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
         AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
 
         return () => {
             AppStore.off('addedCoursesChange', handleCoursesChange);
             AppStore.off('currentScheduleIndexChange', handleCoursesChange);
+            AppStore.off('customEventsChange', handleCustomEventsChange);
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
