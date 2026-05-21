@@ -9,7 +9,13 @@ import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchP
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
-import { trpc } from '$lib/api/trpc';
+import { trpc, trpcReact } from '$lib/api/trpc';
+import {
+    getGradesPrefetchParams,
+    prefetchGradesForSearch,
+    SEARCH_RESULTS_QUERY_KEY,
+    type GradesPrefetchParams,
+} from '$lib/hydrateGrades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -284,6 +290,7 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
+    const utils = trpcReact.useUtils();
     const [courseColors, setCourseColors] = useState(getColors);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
@@ -320,13 +327,14 @@ export default function CourseRenderPane(props: { id?: number }) {
         isError,
     } = useQuery({
         staleTime: 5 * 60 * 1000,
-        queryKey: ['searchResults', RightPaneStore.getFormData(), RightPaneStore.getMultiSearchData()],
+        queryKey: [SEARCH_RESULTS_QUERY_KEY, RightPaneStore.getFormData(), RightPaneStore.getMultiSearchData()],
         queryFn: async (): Promise<WebsocAPIResponse | null> => {
             setUnofferedCourses([]);
 
             try {
                 const multiSearchData = RightPaneStore.getMultiSearchData();
                 let response: WebsocAPIResponse;
+                const gradesPrefetchParams: GradesPrefetchParams[] = [];
 
                 if (multiSearchData.length > 0) {
                     const { year, quarter } = RightPaneStore.getFormData().term;
@@ -339,6 +347,10 @@ export default function CourseRenderPane(props: { id?: number }) {
                     for (const course of multiSearchData) {
                         if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
                             offeredCourses.push(getQueryParams(course));
+                            const gradesParams = getGradesPrefetchParams(course);
+                            if (gradesParams) {
+                                gradesPrefetchParams.push(gradesParams);
+                            }
                         } else {
                             unofferedCourses.push(course);
                         }
@@ -346,7 +358,8 @@ export default function CourseRenderPane(props: { id?: number }) {
                     setUnofferedCourses(unofferedCourses);
                     response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
                 } else {
-                    const websocQueryParams = getQueryParams(RightPaneStore.getFormData());
+                    const formData = RightPaneStore.getFormData();
+                    const websocQueryParams = getQueryParams(formData);
                     const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
                     response =
                         selectedGEs.length > 1
@@ -357,7 +370,17 @@ export default function CourseRenderPane(props: { id?: number }) {
                                   })
                               )
                             : await trpc.websoc.getOne.query(websocQueryParams);
+
+                    const gradesParams = getGradesPrefetchParams(formData);
+                    if (gradesParams) {
+                        gradesPrefetchParams.push(gradesParams);
+                    }
                 }
+
+                await prefetchGradesForSearch(utils, gradesPrefetchParams).catch((error) => {
+                    console.error(error);
+                    openSnackbar('error', 'Error loading grades information');
+                });
 
                 setSearchedTerm(RightPaneStore.getFormData().term.longName);
                 return response;
