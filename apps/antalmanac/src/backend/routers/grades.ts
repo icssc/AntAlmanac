@@ -13,14 +13,6 @@ const gradesInputSchema = z.object({
     ge: GradesGeSchema.optional(),
 });
 
-/**
- * Fetches aggregate grades for a course and all of its historical predecessors
- * (via the rename chain in `COURSE_RENAMES`), then merges the results into a
- * single `AggregateGrades` value.
- *
- * When no rename chain exists for the course, the function is equivalent to a
- * single direct API call with no overhead.
- */
 async function fetchAndMergeGrades(input: z.infer<typeof gradesInputSchema>): Promise<AggregateGrades> {
     const { department, courseNumber } = input;
 
@@ -34,8 +26,8 @@ async function fetchAndMergeGrades(input: z.infer<typeof gradesInputSchema>): Pr
         return aapiClient.grades.aggregate(input);
     }
 
-    // Fan out: apply instructor/ge filters only to the current course ID — those
-    // filters are not meaningful across a rename boundary.
+    // Instructor/ge filters only apply to the current course ID; predecessors
+    // are queried by department + courseNumber only.
     const [current, ...predecessors] = identifiers;
     const results = await Promise.all([
         aapiClient.grades.aggregate({ ...input, department: current.department, courseNumber: current.courseNumber }),
@@ -44,7 +36,6 @@ async function fetchAndMergeGrades(input: z.infer<typeof gradesInputSchema>): Pr
         ),
     ]);
 
-    // aapiClient.grades.aggregate throws on failure, so results are never null.
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return mergeAggregateGrades(results)!;
 }
