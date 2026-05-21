@@ -1,45 +1,48 @@
 import type { AggregateGrades } from '@packages/anteater-api/types';
 
+interface CourseId {
+    department: string;
+    courseNumber: string;
+}
+
 /**
- * Metadata for a single course rename event.
+ * Each entry maps a course's current identity to the identity it held
+ * immediately before the rename, plus the fall-start year the new name
+ * first appeared.
  *
- * `effectiveYear` is the fall-start year of the academic year in which the
- * course was first offered under its new name (e.g. 2024 → Fall 2024–25).
- * Data before `effectiveYear` in AnteaterAPI is recorded under `previously`;
- * data from `effectiveYear` onward is under the new department/courseNumber.
- * The two sets are disjoint — fetching both is purely additive.
+ * Data before `effectiveYear` in AnteaterAPI lives under `previously`;
+ * data from `effectiveYear` onward lives under the current department +
+ * courseNumber.  The two sets are disjoint — fetching both is additive.
  *
- * Chains (A → B → C) are represented as consecutive entries where each step's
- * `previously` points to the immediately preceding department/courseNumber.
+ * Chains (A → B → C) use two entries:
+ *   { department: B_dept, courseNumber: B_num, previously: A, effectiveYear: year1 }
+ *   { department: C_dept, courseNumber: C_num, previously: B, effectiveYear: year2 }
  */
-interface CourseRenameEntry {
-    previously: { department: string; courseNumber: string };
+interface CourseRename extends CourseId {
+    previously: CourseId;
     effectiveYear: number;
 }
 
 /**
- * Nested map: department → courseNumber → rename metadata.
- *
- * To add a rename:
- *   1. Add (or extend) the department key.
- *   2. Add the *new* courseNumber as the inner key.
- *   3. Set `previously` to the old department/courseNumber.
- *   4. Set `effectiveYear` to the fall-start year the new name appeared.
- *
- * Example chain A(dept, num) → B → C:
- *   B_dept: { B_num: { previously: A, effectiveYear: year1 } }
- *   C_dept: { C_num: { previously: B, effectiveYear: year2 } }
+ * To add a rename, append one object: the new department/courseNumber, the
+ * old department/courseNumber as `previously`, and the fall-start year.
  */
-const COURSE_RENAMES: Record<string, Record<string, CourseRenameEntry>> = {
+const COURSE_RENAMES: CourseRename[] = [
     // INF 43 → SWE 43 (Fall 2024)
-    SWE: {
-        '43': { previously: { department: 'INF', courseNumber: '43' }, effectiveYear: 2024 },
+    {
+        department: 'SWE',
+        courseNumber: '43',
+        previously: { department: 'INF', courseNumber: '43' },
+        effectiveYear: 2024,
     },
     // ICS 32A → ICS H32 (Fall 2024)
-    ICS: {
-        H32: { previously: { department: 'ICS', courseNumber: '32A' }, effectiveYear: 2024 },
+    {
+        department: 'ICS',
+        courseNumber: 'H32',
+        previously: { department: 'ICS', courseNumber: '32A' },
+        effectiveYear: 2024,
     },
-};
+];
 
 /**
  * Returns every { department, courseNumber } pair that must be queried to
@@ -48,21 +51,16 @@ const COURSE_RENAMES: Record<string, Record<string, CourseRenameEntry>> = {
  *
  * When the course has no rename history, the returned array contains only the
  * input values and no extra queries are needed.
- *
- * The loop depth is bounded by the total number of entries in `COURSE_RENAMES`
- * so cycles (which should never occur in practice) cannot cause an infinite loop.
  */
-export function getAllCourseIdentifiers(
-    department: string,
-    courseNumber: string
-): Array<{ department: string; courseNumber: string }> {
-    const identifiers: Array<{ department: string; courseNumber: string }> = [{ department, courseNumber }];
+export function getAllCourseIdentifiers(department: string, courseNumber: string): CourseId[] {
+    const identifiers: CourseId[] = [{ department, courseNumber }];
+    let current: CourseId = { department, courseNumber };
 
-    const maxDepth = Object.values(COURSE_RENAMES).reduce((sum, dept) => sum + Object.keys(dept).length, 0);
-    let current = { department, courseNumber };
-
-    for (let i = 0; i < maxDepth; i++) {
-        const entry = COURSE_RENAMES[current.department]?.[current.courseNumber];
+    // Bound iterations by list length to guard against accidental cycles.
+    for (let i = 0; i < COURSE_RENAMES.length; i++) {
+        const entry = COURSE_RENAMES.find(
+            (r) => r.department === current.department && r.courseNumber === current.courseNumber
+        );
         if (!entry) break;
         identifiers.push(entry.previously);
         current = entry.previously;
