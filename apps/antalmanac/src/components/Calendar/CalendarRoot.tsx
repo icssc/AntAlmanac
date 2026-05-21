@@ -397,7 +397,7 @@ export const ScheduleCalendar = memo(() => {
 
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
                 <TbaCalendarCard />
-                <CalendarEventPopover />
+                <CalendarEventPopover scheduleNames={scheduleNames} />
 
                 <Backdrop
                     open={showEmptyState}
