@@ -58,15 +58,15 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
             <CardHeader
                 title={title}
                 subheader={
-                    predecessorLabel ? (
-                        <>
-                            {subheader}
-                            <br />
-                            {predecessorLabel}
-                        </>
-                    ) : (
-                        subheader
-                    )
+                    <>
+                        {subheader}
+                        {predecessorLabel && (
+                            <>
+                                <br />
+                                {predecessorLabel}
+                            </>
+                        )}
+                    </>
                 }
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },

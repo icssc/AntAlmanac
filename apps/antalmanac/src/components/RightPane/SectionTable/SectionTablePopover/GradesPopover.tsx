@@ -99,15 +99,15 @@ export function GradesPopover(props: GradesPopoverProps) {
             <CardHeader
                 title={title}
                 subheader={
-                    predecessorLabel ? (
-                        <>
-                            {subheader}
-                            <br />
-                            {predecessorLabel}
-                        </>
-                    ) : (
-                        subheader
-                    )
+                    <>
+                        {subheader}
+                        {predecessorLabel && (
+                            <>
+                                <br />
+                                {predecessorLabel}
+                            </>
+                        )}
+                    </>
                 }
                 action={
                     <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">

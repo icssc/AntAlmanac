@@ -128,15 +128,15 @@ export function EnrollmentHistoryPopover({
             <CardHeader
                 title={title}
                 subheader={
-                    predecessorLabel ? (
-                        <>
-                            {subheader}
-                            <br />
-                            {predecessorLabel}
-                        </>
-                    ) : (
-                        subheader
-                    )
+                    <>
+                        {subheader}
+                        {predecessorLabel && (
+                            <>
+                                <br />
+                                {predecessorLabel}
+                            </>
+                        )}
+                    </>
                 }
                 action={headerAction}
                 slotProps={{
