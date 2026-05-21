@@ -127,7 +127,7 @@ export function EnrollmentHistoryPopover({
                 title={title}
                 subheader={
                     <>
-                        {subheader ?? (predecessorLabel ? null : <>&nbsp;</>)}
+                        {subheader ?? (!predecessorLabel && <>&nbsp;</>)}
                         {subheader && predecessorLabel && <br />}
                         {predecessorLabel}
                     </>

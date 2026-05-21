@@ -101,12 +101,8 @@ export function GradesPopover(props: GradesPopoverProps) {
                 subheader={
                     <>
                         {subheader}
-                        {predecessorLabel && (
-                            <>
-                                <br />
-                                {predecessorLabel}
-                            </>
-                        )}
+                        {subheader && predecessorLabel && <br />}
+                        {predecessorLabel}
                     </>
                 }
                 action={
