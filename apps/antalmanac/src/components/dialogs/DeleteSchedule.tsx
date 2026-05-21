@@ -9,7 +9,7 @@ import {
     DialogTitle,
     type DialogProps,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface ScheduleNameDialogProps extends DialogProps {
     /**
@@ -41,17 +41,6 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
         deleteSchedule(index);
         onClose?.({}, 'escapeKeyDown');
     }, [index, onClose]);
-
-    const handleScheduleNamesChange = useCallback(() => {
-        setName(AppStore.getScheduleNames()[index]);
-    }, [index]);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
 
     return (
         <Dialog {...dialogProps}>
