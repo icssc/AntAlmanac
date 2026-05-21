@@ -11,32 +11,48 @@ interface GpaCellProps {
     instructors: string[];
 }
 
+function formatGpa(averageGPA: number | null | undefined): string {
+    if (averageGPA == null) {
+        return '';
+    }
+    return averageGPA.toFixed(2);
+}
+
 export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
     const isMobile = useIsMobile();
     const theme = useTheme();
+    const utils = trpcReact.useUtils();
     const [anchorEl, setAnchorEl] = useState<Element>();
 
     const namedInstructors = useMemo(() => instructors.filter((i) => i !== 'STAFF'), [instructors]);
 
-    const instructorResults = trpcReact.useQueries((t) =>
-        namedInstructors.map((instructor) =>
-            t.grades.aggregateGrades(
-                { department: deptCode, courseNumber, instructor },
-                { select: (data) => data?.gradeDistribution ?? null }
-            )
-        )
+    const cachedMatch = useMemo(() => {
+        for (const instructor of namedInstructors) {
+            const cached = utils.grades.aggregateGrades.getData({
+                department: deptCode,
+                courseNumber,
+                instructor,
+            });
+            if (cached?.gradeDistribution?.averageGPA != null) {
+                return { instructor, gpa: formatGpa(cached.gradeDistribution.averageGPA) };
+            }
+        }
+        return null;
+    }, [courseNumber, deptCode, namedInstructors, utils]);
+
+    const fallbackInstructor = namedInstructors[0] ?? '';
+
+    const { data: fetchedGrades, isLoading } = trpcReact.grades.aggregateGrades.useQuery(
+        { department: deptCode, courseNumber, instructor: fallbackInstructor },
+        {
+            enabled: !cachedMatch && !!fallbackInstructor,
+            select: (data) => data?.gradeDistribution ?? null,
+        }
     );
 
-    const loading = instructorResults.some((r) => r.isLoading);
-
-    const { gpa, instructor } = useMemo(() => {
-        const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
-        if (idx >= 0) {
-            const avg = instructorResults[idx].data?.averageGPA;
-            return { gpa: avg || avg === 0 ? avg.toFixed(2) : '', instructor: namedInstructors[idx] };
-        }
-        return { gpa: '', instructor: namedInstructors[0] ?? '' };
-    }, [instructorResults, namedInstructors]);
+    const gpa = cachedMatch?.gpa ?? formatGpa(fetchedGrades?.averageGPA);
+    const instructor = cachedMatch?.instructor ?? fallbackInstructor;
+    const loading = !cachedMatch && isLoading;
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl((current) => (current ? undefined : event.currentTarget));
