@@ -75,11 +75,9 @@ export function EnrollmentHistoryPopover({
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
-        currEnrollmentHistory != null ? (
-            `${currEnrollmentHistory.term.shortName} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
-        ) : (
-            <>&nbsp;</>
-        );
+        currEnrollmentHistory != null
+            ? `${currEnrollmentHistory.term.shortName} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
+            : null;
 
     const chartColors = theme.palette.enrollmentStatus;
 
@@ -129,13 +127,9 @@ export function EnrollmentHistoryPopover({
                 title={title}
                 subheader={
                     <>
-                        {subheader}
-                        {predecessorLabel && (
-                            <>
-                                <br />
-                                {predecessorLabel}
-                            </>
-                        )}
+                        {subheader ?? (predecessorLabel ? null : <>&nbsp;</>)}
+                        {subheader && predecessorLabel && <br />}
+                        {predecessorLabel}
                     </>
                 }
                 action={headerAction}

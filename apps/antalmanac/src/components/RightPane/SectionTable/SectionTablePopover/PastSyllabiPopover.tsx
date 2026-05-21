@@ -47,11 +47,9 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     }, [syllabi]);
 
     const title = `${deptCode} ${courseNumber}`;
-    const subheader = loading ? (
-        <>&nbsp;</>
-    ) : (
-        `${syllabi.length} ${syllabi.length === 1 ? 'syllabus' : 'syllabi'} across ${Object.keys(syllabiByTerm).length} ${Object.keys(syllabiByTerm).length === 1 ? 'term' : 'terms'}`
-    );
+    const subheader = loading
+        ? null
+        : `${syllabi.length} ${syllabi.length === 1 ? 'syllabus' : 'syllabi'} across ${Object.keys(syllabiByTerm).length} ${Object.keys(syllabiByTerm).length === 1 ? 'term' : 'terms'}`;
 
     return (
         <Card>
@@ -59,13 +57,9 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                 title={title}
                 subheader={
                     <>
-                        {subheader}
-                        {predecessorLabel && (
-                            <>
-                                <br />
-                                {predecessorLabel}
-                            </>
-                        )}
+                        {subheader ?? (predecessorLabel ? null : <>&nbsp;</>)}
+                        {subheader && predecessorLabel && <br />}
+                        {predecessorLabel}
                     </>
                 }
                 slotProps={{
