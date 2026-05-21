@@ -31,7 +31,7 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
      * This is destructured separately for memoization.
      */
     const { onClose } = props;
-    const [name, setName] = useState<string>(AppStore.getScheduleNames()[index]);
+    const [name] = useState<string>(AppStore.getScheduleNames()[index]);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
