@@ -79,7 +79,7 @@ export function getPredecessorLabel(department: string, courseNumber: string): s
         );
         if (!entry) break;
         const yr = entry.effectiveYear;
-        const yearLabel = `${yr}/${String(yr + 1).slice(-2)}`;
+        const yearLabel = `${String(yr).slice(-2)}/${String(yr + 1).slice(-2)}`;
         parts.push(`${entry.previously.department} ${entry.previously.courseNumber} (before ${yearLabel})`);
         current = entry.previously;
     }

@@ -4,7 +4,7 @@ import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/a
 import { trpc } from '$lib/api/trpc';
 import { getAllSyllabiCourseIds, getPredecessorLabel } from '$lib/courseRenames';
 import { InfoOutlined } from '@mui/icons-material';
-import { Box, Button, Card, CardContent, CardHeader, Popover, Skeleton, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CardHeader, Divider, Popover, Skeleton, Typography } from '@mui/material';
 import type { PrerequisiteTree } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
@@ -123,17 +123,20 @@ export const CourseInfoBar = ({
         return (
             <Card>
                 <CardHeader
-                    title={title}
+                    title={`${deptCode} ${courseNumber} | ${title}`}
                     subheader={predecessorLabel ?? undefined}
                     slotProps={{
                         title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                     }}
                 />
                 <CardContent sx={{ maxWidth: 500, pt: 0 }}>
-                    <Typography variant="body2">{description}</Typography>
+                    <Typography variant="body1">{description}</Typography>
+                    {(Object.keys(prerequisite_tree).length > 0 ||
+                        prerequisite_text !== '' ||
+                        prerequisite_for.length !== 0) && <Divider sx={{ my: 1 }} />}
                     {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
                     {prerequisite_text !== '' && (
-                        <Typography variant="body2" mt={1}>
+                        <Typography variant="body1" mt={1}>
                             <a
                                 onClick={() => {
                                     logAnalytics(postHog, {
@@ -151,13 +154,13 @@ export const CourseInfoBar = ({
                         </Typography>
                     )}
                     {prerequisite_for.length !== 0 && (
-                        <Typography variant="body2" mt={1}>
+                        <Typography variant="body1" mt={1}>
                             <span style={{ marginRight: 4 }}>Prerequisite for:</span>
                             {prerequisite_for.join(', ')}
                         </Typography>
                     )}
                     {ge_list !== '' && (
-                        <Typography variant="body2" mt={1}>
+                        <Typography variant="body1" mt={1}>
                             <span style={{ marginRight: 4 }}>General Education Categories:</span>
                             {ge_list}
                         </Typography>
@@ -185,7 +188,7 @@ export const CourseInfoBar = ({
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={() => setAnchorEl(null)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
                 {getPopoverContent()}
             </Popover>
