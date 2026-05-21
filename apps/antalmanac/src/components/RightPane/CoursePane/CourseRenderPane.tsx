@@ -272,8 +272,7 @@ const ErrorMessage = () => {
             ) : null}
 
             <Image
-                // src={isDark ? '/assets/dark-no_results.png' : '/assets/no_results.png'}
-                src={isDark ? '/assets/mobile-logo-cropped.svg' : '/assets/mobile-logo-cropped.svg'}
+                src={isDark ? '/assets/dark-no_results.png' : '/assets/no_results.png'}
                 width={601}
                 height={422}
                 alt="No Results Found"
