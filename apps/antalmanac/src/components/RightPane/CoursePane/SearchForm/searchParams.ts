@@ -1,6 +1,5 @@
 import {
     type AdvancedSearchParam,
-    MANUAL_SEARCH_PARAMS,
     PLANNER_SEARCH_PARAM,
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
@@ -101,45 +100,27 @@ export const courseSearchParamParsers = {
 
 export const serializeCourseSearchParams = createSerializer(courseSearchParamParsers);
 
-export function buildCourseSearchFormData(
-    values: Partial<CourseSearchParams> = defaultCourseSearchFormValues
-): CourseSearchParams {
-    return {
-        ...defaultCourseSearchFormValues,
-        ...values,
-        term: values.term ?? defaultCourseSearchFormValues.term,
-        ge: normalizeGeSelection(values.ge ?? defaultCourseSearchFormValues.ge),
-    };
-}
-
+/** Enough to run a WebSOC search (dept, GE, section, or instructor). */
 export function courseSearchFormDataIsValid(formData: CourseSearchParams) {
     const { ge, deptValue, sectionCode, instructor } = formData;
-    return ge.toUpperCase() !== 'ANY' || deptValue.toUpperCase() !== 'ALL' || sectionCode !== '' || instructor !== '';
+    return ge !== 'ANY' || deptValue !== 'ALL' || sectionCode !== '' || instructor !== '';
 }
 
 export function courseSearchFormDataHasAdvancedSearch(formData: CourseSearchParams) {
-    const formFields = Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[];
-    return formFields.some((key) => formData[key] !== defaultAdvancedSearchValues[key]);
+    return (Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[]).some(
+        (key) => formData[key] !== defaultAdvancedSearchValues[key]
+    );
 }
 
-export function courseSearchFormDataHasManualSearch(formData: CourseSearchParams) {
-    const formFields = MANUAL_SEARCH_PARAMS as readonly (keyof CourseSearchParams)[];
-    return formFields.some((key) => {
-        if (key === 'term') {
-            return formData.term.shortName !== defaultCourseSearchFormValues.term.shortName;
-        }
-
-        return formData[key] !== defaultCourseSearchFormValues[key];
-    });
-}
-
-export function courseSearchFormDataHasRequiredSearchParams(formData: CourseSearchParams) {
-    return (
+/** Show the search form when params are empty or present but not valid enough for results. */
+export function courseSearchFormDataShouldShowSearchForm(formData: CourseSearchParams) {
+    const hasPrimarySearchInput =
         formData.sectionCode !== '' ||
         formData.courseNumber !== '' ||
         formData.ge !== 'ANY' ||
-        formData.deptValue !== 'ALL'
-    );
+        formData.deptValue !== 'ALL';
+
+    return !hasPrimarySearchInput || !courseSearchFormDataIsValid(formData);
 }
 
 export function useCourseSearchUrlState() {
@@ -152,10 +133,7 @@ export function useCourseSearchUrlState() {
     const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString);
     const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
 
-    const shouldShowSearchForm =
-        !courseSearchFormDataHasRequiredSearchParams(formData) || !courseSearchFormDataIsValid(formData);
-
-    const derivedView: CourseSearchView = shouldShowSearchForm ? 'search' : 'results';
+    const derivedView: CourseSearchView = courseSearchFormDataShouldShowSearchForm(formData) ? 'search' : 'results';
     const view: CourseSearchView = viewParam ?? derivedView;
     const searchFormIsDisplayed = view === 'search';
 

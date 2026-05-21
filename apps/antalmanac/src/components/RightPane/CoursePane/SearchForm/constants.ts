@@ -32,7 +32,7 @@ export type ManualSearchParam = (typeof MANUAL_SEARCH_PARAMS)[number];
 export const PLANNER_SEARCH_PARAM = 'importRoadmap';
 
 export const GE_LIST = [
-    { value: 'ANY', label: "All: Don't filter for GE", shortLabel: 'All GEs' },
+    { value: 'ANY', label: "ANY: Don't filter for GE", shortLabel: 'Any GEs' },
     { value: 'GE-1A', label: 'GE Ia (1a): Lower Division Writing', shortLabel: 'GE Ia (1a)' },
     { value: 'GE-1B', label: 'GE Ib (1b): Upper Division Writing', shortLabel: 'GE Ib (1b)' },
     { value: 'GE-2', label: 'GE II (2): Science and Technology', shortLabel: 'GE II (2)' },
