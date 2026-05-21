@@ -124,13 +124,7 @@ export const CourseInfoBar = ({
             <Card>
                 <CardHeader
                     title={title}
-                    subheader={
-                        predecessorLabel ? (
-                            <Typography variant="caption" color="text.secondary">
-                                {predecessorLabel}
-                            </Typography>
-                        ) : undefined
-                    }
+                    subheader={predecessorLabel ?? undefined}
                     slotProps={{
                         title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                     }}

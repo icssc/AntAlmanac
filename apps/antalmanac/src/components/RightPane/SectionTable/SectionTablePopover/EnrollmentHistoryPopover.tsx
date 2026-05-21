@@ -131,9 +131,8 @@ export function EnrollmentHistoryPopover({
                     predecessorLabel ? (
                         <>
                             {subheader}
-                            <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
-                                {predecessorLabel}
-                            </Typography>
+                            <br />
+                            {predecessorLabel}
                         </>
                     ) : (
                         subheader
