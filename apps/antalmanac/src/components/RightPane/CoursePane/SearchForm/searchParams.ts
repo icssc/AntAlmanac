@@ -1,5 +1,5 @@
 import {
-    type AdvancedSearchParam,
+    ADVANCED_SEARCH_PARAMS,
     PLANNER_SEARCH_PARAM,
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
@@ -107,9 +107,7 @@ export function courseSearchFormDataIsValid(formData: CourseSearchParams) {
 }
 
 export function courseSearchFormDataHasAdvancedSearch(formData: CourseSearchParams) {
-    return (Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[]).some(
-        (key) => formData[key] !== defaultAdvancedSearchValues[key]
-    );
+    return ADVANCED_SEARCH_PARAMS.some((key) => formData[key] !== defaultAdvancedSearchValues[key]);
 }
 
 /** Show the search form when params are empty or present but not valid enough for results. */
