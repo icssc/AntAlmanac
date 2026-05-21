@@ -129,38 +129,42 @@ export const CourseInfoBar = ({
                         title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                     }}
                 />
-                <CardContent sx={{ maxWidth: 500, pt: 0 }}>
+                <CardContent sx={{ maxWidth: 500, pt: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Typography variant="body1">{description}</Typography>
                     {(Object.keys(prerequisite_tree).length > 0 ||
                         prerequisite_text !== '' ||
-                        prerequisite_for.length !== 0) && <Divider sx={{ my: 1 }} />}
-                    {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
-                    {prerequisite_text !== '' && (
-                        <Typography variant="body1" mt={1}>
-                            <a
-                                onClick={() => {
-                                    logAnalytics(postHog, {
-                                        category: analyticsCategory,
-                                        action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
-                                    });
-                                }}
-                                href={prerequisiteLink}
-                                rel="noopener noreferrer"
-                                target="_blank"
-                            >
-                                <span style={{ marginRight: 4 }}>Prerequisites:</span>
-                            </a>
-                            {prerequisite_text}
-                        </Typography>
-                    )}
-                    {prerequisite_for.length !== 0 && (
-                        <Typography variant="body1" mt={1}>
-                            <span style={{ marginRight: 4 }}>Prerequisite for:</span>
-                            {prerequisite_for.join(', ')}
-                        </Typography>
+                        prerequisite_for.length !== 0) && (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            <Divider />
+                            {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
+                            {prerequisite_text !== '' && (
+                                <Typography variant="body1">
+                                    <a
+                                        onClick={() => {
+                                            logAnalytics(postHog, {
+                                                category: analyticsCategory,
+                                                action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
+                                            });
+                                        }}
+                                        href={prerequisiteLink}
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                    >
+                                        <span style={{ marginRight: 4 }}>Prerequisites:</span>
+                                    </a>
+                                    {prerequisite_text}
+                                </Typography>
+                            )}
+                            {prerequisite_for.length !== 0 && (
+                                <Typography variant="body1">
+                                    <span style={{ marginRight: 4 }}>Prerequisite for:</span>
+                                    {prerequisite_for.join(', ')}
+                                </Typography>
+                            )}
+                        </Box>
                     )}
                     {ge_list !== '' && (
-                        <Typography variant="body1" mt={1}>
+                        <Typography variant="body1">
                             <span style={{ marginRight: 4 }}>General Education Categories:</span>
                             {ge_list}
                         </Typography>
