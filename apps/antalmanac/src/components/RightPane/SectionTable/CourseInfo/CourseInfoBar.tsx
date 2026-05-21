@@ -13,7 +13,7 @@ const noCourseInfo = {
     id: '',
     department: '',
     courseNumber: '',
-    title: 'No description available',
+    title: '',
     prerequisite_tree: {},
     prerequisite_list: [],
     prerequisite_text: '',
@@ -121,51 +121,69 @@ export const CourseInfoBar = ({
         return (
             <Card>
                 <CardHeader
-                    title={`${deptCode} ${courseNumber} | ${title}`}
+                    title={`${deptCode} ${courseNumber}${title ? ` | ${title}` : ''}`}
                     subheader={predecessorLabel ?? undefined}
                     slotProps={{
                         title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                     }}
                 />
                 <CardContent sx={{ maxWidth: 500, pt: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Typography variant="body1">{description}</Typography>
-                    {(Object.keys(prerequisite_tree).length > 0 ||
-                        prerequisite_text !== '' ||
-                        prerequisite_for.length !== 0) && (
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            <Divider />
-                            {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
-                            {prerequisite_text !== '' && (
-                                <Typography variant="body1">
-                                    <a
-                                        onClick={() => {
-                                            logAnalytics(postHog, {
-                                                category: analyticsCategory,
-                                                action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
-                                            });
-                                        }}
-                                        href={prerequisiteLink}
-                                        rel="noopener noreferrer"
-                                        target="_blank"
-                                    >
-                                        <span style={{ marginRight: 4 }}>Prerequisites:</span>
-                                    </a>
-                                    {prerequisite_text}
-                                </Typography>
-                            )}
-                            {prerequisite_for.length !== 0 && (
-                                <Typography variant="body1">
-                                    <span style={{ marginRight: 4 }}>Prerequisite for:</span>
-                                    {prerequisite_for.join(', ')}
-                                </Typography>
-                            )}
+                    {!description && !Object.keys(prerequisite_tree).length && !ge_list ? (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                px: 1,
+                                textAlign: 'center',
+                            }}
+                        >
+                            <Typography variant="body1" color="text.secondary">
+                                No description available.
+                            </Typography>
                         </Box>
-                    )}
-                    {ge_list !== '' && (
-                        <Typography variant="body1">
-                            <span style={{ marginRight: 4 }}>General Education Categories:</span>
-                            {ge_list}
-                        </Typography>
+                    ) : (
+                        <>
+                            <Typography variant="body1">{description}</Typography>
+                            {(Object.keys(prerequisite_tree).length > 0 ||
+                                prerequisite_text !== '' ||
+                                prerequisite_for.length !== 0) && (
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    <Divider />
+                                    {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
+                                    {prerequisite_text !== '' && (
+                                        <Typography variant="body1">
+                                            <a
+                                                onClick={() => {
+                                                    logAnalytics(postHog, {
+                                                        category: analyticsCategory,
+                                                        action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
+                                                    });
+                                                }}
+                                                href={prerequisiteLink}
+                                                rel="noopener noreferrer"
+                                                target="_blank"
+                                            >
+                                                <span style={{ marginRight: 4 }}>Prerequisites:</span>
+                                            </a>
+                                            {prerequisite_text}
+                                        </Typography>
+                                    )}
+                                    {prerequisite_for.length !== 0 && (
+                                        <Typography variant="body1">
+                                            <span style={{ marginRight: 4 }}>Prerequisite for:</span>
+                                            {prerequisite_for.join(', ')}
+                                        </Typography>
+                                    )}
+                                </Box>
+                            )}
+                            {ge_list !== '' && (
+                                <Typography variant="body1">
+                                    <span style={{ marginRight: 4 }}>General Education Categories:</span>
+                                    {ge_list}
+                                </Typography>
+                            )}
+                        </>
                     )}
                 </CardContent>
             </Card>
