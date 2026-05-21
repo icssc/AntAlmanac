@@ -20,16 +20,9 @@ export function ScheduleManagementTabs({ onTabChange }: ScheduleManagementTabsPr
                 borderWidth: '1px 0px 1px 0px',
             }}
         >
-            <MuiTabs
-                value={activeTab}
-                indicatorColor="secondary"
-                textColor="secondary"
-                variant="fullWidth"
-                centered
-                onChange={(_, tabIndex) => onTabChange(tabIndex)}
-            >
+            <MuiTabs value={activeTab} indicatorColor="secondary" textColor="secondary" variant="fullWidth" centered>
                 {Tabs.map((tab, index) => (
-                    <ScheduleManagementTab key={tab.name} tab={tab} value={index} />
+                    <ScheduleManagementTab key={tab.name} tab={tab} value={index} onTabChange={onTabChange} />
                 ))}
             </MuiTabs>
         </Paper>

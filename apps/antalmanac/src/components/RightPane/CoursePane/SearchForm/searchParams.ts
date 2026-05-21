@@ -126,7 +126,8 @@ export function shouldShowSearchForm(formData: CourseSearchParams) {
         formData.sectionCode !== '' ||
         formData.courseNumber !== '' ||
         formData.ge !== 'ANY' ||
-        formData.deptValue !== 'ALL';
+        formData.deptValue !== 'ALL' ||
+        formData.instructor !== '';
 
     return !hasPrimarySearchInput || !isValidSearch(formData);
 }

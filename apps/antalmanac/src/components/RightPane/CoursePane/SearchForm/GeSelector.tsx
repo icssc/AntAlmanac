@@ -34,7 +34,7 @@ export function GeSelector() {
                 onChange: handleChange,
                 renderValue: (selected) => {
                     const values = selected as string[];
-                    if (values.length === 0) return ANY_GE;
+                    if (values.length === 0) return getLabel(ANY_GE);
                     if (values.length === 1) return getLabel(values[0]);
                     return values.map((value) => getShortLabel(value)).join(' and ');
                 },

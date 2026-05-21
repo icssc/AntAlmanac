@@ -7,10 +7,10 @@ import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { Tabs, TAB_INDEX, useTabStore } from '$stores/TabStore';
+import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 /**
@@ -18,7 +18,6 @@ import { useShallow } from 'zustand/react/shallow';
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
-    const navigate = useNavigate();
     const { activeTab, setActiveTab, setActiveTabValue } = useTabStore(
         useShallow((store) => ({
             activeTab: store.activeTab,
@@ -53,18 +52,13 @@ export function ScheduleManagement() {
                 useSavedSearchStore.getState().saveSearch();
             }
 
-            setActiveTabValue(nextTab);
-
             if (nextTab === TAB_INDEX.search) {
-                const restoredSearch = useSavedSearchStore.getState().popSavedSearch();
-                navigate(restoredSearch ? { pathname: '/', search: restoredSearch } : '/');
-                return;
+                useSavedSearchStore.getState().popSavedSearch();
             }
 
-            const href = Tabs[nextTab]?.href;
-            navigate(href || '/');
+            setActiveTabValue(nextTab);
         },
-        [activeTab, navigate, setActiveTabValue]
+        [activeTab, setActiveTabValue]
     );
 
     useEffect(() => {
