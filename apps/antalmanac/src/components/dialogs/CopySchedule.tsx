@@ -11,7 +11,7 @@ import {
     type DialogProps,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 interface CopyScheduleDialogProps extends DialogProps {
     index: number;
@@ -36,17 +36,6 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
         copySchedule(index, name, undefined, postHog);
         onClose?.({}, 'escapeKeyDown');
     }, [index, name, onClose, postHog]);
-
-    const handleScheduleNamesChange = useCallback(() => {
-        setName(`Copy of ${AppStore.getScheduleNames()[index]}`);
-    }, [index]);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
 
     return (
         <Dialog onClose={onClose} {...props}>
