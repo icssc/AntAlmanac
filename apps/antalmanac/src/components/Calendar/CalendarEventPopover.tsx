@@ -1,34 +1,23 @@
 'use client';
 
 import { CourseCalendarEvent, isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import AppStore from '$stores/AppStore';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { Popover } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-export function CalendarEventPopover() {
+interface CalendarEventPopoverProps {
+    scheduleNames: string[];
+}
+
+export function CalendarEventPopover({ scheduleNames }: CalendarEventPopoverProps) {
     const [anchorEl, selectedEvent, setSelectedEvent] = useSelectedEventStore(
         useShallow((state) => [state.selectedEventAnchorEl, state.selectedEvent, state.setSelectedEvent])
     );
 
-    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
-
     const handleClosePopover = useCallback(() => {
         setSelectedEvent(null, null);
     }, [setSelectedEvent]);
-
-    useEffect(() => {
-        const updateScheduleNames = () => {
-            setScheduleNames(AppStore.getScheduleNames());
-        };
-
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
-        };
-    }, []);
 
     if (!selectedEvent || isSkeletonEvent(selectedEvent)) {
         return null;
