@@ -1,4 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
+import { getAllSyllabiCourseIds } from '$src/lib/courseRenames';
 import { QuarterSchema, WebsocSearchInputKeysSchema, type CourseInfo } from '@packages/antalmanac-types';
 import { WebsocSearchInputSchema, type WebsocSearchInput } from '@packages/antalmanac-types';
 import type {
@@ -112,7 +113,18 @@ const websocRouter = router({
                 instructor: z.string().optional(),
             })
         )
-        .query(({ input }): Promise<WebsocSyllabiResponse> => aapiClient.websoc.getSyllabi(input)),
+        .query(async ({ input }): Promise<WebsocSyllabiResponse> => {
+            const courseIds = getAllSyllabiCourseIds(input.courseId);
+            if (courseIds.length === 1) return aapiClient.websoc.getSyllabi(input);
+
+            const settled = await Promise.allSettled(
+                courseIds.map((courseId) => aapiClient.websoc.getSyllabi({ ...input, courseId }))
+            );
+
+            return settled
+                .filter((r): r is PromiseFulfilledResult<WebsocSyllabiResponse> => r.status === 'fulfilled')
+                .flatMap((r) => r.value);
+        }),
 });
 
 export default websocRouter;

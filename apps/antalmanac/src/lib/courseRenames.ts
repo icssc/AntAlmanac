@@ -44,6 +44,26 @@ export function getAllCourseIdentifiers(department: string, courseNumber: string
     return identifiers;
 }
 
+/**
+ * Returns the given syllabi courseId (format: `deptCode.replaceAll(' ', '') + courseNumber`,
+ * e.g. "SWE43") plus all predecessor courseIds in the same format, newest-first.
+ */
+export function getAllSyllabiCourseIds(courseId: string): string[] {
+    const toSyllabiId = (ci: CourseId) => ci.department.replaceAll(' ', '') + ci.courseNumber;
+    const ids: string[] = [courseId];
+    let current = courseId;
+
+    for (let i = 0; i < COURSE_RENAMES.length; i++) {
+        const entry = COURSE_RENAMES.find((r) => toSyllabiId(r) === current);
+        if (!entry) break;
+        const prevId = toSyllabiId(entry.previously);
+        ids.push(prevId);
+        current = prevId;
+    }
+
+    return ids;
+}
+
 /** Sums grade counts across results and recalculates averageGPA as a weighted mean. */
 export function mergeAggregateGrades(results: (AggregateGrades | null | undefined)[]): AggregateGrades | null {
     const defined = results.filter((r): r is NonNullable<AggregateGrades> => r != null);

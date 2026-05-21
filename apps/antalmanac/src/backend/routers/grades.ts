@@ -32,7 +32,7 @@ const gradesRouter = router({
             // Instructor/ge filters only apply to the current course ID; predecessors
             // are queried by department + courseNumber only.
             const [current, ...predecessors] = identifiers;
-            const results = await Promise.all([
+            const settled = await Promise.allSettled([
                 aapiClient.grades.aggregate({
                     ...input,
                     department: current.department,
@@ -43,8 +43,12 @@ const gradesRouter = router({
                 ),
             ]);
 
+            const fulfilled = settled
+                .filter((r): r is PromiseFulfilledResult<AggregateGrades> => r.status === 'fulfilled')
+                .map((r) => r.value);
+
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            return mergeAggregateGrades(results)!;
+            return mergeAggregateGrades(fulfilled)!;
         }),
 
     // Mutation so tRPC doesn't batch it with concurrent WebSOC queries.
