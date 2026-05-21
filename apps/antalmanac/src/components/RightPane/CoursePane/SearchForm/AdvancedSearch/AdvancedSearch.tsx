@@ -1,22 +1,22 @@
 import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import {
+    courseSearchFormDataHasAdvancedSearch,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Button, Collapse, Typography } from '@mui/material';
+import { useState } from 'react';
 
 export function AdvancedSearch() {
-    const advancedSearchEnabled = useCoursePaneStore((store) => store.advancedSearchEnabled);
-    const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
+    const { formData } = useCourseSearchUrlState();
+    const [expanded, setExpanded] = useState(() => courseSearchFormDataHasAdvancedSearch(formData));
     const isDark = useThemeStore((store) => store.isDark);
-
-    const handleExpand = () => {
-        setAdvancedSearchEnabled(!advancedSearchEnabled);
-    };
 
     return (
         <>
             <Button
-                onClick={handleExpand}
+                onClick={() => setExpanded((value) => !value)}
                 color={isDark ? 'secondary' : 'primary'}
                 sx={{
                     textTransform: 'none',
@@ -25,9 +25,9 @@ export function AdvancedSearch() {
                 }}
             >
                 <Typography noWrap>Advanced Search Options</Typography>
-                {advancedSearchEnabled ? <ExpandLess /> : <ExpandMore />}
+                {expanded ? <ExpandLess /> : <ExpandMore />}
             </Button>
-            <Collapse in={advancedSearchEnabled}>
+            <Collapse in={expanded}>
                 <AdvancedSearchTextFields />
             </Collapse>
         </>

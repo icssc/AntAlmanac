@@ -1,20 +1,15 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
-import {
-    courseSearchFormDataHasAdvancedSearch,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { Box } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
 export function CoursePaneRoot() {
     const {
-        formData,
         manualSearchEnabled,
         searchFormIsDisplayed,
         showSearchForm,
@@ -22,36 +17,22 @@ export function CoursePaneRoot() {
         setSearchMode,
         resetAllPreservingTerm,
     } = useCourseSearchUrlState();
-    const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
 
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
-    const derivedAdvancedSearchEnabled = courseSearchFormDataHasAdvancedSearch(formData);
 
     const handleDisplaySearch = useCallback(() => {
         if (manualSearchEnabled) {
-            if (derivedAdvancedSearchEnabled) {
-                setAdvancedSearchEnabled(true);
-            }
             // Keep params; force form visible via view=search
             void showSearchForm();
             return;
         }
 
-        setAdvancedSearchEnabled(false);
         void setSearchMode('quick');
         // Clear params → shouldShowSearchForm becomes true → view=null auto-derives to form
         void resetAllPreservingTerm();
         void clearView();
-    }, [
-        clearView,
-        derivedAdvancedSearchEnabled,
-        manualSearchEnabled,
-        resetAllPreservingTerm,
-        setAdvancedSearchEnabled,
-        setSearchMode,
-        showSearchForm,
-    ]);
+    }, [clearView, manualSearchEnabled, resetAllPreservingTerm, setSearchMode, showSearchForm]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {

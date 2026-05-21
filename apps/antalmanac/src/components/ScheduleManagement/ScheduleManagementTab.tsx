@@ -1,6 +1,6 @@
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useTabStore } from '$stores/TabStore';
 import { Tab } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -16,7 +16,7 @@ interface ScheduleManagementTabProps {
 export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
     const setActiveTabValue = useTabStore((store) => store.setActiveTabValue);
     const isMobile = useIsMobile();
-    const savedSearch = useCoursePaneStore((store) => store.savedSearch);
+    const savedSearch = useSavedSearchStore((store) => store.savedSearch);
 
     // When returning to Search, replay the saved query string so nuqs picks it up.
     const to = value === SEARCH_TAB_VALUE && savedSearch ? { pathname: tab.href, search: savedSearch } : tab.href;
@@ -25,11 +25,11 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
         const activeTab = useTabStore.getState().activeTab;
 
         if (activeTab === SEARCH_TAB_VALUE && value !== SEARCH_TAB_VALUE) {
-            useCoursePaneStore.getState().saveSearch();
+            useSavedSearchStore.getState().saveSearch();
         }
 
         if (value === SEARCH_TAB_VALUE) {
-            useCoursePaneStore.getState().popSavedSearch();
+            useSavedSearchStore.getState().popSavedSearch();
         }
 
         setActiveTabValue(value);

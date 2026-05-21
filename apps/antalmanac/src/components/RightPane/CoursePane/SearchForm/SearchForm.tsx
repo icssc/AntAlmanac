@@ -6,7 +6,6 @@ import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/Search
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
@@ -15,7 +14,6 @@ import { useCallback, type FormEvent } from 'react';
 export const SearchForm = () => {
     const { formData, resetAllPreservingTerm, searchMode, setSearchMode, clearView, submitSearch } =
         useCourseSearchUrlState();
-    const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
     const manualSearchEnabled = searchMode === 'manual';
@@ -39,7 +37,6 @@ export const SearchForm = () => {
             return;
         }
 
-        setAdvancedSearchEnabled(false);
         void setSearchMode('quick');
         void resetAllPreservingTerm();
         // Params are cleared; let auto-derive show the form (view=null)

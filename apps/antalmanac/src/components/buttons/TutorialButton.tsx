@@ -1,6 +1,5 @@
 import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
@@ -13,16 +12,14 @@ interface TutorialButtonProps {
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
     const { setCurrentStep, setIsOpen, isOpen } = useTour();
     const { setSearchMode, resetAll, clearView } = useCourseSearchUrlState();
-    const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
 
     const startTutorial = useCallback(() => {
-        setAdvancedSearchEnabled(false);
         void setSearchMode('quick');
         void resetAll();
         void clearView();
         setCurrentStep(0);
         setIsOpen(true);
-    }, [clearView, resetAll, setAdvancedSearchEnabled, setCurrentStep, setIsOpen, setSearchMode]);
+    }, [clearView, resetAll, setCurrentStep, setIsOpen, setSearchMode]);
 
     useEffect(() => {
         return () => {
