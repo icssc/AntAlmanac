@@ -117,13 +117,11 @@ const websocRouter = router({
             const courseIds = getAllSyllabiCourseIds(input.courseId);
             if (courseIds.length === 1) return aapiClient.websoc.getSyllabi(input);
 
-            const settled = await Promise.allSettled(
+            const results = await Promise.all(
                 courseIds.map((courseId) => aapiClient.websoc.getSyllabi({ ...input, courseId }))
             );
 
-            return settled
-                .filter((r): r is PromiseFulfilledResult<WebsocSyllabiResponse> => r.status === 'fulfilled')
-                .flatMap((r) => r.value);
+            return results.flat();
         }),
 });
 

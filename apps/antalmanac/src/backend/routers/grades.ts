@@ -29,18 +29,14 @@ const gradesRouter = router({
                 return aapiClient.grades.aggregate(input);
             }
 
-            const settled = await Promise.allSettled(
+            const results = await Promise.all(
                 identifiers.map((ci) =>
                     aapiClient.grades.aggregate({ ...input, department: ci.department, courseNumber: ci.courseNumber })
                 )
             );
 
-            const fulfilled = settled
-                .filter((r): r is PromiseFulfilledResult<AggregateGrades> => r.status === 'fulfilled')
-                .map((r) => r.value);
-
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            return mergeAggregateGrades(fulfilled)!;
+            return mergeAggregateGrades(results)!;
         }),
 
     // Mutation so tRPC doesn't batch it with concurrent WebSOC queries.
