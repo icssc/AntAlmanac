@@ -1,6 +1,6 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
+import { getAllCourseIdentifiers, mergeAggregateGrades } from '$src/lib/courseRenames';
 import { GradesGeSchema } from '@packages/antalmanac-types';
-import { getAllCourseIdentifiers, mergeAggregateGrades } from '@packages/antalmanac-types';
 import type { AggregateGrades, AggregateGradesByOffering } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
@@ -24,21 +24,18 @@ const gradesInputSchema = z.object({
 async function fetchAndMergeGrades(input: z.infer<typeof gradesInputSchema>): Promise<AggregateGrades> {
     const { department, courseNumber } = input;
 
-    // No rename look-up possible without both fields; fall back to a plain query.
     if (!department || !courseNumber) {
         return aapiClient.grades.aggregate(input);
     }
 
-    const identifiers = getAllCourseIdentifiers({ department, courseNumber });
+    const identifiers = getAllCourseIdentifiers(department, courseNumber);
 
-    // Single-course fast path — no rename chain.
     if (identifiers.length === 1) {
         return aapiClient.grades.aggregate(input);
     }
 
-    // Fan out: query the current course with all original params (instructor,
-    // ge, etc.), and query each predecessor by department + courseNumber only
-    // (instructor/ge filters are not meaningful across a rename boundary).
+    // Fan out: apply instructor/ge filters only to the current course ID — those
+    // filters are not meaningful across a rename boundary.
     const [current, ...predecessors] = identifiers;
     const results = await Promise.all([
         aapiClient.grades.aggregate({ ...input, department: current.department, courseNumber: current.courseNumber }),
@@ -47,9 +44,7 @@ async function fetchAndMergeGrades(input: z.infer<typeof gradesInputSchema>): Pr
         ),
     ]);
 
-    // mergeAggregateGrades returns null only when every input is null/undefined.
-    // aapiClient.grades.aggregate throws on failure, so `results` is always
-    // populated — the non-null assertion is safe.
+    // aapiClient.grades.aggregate throws on failure, so results are never null.
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return mergeAggregateGrades(results)!;
 }

@@ -1,6 +1,4 @@
 export * from './calendar';
-export * from './courseRenames';
-export * from './courseRenameUtils';
 export * from './schedule';
 export * from './grades';
 export * from './customEvent';
