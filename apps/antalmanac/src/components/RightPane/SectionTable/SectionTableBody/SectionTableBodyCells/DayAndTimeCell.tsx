@@ -9,7 +9,11 @@ interface DayAndTimeCellProps {
 }
 
 function getMeetingKey(meeting: WebsocSectionMeeting, meetingIndex: number): string {
-    return `${meetingIndex}-${meeting.days}-${meeting.startTime ?? 'tba'}-${meeting.endTime ?? 'tba'}-${meeting.bldg.join(',')}`;
+    if (meeting.timeIsTBA) {
+        return `${meetingIndex}-tba`;
+    }
+
+    return `${meetingIndex}-${meeting.days}-${meeting.startTime.hour}:${meeting.startTime.minute}-${meeting.endTime.hour}:${meeting.endTime.minute}-${meeting.bldg.join(',')}`;
 }
 
 export const DayAndTimeCell = ({ meetings }: DayAndTimeCellProps) => {
