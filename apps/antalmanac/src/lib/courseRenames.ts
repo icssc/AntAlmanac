@@ -88,25 +88,23 @@ export function getPredecessorLabel(department: string, courseNumber: string): s
 }
 
 /** Sums grade counts across results and recalculates averageGPA as a weighted mean. */
-export function mergeAggregateGrades(results: (AggregateGrades | null | undefined)[]): AggregateGrades | null {
-    const defined = results.filter((r): r is NonNullable<AggregateGrades> => r != null);
-    if (defined.length === 0) return null;
-    if (defined.length === 1) return defined[0];
+export function mergeAggregateGrades(results: NonNullable<AggregateGrades>[]): NonNullable<AggregateGrades> {
+    if (results.length === 1) return results[0];
 
     type GradeDistribution = NonNullable<AggregateGrades>['gradeDistribution'];
     type GradeCountKey = Exclude<keyof GradeDistribution, 'averageGPA'>;
 
-    const countKeys = (Object.keys(defined[0].gradeDistribution) as Array<keyof GradeDistribution>).filter(
+    const countKeys = (Object.keys(results[0].gradeDistribution) as Array<keyof GradeDistribution>).filter(
         (k): k is GradeCountKey => k !== 'averageGPA'
     );
 
     const mergedCounts = Object.fromEntries(
-        countKeys.map((key) => [key, defined.reduce((sum, r) => sum + ((r.gradeDistribution[key] as number) ?? 0), 0)])
+        countKeys.map((key) => [key, results.reduce((sum, r) => sum + ((r.gradeDistribution[key] as number) ?? 0), 0)])
     ) as Omit<GradeDistribution, 'averageGPA'>;
 
     let weightedGpaSum = 0;
     let weightedGpaCount = 0;
-    for (const r of defined) {
+    for (const r of results) {
         const gpa = r.gradeDistribution.averageGPA;
         if (gpa == null) continue;
         const count = countKeys.reduce((s, k) => s + ((r.gradeDistribution[k as GradeCountKey] as number) ?? 0), 0);
@@ -118,7 +116,7 @@ export function mergeAggregateGrades(results: (AggregateGrades | null | undefine
     const totalStudents = countKeys.reduce((sum, k) => sum + (mergedCounts[k] as number), 0);
 
     return {
-        ...defined[0],
+        ...results[0],
         gradeDistribution: { ...mergedCounts, averageGPA },
         ...(totalStudents > 0 ? { numStudents: totalStudents } : {}),
     } as NonNullable<AggregateGrades>;

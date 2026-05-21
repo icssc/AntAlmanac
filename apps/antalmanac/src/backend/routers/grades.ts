@@ -35,8 +35,7 @@ const gradesRouter = router({
                 )
             );
 
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            return mergeAggregateGrades(results)!;
+            return mergeAggregateGrades(results);
         }),
 
     // Mutation so tRPC doesn't batch it with concurrent WebSOC queries.
