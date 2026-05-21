@@ -16,10 +16,10 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
 
     const parsedRestrictions = useMemo(
         () =>
-            restrictions.split(' ').map((code, index) => {
+            restrictions.split(' ').map((code) => {
                 if (code !== 'and' && code !== 'or') {
                     return (
-                        <Fragment key={index}>
+                        <Fragment key={code}>
                             {restrictionsMapping[code as keyof typeof restrictionsMapping]}
                             <br />
                         </Fragment>

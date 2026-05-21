@@ -747,7 +747,7 @@ export function Import() {
                                         <Stack spacing={1}>
                                             {exportSchedules.map((schedule, index) => (
                                                 <Paper
-                                                    key={index}
+                                                    key={schedule.id ?? `${schedule.scheduleName}-${index}`}
                                                     sx={{
                                                         p: 1.5,
                                                         border: '2px solid',
@@ -1051,7 +1051,7 @@ export function Import() {
                                                 <Stack spacing={1}>
                                                     {importedSchedules.map((schedule, index) => (
                                                         <Paper
-                                                            key={index}
+                                                            key={schedule.id ?? `${schedule.scheduleName}-${index}`}
                                                             sx={{
                                                                 p: 1.5,
                                                                 border: '2px solid',

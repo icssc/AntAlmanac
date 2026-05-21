@@ -13,21 +13,21 @@ interface LocationsCellProps {
 export const LocationsCell = ({ meetings }: LocationsCellProps) => {
     return (
         <TableBodyCellContainer>
-            {meetings.map((meeting) => {
-                return !meeting.timeIsTBA ? (
-                    meeting.bldg.map((bldg) => {
-                        const [buildingName = ''] = bldg.split(' ');
-                        const buildingId = locationIds[buildingName];
-                        return (
-                            <Fragment key={meeting.timeIsTBA + bldg}>
-                                <MapLink buildingId={buildingId} room={bldg} />
-                                <br />
-                            </Fragment>
-                        );
-                    })
-                ) : (
-                    <Box>{'TBA'}</Box>
-                );
+            {meetings.flatMap((meeting, meetingIndex) => {
+                if (meeting.timeIsTBA) {
+                    return <Box key={`${meetingIndex}-tba`}>TBA</Box>;
+                }
+
+                return meeting.bldg.map((bldg, bldgIndex) => {
+                    const [buildingName = ''] = bldg.split(' ');
+                    const buildingId = locationIds[buildingName];
+                    return (
+                        <Fragment key={`${meetingIndex}-${bldgIndex}-${bldg}`}>
+                            <MapLink buildingId={buildingId} room={bldg} />
+                            <br />
+                        </Fragment>
+                    );
+                });
             })}
         </TableBodyCellContainer>
     );

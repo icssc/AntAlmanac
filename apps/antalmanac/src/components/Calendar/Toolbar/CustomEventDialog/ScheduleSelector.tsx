@@ -32,7 +32,7 @@ export function ScheduleSelector({ scheduleIndices, onSelectScheduleIndices, sch
             >
                 {scheduleNames.map((name: string, index: number) => {
                     return (
-                        <MenuItem key={index} value={index}>
+                        <MenuItem key={`${name}-${index}`} value={index}>
                             {name}
                         </MenuItem>
                     );

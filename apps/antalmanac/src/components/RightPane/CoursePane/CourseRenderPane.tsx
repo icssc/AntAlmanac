@@ -83,6 +83,16 @@ function estimateCoursePaneLazyHeight(entry: CourseListEntry): number {
     return isCourseEntry(entry) ? entry.sections.length * 60 + 20 + 40 : 200;
 }
 
+function getCourseListEntryKey(entry: CourseListEntry): string {
+    if (isSchoolEntry(entry)) {
+        return `school-${entry.schoolName}`;
+    }
+    if (isDepartmentEntry(entry)) {
+        return `dept-${entry.deptCode}`;
+    }
+    return `course-${entry.deptCode}-${entry.courseNumber}`;
+}
+
 function cleanHeaders(items: CourseListEntry[]): CourseListEntry[] {
     const result: CourseListEntry[] = [];
     let pendingSchool: WebsocSchool | null = null;
@@ -445,7 +455,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                         {courseData.map((data, index) => (
                             <LazyLoad
                                 once
-                                key={index}
+                                key={getCourseListEntryKey(data)}
                                 overflow
                                 height={estimateCoursePaneLazyHeight(data)}
                                 offset={1000}

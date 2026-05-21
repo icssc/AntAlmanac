@@ -49,9 +49,9 @@ export function FallbackSchedule() {
                 sectionsByTerm.map(([term, sections]) => (
                     <Box key={term}>
                         <Typography variant="h6">{term}</Typography>
-                        <Paper key={term} elevation={1}>
-                            {sections.map((section, index) => (
-                                <Tooltip title="Click to copy section code" placement="right" key={index}>
+                        <Paper elevation={1}>
+                            {sections.map((section) => (
+                                <Tooltip title="Click to copy section code" placement="right" key={section}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, section);
@@ -63,7 +63,6 @@ export function FallbackSchedule() {
                                         label={section}
                                         size="small"
                                         style={{ margin: '10px 10px 10px 10px' }}
-                                        key={index}
                                     />
                                 </Tooltip>
                             ))}

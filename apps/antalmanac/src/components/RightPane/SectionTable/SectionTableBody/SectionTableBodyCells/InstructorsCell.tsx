@@ -16,7 +16,7 @@ export const InstructorsCell = ({ instructors, sx }: InstructorsCellProps) => {
 
         const lastName = profName.substring(0, profName.indexOf(','));
         return (
-            <Box key={profName}>
+            <Box key={`${profName}-${index}`}>
                 <Typography
                     variant="body2"
                     sx={{

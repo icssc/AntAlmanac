@@ -20,7 +20,7 @@ import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useSearchParams } from 'next/navigation';
-import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
+import { ComponentProps, HTMLAttributes, type Key, useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 interface SearchWithPlannerProps {
@@ -139,18 +139,20 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
         );
     };
 
-    const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
-        const menuItem = (
+    const renderOption = (props: HTMLAttributes<HTMLLIElement> & { key: Key }, roadmap: Roadmap) => {
+        const { key, ...restProps } = props;
+
+        const option = (
             <Box
-                key={roadmap.id}
+                component="li"
+                key={key}
+                {...restProps}
                 display="flex"
                 alignItems="center"
                 justifyContent="space-between"
                 sx={{ paddingRight: 1 }}
             >
                 <MenuItem
-                    {...props}
-                    key={roadmap.id}
                     onClick={() => search(roadmap.id)}
                     disabled={!doesRoadmapIncludeTerm(roadmap.id)}
                     sx={{ width: '100%' }}
@@ -170,14 +172,15 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 </Tooltip>
             </Box>
         );
+
         if (termRoadmapGrouping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
             return (
-                <Tooltip key={roadmap.id} title="This roadmap has no courses for this term">
-                    <span>{menuItem}</span>
+                <Tooltip title="This roadmap has no courses for this term">
+                    <span>{option}</span>
                 </Tooltip>
             );
         }
-        return menuItem;
+        return option;
     };
 
     useEffect(() => {

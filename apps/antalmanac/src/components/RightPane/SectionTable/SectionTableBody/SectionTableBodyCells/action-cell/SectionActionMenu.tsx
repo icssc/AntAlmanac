@@ -70,7 +70,7 @@ export const SectionActionMenu = memo(function SectionActionMenu({
                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
             >
                 {scheduleNames.map((name, index) => (
-                    <MenuItem key={index} onClick={() => handleAddToSchedule(index)}>
+                    <MenuItem key={`${name}-${index}`} onClick={() => handleAddToSchedule(index)}>
                         Add to {name}
                     </MenuItem>
                 ))}

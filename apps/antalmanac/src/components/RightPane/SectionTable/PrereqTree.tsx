@@ -38,8 +38,20 @@ const Node: FC<NodeProps> = (props) => {
 interface TreeProps {
     prerequisiteNames: string[];
     prerequisite: PrerequisiteNode;
-    key?: string;
     index?: number;
+}
+
+function getPrereqNodeKey(node: PrerequisiteNode, index: number): string {
+    if (Object.prototype.hasOwnProperty.call(node, 'prereqType')) {
+        const prereq = node as Prerequisite;
+        if (prereq.prereqType === 'course') {
+            return `course-${prereq.courseId}`;
+        }
+        return `exam-${prereq.examName}-${index}`;
+    }
+
+    const subtreeType = Object.keys(node)[0];
+    return `group-${subtreeType}-${index}`;
 }
 
 const PrereqTreeNode: FC<TreeProps> = (props) => {
@@ -49,7 +61,7 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
     if (isValueNode) {
         const prereq = prerequisite as Prerequisite;
         return (
-            <li key={props.index} className={'prerequisite-node'}>
+            <li className={'prerequisite-node'}>
                 <Node
                     label={
                         prereq.prereqType === 'course'
@@ -80,7 +92,7 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
                         <ul className="prereq-list">
                             {prereqTree[Object.keys(prerequisite)[0]].map((child, index) => (
                                 <PrereqTreeNode
-                                    key={`tree-${index}`}
+                                    key={getPrereqNodeKey(child, index)}
                                     prerequisiteNames={props.prerequisiteNames}
                                     index={index}
                                     prerequisite={child}
@@ -151,8 +163,8 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                                 <>
                                     <ul style={{ padding: '0', display: 'flex' }}>
                                         <div className={'dependency-list-branch'}>
-                                            {Object.values(props.prerequisite_for).map((dependency, index) => (
-                                                <li key={`dependencyNode-${index}`} className={'dependency-node'}>
+                                            {Object.values(props.prerequisite_for).map((dependency) => (
+                                                <li key={dependency} className={'dependency-node'}>
                                                     <Node label={dependency} node={'dependencyNode'} />
                                                 </li>
                                             ))}
