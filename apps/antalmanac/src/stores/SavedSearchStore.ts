@@ -4,7 +4,7 @@ import { create } from 'zustand';
 interface SavedSearchStoreState {
     /**
      * Tab routes replace the URL when leaving Search; we stash location.search here
-     * on exit and replay it when the user returns (ScheduleManagementTab).
+     * on exit and replay it when the user returns.
      */
     savedSearch: string | null;
     saveSearch: () => void;

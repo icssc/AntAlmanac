@@ -5,11 +5,12 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
+import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useTabStore } from '$stores/TabStore';
+import { Tabs, TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 /**
@@ -17,8 +18,13 @@ import { useShallow } from 'zustand/react/shallow';
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
-    const { activeTab, setActiveTab } = useTabStore(
-        useShallow((store) => ({ activeTab: store.activeTab, setActiveTab: store.setActiveTab }))
+    const navigate = useNavigate();
+    const { activeTab, setActiveTab, setActiveTabValue } = useTabStore(
+        useShallow((store) => ({
+            activeTab: store.activeTab,
+            setActiveTab: store.setActiveTab,
+            setActiveTabValue: store.setActiveTabValue,
+        }))
     );
     const { tab } = useParams();
     const isMobile = useIsMobile();
@@ -40,6 +46,26 @@ export function ScheduleManagement() {
             return current;
         });
     };
+
+    const handleTabChange = useCallback(
+        (nextTab: number) => {
+            if (activeTab === TAB_INDEX.search && nextTab !== TAB_INDEX.search) {
+                useSavedSearchStore.getState().saveSearch();
+            }
+
+            setActiveTabValue(nextTab);
+
+            if (nextTab === TAB_INDEX.search) {
+                const restoredSearch = useSavedSearchStore.getState().popSavedSearch();
+                navigate(restoredSearch ? { pathname: '/', search: restoredSearch } : '/');
+                return;
+            }
+
+            const href = Tabs[nextTab]?.href;
+            navigate(href || '/');
+        },
+        [activeTab, navigate, setActiveTabValue]
+    );
 
     useEffect(() => {
         if (tab) {
@@ -109,7 +135,7 @@ export function ScheduleManagement() {
         <Stack direction="column" flexGrow={1} height="0">
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            {!isMobile && <ScheduleManagementTabs />}
+            {!isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
 
             <Stack width="100%" height="0" flexGrow={1} padding={1}>
                 <Stack
@@ -125,7 +151,7 @@ export function ScheduleManagement() {
                 </Stack>
             </Stack>
 
-            {isMobile && <ScheduleManagementTabs />}
+            {isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
         </Stack>
     );
 }

@@ -1,46 +1,19 @@
-import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { useTabStore } from '$stores/TabStore';
+import { type TabInfo } from '$stores/TabStore';
 import { Tab } from '@mui/material';
-import { Link } from 'react-router-dom';
-
-// Search is always index 1 in scheduleManagementTabs.
-const SEARCH_TAB_VALUE = 1;
 
 interface ScheduleManagementTabProps {
-    tab: ScheduleManagementTabInfo;
+    tab: TabInfo;
     value: number;
 }
 
 export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
-    const setActiveTabValue = useTabStore((store) => store.setActiveTabValue);
     const isMobile = useIsMobile();
-    const savedSearch = useSavedSearchStore((store) => store.savedSearch);
-
-    // When returning to Search, replay the saved query string so nuqs picks it up.
-    const to = value === SEARCH_TAB_VALUE && savedSearch ? { pathname: tab.href, search: savedSearch } : tab.href;
-
-    const handleClick = () => {
-        const activeTab = useTabStore.getState().activeTab;
-
-        if (activeTab === SEARCH_TAB_VALUE && value !== SEARCH_TAB_VALUE) {
-            useSavedSearchStore.getState().saveSearch();
-        }
-
-        if (value === SEARCH_TAB_VALUE) {
-            useSavedSearchStore.getState().popSavedSearch();
-        }
-
-        setActiveTabValue(value);
-    };
 
     return (
         <Tab
             id={tab.id}
-            component={Link}
-            to={to}
-            icon={tab.icon}
+            icon={<tab.icon />}
             iconPosition={isMobile ? 'top' : 'start'}
             sx={{
                 ...(isMobile
@@ -58,7 +31,6 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
                 display: isMobile || !tab.mobile ? 'flex' : 'none',
             }}
             label={tab.label}
-            onClick={handleClick}
             value={value}
         />
     );
