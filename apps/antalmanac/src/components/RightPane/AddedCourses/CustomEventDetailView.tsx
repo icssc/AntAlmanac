@@ -91,7 +91,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
     );
 
     return skeleton ? (
-        <Skeleton variant="rounded" component="div" sx={{ pointerEvents: 'none' }}>
+        <Skeleton variant="rounded" component="div" width="100%" sx={{ pointerEvents: 'none' }}>
             {card}
         </Skeleton>
     ) : (
