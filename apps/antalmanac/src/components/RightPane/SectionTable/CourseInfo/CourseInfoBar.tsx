@@ -2,8 +2,9 @@ import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
+import { getAllSyllabiCourseIds, getPredecessorLabel } from '$lib/courseRenames';
 import { InfoOutlined } from '@mui/icons-material';
-import { Box, Button, Popover, Skeleton } from '@mui/material';
+import { Box, Button, Popover, Skeleton, Typography } from '@mui/material';
 import type { PrerequisiteTree } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
@@ -56,6 +57,8 @@ export const CourseInfoBar = ({
 
     const postHog = usePostHog();
 
+    const predecessorLabel = getPredecessorLabel(deptCode, courseNumber);
+
     const togglePopover = async (currentTarget: HTMLElement | null) => {
         if (anchorEl) {
             setAnchorEl(null);
@@ -67,31 +70,35 @@ export const CourseInfoBar = ({
             return;
         }
 
-        try {
-            const res = await trpc.course.get.query({
-                id: `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`,
-            });
+        // Try course IDs in order (current name first, then immediate predecessor)
+        // so that a newly renamed course with no catalog entry yet still shows
+        // the predecessor's description.
+        const courseIds = getAllSyllabiCourseIds(`${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`);
 
-            if (!res) {
-                setCourseInfo(noCourseInfo);
+        for (const id of courseIds) {
+            try {
+                const res = await trpc.course.get.query({ id });
+                if (!res) continue;
+
+                setCourseInfo({
+                    id: res.id,
+                    department: res.department,
+                    courseNumber: res.courseNumber,
+                    title: res.title,
+                    prerequisite_tree: res.prerequisiteTree,
+                    prerequisite_list: res.prerequisites.map((x) => x.id),
+                    prerequisite_text: res.prerequisiteText,
+                    prerequisite_for: res.dependencies.map((x) => x.id),
+                    description: res.description,
+                    ge_list: res.geList.join(', '),
+                });
                 return;
+            } catch {
+                // try next id
             }
-
-            setCourseInfo({
-                id: res.id,
-                department: res.department,
-                courseNumber: res.courseNumber,
-                title: res.title,
-                prerequisite_tree: res.prerequisiteTree,
-                prerequisite_list: res.prerequisites.map((x) => x.id),
-                prerequisite_text: res.prerequisiteText,
-                prerequisite_for: res.dependencies.map((x) => x.id),
-                description: res.description,
-                ge_list: res.geList.join(', '),
-            });
-        } catch {
-            setCourseInfo(noCourseInfo);
         }
+
+        setCourseInfo(noCourseInfo);
     };
 
     const getPopoverContent = () => {
@@ -118,6 +125,11 @@ export const CourseInfoBar = ({
                     <p>
                         <strong>{title}</strong>
                     </p>
+                    {predecessorLabel && (
+                        <Typography variant="caption" color="text.secondary">
+                            {predecessorLabel}
+                        </Typography>
+                    )}
                     <p>{description}</p>
                     {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
 
