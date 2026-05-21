@@ -16,13 +16,13 @@ const COURSE_RENAMES: CourseRename[] = [
     {
         department: 'SWE',
         courseNumber: '43',
-        previously: { department: 'INF', courseNumber: '43' },
+        previously: { department: 'IN4MATX', courseNumber: '43' },
         effectiveYear: 2026,
     },
     {
-        department: 'ICS',
+        department: 'I&C SCI',
         courseNumber: 'H32',
-        previously: { department: 'ICS', courseNumber: '32A' },
+        previously: { department: 'I&C SCI', courseNumber: '32A' },
         effectiveYear: 2024,
     },
 ];
