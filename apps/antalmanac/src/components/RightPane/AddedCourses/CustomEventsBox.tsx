@@ -1,46 +1,27 @@
 import { CustomEventDetailView } from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { useCurrentCustomEvents } from '$hooks/useAppStoreSchedule';
 import AppStore from '$stores/AppStore';
-import { useFallbackStore } from '$stores/FallbackStore';
 import { Box, Typography } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { useEffect, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
-export function CustomEventsBox() {
-    const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore(
-        useShallow((store) => ({
-            fallbackMode: store.fallbackMode,
-            getCurrentFallbackSchedule: store.getCurrentFallbackSchedule,
-        }))
-    );
-    const currentScheduleIndex = AppStore.getCurrentScheduleIndex();
+type CustomEventsBoxProps = {
+    customEvents?: RepeatingCustomEvent[];
+};
 
-    const [customEvents, setCustomEvents] = useState<RepeatingCustomEvent[]>(
-        fallbackMode
-            ? getCurrentFallbackSchedule(currentScheduleIndex).customEvents
-            : AppStore.schedule.getCurrentCustomEvents()
-    );
+export function CustomEventsBox({ customEvents: customEventsProp }: CustomEventsBoxProps) {
+    if (customEventsProp !== undefined) {
+        return <CustomEventsBoxContent customEvents={customEventsProp} />;
+    }
 
-    useEffect(() => {
-        const handleCustomEventsChange = () => {
-            const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore.getState();
-            if (fallbackMode) {
-                const idx = AppStore.getCurrentScheduleIndex();
-                setCustomEvents([...getCurrentFallbackSchedule(idx).customEvents]);
-            } else {
-                setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
-            }
-        };
+    return <CustomEventsBoxFromStore />;
+}
 
-        AppStore.on('customEventsChange', handleCustomEventsChange);
-        AppStore.on('currentScheduleIndexChange', handleCustomEventsChange);
+function CustomEventsBoxFromStore() {
+    const customEvents = useCurrentCustomEvents();
+    return <CustomEventsBoxContent customEvents={customEvents} />;
+}
 
-        return () => {
-            AppStore.off('customEventsChange', handleCustomEventsChange);
-            AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
-        };
-    }, []);
-
+function CustomEventsBoxContent({ customEvents }: { customEvents: RepeatingCustomEvent[] }) {
     if (customEvents.length <= 0) {
         return null;
     }

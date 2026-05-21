@@ -1,32 +1,20 @@
 import { CustomEventsBox } from '$components/RightPane/AddedCourses/CustomEventsBox';
 import { ScheduleNoteBox } from '$components/RightPane/AddedCourses/ScheduleNoteBox';
+import { useAppStoreScheduleIndex } from '$hooks/useAppStoreSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
-import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { Box, Chip, Paper, Tooltip, Typography } from '@mui/material';
 import { ShortCourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 export function FallbackSchedule() {
+    const scheduleIndex = useAppStoreScheduleIndex();
     const getCurrentFallbackSchedule = useFallbackStore((store) => store.getCurrentFallbackSchedule);
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const postHog = usePostHog();
 
-    useEffect(() => {
-        const handleScheduleIndexChange = () => {
-            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
-        };
-
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-
-        return () => {
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-        };
-    }, []);
-
-    const fallbackSchedule = getCurrentFallbackSchedule(currentScheduleIndex);
+    const fallbackSchedule = getCurrentFallbackSchedule(scheduleIndex);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
         const result = fallbackSchedule.courses.reduce(
@@ -72,9 +60,9 @@ export function FallbackSchedule() {
                 ))
             }
 
-            <CustomEventsBox />
+            <CustomEventsBox customEvents={fallbackSchedule.customEvents} />
 
-            <ScheduleNoteBox />
+            <ScheduleNoteBox scheduleNote={fallbackSchedule.scheduleNote} />
 
             <Typography variant="body1">
                 Anteater API is currently unreachable. This is the information that we can currently retrieve.

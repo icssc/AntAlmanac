@@ -1,24 +1,61 @@
 import { updateScheduleNote } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
-import { useFallbackStore } from '$stores/FallbackStore';
+import { useAppStoreScheduleIndex, useScheduleNoteSnapshot } from '$hooks/useAppStoreSchedule';
 import { Box, TextField, Typography } from '@mui/material';
 import { SCHEDULE_NOTE_MAX_LENGTH } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
-export function ScheduleNoteBox() {
-    const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore(
-        useShallow((store) => ({
-            fallbackMode: store.fallbackMode,
-            getCurrentFallbackSchedule: store.getCurrentFallbackSchedule,
-        }))
+type ScheduleNoteBoxProps = {
+    scheduleNote?: string;
+};
+
+export function ScheduleNoteBox({ scheduleNote: scheduleNoteProp }: ScheduleNoteBoxProps) {
+    if (scheduleNoteProp !== undefined) {
+        return <ScheduleNoteBoxReadOnly scheduleNote={scheduleNoteProp} />;
+    }
+
+    return <ScheduleNoteBoxEditable />;
+}
+
+function ScheduleNoteBoxReadOnly({ scheduleNote }: { scheduleNote: string }) {
+    return (
+        <Box>
+            <Typography variant="h6">Schedule Notes</Typography>
+
+            <TextField
+                type="text"
+                color="secondary"
+                variant="filled"
+                label="Click here to start typing!"
+                value={scheduleNote}
+                inputProps={{
+                    maxLength: SCHEDULE_NOTE_MAX_LENGTH,
+                    style: { cursor: 'not-allowed' },
+                }}
+                InputLabelProps={{
+                    variant: 'filled',
+                }}
+                InputProps={{ disableUnderline: true }}
+                fullWidth
+                multiline
+                disabled
+                sx={{
+                    '& .MuiInputBase-root': {
+                        cursor: 'not-allowed',
+                    },
+                }}
+            />
+        </Box>
     );
-    const [scheduleNote, setScheduleNote] = useState(
-        fallbackMode
-            ? getCurrentFallbackSchedule(AppStore.getCurrentScheduleIndex()).scheduleNote
-            : AppStore.getCurrentScheduleNote()
-    );
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+}
+
+function ScheduleNoteBoxEditable() {
+    const scheduleIndex = useAppStoreScheduleIndex();
+    const storeScheduleNote = useScheduleNoteSnapshot();
+    const [scheduleNote, setScheduleNote] = useState(storeScheduleNote);
+
+    useEffect(() => {
+        setScheduleNote(storeScheduleNote);
+    }, [storeScheduleNote]);
 
     const handleNoteChange = useCallback(
         (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -27,30 +64,6 @@ export function ScheduleNoteBox() {
         },
         [scheduleIndex]
     );
-
-    useEffect(() => {
-        const handleScheduleNoteChange = () => {
-            const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore.getState();
-            if (fallbackMode) {
-                const idx = AppStore.getCurrentScheduleIndex();
-                setScheduleNote(getCurrentFallbackSchedule(idx).scheduleNote);
-            } else {
-                setScheduleNote(AppStore.getCurrentScheduleNote());
-            }
-        };
-
-        const handleScheduleIndexChange = () => {
-            setScheduleIndex(AppStore.getCurrentScheduleIndex());
-        };
-
-        AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-
-        return () => {
-            AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-        };
-    }, []);
 
     return (
         <Box>
@@ -65,7 +78,7 @@ export function ScheduleNoteBox() {
                 value={scheduleNote}
                 inputProps={{
                     maxLength: SCHEDULE_NOTE_MAX_LENGTH,
-                    style: { cursor: fallbackMode ? 'not-allowed' : 'text' },
+                    style: { cursor: 'text' },
                 }}
                 InputLabelProps={{
                     variant: 'filled',
@@ -73,10 +86,9 @@ export function ScheduleNoteBox() {
                 InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
-                disabled={fallbackMode}
                 sx={{
                     '& .MuiInputBase-root': {
-                        cursor: fallbackMode ? 'not-allowed' : 'text',
+                        cursor: 'text',
                     },
                 }}
             />
