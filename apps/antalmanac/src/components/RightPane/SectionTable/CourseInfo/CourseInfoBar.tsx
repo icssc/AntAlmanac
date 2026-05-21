@@ -63,22 +63,24 @@ export const CourseInfoBar = ({
         const courseIds = getAllSyllabiCourseIds(`${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`);
 
         for (const id of courseIds) {
-            const res = await trpc.course.get.query({ id });
-            if (!res) continue; // 404 — try next
-
-            setCourseInfo({
-                id: res.id,
-                department: res.department,
-                courseNumber: res.courseNumber,
-                title: res.title,
-                prerequisite_tree: res.prerequisiteTree,
-                prerequisite_list: res.prerequisites.map((x) => x.id),
-                prerequisite_text: res.prerequisiteText,
-                prerequisite_for: res.dependencies.map((x) => x.id),
-                description: res.description,
-                ge_list: res.geList.join(', '),
-            });
-            return;
+            try {
+                const res = await trpc.course.get.query({ id });
+                setCourseInfo({
+                    id: res.id,
+                    department: res.department,
+                    courseNumber: res.courseNumber,
+                    title: res.title,
+                    prerequisite_tree: res.prerequisiteTree,
+                    prerequisite_list: res.prerequisites.map((x) => x.id),
+                    prerequisite_text: res.prerequisiteText,
+                    prerequisite_for: res.dependencies.map((x) => x.id),
+                    description: res.description,
+                    ge_list: res.geList.join(', '),
+                });
+                return;
+            } catch {
+                // course not found under this id — try next
+            }
         }
 
         setCourseInfo(noCourseInfo);
