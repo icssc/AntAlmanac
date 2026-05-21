@@ -127,19 +127,24 @@ export function EnrollmentHistoryPopover({
         <Card>
             <CardHeader
                 title={title}
-                subheader={subheader}
+                subheader={
+                    predecessorLabel ? (
+                        <>
+                            {subheader}
+                            <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+                                {predecessorLabel}
+                            </Typography>
+                        </>
+                    ) : (
+                        subheader
+                    )
+                }
                 action={headerAction}
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                     action: { sx: { alignSelf: 'flex-start', margin: 0 } },
                 }}
             />
-
-            {predecessorLabel && (
-                <Typography variant="caption" color="text.secondary" sx={{ px: 2 }}>
-                    {predecessorLabel}
-                </Typography>
-            )}
 
             <CardContent sx={{ display: 'flex', flexDirection: 'column', minWidth: width, paddingTop: 0 }}>
                 {loading ? (

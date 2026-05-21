@@ -98,7 +98,18 @@ export function GradesPopover(props: GradesPopoverProps) {
         <Card>
             <CardHeader
                 title={title}
-                subheader={subheader}
+                subheader={
+                    predecessorLabel ? (
+                        <>
+                            {subheader}
+                            <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+                                {predecessorLabel}
+                            </Typography>
+                        </>
+                    ) : (
+                        subheader
+                    )
+                }
                 action={
                     <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
                         <ToggleButton
@@ -126,12 +137,6 @@ export function GradesPopover(props: GradesPopoverProps) {
                     action: { sx: { alignSelf: 'flex-start', margin: 0 } },
                 }}
             />
-
-            {predecessorLabel && (
-                <Typography variant="caption" color="text.secondary" sx={{ px: 2 }}>
-                    {predecessorLabel}
-                </Typography>
-            )}
 
             <CardContent sx={{ display: 'flex', minWidth: width, paddingTop: 0 }}>
                 {loading ? (

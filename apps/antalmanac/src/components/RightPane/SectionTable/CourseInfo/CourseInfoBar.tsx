@@ -4,7 +4,7 @@ import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/a
 import { trpc } from '$lib/api/trpc';
 import { getAllSyllabiCourseIds, getPredecessorLabel } from '$lib/courseRenames';
 import { InfoOutlined } from '@mui/icons-material';
-import { Box, Button, Popover, Skeleton, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CardHeader, Popover, Skeleton, Typography } from '@mui/material';
 import type { PrerequisiteTree } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
@@ -59,20 +59,7 @@ export const CourseInfoBar = ({
 
     const predecessorLabel = getPredecessorLabel(deptCode, courseNumber);
 
-    const togglePopover = async (currentTarget: HTMLElement | null) => {
-        if (anchorEl) {
-            setAnchorEl(null);
-            return;
-        }
-
-        setAnchorEl(currentTarget);
-        if (courseInfo !== null) {
-            return;
-        }
-
-        // Try course IDs in order (current name first, then immediate predecessor)
-        // so that a newly renamed course with no catalog entry yet still shows
-        // the predecessor's description.
+    const fetchCourseInfo = async () => {
         const courseIds = getAllSyllabiCourseIds(`${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`);
 
         for (const id of courseIds) {
@@ -101,40 +88,58 @@ export const CourseInfoBar = ({
         setCourseInfo(noCourseInfo);
     };
 
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        logAnalytics(postHog, {
+            category: analyticsCategory,
+            action: analyticsEnum.classSearch.actions.CLICK_INFO,
+        });
+        const isOpening = !anchorEl;
+        setAnchorEl(anchorEl ? null : event.currentTarget);
+        if (isOpening && courseInfo === null) {
+            void fetchCourseInfo();
+        }
+    };
+
     const getPopoverContent = () => {
         if (courseInfo === null) {
             return (
-                <Box sx={{ margin: 1.5, width: 500, height: 150 }}>
-                    <p>
+                <Card>
+                    <CardContent sx={{ width: 500 }}>
                         <Skeleton variant="text" animation="wave" height={30} width="50%" />
-                    </p>
-                    <p>
-                        <Skeleton variant="text" animation="wave" />
-                        <Skeleton variant="text" animation="wave" />
-                        <Skeleton variant="text" animation="wave" />
-                        <Skeleton variant="text" animation="wave" />
-                        <Skeleton variant="text" animation="wave" />
-                    </p>
-                </Box>
+                        <Box mt={1}>
+                            <Skeleton variant="text" animation="wave" />
+                            <Skeleton variant="text" animation="wave" />
+                            <Skeleton variant="text" animation="wave" />
+                            <Skeleton variant="text" animation="wave" />
+                            <Skeleton variant="text" animation="wave" />
+                        </Box>
+                    </CardContent>
+                </Card>
             );
-        } else {
-            const { title, prerequisite_tree, prerequisite_text, prerequisite_for, description, ge_list } = courseInfo;
+        }
 
-            return (
-                <Box sx={{ margin: 1.5, maxWidth: 500 }}>
-                    <p>
-                        <strong>{title}</strong>
-                    </p>
-                    {predecessorLabel && (
-                        <Typography variant="caption" color="text.secondary">
-                            {predecessorLabel}
-                        </Typography>
-                    )}
-                    <p>{description}</p>
+        const { title, prerequisite_tree, prerequisite_text, prerequisite_for, description, ge_list } = courseInfo;
+
+        return (
+            <Card>
+                <CardHeader
+                    title={title}
+                    subheader={
+                        predecessorLabel ? (
+                            <Typography variant="caption" color="text.secondary">
+                                {predecessorLabel}
+                            </Typography>
+                        ) : undefined
+                    }
+                    slotProps={{
+                        title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
+                    }}
+                />
+                <CardContent sx={{ maxWidth: 500, pt: 0 }}>
+                    <Typography variant="body2">{description}</Typography>
                     {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
-
                     {prerequisite_text !== '' && (
-                        <p>
+                        <Typography variant="body2" mt={1}>
                             <a
                                 onClick={() => {
                                     logAnalytics(postHog, {
@@ -149,24 +154,23 @@ export const CourseInfoBar = ({
                                 <span style={{ marginRight: 4 }}>Prerequisites:</span>
                             </a>
                             {prerequisite_text}
-                        </p>
+                        </Typography>
                     )}
                     {prerequisite_for.length !== 0 && (
-                        <p>
+                        <Typography variant="body2" mt={1}>
                             <span style={{ marginRight: 4 }}>Prerequisite for:</span>
                             {prerequisite_for.join(', ')}
-                        </p>
+                        </Typography>
                     )}
-
                     {ge_list !== '' && (
-                        <p>
+                        <Typography variant="body2" mt={1}>
                             <span style={{ marginRight: 4 }}>General Education Categories:</span>
                             {ge_list}
-                        </p>
+                        </Typography>
                     )}
-                </Box>
-            );
-        }
+                </CardContent>
+            </Card>
+        );
     };
 
     return (
@@ -176,14 +180,7 @@ export const CourseInfoBar = ({
                 color="secondary"
                 startIcon={!isMobile && <InfoOutlined />}
                 size="small"
-                onClick={(event) => {
-                    logAnalytics(postHog, {
-                        category: analyticsCategory,
-                        action: analyticsEnum.classSearch.actions.CLICK_INFO,
-                    });
-                    const currentTarget = event.currentTarget;
-                    void togglePopover(currentTarget);
-                }}
+                onClick={handleClick}
             >
                 <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
@@ -193,15 +190,8 @@ export const CourseInfoBar = ({
             <Popover
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
-                onClose={() => togglePopover(null)}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 {getPopoverContent()}
             </Popover>
