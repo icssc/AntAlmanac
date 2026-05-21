@@ -6,44 +6,46 @@ import { z } from 'zod';
 
 import { router } from '../trpc';
 
-const gradesInputSchema = z.object({
-    department: z.string().optional(),
-    courseNumber: z.string().optional(),
-    instructor: z.string().optional(),
-    ge: GradesGeSchema.optional(),
-});
-
-async function fetchAndMergeGrades(input: z.infer<typeof gradesInputSchema>): Promise<AggregateGrades> {
-    const { department, courseNumber } = input;
-
-    if (!department || !courseNumber) {
-        return aapiClient.grades.aggregate(input);
-    }
-
-    const identifiers = getAllCourseIdentifiers(department, courseNumber);
-
-    if (identifiers.length === 1) {
-        return aapiClient.grades.aggregate(input);
-    }
-
-    // Instructor/ge filters only apply to the current course ID; predecessors
-    // are queried by department + courseNumber only.
-    const [current, ...predecessors] = identifiers;
-    const results = await Promise.all([
-        aapiClient.grades.aggregate({ ...input, department: current.department, courseNumber: current.courseNumber }),
-        ...predecessors.map((ci) =>
-            aapiClient.grades.aggregate({ department: ci.department, courseNumber: ci.courseNumber })
-        ),
-    ]);
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return mergeAggregateGrades(results)!;
-}
-
 const gradesRouter = router({
     aggregateGrades: aapiProcedure
-        .input(gradesInputSchema)
-        .query(({ input }): Promise<AggregateGrades> => fetchAndMergeGrades(input)),
+        .input(
+            z.object({
+                department: z.string().optional(),
+                courseNumber: z.string().optional(),
+                instructor: z.string().optional(),
+                ge: GradesGeSchema.optional(),
+            })
+        )
+        .query(async ({ input }): Promise<AggregateGrades> => {
+            const { department, courseNumber } = input;
+
+            if (!department || !courseNumber) {
+                return aapiClient.grades.aggregate(input);
+            }
+
+            const identifiers = getAllCourseIdentifiers(department, courseNumber);
+
+            if (identifiers.length === 1) {
+                return aapiClient.grades.aggregate(input);
+            }
+
+            // Instructor/ge filters only apply to the current course ID; predecessors
+            // are queried by department + courseNumber only.
+            const [current, ...predecessors] = identifiers;
+            const results = await Promise.all([
+                aapiClient.grades.aggregate({
+                    ...input,
+                    department: current.department,
+                    courseNumber: current.courseNumber,
+                }),
+                ...predecessors.map((ci) =>
+                    aapiClient.grades.aggregate({ department: ci.department, courseNumber: ci.courseNumber })
+                ),
+            ]);
+
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return mergeAggregateGrades(results)!;
+        }),
 
     // Mutation so tRPC doesn't batch it with concurrent WebSOC queries.
     aggregateByOffering: aapiProcedure
