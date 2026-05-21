@@ -12,10 +12,10 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
 import {
     getGradesPrefetchParams,
-    prefetchGradesForSearch,
+    prefetchSearchGrades,
     SEARCH_RESULTS_QUERY_KEY,
     type GradesPrefetchParams,
-} from '$lib/hydrateGrades';
+} from '$lib/gradesSearch';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -377,7 +377,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                     }
                 }
 
-                await prefetchGradesForSearch(utils, gradesPrefetchParams).catch((error) => {
+                await prefetchSearchGrades(utils, gradesPrefetchParams).catch((error) => {
                     console.error(error);
                     openSnackbar('error', 'Error loading grades information');
                 });
