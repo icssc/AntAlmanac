@@ -7,10 +7,15 @@ import {
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
-import { createParser, createSerializer, parseAsString, useQueryState, useQueryStates } from 'nuqs';
+import {
+    createParser,
+    createSerializer,
+    parseAsString,
+    parseAsStringLiteral,
+    useQueryState,
+    useQueryStates,
+} from 'nuqs';
 import { useCallback } from 'react';
-
-const REPLACE_HISTORY_OPTIONS = { history: 'replace' as const };
 
 type AdvancedSearchDefaults = Omit<CourseSearchParams, 'term' | 'deptValue' | 'ge' | 'courseNumber' | 'sectionCode'>;
 
@@ -52,6 +57,7 @@ export interface CourseSearchParams {
 export type CourseSearchField = Exclude<keyof CourseSearchParams, 'term'>;
 
 export type CourseSearchMode = 'quick' | 'manual';
+export type CourseSearchView = 'search' | 'results';
 
 export const defaultCourseSearchFormValues: CourseSearchParams = {
     term: defaultTerm,
@@ -62,42 +68,35 @@ export const defaultCourseSearchFormValues: CourseSearchParams = {
     ...defaultAdvancedSearchValues,
 };
 
-const createStringParser = (defaultValue = '') =>
-    parseAsString.withOptions(REPLACE_HISTORY_OPTIONS).withDefault(defaultValue);
-
 const parseAsCourseSearchTerm = createParser<AATerm>({
     parse: (value) => getTermByShortName(value) ?? null,
     serialize: (value) => value.shortName,
     eq: (a, b) => a.shortName === b.shortName,
-})
-    .withOptions(REPLACE_HISTORY_OPTIONS)
-    .withDefault(defaultTerm);
+}).withDefault(defaultTerm);
 
 const parseAsNormalizedGe = createParser<string>({
     parse: (value) => normalizeGeSelection(value),
     serialize: (value) => normalizeGeSelection(value),
     eq: (a, b) => normalizeGeSelection(a) === normalizeGeSelection(b),
-})
-    .withOptions(REPLACE_HISTORY_OPTIONS)
-    .withDefault(defaultCourseSearchFormValues.ge);
+}).withDefault(defaultCourseSearchFormValues.ge);
 
 export const courseSearchParamParsers = {
     term: parseAsCourseSearchTerm,
-    deptValue: createStringParser(defaultCourseSearchFormValues.deptValue),
+    deptValue: parseAsString.withDefault(defaultCourseSearchFormValues.deptValue),
     ge: parseAsNormalizedGe,
-    courseNumber: createStringParser(defaultCourseSearchFormValues.courseNumber),
-    sectionCode: createStringParser(defaultCourseSearchFormValues.sectionCode),
-    instructor: createStringParser(defaultAdvancedSearchValues.instructor),
-    units: createStringParser(defaultAdvancedSearchValues.units),
-    endTime: createStringParser(defaultAdvancedSearchValues.endTime),
-    startTime: createStringParser(defaultAdvancedSearchValues.startTime),
-    coursesFull: createStringParser(WebsocFullCoursesOptionSchema.options[0]),
-    building: createStringParser(defaultAdvancedSearchValues.building),
-    room: createStringParser(defaultAdvancedSearchValues.room),
-    division: createStringParser(defaultAdvancedSearchValues.division),
-    excludeRoadmapCourses: createStringParser(defaultAdvancedSearchValues.excludeRoadmapCourses),
-    excludeRestrictionCodes: createStringParser(defaultAdvancedSearchValues.excludeRestrictionCodes),
-    days: createStringParser(defaultAdvancedSearchValues.days),
+    courseNumber: parseAsString.withDefault(defaultCourseSearchFormValues.courseNumber),
+    sectionCode: parseAsString.withDefault(defaultCourseSearchFormValues.sectionCode),
+    instructor: parseAsString.withDefault(defaultAdvancedSearchValues.instructor),
+    units: parseAsString.withDefault(defaultAdvancedSearchValues.units),
+    endTime: parseAsString.withDefault(defaultAdvancedSearchValues.endTime),
+    startTime: parseAsString.withDefault(defaultAdvancedSearchValues.startTime),
+    coursesFull: parseAsString.withDefault(WebsocFullCoursesOptionSchema.options[0]),
+    building: parseAsString.withDefault(defaultAdvancedSearchValues.building),
+    room: parseAsString.withDefault(defaultAdvancedSearchValues.room),
+    division: parseAsString.withDefault(defaultAdvancedSearchValues.division),
+    excludeRoadmapCourses: parseAsString.withDefault(defaultAdvancedSearchValues.excludeRoadmapCourses),
+    excludeRestrictionCodes: parseAsString.withDefault(defaultAdvancedSearchValues.excludeRestrictionCodes),
+    days: parseAsString.withDefault(defaultAdvancedSearchValues.days),
 };
 
 export const serializeCourseSearchParams = createSerializer(courseSearchParamParsers);
@@ -143,35 +142,22 @@ export function courseSearchFormDataHasRequiredSearchParams(formData: CourseSear
     );
 }
 
-const parseAsManualSearchMode = createParser<'manual'>({
-    parse: (value) => (value === 'manual' ? 'manual' : null),
-    serialize: (value) => value,
-    eq: (a, b) => a === b,
-}).withOptions(REPLACE_HISTORY_OPTIONS);
-
-// null   → auto-derive from params (show results if valid, form otherwise)
-// results → always show results pane
-// search  → always show search form (used by manual-mode "back" to keep params)
-const parseAsViewMode = createParser<'results' | 'search'>({
-    parse: (value) => (value === 'results' || value === 'search' ? value : null),
-    serialize: (value) => value,
-    eq: (a, b) => a === b,
-}).withOptions(REPLACE_HISTORY_OPTIONS);
-
 export function useCourseSearchUrlState() {
     const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
-    const [searchModeParam, setSearchModeParam] = useQueryState('search', parseAsManualSearchMode);
-    const [viewParam, setViewParam] = useQueryState('view', parseAsViewMode);
-    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString.withOptions({ history: 'replace' }));
-
-    const searchMode: CourseSearchMode = searchModeParam === 'manual' ? 'manual' : 'quick';
+    const [searchMode, setSearchModeParam] = useQueryState(
+        'search',
+        parseAsStringLiteral(['manual', 'quick'] as const).withDefault('quick')
+    );
+    const [viewParam, setViewParam] = useQueryState('view', parseAsStringLiteral(['results', 'search'] as const));
+    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString);
     const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
 
     const shouldShowSearchForm =
         !courseSearchFormDataHasRequiredSearchParams(formData) || !courseSearchFormDataIsValid(formData);
 
-    // view=results → results; view=search → form; null → derive from params
-    const searchFormIsDisplayed = viewParam !== 'results' && (viewParam === 'search' || shouldShowSearchForm);
+    const derivedView: CourseSearchView = shouldShowSearchForm ? 'search' : 'results';
+    const view: CourseSearchView = viewParam ?? derivedView;
+    const searchFormIsDisplayed = view === 'search';
 
     const setField = useCallback(
         <Field extends CourseSearchField>(field: Field, value: CourseSearchParams[Field]) => {
@@ -208,7 +194,7 @@ export function useCourseSearchUrlState() {
 
     const setSearchMode = useCallback(
         (mode: CourseSearchMode) => {
-            return setSearchModeParam(mode === 'manual' ? 'manual' : null);
+            return setSearchModeParam(mode);
         },
         [setSearchModeParam]
     );
@@ -219,7 +205,7 @@ export function useCourseSearchUrlState() {
     /** Navigate to the search form (keeps params intact — use for manual-mode back). */
     const showSearchForm = useCallback(() => setViewParam('search'), [setViewParam]);
 
-    /** Clear the view override, letting the form/results display derive from params. */
+    /** Clear URL view override; pane follows derivedView from search params. */
     const clearView = useCallback(() => setViewParam(null), [setViewParam]);
 
     /** Validate and submit a search. Shows results on success, error snackbar on failure. */
