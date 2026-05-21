@@ -1,6 +1,5 @@
-import Image from 'next/image';
-
 import { useIsMobile } from '$hooks/useIsMobile';
+import Image from 'next/image';
 
 type Logo = {
     name: string;
@@ -16,7 +15,8 @@ type Logo = {
 
 const defaultLogo: Logo = {
     name: 'Default',
-    logo: '/assets/mobile-logo-cropped.svg',
+    // logo: '/assets/mobile-logo-cropped.svg',
+    logo: '/assets/no_results.png',
     mobileLogo: '/assets/mobile-logo-cropped.svg',
     desktopLogo: '/assets/logo.svg',
     startDay: 0,
