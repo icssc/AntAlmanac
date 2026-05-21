@@ -1,5 +1,6 @@
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
+import { getPredecessorLabel } from '$lib/courseRenames';
 import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
@@ -37,6 +38,8 @@ export function EnrollmentHistoryPopover({
     term,
     sectionCode,
 }: EnrollmentHistoryPopoverProps) {
+    const predecessorLabel = getPredecessorLabel(department, courseNumber);
+
     const { data: enrollmentHistory, isLoading: loading } = trpcReact.enrollHist.get.useQuery(
         { department, courseNumber, sectionType },
         { select: parseAndSortEnrollmentHistory }
@@ -131,6 +134,12 @@ export function EnrollmentHistoryPopover({
                     action: { sx: { alignSelf: 'flex-start', margin: 0 } },
                 }}
             />
+
+            {predecessorLabel && (
+                <Typography variant="caption" color="text.secondary" sx={{ px: 2 }}>
+                    {predecessorLabel}
+                </Typography>
+            )}
 
             <CardContent sx={{ display: 'flex', flexDirection: 'column', minWidth: width, paddingTop: 0 }}>
                 {loading ? (

@@ -1,4 +1,5 @@
 import { trpcReact } from '$lib/api/trpc';
+import { getPredecessorLabel } from '$lib/courseRenames';
 import {
     Box,
     ToggleButton,
@@ -58,6 +59,7 @@ export function GradesPopover(props: GradesPopoverProps) {
     const secondaryColor = theme.palette.secondary.main;
 
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
+    const predecessorLabel = getPredecessorLabel(deptCode, courseNumber);
 
     const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGrades.useQuery(
         { department: deptCode, courseNumber, instructor: '' },
@@ -124,6 +126,12 @@ export function GradesPopover(props: GradesPopoverProps) {
                     action: { sx: { alignSelf: 'flex-start', margin: 0 } },
                 }}
             />
+
+            {predecessorLabel && (
+                <Typography variant="caption" color="text.secondary" sx={{ px: 2 }}>
+                    {predecessorLabel}
+                </Typography>
+            )}
 
             <CardContent sx={{ display: 'flex', minWidth: width, paddingTop: 0 }}>
                 {loading ? (

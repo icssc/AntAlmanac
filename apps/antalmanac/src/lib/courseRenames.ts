@@ -64,6 +64,29 @@ export function getAllSyllabiCourseIds(courseId: string): string[] {
     return ids;
 }
 
+/**
+ * Returns a formatted string describing all predecessor course names for display,
+ * e.g. "Previously IN4MATX 43 (before 2026/27)" or null if no rename exists.
+ * For chains, predecessors are listed newest-first, separated by commas.
+ */
+export function getPredecessorLabel(department: string, courseNumber: string): string | null {
+    const parts: string[] = [];
+    let current: CourseId = { department, courseNumber };
+
+    for (let i = 0; i < COURSE_RENAMES.length; i++) {
+        const entry = COURSE_RENAMES.find(
+            (r) => r.department === current.department && r.courseNumber === current.courseNumber
+        );
+        if (!entry) break;
+        const yr = entry.effectiveYear;
+        const yearLabel = `${yr}/${String(yr + 1).slice(-2)}`;
+        parts.push(`${entry.previously.department} ${entry.previously.courseNumber} (before ${yearLabel})`);
+        current = entry.previously;
+    }
+
+    return parts.length > 0 ? `Previously ${parts.join(', ')}` : null;
+}
+
 /** Sums grade counts across results and recalculates averageGPA as a weighted mean. */
 export function mergeAggregateGrades(results: (AggregateGrades | null | undefined)[]): AggregateGrades | null {
     const defined = results.filter((r): r is NonNullable<AggregateGrades> => r != null);

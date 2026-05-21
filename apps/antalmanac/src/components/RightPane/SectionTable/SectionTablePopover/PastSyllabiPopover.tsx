@@ -1,5 +1,6 @@
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
+import { getPredecessorLabel } from '$lib/courseRenames';
 import { OpenInNew } from '@mui/icons-material';
 import {
     Card,
@@ -24,6 +25,7 @@ interface PastSyllabiPopoverProps {
 export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const isMobile = useIsMobile();
     const { deptCode, courseNumber, courseId } = props;
+    const predecessorLabel = getPredecessorLabel(deptCode, courseNumber);
 
     const { data: syllabi = [], isLoading: loading } = trpcReact.websoc.getSyllabi.useQuery({ courseId });
 
@@ -60,6 +62,12 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                 }}
             />
+
+            {predecessorLabel && (
+                <Typography variant="caption" color="text.secondary" sx={{ px: 2 }}>
+                    {predecessorLabel}
+                </Typography>
+            )}
 
             <CardContent sx={{ minWidth: width, paddingTop: 0 }}>
                 {loading ? (

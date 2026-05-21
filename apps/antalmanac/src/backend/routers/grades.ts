@@ -29,19 +29,11 @@ const gradesRouter = router({
                 return aapiClient.grades.aggregate(input);
             }
 
-            // Instructor/ge filters only apply to the current course ID; predecessors
-            // are queried by department + courseNumber only.
-            const [current, ...predecessors] = identifiers;
-            const settled = await Promise.allSettled([
-                aapiClient.grades.aggregate({
-                    ...input,
-                    department: current.department,
-                    courseNumber: current.courseNumber,
-                }),
-                ...predecessors.map((ci) =>
-                    aapiClient.grades.aggregate({ department: ci.department, courseNumber: ci.courseNumber })
-                ),
-            ]);
+            const settled = await Promise.allSettled(
+                identifiers.map((ci) =>
+                    aapiClient.grades.aggregate({ ...input, department: ci.department, courseNumber: ci.courseNumber })
+                )
+            );
 
             const fulfilled = settled
                 .filter((r): r is PromiseFulfilledResult<AggregateGrades> => r.status === 'fulfilled')
