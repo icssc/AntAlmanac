@@ -17,7 +17,7 @@ const COURSE_RENAMES: CourseRename[] = [
         department: 'SWE',
         courseNumber: '43',
         previously: { department: 'INF', courseNumber: '43' },
-        effectiveYear: 2024,
+        effectiveYear: 2026,
     },
     {
         department: 'ICS',
