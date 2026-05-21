@@ -276,7 +276,6 @@ const ErrorMessage = () => {
                 width={601}
                 height={422}
                 alt="No Results Found"
-                loading="eager"
                 style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
             />
         </Box>
