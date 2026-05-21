@@ -4,7 +4,6 @@ import {
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
 import { createParser, createSerializer, parseAsString, useQueryState, useQueryStates } from 'nuqs';
@@ -149,10 +148,27 @@ const parseAsManualSearchMode = createParser<'manual'>({
     eq: (a, b) => a === b,
 }).withOptions(REPLACE_HISTORY_OPTIONS);
 
+// null   → auto-derive from params (show results if valid, form otherwise)
+// results → always show results pane
+// search  → always show search form (used by manual-mode "back" to keep params)
+const parseAsViewMode = createParser<'results' | 'search'>({
+    parse: (value) => (value === 'results' || value === 'search' ? value : null),
+    serialize: (value) => value,
+    eq: (a, b) => a === b,
+}).withOptions(REPLACE_HISTORY_OPTIONS);
+
 export function useCourseSearchUrlState() {
     const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
     const [searchModeParam, setSearchModeParam] = useQueryState('search', parseAsManualSearchMode);
+    const [viewParam, setViewParam] = useQueryState('view', parseAsViewMode);
+
     const searchMode: CourseSearchMode = searchModeParam === 'manual' ? 'manual' : 'quick';
+
+    const shouldShowSearchForm =
+        !courseSearchFormDataHasRequiredSearchParams(formData) || !courseSearchFormDataIsValid(formData);
+
+    // view=results → results; view=search → form; null → derive from params
+    const searchFormIsDisplayed = viewParam !== 'results' && (viewParam === 'search' || shouldShowSearchForm);
 
     const setField = useCallback(
         <Field extends CourseSearchField>(field: Field, value: CourseSearchParams[Field]) => {
@@ -194,9 +210,39 @@ export function useCourseSearchUrlState() {
         [setSearchModeParam]
     );
 
+    /** Navigate to the results pane. */
+    const showResults = useCallback(() => setViewParam('results'), [setViewParam]);
+
+    /** Navigate to the search form (keeps params intact — use for manual-mode back). */
+    const showSearchForm = useCallback(() => setViewParam('search'), [setViewParam]);
+
+    /** Clear the view override, letting the form/results display derive from params. */
+    const clearView = useCallback(() => setViewParam(null), [setViewParam]);
+
+    /** Validate and submit a search. Shows results on success, error snackbar on failure. */
+    const submitSearch = useCallback(
+        (data: CourseSearchParams) => {
+            if (courseSearchFormDataIsValid(data)) {
+                void showResults();
+                return true;
+            }
+            openSnackbar(
+                'error',
+                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
+            );
+            return false;
+        },
+        [showResults]
+    );
+
     return {
         formData,
         searchMode,
+        searchFormIsDisplayed,
+        showResults,
+        showSearchForm,
+        clearView,
+        submitSearch,
         setField,
         setFields,
         setFormData,
@@ -207,24 +253,4 @@ export function useCourseSearchUrlState() {
         resetAdvanced,
         defaultFormData: defaultCourseSearchFormValues,
     };
-}
-
-export function useCourseSearchSubmit() {
-    const setSearchFormIsDisplayed = useCoursePaneStore((store) => store.setSearchFormIsDisplayed);
-
-    return useCallback(
-        (formData: CourseSearchParams) => {
-            if (courseSearchFormDataIsValid(formData)) {
-                setSearchFormIsDisplayed(false);
-                return true;
-            }
-
-            openSnackbar(
-                'error',
-                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
-            );
-            return false;
-        },
-        [setSearchFormIsDisplayed]
-    );
 }

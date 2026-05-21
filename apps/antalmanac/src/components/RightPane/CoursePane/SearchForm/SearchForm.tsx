@@ -2,10 +2,7 @@ import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
-import {
-    useCourseSearchSubmit,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
@@ -16,8 +13,8 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
 export const SearchForm = () => {
-    const { formData, resetAllPreservingTerm, searchMode, setSearchMode } = useCourseSearchUrlState();
-    const submitSearch = useCourseSearchSubmit();
+    const { formData, resetAllPreservingTerm, searchMode, setSearchMode, clearView, submitSearch } =
+        useCourseSearchUrlState();
     const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
@@ -45,6 +42,8 @@ export const SearchForm = () => {
         setAdvancedSearchEnabled(false);
         void setSearchMode('quick');
         void resetAllPreservingTerm();
+        // Params are cleared; let auto-derive show the form (view=null)
+        void clearView();
     };
 
     return (

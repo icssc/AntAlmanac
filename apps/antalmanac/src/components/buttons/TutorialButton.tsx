@@ -5,7 +5,6 @@ import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
 import { useCallback, useEffect } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface TutorialButtonProps {
     onMenuClose?: () => void;
@@ -13,22 +12,17 @@ interface TutorialButtonProps {
 
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
     const { setCurrentStep, setIsOpen, isOpen } = useTour();
-    const { setSearchMode, resetAll } = useCourseSearchUrlState();
-    const { setSearchFormIsDisplayed, setAdvancedSearchEnabled } = useCoursePaneStore(
-        useShallow((store) => ({
-            setSearchFormIsDisplayed: store.setSearchFormIsDisplayed,
-            setAdvancedSearchEnabled: store.setAdvancedSearchEnabled,
-        }))
-    );
+    const { setSearchMode, resetAll, clearView } = useCourseSearchUrlState();
+    const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
 
     const startTutorial = useCallback(() => {
-        setSearchFormIsDisplayed(true);
         setAdvancedSearchEnabled(false);
         void setSearchMode('quick');
         void resetAll();
+        void clearView();
         setCurrentStep(0);
         setIsOpen(true);
-    }, [resetAll, setAdvancedSearchEnabled, setCurrentStep, setIsOpen, setSearchFormIsDisplayed, setSearchMode]);
+    }, [clearView, resetAll, setAdvancedSearchEnabled, setCurrentStep, setIsOpen, setSearchMode]);
 
     useEffect(() => {
         return () => {

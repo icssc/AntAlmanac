@@ -3,14 +3,12 @@ import {
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { AATerm } from '$lib/term';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';
 
 export function useQuickSearch() {
     const setActiveTab = useTabStore((s) => s.setActiveTab);
-    const { setFields, setSearchMode } = useCourseSearchUrlState();
-    const setSearchFormIsDisplayed = useCoursePaneStore((store) => store.setSearchFormIsDisplayed);
+    const { setFields, setSearchMode, showResults } = useCourseSearchUrlState();
 
     return useCallback(
         (deptValue: string, courseNumber: string, term: AATerm) => {
@@ -22,8 +20,8 @@ export function useQuickSearch() {
                 courseNumber,
             });
             setActiveTab('search');
-            setSearchFormIsDisplayed(false);
+            void showResults();
         },
-        [setActiveTab, setFields, setSearchFormIsDisplayed, setSearchMode]
+        [setActiveTab, setFields, setSearchMode, showResults]
     );
 }

@@ -4,8 +4,6 @@ import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchFor
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import {
     courseSearchFormDataHasAdvancedSearch,
-    courseSearchFormDataHasRequiredSearchParams,
-    courseSearchFormDataIsValid,
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -15,49 +13,48 @@ import { Box } from '@mui/material';
 import { parseAsString, useQueryState } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 export function CoursePaneRoot() {
-    const { formData, searchMode, setSearchMode, resetAllPreservingTerm } = useCourseSearchUrlState();
+    const {
+        formData,
+        searchMode,
+        searchFormIsDisplayed,
+        showSearchForm,
+        clearView,
+        setSearchMode,
+        resetAllPreservingTerm,
+    } = useCourseSearchUrlState();
     const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString.withOptions({ history: 'replace' }));
-    const { searchFormIsDisplayed, initialized, initialize, setSearchFormIsDisplayed, setAdvancedSearchEnabled } =
-        useCoursePaneStore(
-            useShallow((store) => ({
-                searchFormIsDisplayed: store.searchFormIsDisplayed,
-                initialized: store.initialized,
-                initialize: store.initialize,
-                setSearchFormIsDisplayed: store.setSearchFormIsDisplayed,
-                setAdvancedSearchEnabled: store.setAdvancedSearchEnabled,
-            }))
-        );
+    const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
 
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
     const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
     const derivedAdvancedSearchEnabled = courseSearchFormDataHasAdvancedSearch(formData);
-    const shouldShowSearchForm =
-        !courseSearchFormDataHasRequiredSearchParams(formData) || !courseSearchFormDataIsValid(formData);
 
     const handleDisplaySearch = useCallback(() => {
-        setSearchFormIsDisplayed(true);
-
         if (manualSearchEnabled) {
             if (derivedAdvancedSearchEnabled) {
                 setAdvancedSearchEnabled(true);
             }
+            // Keep params; force form visible via view=search
+            void showSearchForm();
             return;
         }
 
         setAdvancedSearchEnabled(false);
         void setSearchMode('quick');
+        // Clear params → shouldShowSearchForm becomes true → view=null auto-derives to form
         void resetAllPreservingTerm();
+        void clearView();
     }, [
+        clearView,
         derivedAdvancedSearchEnabled,
         manualSearchEnabled,
         resetAllPreservingTerm,
         setAdvancedSearchEnabled,
-        setSearchFormIsDisplayed,
         setSearchMode,
+        showSearchForm,
     ]);
 
     const refreshSearch = useCallback(() => {
@@ -75,12 +72,6 @@ export function CoursePaneRoot() {
         },
         [handleDisplaySearch]
     );
-
-    useEffect(() => {
-        if (!initialized) {
-            initialize(shouldShowSearchForm, manualSearchEnabled && derivedAdvancedSearchEnabled);
-        }
-    }, [derivedAdvancedSearchEnabled, initialize, initialized, manualSearchEnabled, shouldShowSearchForm]);
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeydown, false);

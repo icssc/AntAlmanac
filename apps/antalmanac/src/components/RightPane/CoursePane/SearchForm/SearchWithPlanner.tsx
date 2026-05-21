@@ -8,7 +8,6 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -37,8 +36,7 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
 }
 
 export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
-    const { formData } = useCourseSearchUrlState();
-    const setSearchFormIsDisplayed = useCoursePaneStore((store) => store.setSearchFormIsDisplayed);
+    const { formData, showResults } = useCourseSearchUrlState();
     const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
         PLANNER_SEARCH_PARAM,
         parseAsString.withOptions({ history: 'replace' })
@@ -104,7 +102,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 }));
 
                 RightPaneStore.setMultiSearchData(searchData, term);
-                setSearchFormIsDisplayed(false);
+                void showResults();
             } catch (error) {
                 console.error('Something went wrong while searching with Planner:', error);
                 openSnackbar('error', 'Something went wrong while searching with Planner.');
@@ -114,7 +112,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
             }
             return true;
         },
-        [formData.term, plannerRoadmaps, setSearchFormIsDisplayed]
+        [formData.term, plannerRoadmaps, showResults]
     );
 
     const groupBy = (option: Roadmap) => {

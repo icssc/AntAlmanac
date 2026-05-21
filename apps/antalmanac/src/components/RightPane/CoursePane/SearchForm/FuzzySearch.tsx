@@ -3,7 +3,6 @@ import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm
 import {
     type CourseSearchParams,
     defaultCourseSearchFormValues,
-    useCourseSearchSubmit,
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -60,8 +59,7 @@ interface SearchOption {
 }
 
 const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
-    const { formData, setFields, setSearchMode } = useCourseSearchUrlState();
-    const submitSearch = useCourseSearchSubmit();
+    const { formData, setFields, setSearchMode, submitSearch } = useCourseSearchUrlState();
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
     const [open, setOpen] = useState<boolean>(false);
     const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});
