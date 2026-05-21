@@ -1,6 +1,5 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
-import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import {
     courseSearchFormDataHasAdvancedSearch,
@@ -10,26 +9,23 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { Box } from '@mui/material';
-import { parseAsString, useQueryState } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
 export function CoursePaneRoot() {
     const {
         formData,
-        searchMode,
+        manualSearchEnabled,
         searchFormIsDisplayed,
         showSearchForm,
         clearView,
         setSearchMode,
         resetAllPreservingTerm,
     } = useCourseSearchUrlState();
-    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString.withOptions({ history: 'replace' }));
     const setAdvancedSearchEnabled = useCoursePaneStore((store) => store.setAdvancedSearchEnabled);
 
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
-    const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
     const derivedAdvancedSearchEnabled = courseSearchFormDataHasAdvancedSearch(formData);
 
     const handleDisplaySearch = useCallback(() => {

@@ -1,6 +1,7 @@
 import {
     type AdvancedSearchParam,
     MANUAL_SEARCH_PARAMS,
+    PLANNER_SEARCH_PARAM,
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
@@ -161,8 +162,10 @@ export function useCourseSearchUrlState() {
     const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
     const [searchModeParam, setSearchModeParam] = useQueryState('search', parseAsManualSearchMode);
     const [viewParam, setViewParam] = useQueryState('view', parseAsViewMode);
+    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString.withOptions({ history: 'replace' }));
 
     const searchMode: CourseSearchMode = searchModeParam === 'manual' ? 'manual' : 'quick';
+    const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
 
     const shouldShowSearchForm =
         !courseSearchFormDataHasRequiredSearchParams(formData) || !courseSearchFormDataIsValid(formData);
@@ -238,6 +241,7 @@ export function useCourseSearchUrlState() {
     return {
         formData,
         searchMode,
+        manualSearchEnabled,
         searchFormIsDisplayed,
         showResults,
         showSearchForm,
