@@ -23,13 +23,11 @@ export function CoursePaneRoot() {
 
     const handleDisplaySearch = useCallback(() => {
         if (manualSearchEnabled) {
-            // Keep params; force form visible via view=search
             void showSearchForm();
             return;
         }
 
         void setSearchMode('quick');
-        // Clear params → shouldShowSearchForm becomes true → view=null auto-derives to form
         void resetAllPreservingTerm();
         void clearView();
     }, [clearView, manualSearchEnabled, resetAllPreservingTerm, setSearchMode, showSearchForm]);
