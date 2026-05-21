@@ -9,7 +9,7 @@ import {
     DialogTitle,
     type DialogProps,
 } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 interface ScheduleNameDialogProps extends DialogProps {
     /**
@@ -31,7 +31,7 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
      * This is destructured separately for memoization.
      */
     const { onClose } = props;
-    const [name] = useState<string>(AppStore.getScheduleNames()[index]);
+    const name = AppStore.getScheduleNames()[index];
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
