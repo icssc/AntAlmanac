@@ -2,8 +2,6 @@ import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleMa
 import { Tabs, useTabStore } from '$stores/TabStore';
 import { Paper, Tabs as MuiTabs } from '@mui/material';
 
-export type { TabInfo as ScheduleManagementTabInfo } from '$stores/TabStore';
-
 interface ScheduleManagementTabsProps {
     onTabChange: (tabIndex: number) => void;
 }
