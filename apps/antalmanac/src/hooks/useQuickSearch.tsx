@@ -1,7 +1,4 @@
-import {
-    defaultCourseSearchFormValues,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { defaultFormData, useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { AATerm } from '$lib/term';
 import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';
@@ -14,7 +11,7 @@ export function useQuickSearch() {
         (deptValue: string, courseNumber: string, term: AATerm) => {
             void setSearchMode('quick');
             void setFields({
-                ...defaultCourseSearchFormValues,
+                ...defaultFormData,
                 term,
                 deptValue,
                 courseNumber,

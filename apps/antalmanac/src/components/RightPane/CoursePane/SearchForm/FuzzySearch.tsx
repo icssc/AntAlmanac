@@ -2,7 +2,7 @@ import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import {
     type CourseSearchParams,
-    defaultCourseSearchFormValues,
+    defaultFormData,
     useCourseSearchUrlState,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -81,7 +81,7 @@ const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
         }
 
         const baseFormData: CourseSearchParams = {
-            ...defaultCourseSearchFormValues,
+            ...defaultFormData,
             term: formData.term,
         };
 

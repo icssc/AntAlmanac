@@ -11,12 +11,12 @@ type TermSelectorProps = Omit<
 >;
 
 export function TermSelector(props: TermSelectorProps) {
-    const { formData, setTerm } = useCourseSearchUrlState();
+    const { formData, setField } = useCourseSearchUrlState();
 
     const handleChange = (_: unknown, option: AATerm | null) => {
         const value = option ?? getDefaultTerm();
 
-        void setTerm(value);
+        void setField('term', value);
 
         RightPaneStore.clearWarningMessages(CourseSearchWarningType.TermUnavailable);
     };

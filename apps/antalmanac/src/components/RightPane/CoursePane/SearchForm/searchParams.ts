@@ -53,12 +53,12 @@ export interface CourseSearchParams {
     days: string;
 }
 
-export type CourseSearchField = Exclude<keyof CourseSearchParams, 'term'>;
+export type CourseSearchField = keyof CourseSearchParams;
 
 export type CourseSearchMode = 'quick' | 'manual';
 export type CourseSearchView = 'search' | 'results';
 
-export const defaultCourseSearchFormValues: CourseSearchParams = {
+export const defaultFormData: CourseSearchParams = {
     term: defaultTerm,
     deptValue: 'ALL',
     ge: 'ANY',
@@ -77,14 +77,14 @@ const parseAsNormalizedGe = createParser<string>({
     parse: (value) => normalizeGeSelection(value),
     serialize: (value) => normalizeGeSelection(value),
     eq: (a, b) => normalizeGeSelection(a) === normalizeGeSelection(b),
-}).withDefault(defaultCourseSearchFormValues.ge);
+}).withDefault(defaultFormData.ge);
 
 export const courseSearchParamParsers = {
     term: parseAsCourseSearchTerm,
-    deptValue: parseAsString.withDefault(defaultCourseSearchFormValues.deptValue),
+    deptValue: parseAsString.withDefault(defaultFormData.deptValue),
     ge: parseAsNormalizedGe,
-    courseNumber: parseAsString.withDefault(defaultCourseSearchFormValues.courseNumber),
-    sectionCode: parseAsString.withDefault(defaultCourseSearchFormValues.sectionCode),
+    courseNumber: parseAsString.withDefault(defaultFormData.courseNumber),
+    sectionCode: parseAsString.withDefault(defaultFormData.sectionCode),
     instructor: parseAsString.withDefault(defaultAdvancedSearchValues.instructor),
     units: parseAsString.withDefault(defaultAdvancedSearchValues.units),
     endTime: parseAsString.withDefault(defaultAdvancedSearchValues.endTime),
@@ -149,24 +149,13 @@ export function useCourseSearchUrlState() {
         [setFormData]
     );
 
-    const setTerm = useCallback(
-        (term: AATerm) => {
-            return setFormData({ term });
-        },
-        [setFormData]
-    );
-
     const resetAll = useCallback(() => {
-        return setFormData(defaultCourseSearchFormValues);
+        return setFormData(defaultFormData);
     }, [setFormData]);
 
     const resetAllPreservingTerm = useCallback(() => {
-        return setFormData({ ...defaultCourseSearchFormValues, term: formData.term });
+        return setFormData({ ...defaultFormData, term: formData.term });
     }, [formData.term, setFormData]);
-
-    const resetAdvanced = useCallback(() => {
-        return setFormData(defaultAdvancedSearchValues);
-    }, [setFormData]);
 
     const setSearchMode = useCallback(
         (mode: CourseSearchMode) => {
@@ -202,7 +191,6 @@ export function useCourseSearchUrlState() {
 
     return {
         formData,
-        searchMode,
         manualSearchEnabled,
         searchFormIsDisplayed,
         showResults,
@@ -211,12 +199,8 @@ export function useCourseSearchUrlState() {
         submitSearch,
         setField,
         setFields,
-        setFormData,
-        setTerm,
         setSearchMode,
         resetAll,
         resetAllPreservingTerm,
-        resetAdvanced,
-        defaultFormData: defaultCourseSearchFormValues,
     };
 }
