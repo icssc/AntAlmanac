@@ -4,7 +4,7 @@ import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchFo
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
-import { SEARCH_RESULTS_QUERY_KEY } from '$lib/hydrateGrades';
+import { SEARCH_RESULTS_QUERY_KEY } from '$lib/gradesSearch';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
