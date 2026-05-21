@@ -12,7 +12,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
 export const SearchForm = () => {
-    const { formData, manualSearchEnabled, resetAllPreservingTerm, setSearchMode, clearView, submitSearch } =
+    const { formData, manualSearchEnabled, resetAll, resetAllPreservingTerm, setSearchMode, clearView, submitSearch } =
         useCourseSearchUrlState();
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
@@ -20,9 +20,6 @@ export const SearchForm = () => {
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            if (!manualSearchEnabled) {
-                return;
-            }
             submitSearch(formData);
         },
         [formData, manualSearchEnabled, submitSearch]
@@ -85,7 +82,7 @@ export const SearchForm = () => {
                                 });
                             }}
                             onReset={() => {
-                                void resetAllPreservingTerm();
+                                void resetAll();
                             }}
                         />
                     )}
