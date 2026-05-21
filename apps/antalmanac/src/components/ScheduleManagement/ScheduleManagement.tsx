@@ -1,4 +1,4 @@
-import { MANUAL_SEARCH_PARAMS } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { hasSearchParams, useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -12,11 +12,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
-function hasManualSearchParamsInUrl() {
-    const search = new URLSearchParams(window.location.search);
-    return MANUAL_SEARCH_PARAMS.some((param) => search.get(param) !== null);
-}
-
 /**
  * List of interactive tab buttons with their accompanying content.
  * Each tab's content has functionality for managing the user's schedule.
@@ -27,6 +22,7 @@ export function ScheduleManagement() {
     );
     const { tab } = useParams();
     const isMobile = useIsMobile();
+    const { formData, manualSearchEnabled } = useCourseSearchUrlState();
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
@@ -65,11 +61,10 @@ export function ScheduleManagement() {
         }
 
         const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-        const urlHasManualSearchParams = hasManualSearchParamsInUrl();
         const hasLocalScheduleData = () =>
             AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
-        if (urlHasManualSearchParams) {
+        if (hasSearchParams(formData) || manualSearchEnabled) {
             setActiveTab('search');
             return;
         }

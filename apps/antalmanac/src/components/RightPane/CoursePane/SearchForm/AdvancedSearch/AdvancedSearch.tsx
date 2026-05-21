@@ -1,8 +1,5 @@
 import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
-import {
-    courseSearchFormDataHasAdvancedSearch,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { hasAdvancedParams, useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Button, Collapse, Typography } from '@mui/material';
@@ -10,7 +7,7 @@ import { useState } from 'react';
 
 export function AdvancedSearch() {
     const { formData } = useCourseSearchUrlState();
-    const [expanded, setExpanded] = useState(() => courseSearchFormDataHasAdvancedSearch(formData));
+    const [expanded, setExpanded] = useState(() => hasAdvancedParams(formData));
     const isDark = useThemeStore((store) => store.isDark);
 
     return (
