@@ -75,7 +75,6 @@ function PatchNotes() {
                             alt="4-year plan"
                             width={350}
                             height={50}
-                            unoptimized
                             style={{
                                 width: '100%',
                                 height: 'auto',
@@ -106,7 +105,6 @@ function PatchNotes() {
                                 alt="AANTS example"
                                 width={425}
                                 height={185}
-                                unoptimized
                                 style={{
                                     width: '100%',
                                     height: 'auto',
