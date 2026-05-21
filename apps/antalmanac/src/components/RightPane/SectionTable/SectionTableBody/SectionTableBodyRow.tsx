@@ -85,13 +85,6 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const [currColor, setCurrColor] = useState(() => getSectionScheduleColor(section, term));
     const [colorPopoverAnchorEl, setColorPopoverAnchorEl] = useState<PopoverProps['anchorEl']>(null);
 
-    const updateHighlight = useCallback(() => {
-        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`));
-    }, [section.sectionCode, term]);
-
-    const updateColorFromSchedule = useCallback(() => {
-        setCurrColor(getSectionScheduleColor(section, term));
-    }, [section.sectionCode, section.color, term]);
     const updateColorFromPicker = useCallback((newColor: string) => {
         setCurrColor(newColor);
     }, []);
@@ -124,32 +117,32 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         [section.sectionCode, term]
     );
 
-    // Attach event listeners to the store.
     useEffect(() => {
-        AppStore.on('addedCoursesChange', updateHighlight);
-        AppStore.on('currentScheduleIndexChange', updateHighlight);
+        const sectionKey = `${section.sectionCode} ${term.shortName}`;
+
+        const syncAddedCourse = () => {
+            setAddedCourse(AppStore.getAddedSectionCodes().has(sectionKey));
+        };
+        const syncColor = () => {
+            setCurrColor(getSectionScheduleColor(section, term));
+        };
+        const syncFromScheduleChanges = () => {
+            syncAddedCourse();
+            syncColor();
+        };
+
+        syncFromScheduleChanges();
+
+        AppStore.on('addedCoursesChange', syncFromScheduleChanges);
+        AppStore.on('currentScheduleIndexChange', syncFromScheduleChanges);
+        AppStore.on('colorChange', syncColor);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateHighlight);
-            AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
+            AppStore.removeListener('addedCoursesChange', syncFromScheduleChanges);
+            AppStore.removeListener('currentScheduleIndexChange', syncFromScheduleChanges);
+            AppStore.removeListener('colorChange', syncColor);
         };
-    }, [updateHighlight]);
-
-    useEffect(() => {
-        setCurrColor(getSectionScheduleColor(section, term));
     }, [section.sectionCode, section.color, term]);
-
-    useEffect(() => {
-        AppStore.on('addedCoursesChange', updateColorFromSchedule);
-        AppStore.on('colorChange', updateColorFromSchedule);
-        AppStore.on('currentScheduleIndexChange', updateColorFromSchedule);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', updateColorFromSchedule);
-            AppStore.removeListener('colorChange', updateColorFromSchedule);
-            AppStore.removeListener('currentScheduleIndexChange', updateColorFromSchedule);
-        };
-    }, [updateColorFromSchedule]);
 
     useEffect(() => {
         if (!addedCourse) {
