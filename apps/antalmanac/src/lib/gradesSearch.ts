@@ -45,6 +45,7 @@ function formatGpa(averageGPA: number | null | undefined): string {
 
 function offeringToAggregateGrades(offering: GradeOfferingRow): AggregateGrades {
     return {
+        sectionList: [],
         gradeDistribution: {
             averageGPA: offering.averageGPA,
             gradeACount: offering.gradeACount,
