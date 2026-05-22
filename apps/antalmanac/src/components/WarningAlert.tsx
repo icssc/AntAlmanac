@@ -19,12 +19,20 @@ export const WarningAlert = ({ children, closable = false, onClose }: WarningAle
         <Alert
             severity="warning"
             onClose={closable ? handleClose : undefined}
-            sx={{ mb: 1 }}
+            sx={{ paddingX: 1.25, paddingY: 0.5, alignItems: 'center', mb: 1 }}
             slotProps={{
                 message: {
                     sx: {
+                        padding: 0,
+                    },
+                },
+                icon: {
+                    sx: {
                         display: 'flex',
                         alignItems: 'center',
+                        fontSize: '18px',
+                        pr: 0,
+                        mr: 1,
                     },
                 },
             }}

@@ -46,7 +46,7 @@ export function CustomEventsBox() {
     }
 
     return (
-        <Box>
+        <>
             <Typography variant="h6">Custom Events</Typography>
             <Box display="flex" flexDirection="column" gap={1}>
                 {customEvents.map((customEvent) => {
@@ -60,6 +60,6 @@ export function CustomEventsBox() {
                     );
                 })}
             </Box>
-        </Box>
+        </>
     );
 }
