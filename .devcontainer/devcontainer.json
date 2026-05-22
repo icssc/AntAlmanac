@@ -26,7 +26,6 @@
             "extensions": [
                 "oxc.oxc-vscode",
                 "ms-azuretools.vscode-docker",
-                "bradlc.vscode-tailwindcss",
                 "mikestead.dotenv"
             ],
             "settings": {
