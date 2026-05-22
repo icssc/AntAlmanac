@@ -336,6 +336,12 @@ export default function CourseRenderPane(props: { id?: number }) {
                 let response: WebsocAPIResponse;
                 const gradesPrefetchParams: GradesPrefetchParams[] = [];
 
+                const prefetchGrades = () =>
+                    prefetchSearchGrades(utils, gradesPrefetchParams).catch((error) => {
+                        console.error(error);
+                        openSnackbar('error', 'Error loading grades information');
+                    });
+
                 if (multiSearchData.length > 0) {
                     const { year, quarter } = RightPaneStore.getFormData().term;
                     const offeredCourses: WebsocSearchInput[] = [];
@@ -356,31 +362,31 @@ export default function CourseRenderPane(props: { id?: number }) {
                         }
                     }
                     setUnofferedCourses(unofferedCourses);
-                    response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
+                    [response] = await Promise.all([
+                        trpc.websoc.getMultiple.query({ params: offeredCourses }),
+                        prefetchGrades(),
+                    ]);
                 } else {
                     const formData = RightPaneStore.getFormData();
                     const websocQueryParams = getQueryParams(formData);
                     const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
-                    response =
-                        selectedGEs.length > 1
-                            ? intersectWebsocResponses(
-                                  await trpc.websoc.getManyOfField.query({
-                                      params: { ...websocQueryParams, ge: selectedGEs.join(',') },
-                                      fieldName: 'ge',
-                                  })
-                              )
-                            : await trpc.websoc.getOne.query(websocQueryParams);
-
                     const gradesParams = getGradesPrefetchParams(formData);
                     if (gradesParams) {
                         gradesPrefetchParams.push(gradesParams);
                     }
-                }
 
-                await prefetchSearchGrades(utils, gradesPrefetchParams).catch((error) => {
-                    console.error(error);
-                    openSnackbar('error', 'Error loading grades information');
-                });
+                    const websocPromise =
+                        selectedGEs.length > 1
+                            ? trpc.websoc.getManyOfField
+                                  .query({
+                                      params: { ...websocQueryParams, ge: selectedGEs.join(',') },
+                                      fieldName: 'ge',
+                                  })
+                                  .then(intersectWebsocResponses)
+                            : trpc.websoc.getOne.query(websocQueryParams);
+
+                    [response] = await Promise.all([websocPromise, prefetchGrades()]);
+                }
 
                 setSearchedTerm(RightPaneStore.getFormData().term.longName);
                 return response;

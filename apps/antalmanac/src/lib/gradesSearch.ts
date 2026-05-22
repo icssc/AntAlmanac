@@ -116,7 +116,7 @@ function lookupFirstInstructorGpa(
     return null;
 }
 
-/** Search path: read hydrated cache. Added path: at most one aggregateGrades fetch on cache miss. */
+/** Search path: read hydrated cache. Added path: aggregateGrades per instructor until first GPA. */
 export function useSectionGpa(deptCode: string, courseNumber: string, instructors: string[]) {
     const utils = trpcReact.useUtils();
     const namedInstructors = useMemo(() => instructors.filter((instructor) => instructor !== 'STAFF'), [instructors]);
@@ -126,19 +126,34 @@ export function useSectionGpa(deptCode: string, courseNumber: string, instructor
         [courseNumber, deptCode, namedInstructors, utils]
     );
 
-    const fallbackInstructor = namedInstructors[0] ?? '';
-
-    const { data: fetchedGrades, isLoading } = trpcReact.grades.aggregateGrades.useQuery(
-        { department: deptCode, courseNumber, instructor: fallbackInstructor },
-        {
-            enabled: cachedMatch === null && !!fallbackInstructor,
-            select: (data) => data?.gradeDistribution ?? null,
-        }
+    const instructorResults = trpcReact.useQueries((t) =>
+        namedInstructors.map((instructor) =>
+            t.grades.aggregateGrades(
+                { department: deptCode, courseNumber, instructor },
+                {
+                    enabled: cachedMatch === null,
+                    select: (data) => data?.gradeDistribution ?? null,
+                }
+            )
+        )
     );
 
+    const fetchedMatch = useMemo(() => {
+        const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
+        if (idx < 0) {
+            return null;
+        }
+        return {
+            instructor: namedInstructors[idx],
+            gpa: formatGpa(instructorResults[idx].data?.averageGPA),
+        };
+    }, [instructorResults, namedInstructors]);
+
+    const loading = cachedMatch === null && instructorResults.some((r) => r.isLoading);
+
     return {
-        gpa: cachedMatch?.gpa ?? formatGpa(fetchedGrades?.averageGPA),
-        instructor: cachedMatch?.instructor ?? fallbackInstructor,
-        loading: cachedMatch === null && isLoading,
+        gpa: cachedMatch?.gpa ?? fetchedMatch?.gpa ?? '',
+        instructor: cachedMatch?.instructor ?? fetchedMatch?.instructor ?? namedInstructors[0] ?? '',
+        loading,
     };
 }
