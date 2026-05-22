@@ -13,7 +13,6 @@ interface CourseRename extends CourseId {
 }
 
 const COURSE_RENAMES: CourseRename[] = [
-    // IN4MATX (Informatics) → SWE (Software Engineering), Fall 2026
     {
         department: 'SWE',
         courseNumber: '43',
@@ -68,7 +67,6 @@ const COURSE_RENAMES: CourseRename[] = [
         previously: { department: 'IN4MATX', courseNumber: '141' },
         effectiveYear: 2026,
     },
-    // I&C SCI 32A → I&C SCI H32, Fall 2024
     {
         department: 'I&C SCI',
         courseNumber: 'H32',
