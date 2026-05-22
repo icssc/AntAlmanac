@@ -100,7 +100,7 @@ export function GradesPopover(props: GradesPopoverProps) {
                 title={title}
                 subheader={
                     <>
-                        {subheader ?? (!predecessorLabel && <>&nbsp;</>)}
+                        {subheader || (!predecessorLabel && <>&nbsp;</>)}
                         {subheader && predecessorLabel && <br />}
                         {predecessorLabel}
                     </>

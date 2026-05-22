@@ -35,7 +35,9 @@ const gradesRouter = router({
                 )
             );
 
-            return mergeAggregateGrades(results);
+            return mergeAggregateGrades(
+                results as [NonNullable<AggregateGrades>, ...NonNullable<AggregateGrades>[]]
+            );
         }),
 
     // Mutation so tRPC doesn't batch it with concurrent WebSOC queries.
