@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { termData } from '$lib/term';
 import { canTermEnrollmentChange } from '$lib/termHelpers';
 import type { AATerm, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
-import { createClient } from '@packages/anteater-api/client';
+import { AAPIError, createClient } from '@packages/anteater-api/client';
 import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
 import { parseSectionCodes, SectionCodesGraphQLResponse } from '../src/backend/lib/term-section-codes';
@@ -13,10 +13,25 @@ import { GENERATED_DIR, GENERATED_TERMS_DIR, SEARCH_DATA_FILE } from './lib/path
 
 const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
-const MAX_COURSES = 10_000;
+// Page size for `/v2/rest/courses` is hard-capped at 100 by AAPI.
+const COURSES_PAGE_SIZE = 100;
 
-// Delay between GraphQL requests to avoid triggering AAPI rate limits / OOM.
-const DELAY_MS = 500;
+/*
+ * Concurrency caps for outbound AAPI traffic. AAPI's GraphQL `websoc` queries
+ * for current-ish quarters are heavy (~1 MB / ~7 s) and have been observed to
+ * trip Cloudflare Worker memory limits when fired in larger waves, so we keep
+ * that pool small while letting the cheap REST `/courses` paginator run wider.
+ */
+const COURSES_PAGE_CONCURRENCY = 8;
+const SECTION_CODES_CONCURRENCY = 3;
+
+/*
+ * Retry transient AAPI failures (HTTP 5xx, including the Cloudflare Worker
+ * resource-limit error which surfaces as 503). The script otherwise aborts on
+ * a single hiccup, which is painful when most of a long run has succeeded.
+ */
+const SECTION_CODES_MAX_ATTEMPTS = 4;
+const SECTION_CODES_RETRY_BASE_MS = 1500;
 
 const ALIASES: Record<string, string | undefined> = {
     COMPSCI: 'CS',
@@ -47,6 +62,60 @@ function getWebsocCoursesFromResponse(data: WebsocAPIResponse) {
     );
 }
 
+/**
+ * Fetch section-code data for a term, retrying transient 5xx responses (notably AAPI's
+ * Cloudflare Worker resource-limit error, which surfaces as 503) with exponential backoff.
+ */
+async function fetchSectionCodesWithRetry(term: AATerm) {
+    const query = buildSectionCodesQuery(term);
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= SECTION_CODES_MAX_ATTEMPTS; attempt++) {
+        try {
+            const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
+            if (!res) {
+                throw new Error(`Error fetching section codes for ${term.shortName}.`);
+            }
+            return res;
+        } catch (error) {
+            lastError = error;
+            const isRetryable = error instanceof AAPIError && error.status !== undefined && error.status >= 500;
+            if (!isRetryable || attempt === SECTION_CODES_MAX_ATTEMPTS) {
+                throw error;
+            }
+            const delayMs = SECTION_CODES_RETRY_BASE_MS * 2 ** (attempt - 1);
+            console.warn(
+                `Transient AAPI error (${(error as AAPIError).status}) for ${term.shortName}; retrying in ${delayMs} ms (attempt ${attempt}/${SECTION_CODES_MAX_ATTEMPTS}).`
+            );
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
+        }
+    }
+    throw lastError;
+}
+
+/**
+ * Run `worker` over `items` with at most `concurrency` in-flight tasks at once.
+ * Preserves the original ordering for the returned results.
+ */
+async function runPool<T, R>(items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>) {
+    const results: R[] = Array.from({ length: items.length });
+    let cursor = 0;
+    let aborted = false;
+    const runners = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+        while (!aborted) {
+            const i = cursor++;
+            if (i >= items.length) return;
+            try {
+                results[i] = await worker(items[i], i);
+            } catch (error) {
+                aborted = true;
+                throw error;
+            }
+        }
+    });
+    await Promise.all(runners);
+    return results;
+}
+
 function buildSectionCodesQuery(term: AATerm): string {
     return `{
         websoc(query: { year: "${term.year}", quarter: ${term.quarter} }) {
@@ -74,13 +143,25 @@ async function main() {
     const activeTerms = termData.filter((t) => canTermEnrollmentChange(t));
 
     console.log('Fetching courses from Anteater API...');
+    /*
+     * Catalogue size isn't known up front and the API caps `take` at 100, so we fire pages in
+     * concurrent waves and stop the moment any page in a wave returns a short batch (which means
+     * we've reached the end of the catalogue).
+     */
     const courses: Course[] = [];
-    for (let skip = 0; skip < MAX_COURSES; skip += 100) {
-        const batch = await aapiClient.courses.list({ take: 100, skip });
-        courses.push(...batch);
-
-        if (batch.length < 100) {
-            break;
+    let waveStart = 0;
+    let reachedEnd = false;
+    while (!reachedEnd) {
+        const skips = Array.from({ length: COURSES_PAGE_CONCURRENCY }, (_, i) => waveStart + i * COURSES_PAGE_SIZE);
+        waveStart += COURSES_PAGE_CONCURRENCY * COURSES_PAGE_SIZE;
+        const batches = await Promise.all(
+            skips.map((skip) => aapiClient.courses.list({ take: COURSES_PAGE_SIZE, skip }))
+        );
+        for (const batch of batches) {
+            courses.push(...batch);
+            if (batch.length < COURSES_PAGE_SIZE) {
+                reachedEnd = true;
+            }
         }
     }
     console.log(`Fetched ${courses.length} courses.`);
@@ -126,13 +207,10 @@ async function main() {
             string,
             Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
         >();
-        for (let i = 0; i < activeTerms.length; i++) {
-            if (i > 0) {
-                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
-            }
-            const { year, quarter } = activeTerms[i];
-
-            const websocData = await aapiClient.websoc.query({ year, quarter });
+        const websocResponses = await Promise.all(
+            activeTerms.map(({ year, quarter }) => aapiClient.websoc.query({ year, quarter }))
+        );
+        for (const websocData of websocResponses) {
             const chunk = getWebsocCoursesFromResponse(websocData);
             for (const [key, course] of chunk) {
                 fromWebsoc.set(key, course);
@@ -184,58 +262,55 @@ async function main() {
     );
 
     const refreshShortNames = new Set(activeTerms.map((t) => t.shortName));
-    let count = 0;
 
     /*
-     * Fetch section-code data one term at a time with a fixed delay between requests.
-     * Sequential execution (rather than staggered Promise.all) ensures we never have
-     * concurrent in-flight GraphQL calls, which matters while AAPI has OOM constraints.
+     * Decide which terms still need section-code data. Terms whose JSON cache exists *and* aren't
+     * inside an active-enrollment refresh window are skipped, since their section codes can no
+     * longer change. The remaining terms are fetched concurrently via a bounded pool, which keeps
+     * AAPI under controlled load while finishing cold rebuilds in seconds rather than minutes.
      */
-    let requestsMade = 0;
+    const termsToFetch: { term: AATerm; fileName: string }[] = [];
     for (const term of termData) {
+        const fileName = join(GENERATED_TERMS_DIR, `${term.quarter}_${term.year}.json`);
+        let cacheExists = false;
         try {
-            const { year, quarter } = term;
-            const parsedTerm = `${quarter}_${year}`;
-            const fileName = join(GENERATED_TERMS_DIR, `${parsedTerm}.json`);
+            await access(fileName);
+            cacheExists = true;
+        } catch {
+            // Cache miss is the normal path on a fresh checkout.
+        }
 
-            try {
-                await access(fileName);
+        if (cacheExists && !refreshShortNames.has(term.shortName)) {
+            console.log(`Skipping ${term.shortName}, cache exists and term is outside enrollment refresh window.`);
+            continue;
+        }
 
-                if (!refreshShortNames.has(term.shortName)) {
-                    console.log(
-                        `Skipping ${term.shortName}, cache exists and term is outside enrollment refresh window.`
-                    );
-                    continue;
-                }
-                console.log(`Updating section-code cache for active term (${term.shortName})...`);
-            } catch {
-                console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
-            }
+        if (cacheExists) {
+            console.log(`Updating section-code cache for active term (${term.shortName})...`);
+        } else {
+            console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
+        }
 
-            // Stagger requests to respect AAPI rate limits / avoid OOM
-            if (requestsMade > 0) {
-                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
-            }
-            requestsMade++;
+        termsToFetch.push({ term, fileName });
+    }
 
-            const query = buildSectionCodesQuery(term);
-            const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
-            if (!res) {
-                throw new Error(`Error fetching section codes for ${term.shortName}.`);
-            }
-
+    const sectionCounts = await runPool(termsToFetch, SECTION_CODES_CONCURRENCY, async ({ term, fileName }) => {
+        try {
+            const res = await fetchSectionCodesWithRetry(term);
             const parsedSectionData = parseSectionCodes(res);
             const numKeys = Object.keys(parsedSectionData).length;
 
             console.log(`Fetched ${numKeys} section codes for ${term.shortName} from Anteater API.`);
 
             await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
-            count += numKeys;
+            return numKeys;
         } catch (error) {
             console.error(`ERROR for term "${term.shortName}":`);
             throw error;
         }
-    }
+    });
+
+    const count = sectionCounts.reduce((sum, n) => sum + n, 0);
 
     console.log(`Fetched ${count} section codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
