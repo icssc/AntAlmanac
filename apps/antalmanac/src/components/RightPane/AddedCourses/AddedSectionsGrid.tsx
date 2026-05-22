@@ -123,7 +123,7 @@ export function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-    const loadingSchedule = scheduleComponentsToggleStore((state) => state.openLoadingSchedule);
+    const loadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
 
     const isMobile = useIsMobile();
 
