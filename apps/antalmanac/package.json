@@ -34,6 +34,7 @@
         "@mui/x-date-pickers": "^8.11.1",
         "@packages/antalmanac-types": "workspace:^",
         "@packages/anteater-api": "workspace:^",
+        "@packages/db": "workspace:^",
         "@paralleldrive/cuid2": "^2.2.2",
         "@reactour/tour": "^3.7.0",
         "@tanstack/react-query": "^5.100.9",
@@ -73,7 +74,6 @@
     },
     "devDependencies": {
         "@babel/core": "^7.28.6",
-        "@packages/db": "workspace:^",
         "@testing-library/react": "^14.0.0",
         "@types/file-saver": "^2.0.5",
         "@types/leaflet": "^1.9.14",
