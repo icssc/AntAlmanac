@@ -136,7 +136,6 @@ export const AuthInitializer = () => {
                     await loadUnsavedChanges(userData);
 
                     setAreSchedulesLoaded(true);
-
                     setWasLoggedIn(true);
 
                     handleAuthChecked();
@@ -146,6 +145,7 @@ export const AuthInitializer = () => {
                 }
 
                 isInitializingRef.current = false;
+
                 handleInitialized();
             })();
         } else {
