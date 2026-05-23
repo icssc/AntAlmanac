@@ -29,7 +29,7 @@ import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/l
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
-import { useSectionThemeStore } from '$stores/SectionThemeStore';
+import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 function getBuildingNameAcronym(name: string): string {
@@ -168,7 +168,7 @@ export default function CourseMap() {
     const markerRef = useRef<Marker | null>(null);
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
-    const sectionColor = useSectionThemeStore((s) => s.sectionColor);
+    const sectionColor = useSectionThemeStore(selectActiveSectionColor);
     const isDark = useThemeStore((s) => s.isDark);
 
     const [rawCalendarEvents, setRawCalendarEvents] = useState(() => AppStore.getEventsInCalendar());
