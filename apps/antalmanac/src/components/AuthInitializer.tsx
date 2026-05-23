@@ -149,6 +149,7 @@ export const AuthInitializer = () => {
                 setOpenAlert(true);
             }
             setHasCheckedAuth(true);
+            hasInitializedRef.current = true;
             handleInitialized();
         }
     }, [
