@@ -120,7 +120,8 @@ rather not develop in the cloud. You'll need
 the Dev Containers extension for your editor:
 
 -   VS Code: [`ms-vscode-remote.remote-containers`](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
--   Cursor: [`anysphere.remote-containers`](https://open-vsx.org/extension/anysphere/remote-containers)
+-   Cursor: search for "Dev Containers" (`anysphere.remote-containers`)
+    in the Extensions panel.
 
 Then open the repository and run **Dev Containers: Reopen in Container**
 from the command palette. The same post-create script runs, leaving you
