@@ -9,6 +9,7 @@ import locationIds from '$lib/locations/locations';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
+import { useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
@@ -93,6 +94,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
+    const isCustomTheme = useSectionThemeStore((store) => store.sectionColor) === 'custom';
 
     const postHog = usePostHog();
 
@@ -200,18 +202,20 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             <td>Final</td>
                             <td style={{ textAlign: 'right' }}>{finalExamString}</td>
                         </tr>
-                        <tr>
-                            <td>Color</td>
-                            <td style={{ textAlign: 'right' }}>
-                                <ColorPicker
-                                    color={selectedEvent.color}
-                                    isCustomEvent={selectedEvent.isCustomEvent}
-                                    sectionCode={selectedEvent.sectionCode}
-                                    term={selectedEvent.term}
-                                    analyticsCategory={analyticsEnum.calendar}
-                                />
-                            </td>
-                        </tr>
+                        {isCustomTheme && (
+                            <tr>
+                                <td>Color</td>
+                                <td style={{ textAlign: 'right' }}>
+                                    <ColorPicker
+                                        color={selectedEvent.color}
+                                        isCustomEvent={selectedEvent.isCustomEvent}
+                                        sectionCode={selectedEvent.sectionCode}
+                                        term={selectedEvent.term}
+                                        analyticsCategory={analyticsEnum.calendar}
+                                    />
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </Paper>

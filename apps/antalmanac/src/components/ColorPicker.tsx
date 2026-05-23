@@ -3,6 +3,7 @@ import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
+import { useSectionThemeStore } from '$stores/SectionThemeStore';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { CustomEventId } from '@packages/antalmanac-types';
@@ -33,6 +34,7 @@ const ColorPicker = memo(function ColorPicker({
 }: ColorPickerProps) {
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
     const [currColor, setCurrColor] = useState(color);
+    const isCustomTheme = useSectionThemeStore((s) => s.sectionColor) === 'custom';
 
     const postHog = usePostHog();
 
@@ -46,6 +48,8 @@ const ColorPicker = memo(function ColorPicker({
     );
 
     useEffect(() => {
+        if (!isCustomTheme) return;
+
         let colorPickerId;
         if (isCustomEvent && customEventID) colorPickerId = customEventID.toString();
         else if (sectionCode) colorPickerId = sectionCode;
@@ -55,7 +59,9 @@ const ColorPicker = memo(function ColorPicker({
         return () => {
             AppStore.unregisterColorPicker(colorPickerId, updateColor);
         };
-    }, [isCustomEvent, customEventID, sectionCode, updateColor]);
+    }, [isCustomTheme, isCustomEvent, customEventID, sectionCode, updateColor]);
+
+    if (!isCustomTheme) return null;
 
     const openPicker = (target: HTMLElement, postHog?: PostHog) => {
         setAnchorEl(target);
