@@ -123,6 +123,12 @@ the Dev Containers extension for your editor:
 -   Cursor: search for "Dev Containers" (`anysphere.remote-containers`)
     in the Extensions panel.
 
+We recommend starting from a **fresh clone** of the repository for this.
+A working tree that's already had `pnpm install` or `docker compose up`
+run on your host can leave behind `node_modules/` or volumes from a
+different platform (especially on macOS/Windows), which will conflict
+with the Linux container.
+
 Then open the repository and run **Dev Containers: Reopen in Container**
 from the command palette. The same post-create script runs, leaving you
 ready to `pnpm dev`.
