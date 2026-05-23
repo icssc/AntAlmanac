@@ -112,8 +112,22 @@ in the browser, with no setup required on your own machine.
 
 4. Open the forwarded port `3000` (Codespaces will offer a preview link).
 
+### Using the dev container locally (VS Code or Cursor)
+
+The same `.devcontainer/` configuration also works locally if you'd
+rather not develop in the cloud. You'll need
+[Docker](https://www.docker.com/products/docker-desktop) installed, plus
+the Dev Containers extension for your editor:
+
+-   VS Code: [`ms-vscode-remote.remote-containers`](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+-   Cursor: [`anysphere.remote-containers`](https://open-vsx.org/extension/anysphere/remote-containers)
+
+Then open the repository and run **Dev Containers: Reopen in Container**
+from the command palette. The same post-create script runs, leaving you
+ready to `pnpm dev`.
+
 Everything below is for setting up a development environment on your own
-machine.
+machine without containers.
 
 ## Pre-requisites
 
