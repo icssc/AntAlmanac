@@ -6,6 +6,9 @@ import { postHog } from '$providers/PostHog';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import type { AATerm, CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
+import { debounce } from '@mui/material';
+
+const AUTO_SAVE_DEBOUNCE_MS = 500;
 
 export interface UndoRedoAction {
     type: 'undoRedoAction';
@@ -113,7 +116,13 @@ type ActionType =
     | UndoRedoAction;
 
 class ActionTypesStore extends EventEmitter {
-    async autoSaveSchedule(_action: ActionType) {
+    private debouncedSave = debounce(async () => {
+        this.emit('autoSaveStart');
+        await autoSaveSchedule({ postHog });
+        this.emit('autoSaveEnd');
+    }, AUTO_SAVE_DEBOUNCE_MS);
+
+    autoSaveSchedule(_action: ActionType) {
         const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
 
@@ -128,9 +137,7 @@ class ActionTypesStore extends EventEmitter {
             return;
         }
 
-        this.emit('autoSaveStart');
-        await autoSaveSchedule({ postHog });
-        this.emit('autoSaveEnd');
+        this.debouncedSave();
     }
 }
 
