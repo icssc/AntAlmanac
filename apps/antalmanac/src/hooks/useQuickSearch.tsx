@@ -1,4 +1,8 @@
-import { defaultFormData, serializeCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import {
+    clearMultiSearchData,
+    defaultFormData,
+    serializeCourseSearchParams,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { AATerm } from '$lib/term';
 import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';
@@ -10,6 +14,7 @@ export function useQuickSearch() {
 
     return useCallback(
         (deptValue: string, courseNumber: string, term: AATerm) => {
+            clearMultiSearchData();
             const courseSearch = serializeCourseSearchParams({
                 ...defaultFormData,
                 term,

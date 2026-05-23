@@ -4,6 +4,7 @@ import {
     PLANNER_SEARCH_PARAM,
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
@@ -132,6 +133,11 @@ export function shouldShowSearchForm(formData: CourseSearchParams) {
     return !hasPrimarySearchInput || !isValidSearch(formData);
 }
 
+/** Drop planner batch search so URL-driven queries take precedence. */
+export function clearMultiSearchData() {
+    RightPaneStore.clearMultiSearchData();
+}
+
 export function useCourseSearchUrlState() {
     const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
     const [searchMode, setSearchModeParam] = useQueryState(
@@ -148,6 +154,7 @@ export function useCourseSearchUrlState() {
 
     const setField = useCallback(
         <Field extends CourseSearchField>(field: Field, value: CourseSearchParams[Field]) => {
+            clearMultiSearchData();
             return setFormData({ [field]: value });
         },
         [setFormData]
@@ -155,16 +162,19 @@ export function useCourseSearchUrlState() {
 
     const setFields = useCallback(
         (values: Partial<CourseSearchParams> | null) => {
+            clearMultiSearchData();
             return setFormData(values);
         },
         [setFormData]
     );
 
     const resetAll = useCallback(() => {
+        clearMultiSearchData();
         return setFormData(defaultFormData);
     }, [setFormData]);
 
     const resetAllPreservingTerm = useCallback(() => {
+        clearMultiSearchData();
         return setFormData({ ...defaultFormData, term: formData.term });
     }, [formData.term, setFormData]);
 
@@ -179,7 +189,10 @@ export function useCourseSearchUrlState() {
     const showResults = useCallback(() => setViewParam('results'), [setViewParam]);
 
     /** Navigate to the search form (keeps params intact — use for manual-mode back). */
-    const showSearchForm = useCallback(() => setViewParam('search'), [setViewParam]);
+    const showSearchForm = useCallback(() => {
+        clearMultiSearchData();
+        return setViewParam('search');
+    }, [setViewParam]);
 
     /** Clear URL view override; pane follows derivedView from search params. */
     const clearView = useCallback(() => setViewParam(null), [setViewParam]);
@@ -188,6 +201,7 @@ export function useCourseSearchUrlState() {
     const submitSearch = useCallback(
         (data: CourseSearchParams) => {
             if (isValidSearch(data)) {
+                clearMultiSearchData();
                 void showResults();
                 return true;
             }
