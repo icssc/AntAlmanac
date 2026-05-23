@@ -47,7 +47,7 @@ export const AuthInitializer = () => {
 
     const postHog = usePostHog();
 
-    const handleAuthChecked = () => {
+    const handleInitialized = () => {
         setOpenLoadingSchedule(false);
         loadNotifications();
     };
@@ -113,7 +113,7 @@ export const AuthInitializer = () => {
                 if (sessionData.session.expiresAt < new Date()) {
                     setOpenAlert(true);
                     setHasCheckedAuth(true);
-                    handleAuthChecked();
+                    handleInitialized();
                     return;
                 }
                 isInitializingRef.current = true;
@@ -142,14 +142,14 @@ export const AuthInitializer = () => {
                 }
 
                 isInitializingRef.current = false;
-                handleAuthChecked();
+                handleInitialized();
             })();
         } else {
             if (getWasLoggedIn()) {
                 setOpenAlert(true);
             }
             setHasCheckedAuth(true);
-            handleAuthChecked();
+            handleInitialized();
         }
     }, [
         sessionData,
