@@ -22,7 +22,7 @@ import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSectionThemeStore } from '$stores/SectionThemeStore';
+import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
@@ -121,7 +121,7 @@ export const ScheduleCalendar = memo(() => {
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
     const isDark = useThemeStore((store) => store.isDark);
-    const sectionColor = useSectionThemeStore((store) => store.sectionColor);
+    const sectionColor = useSectionThemeStore(selectActiveSectionColor);
 
     const eventsInCalendar = useMemo(
         () => applyThemeToCalendarEvents(rawEventsInCalendar, currentScheduleCourses, sectionColor, isDark),

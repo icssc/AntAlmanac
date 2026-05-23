@@ -1,66 +1,158 @@
-import { SectionThemeDialog } from '$components/SectionTheme/SectionThemeDialog';
-import { getPalette, SECTION_THEMES } from '$lib/sectionThemes';
+import { getPalette, SECTION_THEMES, type SectionColorSetting } from '$lib/sectionThemes';
 import { useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { Palette } from '@mui/icons-material';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Check, ExpandMore } from '@mui/icons-material';
+import { Box, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
+interface ThemeOption {
+    id: SectionColorSetting;
+    name: string;
+    swatches: string[];
+}
+
+function Swatches({ colors }: { colors: string[] }) {
+    const theme = useTheme();
+    if (colors.length === 0) return null;
+    return (
+        <Stack direction="row" gap={0.5} sx={{ flexShrink: 0 }}>
+            {colors.map((c) => (
+                <Box
+                    key={c}
+                    sx={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: '50%',
+                        backgroundColor: c,
+                        border: `1px solid ${theme.palette.divider}`,
+                    }}
+                />
+            ))}
+        </Stack>
+    );
+}
+
+/**
+ * Settings entry for picking the section color theme.
+ *
+ * Mirrors AntAlmanac's other Settings selectors (label on top, control below) and matches
+ * issue #1720: a dropdown that live-previews each theme on the actual calendar as the user
+ * hovers, committing on click and reverting on dismiss. No modal.
+ */
 export function SectionColorSelector() {
+    const muiTheme = useTheme();
     const isDark = useThemeStore((s) => s.isDark);
+
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
     const setSectionColor = useSectionThemeStore((s) => s.setSectionColor);
+    const setPreviewSectionColor = useSectionThemeStore((s) => s.setPreviewSectionColor);
     const postHog = usePostHog();
 
-    const [open, setOpen] = useState(false);
+    const buttonRef = useRef<HTMLDivElement>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
-    const activeTheme = SECTION_THEMES.find((t) => t.id === sectionColor);
-    const activeName = activeTheme?.name ?? 'Custom';
-    const swatches = activeTheme ? getPalette(activeTheme.id, isDark).map((f) => f[0]) : [];
+    const options = useMemo<ThemeOption[]>(
+        () => [
+            { id: 'custom', name: 'Custom', swatches: [] },
+            ...SECTION_THEMES.map((t) => ({
+                id: t.id,
+                name: t.name,
+                swatches: getPalette(t.id, isDark)
+                    .map((family) => family[0])
+                    .slice(0, 4),
+            })),
+        ],
+        [isDark]
+    );
+
+    const activeOption = options.find((o) => o.id === sectionColor);
+    const activeName = activeOption?.name ?? 'Custom';
+
+    const handleClose = useCallback(() => {
+        setMenuOpen(false);
+        setPreviewSectionColor(null);
+    }, [setPreviewSectionColor]);
+
+    const handleSelect = useCallback(
+        (value: SectionColorSetting) => {
+            setSectionColor(value, postHog);
+            setMenuOpen(false);
+        },
+        [setSectionColor, postHog]
+    );
 
     return (
-        <Stack gap={1}>
-            <Typography variant="h6">Section Color</Typography>
-            <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
-                <Typography variant="body1" sx={{ fontWeight: 600, minWidth: 80 }}>
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                Section Color
+            </Typography>
+
+            <Box
+                ref={buttonRef}
+                onClick={() => setMenuOpen(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setMenuOpen(true);
+                    }
+                }}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 1.5,
+                    padding: '8px 12px',
+                    border: `1px solid ${muiTheme.palette.divider}`,
+                    borderRadius: 1,
+                    cursor: 'pointer',
+                    backgroundColor: muiTheme.palette.settingsSegment.background,
+                    '&:hover': { backgroundColor: muiTheme.palette.settingsSegment.hoverBackground },
+                }}
+            >
+                <Typography sx={{ fontWeight: 'bold', fontSize: '1.1rem', color: muiTheme.palette.secondary.main }}>
                     {activeName}
                 </Typography>
-                {swatches.length > 0 && (
-                    <Stack direction="row" gap={0.5}>
-                        {swatches.map((c) => (
-                            <Box
-                                key={c}
-                                sx={{
-                                    width: 14,
-                                    height: 14,
-                                    borderRadius: 0.5,
-                                    backgroundColor: c,
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                }}
-                            />
-                        ))}
-                    </Stack>
-                )}
-                <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<Palette fontSize="small" />}
-                    onClick={() => setOpen(true)}
-                    sx={{ ml: 'auto' }}
-                >
-                    Browse Themes
-                </Button>
-            </Stack>
+                <Stack direction="row" alignItems="center" gap={1}>
+                    {activeOption && <Swatches colors={activeOption.swatches} />}
+                    <ExpandMore fontSize="small" sx={{ color: muiTheme.palette.secondary.main }} />
+                </Stack>
+            </Box>
 
-            <SectionThemeDialog
-                open={open}
-                onClose={() => setOpen(false)}
-                initialValue={sectionColor}
-                description="Pick a preset theme, or choose Custom to set each section's color individually from the calendar."
-                onApply={(value) => setSectionColor(value, postHog)}
-            />
-        </Stack>
+            <Menu
+                anchorEl={buttonRef.current}
+                open={menuOpen}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                slotProps={{ paper: { sx: { width: buttonRef.current?.offsetWidth, maxHeight: 320 } } }}
+            >
+                {options.map((option) => {
+                    const isSelected = option.id === sectionColor;
+                    return (
+                        <MenuItem
+                            key={option.id}
+                            selected={isSelected}
+                            onMouseEnter={() => setPreviewSectionColor(option.id)}
+                            onFocus={() => setPreviewSectionColor(option.id)}
+                            onMouseLeave={() => setPreviewSectionColor(null)}
+                            onClick={() => handleSelect(option.id)}
+                        >
+                            <ListItemIcon sx={{ minWidth: 28 }}>
+                                {isSelected ? <Check fontSize="small" /> : null}
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={option.name}
+                                primaryTypographyProps={{ fontWeight: isSelected ? 700 : 500 }}
+                            />
+                            <Swatches colors={option.swatches} />
+                        </MenuItem>
+                    );
+                })}
+            </Menu>
+        </Box>
     );
 }
