@@ -113,6 +113,7 @@ export const AuthInitializer = () => {
                 if (sessionData.session.expiresAt < new Date()) {
                     setOpenAlert(true);
                     setHasCheckedAuth(true);
+                    handleAuthChecked();
                     return;
                 }
                 isInitializingRef.current = true;
