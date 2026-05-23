@@ -5,6 +5,7 @@ import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
+import { SectionThemeOnboarding } from '$components/SectionTheme/SectionThemeOnboarding';
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
@@ -91,6 +92,7 @@ export default function Home() {
 
             <NotificationSnackbar />
             <ReviewPrompt />
+            <SectionThemeOnboarding />
             <KeyboardShortcutsModal open={shortcutsOpen} onClose={closeShortcutsModal} />
         </LocalizationProvider>
     );

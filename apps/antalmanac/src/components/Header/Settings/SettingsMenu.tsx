@@ -1,5 +1,6 @@
 import { About } from '$components/Header/About';
 import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
+import { SectionColorSelector } from '$components/Header/Settings/SectionColorSelector';
 import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
 import { TimeSelector } from '$components/Header/Settings/TimeSelector';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -76,6 +77,7 @@ export function SettingsMenu({ user, onClose }: SettingsMenuProps) {
             <UserProfileSection user={user} />
 
             <ThemeSelector />
+            <SectionColorSelector />
             <TimeSelector />
 
             <Stack>
