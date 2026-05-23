@@ -47,6 +47,11 @@ export const AuthInitializer = () => {
 
     const postHog = usePostHog();
 
+    const handleAuthChecked = () => {
+        hasInitializedRef.current = true;
+        setHasCheckedAuth(true);
+    };
+
     const handleInitialized = () => {
         setOpenLoadingSchedule(false);
         loadNotifications();
@@ -112,7 +117,7 @@ export const AuthInitializer = () => {
             (async () => {
                 if (sessionData.session.expiresAt < new Date()) {
                     setOpenAlert(true);
-                    setHasCheckedAuth(true);
+                    handleAuthChecked();
                     handleInitialized();
                     return;
                 }
@@ -123,7 +128,6 @@ export const AuthInitializer = () => {
                     loadPlannerRoadmaps();
 
                     setSsoCookie();
-                    setHasCheckedAuth(true);
 
                     analyticsIdentifyUser(postHog, sessionData.user.id);
 
@@ -135,7 +139,7 @@ export const AuthInitializer = () => {
 
                     setWasLoggedIn(true);
 
-                    hasInitializedRef.current = true;
+                    handleAuthChecked();
                 } catch (error) {
                     console.error('Error during authentication:', error);
                     signOut({ postHog });
@@ -148,8 +152,7 @@ export const AuthInitializer = () => {
             if (getWasLoggedIn()) {
                 setOpenAlert(true);
             }
-            setHasCheckedAuth(true);
-            hasInitializedRef.current = true;
+            handleAuthChecked();
             handleInitialized();
         }
     }, [
