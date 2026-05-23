@@ -1,7 +1,7 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { resolveCourseColors } from '$lib/sectionThemes';
 import { bakeThemeIntoSchedule } from '$lib/sectionThemes/bakeTheme';
+import { getThemedCourseColors } from '$lib/sectionThemes/themedColorCache';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
@@ -32,8 +32,7 @@ function getDisplayColor(section: AASection, term: AATerm, theme: string, isDark
     if (theme === 'custom') {
         return courses[index].section.color;
     }
-    const themed = resolveCourseColors(courses, theme as never, isDark);
-    return themed[index];
+    return getThemedCourseColors(courses, theme as never, isDark)[index];
 }
 
 interface SectionTableBodyRowColorStripProps {
