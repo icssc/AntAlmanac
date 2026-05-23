@@ -25,6 +25,11 @@ export function getPalette(theme: SectionColorSetting | string, isDark: boolean)
     return isDark && def.dark ? def.dark : def.light;
 }
 
+/** Primary color (variant 0) of each family in a theme — the colors a fresh course gets. */
+export function getPrimaryColors(theme: SectionColorSetting | string, isDark: boolean): string[] {
+    return getPalette(theme, isDark).map((family) => family[0]);
+}
+
 /**
  * Pick a color for a course given a palette and the courses already assigned colors.
  *
@@ -69,22 +74,29 @@ export function pickColor(
 
 /**
  * Compute themed colors for every course, deterministically based on schedule order.
- * Returns a map from `courseKey(course)` to its themed color.
+ * Returns an array aligned with `courses` (same length, same order).
  */
-function resolveCourseColors(
+export function resolveCourseColors(
     courses: readonly ScheduleCourse[],
     theme: SectionThemeId,
     isDark: boolean
-): Map<string, string> {
+): string[] {
     const palette = getPalette(theme, isDark);
     const assigned: { course: ScheduleCourse; color: string }[] = [];
-    const result = new Map<string, string>();
     for (const course of courses) {
         const color = pickColor(course, assigned, palette);
-        result.set(courseKey(course), color);
         assigned.push({ course, color });
     }
-    return result;
+    return assigned.map((a) => a.color);
+}
+
+function courseColorMap(courses: readonly ScheduleCourse[], theme: SectionThemeId, isDark: boolean) {
+    const colors = resolveCourseColors(courses, theme, isDark);
+    const map = new Map<string, string>();
+    courses.forEach((course, i) => {
+        map.set(courseKey(course), colors[i]);
+    });
+    return map;
 }
 
 function courseKey(course: { term: unknown; section: { sectionCode: string } }) {
@@ -110,7 +122,7 @@ export function applyThemeToCalendarEvents<E extends CalendarEvent>(
 ): E[] {
     if (setting === 'custom') return [...events];
 
-    const courseColors = resolveCourseColors(courses, setting, isDark);
+    const courseColors = courseColorMap(courses, setting, isDark);
     const primaries = getPalette(setting, isDark).map((f) => f[0]);
 
     const customEventColorById = new Map<string, string>();

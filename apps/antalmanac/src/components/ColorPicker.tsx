@@ -1,9 +1,11 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import { bakeThemeIntoSchedule } from '$lib/sectionThemes/bakeTheme';
 import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { useSectionThemeStore } from '$stores/SectionThemeStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { CustomEventId } from '@packages/antalmanac-types';
@@ -34,22 +36,23 @@ const ColorPicker = memo(function ColorPicker({
 }: ColorPickerProps) {
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
     const [currColor, setCurrColor] = useState(color);
-    const isCustomTheme = useSectionThemeStore((s) => s.sectionColor) === 'custom';
+
+    const sectionColor = useSectionThemeStore((s) => s.sectionColor);
+    const setSectionColor = useSectionThemeStore((s) => s.setSectionColor);
+    const isDark = useThemeStore((s) => s.isDark);
 
     const postHog = usePostHog();
 
-    const updateColor = useCallback(
-        (newColor: string) => {
-            if (currColor !== newColor) {
-                setCurrColor(newColor);
-            }
-        },
-        [currColor]
-    );
+    // Reflect color changes that come from the parent (e.g. theme switch repaints).
+    useEffect(() => {
+        setCurrColor(color);
+    }, [color]);
+
+    const updateColor = useCallback((newColor: string) => {
+        setCurrColor((prev) => (prev === newColor ? prev : newColor));
+    }, []);
 
     useEffect(() => {
-        if (!isCustomTheme) return;
-
         let colorPickerId;
         if (isCustomEvent && customEventID) colorPickerId = customEventID.toString();
         else if (sectionCode) colorPickerId = sectionCode;
@@ -59,9 +62,7 @@ const ColorPicker = memo(function ColorPicker({
         return () => {
             AppStore.unregisterColorPicker(colorPickerId, updateColor);
         };
-    }, [isCustomTheme, isCustomEvent, customEventID, sectionCode, updateColor]);
-
-    if (!isCustomTheme) return null;
+    }, [isCustomEvent, customEventID, sectionCode, updateColor]);
 
     const openPicker = (target: HTMLElement, postHog?: PostHog) => {
         setAnchorEl(target);
@@ -82,6 +83,14 @@ const ColorPicker = memo(function ColorPicker({
     };
 
     const handleColorChange = (newColor: { hex: string }) => {
+        // If the user is on a preset theme, "forking" their schedule into a custom palette
+        // is exactly the intent of tweaking a color — bake current display colors onto
+        // every course/event, then switch to custom so this tweak (and future ones) stick.
+        if (sectionColor !== 'custom') {
+            bakeThemeIntoSchedule(sectionColor, isDark);
+            setSectionColor('custom', postHog);
+        }
+
         setCurrColor(newColor.hex);
         if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, newColor.hex);
         else if (sectionCode && term) changeCourseColor(sectionCode, term, newColor.hex);
