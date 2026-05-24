@@ -50,8 +50,8 @@ export const auth = betterAuth({
                     if (additionalData.returnUrl) {
                         const returnUrl = getSafeAuthRedirectPath(
                             additionalData.returnUrl,
-                            ctx.request?.url ?? '',
-                            BETTER_AUTH_URL
+                            ctx.request?.url,
+                            new URL(BETTER_AUTH_URL).origin
                         );
                         ctx.redirect(returnUrl);
                     }

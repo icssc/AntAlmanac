@@ -2,44 +2,23 @@ import { Provider } from '$lib/auth/authTypes';
 
 export const getSafeAuthRedirectPath = (
     redirectUrl: string | null | undefined,
-    requestUrl: string,
-    fallbackRequestUrl: string
+    requestUrl: string | null | undefined,
+    allowedOrigin: string
 ): string => {
     if (!redirectUrl) {
         return '/';
     }
 
-    let requestOrigin: string;
     try {
-        requestOrigin = new URL(requestUrl).origin;
-    } catch {
-        requestOrigin = new URL(fallbackRequestUrl).origin;
-    }
-
-    const candidates: string[] = [];
-    try {
-        const decodedRedirectUrl = decodeURIComponent(redirectUrl);
-        candidates.push(decodedRedirectUrl);
-    } catch {
-        // Ignore malformed encoding and continue with the raw value.
-    }
-
-    if (!candidates.includes(redirectUrl)) {
-        candidates.push(redirectUrl);
-    }
-
-    for (const candidate of candidates) {
-        try {
-            const parsedRedirectUrl = new URL(candidate, requestOrigin);
-            if (parsedRedirectUrl.origin === requestOrigin) {
-                return `${parsedRedirectUrl.pathname}${parsedRedirectUrl.search}${parsedRedirectUrl.hash}`;
-            }
-        } catch {
-            // Ignore malformed candidate and try next.
+        const requestOrigin = requestUrl ? new URL(requestUrl).origin : undefined;
+        const url = new URL(redirectUrl, requestOrigin);
+        if (url.origin === allowedOrigin) {
+            return url.toString();
         }
+        return '/';
+    } catch {
+        return '/';
     }
-
-    return '/';
 };
 
 export function getProviderDisplayName(provider: Provider) {
