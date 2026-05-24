@@ -1,0 +1,19 @@
+apps/antalmanac/src/components/Calendar/CalendarRoot.tsx
+  s_a824d6702f5186::t_21dead8a4efeb9 314
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "9c64b2fddaa40bed4e7fe86fd0d0f0584cc2fac6",
+  "prompts": {},
+  "sessions": {
+    "s_a824d6702f5186": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "db03cdd5-b3d7-4506-83a5-1d4f25f86e36",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
