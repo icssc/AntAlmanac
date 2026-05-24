@@ -9,8 +9,13 @@ import { useShallow } from 'zustand/react/shallow';
 
 export function CalendarEventPopover() {
     const scheduleSource = useScheduleViewSource();
-    const [anchorEl, selectedEvent, setSelectedEvent] = useSelectedEventStore(
-        useShallow((state) => [state.selectedEventAnchorEl, state.selectedEvent, state.setSelectedEvent])
+    const [anchorEl, selectedEvent, selectedEventScope, setSelectedEvent] = useSelectedEventStore(
+        useShallow((state) => [
+            state.selectedEventAnchorEl,
+            state.selectedEvent,
+            state.selectedEventScope,
+            state.setSelectedEvent,
+        ])
     );
 
     const [scheduleNames, setScheduleNames] = useState(() => scheduleSource.getScheduleNames());
@@ -28,7 +33,7 @@ export function CalendarEventPopover() {
         return scheduleSource.subscribe(updateScheduleNames);
     }, [scheduleSource]);
 
-    if (!selectedEvent || isSkeletonEvent(selectedEvent)) {
+    if (!selectedEvent || isSkeletonEvent(selectedEvent) || selectedEventScope !== scheduleSource.scope) {
         return null;
     }
 
