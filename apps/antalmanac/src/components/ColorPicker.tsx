@@ -1,5 +1,6 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { ColorLens } from '@mui/icons-material';
@@ -17,7 +18,7 @@ interface ColorPickerProps {
     /**Not undefined when isCustomEvent is true */
     customEventID?: CustomEventId;
     /**Not undefined  when isCustomEvent is false */
-    term?: string;
+    term?: AATerm;
     /**Not undefined  when isCustomEvent is false */
     sectionCode?: string;
 }
@@ -56,15 +57,17 @@ const ColorPicker = memo(function ColorPicker({
         };
     }, [isCustomEvent, customEventID, sectionCode, updateColor]);
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
-        event.stopPropagation();
-
-        setAnchorEl(event.currentTarget);
-
+    const openPicker = (target: HTMLElement, postHog?: PostHog) => {
+        setAnchorEl(target);
         logAnalytics(postHog, {
             category: analyticsCategory,
             action: analyticsCategory.actions.CHANGE_COURSE_COLOR,
         });
+    };
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
+        event.stopPropagation();
+        openPicker(event.currentTarget, postHog);
     };
 
     const handleClose = (event: Event) => {

@@ -1,3 +1,4 @@
+import { SortableList } from '$components/drag-and-drop/SortableList';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
@@ -5,14 +6,28 @@ import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/Enrol
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { WarningAlert } from '$components/WarningAlert';
+import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
+import { getCourseCancellationWarning } from '$lib/courseAvailability';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
-import { Box, Collapse, IconButton, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
+import {
+    Box,
+    Button,
+    Collapse,
+    IconButton,
+    Paper,
+    Skeleton,
+    Table,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+} from '@mui/material';
+import { AACourse, AATerm } from '@packages/antalmanac-types';
 import { useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
 
@@ -37,25 +52,51 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
-interface SectionTableProps {
+const wrapSkeleton = (children: React.ReactNode, skeleton: boolean) =>
+    skeleton ? (
+        <Skeleton variant="rounded" component="div" sx={{ pointerEvents: 'none' }}>
+            {children}
+        </Skeleton>
+    ) : (
+        children
+    );
+
+export interface SectionTableProps {
     courseDetails: AACourse;
-    term: string;
+    term: AATerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: AnalyticsCategory;
     updatedAt?: string;
     missingSections?: string[];
+    sortable?: boolean;
+    /**
+     * Wraps each interactive element (each button, the table) in MUI's
+     * children-aware Skeleton, so the component still renders at the
+     * correct dimensions while displaying as a set of loading placeholders.
+     */
+    skeleton?: boolean;
 }
 
-function SectionTable(props: SectionTableProps) {
-    const [openContent, setOpenContent] = useState(true);
-
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
-    const { isMilitaryTime } = useTimeFormatStore();
-
-    const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
-    const [activeTab] = useTabStore((store) => [store.activeTab]);
+function SectionTable({
+    courseDetails,
+    term,
+    allowHighlight,
+    scheduleNames,
+    analyticsCategory,
+    missingSections = [],
+    sortable = false,
+    skeleton = false,
+}: SectionTableProps) {
     const isMobile = useIsMobile();
+    const draggingState = useDraggingItemState(() => ({ isCollapsed: !openContent }));
+
+    const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
+
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
+
+    const activeColumns = useColumnStore((store) => store.activeColumns);
+    const activeTab = useTabStore((store) => store.activeTab);
 
     const handleToggleExpand = () => {
         setOpenContent(!openContent);
@@ -65,11 +106,17 @@ function SectionTable(props: SectionTableProps) {
         forceCheck();
     };
 
-    const actionColumnWidth = isMobile ? 54 : 77;
+    const colorStripWidth = isMobile ? 5 : 8;
+    const actionColumnWidth = 77;
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
+
+    const cancellationWarning = useMemo(
+        () => getCourseCancellationWarning(courseDetails.sections),
+        [courseDetails.sections]
+    );
 
     const formattedTime = useMemo(() => {
         if (!courseDetails.updatedAt) {
@@ -101,7 +148,7 @@ function SectionTable(props: SectionTableProps) {
     }, [activeColumns]);
 
     return (
-        <>
+        <Box sx={{ overflow: 'hidden' }}>
             <Box
                 sx={{
                     display: 'flex',
@@ -110,101 +157,150 @@ function SectionTable(props: SectionTableProps) {
                     marginTop: '4px',
                 }}
             >
-                <CourseInfoBar
-                    deptCode={courseDetails.deptCode}
-                    courseTitle={courseDetails.courseTitle}
-                    courseNumber={courseDetails.courseNumber}
-                    prerequisiteLink={courseDetails.prerequisiteLink}
-                    analyticsCategory={analyticsCategory}
-                />
+                {sortable
+                    ? wrapSkeleton(
+                          <Button
+                              variant="contained"
+                              color="secondary"
+                              sx={{
+                                  padding: 0,
+                                  minWidth: 0,
+                                  minHeight: 0,
+                                  cursor: 'inherit',
+                                  flexShrink: 0,
+                              }}
+                          >
+                              <SortableList.DragHandle sx={{ height: '100%' }} iconSx={{ color: 'inherit' }} />
+                          </Button>,
+                          skeleton
+                      )
+                    : null}
 
-                {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
+                {wrapSkeleton(
+                    <CourseInfoBar
+                        deptCode={courseDetails.deptCode}
+                        courseTitle={courseDetails.courseTitle}
+                        courseNumber={courseDetails.courseNumber}
+                        prerequisiteLink={courseDetails.prerequisiteLink}
+                        analyticsCategory={analyticsCategory}
+                    />,
+                    skeleton
+                )}
 
-                <CourseInfoButton
-                    analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
-                    text="Planner"
-                    icon={<Route />}
-                    redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
-                />
+                {activeTab !== 2
+                    ? null
+                    : wrapSkeleton(<CourseInfoSearchButton courseDetails={courseDetails} term={term} />, skeleton)}
 
-                <CourseInfoButton
-                    analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
-                    text="Past Syllabi"
-                    icon={<HistoryEdu />}
-                    popupContent={
-                        <PastSyllabiPopover
-                            courseId={courseId}
-                            deptCode={courseDetails.deptCode}
-                            courseNumber={courseDetails.courseNumber}
-                        />
-                    }
-                />
+                {wrapSkeleton(
+                    <CourseInfoButton
+                        analyticsCategory={analyticsCategory}
+                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
+                        text="Planner"
+                        icon={<Route />}
+                        redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
+                    />,
+                    skeleton
+                )}
 
-                <IconButton
-                    title={`${openContent ? 'Collapse' : 'Expand'} courses`}
-                    onClick={handleToggleExpand}
-                    size="small"
-                    sx={{ padding: '4px', marginLeft: 'auto', marginRight: 0.5 }}
-                >
-                    {openContent ? <ExpandLess /> : <ExpandMore />}
-                </IconButton>
+                {wrapSkeleton(
+                    <CourseInfoButton
+                        analyticsCategory={analyticsCategory}
+                        analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
+                        text="Past Syllabi"
+                        icon={<HistoryEdu />}
+                        popupContent={
+                            <PastSyllabiPopover
+                                courseId={courseId}
+                                deptCode={courseDetails.deptCode}
+                                courseNumber={courseDetails.courseNumber}
+                            />
+                        }
+                    />,
+                    skeleton
+                )}
+
+                {skeleton ? (
+                    <Skeleton variant="circular" component="div" sx={{ ml: 'auto', mr: 0.5, pointerEvents: 'none' }}>
+                        <IconButton size="small" sx={{ padding: '4px' }}>
+                            <ExpandLess />
+                        </IconButton>
+                    </Skeleton>
+                ) : (
+                    <IconButton
+                        title={`${openContent ? 'Collapse' : 'Expand'} courses`}
+                        onClick={handleToggleExpand}
+                        size="small"
+                        sx={{ padding: '4px', marginLeft: 'auto', marginRight: 0.5 }}
+                    >
+                        {openContent ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                )}
             </Box>
+
+            {cancellationWarning && <WarningAlert>{cancellationWarning}</WarningAlert>}
 
             {missingSections?.length > 0 && (
                 <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
             )}
-            <Collapse in={openContent} onExited={handleCollapseExit}>
-                <TableContainer
-                    component={Paper}
-                    sx={{ margin: '0px 0px 8px 0px', width: '100%' }}
-                    elevation={0}
-                    variant="outlined"
-                >
-                    <Table
-                        size="small"
-                        sx={{
-                            minWidth: `${tableMinWidth}px`,
-                            width: '100%',
-                            tableLayout: 'fixed',
-                        }}
-                    >
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
-                                {(() => {
-                                    const visible = tableHeaderColumnEntries.filter(([column]) =>
-                                        activeColumns.includes(column as SectionTableColumn)
-                                    );
-                                    const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
-                                    return visible.map(([column, { label, weight }]) => (
-                                        <TableCell
-                                            key={column}
-                                            sx={{
-                                                width: `${(weight / totalWeight) * 100}%`,
-                                                padding: 0,
-                                            }}
-                                        >
-                                            {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
-                                        </TableCell>
-                                    ));
-                                })()}
-                            </TableRow>
-                        </TableHead>
 
-                        <SectionTableBody
-                            courseDetails={courseDetails}
-                            term={term}
-                            allowHighlight={allowHighlight}
-                            scheduleNames={scheduleNames}
-                            analyticsCategory={analyticsCategory}
-                            formattedTime={formattedTime}
-                        />
-                    </Table>
-                </TableContainer>
+            <Collapse in={openContent} onExited={handleCollapseExit}>
+                {wrapSkeleton(
+                    <TableContainer
+                        component={Paper}
+                        sx={{ margin: '0px 0px 8px 0px', width: '100%' }}
+                        elevation={0}
+                        variant="outlined"
+                    >
+                        <Table
+                            size="small"
+                            sx={{
+                                minWidth: `${tableMinWidth}px`,
+                                width: '100%',
+                                tableLayout: 'fixed',
+                            }}
+                        >
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={{ padding: 0, width: `${colorStripWidth}px` }} />
+                                    <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
+                                    {(() => {
+                                        const visible = tableHeaderColumnEntries.filter(([column]) =>
+                                            activeColumns.includes(column as SectionTableColumn)
+                                        );
+                                        const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
+                                        return visible.map(([column, { label, weight }]) => (
+                                            <TableCell
+                                                key={column}
+                                                sx={{
+                                                    width: `${(weight / totalWeight) * 100}%`,
+                                                    padding: 0,
+                                                }}
+                                            >
+                                                {label === 'Enrollment' ? (
+                                                    <EnrollmentColumnHeader label={label} />
+                                                ) : (
+                                                    label
+                                                )}
+                                            </TableCell>
+                                        ));
+                                    })()}
+                                </TableRow>
+                            </TableHead>
+
+                            <SectionTableBody
+                                courseDetails={courseDetails}
+                                term={term}
+                                allowHighlight={allowHighlight}
+                                scheduleNames={scheduleNames}
+                                analyticsCategory={analyticsCategory}
+                                formattedTime={formattedTime}
+                            />
+                        </Table>
+                    </TableContainer>,
+                    skeleton
+                )}
             </Collapse>
-        </>
+        </Box>
     );
 }
 

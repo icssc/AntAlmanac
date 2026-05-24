@@ -71,7 +71,7 @@ function PatchNotes() {
                         }}
                     >
                         <Image
-                            src="/assets/merge-switcher.png"
+                            src="/logos/merge-switcher.png"
                             alt="4-year plan"
                             width={350}
                             height={50}
@@ -101,7 +101,7 @@ function PatchNotes() {
                             }}
                         >
                             <Image
-                                src="/assets/aants-preview.png"
+                                src="/logos/aants-preview.png"
                                 alt="AANTS example"
                                 width={425}
                                 height={185}

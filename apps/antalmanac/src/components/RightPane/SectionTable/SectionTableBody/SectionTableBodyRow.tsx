@@ -8,13 +8,14 @@ import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTabl
 import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
+import { SectionTableBodyRowColorStrip } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowColorStrip';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { TableRow, useTheme } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { AASection, AATerm, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
@@ -22,7 +23,7 @@ import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 interface SectionTableBodyRowProps {
     section: AASection;
     courseDetails: CourseDetails;
-    term: string;
+    term: AATerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
@@ -65,14 +66,8 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(
-        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
+        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
     );
-
-    // Stable references to event listeners will synchronize React state with the store.
-
-    const updateHighlight = useCallback(() => {
-        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
-    }, [section.sectionCode, term]);
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
@@ -86,16 +81,23 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         setHoveredEvent(undefined);
     }, [setHoveredEvent]);
 
-    // Attach event listeners to the store.
     useEffect(() => {
-        AppStore.on('addedCoursesChange', updateHighlight);
-        AppStore.on('currentScheduleIndexChange', updateHighlight);
+        const sectionKey = `${section.sectionCode} ${term.shortName}`;
+
+        const syncAddedCourse = () => {
+            setAddedCourse(AppStore.getAddedSectionCodes().has(sectionKey));
+        };
+
+        syncAddedCourse();
+
+        AppStore.on('addedCoursesChange', syncAddedCourse);
+        AppStore.on('currentScheduleIndexChange', syncAddedCourse);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateHighlight);
-            AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
+            AppStore.removeListener('addedCoursesChange', syncAddedCourse);
+            AppStore.removeListener('currentScheduleIndexChange', syncAddedCourse);
         };
-    }, [updateHighlight]);
+    }, [section.sectionCode, term]);
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {
@@ -134,6 +136,8 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
+            <SectionTableBodyRowColorStrip section={section} term={term} visible={addedCourse} />
+
             {Object.entries(tableBodyCells)
                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                 .map(([column, Component]) => {

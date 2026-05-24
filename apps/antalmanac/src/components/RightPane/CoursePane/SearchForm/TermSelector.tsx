@@ -1,6 +1,7 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
-import { getTermLongName, termData } from '$lib/termData';
+import { getDefaultTerm, termData } from '$lib/term';
+import type { AATerm } from '@packages/antalmanac-types';
 import { ComponentProps, useCallback, useEffect, useState } from 'react';
 
 type TermSelectorProps = Omit<
@@ -9,18 +10,18 @@ type TermSelectorProps = Omit<
 >;
 
 export function TermSelector(props: TermSelectorProps) {
-    const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
+    const [term, setTerm] = useState<AATerm>(() => RightPaneStore.getFormData().term);
 
-    const handleChange = (_: unknown, option: string | null) => {
-        const value = option ?? termData.at(0)?.shortName ?? '';
+    const handleChange = (_: unknown, option: AATerm | null) => {
+        const value = option ?? getDefaultTerm();
 
         setTerm(value);
 
         const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('term', value);
+        urlParams.set('term', value.shortName);
         history.replaceState({ url: 'url' }, 'url', `/?${urlParams}`);
 
-        RightPaneStore.updateFormValue('term', value);
+        RightPaneStore.setTerm(value);
 
         RightPaneStore.clearWarningMessages(CourseSearchWarningType.TermUnavailable);
     };
@@ -43,8 +44,9 @@ export function TermSelector(props: TermSelectorProps) {
             label="Term"
             autocompleteProps={{
                 value: term,
-                options: termData.map((term) => term.shortName),
-                getOptionLabel: (option) => getTermLongName(option),
+                options: termData,
+                getOptionLabel: (term: AATerm) => term.longName,
+                isOptionEqualToValue: (option: AATerm, value: AATerm) => option.shortName === value.shortName,
                 autoHighlight: true,
                 openOnFocus: true,
                 onChange: handleChange,

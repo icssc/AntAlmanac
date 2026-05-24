@@ -14,21 +14,22 @@
     "dependencies": {
         "@aws-sdk/client-sesv2": "^3.750.0",
         "@aws-sdk/client-sqs": "^3.750.0",
+        "@packages/antalmanac-types": "workspace:*",
         "@packages/anteater-api": "workspace:*",
         "@packages/db": "workspace:*",
         "@react-email/components": "^1.0.8",
         "@react-email/render": "^2.0.4",
         "dotenv": "^16.4.5",
-        "drizzle-orm": "^0.45.1",
-        "react": "19.2.1",
-        "react-dom": "19.2.1",
+        "drizzle-orm": "^0.45.2",
+        "react": "19.2.6",
+        "react-dom": "19.2.6",
         "zod": "3.23.8"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.130",
-        "@types/react": "19.2.7",
+        "@types/react": "19.2.14",
         "@types/react-dom": "19.2.3",
-        "tsx": "^3.12.7",
-        "typescript": "^5.7.2"
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3"
     }
 }

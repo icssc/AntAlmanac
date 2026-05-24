@@ -1,3 +1,4 @@
+import { AuthInitializer } from '$components/AuthInitializer';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
@@ -47,7 +48,7 @@ function DesktopHome() {
 
     return (
         <Split
-            sizes={[45, 55]}
+            sizes={[42.5, 57.5]}
             minSize={400}
             expandToMin={false}
             gutterSize={10}
@@ -82,6 +83,7 @@ export default function Home() {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <TutorialInitializer />
+            <AuthInitializer />
             <PatchNotes />
 
             <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">

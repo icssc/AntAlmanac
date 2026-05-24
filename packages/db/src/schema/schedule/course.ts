@@ -1,4 +1,5 @@
-import { integer, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import { check, integer, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { schedules } from './index';
 
@@ -23,7 +24,7 @@ export const coursesInSchedule = pgTable(
         sectionCode: integer('sectionCode').notNull(),
 
         /**
-         * @example Winter 2024.
+         * AntAlmanac term shortName: `"<year> <quarter>"` (e.g. "2024 Winter").
          */
         term: text('term').notNull(),
 
@@ -31,6 +32,13 @@ export const coursesInSchedule = pgTable(
          * Color that the course has when displayed on calendar.
          */
         color: text('color').notNull(),
+
+        /**
+         * Visibility state of the course in the calendar.
+         * @see VisibilityState
+         */
+        visibility: text('visibility').notNull().default('visible'),
+        index: integer(),
 
         createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 
@@ -43,6 +51,7 @@ export const coursesInSchedule = pgTable(
         primaryKey({
             columns: [table.scheduleId, table.sectionCode, table.term],
         }),
+        check('visibility_check', sql`${table.visibility} IN ('visible', 'outlined', 'disappeared')`),
     ]
 );
 

@@ -32,10 +32,12 @@ export const users = pgTable('users', {
      */
     email: text('email'),
 
+    emailVerified: boolean('email_verified').default(false).notNull(),
+
     /**
      * Imported User Flag.
      *
-     * Indicates if the user was imported into a Google account.
+     * Indicates if the user was imported into an account.
      */
     imported: boolean('imported').default(false),
 
@@ -57,3 +59,4 @@ export const users = pgTable('users', {
 });
 
 export type User = typeof users.$inferSelect;
+export type UserProfile = Pick<User, 'name' | 'avatar' | 'email'>;

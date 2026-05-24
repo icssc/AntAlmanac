@@ -1,8 +1,9 @@
-import trpc from '$lib/api/trpc';
+import { trpc } from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
+import { getTermByYearAndQuarter } from '$lib/term';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
-import { type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
+import { type AATerm, type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
 import type { Course } from '@packages/anteater-api/types';
 import { create } from 'zustand';
 
@@ -14,7 +15,7 @@ export type NotifyOn = {
 };
 
 export type Notification = {
-    term: string;
+    term: AATerm;
     sectionCode: AASection['sectionCode'];
     units: number;
     sectionNum: string;
@@ -27,12 +28,6 @@ export type Notification = {
     courseNumber?: string;
     instructors?: string[];
 };
-
-interface RawNotification {
-    year: string;
-    quarter: string;
-    sectionCode: string;
-}
 
 interface NotificationStore {
     initialized: boolean;
@@ -77,7 +72,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             courseNumber,
             instructors,
         }) => {
-            const key = sectionCode + ' ' + term;
+            const key = `${sectionCode} ${term.shortName}`;
 
             set((state) => {
                 const notifications = state.notifications;
@@ -153,8 +148,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             });
         },
         loadNotifications: async () => {
-            const { isGoogleUser } = useSessionStore.getState();
-            if (!isGoogleUser) {
+            const { sessionIsValid } = useSessionStore.getState();
+            if (!sessionIsValid) {
                 set({ notifications: {}, initialized: true });
                 return;
             }
@@ -166,43 +161,50 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     return;
                 }
 
-                const courseDict: { [key: string]: Set<string> } = {};
+                const termGroups = new Map<string, { term: AATerm; sectionCodes: Set<string> }>();
 
-                for (const notification of existingNotifications) {
-                    const { year, quarter, sectionCode } = notification;
-                    const term = year + ' ' + quarter;
-
-                    if (term in courseDict) {
-                        courseDict[term].add(sectionCode.toString());
-                    } else {
-                        courseDict[term] = new Set([sectionCode.toString()]);
+                for (const { year, quarter, sectionCode } of existingNotifications) {
+                    const term = getTermByYearAndQuarter(year, quarter);
+                    if (!term) {
+                        continue;
                     }
+
+                    const key = term.shortName;
+                    let group = termGroups.get(key);
+                    if (!group) {
+                        group = { term, sectionCodes: new Set() };
+                        termGroups.set(key, group);
+                    }
+                    group.sectionCodes.add(sectionCode.toString());
                 }
 
-                const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
-                const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
-                    const sectionCodes = Array.from(courseSet).join(',');
-                    const courseInfo = await trpc.websoc.getCourseInfo.query({
-                        term,
-                        sectionCodes,
-                    });
-                    courseInfoDict.set(term, courseInfo);
-                });
-
-                await Promise.all(websocRequests);
+                const courseInfoDict = new Map<
+                    string,
+                    { term: AATerm; courseInfo: { [sectionCode: string]: CourseInfo } }
+                >();
+                await Promise.all(
+                    Array.from(termGroups, async ([key, { term, sectionCodes }]) => {
+                        const courseInfo = await trpc.websoc.getCourseInfo.query({
+                            year: term.year,
+                            quarter: term.quarter,
+                            sectionCodes: Array.from(sectionCodes).join(','),
+                        });
+                        courseInfoDict.set(key, { term, courseInfo });
+                    })
+                );
 
                 const notifications: Partial<Record<string, Notification>> = {};
 
-                for (const [term, courseInfo] of courseInfoDict.entries()) {
+                for (const { term, courseInfo } of courseInfoDict.values()) {
                     for (const sectionCode in courseInfo) {
                         const course = courseInfo[sectionCode];
-                        const key = sectionCode + ' ' + term;
+                        const key = `${sectionCode} ${term.shortName}`;
 
                         const existingNotification = existingNotifications.find(
-                            (notification: RawNotification) =>
+                            (notification) =>
                                 notification.sectionCode === sectionCode &&
-                                notification.year === term.split(' ')[0] &&
-                                notification.quarter === term.split(' ')[1]
+                                notification.year === term.year &&
+                                notification.quarter === term.quarter
                         );
 
                         if (existingNotification) {

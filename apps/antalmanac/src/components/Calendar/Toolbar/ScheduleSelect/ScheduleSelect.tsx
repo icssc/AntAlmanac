@@ -1,17 +1,18 @@
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
 import { CopyScheduleButton } from '$components/buttons/Copy';
-import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList';
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
+import { SortableList } from '$components/drag-and-drop/SortableList';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
 const scheduleSelectButtonMinWidth = 100;
@@ -46,11 +47,21 @@ function handleScheduleChange(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
-    const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
+    const { openScheduleSelect, setOpenScheduleSelect } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openScheduleSelect: state.openScheduleSelect,
+            setOpenScheduleSelect: state.setOpenScheduleSelect,
+        }))
+    );
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
-    const { fallbackMode, getFallbackScheduleNames } = useFallbackStore();
+    const { fallbackMode, getFallbackScheduleNames } = useFallbackStore(
+        useShallow((store) => ({
+            fallbackMode: store.fallbackMode,
+            getFallbackScheduleNames: store.getFallbackScheduleNames,
+        }))
+    );
     const fallbackScheduleMapping = getScheduleItems(getFallbackScheduleNames());
 
     const anchorElementRef = useRef(null);
@@ -68,6 +79,11 @@ export function SelectSchedulePopover() {
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
     }, []);
+
+    const handleSortableListChange = (schedules: ScheduleItem[], activeIndex: number, overIndex: number) => {
+        setScheduleMapping(schedules);
+        AppStore.reorderSchedule(activeIndex, overIndex);
+    };
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
@@ -148,7 +164,7 @@ export function SelectSchedulePopover() {
                 <Box padding={1}>
                     <SortableList
                         items={scheduleMappingToUse}
-                        onChange={setScheduleMapping}
+                        onChange={handleSortableListChange}
                         renderItem={(item, index) => {
                             return (
                                 <SortableList.Item id={item.id}>

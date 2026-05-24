@@ -1,15 +1,13 @@
 import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import { getDefaultTerm, termData } from '$lib/termData';
+import { type AATerm, getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import type { HourMinute } from '@packages/anteater-api/types';
+import type { HourMinute, Quarter } from '@packages/anteater-api/types';
 import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
 
 import { notNull } from './utils';
-
-const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 
@@ -70,9 +68,8 @@ function getByDays(days: string): string[] {
  *
  * @example ("2021 Spring", 'Tu') -> [2021, 3, 30]
  */
-function getClassStartDate(term: string, bydays: string[]) {
-    // Get the start date of the quarter (Monday)
-    const quarterStartDate = new Date(quarterStartDates[term]);
+function getClassStartDate(term: AATerm, bydays: string[]) {
+    const quarterStartDate = new Date(term.instructionStart);
 
     // The number of days since the start of the quarter.
     let dayOffset: number;
@@ -80,7 +77,7 @@ function getClassStartDate(term: string, bydays: string[]) {
     // Since Fall quarter starts on a Thursday,
     // the first byday and offset will be different from other quarters.
     // Sort by this ordering: [TH, FR, SA, SU, MO, TU, WE]
-    if (getQuarter(term) === 'Fall') {
+    if (term.quarter === 'Fall') {
         bydays.sort((day1, day2) => {
             return fallDaysOffset[day1] - fallDaysOffset[day2];
         });
@@ -178,29 +175,11 @@ function parseTimes(startTime: HourMinute, endTime: HourMinute) {
 }
 
 /**
- * Get the year of a given term.
- *
- * @example "2019 Fall" -> "2019"
- */
-function getYear(term: string) {
-    return parseInt(term.split(' ')[0]);
-}
-
-/**
- * Get the quarter of a given term.
- *
- * @example "2019 Fall" -> "Fall"
- */
-function getQuarter(term: string) {
-    return term.split(' ')[1];
-}
-
-/**
  * Get the number of weeks in a given term.
  *
  * @example 10 for quarters and Summer Session 10wk, 5 for Summer Sessions I and II.
  */
-function getTermLength(quarter: string) {
+function getTermLength(quarter: Quarter) {
     return quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10;
 }
 
@@ -209,7 +188,7 @@ function getTermLength(quarter: string) {
  *
  * @example ["TU", "TH"] -> "FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;COUNT=20"
  */
-function getRRule(bydays: string[], quarter: string) {
+function getRRule(bydays: string[], quarter: Quarter) {
     /**
      * Number of occurrences in the quarter
      */
@@ -242,19 +221,16 @@ function getRRule(bydays: string[], quarter: string) {
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
 
-export function getEventsFromCourses(
-    events = AppStore.getEventsWithFinalsInCalendar(),
-    _term?: string
-): EventAttributes[] {
+export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCalendar()): EventAttributes[] {
     const customEventIDs = new Set();
     const calendarEvents = events.flatMap((event) => {
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
-            const term = _term ?? getDefaultTerm(events).shortName;
+            const term = getDefaultTerm(events);
             const { title, start, end, building } = event as CustomEvent;
             const days = getByDays(event.days.join(''));
-            const rrule = getRRule(days, getQuarter(term));
+            const rrule = getRRule(days, term.quarter);
             const eventStartDate = getClassStartDate(term, days);
             const [firstClassStart, firstClassEnd] = getFirstClass(
                 eventStartDate,
@@ -279,6 +255,7 @@ export function getEventsFromCourses(
             return customEvent;
         } else {
             const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
+            const year = parseInt(term.year);
             const courseEvents: EventAttributes[] = event.locations
                 .map((location) => {
                     if (location.days === undefined) {
@@ -286,7 +263,7 @@ export function getEventsFromCourses(
                     }
                     const days = getByDays(location.days);
 
-                    const [finalStart, finalEnd] = getExamTime(finalExam, getYear(term));
+                    const [finalStart, finalEnd] = getExamTime(finalExam, year);
 
                     if (sectionType === 'Fin' && finalStart && finalEnd) {
                         return {
@@ -307,7 +284,7 @@ export function getEventsFromCourses(
                             { hour: end.getHours(), minute: end.getMinutes() }
                         );
 
-                        const rrule = getRRule(days, getQuarter(term));
+                        const rrule = getRRule(days, term.quarter);
 
                         // Add VEvent to events array.
                         return {

@@ -1,20 +1,16 @@
-import { loadGuestSchedule, loadSchedule, loginUser } from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
-import { AppleSignInButton } from '$components/buttons/AppleSignInButton';
-import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
+import { loadGuestSchedule } from '$actions/AppStoreActions';
+import { SignInButtons } from '$components/buttons/SignInButtons/SignInButtons';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import trpc from '$lib/api/trpc';
-import { getLocalStorageUserId, getWasLoggedIn, setLocalStorageFromLoading } from '$lib/localStorage';
-import { useNotificationStore } from '$stores/NotificationStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
+import { SignInAlertDialog } from '$components/SignInAlertDialog';
+import { trpc } from '$lib/api/trpc';
+import { getLocalStorageUserId } from '$lib/localStorage';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { AccountCircle, ExpandMore } from '@mui/icons-material';
 import {
     Alert,
-    type AlertColor,
     AlertTitle,
     Box,
     Button,
@@ -32,35 +28,27 @@ import {
     TextField,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useState } from 'react';
-
-const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
-    SESSION_EXPIRED: {
-        title: 'Your session has expired. Please sign in again.',
-        severity: 'info',
-    },
-    SCHEDULE_IMPORTED: {
-        title: 'This schedule was previously imported to a Google account. Did you want to sign in with Google?',
-        severity: 'info',
-    },
-};
+import { useCallback, useState, type KeyboardEvent } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { loadSession } = useSessionStore();
-    const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
-    const [openAlert, setOpenalert] = useState(false);
-    const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
-    const [alertMessage, setAlertMessage] = useState<{ title: string; severity: AlertColor }>(
-        ALERT_MESSAGES.SCHEDULE_IMPORTED
+    const { openLoadingSchedule, setOpenLoadingSchedule } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openLoadingSchedule: state.openLoadingSchedule,
+            setOpenLoadingSchedule: state.setOpenLoadingSchedule,
+        }))
     );
 
-    const postHog = usePostHog();
+    const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [userID, setUserID] = useState('');
     const [rememberMe] = useState(true);
     const [showLegacyLogin, setShowLegacyLogin] = useState(false);
+    const [openAlert, setOpenalert] = useState(false);
+
+    const postHog = usePostHog();
 
     const handleOpen = useCallback(() => {
         setIsOpen(true);
@@ -80,8 +68,7 @@ export const Signin = () => {
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
             const res = await trpc.schedule.getGuest.query({ username: userID });
-            if (res.user.imported) {
-                setAlertMessage(ALERT_MESSAGES.SCHEDULE_IMPORTED);
+            if (res.imported) {
                 setOpenalert(true);
             }
             return res;
@@ -101,85 +88,27 @@ export const Signin = () => {
         [setOpenLoadingSchedule, validateImportedUser, postHog]
     );
 
-    const loadScheduleAndSetLoadingAuth = useCallback(
-        async (userID: string, rememberMe: boolean) => {
-            setOpenLoadingSchedule(true);
-
-            const [validSession, prefetchedUserData] = await Promise.all([
-                loadSession(),
-                trpc.schedule.get.query().catch(() => null),
-            ]);
-
-            if (validSession) {
-                await loadSchedule({ prefetched: prefetchedUserData, postHog });
-            } else if (getWasLoggedIn()) {
-                setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-                setOpenalert(true);
-            } else if (userID && userID !== '') {
-                await validateImportedUser(userID);
-                await loadGuestSchedule(userID, rememberMe, postHog);
-            }
-
-            setOpenLoadingSchedule(false);
-
-            void useNotificationStore.getState().loadNotifications();
-        },
-        [setOpenLoadingSchedule, loadSession, validateImportedUser, postHog]
-    );
-
-    const handleLogin = (provider: 'google' | 'apple' = 'google') => {
-        loginUser({ provider, postHog });
-        setLocalStorageFromLoading('true');
-    };
-
-    const enterEvent = useCallback(
-        (event: KeyboardEvent) => {
-            if (!showLegacyLogin) return;
-
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                setIsOpen(false);
-                document.removeEventListener('keydown', enterEvent, false);
-                void loadScheduleAndSetLoading(userID, rememberMe);
-                setUserID('');
-                return false;
-            }
-        },
-        [showLegacyLogin, loadScheduleAndSetLoading, userID, rememberMe]
-    );
-
     const handleClose = useCallback(
         (wasCancelled: boolean) => {
-            if (wasCancelled) {
-                setIsOpen(false);
-                document.removeEventListener('keydown', enterEvent, false);
-                setUserID('');
-            } else {
-                setIsOpen(false);
-                document.removeEventListener('keydown', enterEvent, false);
+            setIsOpen(false);
+            setUserID('');
+            if (!wasCancelled) {
                 void loadScheduleAndSetLoading(userID, rememberMe);
-                setUserID('');
             }
         },
-        [loadScheduleAndSetLoading, userID, rememberMe, enterEvent]
+        [loadScheduleAndSetLoading, userID, rememberMe]
     );
 
-    useEffect(() => {
-        if (isOpen) {
-            document.addEventListener('keydown', enterEvent, false);
-        } else {
-            document.removeEventListener('keydown', enterEvent, false);
-        }
-
-        return () => {
-            document.removeEventListener('keydown', enterEvent, false);
-        };
-    }, [isOpen, enterEvent]);
-
-    useEffect(() => {
-        const savedUserID = getLocalStorageUserId();
-        void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
-    }, [loadScheduleAndSetLoadingAuth]);
+    const handleDialogKeyDown = useCallback(
+        (event: KeyboardEvent) => {
+            if (!showLegacyLogin || event.key !== 'Enter') {
+                return;
+            }
+            event.preventDefault();
+            handleClose(false);
+        },
+        [showLegacyLogin, handleClose]
+    );
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
@@ -187,14 +116,13 @@ export const Signin = () => {
                 user={null}
                 handleOpen={handleOpen}
                 handleSettingsOpen={handleSettingsOpen}
-                loading={loadingSchedule}
+                loading={openLoadingSchedule}
             />
 
-            <Dialog open={isOpen} onClose={() => handleClose(true)}>
+            <Dialog open={isOpen} onClose={() => handleClose(true)} onKeyDown={handleDialogKeyDown}>
                 <DialogContent>
                     <Stack spacing={1}>
-                        <GoogleSignInButton onClick={() => handleLogin('google')} fullWidth />
-                        <AppleSignInButton onClick={() => handleLogin('apple')} fullWidth />
+                        <SignInButtons />
 
                         <Box
                             onClick={() => setShowLegacyLogin(!showLegacyLogin)}
@@ -228,7 +156,7 @@ export const Signin = () => {
                                     <AlertTitle>
                                         Note: Existing schedules saved to a unique user ID can no longer be updated.
                                     </AlertTitle>
-                                    Please sign up with your Google account to save your schedules.
+                                    Please sign up with an account to save your schedules.
                                 </Alert>
 
                                 <TextField
@@ -296,18 +224,11 @@ export const Signin = () => {
                 </MenuItem>
             </Popover>
 
-            <AlertDialog
+            <SignInAlertDialog
                 open={openAlert}
+                title="This schedule was previously imported to an account. Did you want to sign in?"
                 onClose={() => setOpenalert(false)}
-                title={alertMessage.title}
-                severity={alertMessage.severity}
-            >
-                <DialogContentText>To load your schedule, sign in with your account</DialogContentText>
-                <Stack spacing={1}>
-                    <GoogleSignInButton onClick={() => handleLogin('google')} fullWidth />
-                    <AppleSignInButton onClick={() => handleLogin('apple')} fullWidth />
-                </Stack>
-            </AlertDialog>
+            />
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { termData } from '$lib/termData';
-import { postHog } from '$providers/PostHog';
+import { trpc } from '$lib/api/trpc';
+import { type AATerm, termData } from '$lib/term';
+import { postHog } from '$providers/AppPostHogProvider';
 import AppStore from '$stores/AppStore';
 import { create } from 'zustand';
 import { combine } from 'zustand/middleware';
@@ -24,8 +24,7 @@ type ReviewCandidate = {
     courseTitle: string;
     /** Raw WebSOC instructor name, e.g. "PATTIS, R." */
     professorId: string;
-    /** AntAlmanac term shortName, e.g. "Fall 2024" */
-    term: string;
+    term: AATerm;
 };
 
 type Step = 'enrollment-confirm' | 'review' | 'hidden';
@@ -58,7 +57,7 @@ export const useReviewPromptStore = create(
             // We further filter to terms whose finals have already ended.
             const pastTermNames = new Set<string>(
                 termData
-                    .filter((t) => t.finalsStartDate < today)
+                    .filter((t) => t.finalsStart < today)
                     .slice(0, PAST_TERMS_WINDOW)
                     .map((t) => t.shortName)
             );
@@ -66,17 +65,15 @@ export const useReviewPromptStore = create(
             if (pastTermNames.size === 0) return;
 
             const allCourses = AppStore.schedule.getAllCourses();
-            const seen = new Set<string>();
-            const candidates: ReviewCandidate[] = [];
+            const courseGroups = new Map<string, (typeof allCourses)[number][]>();
 
             for (const course of allCourses) {
                 const term = course.term;
-                const sectionType = course.section.sectionType;
-
-                if (!pastTermNames.has(term)) {
+                if (!pastTermNames.has(term.shortName)) {
                     continue;
                 }
 
+                const sectionType = course.section.sectionType;
                 if (
                     sectionType === 'Act' ||
                     sectionType === 'Col' ||
@@ -93,17 +90,28 @@ export const useReviewPromptStore = create(
                 }
 
                 const courseId = `${course.deptCode} ${course.courseNumber}`;
-                const dedupKey = `${courseId}::${instructor}::${term}`;
-                if (seen.has(dedupKey)) {
+                const dedupKey = `${courseId}::${instructor}::${term.shortName}`;
+                const group = courseGroups.get(dedupKey);
+                if (group) {
+                    group.push(course);
+                } else {
+                    courseGroups.set(dedupKey, [course]);
+                }
+            }
+
+            const candidates: ReviewCandidate[] = [];
+            for (const courses of courseGroups.values()) {
+                const picked = courses.find((c) => c.section.sectionType === 'Lec') ?? courses.at(0);
+                const instructor = picked?.section.instructors.at(0)?.trim();
+                if (!instructor || !picked) {
                     continue;
                 }
-                seen.add(dedupKey);
 
                 candidates.push({
-                    courseId,
-                    courseTitle: course.courseTitle,
+                    courseId: `${picked.deptCode} ${picked.courseNumber}`,
+                    courseTitle: picked.courseTitle,
                     professorId: instructor,
-                    term,
+                    term: picked.term,
                 });
             }
 
@@ -134,7 +142,7 @@ export const useReviewPromptStore = create(
             }
 
             const eligible = candidates.filter((c) => {
-                const key = `${c.courseId}::${c.professorId}::${c.term}`;
+                const key = `${c.courseId}::${c.professorId}::${c.term.shortName}`;
                 return !dismissedSet.has(key) && !reviewedSet.has(key);
             });
 
@@ -151,7 +159,7 @@ export const useReviewPromptStore = create(
                     courseId: candidate.courseId,
                     courseTitle: candidate.courseTitle,
                     professorId: candidate.professorId,
-                    term: candidate.term,
+                    term: candidate.term.shortName,
                 },
             });
         },
@@ -166,7 +174,7 @@ export const useReviewPromptStore = create(
                     customProps: {
                         courseId: candidate.courseId,
                         professorId: candidate.professorId,
-                        term: candidate.term,
+                        term: candidate.term.shortName,
                     },
                 });
             }
@@ -187,7 +195,7 @@ export const useReviewPromptStore = create(
                     customProps: {
                         courseId: candidate.courseId,
                         professorId: candidate.professorId,
-                        term: candidate.term,
+                        term: candidate.term.shortName,
                         dismissedAtStep: step,
                     },
                 });

@@ -1,5 +1,5 @@
 {
-  "id": "2ac7b8ba-0a22-45b4-8505-80e6030f822e",
+  "id": "44a84db0-3d3a-40ea-8fd4-8477a316aeaf",
   "prevId": "13f815ee-b9d3-41e1-9b83-3a0343d67492",
   "version": "7",
   "dialect": "postgresql",
@@ -536,17 +536,11 @@
           "primaryKey": false,
           "notNull": false
         },
-        "archived_at": {
-          "name": "archived_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
         "index": {
           "name": "index",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -589,12 +583,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {
-        "schedules_archive_index_consistency": {
-          "name": "schedules_archive_index_consistency",
-          "value": "(\"schedules\".\"archived_at\" IS NULL AND \"schedules\".\"index\" IS NOT NULL) OR (\"schedules\".\"archived_at\" IS NOT NULL AND \"schedules\".\"index\" IS NULL)"
-        }
-      },
+      "checkConstraints": {},
       "isRLSEnabled": false
     },
     "public.coursesInSchedule": {
@@ -624,6 +613,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'visible'"
         },
         "index": {
           "name": "index",
@@ -674,7 +670,12 @@
       },
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "visibility_check": {
+          "name": "visibility_check",
+          "value": "\"coursesInSchedule\".\"visibility\" IN ('visible', 'outlined', 'disappeared')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.customEvents": {

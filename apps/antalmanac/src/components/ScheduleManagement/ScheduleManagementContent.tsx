@@ -1,19 +1,15 @@
-import Image from 'next/image';
-import { lazy, Suspense } from 'react';
-
-import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
+import Image from 'next/image';
+import { lazy, Suspense } from 'react';
 
 const UCIMap = lazy(() => import('../Map/Map'));
 
 export function ScheduleManagementContent() {
-    const { activeTab } = useTabStore();
+    const activeTab = useTabStore((store) => store.activeTab);
     const isDark = useThemeStore((store) => store.isDark);
 
     switch (activeTab) {
@@ -36,7 +32,13 @@ export function ScheduleManagementContent() {
                                 alignItems: 'center',
                             }}
                         >
-                            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" unoptimized />
+                            <Image
+                                src={isDark ? '/course-search/dark-loading.gif' : '/course-search/loading.gif'}
+                                alt="Loading map"
+                                width={370}
+                                height={220}
+                                unoptimized
+                            />
                         </div>
                     }
                 >

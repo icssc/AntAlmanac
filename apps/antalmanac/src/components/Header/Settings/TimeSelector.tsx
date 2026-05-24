@@ -1,14 +1,16 @@
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-
-import { useTimeFormatStore } from '$stores/SettingsStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export function TimeSelector() {
     const theme = useTheme();
     const accentColor = theme.palette.secondary.main;
     const segment = theme.palette.settingsSegment;
 
-    const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
+    const [isMilitaryTime, setTimeFormat] = useTimeFormatStore(
+        useShallow((store) => [store.isMilitaryTime, store.setTimeFormat])
+    );
 
     const borderColor = theme.palette.divider;
     const inactiveHoverBackgroundColor = segment.hoverBackground;

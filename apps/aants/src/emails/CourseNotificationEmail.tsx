@@ -1,3 +1,4 @@
+import type { Quarter, Year } from '@packages/anteater-api/types';
 import {
     Body,
     Button,
@@ -32,8 +33,8 @@ export interface CourseNotificationEmailProps {
     hours: string;
     sectionCode: string;
     userId: string;
-    quarter: string;
-    year: string;
+    quarter: Quarter;
+    year: Year;
 }
 
 export function CourseNotificationEmail({
@@ -105,7 +106,7 @@ export function CourseNotificationEmail({
                     >
                         <Link href="https://antalmanac.com" style={{ textDecoration: 'none', color: '#ffffff' }}>
                             <Img
-                                src="https://antalmanac.com/assets/logo.png"
+                                src="https://antalmanac.com/logos/logo.png"
                                 alt="AntAlmanac"
                                 width={180}
                                 height={28}

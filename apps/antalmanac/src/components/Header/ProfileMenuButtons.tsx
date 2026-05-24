@@ -1,11 +1,11 @@
 import { useFallbackStore } from '$stores/FallbackStore';
 import { AccountCircle, Menu } from '@mui/icons-material';
 import { Button, IconButton, CircularProgress } from '@mui/material';
-import { User } from '@packages/antalmanac-types';
+import type { UserProfile } from '@packages/db/src/schema/auth/user';
 import Image from 'next/image';
 
 interface ProfileMenuButtonsProps {
-    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
+    user: UserProfile | null;
     handleOpen: (event: React.MouseEvent<HTMLElement>) => void;
     handleSettingsOpen: (event: React.MouseEvent<HTMLElement>) => void;
     loading?: boolean;
@@ -27,7 +27,12 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
                 >
                     Sign In
                 </Button>
-                <IconButton onClick={handleSettingsOpen} color="inherit">
+                <IconButton
+                    onClick={handleSettingsOpen}
+                    color="inherit"
+                    aria-label="Open settings menu"
+                    aria-haspopup="true"
+                >
                     <Menu sx={{ width: 24, height: 24 }} />
                 </IconButton>
             </>

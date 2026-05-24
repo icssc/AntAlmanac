@@ -22,8 +22,8 @@ const submitReviewInput = z.object({
     professorId: z.string(),
     /** Course string, e.g. "ICS 31" */
     courseId: z.string(),
-    /** AntAlmanac term shortName, e.g. "Fall 2024" */
-    quarter: z.string(),
+    /** AntAlmanac term shortName, e.g. "2024 Fall" */
+    termShortName: z.string(),
     /** 1–5 star rating */
     rating: z.number().int().min(1).max(5),
     difficulty: z.number().int().min(1).max(5),
@@ -46,7 +46,7 @@ const reviewRouter = router({
                     eq(instructorReviews.userId, ctx.userId),
                     eq(instructorReviews.professorId, input.professorId),
                     eq(instructorReviews.courseId, input.courseId),
-                    eq(instructorReviews.quarter, input.quarter)
+                    eq(instructorReviews.quarter, input.termShortName)
                 )
             )
             .limit(1);
@@ -64,7 +64,7 @@ const reviewRouter = router({
                 userId: ctx.userId,
                 professorId: input.professorId,
                 courseId: input.courseId,
-                quarter: input.quarter,
+                quarter: input.termShortName,
                 rating: input.rating,
                 difficulty: input.difficulty,
                 tags: input.tags,
@@ -95,7 +95,7 @@ const reviewRouter = router({
      * Dismiss a review prompt for a course/professor.
      */
     dismissReview: protectedProcedure
-        .input(z.object({ professorId: z.string(), courseId: z.string(), term: z.string() }))
+        .input(z.object({ professorId: z.string(), courseId: z.string(), termShortName: z.string() }))
         .mutation(async ({ ctx, input }) => {
             await db
                 .insert(reviewDismissals)
@@ -103,7 +103,7 @@ const reviewRouter = router({
                     userId: ctx.userId,
                     professorId: input.professorId,
                     courseId: input.courseId,
-                    term: input.term,
+                    term: input.termShortName,
                 })
                 .onConflictDoNothing();
         }),

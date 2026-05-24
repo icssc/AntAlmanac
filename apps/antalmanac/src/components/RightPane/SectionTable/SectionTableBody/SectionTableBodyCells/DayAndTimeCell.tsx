@@ -9,7 +9,7 @@ interface DayAndTimeCellProps {
 }
 
 export const DayAndTimeCell = ({ meetings }: DayAndTimeCellProps) => {
-    const { isMilitaryTime } = useTimeFormatStore();
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     return (
         <TableBodyCellContainer>

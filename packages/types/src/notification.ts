@@ -1,5 +1,7 @@
 import type { WebsocSection, WebsocSectionType } from '@packages/anteater-api/types';
 
+import type { AATerm } from './calendar';
+
 export type notifyOn = {
     notifyOnOpen: boolean;
     notifyOnWaitlist: boolean;
@@ -8,7 +10,8 @@ export type notifyOn = {
 };
 
 export type Notification = {
-    term: string;
+    year: AATerm['year'];
+    quarter: AATerm['quarter'];
     sectionCode: string;
     courseTitle: string;
     sectionType: WebsocSectionType;

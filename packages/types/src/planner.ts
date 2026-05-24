@@ -1,17 +1,17 @@
-interface Course {
+interface RoadmapCourse {
     courseId: string;
     userChosenUnits?: number;
 }
 
-export interface Quarter {
+interface RoadmapQuarter {
     name: string;
-    courses: Course[];
+    courses: RoadmapCourse[];
 }
 
-export interface RoadmapContent {
+interface RoadmapContent {
     name: string;
     startYear: number;
-    quarters: Quarter[];
+    quarters: RoadmapQuarter[];
 }
 
 export interface Roadmap {

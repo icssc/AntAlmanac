@@ -1,24 +1,30 @@
 'use client';
 
-import { trpcReact } from '$lib/api/trpcReact';
+import { trpcReact } from '$lib/api/trpc';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { Close } from '@mui/icons-material';
 import { Box, Button, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
+import { useShallow } from 'zustand/react/shallow';
 
 export function EnrollmentConfirmStep() {
-    const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
-    const courseTitle = useReviewPromptStore((s) => s.candidate?.courseTitle ?? '');
-    const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
-    const term = useReviewPromptStore((s) => s.candidate?.term ?? '');
-    const confirm = useReviewPromptStore((s) => s.confirm);
-    const dismiss = useReviewPromptStore((s) => s.dismiss);
+    const { candidate, confirm, dismiss } = useReviewPromptStore(
+        useShallow((s) => ({ candidate: s.candidate, confirm: s.confirm, dismiss: s.dismiss }))
+    );
+    const courseId = candidate?.courseId ?? '';
+    const courseTitle = candidate?.courseTitle ?? '';
+    const professorId = candidate?.professorId ?? '';
+    const term = candidate?.term ?? null;
 
     const { mutate: dismissReview } = trpcReact.review.dismissReview.useMutation();
 
     const handleDismiss = () => {
         const candidate = dismiss();
         if (candidate) {
-            dismissReview({ professorId: candidate.professorId, courseId: candidate.courseId, term: candidate.term });
+            dismissReview({
+                professorId: candidate.professorId,
+                courseId: candidate.courseId,
+                termShortName: candidate.term.shortName,
+            });
         }
     };
 
@@ -46,7 +52,7 @@ export function EnrollmentConfirmStep() {
                     {courseTitle && <>({courseTitle}) </>}
                     in{' '}
                     <Box component="span" fontWeight={600} color="text.primary">
-                        {term}
+                        {term?.shortName}
                     </Box>{' '}
                     with{' '}
                     <Box component="span" fontWeight={600} color="text.primary">

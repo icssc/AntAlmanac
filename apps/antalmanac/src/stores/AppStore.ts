@@ -16,10 +16,12 @@ import type {
     ChangeCourseColorAction,
     UndoRedoAction,
     AddScheduleAction,
+    ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
 import { useFallbackStore } from '$stores/FallbackStore';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
@@ -28,6 +30,7 @@ import type {
     ScheduleSaveState,
     RepeatingCustomEvent,
     CustomEventId,
+    AATerm,
 } from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
@@ -74,8 +77,16 @@ class AppStore extends EventEmitter {
         return this.schedule.getCurrentScheduleIndex();
     }
 
+    getCurrentSchedule() {
+        return this.schedule.getCurrentSchedule();
+    }
+
     getScheduleNames() {
         return this.schedule.getScheduleNames();
+    }
+
+    getCurrentScheduleId() {
+        return this.schedule.getCurrentScheduleId();
     }
 
     getAddedCourses() {
@@ -155,8 +166,12 @@ class AppStore extends EventEmitter {
         }
     }
 
-    deleteCourse(sectionCode: string, term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+    deleteCourse(sectionCode: string, term: AATerm, scheduleIndex: number, triggerUnsavedWarning = true) {
+        const scheduleId = this.schedule.getScheduleId(scheduleIndex);
         this.schedule.deleteCourse(sectionCode, term, scheduleIndex);
+        if (scheduleId) {
+            useHiddenCoursesStore.getState().clearCourseVisibility(scheduleId, sectionCode);
+        }
         this.unsavedChanges = triggerUnsavedWarning;
         const action: DeleteCourseAction = {
             type: 'deleteCourse',
@@ -168,7 +183,7 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
     }
 
-    deleteCourses(sectionCodes: string[], term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+    deleteCourses(sectionCodes: string[], term: AATerm, scheduleIndex: number, triggerUnsavedWarning = true) {
         sectionCodes.forEach((sectionCode) =>
             this.deleteCourse(sectionCode, term, scheduleIndex, triggerUnsavedWarning)
         );
@@ -324,6 +339,19 @@ class AppStore extends EventEmitter {
         this.emit('reorderSchedule');
     }
 
+    reorderAddedCourses(scheduleIndex: number, movedCourseId: string, nextCourseId: string | null) {
+        this.schedule.reorderAddedCourses(scheduleIndex, movedCourseId, nextCourseId);
+        this.unsavedChanges = true;
+        const action: ReorderAddedCoursesAction = {
+            type: 'reorderAddedCourses',
+            scheduleIndex: scheduleIndex,
+            movedCourseId: movedCourseId,
+            nextCourseId: nextCourseId,
+        };
+        actionTypesStore.autoSaveSchedule(action);
+        this.emit('addedCoursesChange');
+    }
+
     private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);
@@ -380,7 +408,9 @@ class AppStore extends EventEmitter {
     }
 
     clearSchedule() {
+        const scheduleId = this.schedule.getCurrentScheduleId();
         this.schedule.clearCurrentSchedule();
+        useHiddenCoursesStore.getState().clearScheduleVisibility(scheduleId);
         this.unsavedChanges = true;
         const action: ClearScheduleAction = {
             type: 'clearSchedule',
@@ -391,7 +421,11 @@ class AppStore extends EventEmitter {
     }
 
     deleteSchedule(scheduleIndex: number) {
+        const scheduleId = this.schedule.getScheduleId(scheduleIndex);
         this.schedule.deleteSchedule(scheduleIndex);
+        if (scheduleId) {
+            useHiddenCoursesStore.getState().clearScheduleVisibility(scheduleId);
+        }
         this.unsavedChanges = true;
         const action: DeleteScheduleAction = {
             type: 'deleteSchedule',
@@ -405,7 +439,7 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    changeCourseColor(sectionCode: string, term: string, newColor: string) {
+    changeCourseColor(sectionCode: string, term: AATerm, newColor: string) {
         this.schedule.changeCourseColor(sectionCode, term, newColor);
         this.unsavedChanges = true;
         const action: ChangeCourseColorAction = {
@@ -424,8 +458,16 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    termsInSchedule = (term: string) =>
-        new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+    termsInSchedule = (term: AATerm): Set<AATerm> => {
+        const map = new Map<string, AATerm>();
+        map.set(term.shortName, term);
+        for (const course of this.schedule.getCurrentCourses()) {
+            if (!map.has(course.term.shortName)) {
+                map.set(course.term.shortName, course.term);
+            }
+        }
+        return new Set(map.values());
+    };
 
     getPreviousStates = () => this.schedule.getPreviousStates();
 }

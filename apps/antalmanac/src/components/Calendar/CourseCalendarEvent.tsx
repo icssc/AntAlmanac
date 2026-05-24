@@ -12,10 +12,10 @@ import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { CustomEventId } from '@packages/antalmanac-types';
+import { AATerm, CustomEventId } from '@packages/antalmanac-types';
 import { WebsocSectionFinalExam } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Event } from 'react-big-calendar';
 
 interface CommonCalendarEvent extends Event {
@@ -57,7 +57,7 @@ export interface CourseEvent extends CommonCalendarEvent {
     sectionType: string;
     deptValue: string;
     courseNumber: string;
-    term: string;
+    term: AATerm;
 }
 
 /**
@@ -92,23 +92,9 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
-    const { isMilitaryTime } = useTimeFormatStore();
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const postHog = usePostHog();
-
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                closePopover();
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [closePopover]);
 
     if (!selectedEvent.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
@@ -191,7 +177,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </tr>
                         <tr>
                             <td style={{ verticalAlign: 'top' }}>Term</td>
-                            <td style={{ textAlign: 'right' }}>{term}</td>
+                            <td style={{ textAlign: 'right' }}>{term.shortName}</td>
                         </tr>
                         <tr>
                             <td style={{ verticalAlign: 'top' }}>Instructors</td>
