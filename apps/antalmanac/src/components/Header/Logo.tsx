@@ -1,6 +1,5 @@
-import Image from 'next/image';
-
 import { useIsMobile } from '$hooks/useIsMobile';
+import Image from 'next/image';
 
 type Logo = {
     name: string;
@@ -16,9 +15,9 @@ type Logo = {
 
 const defaultLogo: Logo = {
     name: 'Default',
-    logo: '/assets/mobile-logo-cropped.svg',
-    mobileLogo: '/assets/mobile-logo-cropped.svg',
-    desktopLogo: '/assets/logo.svg',
+    logo: '/logos/mobile-logo-cropped.svg',
+    mobileLogo: '/logos/mobile-logo-cropped.svg',
+    desktopLogo: '/logos/logo.svg',
     startDay: 0,
     startMonthIndex: 0,
     endDay: 31,
@@ -28,9 +27,9 @@ const defaultLogo: Logo = {
 const logos: Logo[] = [
     {
         name: 'Christmas',
-        logo: '/assets/christmas-logo.png',
-        mobileLogo: '/assets/christmas-mobile-logo.png',
-        desktopLogo: '/assets/christmas-logo.png',
+        logo: '/logos/christmas-logo.png',
+        mobileLogo: '/logos/christmas-mobile-logo.png',
+        desktopLogo: '/logos/christmas-logo.png',
         startDay: 1,
         startMonthIndex: 11,
         endDay: 31,
@@ -39,9 +38,9 @@ const logos: Logo[] = [
     },
     {
         name: 'Thanksgiving',
-        logo: '/assets/thanksgiving-mobile-logo.png',
-        mobileLogo: '/assets/thanksgiving-mobile-logo.png',
-        desktopLogo: '/assets/thanksgiving-logo.png',
+        logo: '/logos/thanksgiving-mobile-logo.png',
+        mobileLogo: '/logos/thanksgiving-mobile-logo.png',
+        desktopLogo: '/logos/thanksgiving-logo.png',
         startDay: 1,
         startMonthIndex: 10,
         endDay: 30,
@@ -50,9 +49,9 @@ const logos: Logo[] = [
     },
     {
         name: 'Halloween',
-        logo: '/assets/halloween-mobile-logo.png',
-        mobileLogo: '/assets/halloween-mobile-logo.png',
-        desktopLogo: '/assets/halloween-logo.png',
+        logo: '/logos/halloween-mobile-logo.png',
+        mobileLogo: '/logos/halloween-mobile-logo.png',
+        desktopLogo: '/logos/halloween-logo.png',
         startDay: 1,
         startMonthIndex: 9,
         endDay: 31,
