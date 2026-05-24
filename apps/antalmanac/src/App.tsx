@@ -4,7 +4,7 @@ import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';
-import AppTourProvider from '$providers/Tour';
+import AppTourProvider from '$providers/TourProvider';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
