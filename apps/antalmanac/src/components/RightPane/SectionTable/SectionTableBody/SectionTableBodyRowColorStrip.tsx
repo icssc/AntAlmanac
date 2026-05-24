@@ -64,8 +64,6 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
             setCurrColor(getSectionScheduleColor(section, term));
         };
 
-        syncColor();
-
         AppStore.on('addedCoursesChange', syncColor);
         AppStore.on('currentScheduleIndexChange', syncColor);
         AppStore.on('colorChange', syncColor);

@@ -2,6 +2,7 @@ import './App.css';
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
+import { removeSampleClasses } from '$lib/tourExampleGeneration';
 import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';
 import { ErrorPage } from '$routes/ErrorPage';
@@ -110,6 +111,9 @@ export default function App() {
                         <TourProvider
                             steps={[] /** Will be populated by Tutorial component */}
                             padding={5}
+                            beforeClose={() => {
+                                removeSampleClasses();
+                            }}
                             styles={{
                                 maskArea: (base) => ({
                                     ...base,
