@@ -6,6 +6,35 @@ import type { GE } from '@packages/anteater-api/types';
 
 type TrpcUtils = ReturnType<typeof trpcReact.useUtils>;
 type GradeOfferingRow = AggregateGradesByOffering[number];
+type GradeDistribution = NonNullable<AggregateGrades>['gradeDistribution'];
+
+/** True after bulk prefetch hydrated any aggregateGrades entries for this department. */
+export function isDepartmentBulkLoaded(utils: TrpcUtils, department: string): boolean {
+    return (
+        utils.queryClient.getQueriesData({
+            predicate: (query) => {
+                const procedureKey = query.queryKey[0];
+                const options = query.queryKey[1] as { type?: string; input?: { department?: string } } | undefined;
+                return (
+                    Array.isArray(procedureKey) &&
+                    procedureKey[0] === 'grades' &&
+                    procedureKey[1] === 'aggregateGrades' &&
+                    options?.type === 'query' &&
+                    options?.input?.department === department
+                );
+            },
+        }).length > 0
+    );
+}
+
+export function getCachedGradeDistribution(
+    utils: TrpcUtils,
+    department: string,
+    courseNumber: string,
+    instructor: string
+): GradeDistribution | undefined {
+    return utils.grades.aggregateGrades.getData({ department, courseNumber, instructor })?.gradeDistribution;
+}
 
 function getPrefetchScope(searchData: CourseSearchParams): { department?: string; ge?: GE } | null {
     const department = searchData.deptValue !== 'ALL' ? searchData.deptValue : undefined;
