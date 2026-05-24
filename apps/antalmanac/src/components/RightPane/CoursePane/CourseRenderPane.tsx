@@ -5,8 +5,9 @@ import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchP
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
-import { trpc } from '$lib/api/trpc';
+import { trpc, trpcReact } from '$lib/api/trpc';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
+import { prefetchSearchGrades } from '$lib/prefetchSearchGrades';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -286,6 +287,7 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
+    const utils = trpcReact.useUtils();
     const [courseColors, setCourseColors] = useState(getColors);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
@@ -327,12 +329,19 @@ export default function CourseRenderPane(props: { id?: number }) {
             setUnofferedCourses([]);
 
             try {
+                const prefetchGrades = (searchDataList: CourseSearchParams[]) =>
+                    prefetchSearchGrades(utils, searchDataList).catch((error) => {
+                        console.error(error);
+                        openSnackbar('error', 'Error loading grades information');
+                    });
+
                 const multiSearchData = RightPaneStore.getMultiSearchData();
                 let response: WebsocAPIResponse;
 
                 if (multiSearchData.length > 0) {
                     const { year, quarter } = RightPaneStore.getFormData().term;
                     const offeredCourses: WebsocSearchInput[] = [];
+                    const offeredSearchParams: CourseSearchParams[] = [];
                     const unofferedCourses: CourseSearchParams[] = [];
                     const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
                         term: { year, quarter },
@@ -341,24 +350,31 @@ export default function CourseRenderPane(props: { id?: number }) {
                     for (const course of multiSearchData) {
                         if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
                             offeredCourses.push(getQueryParams(course));
+                            offeredSearchParams.push(course);
                         } else {
                             unofferedCourses.push(course);
                         }
                     }
                     setUnofferedCourses(unofferedCourses);
-                    response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
+                    [response] = await Promise.all([
+                        trpc.websoc.getMultiple.query({ params: offeredCourses }),
+                        prefetchGrades(offeredSearchParams),
+                    ]);
                 } else {
-                    const websocQueryParams = getQueryParams(RightPaneStore.getFormData());
+                    const formData = RightPaneStore.getFormData();
+                    const websocQueryParams = getQueryParams(formData);
                     const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
-                    response =
+                    const websocPromise =
                         selectedGEs.length > 1
-                            ? intersectWebsocResponses(
-                                  await trpc.websoc.getManyOfField.query({
+                            ? trpc.websoc.getManyOfField
+                                  .query({
                                       params: { ...websocQueryParams, ge: selectedGEs.join(',') },
                                       fieldName: 'ge',
                                   })
-                              )
-                            : await trpc.websoc.getOne.query(websocQueryParams);
+                                  .then(intersectWebsocResponses)
+                            : trpc.websoc.getOne.query(websocQueryParams);
+
+                    [response] = await Promise.all([websocPromise, prefetchGrades([formData])]);
                 }
 
                 setSearchedTerm(RightPaneStore.getFormData().term.longName);
