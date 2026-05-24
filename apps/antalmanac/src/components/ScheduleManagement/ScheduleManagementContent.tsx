@@ -1,13 +1,11 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
+import { COURSE_SEARCH_DARK_LOADING_GIF, COURSE_SEARCH_LOADING_GIF } from '$lib/courseSearchImages';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
-
-import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 
 const UCIMap = lazy(() => import('../Map/Map'));
 
@@ -35,7 +33,11 @@ export function ScheduleManagementContent() {
                                 alignItems: 'center',
                             }}
                         >
-                            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" unoptimized />
+                            <Image
+                                src={isDark ? COURSE_SEARCH_DARK_LOADING_GIF : COURSE_SEARCH_LOADING_GIF}
+                                alt="Loading map"
+                                unoptimized
+                            />
                         </div>
                     }
                 >

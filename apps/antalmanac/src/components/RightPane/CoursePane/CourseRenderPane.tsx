@@ -1,15 +1,17 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
-import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-import darkNoResults from '$components/RightPane/CoursePane/static/dark-no_results.png';
-import noResults from '$components/RightPane/CoursePane/static/no_results.png';
 import RightPaneStore, { CourseSearchParams, CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
+import {
+    COURSE_SEARCH_DARK_LOADING_GIF,
+    COURSE_SEARCH_DARK_NO_RESULTS_IMAGE,
+    COURSE_SEARCH_LOADING_GIF,
+    COURSE_SEARCH_NO_RESULTS_IMAGE,
+} from '$lib/courseSearchImages';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -222,7 +224,11 @@ const LoadingMessage = () => {
     const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" unoptimized />
+            <Image
+                src={isDark ? COURSE_SEARCH_DARK_LOADING_GIF : COURSE_SEARCH_LOADING_GIF}
+                alt="Loading courses"
+                unoptimized
+            />
         </Box>
     );
 };
@@ -274,7 +280,7 @@ const ErrorMessage = () => {
             ) : null}
 
             <Image
-                src={isDark ? darkNoResults : noResults}
+                src={isDark ? COURSE_SEARCH_DARK_NO_RESULTS_IMAGE : COURSE_SEARCH_NO_RESULTS_IMAGE}
                 alt="No Results Found"
                 unoptimized
                 style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
