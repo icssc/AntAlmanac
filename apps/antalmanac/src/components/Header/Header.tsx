@@ -12,27 +12,20 @@ import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 export function Header() {
+    const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
-    const [importSuccessDismissed, setImportSuccessDismissed] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const isMobile = useIsMobile();
-    const openSuccessfulSaved = importedUser !== '' && sessionIsValid && !importSuccessDismissed;
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
     };
 
     const handleCloseSuccessfulSaved = () => {
+        setOpenSuccessfulSaved(false);
         clearStorage();
-        setImportSuccessDismissed(true);
     };
-
-    useEffect(() => {
-        if (importedUser !== '') {
-            setImportSuccessDismissed(false);
-        }
-    }, [importedUser]);
 
     const handleLogoutComplete = () => {
         setOpenSignoutDialog(true);
@@ -42,6 +35,12 @@ export function Header() {
         setOpenSignoutDialog(false);
         window.location.reload();
     };
+
+    useEffect(() => {
+        if (importedUser !== '' && sessionIsValid) {
+            setOpenSuccessfulSaved(true);
+        }
+    }, [importedUser, sessionIsValid]);
 
     return (
         <Box
