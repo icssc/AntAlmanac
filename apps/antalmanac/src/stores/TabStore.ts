@@ -1,4 +1,3 @@
-import { logAddedClassesOpen } from '$lib/analytics/logAddedClassesOpen';
 import { create } from 'zustand';
 
 type TabName = 'calendar' | 'search' | 'added' | 'map';
@@ -33,15 +32,9 @@ export const useTabStore = create<TabStore>((set) => {
             set(() => ({
                 activeTab: TabMap[name],
             }));
-            if (name === 'added') {
-                logAddedClassesOpen();
-            }
         },
         setActiveTabValue: (value: number) => {
             set(() => ({ activeTab: value }));
-            if (value === TabMap.added) {
-                logAddedClassesOpen();
-            }
         },
     };
 });
