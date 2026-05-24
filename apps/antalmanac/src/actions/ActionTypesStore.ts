@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
-import { postHog } from '$providers/PostHog';
+import { postHog } from '$providers/PostHogProvider';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import type { AATerm, CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
