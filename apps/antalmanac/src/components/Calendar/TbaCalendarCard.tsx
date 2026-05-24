@@ -1,6 +1,6 @@
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { BLUE } from '$src/globals';
-import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Close, InfoOutlined } from '@mui/icons-material';
 import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '@mui/material';
@@ -113,6 +113,7 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
 }
 
 export function TbaCalendarCard() {
+    const scheduleSource = useScheduleViewSource();
     const [tbaSections, setTbaSections] = useState<TbaSection[]>([]);
     const [collapsed, setCollapsed] = useState(true);
     const visible = tbaSections.length > 0;
@@ -120,13 +121,13 @@ export function TbaCalendarCard() {
 
     useEffect(() => {
         const updateTbaSections = () => {
-            const scheduleIndex = AppStore.getCurrentScheduleIndex();
+            const scheduleIndex = scheduleSource.getCurrentScheduleIndex();
             if (scheduleIndex == null) {
                 setTbaSections([]);
                 return;
             }
 
-            const courses = AppStore.schedule.getCurrentCourses();
+            const courses = scheduleSource.schedule.getCurrentCourses();
             const sectionsWithTBA: TbaSection[] = [];
 
             for (const course of courses) {
@@ -145,16 +146,9 @@ export function TbaCalendarCard() {
             setTbaSections(sectionsWithTBA);
         };
 
-        AppStore.on('addedCoursesChange', updateTbaSections);
-        AppStore.on('currentScheduleIndexChange', updateTbaSections);
-
         updateTbaSections();
-
-        return () => {
-            AppStore.off('addedCoursesChange', updateTbaSections);
-            AppStore.off('currentScheduleIndexChange', updateTbaSections);
-        };
-    }, []);
+        return scheduleSource.subscribe(updateTbaSections);
+    }, [scheduleSource]);
 
     const handleToggleCollapse = () => {
         setCollapsed((prev) => !prev);

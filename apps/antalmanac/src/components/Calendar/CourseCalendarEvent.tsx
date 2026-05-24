@@ -6,12 +6,13 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
+import { Chip, IconButton, Paper, Tooltip, Button, Box, Typography } from '@mui/material';
 import { AATerm, CustomEventId } from '@packages/antalmanac-types';
 import { WebsocSectionFinalExam } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
@@ -91,8 +92,10 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLDivElement>(null);
+    const scheduleSource = useScheduleViewSource();
     const quickSearch = useQuickSearch();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
+    const isReadonly = scheduleSource.readonly;
 
     const postHog = usePostHog();
 
@@ -132,28 +135,38 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         marginBottom: '0.25rem',
                     }}
                 >
-                    <Tooltip title="Quick Search (or CMD/CTRL + Click event)">
-                        <Button size="small" color="secondary" onClick={handleQuickSearch}>
-                            <Search fontSize="small" style={{ marginRight: 5 }} />
-                            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
-                        </Button>
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                        <IconButton
-                            size="small"
-                            style={{ textDecoration: 'underline' }}
-                            onClick={() => {
-                                closePopover();
-                                deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
-                                logAnalytics(postHog, {
-                                    category: analyticsEnum.calendar,
-                                    action: analyticsEnum.calendar.actions.DELETE_COURSE,
-                                });
-                            }}
-                        >
-                            <Delete fontSize="inherit" />
-                        </IconButton>
-                    </Tooltip>
+                    {isReadonly ? (
+                        <Typography
+                            sx={{ fontSize: '0.9rem', fontWeight: 500 }}
+                        >{`${title} ${sectionType}`}</Typography>
+                    ) : (
+                        <>
+                            <Tooltip title="Quick Search (or CMD/CTRL + Click event)">
+                                <Button size="small" color="secondary" onClick={handleQuickSearch}>
+                                    <Search fontSize="small" style={{ marginRight: 5 }} />
+                                    <span
+                                        style={{ fontSize: '0.9rem', fontWeight: 500 }}
+                                    >{`${title} ${sectionType}`}</span>
+                                </Button>
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                                <IconButton
+                                    size="small"
+                                    style={{ textDecoration: 'underline' }}
+                                    onClick={() => {
+                                        closePopover();
+                                        deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
+                                        logAnalytics(postHog, {
+                                            category: analyticsEnum.calendar,
+                                            action: analyticsEnum.calendar.actions.DELETE_COURSE,
+                                        });
+                                    }}
+                                >
+                                    <Delete fontSize="inherit" />
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    )}
                 </Box>
                 <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                     <tbody>
@@ -200,18 +213,20 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             <td>Final</td>
                             <td style={{ textAlign: 'right' }}>{finalExamString}</td>
                         </tr>
-                        <tr>
-                            <td>Color</td>
-                            <td style={{ textAlign: 'right' }}>
-                                <ColorPicker
-                                    color={selectedEvent.color}
-                                    isCustomEvent={selectedEvent.isCustomEvent}
-                                    sectionCode={selectedEvent.sectionCode}
-                                    term={selectedEvent.term}
-                                    analyticsCategory={analyticsEnum.calendar}
-                                />
-                            </td>
-                        </tr>
+                        {!isReadonly && (
+                            <tr>
+                                <td>Color</td>
+                                <td style={{ textAlign: 'right' }}>
+                                    <ColorPicker
+                                        color={selectedEvent.color}
+                                        isCustomEvent={selectedEvent.isCustomEvent}
+                                        sectionCode={selectedEvent.sectionCode}
+                                        term={selectedEvent.term}
+                                        analyticsCategory={analyticsEnum.calendar}
+                                    />
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </Paper>
@@ -227,35 +242,37 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
                     </Box>
                 )}
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <ColorPicker
-                        color={selectedEvent.color}
-                        isCustomEvent={true}
-                        customEventID={selectedEvent.customEventID}
-                        analyticsCategory={analyticsEnum.calendar}
-                    />
-                    <CustomEventDialog
-                        onDialogClose={closePopover}
-                        customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
-                        scheduleNames={scheduleNames}
-                    />
+                {!isReadonly && (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ColorPicker
+                            color={selectedEvent.color}
+                            isCustomEvent={true}
+                            customEventID={selectedEvent.customEventID}
+                            analyticsCategory={analyticsEnum.calendar}
+                        />
+                        <CustomEventDialog
+                            onDialogClose={closePopover}
+                            customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
+                            scheduleNames={scheduleNames}
+                        />
 
-                    <Tooltip title="Delete">
-                        <IconButton
-                            sx={{ padding: 0.5 }}
-                            onClick={() => {
-                                closePopover();
-                                deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
-                                logAnalytics(postHog, {
-                                    category: analyticsEnum.calendar,
-                                    action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
-                                });
-                            }}
-                        >
-                            <Delete fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
+                        <Tooltip title="Delete">
+                            <IconButton
+                                sx={{ padding: 0.5 }}
+                                onClick={() => {
+                                    closePopover();
+                                    deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
+                                    logAnalytics(postHog, {
+                                        category: analyticsEnum.calendar,
+                                        action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
+                                    });
+                                }}
+                            >
+                                <Delete fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                )}
             </Paper>
         );
     }

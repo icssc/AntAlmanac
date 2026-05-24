@@ -2,6 +2,7 @@
 
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { cloneElement, isValidElement, memo, useCallback } from 'react';
@@ -18,6 +19,7 @@ export const CalendarCourseEventWrapper = memo(function CalendarCourseEventWrapp
     children,
     ...props
 }: CalendarCourseEventWrapperProps) {
+    const scheduleSource = useScheduleViewSource();
     const quickSearch = useQuickSearch();
 
     const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent);
@@ -31,14 +33,14 @@ export const CalendarCourseEventWrapper = memo(function CalendarCourseEventWrapp
             e.preventDefault();
             e.stopPropagation();
 
-            if (!props.event.isCustomEvent && (e.metaKey || e.ctrlKey)) {
+            if (!scheduleSource.readonly && !props.event.isCustomEvent && (e.metaKey || e.ctrlKey)) {
                 const courseInfo = props.event as CourseEvent;
                 quickSearch(courseInfo.deptValue, courseInfo.courseNumber, courseInfo.term);
             } else {
                 setSelectedEvent(e, props.event);
             }
         },
-        [props.event, quickSearch, setSelectedEvent]
+        [props.event, scheduleSource.readonly, quickSearch, setSelectedEvent]
     );
 
     return <div>{isValidElement(children) ? cloneElement(children, { onClick: handleClick }) : children}</div>;
