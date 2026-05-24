@@ -1,7 +1,6 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
-import { COURSE_SEARCH_DARK_LOADING_GIF, COURSE_SEARCH_LOADING_GIF } from '$lib/courseSearchImages';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
@@ -34,7 +33,7 @@ export function ScheduleManagementContent() {
                             }}
                         >
                             <Image
-                                src={isDark ? COURSE_SEARCH_DARK_LOADING_GIF : COURSE_SEARCH_LOADING_GIF}
+                                src={isDark ? '/course-search/dark-loading.gif' : '/course-search/loading.gif'}
                                 alt="Loading map"
                                 unoptimized
                             />
