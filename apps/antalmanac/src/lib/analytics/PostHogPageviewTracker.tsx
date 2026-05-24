@@ -1,4 +1,4 @@
-import { postHog } from '$providers/PostHogProvider';
+import { postHog } from '$providers/AppPostHogProvider';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
