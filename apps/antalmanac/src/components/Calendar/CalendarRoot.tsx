@@ -133,11 +133,6 @@ export const ScheduleCalendar = memo(() => {
 
     const isMobile = useIsMobile();
 
-    const onlyCourseEvents = useMemo(
-        () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
-        [eventsInCalendar]
-    );
-
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         const raw = showFinalsSchedule
             ? hoveredCalendarizedFinal
@@ -316,7 +311,7 @@ export const ScheduleCalendar = memo(() => {
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h a';
 
-    const finalsTerm = hoveredCalendarizedFinal?.term ?? onlyCourseEvents[0]?.term;
+    const finalsTerm = hoveredCalendarizedFinal?.term ?? currentScheduleCourses[0]?.term;
     const finalsDate = (finalsTerm ?? getDefaultTerm()).finalsStart;
 
     const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
