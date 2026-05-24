@@ -18,3 +18,15 @@ Object.defineProperty(window, 'matchMedia', {
         dispatchEvent: vi.fn(),
     })),
 });
+
+vi.mock('$lib/auth/auth', () => {
+    return {
+        // This module can only run on the server
+    };
+});
+
+vi.mock('$lib/auth/authActions', () => {
+    return {
+        // This module can only run on the server
+    };
+});

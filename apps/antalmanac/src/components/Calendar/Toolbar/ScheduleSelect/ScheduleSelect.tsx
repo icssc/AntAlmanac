@@ -7,7 +7,7 @@ import { SortableList } from '$components/drag-and-drop/SortableList';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
@@ -47,7 +47,12 @@ function handleScheduleChange(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
-    const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
+    const { openScheduleSelect, setOpenScheduleSelect } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openScheduleSelect: state.openScheduleSelect,
+            setOpenScheduleSelect: state.setOpenScheduleSelect,
+        }))
+    );
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());

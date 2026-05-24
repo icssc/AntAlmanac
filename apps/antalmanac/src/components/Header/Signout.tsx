@@ -1,9 +1,7 @@
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpc';
-import { getErrorMessage } from '$lib/utils';
+import { signOut } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -19,10 +17,9 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore(
+    const { sessionIsValid, name, avatar, email } = useSessionStore(
         useShallow((store) => ({
             sessionIsValid: store.sessionIsValid,
-            clearSession: store.clearSession,
             name: store.name,
             avatar: store.avatar,
             email: store.email,
@@ -43,42 +40,14 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         [sessionIsValid, name, avatar, email]
     );
 
-    const { mutate: logout } = trpcReact.auth.logout.useMutation({
-        onSuccess: ({ logoutUrl }) => {
-            clearSession();
-            onLogoutComplete?.();
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SIGN_OUT,
-            });
-
-            if (logoutUrl) {
-                window.location.href = logoutUrl;
-            }
-        },
-        onError: (error) => {
-            console.error('Error during logout', error);
-            clearSession();
-            onLogoutComplete?.();
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SIGN_OUT_FAIL,
-                error: getErrorMessage(error),
-            });
-            window.location.reload();
-        },
-        onSettled: () => {
-            postHog?.reset();
-        },
-    });
-
     const handleClick = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         setAnchorEl(null);
-        logout({ redirectUrl: window.location.origin });
+
+        signOut({ onLogoutComplete, postHog });
     };
 
     return (
