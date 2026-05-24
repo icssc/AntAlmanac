@@ -10,7 +10,7 @@ export const getSafeAuthRedirectPath = (
     }
 
     try {
-        const requestOrigin = requestUrl ? new URL(requestUrl).origin : undefined;
+        const requestOrigin = requestUrl ? new URL(requestUrl).origin : allowedOrigin;
         const url = new URL(redirectUrl, requestOrigin);
         if (url.origin === allowedOrigin) {
             return url.toString();
