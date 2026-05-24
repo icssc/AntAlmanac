@@ -35,12 +35,10 @@ function getScheduleItems(scheduleNames: string[]): ScheduleItem[] {
 export function SelectSchedulePopover() {
     const theme = useTheme();
     const scheduleSource = useScheduleViewSource();
-    const { openScheduleSelect, setOpenScheduleSelect } = useScheduleComponentsToggleStore(
-        useShallow((state) => ({
-            openScheduleSelect: state.openScheduleSelect,
-            setOpenScheduleSelect: state.setOpenScheduleSelect,
-        }))
+    const [openScheduleSelect, openScheduleSelectScope, setOpenScheduleSelect] = useScheduleComponentsToggleStore(
+        useShallow((state) => [state.openScheduleSelect, state.openScheduleSelectScope, state.setOpenScheduleSelect])
     );
+    const isOpen = openScheduleSelect && openScheduleSelectScope === scheduleSource.scope;
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => scheduleSource.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(() => getScheduleItems(scheduleSource.getScheduleNames()));
@@ -57,8 +55,8 @@ export function SelectSchedulePopover() {
     const postHog = usePostHog();
 
     const handleClick = useCallback(() => {
-        setOpenScheduleSelect(true);
-    }, [setOpenScheduleSelect]);
+        setOpenScheduleSelect(true, scheduleSource.scope);
+    }, [scheduleSource.scope, setOpenScheduleSelect]);
 
     const handleClose = useCallback(() => {
         setOpenScheduleSelect(false);
@@ -129,7 +127,7 @@ export function SelectSchedulePopover() {
             </Tooltip>
 
             <Popover
-                open={openScheduleSelect}
+                open={isOpen}
                 anchorEl={anchorElementRef.current}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
