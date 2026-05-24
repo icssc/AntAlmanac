@@ -1,0 +1,58 @@
+apps/antalmanac/src/lib/schedule/appScheduleViewSource.ts
+  s_b065e03900c14d::t_ee9e2b3fafa1a8 1-45
+apps/antalmanac/src/lib/schedule/ScheduleViewSource.ts
+  s_b065e03900c14d::t_5f982af5bbba42 1-34
+apps/antalmanac/src/components/Calendar/CalendarCourseEventWrapper.tsx
+  s_b065e03900c14d::t_14535def43c1c4 36,43
+  s_b065e03900c14d::t_d9221a4f8ea676 22
+  s_b065e03900c14d::t_0d17084a07acd8 5
+apps/antalmanac/src/components/Calendar/CalendarRoot.tsx
+  s_b065e03900c14d::t_b49ea277ef0a66 403
+  s_b065e03900c14d::t_abe51fb1e0db7b 153-155,168
+  s_b065e03900c14d::t_e1d87c9544ec21 359-366,369-371
+  s_b065e03900c14d::t_242ae77cce04ac 105-106,108-110,112,114-120
+apps/antalmanac/src/components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect.tsx
+  s_b065e03900c14d::t_fd2ae069f880b1 84-87
+  s_b065e03900c14d::t_01b555df0cdda9 7,13,26,37,45-46,68-70,73-74,76-82,90,153,186,200-206,212-217
+  s_4ba718499d6608::t_82dc0138a7908b 47
+apps/antalmanac/src/lib/schedule/ScheduleViewContext.tsx
+  s_b065e03900c14d::t_6cc8027d7920d7 1-8,10-15
+apps/antalmanac/src/components/Calendar/CalendarEventPopover.tsx
+  s_b065e03900c14d::t_a1e4975a1f6f67 4,7,10-11,16-17,22-28
+apps/antalmanac/src/components/Calendar/CourseCalendarEvent.tsx
+  s_b065e03900c14d::t_6bc3f379381407 9
+  s_b065e03900c14d::t_9e421f29003458 245-257,259-275
+  s_b065e03900c14d::t_c4fcb96a7247d7 95,98
+  s_b065e03900c14d::t_756e84b11b5426 216-229
+  s_b065e03900c14d::t_c95b1cce7400e1 15
+  s_b065e03900c14d::t_4cc7f6299aa487 138-169
+apps/antalmanac/src/components/Calendar/TbaCalendarCard.tsx
+  s_b065e03900c14d::t_c433c14467a683 150-151
+  s_b065e03900c14d::t_802da15bfdc496 116
+  s_b065e03900c14d::t_613c33eea75555 2
+  s_b065e03900c14d::t_3867c7c71e8a00 124,130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "3716456cf48fb85473ad2dec25787d67497b5c23",
+  "prompts": {},
+  "sessions": {
+    "s_4ba718499d6608": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "8a335724-6152-4608-bd10-33fd77541016",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    },
+    "s_b065e03900c14d": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "8af43442-d499-4f9d-8793-8f917a07f065",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
