@@ -35,6 +35,8 @@ export function ScheduleManagementContent() {
                             <Image
                                 src={isDark ? '/course-search/dark-loading.gif' : '/course-search/loading.gif'}
                                 alt="Loading map"
+                                width={370}
+                                height={220}
                                 unoptimized
                             />
                         </div>

@@ -221,6 +221,8 @@ const LoadingMessage = () => {
             <Image
                 src={isDark ? '/course-search/dark-loading.gif' : '/course-search/loading.gif'}
                 alt="Loading courses"
+                width={370}
+                height={220}
                 unoptimized
             />
         </Box>
