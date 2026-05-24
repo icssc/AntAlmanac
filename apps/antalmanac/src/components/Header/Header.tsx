@@ -9,14 +9,15 @@ import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 import { AppBar, Box, Stack } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export function Header() {
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
+    const [importSuccessDismissed, setImportSuccessDismissed] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const isMobile = useIsMobile();
-    const openSuccessfulSaved = importedUser !== '' && sessionIsValid;
+    const openSuccessfulSaved = importedUser !== '' && sessionIsValid && !importSuccessDismissed;
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
@@ -24,7 +25,14 @@ export function Header() {
 
     const handleCloseSuccessfulSaved = () => {
         clearStorage();
+        setImportSuccessDismissed(true);
     };
+
+    useEffect(() => {
+        if (importedUser !== '') {
+            setImportSuccessDismissed(false);
+        }
+    }, [importedUser]);
 
     const handleLogoutComplete = () => {
         setOpenSignoutDialog(true);
