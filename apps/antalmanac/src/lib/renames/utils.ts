@@ -18,19 +18,18 @@ export function getRenamedCoursesIdentifiers(department: string, courseNumber: s
 }
 
 export function getRenamedCoursesLabel(department: string, courseNumber: string): string | null {
-    const chain = getRenamedCoursesIdentifiers(department, courseNumber);
-    if (chain.length <= 1) return null;
-
     const parts: string[] = [];
-    for (let i = 0; i < chain.length - 1; i++) {
+    let current: CourseId = { department, courseNumber };
+
+    for (let i = 0; i < COURSE_RENAMES.length; i++) {
         const entry = COURSE_RENAMES.find(
-            (r) => r.department === chain[i].department && r.courseNumber === chain[i].courseNumber
+            (r) => r.department === current.department && r.courseNumber === current.courseNumber
         );
         if (!entry) break;
-        const predecessor = chain[i + 1];
         const yr = entry.effectiveYear;
-        const yearLabel = `${String(yr).slice(-2)}/${String(yr + 1).slice(-2)}`;
-        parts.push(`${predecessor.department} ${predecessor.courseNumber} (before ${yearLabel})`);
+        const yearLabel = `${String(yr).slice(-2)}/${String(yr + 1).slice(-2)}`; // 2026 -> 26/27
+        parts.push(`${entry.previously.department} ${entry.previously.courseNumber} (before ${yearLabel})`);
+        current = entry.previously;
     }
 
     return parts.length > 0 ? `Previously ${parts.join(', ')}` : null;
