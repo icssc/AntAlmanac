@@ -4,7 +4,7 @@ on:
     push:
         branches: [main]
         paths-ignore:
-            - 'apps/pwa/**'
+            - 'apps/ios/**'
 
 concurrency:
     group: sst-production

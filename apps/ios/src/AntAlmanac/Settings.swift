@@ -10,7 +10,7 @@ let gcmMessageIDKey = "00000000000" // update this with actual ID if using Fireb
 // URL for first launch
 let rootUrl = URL(string: "https://antalmanac.com")!
 
-// allowed origin is for what we are sticking to pwa domain
+// allowed origin is for what we are sticking to the web app domain
 // This should also appear in Info.plist
 let allowedOrigins: [String] = ["antalmanac.com"]
 
