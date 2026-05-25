@@ -1,17 +1,25 @@
-import { COURSE_RENAMES, type CourseId } from '$lib/renames/renames';
+import { COURSE_RENAMES, type CourseId, type CourseRename } from '$lib/renames/renames';
 import type { AggregateGrades } from '@packages/anteater-api/types';
 
-export function getRenamedCoursesIdentifiers(department: string, courseNumber: string): CourseId[] {
-    const identifiers: CourseId[] = [{ department, courseNumber }];
+function* iterateRenameChain(department: string, courseNumber: string): Generator<CourseRename> {
     let current: CourseId = { department, courseNumber };
 
     for (let i = 0; i < COURSE_RENAMES.length; i++) {
         const entry = COURSE_RENAMES.find(
             (r) => r.department === current.department && r.courseNumber === current.courseNumber
         );
+
         if (!entry) break;
-        identifiers.push(entry.previously);
+        yield entry;
         current = entry.previously;
+    }
+}
+
+export function getRenamedCoursesIdentifiers(department: string, courseNumber: string): CourseId[] {
+    const identifiers: CourseId[] = [{ department, courseNumber }];
+
+    for (const entry of iterateRenameChain(department, courseNumber)) {
+        identifiers.push(entry.previously);
     }
 
     return identifiers;
@@ -19,23 +27,16 @@ export function getRenamedCoursesIdentifiers(department: string, courseNumber: s
 
 export function getRenamedCoursesLabel(department: string, courseNumber: string): string | null {
     const parts: string[] = [];
-    let current: CourseId = { department, courseNumber };
 
-    for (let i = 0; i < COURSE_RENAMES.length; i++) {
-        const entry = COURSE_RENAMES.find(
-            (r) => r.department === current.department && r.courseNumber === current.courseNumber
-        );
-        if (!entry) break;
+    for (const entry of iterateRenameChain(department, courseNumber)) {
         const yr = entry.effectiveYear;
         const yearLabel = `${String(yr).slice(-2)}/${String(yr + 1).slice(-2)}`; // 2026 -> 26/27
         parts.push(`${entry.previously.department} ${entry.previously.courseNumber} (before ${yearLabel})`);
-        current = entry.previously;
     }
 
     return parts.length > 0 ? `Previously ${parts.join(', ')}` : null;
 }
 
-/** Sums grade counts across results and recalculates averageGPA as a weighted mean. */
 export function mergeAggregateGrades(
     results: [NonNullable<AggregateGrades>, ...NonNullable<AggregateGrades>[]]
 ): NonNullable<AggregateGrades> {
