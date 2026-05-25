@@ -11,12 +11,12 @@ export function FriendAvatar({ name, email, avatar }: FriendAvatarProps) {
     const displayEmail = email ?? '';
 
     return (
-        <Stack sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1, flex: 1 }}>
-            <Avatar src={avatar || undefined} sx={{ width: 30, height: 30 }}>
+        <Stack sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
+            <Avatar src={avatar || undefined} sx={{ width: 36, height: 36 }}>
                 <AccountCircle />
             </Avatar>
 
-            <Stack sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <Stack sx={{ display: 'flex', flexDirection: 'column', gap: 0.25, minWidth: 0 }}>
                 <Typography
                     variant="body2"
                     fontWeight={600}
