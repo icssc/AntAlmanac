@@ -119,8 +119,8 @@ function getCourses() {
 
 export function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses);
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+    const [scheduleIndex, setScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const loadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
 
     const handleCourseOrderChange = (updatedCourses: CourseWithTerm[], _activeIndex: number, overIndex: number) => {

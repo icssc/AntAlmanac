@@ -287,7 +287,7 @@ const ErrorMessage = () => {
 
 export default function CourseRenderPane(props: { id?: number }) {
     const [courseColors, setCourseColors] = useState(getColors);
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term.longName);
 

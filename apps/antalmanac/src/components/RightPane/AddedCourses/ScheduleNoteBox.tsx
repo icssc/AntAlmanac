@@ -18,7 +18,7 @@ export function ScheduleNoteBox() {
             ? getCurrentFallbackSchedule(AppStore.getCurrentScheduleIndex()).scheduleNote
             : AppStore.getCurrentScheduleNote()
     );
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [scheduleIndex, setScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
 
     const handleNoteChange = useCallback(
         (event: React.ChangeEvent<HTMLTextAreaElement>) => {

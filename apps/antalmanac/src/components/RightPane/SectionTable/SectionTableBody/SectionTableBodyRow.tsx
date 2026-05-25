@@ -65,7 +65,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const previewMode = usePreviewStore((store) => store.previewMode);
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
-    const [addedCourse, setAddedCourse] = useState(
+    const [addedCourse, setAddedCourse] = useState(() =>
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
     );
 

@@ -164,9 +164,9 @@ export default function CourseMap() {
     const markerRef = useRef<Marker | null>(null);
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
-    const [markers, setMarkers] = useState(getCoursesPerBuilding());
-    const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
-    const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
+    const [markers, setMarkers] = useState(() => getCoursesPerBuilding());
+    const [customEventMarkers, setCustomEventMarkers] = useState(() => getCustomEventPerBuilding());
+    const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getEventsInCalendar());
     const postHog = usePostHog();
 
     useEffect(() => {
