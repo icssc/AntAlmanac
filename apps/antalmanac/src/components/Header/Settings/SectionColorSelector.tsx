@@ -2,15 +2,36 @@ import { getPalette, SECTION_THEMES, type SectionColorSetting, type SectionTheme
 import AppStore from '$stores/AppStore';
 import { useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { Check, ExpandMore } from '@mui/icons-material';
+import {
+    Check,
+    Colorize,
+    Diamond,
+    ExpandMore,
+    Gradient,
+    History,
+    Palette,
+    Pets,
+    type SvgIconComponent,
+} from '@mui/icons-material';
 import { Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
+/** A representative MUI icon for each theme (presentational only — kept out of the palette data). */
+const THEME_ICONS: Record<SectionColorSetting, SvgIconComponent> = {
+    default: Palette,
+    legacy: History,
+    pastel: Gradient,
+    catppuccin: Pets,
+    quietLuxury: Diamond,
+    custom: Colorize,
+};
+
 interface ThemeOption {
     id: SectionColorSetting;
     name: string;
+    icon: SvgIconComponent;
     swatches: string[];
 }
 
@@ -54,6 +75,7 @@ function Swatches({ colors }: { colors: string[] }) {
 export function SectionColorSelector() {
     const muiTheme = useTheme();
     const isDark = useThemeStore((s) => s.isDark);
+    const accent = muiTheme.palette.secondary.main;
 
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
     const setSectionColor = useSectionThemeStore((s) => s.setSectionColor);
@@ -65,22 +87,24 @@ export function SectionColorSelector() {
     const buttonRef = useRef<HTMLDivElement>(null);
     const [menuOpen, setMenuOpen] = useState(false);
 
+    // Presets first, "Custom" last.
     const options = useMemo<ThemeOption[]>(
         () => [
-            { id: 'custom', name: 'Custom', swatches: getCustomSwatches(isDark) },
             ...SECTION_THEMES.map((t) => ({
                 id: t.id,
                 name: t.name,
+                icon: THEME_ICONS[t.id] ?? Palette,
                 swatches: getPalette(t.id, isDark)
                     .map((family) => family[0])
                     .slice(0, 4),
             })),
+            { id: 'custom' as const, name: 'Custom', icon: THEME_ICONS.custom, swatches: getCustomSwatches(isDark) },
         ],
         [isDark]
     );
 
-    const activeOption = options.find((o) => o.id === sectionColor);
-    const activeName = activeOption?.name ?? 'Custom';
+    const activeOption = options.find((o) => o.id === sectionColor) ?? options[options.length - 1];
+    const ActiveIcon = activeOption.icon;
 
     // Whether the active preset theme has any per-section overrides to reset.
     const hasOverrides =
@@ -130,12 +154,15 @@ export function SectionColorSelector() {
                     '&:hover': { backgroundColor: muiTheme.palette.settingsSegment.hoverBackground },
                 }}
             >
-                <Typography sx={{ fontWeight: 'bold', fontSize: '1.1rem', color: muiTheme.palette.secondary.main }}>
-                    {activeName}
-                </Typography>
+                <Stack direction="row" alignItems="center" gap={1} sx={{ minWidth: 0 }}>
+                    <ActiveIcon fontSize="medium" sx={{ color: accent }} />
+                    <Typography noWrap sx={{ fontWeight: 'bold', fontSize: '1.1rem', color: accent }}>
+                        {activeOption.name}
+                    </Typography>
+                </Stack>
                 <Stack direction="row" alignItems="center" gap={1}>
-                    {activeOption && <Swatches colors={activeOption.swatches} />}
-                    <ExpandMore fontSize="small" sx={{ color: muiTheme.palette.secondary.main }} />
+                    <Swatches colors={activeOption.swatches} />
+                    <ExpandMore fontSize="small" sx={{ color: accent }} />
                 </Stack>
             </Box>
 
@@ -149,6 +176,7 @@ export function SectionColorSelector() {
             >
                 {options.map((option) => {
                     const isSelected = option.id === sectionColor;
+                    const OptionIcon = option.icon;
                     return (
                         <MenuItem
                             key={option.id}
@@ -158,14 +186,19 @@ export function SectionColorSelector() {
                             onMouseLeave={() => setPreviewSectionColor(null)}
                             onClick={() => handleSelect(option.id)}
                         >
-                            <ListItemIcon sx={{ minWidth: 28 }}>
-                                {isSelected ? <Check fontSize="small" /> : null}
+                            <ListItemIcon sx={{ minWidth: 32, color: isSelected ? accent : 'inherit' }}>
+                                <OptionIcon fontSize="small" />
                             </ListItemIcon>
                             <ListItemText
                                 primary={option.name}
                                 primaryTypographyProps={{ fontWeight: isSelected ? 700 : 500 }}
                             />
-                            <Swatches colors={option.swatches} />
+                            <Stack direction="row" alignItems="center" gap={1}>
+                                <Swatches colors={option.swatches} />
+                                <Check
+                                    sx={{ fontSize: 18, color: accent, visibility: isSelected ? 'visible' : 'hidden' }}
+                                />
+                            </Stack>
                         </MenuItem>
                     );
                 })}
