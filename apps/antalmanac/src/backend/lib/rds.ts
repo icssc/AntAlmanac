@@ -304,17 +304,18 @@ export class RDS {
                 return null;
             }
 
-            const sectionResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.id, scheduleId))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-            const customEventResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.id, scheduleId))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+            const [sectionResults, customEventResults] = await Promise.all([
+                tx
+                    .select()
+                    .from(schedules)
+                    .where(eq(schedules.id, scheduleId))
+                    .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+                tx
+                    .select()
+                    .from(schedules)
+                    .where(eq(schedules.id, scheduleId))
+                    .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
+            ]);
 
             const scheduleArray = RDS.aggregateUserData(sectionResults, customEventResults);
             const result = scheduleArray[0];
@@ -397,17 +398,18 @@ export class RDS {
 
             const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
 
-            const sectionResults = await tx
-                .select()
-                .from(schedules)
-                .where(sharedCondition)
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-            const customEventResults = await tx
-                .select()
-                .from(schedules)
-                .where(sharedCondition)
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+            const [sectionResults, customEventResults] = await Promise.all([
+                tx
+                    .select()
+                    .from(schedules)
+                    .where(sharedCondition)
+                    .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+                tx
+                    .select()
+                    .from(schedules)
+                    .where(sharedCondition)
+                    .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
+            ]);
 
             const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
