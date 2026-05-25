@@ -1,5 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { getRenamedCoursesIdentifiers } from '$src/lib/courseRenames';
+import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
 import { QuarterSchema, WebsocSearchInputKeysSchema, type CourseInfo } from '@packages/antalmanac-types';
 import { WebsocSearchInputSchema, type WebsocSearchInput } from '@packages/antalmanac-types';
 import type {

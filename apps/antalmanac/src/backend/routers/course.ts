@@ -1,5 +1,6 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { getRenamedCoursesIdentifiers } from '$src/lib/courseRenames';
+import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
+import { AAPIError } from '@packages/anteater-api/client';
 import type { Course, CoursesBatchAPIResult } from '@packages/anteater-api/types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -15,8 +16,13 @@ const courseRouter = router({
             )) {
                 try {
                     return await aapiClient.courses.get(id);
-                } catch {
-                    // course not found under this id — try predecessor
+                } catch (e) {
+                    // AAPI returns 404 when the courseId does not exist — try predecessor names.
+                    if (e instanceof AAPIError && e.status === 404) {
+                        continue;
+                    }
+
+                    throw e;
                 }
             }
 

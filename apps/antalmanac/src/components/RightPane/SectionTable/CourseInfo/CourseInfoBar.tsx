@@ -2,7 +2,7 @@ import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
-import { getRenamedCoursesIdentifiers, getRenamedCoursesLabel } from '$lib/courseRenames';
+import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { InfoOutlined } from '@mui/icons-material';
 import { Box, Button, Card, CardContent, CardHeader, Divider, Popover, Skeleton, Typography } from '@mui/material';
 import type { PrerequisiteTree } from '@packages/anteater-api/types';
@@ -60,32 +60,23 @@ export const CourseInfoBar = ({
     const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
     const fetchCourseInfo = async () => {
-        for (const { department, courseNumber: renamedCourseNumber } of getRenamedCoursesIdentifiers(
-            deptCode,
-            courseNumber
-        )) {
-            const id = department.replaceAll(' ', '') + renamedCourseNumber;
-            try {
-                const res = await trpc.course.get.query({ id });
-                setCourseInfo({
-                    id: res.id,
-                    department: res.department,
-                    courseNumber: res.courseNumber,
-                    title: res.title,
-                    prerequisite_tree: res.prerequisiteTree,
-                    prerequisite_list: res.prerequisites.map((x) => x.id),
-                    prerequisite_text: res.prerequisiteText,
-                    prerequisite_for: res.dependencies.map((x) => x.id),
-                    description: res.description,
-                    ge_list: res.geList.join(', '),
-                });
-                return;
-            } catch {
-                // course not found under this id — try predecessor
-            }
+        try {
+            const res = await trpc.course.get.query({ department: deptCode, courseNumber });
+            setCourseInfo({
+                id: res.id,
+                department: res.department,
+                courseNumber: res.courseNumber,
+                title: res.title,
+                prerequisite_tree: res.prerequisiteTree,
+                prerequisite_list: res.prerequisites.map((x) => x.id),
+                prerequisite_text: res.prerequisiteText,
+                prerequisite_for: res.dependencies.map((x) => x.id),
+                description: res.description,
+                ge_list: res.geList.join(', '),
+            });
+        } catch {
+            setCourseInfo(noCourseInfo);
         }
-
-        setCourseInfo(noCourseInfo);
     };
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {

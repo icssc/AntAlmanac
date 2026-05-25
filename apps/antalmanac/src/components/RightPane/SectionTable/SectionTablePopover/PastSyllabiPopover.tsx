@@ -1,7 +1,7 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
-import { getRenamedCoursesLabel } from '$lib/courseRenames';
+import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { OpenInNew } from '@mui/icons-material';
 import {
     Card,

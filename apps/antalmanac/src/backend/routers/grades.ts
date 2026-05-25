@@ -1,5 +1,6 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { getRenamedCoursesIdentifiers, mergeAggregateGrades } from '$src/lib/courseRenames';
+import { getRenamedCoursesIdentifiers, mergeAggregateGrades } from '$src/lib/renames/utils';
+import { isNotEmpty } from '$src/lib/utils';
 import { GradesGeSchema } from '@packages/antalmanac-types';
 import type { AggregateGrades, AggregateGradesByOffering } from '@packages/anteater-api/types';
 import { z } from 'zod';
@@ -35,7 +36,11 @@ const gradesRouter = router({
                 )
             );
 
-            return mergeAggregateGrades(results as [NonNullable<AggregateGrades>, ...NonNullable<AggregateGrades>[]]);
+            if (!isNotEmpty(results)) {
+                return aapiClient.grades.aggregate(input);
+            }
+
+            return mergeAggregateGrades(results);
         }),
 
     // Mutation so tRPC doesn't batch it with concurrent WebSOC queries.

@@ -1,5 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { getRenamedCoursesIdentifiers } from '$src/lib/courseRenames';
+import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
 import { WebsocSectionTypeSchema } from '@packages/antalmanac-types';
 import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
 import { z } from 'zod';
