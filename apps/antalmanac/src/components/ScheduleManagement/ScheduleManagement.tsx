@@ -36,6 +36,7 @@ export function ScheduleManagement() {
      * Ref to the scrollable container with all of the tabs-content within it.
      */
     const ref = useRef<HTMLDivElement>(null);
+    const hasAppliedInitialTab = useRef(false);
 
     // Save the current scroll position to the store.
     const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
@@ -61,49 +62,49 @@ export function ScheduleManagement() {
         [activeTab, setActiveTabValue]
     );
 
+    // Sync tab store when the route changes (back/forward, /added, /map).
+    useEffect(() => {
+        if (tab === 'added') {
+            hasAppliedInitialTab.current = true;
+            setActiveTab('added');
+            return;
+        }
+        if (tab === 'map') {
+            hasAppliedInitialTab.current = true;
+            setActiveTab('map');
+            return;
+        }
+        if (hasAppliedInitialTab.current) {
+            setActiveTab('search');
+        }
+    }, [tab, setActiveTab]);
+
+    // Sets a smart default on mount
     useEffect(() => {
         if (tab) {
-            switch (tab) {
-                case 'added':
-                    setActiveTab('added');
-                    break;
-                case 'map':
-                    setActiveTab('map');
-                    break;
-            }
-
             return;
         }
 
         if (shouldSearchPlannerFromParams()) {
             setActiveTab('search');
-            return;
-        }
-
-        const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-        const hasLocalScheduleData = () =>
-            AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
-
-        if (hasSearchParams(formData) || manualSearchEnabled) {
+        } else if (hasSearchParams(formData) || manualSearchEnabled) {
             setActiveTab('search');
-            return;
-        }
+        } else if (!isMobile) {
+            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
+            setActiveTab(hasSession ? 'added' : 'search');
+        } else {
+            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
+            const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
-        if (!isMobile) {
-            if (!hasSession) {
-                setActiveTab('search');
+            if (hasSession || hasLocalScheduleData) {
+                setActiveTab('calendar');
             } else {
-                setActiveTab('added');
+                setActiveTab('search');
             }
-            return;
         }
 
-        if (hasSession || hasLocalScheduleData()) {
-            setActiveTab('calendar');
-            return;
-        }
+        hasAppliedInitialTab.current = true;
 
-        setActiveTab('search');
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isMobile, setActiveTab]);
