@@ -1,16 +1,16 @@
-import { changeCurrentSchedule } from '$actions/AppStoreActions';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import { SortableList } from '$components/drag-and-drop/SortableList';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -18,26 +18,13 @@ import { useShallow } from 'zustand/react/shallow';
 const scheduleSelectButtonMinWidth = 100;
 const scheduleSelectButtonMaxWidth = 150;
 
-type EventContext = {
-    triggeredBy?: string;
-};
-
 type ScheduleItem = {
     id: number;
     name: string;
 };
 
-function getScheduleItems(items?: string[]): ScheduleItem[] {
-    const scheduleNames: string[] = items || AppStore.getScheduleNames();
+function getScheduleItems(scheduleNames: string[]): ScheduleItem[] {
     return scheduleNames.map((name, index) => ({ id: index, name }));
-}
-
-function handleScheduleChange(index: number, postHog?: PostHog) {
-    logAnalytics(postHog, {
-        category: analyticsEnum.calendar,
-        action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
-    });
-    changeCurrentSchedule(index);
 }
 
 /**
@@ -47,15 +34,15 @@ function handleScheduleChange(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
-    const { openScheduleSelect, setOpenScheduleSelect } = useScheduleComponentsToggleStore(
-        useShallow((state) => ({
-            openScheduleSelect: state.openScheduleSelect,
-            setOpenScheduleSelect: state.setOpenScheduleSelect,
-        }))
+    const scheduleSource = useScheduleViewSource();
+    const [openScheduleSelect, openScheduleSelectScope, setOpenScheduleSelect] = useScheduleComponentsToggleStore(
+        useShallow((state) => [state.openScheduleSelect, state.openScheduleSelectScope, state.setOpenScheduleSelect])
     );
+    const isOpen = openScheduleSelect && openScheduleSelectScope === scheduleSource.scope;
 
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-    const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => scheduleSource.getCurrentScheduleIndex());
+    const [scheduleMapping, setScheduleMapping] = useState(() => getScheduleItems(scheduleSource.getScheduleNames()));
+
     const { fallbackMode, getFallbackScheduleNames } = useFallbackStore(
         useShallow((store) => ({
             fallbackMode: store.fallbackMode,
@@ -65,56 +52,40 @@ export function SelectSchedulePopover() {
     const fallbackScheduleMapping = getScheduleItems(getFallbackScheduleNames());
 
     const anchorElementRef = useRef(null);
-
     const postHog = usePostHog();
 
     const handleClick = useCallback(() => {
-        setOpenScheduleSelect(true);
-    }, [setOpenScheduleSelect]);
+        setOpenScheduleSelect(true, scheduleSource.scope);
+    }, [scheduleSource.scope, setOpenScheduleSelect]);
 
     const handleClose = useCallback(() => {
         setOpenScheduleSelect(false);
     }, [setOpenScheduleSelect]);
 
-    const handleScheduleIndexChange = useCallback(() => {
-        setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
-    }, []);
+    useEffect(() => {
+        const syncFromSource = () => {
+            setCurrentScheduleIndex(scheduleSource.getCurrentScheduleIndex());
+            setScheduleMapping(getScheduleItems(scheduleSource.getScheduleNames()));
+        };
+
+        return scheduleSource.subscribe(syncFromSource);
+    }, [scheduleSource]);
+
+    const handleScheduleChange = (index: number) => {
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
+            action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
+        });
+        scheduleSource.changeCurrentSchedule(index);
+    };
 
     const handleSortableListChange = (schedules: ScheduleItem[], activeIndex: number, overIndex: number) => {
         setScheduleMapping(schedules);
         AppStore.reorderSchedule(activeIndex, overIndex);
     };
 
-    useEffect(() => {
-        AppStore.on('addedCoursesChange', handleScheduleIndexChange);
-        AppStore.on('customEventsChange', handleScheduleIndexChange);
-        AppStore.on('colorChange', handleScheduleIndexChange);
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-
-        return () => {
-            AppStore.off('addedCoursesChange', handleScheduleIndexChange);
-            AppStore.off('customEventsChange', handleScheduleIndexChange);
-            AppStore.off('colorChange', handleScheduleIndexChange);
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-        };
-    }, [handleScheduleIndexChange]);
-
-    useEffect(() => {
-        const handleScheduleNamesChange = (context?: EventContext) => {
-            if (context?.triggeredBy === 'reorder') {
-                return;
-            }
-            setScheduleMapping(getScheduleItems());
-        };
-
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, []);
-
     const scheduleMappingToUse = fallbackMode ? fallbackScheduleMapping : scheduleMapping;
+    const disableActionButtons = fallbackMode || scheduleSource.readonly;
 
     return (
         <Box>
@@ -156,7 +127,7 @@ export function SelectSchedulePopover() {
             </Tooltip>
 
             <Popover
-                open={openScheduleSelect}
+                open={isOpen}
                 anchorEl={anchorElementRef.current}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
@@ -177,7 +148,7 @@ export function SelectSchedulePopover() {
                                             flexGrow: 1,
                                         }}
                                     >
-                                        <SortableList.DragHandle disabled={fallbackMode} />
+                                        <SortableList.DragHandle disabled={disableActionButtons} />
                                         <Box flexGrow={1}>
                                             <Tooltip
                                                 title={item.name}
@@ -210,7 +181,7 @@ export function SelectSchedulePopover() {
                                                                 ? theme.palette.action.selected
                                                                 : undefined,
                                                     }}
-                                                    onClick={() => handleScheduleChange(index, postHog)}
+                                                    onClick={() => handleScheduleChange(index)}
                                                 >
                                                     <Typography
                                                         overflow="hidden"
@@ -224,18 +195,24 @@ export function SelectSchedulePopover() {
                                             </Tooltip>
                                         </Box>
 
-                                        <Box display="flex" alignItems="center" gap={0.5}>
-                                            <CopyScheduleButton index={index} />
-                                            <RenameScheduleButton index={index} />
-                                            <DeleteScheduleButton index={index} />
-                                        </Box>
+                                        {!disableActionButtons && (
+                                            <Box display="flex" alignItems="center" gap={0.5}>
+                                                <CopyScheduleButton index={index} />
+                                                <RenameScheduleButton index={index} />
+                                                <DeleteScheduleButton index={index} />
+                                            </Box>
+                                        )}
                                     </Box>
                                 </SortableList.Item>
                             );
                         }}
                     />
-                    <Box marginY={1} />
-                    <AddScheduleButton />
+                    {!disableActionButtons && (
+                        <>
+                            <Box marginY={1} />
+                            <AddScheduleButton />
+                        </>
+                    )}
                 </Box>
             </Popover>
         </Box>

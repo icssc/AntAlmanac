@@ -1,23 +1,32 @@
 'use client';
 
 import { CourseCalendarEvent, isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { Popover } from '@mui/material';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-interface CalendarEventPopoverProps {
-    scheduleNames: string[];
-}
-
-export function CalendarEventPopover({ scheduleNames }: CalendarEventPopoverProps) {
+export function CalendarEventPopover() {
+    const scheduleSource = useScheduleViewSource();
     const [anchorEl, selectedEvent, setSelectedEvent] = useSelectedEventStore(
         useShallow((state) => [state.selectedEventAnchorEl, state.selectedEvent, state.setSelectedEvent])
     );
 
+    const [scheduleNames, setScheduleNames] = useState(() => scheduleSource.getScheduleNames());
+
     const handleClosePopover = useCallback(() => {
         setSelectedEvent(null, null);
     }, [setSelectedEvent]);
+
+    useEffect(() => {
+        const updateScheduleNames = () => {
+            setScheduleNames(scheduleSource.getScheduleNames());
+        };
+
+        updateScheduleNames();
+        return scheduleSource.subscribe(updateScheduleNames);
+    }, [scheduleSource]);
 
     if (!selectedEvent || isSkeletonEvent(selectedEvent)) {
         return null;

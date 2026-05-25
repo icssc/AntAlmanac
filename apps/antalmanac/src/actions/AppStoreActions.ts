@@ -254,6 +254,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
 
             useScheduleComponentsToggleStore.setState({
                 openScheduleSelect: true,
+                openScheduleSelectScope: 'home',
                 openLoadingSchedule: false,
             });
 

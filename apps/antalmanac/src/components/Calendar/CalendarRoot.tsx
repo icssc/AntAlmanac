@@ -16,8 +16,8 @@ import {
     removeLocalStorageSkeletonBlueprint,
     setLocalStorageSkeletonBlueprint,
 } from '$lib/localStorage';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { getDefaultTerm } from '$lib/term';
-import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -102,16 +102,22 @@ function createSkeletonEvents(color: string): SkeletonEvent[] {
 }
 
 export const ScheduleCalendar = memo(() => {
+    const scheduleSource = useScheduleViewSource();
+
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
-    const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
-    const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
-        AppStore.schedule.getCurrentCustomEvents()
+    const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() =>
+        scheduleSource.schedule.getCurrentCourses()
     );
-    const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
-    const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
-    const [currentScheduleId, setCurrentScheduleId] = useState(() => AppStore.getCurrentScheduleId());
-    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+    const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
+        scheduleSource.schedule.getCurrentCustomEvents()
+    );
+    const [eventsInCalendar, setEventsInCalendar] = useState(() => scheduleSource.getEventsInCalendar());
+    const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() =>
+        scheduleSource.getFinalEventsInCalendar()
+    );
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => scheduleSource.getCurrentScheduleIndex());
+    const [currentScheduleId, setCurrentScheduleId] = useState(() => scheduleSource.getCurrentScheduleId());
+    const [scheduleNames, setScheduleNames] = useState(() => scheduleSource.getScheduleNames());
 
     const theme = useTheme();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
@@ -127,11 +133,6 @@ export const ScheduleCalendar = memo(() => {
 
     const isMobile = useIsMobile();
 
-    const onlyCourseEvents = useMemo(
-        () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
-        [eventsInCalendar]
-    );
-
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         const raw = showFinalsSchedule
             ? hoveredCalendarizedFinal
@@ -144,6 +145,7 @@ export const ScheduleCalendar = memo(() => {
         return raw.filter((e) => {
             if ('isCustomEvent' in e && e.isCustomEvent) return true;
             if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
+            if (!scheduleSource.appliesCourseVisibility) return true;
             const visibility: VisibilityState =
                 visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? VisibilityState.Visible;
             return visibility !== VisibilityState.Disappeared;
@@ -156,6 +158,7 @@ export const ScheduleCalendar = memo(() => {
         showFinalsSchedule,
         currentScheduleId,
         visibilityMap,
+        scheduleSource.appliesCourseVisibility,
     ]);
 
     useEffect(() => {
@@ -306,7 +309,7 @@ export const ScheduleCalendar = memo(() => {
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h a';
 
-    const finalsTerm = hoveredCalendarizedFinal?.term ?? onlyCourseEvents[0]?.term;
+    const finalsTerm = hoveredCalendarizedFinal?.term ?? currentScheduleCourses[0]?.term;
     const finalsDate = (finalsTerm ?? getDefaultTerm()).finalsStart;
 
     const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
@@ -346,33 +349,19 @@ export const ScheduleCalendar = memo(() => {
     );
 
     useEffect(() => {
-        const updateEventsInCalendar = () => {
-            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
-            setCurrentScheduleId(AppStore.getCurrentScheduleId());
-            setEventsInCalendar(AppStore.getEventsInCalendar());
-            setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
-            setCurrentScheduleCourses(AppStore.schedule.getCurrentCourses());
-            setCurrentScheduleCustomEvents(AppStore.schedule.getCurrentCustomEvents());
+        const syncFromSource = () => {
+            setCurrentScheduleIndex(scheduleSource.getCurrentScheduleIndex());
+            setCurrentScheduleId(scheduleSource.getCurrentScheduleId());
+            setEventsInCalendar(scheduleSource.getEventsInCalendar());
+            setFinalEventsInCalendar(scheduleSource.getFinalEventsInCalendar());
+            setCurrentScheduleCourses(scheduleSource.schedule.getCurrentCourses());
+            setCurrentScheduleCustomEvents(scheduleSource.schedule.getCurrentCustomEvents());
+            setScheduleNames(scheduleSource.getScheduleNames());
         };
 
-        const updateScheduleNames = () => {
-            setScheduleNames(AppStore.getScheduleNames());
-        };
-
-        AppStore.on('addedCoursesChange', updateEventsInCalendar);
-        AppStore.on('customEventsChange', updateEventsInCalendar);
-        AppStore.on('colorChange', updateEventsInCalendar);
-        AppStore.on('currentScheduleIndexChange', updateEventsInCalendar);
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
-
-        return () => {
-            AppStore.off('addedCoursesChange', updateEventsInCalendar);
-            AppStore.off('customEventsChange', updateEventsInCalendar);
-            AppStore.off('colorChange', updateEventsInCalendar);
-            AppStore.off('currentScheduleIndexChange', updateEventsInCalendar);
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
-        };
-    }, []);
+        syncFromSource();
+        return scheduleSource.subscribe(syncFromSource);
+    }, [scheduleSource]);
 
     return (
         <Box
@@ -404,7 +393,7 @@ export const ScheduleCalendar = memo(() => {
 
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
                 <TbaCalendarCard />
-                <CalendarEventPopover scheduleNames={scheduleNames} />
+                <CalendarEventPopover />
 
                 <Backdrop
                     open={showEmptyState}
