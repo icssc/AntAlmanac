@@ -42,33 +42,37 @@ export function mergeAggregateGrades(
 ): NonNullable<AggregateGrades> {
     if (results.length === 1) return results[0];
 
-    type GradeDistribution = NonNullable<AggregateGrades>['gradeDistribution'];
+    type GradeDistribution = NonNullable<NonNullable<AggregateGrades>['gradeDistribution']>;
     type GradeCountKey = Exclude<keyof GradeDistribution, 'averageGPA'>;
 
-    const countKeys = (Object.keys(results[0].gradeDistribution) as Array<keyof GradeDistribution>).filter(
-        (k): k is GradeCountKey => k !== 'averageGPA'
+    const gradeCountValue = (distribution: GradeDistribution, key: GradeCountKey): number => {
+        const value = distribution[key];
+        return typeof value === 'number' ? value : 0;
+    };
+
+    const countKeys = Object.keys(results[0].gradeDistribution).filter(
+        (key): key is GradeCountKey => key !== 'averageGPA'
     );
 
-    const mergedCounts = Object.fromEntries(
-        countKeys.map((key) => [key, results.reduce((sum, r) => sum + ((r.gradeDistribution[key] as number) ?? 0), 0)])
-    ) as Omit<GradeDistribution, 'averageGPA'>;
+    const { averageGPA: _firstAverageGpa, ...mergedCounts } = results[0].gradeDistribution;
+    for (const key of countKeys) {
+        mergedCounts[key] = results.reduce((sum, r) => sum + gradeCountValue(r.gradeDistribution, key), 0);
+    }
 
     let weightedGpaSum = 0;
     let weightedGpaCount = 0;
     for (const r of results) {
         const gpa = r.gradeDistribution.averageGPA;
         if (gpa == null) continue;
-        const count = countKeys.reduce((s, k) => s + ((r.gradeDistribution[k as GradeCountKey] as number) ?? 0), 0);
+        const count = countKeys.reduce((sum, key) => sum + gradeCountValue(r.gradeDistribution, key), 0);
         weightedGpaSum += gpa * count;
         weightedGpaCount += count;
     }
 
     const averageGPA = weightedGpaCount > 0 ? weightedGpaSum / weightedGpaCount : null;
-    const totalStudents = countKeys.reduce((sum, k) => sum + (mergedCounts[k] as number), 0);
 
     return {
-        ...results[0],
+        sectionList: results.flatMap((r) => r.sectionList),
         gradeDistribution: { ...mergedCounts, averageGPA },
-        ...(totalStudents > 0 ? { numStudents: totalStudents } : {}),
-    } as NonNullable<AggregateGrades>;
+    };
 }
