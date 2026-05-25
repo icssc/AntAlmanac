@@ -1,7 +1,7 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AATerm, termData } from '$lib/term';
-import { postHog } from '$providers/PostHog';
+import { postHog } from '$providers/AppPostHogProvider';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { create } from 'zustand';

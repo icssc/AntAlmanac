@@ -9,7 +9,7 @@ export function isNativeIosApp(): boolean {
 }
 
 /**
- * OAuth redirect URI used when signing in from inside the native iOS wrapper.
+ * Gets the OAuth redirect URI used when signing in from inside the native iOS wrapper.
  *
  * This is a Universal Link (an https URL backed by the AASA file at
  * https://antalmanac.com/.well-known/apple-app-site-association) rather than a
@@ -22,4 +22,6 @@ export function isNativeIosApp(): boolean {
  * (auth.icssc.club) for the AntAlmanac OAuth client, and the path must be
  * listed in the AASA file's `applinks` components.
  */
-export const NATIVE_IOS_REDIRECT_URI = 'https://antalmanac.com/auth/native';
+export function getNativeIosRedirectUri(baseUrl: string) {
+    return `${baseUrl}/auth/native`;
+}

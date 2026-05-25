@@ -65,7 +65,8 @@ const websocRouter = router({
     getMultiple: aapiProcedure
         .input(z.object({ params: z.array(WebsocSearchInputSchema) }))
         .query(
-            ({ input }): Promise<WebsocAPIResponse> => Promise.all(input.params.map(queryWebsoc)).then(unionWebsocResponses)
+            ({ input }): Promise<WebsocAPIResponse> =>
+                Promise.all(input.params.map(queryWebsoc)).then(unionWebsocResponses)
         ),
 
     getCourseInfo: aapiProcedure

@@ -1,14 +1,18 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
+import { getSignInUrl } from '$lib/auth/authActions';
+import { Provider } from '$lib/auth/authTypes';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
+import { isNativeIosApp } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { VisibilityState } from '@packages/antalmanac-types';
 import type {
     AATerm,
     CourseDetails,
@@ -21,12 +25,24 @@ import type { WebsocSection } from '@packages/anteater-api/types';
 import { TRPCClientError } from '@trpc/client';
 import type { PostHog } from 'posthog-js/react';
 
+export type UserData = Awaited<ReturnType<typeof trpc.schedule.get.query>>;
+
 interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
 }
 
 interface AutoSaveScheduleOptions {
+    postHog?: PostHog;
+}
+
+interface LoadScheduleOptions {
+    prefetched: UserData | null;
+    postHog?: PostHog;
+}
+
+interface LoginUserOptions {
+    silent?: boolean;
     postHog?: PostHog;
 }
 
@@ -82,8 +98,22 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
+function enrichSaveStateWithVisibility(saveState: ReturnType<typeof AppStore.schedule.getScheduleAsSaveState>) {
+    const visibilityMap = useHiddenCoursesStore.getState().visibilityMap;
+    return {
+        ...saveState,
+        schedules: saveState.schedules.map((schedule) => ({
+            ...schedule,
+            courses: schedule.courses.map((course) => ({
+                ...course,
+                visibility: visibilityMap[schedule.id!]?.[course.sectionCode] ?? VisibilityState.Visible,
+            })),
+        })),
+    };
+}
+
 export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
-    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+    const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
 
     if (
         isEmptySchedule(scheduleSaveState.schedules) &&
@@ -130,10 +160,8 @@ export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
     }
 };
 
-export async function autoSaveSchedule(options: AutoSaveScheduleOptions) {
-    const { postHog } = options;
-
-    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
+    const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
     try {
         const result = await trpc.schedule.save.mutate({
             userData: scheduleSaveState,
@@ -189,8 +217,8 @@ export const mergeShortCourseSchedules = (
 };
 
 const handleScheduleImport = async (username: string, skipImportedCheck = false, postHog?: PostHog) => {
-    const session = useSessionStore.getState();
-    if (!session.sessionIsValid) {
+    const sessionStore = useSessionStore.getState();
+    if (!sessionStore.sessionIsValid) {
         throw new Error("Invalid session: User isn't logged in.");
     }
 
@@ -210,7 +238,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
-        scheduleComponentsToggleStore.setState({
+        useScheduleComponentsToggleStore.setState({
             openImportDialog: false,
             openLoadingSchedule: true,
         });
@@ -224,7 +252,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
 
             openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
-            scheduleComponentsToggleStore.setState({
+            useScheduleComponentsToggleStore.setState({
                 openScheduleSelect: true,
                 openLoadingSchedule: false,
             });
@@ -322,11 +350,6 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
     }
 };
 
-interface LoadScheduleOptions {
-    prefetched: Awaited<ReturnType<typeof trpc.schedule.get.query>> | null;
-    postHog?: PostHog;
-}
-
 export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions) => {
     try {
         const userDataResponse = prefetched ?? (await trpc.schedule.get.query());
@@ -347,6 +370,7 @@ export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions)
             analyticsErrorMessage = 'Schedule data not found';
             openSnackbar('error', `Couldn't find schedules for this account`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+            useHiddenCoursesStore.getState().hydrateFromSchedules(scheduleSaveState.schedules);
             analyticsIdentifyUser(postHog, userId);
             openSnackbar('success', `Schedule loaded.`);
             logAnalytics(postHog, {
@@ -388,34 +412,33 @@ const cacheSchedule = () => {
     }
 };
 
-export const loginUser = async ({
-    provider = 'google',
-    postHog,
-}: { provider?: 'google' | 'apple'; postHog?: PostHog } = {}) => {
+/**
+ * @param options.silent Sign in silently with `prompt: none` and suppress errors?
+ */
+export const loginUser = async (provider: Provider, { silent = false, postHog }: LoginUserOptions = {}) => {
     try {
-        const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
-        const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-        const authUrl = await trpc.auth.getAuthUrl.query({
-            ...(redirectUri ? { redirectUri } : {}),
-            returnTo,
-            provider,
+        const authUrl = await getSignInUrl(provider, {
+            authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
+            returnUrl: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+            isNativeIosApp: isNativeIosApp(),
         });
-        if (authUrl) {
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SIGN_IN,
-            });
-            cacheSchedule();
-            window.location.href = authUrl.toString();
-        }
+
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SIGN_IN,
+        });
+        cacheSchedule();
+        window.location.href = authUrl;
     } catch (error) {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SIGN_IN_FAIL,
             error: getErrorMessage(error),
         });
-        console.error('Error during login initiation', error);
-        openSnackbar('error', 'Error during login initiation. Please Try Again.');
+        if (!silent) {
+            console.error('Error during login initiation', error);
+            openSnackbar('error', 'Error during login initiation. Please Try Again.');
+        }
     }
 };
 

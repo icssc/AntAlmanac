@@ -15,7 +15,7 @@ import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
 import { AATerm, CustomEventId } from '@packages/antalmanac-types';
 import { WebsocSectionFinalExam } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Event } from 'react-big-calendar';
 
 interface CommonCalendarEvent extends Event {
@@ -95,20 +95,6 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const postHog = usePostHog();
-
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                closePopover();
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [closePopover]);
 
     if (!selectedEvent.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
