@@ -19,7 +19,7 @@ import {
     YAxis,
 } from 'recharts';
 
-import { PopoverSubheader } from './PopoverSubheader';
+import { SectionTablePopoverSubheader } from './SectionTablePopoverSubheader';
 
 interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
@@ -127,7 +127,9 @@ export function EnrollmentHistoryPopover({
         <Card>
             <CardHeader
                 title={title}
-                subheader={<PopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
+                subheader={
+                    <SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />
+                }
                 action={headerAction}
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },

@@ -15,7 +15,7 @@ import type { AggregateGrades } from '@packages/anteater-api/types';
 import { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
 
-import { PopoverSubheader } from './PopoverSubheader';
+import { SectionTablePopoverSubheader } from './SectionTablePopoverSubheader';
 
 type GradeView = 'instructor' | 'overall';
 
@@ -100,7 +100,9 @@ export function GradesPopover(props: GradesPopoverProps) {
         <Card>
             <CardHeader
                 title={title}
-                subheader={<PopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
+                subheader={
+                    <SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />
+                }
                 action={
                     <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
                         <ToggleButton

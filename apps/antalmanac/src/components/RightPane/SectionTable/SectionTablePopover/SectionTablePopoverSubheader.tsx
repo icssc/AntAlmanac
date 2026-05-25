@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 
-interface PopoverSubheaderProps {
+interface SectionTablePopoverSubheaderProps {
     subheader: ReactNode;
     predecessorLabel: string | null;
 }
 
 /** Shared CardHeader subheader for historical-data popovers (GPA, enrollment, syllabi). */
-export function PopoverSubheader({ subheader, predecessorLabel }: PopoverSubheaderProps) {
+export function SectionTablePopoverSubheader({ subheader, predecessorLabel }: SectionTablePopoverSubheaderProps) {
     return (
         <>
             {subheader || (!predecessorLabel && <>&nbsp;</>)}

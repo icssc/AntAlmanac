@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import { useMemo } from 'react';
 
-import { PopoverSubheader } from './PopoverSubheader';
+import { SectionTablePopoverSubheader } from './SectionTablePopoverSubheader';
 
 interface PastSyllabiPopoverProps {
     deptCode: string;
@@ -57,7 +57,9 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
         <Card>
             <CardHeader
                 title={title}
-                subheader={<PopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
+                subheader={
+                    <SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />
+                }
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                 }}
