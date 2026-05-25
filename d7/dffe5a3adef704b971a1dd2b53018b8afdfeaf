@@ -1,0 +1,29 @@
+apps/antalmanac/src/components/Header/Header.tsx
+  s_b065e03900c14d::t_04cf65e756cb4f 3,80
+apps/antalmanac/src/components/Header/Friends/FriendAvatar.tsx
+  s_4ba92ab1ab16c6::t_cb933b240b9795 14-15,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "d7dffe5a3adef704b971a1dd2b53018b8afdfeaf",
+  "prompts": {},
+  "sessions": {
+    "s_4ba92ab1ab16c6": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "572ed0ad-9ab7-4f25-9df1-283b8c04bbae",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    },
+    "s_b065e03900c14d": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "8af43442-d499-4f9d-8793-8f917a07f065",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
