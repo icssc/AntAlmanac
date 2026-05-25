@@ -7,6 +7,7 @@ enum LocalStorageKeys {
     tourHasRun = 'tourHasRun',
     theme = 'theme',
     sectionColor = 'sectionColor',
+    sectionColorAssignments = 'sectionColorAssignments',
     show24HourTime = 'show24HourTime',
     previewMode = 'previewMode',
     autoSave = 'autoSave',
@@ -131,6 +132,15 @@ export function setLocalStorageSectionColor(value: string) {
 
 export function getLocalStorageSectionColor() {
     return window.localStorage.getItem(LSK.sectionColor);
+}
+
+// Helper functions for sectionColorAssignments
+export function setLocalStorageSectionColorAssignments(value: string) {
+    window.localStorage.setItem(LSK.sectionColorAssignments, value);
+}
+
+export function getLocalStorageSectionColorAssignments() {
+    return window.localStorage.getItem(LSK.sectionColorAssignments);
 }
 
 // Helper functions for show24HourTime

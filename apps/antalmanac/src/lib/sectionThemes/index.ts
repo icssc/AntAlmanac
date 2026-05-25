@@ -25,34 +25,83 @@ export function getPalette(theme: SectionColorSetting | string, isDark: boolean)
     return isDark && def.dark ? def.dark : def.light;
 }
 
-/** Primary color (variant 0) of each family in a theme — the colors a fresh course gets. */
+/** Primary color (variant 0) of each family in a theme. */
 export function getPrimaryColors(theme: SectionColorSetting | string, isDark: boolean): string[] {
     return getPalette(theme, isDark).map((family) => family[0]);
 }
 
-/**
- * Pick a color for a course given a palette and the courses already assigned colors.
+/* ------------------------------------------------------------------ *
+ * Theme color assignments
  *
- * Rules (in priority order):
- *   1. Same courseTitle AND same sectionType already assigned → reuse that color.
- *   2. Same courseTitle, different sectionType → use an unused variant in the same family,
- *      based on the closest section by sectionCode.
- *   3. New courseTitle → next unused primary color, wrapping around if all are taken.
+ * A preset theme assigns each course/custom-event a *palette slot* rather than a
+ * concrete hex color, so the same assignment renders correctly in light and dark
+ * mode. A slot is encoded as the string "family:variant" (e.g. "2:0"). A manual
+ * per-section override is stored instead as a raw hex string (e.g. "#ff0000").
+ *
+ * Assignments are keyed by a stable section/custom-event key and persisted, so:
+ *   - deleting a course never reshuffles the colors of the survivors, and
+ *   - a manual tweak lives alongside the theme instead of overwriting the user's
+ *     custom palette.
+ * ------------------------------------------------------------------ */
+
+/** Map of section key -> assignment (either an encoded palette slot or a "#hex" override). */
+export type ThemeAssignmentMap = Record<string, string>;
+
+interface PaletteSlot {
+    family: number;
+    variant: number;
+}
+
+function encodeSlot(slot: PaletteSlot): string {
+    return `${slot.family}:${slot.variant}`;
+}
+
+function isManual(value: string): boolean {
+    return value.startsWith('#');
+}
+
+function parseSlot(value: string): PaletteSlot | null {
+    if (isManual(value)) return null;
+    const [family, variant] = value.split(':').map(Number);
+    if (Number.isNaN(family) || Number.isNaN(variant)) return null;
+    return { family, variant };
+}
+
+/** Resolve a stored assignment value to a concrete hex color using the active palette. */
+export function resolveAssignment(value: string, palette: readonly (readonly string[])[]): string {
+    if (isManual(value)) return value;
+    const slot = parseSlot(value);
+    if (!slot) return palette[0][0];
+    return palette[slot.family]?.[slot.variant] ?? palette[slot.family]?.[0] ?? palette[0][0];
+}
+
+export function courseColorKey(term: unknown, sectionCode: string): string {
+    return `${String(term)}|${sectionCode}`;
+}
+
+export function customEventColorKey(customEventID: unknown): string {
+    return `custom|${String(customEventID)}`;
+}
+
+/**
+ * Choose a palette slot for a course, mirroring the long-standing color logic but in
+ * slot (index) space:
+ *   1. Same courseTitle + sectionType already assigned -> reuse that slot.
+ *   2. Same courseTitle, different sectionType -> same family, next unused variant.
+ *   3. New courseTitle -> next unused family (variant 0), wrapping when exhausted.
  */
-export function pickColor(
+function pickCourseSlot(
     course: ScheduleCourse,
-    assigned: readonly { course: ScheduleCourse; color: string }[],
+    assigned: { course: ScheduleCourse; slot: PaletteSlot }[],
     palette: readonly (readonly string[])[]
-): string {
-    const sameTypeMatch = assigned.find(
+): PaletteSlot {
+    const sameType = assigned.find(
         (a) =>
             a.course.courseTitle === course.courseTitle && a.course.section.sectionType === course.section.sectionType
     );
-    if (sameTypeMatch) return sameTypeMatch.color;
+    if (sameType) return sameType.slot;
 
-    const usedColors = new Set(assigned.map((a) => a.color));
-
-    const sameCourseClosest = assigned
+    const sameCourse = assigned
         .filter((a) => a.course.courseTitle === course.courseTitle)
         .sort(
             (a, b) =>
@@ -60,87 +109,106 @@ export function pickColor(
                 Math.abs(parseInt(b.course.section.sectionCode) - parseInt(course.section.sectionCode))
         )[0];
 
-    if (sameCourseClosest) {
-        const family = palette.find((f) => f.includes(sameCourseClosest.color));
-        const variant = family?.find((c) => !usedColors.has(c));
-        return variant ?? sameCourseClosest.color;
+    if (sameCourse) {
+        const family = sameCourse.slot.family;
+        const usedVariants = new Set(assigned.filter((a) => a.slot.family === family).map((a) => a.slot.variant));
+        const variantCount = palette[family]?.length ?? 1;
+        for (let v = 0; v < variantCount; v++) {
+            if (!usedVariants.has(v)) return { family, variant: v };
+        }
+        return { family, variant: 0 };
     }
 
-    const primaries = palette.map((f) => f[0]);
-    const unusedPrimary = primaries.find((c) => !usedColors.has(c));
-    if (unusedPrimary) return unusedPrimary;
-    return primaries[assigned.length % primaries.length];
+    const usedFamilies = new Set(assigned.map((a) => a.slot.family));
+    for (let f = 0; f < palette.length; f++) {
+        if (!usedFamilies.has(f)) return { family: f, variant: 0 };
+    }
+    return { family: assigned.length % palette.length, variant: 0 };
 }
 
 /**
- * Compute themed colors for every course, deterministically based on schedule order.
- * Returns an array aligned with `courses` (same length, same order).
+ * Fill in assignments for any course / custom event that doesn't already have one,
+ * preserving existing assignments (so survivors keep their colors) and dropping keys
+ * for sections no longer present. Returns the next map and whether it changed.
  */
-export function resolveCourseColors(
+export function computeAssignments(
+    previous: ThemeAssignmentMap,
     courses: readonly ScheduleCourse[],
-    theme: SectionThemeId,
-    isDark: boolean
-): string[] {
-    const palette = getPalette(theme, isDark);
-    const assigned: { course: ScheduleCourse; color: string }[] = [];
-    for (const course of courses) {
-        const color = pickColor(course, assigned, palette);
-        assigned.push({ course, color });
-    }
-    return assigned.map((a) => a.color);
-}
+    customEventIds: readonly (string | number)[],
+    palette: readonly (readonly string[])[]
+): { map: ThemeAssignmentMap; changed: boolean } {
+    const next: ThemeAssignmentMap = {};
+    const courseKeys = courses.map((course) => courseColorKey(course.term, course.section.sectionCode));
+    const customKeys = customEventIds.map(customEventColorKey);
 
-function courseColorMap(courses: readonly ScheduleCourse[], theme: SectionThemeId, isDark: boolean) {
-    const colors = resolveCourseColors(courses, theme, isDark);
-    const map = new Map<string, string>();
-    courses.forEach((course, i) => {
-        map.set(courseKey(course), colors[i]);
+    // Carry over existing assignments for keys that are still present.
+    [...courseKeys, ...customKeys].forEach((key) => {
+        if (previous[key] != null) next[key] = previous[key];
     });
-    return map;
-}
 
-function courseKey(course: { term: unknown; section: { sectionCode: string } }) {
-    return `${String(course.term)}|${course.section.sectionCode}`;
-}
+    // Seed grouping/distinctness from carried-over palette assignments.
+    const assignedCourses: { course: ScheduleCourse; slot: PaletteSlot }[] = [];
+    courses.forEach((course) => {
+        const value = next[courseColorKey(course.term, course.section.sectionCode)];
+        const slot = value != null ? parseSlot(value) : null;
+        if (slot) assignedCourses.push({ course, slot });
+    });
 
-function courseEventKey(event: { term: unknown; sectionCode: string }) {
-    return `${String(event.term)}|${event.sectionCode}`;
+    courses.forEach((course) => {
+        const key = courseColorKey(course.term, course.section.sectionCode);
+        if (next[key] != null) return;
+        const slot = pickCourseSlot(course, assignedCourses, palette);
+        next[key] = encodeSlot(slot);
+        assignedCourses.push({ course, slot });
+    });
+
+    // Custom events: one primary color each, cycling through unused families.
+    customEventIds.forEach((id, index) => {
+        const key = customEventColorKey(id);
+        if (next[key] != null) return;
+        const usedFamilies = new Set(
+            Object.values(next)
+                .map(parseSlot)
+                .filter((s): s is PaletteSlot => s != null)
+                .map((s) => s.family)
+        );
+        let family = -1;
+        for (let f = 0; f < palette.length; f++) {
+            if (!usedFamilies.has(f)) {
+                family = f;
+                break;
+            }
+        }
+        if (family === -1) family = index % palette.length;
+        next[key] = encodeSlot({ family, variant: 0 });
+    });
+
+    const prevKeys = Object.keys(previous);
+    const nextKeys = Object.keys(next);
+    const changed = prevKeys.length !== nextKeys.length || nextKeys.some((key) => previous[key] !== next[key]);
+
+    return { map: next, changed };
 }
 
 /**
- * Apply a section color theme to calendar events without mutating the input.
- * Returns the events unchanged when the user has chosen 'custom'.
- *
- * Custom (non-course) events get colors cycling through the palette's primary colors
- * in their schedule order, so they remain consistent across re-renders.
+ * Apply a preset theme's assignments to calendar events without mutating the input.
+ * `assignments` must already cover every current course/custom event (see
+ * {@link computeAssignments}); missing keys fall back to the event's existing color.
  */
 export function applyThemeToCalendarEvents<E extends CalendarEvent>(
     events: readonly E[],
-    courses: readonly ScheduleCourse[],
     setting: SectionColorSetting,
-    isDark: boolean
+    assignments: ThemeAssignmentMap,
+    palette: readonly (readonly string[])[]
 ): E[] {
     if (setting === 'custom') return [...events];
 
-    const courseColors = courseColorMap(courses, setting, isDark);
-    const primaries = getPalette(setting, isDark).map((f) => f[0]);
-
-    const customEventColorById = new Map<string, string>();
-    let nextCustomIndex = 0;
-
     return events.map((event): E => {
         if (isSkeletonEvent(event)) return event;
-        if (event.isCustomEvent) {
-            const id = String(event.customEventID);
-            let color = customEventColorById.get(id);
-            if (color == null) {
-                color = primaries[nextCustomIndex % primaries.length];
-                customEventColorById.set(id, color);
-                nextCustomIndex++;
-            }
-            return { ...event, color };
-        }
-        const color = courseColors.get(courseEventKey(event));
-        return color != null ? { ...event, color } : event;
+        const key = event.isCustomEvent
+            ? customEventColorKey(event.customEventID)
+            : courseColorKey(event.term, event.sectionCode);
+        const value = assignments[key];
+        return value != null ? { ...event, color: resolveAssignment(value, palette) } : event;
     });
 }

@@ -22,6 +22,7 @@ import {
 } from '$components/Calendar/CourseCalendarEvent';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { UserLocator } from '$components/Map/UserLocator';
+import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
@@ -29,8 +30,6 @@ import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/l
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
-import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 function getBuildingNameAcronym(name: string): string {
     const open = name.indexOf('(');
@@ -168,15 +167,18 @@ export default function CourseMap() {
     const markerRef = useRef<Marker | null>(null);
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
-    const sectionColor = useSectionThemeStore(selectActiveSectionColor);
-    const isDark = useThemeStore((s) => s.isDark);
 
     const [rawCalendarEvents, setRawCalendarEvents] = useState(() => AppStore.getEventsInCalendar());
     const [currentCourses, setCurrentCourses] = useState(() => AppStore.schedule.getCurrentCourses());
+    const [customEventIds, setCustomEventIds] = useState<(string | number)[]>(() =>
+        AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID)
+    );
+
+    const { setting, palette, assignments } = useSectionThemeAssignments(currentCourses, customEventIds);
 
     const themedEvents = useMemo<CalendarEvent[]>(
-        () => applyThemeToCalendarEvents(rawCalendarEvents, currentCourses, sectionColor, isDark),
-        [rawCalendarEvents, currentCourses, sectionColor, isDark]
+        () => applyThemeToCalendarEvents(rawCalendarEvents, setting, assignments, palette),
+        [rawCalendarEvents, setting, assignments, palette]
     );
 
     const calendarEvents = themedEvents;
@@ -208,6 +210,7 @@ export default function CourseMap() {
         const updateFromStore = () => {
             setRawCalendarEvents(AppStore.getEventsInCalendar());
             setCurrentCourses(AppStore.schedule.getCurrentCourses());
+            setCustomEventIds(AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID));
         };
 
         AppStore.on('addedCoursesChange', updateFromStore);

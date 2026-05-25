@@ -11,6 +11,7 @@ import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import {
     getLocalStorageSkeletonBlueprint,
     removeLocalStorageSkeletonBlueprint,
@@ -22,7 +23,6 @@ import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
@@ -121,15 +121,20 @@ export const ScheduleCalendar = memo(() => {
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
     const isDark = useThemeStore((store) => store.isDark);
-    const sectionColor = useSectionThemeStore(selectActiveSectionColor);
+
+    const customEventIds = useMemo(
+        () => currentScheduleCustomEvents.map((event) => event.customEventID),
+        [currentScheduleCustomEvents]
+    );
+    const { setting, palette, assignments } = useSectionThemeAssignments(currentScheduleCourses, customEventIds);
 
     const eventsInCalendar = useMemo(
-        () => applyThemeToCalendarEvents(rawEventsInCalendar, currentScheduleCourses, sectionColor, isDark),
-        [rawEventsInCalendar, currentScheduleCourses, sectionColor, isDark]
+        () => applyThemeToCalendarEvents(rawEventsInCalendar, setting, assignments, palette),
+        [rawEventsInCalendar, setting, assignments, palette]
     );
     const finalsEventsInCalendar = useMemo(
-        () => applyThemeToCalendarEvents(rawFinalsEventsInCalendar, currentScheduleCourses, sectionColor, isDark),
-        [rawFinalsEventsInCalendar, currentScheduleCourses, sectionColor, isDark]
+        () => applyThemeToCalendarEvents(rawFinalsEventsInCalendar, setting, assignments, palette),
+        [rawFinalsEventsInCalendar, setting, assignments, palette]
     );
     const visibilityMap = useHiddenCoursesStore((state) => state.visibilityMap);
     const selectedEvent = useSelectedEventStore((state) => state.selectedEvent);

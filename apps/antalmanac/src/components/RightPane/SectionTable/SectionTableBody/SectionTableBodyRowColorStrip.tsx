@@ -1,14 +1,18 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { bakeThemeIntoSchedule } from '$lib/sectionThemes/bakeTheme';
-import { getThemedCourseColors } from '$lib/sectionThemes/themedColorCache';
+import {
+    courseColorKey,
+    getPalette,
+    resolveAssignment,
+    type SectionColorSetting,
+    type ThemeAssignmentMap,
+} from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Box, Popover, PopoverProps, SxProps, TableCell, Tooltip } from '@mui/material';
 import { AASection, AATerm } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
@@ -23,16 +27,22 @@ const cellSx: SxProps = {
     overflow: 'visible',
 };
 
-function getDisplayColor(section: AASection, term: AATerm, theme: string, isDark: boolean): string {
-    const courses = AppStore.schedule.getCurrentCourses();
-    const index = courses.findIndex((c) => c.section.sectionCode === section.sectionCode && c.term === term);
-    if (index === -1) {
+function getDisplayColor(
+    section: AASection,
+    term: AATerm,
+    setting: SectionColorSetting,
+    assignments: ThemeAssignmentMap,
+    palette: readonly (readonly string[])[]
+): string {
+    const course = AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term);
+    if (!course) {
         return section.color ?? '#5ec8e0';
     }
-    if (theme === 'custom') {
-        return courses[index].section.color;
+    if (setting === 'custom') {
+        return course.section.color;
     }
-    return getThemedCourseColors(courses, theme as never, isDark)[index];
+    const value = assignments[courseColorKey(term, section.sectionCode)];
+    return value != null ? resolveAssignment(value, palette) : course.section.color;
 }
 
 interface SectionTableBodyRowColorStripProps {
@@ -47,12 +57,17 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
 
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
     const activeSectionColor = useSectionThemeStore(selectActiveSectionColor);
-    const setSectionColor = useSectionThemeStore((s) => s.setSectionColor);
+    const setManualColor = useSectionThemeStore((s) => s.setManualColor);
+    const assignmentsByTheme = useSectionThemeStore((s) => s.assignments);
     const isDark = useThemeStore((s) => s.isDark);
-    const postHog = usePostHog();
+
+    const palette = getPalette(activeSectionColor, isDark);
+    const assignments = activeSectionColor === 'custom' ? {} : (assignmentsByTheme[activeSectionColor] ?? {});
 
     const [hovered, setHovered] = useState(false);
-    const [currColor, setCurrColor] = useState(() => getDisplayColor(section, term, activeSectionColor, isDark));
+    const [currColor, setCurrColor] = useState(() =>
+        getDisplayColor(section, term, activeSectionColor, assignments, palette)
+    );
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
 
     const stripWidth = visible && clickable && hovered ? STRIP_EXPAND_PX : STRIP_SHRINK_PX;
@@ -71,20 +86,24 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
 
     const handleColorChange = useCallback(
         (newColor: { hex: string }) => {
-            if (sectionColor !== 'custom') {
-                bakeThemeIntoSchedule(sectionColor, isDark);
-                setSectionColor('custom', postHog);
-            }
             setCurrColor(newColor.hex);
-            changeCourseColor(section.sectionCode, term, newColor.hex);
+            // On a preset theme, store an override layered on the theme; on custom, edit
+            // the section's stored color directly.
+            if (sectionColor !== 'custom') {
+                setManualColor(sectionColor, courseColorKey(term, section.sectionCode), newColor.hex);
+            } else {
+                changeCourseColor(section.sectionCode, term, newColor.hex);
+            }
         },
-        [section.sectionCode, term, sectionColor, isDark, setSectionColor, postHog]
+        [section.sectionCode, term, sectionColor, setManualColor]
     );
 
     useEffect(() => {
         const syncColor = () => {
-            setCurrColor(getDisplayColor(section, term, activeSectionColor, isDark));
+            setCurrColor(getDisplayColor(section, term, activeSectionColor, assignments, palette));
         };
+
+        syncColor();
 
         AppStore.on('addedCoursesChange', syncColor);
         AppStore.on('currentScheduleIndexChange', syncColor);
@@ -95,7 +114,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
             AppStore.removeListener('currentScheduleIndexChange', syncColor);
             AppStore.removeListener('colorChange', syncColor);
         };
-    }, [section, term, activeSectionColor, isDark]);
+    }, [section, term, activeSectionColor, assignments, palette]);
 
     useEffect(() => {
         if (!visible) {

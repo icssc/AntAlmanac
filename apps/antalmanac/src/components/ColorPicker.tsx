@@ -1,11 +1,10 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { bakeThemeIntoSchedule } from '$lib/sectionThemes/bakeTheme';
+import { courseColorKey, customEventColorKey } from '$lib/sectionThemes';
 import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { useSectionThemeStore } from '$stores/SectionThemeStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { CustomEventId } from '@packages/antalmanac-types';
@@ -38,8 +37,7 @@ const ColorPicker = memo(function ColorPicker({
     const [currColor, setCurrColor] = useState(color);
 
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
-    const setSectionColor = useSectionThemeStore((s) => s.setSectionColor);
-    const isDark = useThemeStore((s) => s.isDark);
+    const setManualColor = useSectionThemeStore((s) => s.setManualColor);
 
     const postHog = usePostHog();
 
@@ -83,15 +81,22 @@ const ColorPicker = memo(function ColorPicker({
     };
 
     const handleColorChange = (newColor: { hex: string }) => {
-        // If the user is on a preset theme, "forking" their schedule into a custom palette
-        // is exactly the intent of tweaking a color — bake current display colors onto
-        // every course/event, then switch to custom so this tweak (and future ones) stick.
+        setCurrColor(newColor.hex);
+
+        // On a preset theme, store the change as a per-section override layered on the
+        // theme (keeps the theme selected and leaves the user's custom palette untouched).
         if (sectionColor !== 'custom') {
-            bakeThemeIntoSchedule(sectionColor, isDark);
-            setSectionColor('custom', postHog);
+            const key =
+                isCustomEvent && customEventID
+                    ? customEventColorKey(customEventID)
+                    : sectionCode != null
+                      ? courseColorKey(term, sectionCode)
+                      : null;
+            if (key != null) setManualColor(sectionColor, key, newColor.hex);
+            return;
         }
 
-        setCurrColor(newColor.hex);
+        // On custom, edit the course/event's stored color directly.
         if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, newColor.hex);
         else if (sectionCode && term) changeCourseColor(sectionCode, term, newColor.hex);
     };
