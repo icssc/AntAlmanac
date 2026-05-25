@@ -145,9 +145,7 @@ export const ScheduleCalendar = memo(() => {
         return raw.filter((e) => {
             if ('isCustomEvent' in e && e.isCustomEvent) return true;
             if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
-            if (!scheduleSource.appliesCourseVisibility) {
-                return true;
-            }
+            if (!scheduleSource.appliesCourseVisibility) return true;
             const visibility: VisibilityState =
                 visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? VisibilityState.Visible;
             return visibility !== VisibilityState.Disappeared;
