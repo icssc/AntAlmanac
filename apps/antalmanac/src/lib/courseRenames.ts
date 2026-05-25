@@ -75,21 +75,47 @@ const COURSE_RENAMES: CourseRename[] = [
     },
 ];
 
-/** Returns the current course plus all predecessors, newest-first, for fan-out queries. */
-export function getAllCourseIdentifiers(department: string, courseNumber: string): CourseId[] {
-    const identifiers: CourseId[] = [{ department, courseNumber }];
-    let current: CourseId = { department, courseNumber };
+const toSyllabiId = (ci: CourseId) => ci.department.replaceAll(' ', '') + ci.courseNumber;
 
-    for (let i = 0; i < COURSE_RENAMES.length; i++) {
-        const entry = COURSE_RENAMES.find(
-            (r) => r.department === current.department && r.courseNumber === current.courseNumber
-        );
-        if (!entry) break;
-        identifiers.push(entry.previously);
-        current = entry.previously;
+type RenameChainStart =
+    | { kind: 'course'; department: string; courseNumber: string }
+    | { kind: 'syllabi'; courseId: string };
+
+/** Walks rename entries from a course or syllabi id, newest rename first. */
+function walkRenameChain(start: RenameChainStart): CourseRename[] {
+    const chain: CourseRename[] = [];
+
+    if (start.kind === 'course') {
+        let current: CourseId = { department: start.department, courseNumber: start.courseNumber };
+
+        for (let i = 0; i < COURSE_RENAMES.length; i++) {
+            const entry = COURSE_RENAMES.find(
+                (r) => r.department === current.department && r.courseNumber === current.courseNumber
+            );
+            if (!entry) break;
+            chain.push(entry);
+            current = entry.previously;
+        }
+
+        return chain;
     }
 
-    return identifiers;
+    let current = start.courseId;
+
+    for (let i = 0; i < COURSE_RENAMES.length; i++) {
+        const entry = COURSE_RENAMES.find((r) => toSyllabiId(r) === current);
+        if (!entry) break;
+        chain.push(entry);
+        current = toSyllabiId(entry.previously);
+    }
+
+    return chain;
+}
+
+/** Returns the current course plus all predecessors, newest-first, for fan-out queries. */
+export function getAllCourseIdentifiers(department: string, courseNumber: string): CourseId[] {
+    const chain = walkRenameChain({ kind: 'course', department, courseNumber });
+    return [{ department, courseNumber }, ...chain.map((entry) => entry.previously)];
 }
 
 /**
@@ -97,19 +123,8 @@ export function getAllCourseIdentifiers(department: string, courseNumber: string
  * e.g. "SWE43") plus all predecessor courseIds in the same format, newest-first.
  */
 export function getAllSyllabiCourseIds(courseId: string): string[] {
-    const toSyllabiId = (ci: CourseId) => ci.department.replaceAll(' ', '') + ci.courseNumber;
-    const ids: string[] = [courseId];
-    let current = courseId;
-
-    for (let i = 0; i < COURSE_RENAMES.length; i++) {
-        const entry = COURSE_RENAMES.find((r) => toSyllabiId(r) === current);
-        if (!entry) break;
-        const prevId = toSyllabiId(entry.previously);
-        ids.push(prevId);
-        current = prevId;
-    }
-
-    return ids;
+    const chain = walkRenameChain({ kind: 'syllabi', courseId });
+    return [courseId, ...chain.map((entry) => toSyllabiId(entry.previously))];
 }
 
 /**
@@ -118,21 +133,16 @@ export function getAllSyllabiCourseIds(courseId: string): string[] {
  * For chains, predecessors are listed newest-first, separated by commas.
  */
 export function getPredecessorLabel(department: string, courseNumber: string): string | null {
-    const parts: string[] = [];
-    let current: CourseId = { department, courseNumber };
+    const chain = walkRenameChain({ kind: 'course', department, courseNumber });
+    if (chain.length === 0) return null;
 
-    for (let i = 0; i < COURSE_RENAMES.length; i++) {
-        const entry = COURSE_RENAMES.find(
-            (r) => r.department === current.department && r.courseNumber === current.courseNumber
-        );
-        if (!entry) break;
+    const parts = chain.map((entry) => {
         const yr = entry.effectiveYear;
         const yearLabel = `${String(yr).slice(-2)}/${String(yr + 1).slice(-2)}`;
-        parts.push(`${entry.previously.department} ${entry.previously.courseNumber} (before ${yearLabel})`);
-        current = entry.previously;
-    }
+        return `${entry.previously.department} ${entry.previously.courseNumber} (before ${yearLabel})`;
+    });
 
-    return parts.length > 0 ? `Previously ${parts.join(', ')}` : null;
+    return `Previously ${parts.join(', ')}`;
 }
 
 /** Sums grade counts across results and recalculates averageGPA as a weighted mean. */
