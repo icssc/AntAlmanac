@@ -189,14 +189,19 @@ export function SectionColorSelector() {
                             onClick={() => handleSelect(option.id)}
                             sx={{ gap: 1 }}
                         >
+                            <Check
+                                sx={{
+                                    fontSize: 18,
+                                    color: accent,
+                                    flexShrink: 0,
+                                    visibility: isSelected ? 'visible' : 'hidden',
+                                }}
+                            />
                             <ListItemText
                                 primary={option.name}
                                 primaryTypographyProps={{ fontWeight: isSelected ? 700 : 500 }}
                             />
                             <Swatches colors={option.swatches} />
-                            <Check
-                                sx={{ fontSize: 18, color: accent, visibility: isSelected ? 'visible' : 'hidden' }}
-                            />
                         </MenuItem>
                     );
                 })}
