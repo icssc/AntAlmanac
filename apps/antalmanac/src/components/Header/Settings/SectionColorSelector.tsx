@@ -211,7 +211,7 @@ export function SectionColorSelector() {
                     onClick={() => resetTheme(sectionColor as SectionThemeId)}
                     sx={{ alignSelf: 'flex-start', textTransform: 'none', color: 'text.secondary', px: 0.5 }}
                 >
-                    Reset customized colors
+                    Restore Theme Colors
                 </Button>
             )}
         </Box>
