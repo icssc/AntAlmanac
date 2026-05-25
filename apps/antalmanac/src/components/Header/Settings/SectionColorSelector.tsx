@@ -13,7 +13,7 @@ import {
     Pets,
     type SvgIconComponent,
 } from '@mui/icons-material';
-import { Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import { Box, Button, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -146,6 +146,9 @@ export function SectionColorSelector() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: 1.5,
+                    // Match the Theme selector's height: medium icon (24px) + 8px padding + 1px border.
+                    minHeight: 42,
+                    boxSizing: 'border-box',
                     padding: '8px 12px',
                     border: `1px solid ${muiTheme.palette.divider}`,
                     borderRadius: 1,
@@ -176,7 +179,6 @@ export function SectionColorSelector() {
             >
                 {options.map((option) => {
                     const isSelected = option.id === sectionColor;
-                    const OptionIcon = option.icon;
                     return (
                         <MenuItem
                             key={option.id}
@@ -185,20 +187,16 @@ export function SectionColorSelector() {
                             onFocus={() => setPreviewSectionColor(option.id)}
                             onMouseLeave={() => setPreviewSectionColor(null)}
                             onClick={() => handleSelect(option.id)}
+                            sx={{ gap: 1 }}
                         >
-                            <ListItemIcon sx={{ minWidth: 32, color: isSelected ? accent : 'inherit' }}>
-                                <OptionIcon fontSize="small" />
-                            </ListItemIcon>
                             <ListItemText
                                 primary={option.name}
                                 primaryTypographyProps={{ fontWeight: isSelected ? 700 : 500 }}
                             />
-                            <Stack direction="row" alignItems="center" gap={1}>
-                                <Swatches colors={option.swatches} />
-                                <Check
-                                    sx={{ fontSize: 18, color: accent, visibility: isSelected ? 'visible' : 'hidden' }}
-                                />
-                            </Stack>
+                            <Swatches colors={option.swatches} />
+                            <Check
+                                sx={{ fontSize: 18, color: accent, visibility: isSelected ? 'visible' : 'hidden' }}
+                            />
                         </MenuItem>
                     );
                 })}
