@@ -9,6 +9,8 @@ const nextConfig = {
                 hostname: 'lh3.googleusercontent.com',
             },
         ],
+        // TODO: Remove this once Next.js/Opennext fixes image optimization
+        unoptimized: true,
     },
     serverExternalPackages: ['@node-rs/argon2'],
     turbopack: {},

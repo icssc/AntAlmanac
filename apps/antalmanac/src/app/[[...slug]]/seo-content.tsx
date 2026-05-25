@@ -1,6 +1,5 @@
-import Link from 'next/link';
-
 import { ANTALMANAC_TITLE } from '$src/app/seo-constants';
+import Link from 'next/link';
 
 /**
  * Server-rendered content for search engine indexing and screen readers.
@@ -25,8 +24,8 @@ export function SeoContent() {
             <p>
                 Run a UCI course search across Computer Science, Informatics, Biological Sciences, Mathematics,
                 Economics, Engineering, Psychology, Political Science, and 130+ more departments. Filter by GE category:
-                Writing, Multicultural Studies, Science &amp; Technology, and more, or search by course number,
-                title, or instructor name.
+                Writing, Multicultural Studies, Science &amp; Technology, and more, or search by course number, title,
+                or instructor name.
             </p>
 
             <h2>UCI class schedule &amp; weekly planner</h2>
