@@ -20,7 +20,7 @@ import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
@@ -62,7 +62,7 @@ interface SkeletonBlueprint {
     endMinute: number;
 }
 
-function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
+function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint, color: string): SkeletonEvent {
     const start = new Date(BASE_DATE);
     start.setDate(start.getDate() + blueprint.dayOffset);
     start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
@@ -71,7 +71,7 @@ function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
     end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
 
     return {
-        color: '#6d6d6d',
+        color,
         start,
         end,
         title: '',
@@ -79,7 +79,7 @@ function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
     } as SkeletonEvent;
 }
 
-function createSkeletonEvents(): SkeletonEvent[] {
+function createSkeletonEvents(color: string): SkeletonEvent[] {
     const savedDataString = getLocalStorageSkeletonBlueprint();
 
     let skeletonBlueprints: SkeletonBlueprint[] | null = null;
@@ -92,13 +92,13 @@ function createSkeletonEvents(): SkeletonEvent[] {
     }
 
     if (skeletonBlueprints) {
-        return skeletonBlueprints.map(blueprintToSkeletonEvent);
+        return skeletonBlueprints.map((b) => blueprintToSkeletonEvent(b, color));
     }
 
     const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
     const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
 
-    return fallbackBlueprints.map(blueprintToSkeletonEvent);
+    return fallbackBlueprints.map((b) => blueprintToSkeletonEvent(b, color));
 }
 
 export const ScheduleCalendar = memo(() => {
@@ -122,7 +122,7 @@ export const ScheduleCalendar = memo(() => {
     const visibilityMap = useHiddenCoursesStore((state) => state.visibilityMap);
     const selectedEvent = useSelectedEventStore((state) => state.selectedEvent);
 
-    const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
+    const openLoadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
     const hasHadEventsRef = useRef(false);
 
     const isMobile = useIsMobile();
@@ -159,7 +159,7 @@ export const ScheduleCalendar = memo(() => {
     ]);
 
     useEffect(() => {
-        if (!loadingSchedule) {
+        if (!openLoadingSchedule) {
             if (eventsInCalendar.length > 0) {
                 hasHadEventsRef.current = true;
                 const skeletonBlueprint = eventsInCalendar
@@ -183,11 +183,13 @@ export const ScheduleCalendar = memo(() => {
                 hasHadEventsRef.current = false;
             }
         }
-    }, [eventsInCalendar, loadingSchedule]);
+    }, [eventsInCalendar, openLoadingSchedule]);
+
+    const skeletonColor = theme.palette.action.disabledBackground;
 
     const events = useMemo(
-        () => (loadingSchedule ? createSkeletonEvents() : getEventsForCalendar()),
-        [loadingSchedule, getEventsForCalendar]
+        () => (openLoadingSchedule ? createSkeletonEvents(skeletonColor) : getEventsForCalendar()),
+        [openLoadingSchedule, getEventsForCalendar, skeletonColor]
     );
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
@@ -229,7 +231,12 @@ export const ScheduleCalendar = memo(() => {
                           cursor: 'pointer',
                           border: '2px solid transparent',
                           borderRadius: '4px',
-                          color: colorContrastSufficient(event.color) ? 'white' : 'black',
+                          // Skeleton text is empty so contrast doesn't matter — skip the check.
+                          color: isSkeletonEvent
+                              ? 'transparent'
+                              : colorContrastSufficient(event.color)
+                                ? 'white'
+                                : 'black',
                           ...(isSelected && { zIndex: 10 }),
                       };
 
@@ -281,13 +288,13 @@ export const ScheduleCalendar = memo(() => {
 
     const showEmptyState = useMemo(
         () =>
-            !loadingSchedule &&
+            !openLoadingSchedule &&
             !hoveredCalendarizedCourses &&
             !hoveredCalendarizedFinal &&
             currentScheduleCourses.length === 0 &&
             currentScheduleCustomEvents.length === 0,
         [
-            loadingSchedule,
+            openLoadingSchedule,
             hoveredCalendarizedCourses,
             hoveredCalendarizedFinal,
             currentScheduleCourses.length,
@@ -385,7 +392,7 @@ export const ScheduleCalendar = memo(() => {
                     position: 'absolute',
                     padding: 0,
                 })}
-                open={loadingSchedule}
+                open={openLoadingSchedule}
             />
 
             <CalendarToolbar
@@ -397,7 +404,7 @@ export const ScheduleCalendar = memo(() => {
 
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
                 <TbaCalendarCard />
-                <CalendarEventPopover />
+                <CalendarEventPopover scheduleNames={scheduleNames} />
 
                 <Backdrop
                     open={showEmptyState}

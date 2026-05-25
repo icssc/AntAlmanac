@@ -1,9 +1,9 @@
+import { SignInButton } from '$components/buttons/SignInButtons/SignInButton';
+import { Provider } from '$lib/auth/authTypes';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Apple as AppleIcon } from '@mui/icons-material';
-import { Button } from '@mui/material';
 
 interface AppleSignInButtonProps {
-    onClick: () => void;
     fullWidth?: boolean;
 }
 
@@ -19,14 +19,13 @@ interface AppleSignInButtonProps {
  * Dark mode  → white style: #FFFFFF bg, #000000 text, #F5F5F5 on hover.
  * Light mode → black style: #000000 bg, #FFFFFF text, #1A1A1A on hover.
  */
-export const AppleSignInButton = ({ onClick, fullWidth }: AppleSignInButtonProps) => {
+export const AppleSignInButton = ({ fullWidth }: AppleSignInButtonProps) => {
     const isDark = useThemeStore((store) => store.isDark);
+
     return (
-        <Button
-            onClick={onClick}
-            startIcon={<AppleIcon />}
-            variant="contained"
-            size="large"
+        <SignInButton
+            icon={<AppleIcon />}
+            provider={Provider.Apple}
             fullWidth={fullWidth}
             sx={{
                 backgroundColor: isDark ? '#fff' : '#000',
@@ -35,8 +34,6 @@ export const AppleSignInButton = ({ onClick, fullWidth }: AppleSignInButtonProps
                     backgroundColor: isDark ? '#f5f5f5' : '#1a1a1a',
                 },
             }}
-        >
-            Sign in with Apple
-        </Button>
+        />
     );
 };

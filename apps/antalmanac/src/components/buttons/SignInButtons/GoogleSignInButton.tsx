@@ -1,4 +1,5 @@
-import { Button } from '@mui/material';
+import { SignInButton } from '$components/buttons/SignInButtons/SignInButton';
+import { Provider } from '$lib/auth/authTypes';
 
 /**
  * Colored four-path Google "G" logo.
@@ -40,19 +41,9 @@ const GoogleLogo = () => (
 );
 
 interface GoogleSignInButtonProps {
-    onClick: () => void;
     fullWidth?: boolean;
 }
 
-export const GoogleSignInButton = ({ onClick, fullWidth }: GoogleSignInButtonProps) => (
-    <Button
-        onClick={onClick}
-        startIcon={<GoogleLogo />}
-        color="primary"
-        variant="contained"
-        size="large"
-        fullWidth={fullWidth}
-    >
-        Sign in with Google
-    </Button>
-);
+export const GoogleSignInButton = ({ fullWidth }: GoogleSignInButtonProps) => {
+    return <SignInButton icon={<GoogleLogo />} provider={Provider.Google} fullWidth={fullWidth} />;
+};

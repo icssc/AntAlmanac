@@ -1,6 +1,6 @@
 import { RDS } from '$src/backend/lib/rds';
 import { protectedProcedure, router } from '$src/backend/trpc';
-import { db } from '@packages/db/src';
+import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 

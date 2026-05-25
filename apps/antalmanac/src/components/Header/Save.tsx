@@ -7,7 +7,7 @@ import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
@@ -16,13 +16,19 @@ import { Stack, Snackbar, Alert, Link, IconButton } from '@mui/material';
 import { TRPCClientError } from '@trpc/client';
 import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [autoSaving, setAutoSaving] = useState(false);
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
-    const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const { openAutoSaveWarning, setOpenAutoSaveWarning } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openAutoSaveWarning: state.openAutoSaveWarning,
+            setOpenAutoSaveWarning: state.setOpenAutoSaveWarning,
+        }))
+    );
     const postHog = usePostHog();
 
     const { mutate: saveSchedule, isPending: isSaving } = trpcReact.schedule.save.useMutation({

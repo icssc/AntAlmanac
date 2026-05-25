@@ -18,26 +18,17 @@ enum LocalStorageKeys {
     sessionId = 'sessionId',
     wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
+    /** @deprecated As part of migration to better auth */
     newUser = 'newUser',
     importedUser = 'importedUser',
+    /** @deprecated As part of migration to better auth */
     fromLoading = 'fromLoading',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
+    addedCoursesSkeletonBlueprint = 'addedCoursesSkeletonBlueprint',
 }
 
 const LSK = LocalStorageKeys;
-
-export function setLocalStorageFromLoading(value: string) {
-    window.localStorage.setItem(LSK.fromLoading, value);
-}
-
-export function getLocalStorageFromLoading() {
-    return window.localStorage.getItem(LSK.fromLoading);
-}
-
-export function removeLocalStorageFromLoading() {
-    window.localStorage.removeItem(LSK.fromLoading);
-}
 
 export function setLocalStorageImportedUser(value: string) {
     window.localStorage.setItem(LSK.importedUser, value);
@@ -49,18 +40,6 @@ export function getLocalStorageImportedUser() {
 
 export function removeLocalStorageImportedUser() {
     window.localStorage.removeItem(LSK.importedUser);
-}
-
-export function setLocalStorageOnFirstSignin(value: string) {
-    window.localStorage.setItem(LSK.newUser, value);
-}
-
-export function getLocalStorageOnFirstSignin() {
-    return window.localStorage.getItem(LSK.newUser);
-}
-
-export function removeLocalStorageOnFirstSignin() {
-    window.localStorage.removeItem(LSK.newUser);
 }
 
 export function setLocalStorageDataCache(value: string) {
@@ -215,4 +194,16 @@ export function getLocalStorageSkeletonBlueprint() {
 
 export function removeLocalStorageSkeletonBlueprint() {
     window.localStorage.removeItem(LSK.skeletonBlueprint);
+}
+
+export function setLocalStorageAddedCoursesSkeletonBlueprint(value: string) {
+    window.localStorage.setItem(LSK.addedCoursesSkeletonBlueprint, value);
+}
+
+export function getLocalStorageAddedCoursesSkeletonBlueprint() {
+    return window.localStorage.getItem(LSK.addedCoursesSkeletonBlueprint);
+}
+
+export function removeLocalStorageAddedCoursesSkeletonBlueprint() {
+    window.localStorage.removeItem(LSK.addedCoursesSkeletonBlueprint);
 }
