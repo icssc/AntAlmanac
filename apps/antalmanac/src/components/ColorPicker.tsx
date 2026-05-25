@@ -89,7 +89,7 @@ const ColorPicker = memo(function ColorPicker({
             const key =
                 isCustomEvent && customEventID
                     ? customEventColorKey(customEventID)
-                    : sectionCode != null
+                    : sectionCode != null && term != null
                       ? courseColorKey(term, sectionCode)
                       : null;
             if (key != null) setManualColor(sectionColor, key, newColor.hex);

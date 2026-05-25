@@ -1,5 +1,5 @@
 import { isSkeletonEvent, type CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
-import type { ScheduleCourse } from '@packages/antalmanac-types';
+import type { AATerm, ScheduleCourse } from '@packages/antalmanac-types';
 
 import { SECTION_THEMES, type SectionTheme, type SectionThemeId } from './themes';
 
@@ -75,8 +75,11 @@ export function resolveAssignment(value: string, palette: readonly (readonly str
     return palette[slot.family]?.[slot.variant] ?? palette[slot.family]?.[0] ?? palette[0][0];
 }
 
-export function courseColorKey(term: unknown, sectionCode: string): string {
-    return `${String(term)}|${sectionCode}`;
+export function courseColorKey(term: AATerm | string, sectionCode: string): string {
+    // Use the term's stable short name (e.g. "2024 Fall"); stringifying the AATerm object
+    // would collapse every term to "[object Object]" and collide on shared section codes.
+    const termId = typeof term === 'string' ? term : term.shortName;
+    return `${termId}|${sectionCode}`;
 }
 
 export function customEventColorKey(customEventID: unknown): string {

@@ -100,10 +100,16 @@ export const useSectionThemeStore = create<SectionThemeStore>((set, get) => ({
         const customEventIds = AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID);
         const palette = getPalette(sectionColor, useThemeStore.getState().isDark);
 
-        const { map, changed } = computeAssignments(assignments[sectionColor] ?? {}, courses, customEventIds, palette);
-        if (!changed) return;
+        const existing = assignments[sectionColor] ?? {};
+        const { map } = computeAssignments(existing, courses, customEventIds, palette);
 
-        const nextAssignments = { ...assignments, [sectionColor]: map };
+        // Merge rather than replace: assignment keys are global (term|sectionCode), and
+        // computeAssignments only returns the *current* schedule's keys. Replacing would
+        // drop assignments/overrides belonging to other schedules, losing them on switch.
+        const hasNew = Object.keys(map).some((key) => existing[key] !== map[key]);
+        if (!hasNew) return;
+
+        const nextAssignments = { ...assignments, [sectionColor]: { ...existing, ...map } };
         persistAssignments(nextAssignments);
         set({ assignments: nextAssignments });
     },
@@ -115,8 +121,9 @@ export const useSectionThemeStore = create<SectionThemeStore>((set, get) => ({
 export const selectActiveSectionColor = (s: SectionThemeStore): SectionColorSetting =>
     s.previewSectionColor ?? s.sectionColor;
 
-// Keep assignments in sync with the schedule: assign colors to newly added sections and
-// drop colors for removed ones, so deletions never reshuffle the survivors' colors.
+// Keep assignments in sync with the schedule: assign colors to newly added sections.
+// Existing assignments are preserved (never reassigned), so deletions don't reshuffle the
+// survivors' colors and switching schedules doesn't discard other schedules' assignments.
 const syncAssignments = () => useSectionThemeStore.getState().ensureAssignments();
 AppStore.on('addedCoursesChange', syncAssignments);
 AppStore.on('customEventsChange', syncAssignments);

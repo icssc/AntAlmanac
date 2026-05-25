@@ -13,11 +13,14 @@ import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionT
 import { useThemeStore } from '$stores/SettingsStore';
 import { Box, Popover, PopoverProps, SxProps, TableCell, Tooltip } from '@mui/material';
 import { AASection, AATerm } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 const STRIP_SHRINK_PX = 5;
 const STRIP_EXPAND_PX = 8;
+
+/** Stable empty map so the color-sync effect doesn't re-run (and re-subscribe) every render. */
+const EMPTY_ASSIGNMENTS: ThemeAssignmentMap = {};
 
 const cellSx: SxProps = {
     position: 'relative',
@@ -61,8 +64,14 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     const assignmentsByTheme = useSectionThemeStore((s) => s.assignments);
     const isDark = useThemeStore((s) => s.isDark);
 
-    const palette = getPalette(activeSectionColor, isDark);
-    const assignments = activeSectionColor === 'custom' ? {} : (assignmentsByTheme[activeSectionColor] ?? {});
+    const palette = useMemo(() => getPalette(activeSectionColor, isDark), [activeSectionColor, isDark]);
+    const assignments = useMemo(
+        () =>
+            activeSectionColor === 'custom'
+                ? EMPTY_ASSIGNMENTS
+                : (assignmentsByTheme[activeSectionColor] ?? EMPTY_ASSIGNMENTS),
+        [activeSectionColor, assignmentsByTheme]
+    );
 
     const [hovered, setHovered] = useState(false);
     const [currColor, setCurrColor] = useState(() =>

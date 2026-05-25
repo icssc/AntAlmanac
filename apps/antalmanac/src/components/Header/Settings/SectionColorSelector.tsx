@@ -16,7 +16,7 @@ import {
 import { Box, Button, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 /** A representative MUI icon for each theme (presentational only — kept out of the palette data). */
 const THEME_ICONS: Record<SectionColorSetting, SvgIconComponent> = {
@@ -87,21 +87,19 @@ export function SectionColorSelector() {
     const buttonRef = useRef<HTMLDivElement>(null);
     const [menuOpen, setMenuOpen] = useState(false);
 
-    // Presets first, "Custom" last.
-    const options = useMemo<ThemeOption[]>(
-        () => [
-            ...SECTION_THEMES.map((t) => ({
-                id: t.id,
-                name: t.name,
-                icon: THEME_ICONS[t.id] ?? Palette,
-                swatches: getPalette(t.id, isDark)
-                    .map((family) => family[0])
-                    .slice(0, 4),
-            })),
-            { id: 'custom' as const, name: 'Custom', icon: THEME_ICONS.custom, swatches: getCustomSwatches(isDark) },
-        ],
-        [isDark]
-    );
+    // Presets first, "Custom" last. Computed each render (not memoized) so the Custom
+    // swatches reflect the user's current schedule colors rather than going stale.
+    const options: ThemeOption[] = [
+        ...SECTION_THEMES.map((t) => ({
+            id: t.id,
+            name: t.name,
+            icon: THEME_ICONS[t.id] ?? Palette,
+            swatches: getPalette(t.id, isDark)
+                .map((family) => family[0])
+                .slice(0, 4),
+        })),
+        { id: 'custom' as const, name: 'Custom', icon: THEME_ICONS.custom, swatches: getCustomSwatches(isDark) },
+    ];
 
     const activeOption = options.find((o) => o.id === sectionColor) ?? options[options.length - 1];
     const ActiveIcon = activeOption.icon;
