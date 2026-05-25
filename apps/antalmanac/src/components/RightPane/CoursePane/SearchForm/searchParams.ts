@@ -70,15 +70,15 @@ export const defaultFormData: CourseSearchParams = {
 };
 
 const parseAsCourseSearchTerm = createParser<AATerm>({
-    parse: (value) => getTermByShortName(value) ?? null,
-    serialize: (value) => value.shortName,
-    eq: (a, b) => a.shortName === b.shortName,
+    parse: (value: string) => getTermByShortName(value) ?? null,
+    serialize: (value: AATerm) => value.shortName,
+    eq: (a: AATerm, b: AATerm) => a.shortName === b.shortName,
 }).withDefault(defaultTerm);
 
 const parseAsNormalizedGe = createParser<string>({
-    parse: (value) => normalizeGeSelection(value),
-    serialize: (value) => normalizeGeSelection(value),
-    eq: (a, b) => normalizeGeSelection(a) === normalizeGeSelection(b),
+    parse: (value: string) => normalizeGeSelection(value),
+    serialize: (value: string) => normalizeGeSelection(value),
+    eq: (a: string, b: string) => normalizeGeSelection(a) === normalizeGeSelection(b),
 }).withDefault(defaultFormData.ge);
 
 export const courseSearchParamParsers = {
@@ -149,7 +149,7 @@ export function useCourseSearchUrlState() {
     const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
 
     const derivedView: CourseSearchView = shouldShowSearchForm(formData) ? 'search' : 'results';
-    const view: CourseSearchView = viewParam ?? derivedView;
+    const view: CourseSearchView = manualSearchEnabled ? (viewParam ?? 'search') : (viewParam ?? derivedView);
     const searchFormIsDisplayed = view === 'search';
 
     const setField = useCallback(
