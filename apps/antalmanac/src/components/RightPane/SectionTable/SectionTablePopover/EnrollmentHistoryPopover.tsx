@@ -1,3 +1,4 @@
+import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { getPredecessorLabel } from '$lib/courseRenames';
@@ -18,8 +19,6 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-
-import { SectionTablePopoverSubheader } from './SectionTablePopoverSubheader';
 
 interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
@@ -127,9 +126,7 @@ export function EnrollmentHistoryPopover({
         <Card>
             <CardHeader
                 title={title}
-                subheader={
-                    <SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />
-                }
+                subheader={<SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
                 action={headerAction}
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },

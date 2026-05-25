@@ -1,3 +1,4 @@
+import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { trpcReact } from '$lib/api/trpc';
 import { getPredecessorLabel } from '$lib/courseRenames';
 import {
@@ -14,8 +15,6 @@ import {
 import type { AggregateGrades } from '@packages/anteater-api/types';
 import { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
-
-import { SectionTablePopoverSubheader } from './SectionTablePopoverSubheader';
 
 type GradeView = 'instructor' | 'overall';
 
@@ -100,9 +99,7 @@ export function GradesPopover(props: GradesPopoverProps) {
         <Card>
             <CardHeader
                 title={title}
-                subheader={
-                    <SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />
-                }
+                subheader={<SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
                 action={
                     <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
                         <ToggleButton

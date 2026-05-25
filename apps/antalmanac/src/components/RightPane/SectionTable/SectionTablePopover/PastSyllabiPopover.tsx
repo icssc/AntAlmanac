@@ -1,3 +1,4 @@
+import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { getPredecessorLabel } from '$lib/courseRenames';
@@ -15,8 +16,6 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useMemo } from 'react';
-
-import { SectionTablePopoverSubheader } from './SectionTablePopoverSubheader';
 
 interface PastSyllabiPopoverProps {
     deptCode: string;
@@ -57,9 +56,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
         <Card>
             <CardHeader
                 title={title}
-                subheader={
-                    <SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />
-                }
+                subheader={<SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                 }}
