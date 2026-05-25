@@ -6,14 +6,23 @@ import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/Search
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
+import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
 export const SearchForm = () => {
-    const { formData, manualSearchEnabled, resetAll, resetAllPreservingTerm, setSearchMode, clearView, submitSearch } =
-        useCourseSearchUrlState();
+    const {
+        formData,
+        manualSearchEnabled,
+        resetAll,
+        resetAllPreservingTerm,
+        setFields,
+        setSearchMode,
+        clearView,
+        submitSearch,
+    } = useCourseSearchUrlState();
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 
@@ -28,14 +37,24 @@ export const SearchForm = () => {
     const toggleSearchMode = (event: React.MouseEvent<HTMLElement>, value: string) => {
         event.preventDefault();
         if (!value) return;
-        if (value === 'manual') {
-            void setSearchMode('manual');
-            return;
-        }
 
-        void setSearchMode('quick');
-        void resetAllPreservingTerm();
-        void clearView();
+        switch (value) {
+            case 'manual':
+                void setSearchMode('manual');
+                const savedManualSearch = useSavedSearchStore.getState().getManualSearch();
+                if (savedManualSearch) {
+                    void setFields(savedManualSearch);
+                }
+                return;
+            case 'quick':
+                useSavedSearchStore.getState().saveManualSearch(formData);
+                void setSearchMode('quick');
+                void resetAllPreservingTerm();
+                void clearView();
+                return;
+            default:
+                return;
+        }
     };
 
     return (
@@ -82,6 +101,7 @@ export const SearchForm = () => {
                                 });
                             }}
                             onReset={() => {
+                                useSavedSearchStore.getState().clearManualSearch();
                                 void resetAll();
                             }}
                         />
