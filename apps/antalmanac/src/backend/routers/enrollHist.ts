@@ -1,5 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { getAllCourseIdentifiers } from '$src/lib/courseRenames';
+import { getRenamedCoursesIdentifiers } from '$src/lib/courseRenames';
 import { WebsocSectionTypeSchema } from '@packages/antalmanac-types';
 import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
 import { z } from 'zod';
@@ -17,7 +17,7 @@ const enrollHistRouter = router({
         )
         .query(async ({ input }): Promise<EnrollmentHistoryEntry[]> => {
             const { department, courseNumber, sectionType } = input;
-            const identifiers = getAllCourseIdentifiers(department, courseNumber);
+            const identifiers = getRenamedCoursesIdentifiers(department, courseNumber);
 
             const results = await Promise.all(
                 identifiers.map((ci) =>

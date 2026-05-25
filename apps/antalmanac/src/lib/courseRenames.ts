@@ -75,74 +75,39 @@ const COURSE_RENAMES: CourseRename[] = [
     },
 ];
 
-const toSyllabiId = (ci: CourseId) => ci.department.replaceAll(' ', '') + ci.courseNumber;
-
-type RenameChainStart =
-    | { kind: 'course'; department: string; courseNumber: string }
-    | { kind: 'syllabi'; courseId: string };
-
-/** Walks rename entries from a course or syllabi id, newest rename first. */
-function walkRenameChain(start: RenameChainStart): CourseRename[] {
-    const chain: CourseRename[] = [];
-
-    if (start.kind === 'course') {
-        let current: CourseId = { department: start.department, courseNumber: start.courseNumber };
-
-        for (let i = 0; i < COURSE_RENAMES.length; i++) {
-            const entry = COURSE_RENAMES.find(
-                (r) => r.department === current.department && r.courseNumber === current.courseNumber
-            );
-            if (!entry) break;
-            chain.push(entry);
-            current = entry.previously;
-        }
-
-        return chain;
-    }
-
-    let current = start.courseId;
+export function getRenamedCoursesIdentifiers(department: string, courseNumber: string): CourseId[] {
+    const identifiers: CourseId[] = [{ department, courseNumber }];
+    let current: CourseId = { department, courseNumber };
 
     for (let i = 0; i < COURSE_RENAMES.length; i++) {
-        const entry = COURSE_RENAMES.find((r) => toSyllabiId(r) === current);
+        const entry = COURSE_RENAMES.find(
+            (r) => r.department === current.department && r.courseNumber === current.courseNumber
+        );
         if (!entry) break;
-        chain.push(entry);
-        current = toSyllabiId(entry.previously);
+        identifiers.push(entry.previously);
+        current = entry.previously;
     }
 
-    return chain;
+    return identifiers;
 }
 
-/** Returns the current course plus all predecessors, newest-first, for fan-out queries. */
-export function getAllCourseIdentifiers(department: string, courseNumber: string): CourseId[] {
-    const chain = walkRenameChain({ kind: 'course', department, courseNumber });
-    return [{ department, courseNumber }, ...chain.map((entry) => entry.previously)];
-}
+export function getRenamedCoursesLabel(department: string, courseNumber: string): string | null {
+    const chain = getRenamedCoursesIdentifiers(department, courseNumber);
+    if (chain.length <= 1) return null;
 
-/**
- * Returns the given syllabi courseId (format: `deptCode.replaceAll(' ', '') + courseNumber`,
- * e.g. "SWE43") plus all predecessor courseIds in the same format, newest-first.
- */
-export function getAllSyllabiCourseIds(courseId: string): string[] {
-    const chain = walkRenameChain({ kind: 'syllabi', courseId });
-    return [courseId, ...chain.map((entry) => toSyllabiId(entry.previously))];
-}
-
-/**
- * Returns a formatted string describing all predecessor course names for display,
- * e.g. "Previously IN4MATX 43 (before 2026/27)" or null if no rename exists.
- * For chains, predecessors are listed newest-first, separated by commas.
- */
-export function getPredecessorLabel(department: string, courseNumber: string): string | null {
-    const chain = walkRenameChain({ kind: 'course', department, courseNumber });
-    if (chain.length === 0) return null;
-
-    const parts = chain.map((entry) => {
+    const parts: string[] = [];
+    for (let i = 0; i < chain.length - 1; i++) {
+        const entry = COURSE_RENAMES.find(
+            (r) => r.department === chain[i].department && r.courseNumber === chain[i].courseNumber
+        );
+        if (!entry) break;
+        const predecessor = chain[i + 1];
         const yr = entry.effectiveYear;
         const yearLabel = `${String(yr).slice(-2)}/${String(yr + 1).slice(-2)}`;
-        return `${entry.previously.department} ${entry.previously.courseNumber} (before ${yearLabel})`;
-    });
+        parts.push(`${predecessor.department} ${predecessor.courseNumber} (before ${yearLabel})`);
+    }
 
-    return `Previously ${parts.join(', ')}`;
+    return parts.length > 0 ? `Previously ${parts.join(', ')}` : null;
 }
 
 /** Sums grade counts across results and recalculates averageGPA as a weighted mean. */

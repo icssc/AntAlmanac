@@ -179,7 +179,6 @@ function SectionTable({
                     icon={<HistoryEdu />}
                     popupContent={
                         <PastSyllabiPopover
-                            courseId={courseId}
                             deptCode={courseDetails.deptCode}
                             courseNumber={courseDetails.courseNumber}
                         />

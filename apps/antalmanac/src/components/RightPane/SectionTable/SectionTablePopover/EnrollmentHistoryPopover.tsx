@@ -1,7 +1,7 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
-import { getPredecessorLabel } from '$lib/courseRenames';
+import { getRenamedCoursesLabel } from '$lib/courseRenames';
 import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
@@ -39,7 +39,7 @@ export function EnrollmentHistoryPopover({
     term,
     sectionCode,
 }: EnrollmentHistoryPopoverProps) {
-    const predecessorLabel = getPredecessorLabel(department, courseNumber);
+    const predecessorLabel = getRenamedCoursesLabel(department, courseNumber);
 
     const { data: enrollmentHistory, isLoading: loading } = trpcReact.enrollHist.get.useQuery(
         { department, courseNumber, sectionType },

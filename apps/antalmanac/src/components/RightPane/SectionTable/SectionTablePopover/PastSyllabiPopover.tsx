@@ -1,7 +1,7 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
-import { getPredecessorLabel } from '$lib/courseRenames';
+import { getRenamedCoursesLabel } from '$lib/courseRenames';
 import { OpenInNew } from '@mui/icons-material';
 import {
     Card,
@@ -20,15 +20,17 @@ import { useMemo } from 'react';
 interface PastSyllabiPopoverProps {
     deptCode: string;
     courseNumber: string;
-    courseId: string;
 }
 
 export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const isMobile = useIsMobile();
-    const { deptCode, courseNumber, courseId } = props;
-    const predecessorLabel = getPredecessorLabel(deptCode, courseNumber);
+    const { deptCode, courseNumber } = props;
+    const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
-    const { data: syllabi = [], isLoading: loading } = trpcReact.websoc.getSyllabi.useQuery({ courseId });
+    const { data: syllabi = [], isLoading: loading } = trpcReact.websoc.getSyllabi.useQuery({
+        department: deptCode,
+        courseNumber,
+    });
 
     const width = isMobile ? 250 : 400;
     const height = isMobile ? 150 : 200;

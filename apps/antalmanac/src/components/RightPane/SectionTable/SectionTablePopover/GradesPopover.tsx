@@ -1,6 +1,6 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { trpcReact } from '$lib/api/trpc';
-import { getPredecessorLabel } from '$lib/courseRenames';
+import { getRenamedCoursesLabel } from '$lib/courseRenames';
 import {
     Box,
     ToggleButton,
@@ -60,7 +60,7 @@ export function GradesPopover(props: GradesPopoverProps) {
     const secondaryColor = theme.palette.secondary.main;
 
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
-    const predecessorLabel = getPredecessorLabel(deptCode, courseNumber);
+    const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
     const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGrades.useQuery(
         { department: deptCode, courseNumber, instructor: '' },
