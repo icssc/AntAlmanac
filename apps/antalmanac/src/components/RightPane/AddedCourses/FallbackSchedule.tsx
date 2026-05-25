@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 export function FallbackSchedule() {
     const getCurrentFallbackSchedule = useFallbackStore((store) => store.getCurrentFallbackSchedule);
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const postHog = usePostHog();
 
     useEffect(() => {

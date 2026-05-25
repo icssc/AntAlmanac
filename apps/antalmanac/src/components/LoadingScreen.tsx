@@ -18,12 +18,16 @@ export function LoadingScreen(props: LoadingScreenProps) {
     const [randomFact, setRandomFact] = useState<string>(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)]);
 
     useEffect(() => {
+        if (!props.open) {
+            return;
+        }
+
         const interval = setInterval(() => {
             setRandomFact(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)]);
         }, 4000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [props.open]);
     return (
         <Dialog fullScreen open={props.open}>
             <DialogContent

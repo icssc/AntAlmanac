@@ -3,11 +3,11 @@ import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/Cou
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
-import { STRIP_SLOT_PX } from '$components/RightPane/SectionTable/SectionTableBody/SectionRowColorStrip';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { WarningAlert } from '$components/WarningAlert';
 import { useDraggingItemState } from '$hooks/useDraggingItemState';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAvailability';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
@@ -88,6 +88,7 @@ function SectionTable({
     sortable = false,
     skeleton = false,
 }: SectionTableProps) {
+    const isMobile = useIsMobile();
     const draggingState = useDraggingItemState(() => ({ isCollapsed: !openContent }));
 
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
@@ -105,6 +106,7 @@ function SectionTable({
         forceCheck();
     };
 
+    const colorStripWidth = isMobile ? 5 : 8;
     const actionColumnWidth = 77;
 
     const courseId = useMemo(() => {
@@ -259,7 +261,7 @@ function SectionTable({
                         >
                             <TableHead>
                                 <TableRow>
-                                    <TableCell sx={{ padding: 0, width: `${STRIP_SLOT_PX}px` }} />
+                                    <TableCell sx={{ padding: 0, width: `${colorStripWidth}px` }} />
                                     <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
                                     {(() => {
                                         const visible = tableHeaderColumnEntries.filter(([column]) =>

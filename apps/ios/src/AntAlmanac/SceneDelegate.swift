@@ -56,7 +56,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // This function is called when our app is already running and the user clicks a universal link.
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
         // Handle universal links into our app when the app is already running.
-        // This allows your PWA to open links to your domain, rather than opening in a browser tab.
+        // This allows the app to open links to your domain, rather than opening in a browser tab.
         // For more info about universal links, see https://developer.apple.com/documentation/xcode/supporting-universal-links-in-your-app
         
         // Ensure we're trying to launch a link.

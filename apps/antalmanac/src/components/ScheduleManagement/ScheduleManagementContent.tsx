@@ -6,9 +6,6 @@ import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
-import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-
 const UCIMap = lazy(() => import('../Map/Map'));
 
 export function ScheduleManagementContent() {
@@ -35,7 +32,13 @@ export function ScheduleManagementContent() {
                                 alignItems: 'center',
                             }}
                         >
-                            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" unoptimized />
+                            <Image
+                                src={isDark ? '/course-search/dark-loading.gif' : '/course-search/loading.gif'}
+                                alt="Loading map"
+                                width={370}
+                                height={220}
+                                unoptimized
+                            />
                         </div>
                     }
                 >

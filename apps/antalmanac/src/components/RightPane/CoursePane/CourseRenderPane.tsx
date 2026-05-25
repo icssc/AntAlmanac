@@ -1,14 +1,10 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
-import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import {
-    type CourseSearchParams,
     useCourseSearchUrlState,
+    type CourseSearchParams,
 } from '$components/RightPane/CoursePane/SearchForm/searchParams';
-import darkNoResults from '$components/RightPane/CoursePane/static/dark-no_results.png';
-import noResults from '$components/RightPane/CoursePane/static/no_results.png';
-import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
+import RightPaneStore, { type CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import { WarningAlert } from '$components/WarningAlert';
@@ -230,7 +226,13 @@ const LoadingMessage = () => {
     const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" unoptimized />
+            <Image
+                src={isDark ? '/course-search/dark-loading.gif' : '/course-search/loading.gif'}
+                alt="Loading courses"
+                width={370}
+                height={220}
+                unoptimized
+            />
         </Box>
     );
 };
@@ -281,7 +283,7 @@ const ErrorMessage = ({ formData }: { formData: CourseSearchParams }) => {
             ) : null}
 
             <Image
-                src={isDark ? darkNoResults : noResults}
+                src={isDark ? '/course-search/dark-no-results.png' : '/course-search/no-results.png'}
                 alt="No Results Found"
                 unoptimized
                 style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
@@ -293,7 +295,7 @@ const ErrorMessage = ({ formData }: { formData: CourseSearchParams }) => {
 export default function CourseRenderPane() {
     const { formData, manualSearchEnabled } = useCourseSearchUrlState();
     const [courseColors, setCourseColors] = useState(getColors);
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => formData.term.longName);
     const multiSearchData = RightPaneStore.getMultiSearchData();

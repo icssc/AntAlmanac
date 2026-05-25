@@ -126,15 +126,16 @@ const reviewRouter = router({
      * Latest time the user dismissed a review prompt or submitted a quick review.
      */
     getReviewPromptLastInteractionAt: protectedProcedure.query(async ({ ctx }) => {
-        const [dismissRow] = await db
-            .select({ createdAt: max(reviewDismissals.createdAt) })
-            .from(reviewDismissals)
-            .where(eq(reviewDismissals.userId, ctx.userId));
-
-        const [reviewRow] = await db
-            .select({ createdAt: max(instructorReviews.createdAt) })
-            .from(instructorReviews)
-            .where(eq(instructorReviews.userId, ctx.userId));
+        const [[dismissRow], [reviewRow]] = await Promise.all([
+            db
+                .select({ createdAt: max(reviewDismissals.createdAt) })
+                .from(reviewDismissals)
+                .where(eq(reviewDismissals.userId, ctx.userId)),
+            db
+                .select({ createdAt: max(instructorReviews.createdAt) })
+                .from(instructorReviews)
+                .where(eq(instructorReviews.userId, ctx.userId)),
+        ]);
 
         const dismissedAt = dismissRow?.createdAt;
         const reviewedAt = reviewRow?.createdAt;

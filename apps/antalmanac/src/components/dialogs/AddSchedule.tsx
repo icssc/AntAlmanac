@@ -1,15 +1,14 @@
+import { addSchedule } from '$actions/AppStoreActions';
+import AppStore from '$stores/AppStore';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import type { DialogProps } from '@mui/material';
 import { useState } from 'react';
-
-import { addSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
 
 /**
  * Dialog with a text field to add a schedule.
  */
 function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
-    const [name, setName] = useState(
+    const [name, setName] = useState(() =>
         AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName())
     );
 

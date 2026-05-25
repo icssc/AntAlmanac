@@ -1,6 +1,5 @@
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
-import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { SortableList } from '$components/drag-and-drop/SortableList';
 import { EmptyState } from '$components/EmptyState';
 import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/AddedCoursesLoadingSkeleton';
@@ -10,14 +9,13 @@ import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifica
 import { ScheduleNoteBox } from '$components/RightPane/AddedCourses/ScheduleNoteBox';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
-import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import {
     removeLocalStorageAddedCoursesSkeletonBlueprint,
     setLocalStorageAddedCoursesSkeletonBlueprint,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { getCourseId } from '$stores/scheduleHelpers';
 import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -121,11 +119,9 @@ function getCourses() {
 
 export function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses);
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-    const loadingSchedule = scheduleComponentsToggleStore((state) => state.openLoadingSchedule);
-
-    const isMobile = useIsMobile();
+    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+    const [scheduleIndex, setScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
+    const loadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
 
     const handleCourseOrderChange = (updatedCourses: CourseWithTerm[], _activeIndex: number, overIndex: number) => {
         setCourses(updatedCourses);
@@ -211,7 +207,10 @@ export function AddedSectionsGrid() {
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {isMobile && <SelectSchedulePopover />}
+                {/*
+                TODO (@KevinWu098) Looks too out of place. Will be added back in the calendar toolbar refactor work.
+                {isMobile && <SelectSchedulePopover />} 
+                */}
                 {loadingSchedule ? (
                     <AddedCoursesLoadingSkeleton />
                 ) : courses.length === 0 ? (
@@ -225,7 +224,7 @@ export function AddedSectionsGrid() {
                         }}
                         secondaryAction={{
                             label: 'Import Schedule',
-                            onClick: () => scheduleComponentsToggleStore.getState().setOpenImportDialog(true),
+                            onClick: () => useScheduleComponentsToggleStore.getState().setOpenImportDialog(true),
                         }}
                     />
                 ) : (

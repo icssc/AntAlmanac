@@ -1,16 +1,15 @@
 import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
-import { removeSampleClasses } from '$lib/tourExampleGeneration';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 interface TutorialButtonProps {
     onMenuClose?: () => void;
 }
 
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
-    const { setCurrentStep, setIsOpen, isOpen } = useTour();
+    const { setCurrentStep, setIsOpen } = useTour();
     const { setSearchMode, resetAll, clearView } = useCourseSearchUrlState();
 
     const startTutorial = useCallback(() => {
@@ -20,12 +19,6 @@ export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
         setCurrentStep(0);
         setIsOpen(true);
     }, [clearView, resetAll, setCurrentStep, setIsOpen, setSearchMode]);
-
-    useEffect(() => {
-        return () => {
-            removeSampleClasses();
-        };
-    }, [isOpen]);
 
     const handleClick = useCallback(() => {
         onMenuClose?.();
