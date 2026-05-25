@@ -4,8 +4,6 @@ import type {
     RepeatingCustomEvent,
     ScheduleSaveState,
 } from '@packages/antalmanac-types';
-import type { db } from '@packages/db';
-import type * as schema from '@packages/db/src/schema';
 import { coursesInSchedule, customEvents, schedules, users } from '@packages/db/src/schema';
 import {
     buildConflictUpdateSet,
@@ -13,13 +11,10 @@ import {
     type ConflictUpdatePolicy,
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
-import { and, eq, ExtractTablesWithRelations, not, notInArray, or } from 'drizzle-orm';
-import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { and, eq, not, notInArray, or } from 'drizzle-orm';
 
+import type { DatabaseOrTransaction, Transaction } from './types';
 import { aggregateUserData } from './users';
-
-type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
-type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
 
 /**
  * Upserts the given user's schedules and selected schedule index.

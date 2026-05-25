@@ -1,12 +1,8 @@
-import type { db } from '@packages/db';
-import type * as schema from '@packages/db/src/schema';
 import { accounts, sessions, users, type Account } from '@packages/db/src/schema';
 import { buildConflictUpdateSet } from '@packages/db/src/utils';
-import { and, eq, ExtractTablesWithRelations, sql } from 'drizzle-orm';
-import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { and, eq, sql } from 'drizzle-orm';
 
-type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
-type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
+import type { DatabaseOrTransaction } from './types';
 
 /**
  * Retrieves an account with the specified account type and provider ID.

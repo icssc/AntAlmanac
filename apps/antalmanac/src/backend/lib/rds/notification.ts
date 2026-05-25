@@ -1,14 +1,10 @@
 import type { Notification } from '@packages/antalmanac-types';
 import type { Quarter, Year } from '@packages/anteater-api/types';
-import type { db } from '@packages/db';
-import type * as schema from '@packages/db/src/schema';
 import { subscriptions } from '@packages/db/src/schema';
 import { buildConflictUpdateSet } from '@packages/db/src/utils';
-import { and, eq, ExtractTablesWithRelations } from 'drizzle-orm';
-import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { and, eq } from 'drizzle-orm';
 
-type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
-type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
+import type { DatabaseOrTransaction } from './types';
 
 /**
  * Retrieves notifications associated with a specified user and environment.

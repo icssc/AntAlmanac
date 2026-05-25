@@ -1,6 +1,4 @@
 import type { ShortCourseSchedule, ScheduleSaveState } from '@packages/antalmanac-types';
-import type { db } from '@packages/db';
-import type * as schema from '@packages/db/src/schema';
 import {
     accounts,
     coursesInSchedule,
@@ -13,13 +11,10 @@ import {
     type CustomEvent,
     type User,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt, sql } from 'drizzle-orm';
-import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { and, eq, gt, sql } from 'drizzle-orm';
 
 import { getCurrentSession } from './sessions';
-
-type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
-type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
+import type { DatabaseOrTransaction } from './types';
 
 /**
  * Retrieves a user by their ID from the database.

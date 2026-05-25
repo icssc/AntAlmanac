@@ -1,11 +1,7 @@
-import type { db } from '@packages/db';
-import type * as schema from '@packages/db/src/schema';
 import { sessions, type Session } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations } from 'drizzle-orm';
-import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { and, eq } from 'drizzle-orm';
 
-type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
-type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
+import type { DatabaseOrTransaction, Transaction } from './types';
 
 /**
  * Retrieves the current session from the database using the provided refresh token.
