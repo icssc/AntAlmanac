@@ -24,6 +24,7 @@ export function CalendarEventPopover() {
             setScheduleNames(scheduleSource.getScheduleNames());
         };
 
+        updateScheduleNames();
         return scheduleSource.subscribe(updateScheduleNames);
     }, [scheduleSource]);
 
