@@ -1,4 +1,6 @@
-import { trpc } from '$lib/api/trpc';
+import { loginUser } from '$actions/AppStoreActions';
+import { authClient } from '$lib/auth/authClient';
+import { Provider } from '$lib/auth/authTypes';
 import { hasSsoCookie } from '$lib/ssoCookie';
 import { useSessionStore } from '$stores/SessionStore';
 import { useEffect, useRef } from 'react';
@@ -14,45 +16,25 @@ import { useEffect, useRef } from 'react';
  */
 export function AutoSignIn() {
     const hasChecked = useRef(false);
+    const { data, isPending } = authClient.useSession();
+    const hasCheckedAuth = useSessionStore((state) => state.hasCheckedAuth);
 
     useEffect(() => {
-        if (hasChecked.current) {
+        if (hasChecked.current || isPending || !hasCheckedAuth) {
             return;
         }
         hasChecked.current = true;
 
         const checkAndSignIn = async () => {
-            // Don't interfere when AuthPage is already handling an OAuth callback.
-            // Calling getAuthUrl here would overwrite the oauth_state /
-            // oauth_code_verifier cookies that AuthPage needs to finish the exchange.
-            if (window.location.pathname === '/auth' || window.location.pathname === '/auth/native') {
+            if (!hasSsoCookie() || data?.session) {
                 return;
             }
 
-            if (!hasSsoCookie()) {
-                return;
-            }
-
-            if (useSessionStore.getState().sessionIsValid) {
-                return;
-            }
-
-            const loaded = await useSessionStore.getState().loadSession();
-            if (loaded) {
-                return;
-            }
-
-            try {
-                const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-                const authUrl = await trpc.auth.getAuthUrl.query({ prompt: 'none', returnTo });
-                window.location.href = authUrl.toString();
-            } catch {
-                // Silent SSO failed (e.g. backend unavailable). Don't retry.
-            }
+            loginUser(Provider.Google, { silent: true });
         };
 
         checkAndSignIn();
-    }, []);
+    }, [isPending, data, hasCheckedAuth]);
 
     return null;
 }

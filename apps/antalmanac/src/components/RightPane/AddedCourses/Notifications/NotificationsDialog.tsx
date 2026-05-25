@@ -31,10 +31,10 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
     const postHog = usePostHog();
 
-    const isGoogleUser = useSessionStore((state) => state.isGoogleUser);
+    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
 
     const handleOpen = useCallback(() => {
-        if (isGoogleUser) {
+        if (sessionIsValid) {
             logAnalytics(postHog, {
                 category: analyticsEnum.aants,
                 action: analyticsEnum.aants.actions.OPEN_MANAGE_NOTIFICATIONS,
@@ -43,7 +43,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
         } else {
             setSignInOpen(true);
         }
-    }, [isGoogleUser, postHog]);
+    }, [sessionIsValid, postHog]);
 
     const handleClose = useCallback(() => {
         logAnalytics(postHog, {
@@ -59,11 +59,11 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
 
     return (
         <>
-            <Tooltip title={isGoogleUser ? 'Notifications Menu' : 'Sign in to access notifications'}>
+            <Tooltip title={sessionIsValid ? 'Notifications Menu' : 'Sign in to access notifications'}>
                 <IconButton
                     sx={{
                         ...buttonSx,
-                        opacity: isGoogleUser ? 1 : 0.5,
+                        opacity: sessionIsValid ? 1 : 0.5,
                     }}
                     onClick={handleOpen}
                     size="small"

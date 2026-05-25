@@ -15,7 +15,7 @@ import {
     setLocalStorageAddedCoursesSkeletonBlueprint,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { getCourseId } from '$stores/scheduleHelpers';
 import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -119,9 +119,9 @@ function getCourses() {
 
 export function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses);
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-    const loadingSchedule = scheduleComponentsToggleStore((state) => state.openLoadingSchedule);
+    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+    const [scheduleIndex, setScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
+    const loadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
 
     const handleCourseOrderChange = (updatedCourses: CourseWithTerm[], _activeIndex: number, overIndex: number) => {
         setCourses(updatedCourses);
@@ -224,7 +224,7 @@ export function AddedSectionsGrid() {
                         }}
                         secondaryAction={{
                             label: 'Import Schedule',
-                            onClick: () => scheduleComponentsToggleStore.getState().setOpenImportDialog(true),
+                            onClick: () => useScheduleComponentsToggleStore.getState().setOpenImportDialog(true),
                         }}
                     />
                 ) : (

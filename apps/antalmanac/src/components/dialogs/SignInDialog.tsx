@@ -1,9 +1,6 @@
-import { loginUser } from '$actions/AppStoreActions';
-import { AppleSignInButton } from '$components/buttons/AppleSignInButton';
-import { GoogleSignInButton } from '$components/buttons/GoogleSignInButton';
+import { SignInButtons } from '$components/buttons/SignInButtons/SignInButtons';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
 
 interface SignInDialogProps {
     open: boolean;
@@ -14,7 +11,6 @@ interface SignInDialogProps {
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, open } = props;
     const isDark = useThemeStore((store) => store.isDark);
-    const postHog = usePostHog();
 
     const handleClose = () => {
         onClose();
@@ -57,8 +53,7 @@ export function SignInDialog(props: SignInDialogProps) {
                             All changes made will be saved to your account
                         </Alert>
                     )}
-                    <GoogleSignInButton onClick={() => loginUser({ provider: 'google', postHog })} />
-                    <AppleSignInButton onClick={() => loginUser({ provider: 'apple', postHog })} />
+                    <SignInButtons />
                 </Stack>
             </DialogContent>
         </Dialog>

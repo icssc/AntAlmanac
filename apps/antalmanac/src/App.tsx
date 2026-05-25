@@ -2,17 +2,17 @@ import './App.css';
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
-import AppPostHogProvider from '$providers/PostHog';
-import AppQueryProvider from '$providers/Query';
-import { AuthPage } from '$routes/AuthPage';
+import AppPostHogProvider from '$providers/AppPostHogProvider';
+import AppQueryProvider from '$providers/AppQueryProvider';
+import AppTourProvider from '$providers/AppTourProvider';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
+import { NewUserPage } from '$routes/NewUserPage';
 import { OutagePage } from '$routes/OutagePage';
 import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { TourProvider } from '@reactour/tour';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
@@ -58,21 +58,8 @@ const BROWSER_ROUTER = createBrowserRouter([
                 errorElement: <ErrorPage />,
             },
             {
-                path: '/auth',
-                element: <AuthPage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                // OAuth callback sink for the native iOS wrapper. In the happy
-                // path ASWebAuthenticationSession intercepts this URL via the
-                // AASA association and never actually loads it in any web view.
-                // This route exists as defense-in-depth: if the URL is ever
-                // navigated to directly (e.g. Universal Link delivered to the
-                // WKWebView via SceneDelegate, or a browser that hits this URL
-                // outside any native flow), AuthPage still completes the PKCE
-                // exchange using the cookies set on antalmanac.com.
-                path: '/auth/native',
-                element: <AuthPage />,
+                path: '/welcome',
+                element: <NewUserPage />,
                 errorElement: <ErrorPage />,
             },
             {
@@ -120,32 +107,9 @@ export default function App() {
             <AppThemeProvider>
                 <AppPostHogProvider>
                     <AppQueryProvider>
-                        <TourProvider
-                            steps={[] /** Will be populated by Tutorial component */}
-                            padding={5}
-                            styles={{
-                                maskArea: (base) => ({
-                                    ...base,
-                                    rx: 5,
-                                }),
-                                maskWrapper: (base) => ({
-                                    ...base,
-                                    color: 'rgba(0, 0, 0, 0.3)',
-                                }),
-                                popover: (base) => ({
-                                    ...base,
-                                    background: '#fff',
-                                    color: 'black',
-                                    borderRadius: 5,
-                                    boxShadow: '0 0 10px #000',
-                                    padding: 20,
-                                    paddingTop: 40,
-                                    margin: '4px 20px 20px 20px',
-                                }),
-                            }}
-                        >
+                        <AppTourProvider>
                             <RouterProvider router={ROUTER} />
-                        </TourProvider>
+                        </AppTourProvider>
                     </AppQueryProvider>
                 </AppPostHogProvider>
             </AppThemeProvider>

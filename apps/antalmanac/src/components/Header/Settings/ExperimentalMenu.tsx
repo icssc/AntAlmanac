@@ -1,6 +1,6 @@
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useAutoSaveStore, useDevModeStore } from '$stores/SettingsStore';
 import { Help } from '@mui/icons-material';
@@ -14,7 +14,7 @@ export function ExperimentalMenu() {
     );
     const [autoSave, setAutoSave] = useAutoSaveStore(useShallow((store) => [store.autoSave, store.setAutoSave]));
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
-    const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const { setOpenAutoSaveWarning } = useScheduleComponentsToggleStore();
     const [devMode, setDevMode] = useDevModeStore(useShallow((store) => [store.devMode, store.setDevMode]));
     const postHog = usePostHog();
 
