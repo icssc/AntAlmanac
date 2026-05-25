@@ -10,7 +10,7 @@ import {
     TextField,
     type DialogProps,
 } from '@mui/material';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 
 interface ScheduleNameDialogProps extends DialogProps {
     /**
@@ -33,7 +33,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
      * This is destructured separately for memoization.
      */
     const { onClose } = props;
-    const [name, setName] = useState(AppStore.getScheduleNames()[index]);
+    const [name, setName] = useState(() => AppStore.getScheduleNames()[index]);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
@@ -64,18 +64,6 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
         },
         [onClose, submitName, onKeyDown]
     );
-
-    const handleScheduleNamesChange = useCallback(() => {
-        setName(AppStore.getScheduleNames()[index]);
-    }, [index]);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
 
     return (
         <Dialog onKeyDown={handleKeyDown} {...dialogProps}>

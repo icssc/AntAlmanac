@@ -3,7 +3,6 @@ import { DeleteButton } from '$components/RightPane/SectionTable/SectionTableBod
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { SectionActionMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/SectionActionMenu';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsMobile } from '$hooks/useIsMobile';
 import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
@@ -33,7 +32,6 @@ export const ActionCell = memo(
             ])
         );
 
-        const isMobile = useIsMobile();
         const handleVisibilityToggle = useCallback(() => {
             cycleVisibility(AppStore.getCurrentScheduleId(), section.sectionCode);
         }, [section.sectionCode, cycleVisibility]);
@@ -94,7 +92,7 @@ export const ActionCell = memo(
                         </IconButton>
                     )}
 
-                    {!isMobile && !addedCourse && (
+                    {!addedCourse && (
                         <SectionActionMenu
                             section={section}
                             courseDetails={courseDetails}

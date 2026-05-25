@@ -1,7 +1,5 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
-import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import RightPaneStore, { CourseSearchParams, CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
@@ -220,7 +218,13 @@ const LoadingMessage = () => {
     const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" unoptimized />
+            <Image
+                src={isDark ? '/course-search/dark-loading.gif' : '/course-search/loading.gif'}
+                alt="Loading courses"
+                width={370}
+                height={220}
+                unoptimized
+            />
         </Box>
     );
 };
@@ -272,7 +276,7 @@ const ErrorMessage = () => {
             ) : null}
 
             <Image
-                src={isDark ? '/assets/dark-no_results.png' : '/assets/no_results.png'}
+                src={isDark ? '/course-search/dark-no-results.png' : '/course-search/no-results.png'}
                 width={601}
                 height={422}
                 alt="No Results Found"
@@ -284,7 +288,7 @@ const ErrorMessage = () => {
 
 export default function CourseRenderPane(props: { id?: number }) {
     const [courseColors, setCourseColors] = useState(getColors);
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => RightPaneStore.getFormData().term.longName);
 
