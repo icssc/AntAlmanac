@@ -4,7 +4,7 @@ on:
     pull_request:
         types: [opened, synchronize, reopened]
         paths-ignore:
-            - 'apps/pwa/**'
+            - 'apps/ios/**'
     repository_dispatch:
         types: [deploy-command]
 
