@@ -2,10 +2,7 @@ import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import {
-    useCourseSearchActions,
-    useCourseSearchFormData,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
@@ -39,8 +36,7 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
 }
 
 export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
-    const formData = useCourseSearchFormData();
-    const { showResults } = useCourseSearchActions();
+    const { formData, showResults } = useCourseSearchUrl();
     const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
         COURSE_SEARCH_PLANNER_KEY,
         parseAsString.withOptions({ history: 'replace' })

@@ -1,4 +1,4 @@
-import { useCourseSearchActions } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
@@ -11,7 +11,7 @@ interface TutorialButtonProps {
 
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
     const { setCurrentStep, setIsOpen } = useTour();
-    const { setSearchMode, resetForm, clearView } = useCourseSearchActions();
+    const { setSearchMode, resetForm, clearView } = useCourseSearchUrl();
 
     const startTutorial = useCallback(() => {
         setSearchMode(COURSE_SEARCH_MODE.QUICK);

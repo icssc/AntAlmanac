@@ -1,7 +1,7 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
-import { useCourseSearchPane } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
@@ -11,7 +11,7 @@ import { useCallback, useEffect } from 'react';
 
 export function CoursePaneRoot() {
     const { manualSearchEnabled, searchFormIsDisplayed, showSearchForm, clearView, setSearchMode, resetForm } =
-        useCourseSearchPane();
+        useCourseSearchUrl();
 
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();

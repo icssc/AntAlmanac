@@ -2,7 +2,7 @@ import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
-import { useCourseSearchPane } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
@@ -16,7 +16,7 @@ import { useCallback, type SyntheticEvent } from 'react';
 
 export const SearchForm = () => {
     const { formData, manualSearchEnabled, resetForm, setFields, setSearchMode, clearView, submitSearch } =
-        useCourseSearchPane();
+        useCourseSearchUrl();
     const isDark = useThemeStore((store) => store.isDark);
     const { savedManualSearch, saveManualSearch, clearManualSearch } = useSavedSearchStore((store) => ({
         savedManualSearch: store.savedManualSearch,

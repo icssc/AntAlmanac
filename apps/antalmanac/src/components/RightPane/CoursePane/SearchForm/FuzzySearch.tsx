@@ -1,6 +1,6 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { useCourseSearchActions, useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchUrl, useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import {
     COURSE_SEARCH_MODE,
     DEFAULT_FORM_DATA,
@@ -61,7 +61,7 @@ interface SearchOption {
 
 const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
     const [term] = useCourseSearchParam('term');
-    const { setFields, setSearchMode, submitSearch } = useCourseSearchActions();
+    const { setFields, setSearchMode, submitSearch } = useCourseSearchUrl();
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
     const [open, setOpen] = useState<boolean>(false);
     const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});

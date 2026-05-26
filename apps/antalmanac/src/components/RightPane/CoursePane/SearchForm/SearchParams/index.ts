@@ -12,7 +12,6 @@ import {
 import {
     advancedSearchParsers,
     courseSearchParamParsers,
-    manualSearchParsers,
     plannerSearchParser,
     searchModeParser,
     searchViewParser,
@@ -22,12 +21,11 @@ import type {
     CourseSearchMode,
     CourseSearchParams,
     CourseSearchView,
-    ManualSearchParams,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { useQueryState, useQueryStates } from 'nuqs';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 /** Enough to run a WebSOC search (dept, GE, section, or instructor). */
 export function isValidSearch(formData: CourseSearchParams) {
@@ -111,19 +109,45 @@ export function useAdvancedSearchParams() {
     return { advanced, setAdvanced, setField };
 }
 
-export function useCourseSearchFormData(): CourseSearchParams {
-    const [manual] = useQueryStates(manualSearchParsers);
-    const [advanced] = useQueryStates(advancedSearchParsers);
-    return useMemo(() => ({ ...manual, ...advanced }), [manual, advanced]);
-}
-
-/** Mode / view chrome — watches `search`, `view`, and planner import param only. */
-export function useCourseSearchChrome() {
+export function useCourseSearchUrl() {
+    const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
     const [searchMode, setSearchModeParam] = useQueryState(COURSE_SEARCH_MODE_KEY, searchModeParser);
     const [viewParam, setViewParam] = useQueryState(COURSE_SEARCH_VIEW_KEY, searchViewParser);
     const [plannerSearchParam] = useQueryState(COURSE_SEARCH_PLANNER_KEY, plannerSearchParser);
 
     const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL && plannerSearchParam === null;
+
+    const derivedView: CourseSearchView = shouldShowSearchForm(formData)
+        ? COURSE_SEARCH_VIEW.SEARCH_FORM
+        : COURSE_SEARCH_VIEW.RESULTS;
+    const view: CourseSearchView = manualSearchEnabled
+        ? (viewParam ?? COURSE_SEARCH_VIEW.SEARCH_FORM)
+        : (viewParam ?? derivedView);
+    const searchFormIsDisplayed = view === COURSE_SEARCH_VIEW.SEARCH_FORM;
+
+    const setField = useCallback(
+        <Field extends keyof CourseSearchParams>(field: Field, value: CourseSearchParams[Field]) => {
+            clearMultiSearchData();
+            void setFormData({ [field]: value });
+        },
+        [setFormData]
+    );
+
+    const setFields = useCallback(
+        (values: Partial<CourseSearchParams> | null) => {
+            clearMultiSearchData();
+            void setFormData(values);
+        },
+        [setFormData]
+    );
+
+    const resetForm = useCallback(
+        ({ preserveTerm = false }: { preserveTerm?: boolean } = {}) => {
+            clearMultiSearchData();
+            void setFormData(preserveTerm ? { ...DEFAULT_FORM_DATA, term: formData.term } : DEFAULT_FORM_DATA);
+        },
+        [formData.term, setFormData]
+    );
 
     const setSearchMode = useCallback(
         (mode: CourseSearchMode) => {
@@ -145,59 +169,6 @@ export function useCourseSearchChrome() {
         void setViewParam(null);
     }, [setViewParam]);
 
-    return {
-        manualSearchEnabled,
-        viewParam,
-        setSearchMode,
-        showResults,
-        showSearchForm,
-        clearView,
-    };
-}
-
-/** Batch writes without subscribing to the full form. */
-export function useCourseSearchActions() {
-    const [, setManual] = useQueryStates(manualSearchParsers);
-    const [, setAdvanced] = useQueryStates(advancedSearchParsers);
-    const [term] = useQueryState('term', manualSearchParsers.term);
-    const { setSearchMode, showResults, showSearchForm, clearView } = useCourseSearchChrome();
-
-    const setFields = useCallback(
-        (values: Partial<CourseSearchParams> | null) => {
-            clearMultiSearchData();
-            if (values === null) {
-                void setManual(null);
-                void setAdvanced(null);
-                return;
-            }
-
-            const manualPatch: Partial<ManualSearchParams> = {};
-            const advancedPatch: Partial<AdvancedSearchParams> = {};
-
-            for (const [key, value] of Object.entries(values) as [keyof CourseSearchParams, unknown][]) {
-                if (key in manualSearchParsers) {
-                    (manualPatch as Record<string, unknown>)[key] = value;
-                }
-                if (key in advancedSearchParsers) {
-                    (advancedPatch as Record<string, unknown>)[key] = value;
-                }
-            }
-
-            if (Object.keys(manualPatch).length > 0) void setManual(manualPatch);
-            if (Object.keys(advancedPatch).length > 0) void setAdvanced(advancedPatch);
-        },
-        [setAdvanced, setManual]
-    );
-
-    const resetForm = useCallback(
-        ({ preserveTerm = false }: { preserveTerm?: boolean } = {}) => {
-            clearMultiSearchData();
-            void setManual(preserveTerm ? { ...DEFAULT_FORM_DATA, term } : DEFAULT_FORM_DATA);
-            void setAdvanced(DEFAULT_ADVANCED_SEARCH_VALUES);
-        },
-        [setAdvanced, setManual, term]
-    );
-
     const submitSearch = useCallback(
         (data: CourseSearchParams) => {
             if (isValidSearch(data)) {
@@ -215,34 +186,17 @@ export function useCourseSearchActions() {
     );
 
     return {
-        setFields,
-        resetForm,
-        setSearchMode,
+        formData,
+        manualSearchEnabled,
+        searchFormIsDisplayed,
+        viewParam,
         showResults,
         showSearchForm,
         clearView,
         submitSearch,
-    };
-}
-
-/** Pane-level hook: full form + chrome + derived view (CoursePaneRoot, SearchForm). */
-export function useCourseSearchPane() {
-    const formData = useCourseSearchFormData();
-    const chrome = useCourseSearchChrome();
-    const actions = useCourseSearchActions();
-
-    const derivedView: CourseSearchView = shouldShowSearchForm(formData)
-        ? COURSE_SEARCH_VIEW.SEARCH_FORM
-        : COURSE_SEARCH_VIEW.RESULTS;
-    const view: CourseSearchView = chrome.manualSearchEnabled
-        ? (chrome.viewParam ?? COURSE_SEARCH_VIEW.SEARCH_FORM)
-        : (chrome.viewParam ?? derivedView);
-    const searchFormIsDisplayed = view === COURSE_SEARCH_VIEW.SEARCH_FORM;
-
-    return {
-        formData,
-        searchFormIsDisplayed,
-        ...chrome,
-        ...actions,
+        setField,
+        setFields,
+        setSearchMode,
+        resetForm,
     };
 }
