@@ -1,0 +1,27 @@
+apps/antalmanac/src/components/RightPane/AddedCourses/FriendSchedule.tsx
+  s_5b70ac43383c21::t_3107165195c821 76
+  s_5b70ac43383c21::t_c772843903c12b 14-15
+  s_5b70ac43383c21::t_dd2f3bef3fd30d 6
+  s_5b70ac43383c21::t_d3a98d09c0164a 52,60
+apps/antalmanac/src/hooks/useQuickSearch.tsx
+  s_5b70ac43383c21::t_5770b93167da4d 27
+  s_5b70ac43383c21::t_e77940e00a6b76 44
+apps/antalmanac/src/lib/schedule/FriendScheduleTabContext.tsx
+  s_5b70ac43383c21::t_f5c7e91f2c0386 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e1fdceeb52cc29df4f3b1624aad75fcf1e32fe84",
+  "prompts": {},
+  "sessions": {
+    "s_5b70ac43383c21": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "e43f38ed-6f22-4f3a-8395-319be537da3f",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
