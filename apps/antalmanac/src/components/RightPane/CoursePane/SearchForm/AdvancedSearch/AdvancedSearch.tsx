@@ -11,15 +11,15 @@ import { OnlineField } from '$components/RightPane/CoursePane/SearchForm/Advance
 import { RoomField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/RoomField';
 import { StartTimeField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/StartTimeField';
 import { UnitsField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/UnitsField';
-import { hasAdvancedParams, useAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { hasAdvancedParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { readAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Box, Button, Collapse, Typography } from '@mui/material';
 import { useState } from 'react';
 
 export function AdvancedSearch() {
-    const { advanced } = useAdvancedSearchParams();
-    const [expanded, setExpanded] = useState(() => hasAdvancedParams(advanced));
+    const [expanded, setExpanded] = useState(() => hasAdvancedParams(readAdvancedSearchParams()));
     const isDark = useThemeStore((store) => store.isDark);
 
     const handleExpand = () => setExpanded((value) => !value);
