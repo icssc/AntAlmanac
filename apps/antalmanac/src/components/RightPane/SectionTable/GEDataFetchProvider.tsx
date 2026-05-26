@@ -1,4 +1,4 @@
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
@@ -12,27 +12,39 @@ import { useMemo } from 'react';
  * GE criteria will miss them.
  */
 const GeDataFetchProvider = (props: SectionTableProps) => {
-    const { formData } = useCourseSearchUrlState();
+    const searchFields = useCourseSearchUrlState((state) => ({
+        term: state.formData.term,
+        instructor: state.formData.instructor,
+        units: state.formData.units,
+        endTime: state.formData.endTime,
+        startTime: state.formData.startTime,
+        coursesFull: state.formData.coursesFull,
+        building: state.formData.building,
+        room: state.formData.room,
+        division: state.formData.division,
+        excludeRestrictionCodes: state.formData.excludeRestrictionCodes,
+        days: state.formData.days,
+    }));
     const params = useMemo(() => {
         return {
-            year: formData.term.year,
-            quarter: formData.term.quarter,
+            year: searchFields.term.year,
+            quarter: searchFields.term.quarter,
             department: props.courseDetails.deptCode,
             ge: 'ANY',
             courseNumber: props.courseDetails.courseNumber,
             courseTitle: props.courseDetails.courseTitle,
-            instructorName: formData.instructor,
-            units: formData.units,
-            endTime: formData.endTime,
-            startTime: formData.startTime,
-            fullCourses: formData.coursesFull,
-            building: formData.building,
-            room: formData.room,
-            division: formData.division,
-            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
-            days: formData.days.split(/(?=[A-Z])/).join(','),
+            instructorName: searchFields.instructor,
+            units: searchFields.units,
+            endTime: searchFields.endTime,
+            startTime: searchFields.startTime,
+            fullCourses: searchFields.coursesFull,
+            building: searchFields.building,
+            room: searchFields.room,
+            division: searchFields.division,
+            excludeRestrictionCodes: searchFields.excludeRestrictionCodes.split('').join(','),
+            days: searchFields.days.split(/(?=[A-Z])/).join(','),
         };
-    }, [formData, props.courseDetails.courseNumber, props.courseDetails.courseTitle, props.courseDetails.deptCode]);
+    }, [searchFields, props.courseDetails.courseNumber, props.courseDetails.courseTitle, props.courseDetails.deptCode]);
 
     const { data } = trpcReact.websoc.getOne.useQuery(params);
 

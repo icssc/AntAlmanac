@@ -4,12 +4,11 @@ import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
-import { safeUnreachableCase } from '$lib/utils';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -83,26 +82,7 @@ export function AdvancedSearchTextFields() {
 
         const value = (event as Exclude<InputEvent, Date | null>).target.value;
         const stringValue = Array.isArray(value) ? value.join('') : value;
-
-        switch (name) {
-            case 'instructor':
-            case 'units':
-            case 'building':
-            case 'room':
-            case 'division':
-            case 'excludeRoadmapCourses':
-            case 'excludeRestrictionCodes':
-            case 'days':
-            case 'coursesFull':
-                void setField(name, stringValue);
-                break;
-            case 'startTime':
-            case 'endTime':
-                break;
-            default:
-                safeUnreachableCase(name);
-                break;
-        }
+        void setField(name, stringValue);
     };
 
     const handleSignInClose = useCallback(() => {

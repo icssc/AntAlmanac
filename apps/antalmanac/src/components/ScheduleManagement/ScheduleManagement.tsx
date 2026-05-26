@@ -1,4 +1,5 @@
-import { hasSearchParams, useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
+import { hasSearchParams } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -27,7 +28,8 @@ export function ScheduleManagement() {
     );
     const { tab } = useParams();
     const isMobile = useIsMobile();
-    const { formData, manualSearchEnabled } = useCourseSearchUrlState();
+    const manualSearchEnabled = useCourseSearchUrlState((state) => state.manualSearchEnabled);
+    const hasParams = useCourseSearchUrlState((state) => hasSearchParams(state.formData));
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
@@ -87,7 +89,7 @@ export function ScheduleManagement() {
 
         if (shouldSearchPlannerFromParams()) {
             setActiveTab('search');
-        } else if (hasSearchParams(formData) || manualSearchEnabled) {
+        } else if (hasParams || manualSearchEnabled) {
             setActiveTab('search');
         } else if (!isMobile) {
             const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();

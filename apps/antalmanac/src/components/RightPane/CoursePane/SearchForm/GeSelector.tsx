@@ -4,16 +4,20 @@ import {
     getSelectedGEs,
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
+import {
+    selectFormField,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 
 const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
 const getShortLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.shortLabel ?? value;
 
 export function GeSelector() {
-    const { formData, setField } = useCourseSearchUrlState();
-    const selectedGEs = getSelectedGEs(formData.ge);
+    const ge = useCourseSearchUrlState(selectFormField('ge'));
+    const setField = useCourseSearchUrlState((state) => state.setField);
+    const selectedGEs = getSelectedGEs(ge);
 
     const handleChange = (event: SelectChangeEvent<string[]>) => {
         const value = event.target.value;

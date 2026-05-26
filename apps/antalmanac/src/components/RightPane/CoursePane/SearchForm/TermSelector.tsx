@@ -1,5 +1,8 @@
+import {
+    selectFormField,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import { getDefaultTerm, termData } from '$lib/term';
 import type { AATerm } from '@packages/antalmanac-types';
@@ -11,7 +14,8 @@ type TermSelectorProps = Omit<
 >;
 
 export function TermSelector(props: TermSelectorProps) {
-    const { formData, setField } = useCourseSearchUrlState();
+    const term = useCourseSearchUrlState(selectFormField('term'));
+    const setField = useCourseSearchUrlState((state) => state.setField);
 
     const handleChange = (_: unknown, option: AATerm | null) => {
         const value = option ?? getDefaultTerm();
@@ -26,7 +30,7 @@ export function TermSelector(props: TermSelectorProps) {
             {...props}
             label="Term"
             autocompleteProps={{
-                value: formData.term,
+                value: term,
                 options: termData,
                 getOptionLabel: (term: AATerm) => term.longName,
                 isOptionEqualToValue: (option: AATerm, value: AATerm) => option.shortName === value.shortName,

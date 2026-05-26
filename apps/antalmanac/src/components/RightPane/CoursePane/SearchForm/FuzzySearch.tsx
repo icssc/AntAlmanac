@@ -1,10 +1,10 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
-import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import {
-    type CourseSearchParams,
-    defaultFormData,
+    selectFormField,
     useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+} from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
+import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import { type CourseSearchParams, defaultFormData } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
@@ -59,14 +59,19 @@ interface SearchOption {
 }
 
 const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
-    const { formData, setFields, setSearchMode, submitSearch } = useCourseSearchUrlState();
+    const term = useCourseSearchUrlState(selectFormField('term'));
+    const { setFields, setSearchMode, submitSearch } = useCourseSearchUrlState((state) => ({
+        setFields: state.setFields,
+        setSearchMode: state.setSearchMode,
+        submitSearch: state.submitSearch,
+    }));
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
     const [open, setOpen] = useState<boolean>(false);
     const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [pendingRequest, setPendingRequest] = useState<number | undefined>(undefined);
-    const [currentTerm, setCurrentTerm] = useState<AATerm>(formData.term);
+    const [currentTerm, setCurrentTerm] = useState<AATerm>(term);
 
     const requestTimestampRef = useRef<number | undefined>(undefined);
 
@@ -82,7 +87,7 @@ const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
 
         const baseFormData: CourseSearchParams = {
             ...defaultFormData,
-            term: formData.term,
+            term,
         };
 
         let nextFormData: CourseSearchParams;
@@ -155,8 +160,6 @@ const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
         (requestTimestamp: number, requestQuery: string) => () => {
             if (!requestIsCurrent(requestTimestamp)) return;
 
-            const term = formData.term;
-
             trpc.search.doSearch
                 .query({ query: requestQuery, term })
                 .then((result) => {
@@ -180,11 +183,11 @@ const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
                     console.error(e);
                 });
         },
-        [formData.term, requestIsCurrent]
+        [term, requestIsCurrent]
     );
 
     const handleFormDataChange = useCallback(() => {
-        const newTerm = formData.term;
+        const newTerm = term;
 
         if (newTerm !== currentTerm && value.length >= MIN_QUERY_LENGTH) {
             const cacheKey = getCacheKey(newTerm, value);
@@ -208,7 +211,7 @@ const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
         } else if (newTerm !== currentTerm) {
             setCurrentTerm(newTerm);
         }
-    }, [cache, currentTerm, formData.term, value, maybeDoSearchFactory, pendingRequest]);
+    }, [cache, currentTerm, term, value, maybeDoSearchFactory, pendingRequest]);
 
     const onInputChange = (_event: unknown, inputValue: string, reason: AutocompleteInputChangeReason) => {
         const lowerCaseValue = inputValue.toLowerCase().trim();
@@ -267,7 +270,7 @@ const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
             return <Box key={params.key}>{params.children}</Box>;
         }
 
-        const termName = formData.term.longName;
+        const termName = term.longName;
         const label = params.group === groupType.OFFERED ? `Offered in ${termName}` : `Not Offered`;
 
         return (

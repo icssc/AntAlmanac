@@ -1,7 +1,7 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
 import { Box } from '@mui/material';
@@ -9,14 +9,8 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
 export function CoursePaneRoot() {
-    const {
-        manualSearchEnabled,
-        searchFormIsDisplayed,
-        showSearchForm,
-        clearView,
-        setSearchMode,
-        resetAllPreservingTerm,
-    } = useCourseSearchUrlState();
+    const { manualSearchEnabled, searchFormIsDisplayed, showSearchForm, clearView, setSearchMode, resetForm } =
+        useCourseSearchUrlState();
 
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();
@@ -28,9 +22,9 @@ export function CoursePaneRoot() {
         }
 
         void setSearchMode('quick');
-        void resetAllPreservingTerm();
+        void resetForm({ preserveTerm: true });
         void clearView();
-    }, [clearView, manualSearchEnabled, resetAllPreservingTerm, setSearchMode, showSearchForm]);
+    }, [clearView, manualSearchEnabled, resetForm, setSearchMode, showSearchForm]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {

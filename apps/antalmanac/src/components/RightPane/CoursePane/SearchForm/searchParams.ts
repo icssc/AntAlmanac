@@ -138,7 +138,7 @@ export function clearMultiSearchData() {
     RightPaneStore.clearMultiSearchData();
 }
 
-export function useCourseSearchUrlState() {
+export function useCourseSearchUrlStateValue() {
     const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
     const [searchMode, setSearchModeParam] = useQueryState(
         'search',
@@ -168,15 +168,13 @@ export function useCourseSearchUrlState() {
         [setFormData]
     );
 
-    const resetAll = useCallback(() => {
-        clearMultiSearchData();
-        return setFormData(defaultFormData);
-    }, [setFormData]);
-
-    const resetAllPreservingTerm = useCallback(() => {
-        clearMultiSearchData();
-        return setFormData({ ...defaultFormData, term: formData.term });
-    }, [formData.term, setFormData]);
+    const resetForm = useCallback(
+        ({ preserveTerm = false }: { preserveTerm?: boolean } = {}) => {
+            clearMultiSearchData();
+            return setFormData(preserveTerm ? { ...defaultFormData, term: formData.term } : defaultFormData);
+        },
+        [formData.term, setFormData]
+    );
 
     const setSearchMode = useCallback(
         (mode: CourseSearchMode) => {
@@ -225,7 +223,6 @@ export function useCourseSearchUrlState() {
         setField,
         setFields,
         setSearchMode,
-        resetAll,
-        resetAllPreservingTerm,
+        resetForm,
     };
 }

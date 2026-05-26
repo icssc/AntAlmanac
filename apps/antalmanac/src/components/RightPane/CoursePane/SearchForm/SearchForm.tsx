@@ -1,8 +1,8 @@
+import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
@@ -13,16 +13,8 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
 export const SearchForm = () => {
-    const {
-        formData,
-        manualSearchEnabled,
-        resetAll,
-        resetAllPreservingTerm,
-        setFields,
-        setSearchMode,
-        clearView,
-        submitSearch,
-    } = useCourseSearchUrlState();
+    const { formData, manualSearchEnabled, resetForm, setFields, setSearchMode, clearView, submitSearch } =
+        useCourseSearchUrlState();
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 
@@ -49,7 +41,7 @@ export const SearchForm = () => {
             case 'quick':
                 useSavedSearchStore.getState().saveManualSearch(formData);
                 void setSearchMode('quick');
-                void resetAllPreservingTerm();
+                void resetForm({ preserveTerm: true });
                 void clearView();
                 return;
             default:
@@ -102,7 +94,7 @@ export const SearchForm = () => {
                             }}
                             onReset={() => {
                                 useSavedSearchStore.getState().clearManualSearch();
-                                void resetAll();
+                                void resetForm();
                             }}
                         />
                     )}

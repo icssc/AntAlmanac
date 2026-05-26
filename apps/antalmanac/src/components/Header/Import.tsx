@@ -6,7 +6,10 @@ import {
     mergeShortCourseSchedules,
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import {
+    selectFormField,
+    useCourseSearchUrlState,
+} from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
@@ -59,7 +62,7 @@ enum ImportSource {
 }
 
 export function Import() {
-    const { formData } = useCourseSearchUrlState();
+    const term = useCourseSearchUrlState(selectFormField('term'));
     const [alertDialogTitle, setAlertDialogTitle] = useState('');
     const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>('error');
     const [alertDialog, setAlertDialog] = useState(false);
@@ -260,7 +263,6 @@ export function Import() {
         importSource: ImportSource.STUDY_LIST_IMPORT | ImportSource.ZOT_COURSE_IMPORT
     ) => {
         try {
-            const term = formData.term;
             const courseInfo = await trpc.websoc.getCourseInfo.query({
                 year: term.year,
                 quarter: term.quarter,
