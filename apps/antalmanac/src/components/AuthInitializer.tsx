@@ -55,6 +55,9 @@ export const AuthInitializer = () => {
     const handleInitialized = () => {
         setOpenLoadingSchedule(false);
         loadNotifications();
+        if (useSessionStore.getState().areSchedulesLoaded) {
+            void loadPlannerRoadmaps();
+        }
     };
 
     const loadUnsavedChanges = useEffectEvent(async (userData: UserData) => {
@@ -124,8 +127,6 @@ export const AuthInitializer = () => {
                 isInitializingRef.current = true;
                 try {
                     await updateSession(sessionData);
-
-                    loadPlannerRoadmaps();
 
                     setSsoCookie();
 
