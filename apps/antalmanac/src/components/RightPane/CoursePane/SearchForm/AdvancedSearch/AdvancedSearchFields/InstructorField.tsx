@@ -1,0 +1,19 @@
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+
+export function InstructorField() {
+    const [instructor, setInstructor] = useCourseSearchParam('instructor');
+
+    return (
+        <LabeledTextField
+            label="Instructor"
+            textFieldProps={{
+                type: 'search',
+                value: instructor,
+                onChange: (event) => setInstructor(event.target.value),
+                placeholder: 'Last name only',
+                fullWidth: true,
+            }}
+        />
+    );
+}

@@ -1,8 +1,20 @@
-import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
+import { AdvancedSearchFieldRow } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/AdvancedSearchFieldRow';
+import { BuildingField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/BuildingField';
+import { CoursesFullField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/CoursesFullField';
+import { DaysField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/DaysField';
+import { DivisionField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/DivisionField';
+import { EndTimeField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/EndTimeField';
+import { ExcludeRestrictionsField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/ExcludeRestrictionsField';
+import { ExcludeRoadmapField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/ExcludeRoadmapField';
+import { InstructorField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/InstructorField';
+import { OnlineField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/OnlineField';
+import { RoomField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/RoomField';
+import { StartTimeField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/StartTimeField';
+import { UnitsField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/UnitsField';
 import { hasAdvancedParams, useAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { Button, Collapse, Typography } from '@mui/material';
+import { Box, Button, Collapse, Typography } from '@mui/material';
 import { useState } from 'react';
 
 export function AdvancedSearch() {
@@ -26,8 +38,40 @@ export function AdvancedSearch() {
                 <Typography noWrap>Advanced Search Options</Typography>
                 {expanded ? <ExpandLess /> : <ExpandMore />}
             </Button>
+
             <Collapse in={expanded}>
-                <AdvancedSearchTextFields />
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                        marginBottom: '1rem',
+                    }}
+                >
+                    <AdvancedSearchFieldRow>
+                        <InstructorField />
+                        <UnitsField />
+                        <CoursesFullField />
+                    </AdvancedSearchFieldRow>
+
+                    <AdvancedSearchFieldRow>
+                        <DivisionField />
+                        <StartTimeField />
+                        <EndTimeField />
+                    </AdvancedSearchFieldRow>
+
+                    <AdvancedSearchFieldRow>
+                        <OnlineField />
+                        <BuildingField />
+                        <RoomField />
+                    </AdvancedSearchFieldRow>
+
+                    <AdvancedSearchFieldRow>
+                        <ExcludeRoadmapField />
+                        <ExcludeRestrictionsField />
+                        <DaysField />
+                    </AdvancedSearchFieldRow>
+                </Box>
             </Collapse>
         </>
     );
