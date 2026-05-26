@@ -4,6 +4,7 @@ import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
 import { useCourseSearchPane } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
@@ -32,9 +33,8 @@ export const SearchForm = () => {
         [formData, manualSearchEnabled, submitSearch]
     );
 
-    const toggleSearchMode = (event: React.MouseEvent<HTMLElement>, value: string) => {
-        event.preventDefault();
-        if (!value) return;
+    const toggleSearchMode = (_event: React.MouseEvent<HTMLElement>, value: CourseSearchMode | null) => {
+        if (value === null) return;
 
         switch (value) {
             case COURSE_SEARCH_MODE.MANUAL:
@@ -42,15 +42,13 @@ export const SearchForm = () => {
                 if (savedManualSearch) {
                     void setFields(savedManualSearch);
                 }
-                return;
+                break;
             case COURSE_SEARCH_MODE.QUICK:
                 saveManualSearch(formData);
                 void setSearchMode(COURSE_SEARCH_MODE.QUICK);
                 void resetForm({ preserveTerm: true });
                 void clearView();
-                return;
-            default:
-                return;
+                break;
         }
     };
 

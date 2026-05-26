@@ -83,7 +83,7 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(field: 
     const setValue = useCallback(
         (next: CourseSearchParams[K]) => {
             clearMultiSearchData();
-            return setValueRaw(next);
+            void setValueRaw(next);
         },
         [setValueRaw]
     );
@@ -91,14 +91,13 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(field: 
     return [value, setValue] as const;
 }
 
-/** Advanced search fields only — rerenders when an advanced param changes. */
 export function useAdvancedSearchParams() {
     const [advanced, setAdvancedRaw] = useQueryStates(advancedSearchParsers);
 
     const setAdvanced = useCallback(
         (values: Partial<AdvancedSearchParams>) => {
             clearMultiSearchData();
-            return setAdvancedRaw(values);
+            void setAdvancedRaw(values);
         },
         [setAdvancedRaw]
     );
@@ -106,7 +105,7 @@ export function useAdvancedSearchParams() {
     const setField = useCallback(
         <K extends keyof AdvancedSearchParams>(field: K, value: AdvancedSearchParams[K]) => {
             clearMultiSearchData();
-            return setAdvancedRaw({ [field]: value });
+            void setAdvancedRaw({ [field]: value });
         },
         [setAdvancedRaw]
     );
@@ -114,7 +113,6 @@ export function useAdvancedSearchParams() {
     return { advanced, setAdvanced, setField };
 }
 
-/** Full form snapshot — use at submit/results boundaries, not leaf inputs. */
 export function useCourseSearchFormData(): CourseSearchParams {
     const [manual] = useQueryStates(manualSearchParsers);
     const [advanced] = useQueryStates(advancedSearchParsers);
