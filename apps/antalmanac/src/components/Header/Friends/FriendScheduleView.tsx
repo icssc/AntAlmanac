@@ -1,8 +1,10 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { FriendSchedule } from '$components/RightPane/AddedCourses/FriendSchedule';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { FriendScheduleTabProvider, type FriendScheduleTab } from '$lib/schedule/FriendScheduleTabContext';
 import { BLUE } from '$src/globals';
 import { Box, Stack } from '@mui/material';
+import { useCallback, useState } from 'react';
 import Split from 'react-split';
 
 function FriendScheduleDesktopView() {
@@ -47,12 +49,34 @@ function FriendScheduleMobileView() {
 
 export function FriendScheduleView() {
     const isMobile = useIsMobile();
+    const [activeTab, setActiveTab] = useState<FriendScheduleTab>('added');
+    const [mapLocationId, setMapLocationId] = useState<number | undefined>();
+
+    const focusMapLocation = useCallback((buildingId: number) => {
+        setMapLocationId(buildingId);
+        setActiveTab('map');
+    }, []);
 
     return (
-        <Box
-            sx={{ flexGrow: 1, height: 0, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+        <FriendScheduleTabProvider
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            mapLocationId={mapLocationId}
+            setMapLocationId={setMapLocationId}
+            focusMapLocation={focusMapLocation}
         >
-            {isMobile ? <FriendScheduleMobileView /> : <FriendScheduleDesktopView />}
-        </Box>
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    height: 0,
+                    minHeight: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden',
+                }}
+            >
+                {isMobile ? <FriendScheduleMobileView /> : <FriendScheduleDesktopView />}
+            </Box>
+        </FriendScheduleTabProvider>
     );
 }

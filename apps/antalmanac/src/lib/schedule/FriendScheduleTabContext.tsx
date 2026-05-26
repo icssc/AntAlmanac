@@ -7,6 +7,9 @@ export type FriendScheduleTab = 'search' | 'added' | 'map';
 interface FriendScheduleTabContextValue {
     activeTab: FriendScheduleTab;
     setActiveTab: (tab: FriendScheduleTab) => void;
+    mapLocationId?: number;
+    setMapLocationId: (locationId: number | undefined) => void;
+    focusMapLocation: (buildingId: number) => void;
 }
 
 const FriendScheduleTabContext = createContext<FriendScheduleTabContextValue | null>(null);
@@ -14,10 +17,15 @@ const FriendScheduleTabContext = createContext<FriendScheduleTabContextValue | n
 export function FriendScheduleTabProvider({
     activeTab,
     setActiveTab,
+    mapLocationId,
+    setMapLocationId,
+    focusMapLocation,
     children,
 }: FriendScheduleTabContextValue & { children: ReactNode }) {
     return (
-        <FriendScheduleTabContext.Provider value={{ activeTab, setActiveTab }}>
+        <FriendScheduleTabContext.Provider
+            value={{ activeTab, setActiveTab, mapLocationId, setMapLocationId, focusMapLocation }}
+        >
             {children}
         </FriendScheduleTabContext.Provider>
     );
