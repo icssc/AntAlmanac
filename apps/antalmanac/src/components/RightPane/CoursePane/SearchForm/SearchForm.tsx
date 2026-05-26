@@ -6,24 +6,20 @@ import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
 import { useCallback, type SyntheticEvent } from 'react';
 
 export const SearchForm = () => {
     const { formData, manualSearchEnabled, resetForm, setFields, setSearchMode, clearView, submitSearch } =
         useCourseSearchUrl();
     const isDark = useThemeStore((store) => store.isDark);
-    const { savedManualSearch, saveManualSearch, clearManualSearch } = useSavedSearchStore((store) => ({
+    const { savedManualSearch, saveManualSearch } = useSavedSearchStore((store) => ({
         savedManualSearch: store.savedManualSearch,
         saveManualSearch: store.saveManualSearch,
-        clearManualSearch: store.clearManualSearch,
     }));
-    const postHog = usePostHog();
 
     const onFormSubmit = useCallback(
         (event: SyntheticEvent<HTMLFormElement>) => {
@@ -85,22 +81,7 @@ export const SearchForm = () => {
                         <TermSelector />
                     </Box>
 
-                    {!manualSearchEnabled ? (
-                        <QuickSearch />
-                    ) : (
-                        <ManualSearch
-                            onSubmit={() => {
-                                logAnalytics(postHog, {
-                                    category: analyticsEnum.classSearch,
-                                    action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
-                                });
-                            }}
-                            onReset={() => {
-                                clearManualSearch();
-                                resetForm();
-                            }}
-                        />
-                    )}
+                    {!manualSearchEnabled ? <QuickSearch /> : <ManualSearch />}
                 </Stack>
             </Box>
 
