@@ -3,6 +3,7 @@ import { FriendsDialog } from '$components/Header/Friends/FriendsDialog';
 import { trpc } from '$lib/api/trpc';
 import type { Friend, FriendRequest } from '$src/backend/lib/rds.types';
 import { useIsMobile } from '$src/hooks/useIsMobile';
+import FriendsStore from '$stores/FriendsStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { People } from '@mui/icons-material';
@@ -63,6 +64,18 @@ export function Friends() {
             void loadFriendsData();
         }
     }, [open, sessionIsValid, userId, dataLoaded, loadFriendsData]);
+
+    useEffect(() => {
+        const handleOpenManageFriends = () => {
+            setOpen(true);
+        };
+
+        FriendsStore.on('openManageFriends', handleOpenManageFriends);
+
+        return () => {
+            FriendsStore.off('openManageFriends', handleOpenManageFriends);
+        };
+    }, []);
 
     useEffect(() => {
         if (!open || !sessionIsValid || !userId) {

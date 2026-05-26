@@ -1,16 +1,29 @@
+import { addFriendScheduleToMySchedule } from '$actions/AppStoreActions';
 import { FriendScheduleView } from '$components/Header/Friends/FriendScheduleView';
 import { FriendSelectDropdown } from '$components/Header/Friends/FriendSelectDropdown';
 import { FriendScheduleViewProvider } from '$lib/schedule/ScheduleViewContext';
+import { useFallbackStore } from '$stores/FallbackStore';
 import FriendsStore from '$stores/FriendsStore';
-import { Close } from '@mui/icons-material';
-import { Box, CircularProgress, Dialog, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Dialog, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
+const headerButtonSx = {
+    textTransform: 'uppercase',
+    fontWeight: 600,
+    fontSize: { xs: '0.6875rem', sm: '0.75rem' },
+    letterSpacing: '0.05em',
+    whiteSpace: 'nowrap',
+    px: { xs: 1.5, sm: 2 },
+    py: 0.75,
+} as const;
+
 export function FriendScheduleDialog() {
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const [open, setOpen] = useState(FriendsStore.isDialogOpen());
     const [friendId, setFriendId] = useState(FriendsStore.getFriendId());
     const [friendName, setFriendName] = useState(FriendsStore.getFriendName() ?? 'Friend');
     const [loading, setLoading] = useState(FriendsStore.isLoading());
+    const [addingSchedule, setAddingSchedule] = useState(false);
 
     const syncFromStore = useCallback(() => {
         setOpen(FriendsStore.isDialogOpen());
@@ -29,6 +42,19 @@ export function FriendScheduleDialog() {
 
     const handleClose = () => {
         FriendsStore.closeFriendView();
+    };
+
+    const handleReturnToManageFriends = () => {
+        FriendsStore.returnToManageFriends();
+    };
+
+    const handleAddToMySchedule = async () => {
+        setAddingSchedule(true);
+        try {
+            await addFriendScheduleToMySchedule(friendName);
+        } finally {
+            setAddingSchedule(false);
+        }
     };
 
     return (
@@ -65,15 +91,40 @@ export function FriendScheduleDialog() {
                         alignItems: 'center',
                         flexWrap: 'wrap',
                         fontSize: { xs: '1rem', sm: '1.25rem' },
+                        minWidth: 0,
                     }}
                 >
                     Viewing
                     <FriendSelectDropdown currentFriendId={friendId} currentFriendName={friendName} />
                     &apos;s Schedule
                 </Typography>
-                <IconButton aria-label="Close friend schedule view" onClick={handleClose} edge="end">
-                    <Close />
-                </IconButton>
+                <Stack direction="row" spacing={1.5} alignItems="center" flexShrink={0}>
+                    <Button
+                        variant="outlined"
+                        color="inherit"
+                        onClick={handleReturnToManageFriends}
+                        sx={{
+                            ...headerButtonSx,
+                            borderColor: 'common.white',
+                            color: 'common.white',
+                            '&:hover': {
+                                borderColor: 'common.white',
+                                backgroundColor: 'action.hover',
+                            },
+                        }}
+                    >
+                        Return to Manage Friends
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleAddToMySchedule}
+                        disabled={fallbackMode || addingSchedule || loading}
+                        sx={headerButtonSx}
+                    >
+                        {addingSchedule ? <CircularProgress size={18} color="inherit" /> : 'Add to my Schedule'}
+                    </Button>
+                </Stack>
             </Stack>
 
             <Box
