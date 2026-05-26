@@ -10,8 +10,8 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import type { AATerm, SearchResult } from '@packages/antalmanac-types';
-import { PostHog } from 'posthog-js/react';
-import { ComponentProps, useCallback, useEffect, useRef, useState } from 'react';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
 
 const SEARCH_TIMEOUT_MS = 150;
@@ -49,17 +49,13 @@ const isIpad = () => {
     return navigator.userAgent.includes('Mac') && 'ontouchend' in document;
 };
 
-interface FuzzySearchProps {
-    postHog?: PostHog;
-    labelProps?: ComponentProps<typeof LabeledAutocomplete>['labelProps'];
-}
-
 interface SearchOption {
     key: string;
     result: SearchResult;
 }
 
-const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
+const FuzzySearch = () => {
+    const postHog = usePostHog();
     const [term] = useCourseSearchParam('term');
     const { setFields, setSearchMode, submitSearch } = useCourseSearchUrl();
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
@@ -343,7 +339,6 @@ const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
                 popupIcon: '',
                 clearOnBlur: false,
             }}
-            labelProps={labelProps}
             textFieldProps={{
                 autoFocus: !isMobile(),
                 placeholder: 'Search for courses, departments, GEs...',

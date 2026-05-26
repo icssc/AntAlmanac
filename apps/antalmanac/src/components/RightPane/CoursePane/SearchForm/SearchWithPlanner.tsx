@@ -18,10 +18,6 @@ import { parseAsString, useQueryState } from 'nuqs';
 import { ComponentProps, HTMLAttributes, Key, useCallback, useRef, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-interface SearchWithPlannerProps {
-    labelProps?: ComponentProps<typeof LabeledAutocomplete>['labelProps'];
-}
-
 type AutocompleteProps = ComponentProps<typeof LabeledAutocomplete>['autocompleteProps'];
 
 // Maps relation types to roadmap IDs
@@ -35,7 +31,7 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
     };
 }
 
-export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
+export const SearchWithPlanner = () => {
     const { formData, showResults } = useCourseSearchUrl();
     const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
         COURSE_SEARCH_PLANNER_KEY,
@@ -234,7 +230,6 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 placeholder: isLoadingSearch ? 'Loading...' : 'Select roadmap from Planner',
                 fullWidth: true,
             }}
-            labelProps={labelProps}
             loading={isLoadingSearch}
             isAligned
         />
