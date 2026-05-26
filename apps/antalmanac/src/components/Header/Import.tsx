@@ -6,10 +6,7 @@ import {
     mergeShortCourseSchedules,
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
-import {
-    selectFormField,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
@@ -62,7 +59,7 @@ enum ImportSource {
 }
 
 export function Import() {
-    const term = useCourseSearchUrlState(selectFormField('term'));
+    const [term] = useCourseSearchParam('term');
     const [alertDialogTitle, setAlertDialogTitle] = useState('');
     const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>('error');
     const [alertDialog, setAlertDialog] = useState(false);

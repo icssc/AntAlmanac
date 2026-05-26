@@ -4,19 +4,15 @@ import {
     getSelectedGEs,
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
-import {
-    selectFormField,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 
 const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
 const getShortLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.shortLabel ?? value;
 
 export function GeSelector() {
-    const ge = useCourseSearchUrlState(selectFormField('ge'));
-    const setField = useCourseSearchUrlState((state) => state.setField);
+    const [ge, setGe] = useCourseSearchParam('ge');
     const selectedGEs = getSelectedGEs(ge);
 
     const handleChange = (event: SelectChangeEvent<string[]>) => {
@@ -25,7 +21,7 @@ export function GeSelector() {
         const selectedValues = values.includes(ANY_GE) ? [] : values.filter((currentValue) => currentValue !== ANY_GE);
         const searchValue = normalizeGeSelection(selectedValues.join(','));
 
-        void setField('ge', searchValue);
+        void setGe(searchValue);
     };
 
     return (

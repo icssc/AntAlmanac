@@ -1,8 +1,5 @@
-import {
-    selectFormField,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import generatedDepartments from '$generated/departments.json';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 import { useCallback, useState } from 'react';
@@ -34,15 +31,14 @@ const parseLocalStorageRecentlySearched = (): string[] => {
 export function DepartmentSearchBar() {
     const options = Object.keys(ALL_DEPARTMENTS);
 
-    const deptValue = useCourseSearchUrlState(selectFormField('deptValue'));
-    const setField = useCourseSearchUrlState((state) => state.setField);
+    const [deptValue, setDeptValue] = useCourseSearchParam('deptValue');
     const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageRecentlySearched());
 
     const handleChange = useCallback(
         (_: unknown, option: string | null) => {
             const newValue = option ?? options[0]; // options[0] corresponds to `ALL`
 
-            void setField('deptValue', newValue);
+            void setDeptValue(newValue);
 
             if (newValue === 'ALL') return;
 
@@ -55,7 +51,7 @@ export function DepartmentSearchBar() {
             setRecentSearches(nextRecentSearches);
             setLocalStorageRecentlySearched(JSON.stringify(nextRecentSearches));
         },
-        [options, recentSearches, setField]
+        [options, recentSearches, setDeptValue]
     );
 
     return (

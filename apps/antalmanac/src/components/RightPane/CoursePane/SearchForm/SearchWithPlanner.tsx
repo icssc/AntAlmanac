@@ -1,9 +1,12 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import {
+    useCourseSearchActions,
+    useCourseSearchFormData,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
@@ -36,7 +39,8 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
 }
 
 export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
-    const { formData, showResults } = useCourseSearchUrlState();
+    const formData = useCourseSearchFormData();
+    const { showResults } = useCourseSearchActions();
     const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
         PLANNER_SEARCH_PARAM,
         parseAsString.withOptions({ history: 'replace' })

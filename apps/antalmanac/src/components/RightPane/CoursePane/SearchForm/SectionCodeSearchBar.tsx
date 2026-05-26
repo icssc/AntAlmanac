@@ -1,16 +1,12 @@
-import {
-    selectFormField,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { ChangeEvent } from 'react';
 
 const SectionCodeSearchBar = () => {
-    const sectionCode = useCourseSearchUrlState(selectFormField('sectionCode'));
-    const setField = useCourseSearchUrlState((state) => state.setField);
+    const [sectionCode, setSectionCode] = useCourseSearchParam('sectionCode');
 
     const handleChange = (event: ChangeEvent<{ value: string }>) => {
-        void setField('sectionCode', event.target.value);
+        void setSectionCode(event.target.value);
     };
 
     return (

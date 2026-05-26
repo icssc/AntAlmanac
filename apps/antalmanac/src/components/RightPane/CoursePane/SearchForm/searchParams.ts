@@ -16,9 +16,15 @@ import {
     useQueryState,
     useQueryStates,
 } from 'nuqs';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+
+/** nuqs updates stay client-side; React Router adapter key-isolates per watched key. */
+const shallowQueryOptions = { shallow: true } as const;
 
 type AdvancedSearchDefaults = Omit<CourseSearchParams, 'term' | 'deptValue' | 'ge' | 'courseNumber' | 'sectionCode'>;
+
+export type AdvancedSearchParams = Pick<CourseSearchParams, (typeof ADVANCED_SEARCH_PARAMS)[number]>;
+export type ManualSearchParams = Pick<CourseSearchParams, 'term' | 'deptValue' | 'ge' | 'courseNumber' | 'sectionCode'>;
 
 const defaultTerm = getDefaultTerm();
 
@@ -60,6 +66,29 @@ export type CourseSearchField = keyof CourseSearchParams;
 export type CourseSearchMode = 'quick' | 'manual';
 export type CourseSearchView = 'search' | 'results';
 
+/** URL query keys for course search form fields (1:1 with `CourseSearchField`). */
+export const COURSE_SEARCH_URL_KEYS = {
+    term: 'term',
+    deptValue: 'deptValue',
+    ge: 'ge',
+    courseNumber: 'courseNumber',
+    sectionCode: 'sectionCode',
+    instructor: 'instructor',
+    units: 'units',
+    endTime: 'endTime',
+    startTime: 'startTime',
+    coursesFull: 'coursesFull',
+    building: 'building',
+    room: 'room',
+    division: 'division',
+    excludeRoadmapCourses: 'excludeRoadmapCourses',
+    excludeRestrictionCodes: 'excludeRestrictionCodes',
+    days: 'days',
+} as const satisfies Record<CourseSearchField, string>;
+
+export const SEARCH_MODE_URL_KEY = 'search';
+export const SEARCH_VIEW_URL_KEY = 'view';
+
 export const defaultFormData: CourseSearchParams = {
     term: defaultTerm,
     deptValue: 'ALL',
@@ -73,32 +102,56 @@ const parseAsCourseSearchTerm = createParser<AATerm>({
     parse: (value: string) => getTermByShortName(value) ?? null,
     serialize: (value: AATerm) => value.shortName,
     eq: (a: AATerm, b: AATerm) => a.shortName === b.shortName,
-}).withDefault(defaultTerm);
+})
+    .withDefault(defaultTerm)
+    .withOptions(shallowQueryOptions);
 
 const parseAsNormalizedGe = createParser<string>({
     parse: (value: string) => normalizeGeSelection(value),
     serialize: (value: string) => normalizeGeSelection(value),
     eq: (a: string, b: string) => normalizeGeSelection(a) === normalizeGeSelection(b),
-}).withDefault(defaultFormData.ge);
+})
+    .withDefault(defaultFormData.ge)
+    .withOptions(shallowQueryOptions);
 
-export const courseSearchParamParsers = {
+const parseAsShallowString = (defaultValue: string) =>
+    parseAsString.withDefault(defaultValue).withOptions(shallowQueryOptions);
+
+export const manualSearchParsers = {
     term: parseAsCourseSearchTerm,
-    deptValue: parseAsString.withDefault(defaultFormData.deptValue),
+    deptValue: parseAsShallowString(defaultFormData.deptValue),
     ge: parseAsNormalizedGe,
-    courseNumber: parseAsString.withDefault(defaultFormData.courseNumber),
-    sectionCode: parseAsString.withDefault(defaultFormData.sectionCode),
-    instructor: parseAsString.withDefault(defaultAdvancedSearchValues.instructor),
-    units: parseAsString.withDefault(defaultAdvancedSearchValues.units),
-    endTime: parseAsString.withDefault(defaultAdvancedSearchValues.endTime),
-    startTime: parseAsString.withDefault(defaultAdvancedSearchValues.startTime),
-    coursesFull: parseAsString.withDefault(WebsocFullCoursesOptionSchema.options[0]),
-    building: parseAsString.withDefault(defaultAdvancedSearchValues.building),
-    room: parseAsString.withDefault(defaultAdvancedSearchValues.room),
-    division: parseAsString.withDefault(defaultAdvancedSearchValues.division),
-    excludeRoadmapCourses: parseAsString.withDefault(defaultAdvancedSearchValues.excludeRoadmapCourses),
-    excludeRestrictionCodes: parseAsString.withDefault(defaultAdvancedSearchValues.excludeRestrictionCodes),
-    days: parseAsString.withDefault(defaultAdvancedSearchValues.days),
+    courseNumber: parseAsShallowString(defaultFormData.courseNumber),
+    sectionCode: parseAsShallowString(defaultFormData.sectionCode),
 };
+
+export const advancedSearchParsers = {
+    instructor: parseAsShallowString(defaultAdvancedSearchValues.instructor),
+    units: parseAsShallowString(defaultAdvancedSearchValues.units),
+    endTime: parseAsShallowString(defaultAdvancedSearchValues.endTime),
+    startTime: parseAsShallowString(defaultAdvancedSearchValues.startTime),
+    coursesFull: parseAsShallowString(WebsocFullCoursesOptionSchema.options[0]),
+    building: parseAsShallowString(defaultAdvancedSearchValues.building),
+    room: parseAsShallowString(defaultAdvancedSearchValues.room),
+    division: parseAsShallowString(defaultAdvancedSearchValues.division),
+    excludeRoadmapCourses: parseAsShallowString(defaultAdvancedSearchValues.excludeRoadmapCourses),
+    excludeRestrictionCodes: parseAsShallowString(defaultAdvancedSearchValues.excludeRestrictionCodes),
+    days: parseAsShallowString(defaultAdvancedSearchValues.days),
+};
+
+/** Full parser map — use for serialization / one-off batch writes, not broad subscriptions. */
+export const courseSearchParamParsers = {
+    ...manualSearchParsers,
+    ...advancedSearchParsers,
+};
+
+const searchModeParser = parseAsStringLiteral(['manual', 'quick'] as const)
+    .withDefault('quick')
+    .withOptions(shallowQueryOptions);
+
+const searchViewParser = parseAsStringLiteral(['results', 'search'] as const).withOptions(shallowQueryOptions);
+
+const plannerSearchParser = parseAsString.withOptions(shallowQueryOptions);
 
 export const serializeCourseSearchParams = createSerializer(courseSearchParamParsers);
 
@@ -117,7 +170,7 @@ export function isValidSearch(formData: CourseSearchParams) {
     return ge !== 'ANY' || deptValue !== 'ALL' || sectionCode !== '' || instructor !== '';
 }
 
-export function hasAdvancedParams(formData: CourseSearchParams) {
+export function hasAdvancedParams(formData: Pick<CourseSearchParams, (typeof ADVANCED_SEARCH_PARAMS)[number]>) {
     return ADVANCED_SEARCH_PARAMS.some((key) => formData[key] !== defaultAdvancedSearchValues[key]);
 }
 
@@ -138,64 +191,128 @@ export function clearMultiSearchData() {
     RightPaneStore.clearMultiSearchData();
 }
 
-export function useCourseSearchUrlStateValue() {
-    const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
-    const [searchMode, setSearchModeParam] = useQueryState(
-        'search',
-        parseAsStringLiteral(['manual', 'quick'] as const).withDefault('quick')
-    );
-    const [viewParam, setViewParam] = useQueryState('view', parseAsStringLiteral(['results', 'search'] as const));
-    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, parseAsString);
-    const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
+/** Subscribe to a single URL-backed form field (nuqs key isolation). */
+export function useCourseSearchParam<K extends CourseSearchField>(field: K) {
+    const urlKey = COURSE_SEARCH_URL_KEYS[field];
+    const parser = courseSearchParamParsers[field];
+    const [value, setValueRaw] = useQueryState(urlKey, parser) as unknown as [
+        CourseSearchParams[K],
+        (next: CourseSearchParams[K] | null) => Promise<URLSearchParams>,
+    ];
 
-    const derivedView: CourseSearchView = shouldShowSearchForm(formData) ? 'search' : 'results';
-    const view: CourseSearchView = manualSearchEnabled ? (viewParam ?? 'search') : (viewParam ?? derivedView);
-    const searchFormIsDisplayed = view === 'search';
+    const setValue = useCallback(
+        (next: CourseSearchParams[K]) => {
+            clearMultiSearchData();
+            return setValueRaw(next);
+        },
+        [setValueRaw]
+    );
+
+    return [value, setValue] as const;
+}
+
+/** Advanced search fields only — rerenders when an advanced param changes. */
+export function useAdvancedSearchParams() {
+    const [advanced, setAdvancedRaw] = useQueryStates(advancedSearchParsers);
+
+    const setAdvanced = useCallback(
+        (values: Partial<AdvancedSearchParams>) => {
+            clearMultiSearchData();
+            return setAdvancedRaw(values);
+        },
+        [setAdvancedRaw]
+    );
 
     const setField = useCallback(
-        <Field extends CourseSearchField>(field: Field, value: CourseSearchParams[Field]) => {
+        <K extends keyof AdvancedSearchParams>(field: K, value: AdvancedSearchParams[K]) => {
             clearMultiSearchData();
-            return setFormData({ [field]: value });
+            return setAdvancedRaw({ [field]: value });
         },
-        [setFormData]
+        [setAdvancedRaw]
     );
 
-    const setFields = useCallback(
-        (values: Partial<CourseSearchParams> | null) => {
-            clearMultiSearchData();
-            return setFormData(values);
-        },
-        [setFormData]
-    );
+    return { advanced, setAdvanced, setField };
+}
 
-    const resetForm = useCallback(
-        ({ preserveTerm = false }: { preserveTerm?: boolean } = {}) => {
-            clearMultiSearchData();
-            return setFormData(preserveTerm ? { ...defaultFormData, term: formData.term } : defaultFormData);
-        },
-        [formData.term, setFormData]
-    );
+/** Full form snapshot — use at submit/results boundaries, not leaf inputs. */
+export function useCourseSearchFormData(): CourseSearchParams {
+    const [manual] = useQueryStates(manualSearchParsers);
+    const [advanced] = useQueryStates(advancedSearchParsers);
+    return useMemo(() => ({ ...manual, ...advanced }), [manual, advanced]);
+}
 
-    const setSearchMode = useCallback(
-        (mode: CourseSearchMode) => {
-            return setSearchModeParam(mode);
-        },
-        [setSearchModeParam]
-    );
+/** Mode / view chrome — watches `search`, `view`, and planner import param only. */
+export function useCourseSearchChrome() {
+    const [searchMode, setSearchModeParam] = useQueryState(SEARCH_MODE_URL_KEY, searchModeParser);
+    const [viewParam, setViewParam] = useQueryState(SEARCH_VIEW_URL_KEY, searchViewParser);
+    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, plannerSearchParser);
 
-    /** Navigate to the results pane. */
+    const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
+
+    const setSearchMode = useCallback((mode: CourseSearchMode) => setSearchModeParam(mode), [setSearchModeParam]);
+
     const showResults = useCallback(() => setViewParam('results'), [setViewParam]);
 
-    /** Navigate to the search form (keeps params intact — use for manual-mode back). */
     const showSearchForm = useCallback(() => {
         clearMultiSearchData();
         return setViewParam('search');
     }, [setViewParam]);
 
-    /** Clear URL view override; pane follows derivedView from search params. */
     const clearView = useCallback(() => setViewParam(null), [setViewParam]);
 
-    /** Validate and submit a search. Shows results on success, error snackbar on failure. */
+    return {
+        manualSearchEnabled,
+        viewParam,
+        setSearchMode,
+        showResults,
+        showSearchForm,
+        clearView,
+    };
+}
+
+/** Batch writes without subscribing to the full form. */
+export function useCourseSearchActions() {
+    const [, setManual] = useQueryStates(manualSearchParsers);
+    const [, setAdvanced] = useQueryStates(advancedSearchParsers);
+    const [term] = useQueryState(COURSE_SEARCH_URL_KEYS.term, manualSearchParsers.term);
+    const { setSearchMode, showResults, showSearchForm, clearView } = useCourseSearchChrome();
+
+    const setFields = useCallback(
+        (values: Partial<CourseSearchParams> | null) => {
+            clearMultiSearchData();
+            if (values === null) {
+                void setManual(null);
+                void setAdvanced(null);
+                return;
+            }
+
+            const manualPatch: Partial<ManualSearchParams> = {};
+            const advancedPatch: Partial<AdvancedSearchParams> = {};
+
+            for (const [key, value] of Object.entries(values) as [keyof CourseSearchParams, unknown][]) {
+                if (key in manualSearchParsers) {
+                    (manualPatch as Record<string, unknown>)[key] = value;
+                }
+                if (key in advancedSearchParsers) {
+                    (advancedPatch as Record<string, unknown>)[key] = value;
+                }
+            }
+
+            if (Object.keys(manualPatch).length > 0) void setManual(manualPatch);
+            if (Object.keys(advancedPatch).length > 0) void setAdvanced(advancedPatch);
+        },
+        [setAdvanced, setManual]
+    );
+
+    const resetForm = useCallback(
+        ({ preserveTerm = false }: { preserveTerm?: boolean } = {}) => {
+            clearMultiSearchData();
+            void setManual(preserveTerm ? { ...defaultFormData, term } : defaultFormData);
+            void setAdvanced(defaultAdvancedSearchValues);
+        },
+        [setAdvanced, setManual, term]
+    );
+
     const submitSearch = useCallback(
         (data: CourseSearchParams) => {
             if (isValidSearch(data)) {
@@ -213,16 +330,32 @@ export function useCourseSearchUrlStateValue() {
     );
 
     return {
-        formData,
-        manualSearchEnabled,
-        searchFormIsDisplayed,
+        setFields,
+        resetForm,
+        setSearchMode,
         showResults,
         showSearchForm,
         clearView,
         submitSearch,
-        setField,
-        setFields,
-        setSearchMode,
-        resetForm,
+    };
+}
+
+/** Pane-level hook: full form + chrome + derived view (CoursePaneRoot, SearchForm). */
+export function useCourseSearchPane() {
+    const formData = useCourseSearchFormData();
+    const chrome = useCourseSearchChrome();
+    const actions = useCourseSearchActions();
+
+    const derivedView: CourseSearchView = shouldShowSearchForm(formData) ? 'search' : 'results';
+    const view: CourseSearchView = chrome.manualSearchEnabled
+        ? (chrome.viewParam ?? 'search')
+        : (chrome.viewParam ?? derivedView);
+    const searchFormIsDisplayed = view === 'search';
+
+    return {
+        formData,
+        searchFormIsDisplayed,
+        ...chrome,
+        ...actions,
     };
 }

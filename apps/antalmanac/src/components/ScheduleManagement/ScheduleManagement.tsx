@@ -1,5 +1,8 @@
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
-import { hasSearchParams } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import {
+    hasSearchParams,
+    useCourseSearchChrome,
+    useCourseSearchFormData,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -28,8 +31,9 @@ export function ScheduleManagement() {
     );
     const { tab } = useParams();
     const isMobile = useIsMobile();
-    const manualSearchEnabled = useCourseSearchUrlState((state) => state.manualSearchEnabled);
-    const hasParams = useCourseSearchUrlState((state) => hasSearchParams(state.formData));
+    const { manualSearchEnabled } = useCourseSearchChrome();
+    const formData = useCourseSearchFormData();
+    const hasParams = hasSearchParams(formData);
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});

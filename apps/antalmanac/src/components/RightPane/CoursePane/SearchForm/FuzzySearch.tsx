@@ -1,10 +1,11 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
-import {
-    selectFormField,
-    useCourseSearchUrlState,
-} from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { type CourseSearchParams, defaultFormData } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import {
+    type CourseSearchParams,
+    defaultFormData,
+    useCourseSearchActions,
+    useCourseSearchParam,
+} from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
@@ -59,12 +60,8 @@ interface SearchOption {
 }
 
 const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
-    const term = useCourseSearchUrlState(selectFormField('term'));
-    const { setFields, setSearchMode, submitSearch } = useCourseSearchUrlState((state) => ({
-        setFields: state.setFields,
-        setSearchMode: state.setSearchMode,
-        submitSearch: state.submitSearch,
-    }));
+    const [term] = useCourseSearchParam('term');
+    const { setFields, setSearchMode, submitSearch } = useCourseSearchActions();
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
     const [open, setOpen] = useState<boolean>(false);
     const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});

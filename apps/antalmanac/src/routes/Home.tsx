@@ -5,7 +5,6 @@ import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/Keybo
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
-import { CourseSearchUrlStateProvider } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -87,12 +86,10 @@ export default function Home() {
             <AuthInitializer />
             <PatchNotes />
 
-            <CourseSearchUrlStateProvider>
-                <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
-                    <Header />
-                    {isMobile ? <MobileHome /> : <DesktopHome />}
-                </Stack>
-            </CourseSearchUrlStateProvider>
+            <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
+                <Header />
+                {isMobile ? <MobileHome /> : <DesktopHome />}
+            </Stack>
 
             <NotificationSnackbar />
             <ReviewPrompt />

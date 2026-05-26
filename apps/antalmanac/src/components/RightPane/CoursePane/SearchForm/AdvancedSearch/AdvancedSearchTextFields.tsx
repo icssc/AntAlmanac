@@ -4,11 +4,11 @@ import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
+import { useAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -56,7 +56,7 @@ function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
 }
 
 export function AdvancedSearchTextFields() {
-    const { formData, setField, setFields } = useCourseSearchUrlState();
+    const { advanced, setField, setAdvanced } = useAdvancedSearchParams();
     const { plannerRoadmaps, updateTakenCourses } = usePlannerStore(
         useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, updateTakenCourses: s.updateTakenCourses }))
     );
@@ -76,7 +76,7 @@ export function AdvancedSearchTextFields() {
             const checked = (event as ChangeEvent<HTMLInputElement>).target.value === 'true';
             const nextBuilding = checked ? 'ON' : '';
             const nextRoom = checked ? 'LINE' : '';
-            void setFields({ building: nextBuilding, room: nextRoom });
+            void setAdvanced({ building: nextBuilding, room: nextRoom });
             return;
         }
 
@@ -90,18 +90,18 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        updateTakenCourses(formData.excludeRoadmapCourses);
+        updateTakenCourses(advanced.excludeRoadmapCourses);
 
-        if (!formData.excludeRoadmapCourses) return;
+        if (!advanced.excludeRoadmapCourses) return;
         if (!plannerRoadmaps || plannerRoadmaps.length === 0) return;
 
-        const exists = plannerRoadmaps.some((r) => r.id.toString() === formData.excludeRoadmapCourses);
+        const exists = plannerRoadmaps.some((r) => r.id.toString() === advanced.excludeRoadmapCourses);
 
         if (!exists) {
             openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
             void setField('excludeRoadmapCourses', '');
         }
-    }, [formData.excludeRoadmapCourses, plannerRoadmaps, setField, updateTakenCourses]);
+    }, [advanced.excludeRoadmapCourses, plannerRoadmaps, setField, updateTakenCourses]);
 
     return (
         <>
@@ -125,7 +125,7 @@ export function AdvancedSearchTextFields() {
                         label="Instructor"
                         textFieldProps={{
                             type: 'search',
-                            value: formData.instructor,
+                            value: advanced.instructor,
                             onChange: changeHandlerFactory('instructor'),
                             placeholder: 'Last name only',
                             fullWidth: true,
@@ -135,7 +135,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledTextField
                         label="Units"
                         textFieldProps={{
-                            value: formData.units,
+                            value: advanced.units,
                             onChange: changeHandlerFactory('units'),
                             type: 'search',
                             placeholder: 'ex. 4 or VAR',
@@ -146,7 +146,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledSelect
                         label="Class Full Option"
                         selectProps={{
-                            value: formData.coursesFull,
+                            value: advanced.coursesFull,
                             onChange: changeHandlerFactory('coursesFull'),
                             sx: {
                                 width: '100%',
@@ -172,7 +172,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledSelect
                         label="Course Level"
                         selectProps={{
-                            value: formData.division,
+                            value: advanced.division,
                             onChange: changeHandlerFactory('division'),
                             displayEmpty: true,
                             MenuProps: {
@@ -199,7 +199,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledTimePicker
                         label="Starts After"
                         timePickerProps={{
-                            value: formData.startTime ? parse(formData.startTime, 'HH:mm', new Date()) : null,
+                            value: advanced.startTime ? parse(advanced.startTime, 'HH:mm', new Date()) : null,
                             onChange: changeHandlerFactory('startTime'),
                             timeSteps: { minutes: 10 },
                         }}
@@ -214,7 +214,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledTimePicker
                         label="Ends Before"
                         timePickerProps={{
-                            value: formData.endTime ? parse(formData.endTime, 'HH:mm', new Date()) : null,
+                            value: advanced.endTime ? parse(advanced.endTime, 'HH:mm', new Date()) : null,
                             onChange: changeHandlerFactory('endTime'),
                             timeSteps: { minutes: 10 },
                         }}
@@ -238,7 +238,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledSelect
                         label="Online Only"
                         selectProps={{
-                            value: formData.building === 'ON' ? 'true' : 'false',
+                            value: advanced.building === 'ON' ? 'true' : 'false',
                             onChange: changeHandlerFactory('online'),
                             sx: {
                                 width: '100%',
@@ -254,7 +254,7 @@ export function AdvancedSearchTextFields() {
                         textFieldProps={{
                             id: 'building',
                             type: 'search',
-                            value: formData.building,
+                            value: advanced.building,
                             onChange: changeHandlerFactory('building'),
                             fullWidth: true,
                         }}
@@ -265,7 +265,7 @@ export function AdvancedSearchTextFields() {
                         textFieldProps={{
                             id: 'room',
                             type: 'search',
-                            value: formData.room,
+                            value: advanced.room,
                             onChange: changeHandlerFactory('room'),
                             fullWidth: true,
                         }}
@@ -293,7 +293,7 @@ export function AdvancedSearchTextFields() {
                             </Tooltip>
                         }
                         selectProps={{
-                            value: formData.excludeRoadmapCourses,
+                            value: advanced.excludeRoadmapCourses,
                             onChange: changeHandlerFactory('excludeRoadmapCourses'),
                             displayEmpty: true,
                             sx: {
@@ -314,7 +314,7 @@ export function AdvancedSearchTextFields() {
                         label="Exclude Restrictions"
                         selectProps={{
                             multiple: true,
-                            value: formData.excludeRestrictionCodes.split(''),
+                            value: advanced.excludeRestrictionCodes.split(''),
                             onChange: changeHandlerFactory('excludeRestrictionCodes'),
                             renderValue: (selected) => (selected as string[]).join(', '),
                             sx: {
@@ -325,7 +325,7 @@ export function AdvancedSearchTextFields() {
                         {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
                             <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
                                 <Checkbox
-                                    checked={formData.excludeRestrictionCodes.includes(option.value)}
+                                    checked={advanced.excludeRestrictionCodes.includes(option.value)}
                                     inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
                                 />
                                 <ListItemText id={`option-label-${option.value}`} primary={option.label} />
@@ -337,7 +337,7 @@ export function AdvancedSearchTextFields() {
                         label="Days"
                         selectProps={{
                             multiple: true,
-                            value: formData.days ? formData.days.split(/(?=[A-Z])/) : [],
+                            value: advanced.days ? advanced.days.split(/(?=[A-Z])/) : [],
                             onChange: changeHandlerFactory('days'),
                             renderValue: (selected) =>
                                 (selected as string[])
@@ -355,7 +355,7 @@ export function AdvancedSearchTextFields() {
                         {DAYS_OPTIONS.map((option) => (
                             <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
                                 <Checkbox
-                                    checked={formData.days.includes(option.value)}
+                                    checked={advanced.days.includes(option.value)}
                                     inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
                                 />
                                 <ListItemText id={`option-label-${option.value}`} primary={option.label} />

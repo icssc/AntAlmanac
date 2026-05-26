@@ -1,4 +1,4 @@
-import { useCourseSearchUrlState } from '$components/RightPane/CoursePane/SearchForm/courseSearchUrlState';
+import { useCourseSearchActions } from '$components/RightPane/CoursePane/SearchForm/searchParams';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
@@ -10,11 +10,7 @@ interface TutorialButtonProps {
 
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
     const { setCurrentStep, setIsOpen } = useTour();
-    const { setSearchMode, resetForm, clearView } = useCourseSearchUrlState((state) => ({
-        setSearchMode: state.setSearchMode,
-        resetForm: state.resetForm,
-        clearView: state.clearView,
-    }));
+    const { setSearchMode, resetForm, clearView } = useCourseSearchActions();
 
     const startTutorial = useCallback(() => {
         void setSearchMode('quick');
