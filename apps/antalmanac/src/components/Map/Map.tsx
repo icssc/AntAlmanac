@@ -362,10 +362,12 @@ export default function CourseMap() {
                             .filter((location) => location.building === primaryBuilding)
                             .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
 
+                        const { key: _markerKey, ...markerProps } = marker;
+
                         return (
                             <Fragment key={marker.sectionCode}>
                                 <LocationMarker
-                                    {...marker}
+                                    {...markerProps}
                                     label={today === 'All' ? undefined : (index + 1).toString()}
                                     stackIndex={stackIndex}
                                 >
@@ -390,11 +392,12 @@ export default function CourseMap() {
                 {/* Draw a marker for each custom Event that occurs today. */}
                 {customEventMarkersToDisplay.map((customEventMarkers, index) => {
                     const customEventSameBuildingPrior = customEventMarkersToDisplay.slice(0, index);
+                    const { key: markerKey, ...markerProps } = customEventMarkers;
 
                     return (
-                        <Fragment key={customEventMarkers.key}>
+                        <Fragment key={markerKey}>
                             <LocationMarker
-                                {...customEventMarkers}
+                                {...markerProps}
                                 label={'E'}
                                 stackIndex={customEventSameBuildingPrior.length}
                             >
