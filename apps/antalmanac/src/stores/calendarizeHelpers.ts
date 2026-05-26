@@ -190,14 +190,8 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
         // Skip events whose time strings are not in HH:mm format (e.g. empty strings from the DB).
         if (isNaN(startHour) || isNaN(startMin) || isNaN(endHour) || isNaN(endMin)) return [];
 
-        const dayIndicesOccurring: number[] = [];
-        const days: string[] = [];
-        for (let index = 0; index < customEvent.days.length; index++) {
-            if (customEvent.days[index]) {
-                dayIndicesOccurring.push(index);
-                days.push(COURSE_WEEK_DAYS[index]);
-            }
-        }
+        const dayIndicesOccurring = getDayIndicesOccurring(customEvent.days);
+        const days = dayIndicesOccurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex]);
 
         return dayIndicesOccurring.map((dayIndex) => {
             return {
