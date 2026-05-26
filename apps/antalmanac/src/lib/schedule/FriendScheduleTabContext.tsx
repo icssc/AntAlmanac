@@ -2,7 +2,7 @@
 
 import { createContext, useContext, type ReactNode } from 'react';
 
-export type FriendScheduleTab = 'search' | 'added' | 'map';
+export type FriendScheduleTab = 'added' | 'map';
 
 interface FriendScheduleTabContextValue {
     activeTab: FriendScheduleTab;

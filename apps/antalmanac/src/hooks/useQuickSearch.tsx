@@ -1,5 +1,4 @@
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useFriendScheduleTab } from '$lib/schedule/FriendScheduleTabContext';
 import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { AATerm } from '$lib/term';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -10,7 +9,6 @@ import { useShallow } from 'zustand/react/shallow';
 
 export function useQuickSearch() {
     const scheduleSource = useScheduleViewSource();
-    const friendScheduleTab = useFriendScheduleTab();
     const { displaySections, forceUpdate } = useCoursePaneStore(
         useShallow((s) => ({ displaySections: s.displaySections, forceUpdate: s.forceUpdate }))
     );
@@ -26,8 +24,7 @@ export function useQuickSearch() {
             displaySections();
             forceUpdate();
 
-            if (scheduleSource.scope === 'friend' && friendScheduleTab) {
-                friendScheduleTab.setActiveTab('search');
+            if (scheduleSource.scope === 'friend') {
                 return;
             }
 
@@ -44,6 +41,6 @@ export function useQuickSearch() {
             navigate(href, { replace: false });
             setActiveTab('search');
         },
-        [displaySections, forceUpdate, friendScheduleTab, navigate, scheduleSource.scope, setActiveTab]
+        [displaySections, forceUpdate, navigate, scheduleSource.scope, setActiveTab]
     );
 }

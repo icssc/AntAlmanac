@@ -1,10 +1,9 @@
 import { AddedSectionsGrid } from '$components/RightPane/AddedCourses/AddedSectionsGrid';
-import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import { useFriendScheduleTab, type FriendScheduleTab } from '$lib/schedule/FriendScheduleTabContext';
 import { useThemeStore } from '$stores/SettingsStore';
-import { FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
+import { FormatListBulleted, MyLocation } from '@mui/icons-material';
 import { Box, Paper, Stack, Tab, Tabs } from '@mui/material';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
@@ -12,9 +11,8 @@ import { lazy, Suspense } from 'react';
 const UCIMap = lazy(() => import('$components/Map/Map'));
 
 const friendScheduleTabIndex: Record<FriendScheduleTab, number> = {
-    search: 0,
-    added: 1,
-    map: 2,
+    added: 0,
+    map: 1,
 };
 
 export function FriendSchedule() {
@@ -47,19 +45,11 @@ export function FriendSchedule() {
                     centered
                 >
                     <Tab
-                        id="friend-search-tab"
-                        icon={<Search />}
-                        iconPosition="start"
-                        label="Search"
-                        sx={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
-                        onClick={() => setActiveTab('search')}
-                    />
-                    <Tab
                         id="friend-added-courses-tab"
                         icon={<FormatListBulleted />}
                         iconPosition="start"
                         label="Added"
-                        sx={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
+                        sx={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '50%' }}
                         onClick={() => setActiveTab('added')}
                     />
                     <Tab
@@ -67,7 +57,7 @@ export function FriendSchedule() {
                         icon={<MyLocation />}
                         iconPosition="start"
                         label="Map"
-                        sx={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
+                        sx={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '50%' }}
                         onClick={() => setActiveTab('map')}
                     />
                 </Tabs>
@@ -83,9 +73,7 @@ export function FriendSchedule() {
                 padding={1}
                 sx={{ WebkitOverflowScrolling: 'touch' }}
             >
-                {activeTab === 'search' ? (
-                    <CoursePaneRoot />
-                ) : activeTab === 'added' ? (
+                {activeTab === 'added' ? (
                     <AddedSectionsGrid />
                 ) : (
                     <Suspense
