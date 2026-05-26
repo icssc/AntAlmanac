@@ -43,14 +43,32 @@ function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
 
 export function ExcludeRoadmapField() {
     const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useCourseSearchParam('excludeRoadmapCourses');
-    const { plannerRoadmaps, updateTakenCourses } = usePlannerStore(
-        useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, updateTakenCourses: s.updateTakenCourses }))
+    const { plannerRoadmaps, loadPlannerRoadmaps, updateTakenCourses } = usePlannerStore(
+        useShallow((s) => ({
+            plannerRoadmaps: s.plannerRoadmaps,
+            loadPlannerRoadmaps: s.loadPlannerRoadmaps,
+            updateTakenCourses: s.updateTakenCourses,
+        }))
     );
     const sessionIsValid = useSessionStore((s) => s.sessionIsValid);
     const [signInOpen, setSignInOpen] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const handleSignInClose = useCallback(() => {
         setSignInOpen(false);
+    }, []);
+
+    const handleMenuOpen = useCallback(() => {
+        if (!sessionIsValid) {
+            setSignInOpen(true);
+            return;
+        }
+
+        setMenuOpen(true);
+    }, [loadPlannerRoadmaps, plannerRoadmaps.length, sessionIsValid]);
+
+    const handleMenuClose = useCallback(() => {
+        setMenuOpen(false);
     }, []);
 
     useEffect(() => {
@@ -82,12 +100,9 @@ export function ExcludeRoadmapField() {
                     onChange: (event) => setExcludeRoadmapCourses(event.target.value),
                     displayEmpty: true,
                     sx: { width: '100%' },
-                    onOpen: () => {
-                        if (!sessionIsValid) {
-                            setSignInOpen(true);
-                        }
-                    },
-                    open: !sessionIsValid ? false : undefined,
+                    open: menuOpen,
+                    onOpen: handleMenuOpen,
+                    onClose: handleMenuClose,
                 }}
             >
                 {getRoadmapMenuItems({ isLoggedIn: sessionIsValid, roadmaps: plannerRoadmaps })}
