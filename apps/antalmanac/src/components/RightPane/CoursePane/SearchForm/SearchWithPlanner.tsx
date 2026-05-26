@@ -142,9 +142,14 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     const renderOption = (props: HTMLAttributes<HTMLLIElement> & { key: Key }, roadmap: Roadmap) => {
         const { key: _autocompleteKey, ...restProps } = props;
         const menuItem = (
-            <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ paddingRight: 1 }}>
+            <Box
+                key={_autocompleteKey}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ paddingRight: 1 }}
+            >
                 <MenuItem
-                    key={roadmap.id}
                     {...restProps}
                     onClick={() => search(roadmap.id)}
                     disabled={!doesRoadmapIncludeTerm(roadmap.id)}
@@ -167,7 +172,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
         );
         if (termRoadmapGrouping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
             return (
-                <Tooltip key={roadmap.id} title="This roadmap has no courses for this term">
+                <Tooltip key={_autocompleteKey} title="This roadmap has no courses for this term">
                     <span>{menuItem}</span>
                 </Tooltip>
             );
