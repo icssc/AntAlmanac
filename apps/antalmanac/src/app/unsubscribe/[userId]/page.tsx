@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 export default function Page() {
     const { userId } = useParams<{ userId: string }>();
-    const [searchParams] = useSearchParams();
+    const searchParams = useSearchParams();
 
     const sectionCode = searchParams.get('sectionCode');
     const searchParamQuarter = searchParams.get('quarter');
