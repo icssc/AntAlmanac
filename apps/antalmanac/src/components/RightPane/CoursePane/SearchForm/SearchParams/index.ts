@@ -1,15 +1,13 @@
 import {
     ADVANCED_SEARCH_PARAMS,
-    MANUAL_SEARCH_PARAMS,
-    PLANNER_SEARCH_PARAM,
-} from '$components/RightPane/CoursePane/SearchForm/constants';
-import {
     COURSE_SEARCH_MODE,
     COURSE_SEARCH_MODE_KEY,
     COURSE_SEARCH_VIEW,
     COURSE_SEARCH_VIEW_KEY,
     DEFAULT_ADVANCED_SEARCH_VALUES,
     DEFAULT_FORM_DATA,
+    MANUAL_SEARCH_PARAMS,
+    COURSE_SEARCH_PLANNER_KEY,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import {
     advancedSearchParsers,
@@ -123,7 +121,7 @@ export function useCourseSearchFormData(): CourseSearchParams {
 export function useCourseSearchChrome() {
     const [searchMode, setSearchModeParam] = useQueryState(COURSE_SEARCH_MODE_KEY, searchModeParser);
     const [viewParam, setViewParam] = useQueryState(COURSE_SEARCH_VIEW_KEY, searchViewParser);
-    const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, plannerSearchParser);
+    const [plannerSearchParam] = useQueryState(COURSE_SEARCH_PLANNER_KEY, plannerSearchParser);
 
     const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL && plannerSearchParam === null;
 

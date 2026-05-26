@@ -30,7 +30,7 @@ export const SearchForm = () => {
             event.preventDefault();
             submitSearch(formData);
         },
-        [formData, manualSearchEnabled, submitSearch]
+        [formData, submitSearch]
     );
 
     const toggleSearchMode = (_event: React.MouseEvent<HTMLElement>, value: CourseSearchMode | null) => {

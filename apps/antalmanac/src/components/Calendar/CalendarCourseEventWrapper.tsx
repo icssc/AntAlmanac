@@ -2,7 +2,7 @@
 
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import { useQuickSearch } from '$src/hooks/useQuickSearch';
+import { useQuickSearch } from '$hooks/useQuickSearch';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { cloneElement, isValidElement, memo, useCallback } from 'react';
 import type { EventWrapperProps } from 'react-big-calendar';

@@ -1,29 +1,3 @@
-export const BASIC_SEARCH_PARAMS = ['term'] as const;
-
-export type BasicSearchParam = (typeof BASIC_SEARCH_PARAMS)[number];
-
-export const ADVANCED_SEARCH_PARAMS = [
-    'instructor',
-    'units',
-    'endTime',
-    'startTime',
-    'coursesFull',
-    'building',
-    'room',
-    'division',
-    'excludeRoadmapCourses',
-    'excludeRestrictionCodes',
-    'days',
-] as const;
-
-export type AdvancedSearchParam = (typeof ADVANCED_SEARCH_PARAMS)[number];
-
-export const MANUAL_SEARCH_PARAMS = ['deptValue', 'ge', 'courseNumber', 'sectionCode', ...BASIC_SEARCH_PARAMS] as const;
-
-export type ManualSearchParam = (typeof MANUAL_SEARCH_PARAMS)[number];
-
-export const PLANNER_SEARCH_PARAM = 'importRoadmap';
-
 export const GE_LIST = [
     { value: 'ANY', label: "ANY: Don't filter for GE", shortLabel: 'Any GEs' },
     { value: 'GE-1A', label: 'GE Ia (1a): Lower Division Writing', shortLabel: 'GE Ia (1a)' },

@@ -27,6 +27,6 @@ export const useSavedSearchStore = create<SavedSearchStoreState>((set, get) => (
     },
 
     savedManualSearch: null,
-    saveManualSearch: (params) => set({ savedManualSearch: { ...params, term: params.term } }),
+    saveManualSearch: (params) => set({ savedManualSearch: params }),
     clearManualSearch: () => set({ savedManualSearch: null }),
 }));

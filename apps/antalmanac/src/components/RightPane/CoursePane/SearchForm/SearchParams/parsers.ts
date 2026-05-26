@@ -1,15 +1,13 @@
+import { normalizeGeSelection } from '$components/RightPane/CoursePane/SearchForm/constants';
 import {
     AdvancedSearchParam,
-    ManualSearchParam,
-    normalizeGeSelection,
-} from '$components/RightPane/CoursePane/SearchForm/constants';
-import {
+    COURSE_SEARCH_MODE,
     COURSE_SEARCH_MODES,
     COURSE_SEARCH_VIEWS,
     DEFAULT_ADVANCED_SEARCH_VALUES,
-    DEFAULT_COURSE_SEARCH_MODE,
     DEFAULT_MANUAL_SEARCH_VALUES,
     DEFAULT_TERM,
+    ManualSearchParam,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import { getTermByShortName } from '$lib/term';
 import { type AATerm } from '@packages/antalmanac-types';
@@ -54,7 +52,7 @@ export const courseSearchParamParsers = {
     ...advancedSearchParsers,
 };
 
-export const searchModeParser = parseAsStringLiteral(COURSE_SEARCH_MODES).withDefault(DEFAULT_COURSE_SEARCH_MODE);
+export const searchModeParser = parseAsStringLiteral(COURSE_SEARCH_MODES).withDefault(COURSE_SEARCH_MODE.QUICK);
 
 export const searchViewParser = parseAsStringLiteral(COURSE_SEARCH_VIEWS);
 
