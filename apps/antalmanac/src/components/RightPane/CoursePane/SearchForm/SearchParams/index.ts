@@ -9,8 +9,8 @@ import {
     MANUAL_SEARCH_PARAMS,
     COURSE_SEARCH_PLANNER_KEY,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
 import {
-    advancedSearchParsers,
     courseSearchParamParsers,
     plannerSearchParser,
     searchModeParser,
@@ -68,13 +68,11 @@ export function clearMultiSearchData() {
     RightPaneStore.clearMultiSearchData();
 }
 
-/** Subscribe to a single URL-backed form field (nuqs key isolation). */
-export function useCourseSearchParam<K extends keyof CourseSearchParams>(field: K) {
+export function useCourseSearchParam<K extends keyof CourseSearchParams>(
+    field: K
+): readonly [CourseSearchParams[K], (next: CourseSearchParams[K]) => void] {
     const parser = courseSearchParamParsers[field];
-    const [value, setValueRaw] = useQueryState(field, parser) as unknown as [
-        CourseSearchParams[K],
-        (next: CourseSearchParams[K] | null) => Promise<URLSearchParams>,
-    ];
+    const [value, setValueRaw] = useQueryState(field, parser);
 
     const setValue = useCallback(
         (next: CourseSearchParams[K]) => {
@@ -84,29 +82,7 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(field: 
         [setValueRaw]
     );
 
-    return [value, setValue] as const;
-}
-
-export function useAdvancedSearchParams() {
-    const [advanced, setAdvancedRaw] = useQueryStates(advancedSearchParsers);
-
-    const setAdvanced = useCallback(
-        (values: Partial<AdvancedSearchParams>) => {
-            clearMultiSearchData();
-            void setAdvancedRaw(values);
-        },
-        [setAdvancedRaw]
-    );
-
-    const setField = useCallback(
-        <K extends keyof AdvancedSearchParams>(field: K, value: AdvancedSearchParams[K]) => {
-            clearMultiSearchData();
-            void setAdvancedRaw({ [field]: value });
-        },
-        [setAdvancedRaw]
-    );
-
-    return { advanced, setAdvanced, setField };
+    return [value, setValue];
 }
 
 export function useCourseSearchUrl() {
@@ -170,8 +146,9 @@ export function useCourseSearchUrl() {
     }, [setViewParam]);
 
     const submitSearch = useCallback(
-        (data: CourseSearchParams) => {
-            if (isValidSearch(data)) {
+        (data?: CourseSearchParams) => {
+            const payload = data ?? readCourseSearchParams();
+            if (isValidSearch(payload)) {
                 clearMultiSearchData();
                 void showResults();
                 return true;

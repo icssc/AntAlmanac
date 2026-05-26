@@ -1,12 +1,11 @@
-import {
-    useAdvancedSearchParams,
-    useCourseSearchParam,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { advancedSearchParsers } from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
 import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import type { AACourse } from '@packages/antalmanac-types';
 import { flattenCourses } from '@packages/anteater-api/utils';
+import { useQueryStates } from 'nuqs';
 import { useMemo } from 'react';
 
 /**
@@ -16,7 +15,7 @@ import { useMemo } from 'react';
  */
 const GeDataFetchProvider = (props: SectionTableProps) => {
     const [term] = useCourseSearchParam('term');
-    const { advanced } = useAdvancedSearchParams();
+    const [advanced] = useQueryStates(advancedSearchParsers);
 
     const params = useMemo(() => {
         return {

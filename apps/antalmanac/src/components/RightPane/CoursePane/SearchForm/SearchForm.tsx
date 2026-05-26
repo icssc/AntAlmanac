@@ -4,6 +4,7 @@ import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
 import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
 import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import { LIGHT_BLUE } from '$src/globals';
@@ -14,8 +15,7 @@ import { useCallback, type SyntheticEvent } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const SearchForm = () => {
-    const { formData, manualSearchEnabled, resetForm, setFields, setSearchMode, clearView, submitSearch } =
-        useCourseSearchUrl();
+    const { manualSearchEnabled, resetForm, setFields, setSearchMode, clearView, submitSearch } = useCourseSearchUrl();
     const isDark = useThemeStore((store) => store.isDark);
     const { savedManualSearch, saveManualSearch } = useSavedSearchStore(
         useShallow((store) => ({
@@ -27,9 +27,9 @@ export const SearchForm = () => {
     const onFormSubmit = useCallback(
         (event: SyntheticEvent<HTMLFormElement>) => {
             event.preventDefault();
-            submitSearch(formData);
+            submitSearch();
         },
-        [formData, submitSearch]
+        [submitSearch]
     );
 
     const toggleSearchMode = (_event: React.MouseEvent<HTMLElement>, value: CourseSearchMode | null) => {
@@ -43,7 +43,7 @@ export const SearchForm = () => {
                 }
                 break;
             case COURSE_SEARCH_MODE.QUICK:
-                saveManualSearch(formData);
+                saveManualSearch(readCourseSearchParams());
                 setSearchMode(COURSE_SEARCH_MODE.QUICK);
                 resetForm({ preserveTerm: true });
                 clearView();

@@ -7,11 +7,19 @@ import {
     DEFAULT_ADVANCED_SEARCH_VALUES,
     DEFAULT_MANUAL_SEARCH_VALUES,
     DEFAULT_TERM,
-    ManualSearchParam,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import { getTermByShortName } from '$lib/term';
 import { type AATerm } from '@packages/antalmanac-types';
-import { createParser, createSerializer, parseAsString, parseAsStringLiteral, SingleParser } from 'nuqs';
+import { createParser, createSerializer, parseAsString, parseAsStringLiteral, type SingleParserBuilder } from 'nuqs';
+
+export type CourseSearchParamParser<K extends keyof CourseSearchParams> = SingleParserBuilder<CourseSearchParams[K]> & {
+    readonly defaultValue: CourseSearchParams[K];
+};
+
+export type CourseSearchParamParserMap = {
+    [K in keyof CourseSearchParams]: CourseSearchParamParser<K>;
+};
 
 const parseAsCourseSearchTerm = createParser<AATerm>({
     parse: (value: string) => getTermByShortName(value) ?? null,
@@ -25,15 +33,12 @@ const parseAsNormalizedGe = createParser<string>({
     eq: (a: string, b: string) => normalizeGeSelection(a) === normalizeGeSelection(b),
 }).withDefault(DEFAULT_MANUAL_SEARCH_VALUES.ge);
 
-export const manualSearchParsers = {
+export const courseSearchParamParsers: CourseSearchParamParserMap = {
     term: parseAsCourseSearchTerm,
     deptValue: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.deptValue),
     ge: parseAsNormalizedGe,
     courseNumber: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.courseNumber),
     sectionCode: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.sectionCode),
-} satisfies Record<ManualSearchParam, SingleParser<string> | SingleParser<AATerm>>;
-
-export const advancedSearchParsers = {
     instructor: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.instructor),
     units: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.units),
     endTime: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.endTime),
@@ -45,11 +50,20 @@ export const advancedSearchParsers = {
     excludeRoadmapCourses: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRoadmapCourses),
     excludeRestrictionCodes: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRestrictionCodes),
     days: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.days),
-} satisfies Record<AdvancedSearchParam, SingleParser<string>>;
+};
 
-export const courseSearchParamParsers = {
-    ...manualSearchParsers,
-    ...advancedSearchParsers,
+export const advancedSearchParsers: Pick<CourseSearchParamParserMap, AdvancedSearchParam> = {
+    instructor: courseSearchParamParsers.instructor,
+    units: courseSearchParamParsers.units,
+    endTime: courseSearchParamParsers.endTime,
+    startTime: courseSearchParamParsers.startTime,
+    coursesFull: courseSearchParamParsers.coursesFull,
+    building: courseSearchParamParsers.building,
+    room: courseSearchParamParsers.room,
+    division: courseSearchParamParsers.division,
+    excludeRoadmapCourses: courseSearchParamParsers.excludeRoadmapCourses,
+    excludeRestrictionCodes: courseSearchParamParsers.excludeRestrictionCodes,
+    days: courseSearchParamParsers.days,
 };
 
 export const searchModeParser = parseAsStringLiteral(COURSE_SEARCH_MODES).withDefault(COURSE_SEARCH_MODE.QUICK);
