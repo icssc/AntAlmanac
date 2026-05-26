@@ -3,11 +3,8 @@ import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import { ErrorPage } from '$routes/ErrorPage';
-import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
-import { NewUserPage } from '$routes/NewUserPage';
 import { OutagePage } from '$routes/OutagePage';
-import { Unsubscribe } from '$routes/UnsubscribePage';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
@@ -38,23 +35,8 @@ const BROWSER_ROUTER = createBrowserRouter([
                 errorElement: <ErrorPage />,
             },
             {
-                path: '/unsubscribe/:userId',
-                element: <Unsubscribe />,
-                errorElement: <ErrorPage />,
-            },
-            {
                 path: '/:tab',
                 element: HOME_PAGE,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/feedback',
-                element: <Feedback />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/welcome',
-                element: <NewUserPage />,
                 errorElement: <ErrorPage />,
             },
             {

@@ -1,14 +1,17 @@
-import { useSessionStore } from '$stores/SessionStore';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+'use client';
 
-export const NewUserPage = () => {
-    const navigate = useNavigate();
+import { useSessionStore } from '$stores/SessionStore';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export default function Page() {
+    const router = useRouter();
     const setIsNewUser = useSessionStore((state) => state.setIsNewUser);
 
     useEffect(() => {
         setIsNewUser(true);
-        navigate('/', { replace: true });
-    }, [navigate, setIsNewUser]);
+        router.replace('/');
+    }, [router, setIsNewUser]);
+
     return null;
-};
+}
