@@ -4,17 +4,17 @@ import {
     getLocalStorageDevMode,
     getLocalStoragePreviewMode,
     getLocalStorageShow24HourTime,
+    getLocalStorageTheme,
     setLocalStorageAutoSave,
     setLocalStorageDevMode,
     setLocalStoragePreviewMode,
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
 } from '$lib/localStorage';
-import { persistThemeCookies, resolveIsDark, type ThemeInitState, type ThemeSetting } from '$lib/theme';
 import { PostHog } from 'posthog-js/react';
 import { create } from 'zustand';
 
-export type { ThemeSetting };
+type ThemeSetting = 'light' | 'dark' | 'system';
 
 interface ThemeStore {
     /**
@@ -29,31 +29,41 @@ interface ThemeStore {
     setAppTheme: (themeSetting: ThemeSetting, postHog?: PostHog) => void;
 }
 
-export const useThemeStore = create<ThemeStore>((set) => ({
-    themeSetting: 'system',
-    isDark: false,
+function themeShouldBeDark(themeSetting: ThemeSetting) {
+    if (typeof window === 'undefined') {
+        return themeSetting === 'dark';
+    }
 
-    setAppTheme: (themeSetting, postHog) => {
-        setLocalStorageTheme(themeSetting);
-
-        const isDark = resolveIsDark(themeSetting);
-        persistThemeCookies(themeSetting, isDark);
-
-        set({ themeSetting, isDark });
-
-        logAnalytics(postHog, {
-            category: analyticsEnum.nav,
-            action: analyticsEnum.nav.actions.CHANGE_THEME,
-            customProps: {
-                themeSetting,
-            },
-        });
-    },
-}));
-
-export function initializeThemeStore(initial: ThemeInitState) {
-    useThemeStore.setState(initial);
+    if (themeSetting == 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return themeSetting == 'dark';
 }
+
+export const useThemeStore = create<ThemeStore>((set) => {
+    const storedThemeSetting: ThemeSetting = ((typeof Storage !== 'undefined' ? getLocalStorageTheme() : null) ??
+        'system') as ThemeSetting;
+    const isDark = themeShouldBeDark(storedThemeSetting);
+
+    return {
+        themeSetting: storedThemeSetting,
+        isDark: isDark,
+
+        setAppTheme: (themeSetting, postHog) => {
+            setLocalStorageTheme(themeSetting);
+
+            const isDark = themeShouldBeDark(themeSetting);
+
+            set({ themeSetting, isDark });
+
+            logAnalytics(postHog, {
+                category: analyticsEnum.nav,
+                action: analyticsEnum.nav.actions.CHANGE_THEME,
+                customProps: {
+                    themeSetting,
+                },
+            });
+        },
+    };
+});
 
 interface TimeFormatStore {
     isMilitaryTime: boolean;

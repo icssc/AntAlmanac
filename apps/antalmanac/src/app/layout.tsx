@@ -1,8 +1,6 @@
-import { getServerThemeState, getThemeBackground, THEME_INIT_SCRIPT } from '$lib/theme';
 import { Providers } from '$src/app/providers';
 import { ANTALMANAC_DESCRIPTION, ANTALMANAC_TITLE } from '$src/app/seo-constants';
 import type { Metadata, Viewport } from 'next';
-import { cookies } from 'next/headers';
 import Script from 'next/script';
 import type { WebApplication, WebSite, WithContext } from 'schema-dts';
 
@@ -79,21 +77,10 @@ const siteSchema: WithContext<WebSite> = {
     },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-    const initialTheme = getServerThemeState(await cookies());
-    const backgroundColor = getThemeBackground(initialTheme.isDark);
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html
-            lang="en"
-            suppressHydrationWarning
-            style={{
-                colorScheme: initialTheme.isDark ? 'dark' : 'light',
-                backgroundColor,
-            }}
-        >
-            <body suppressHydrationWarning style={{ backgroundColor }}>
-                <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <html lang="en">
+            <body>
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify([webAppSchema, siteSchema]) }}
@@ -105,7 +92,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     );`}
                 </Script>
                 <noscript>You need to enable JavaScript to run this app.</noscript>
-                <Providers initialTheme={initialTheme}>{children}</Providers>
+                <Providers>{children}</Providers>
             </body>
         </html>
     );
