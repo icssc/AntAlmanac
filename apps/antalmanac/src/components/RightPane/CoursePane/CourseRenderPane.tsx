@@ -334,7 +334,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                 if (multiSearchData.length > 0) {
                     const { year, quarter } = RightPaneStore.getFormData().term;
                     const offeredCourses: WebsocSearchInput[] = [];
-                    const unofferedCourses: CourseSearchParams[] = [];
+                    const nextUnoffered: CourseSearchParams[] = [];
                     const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
                         term: { year, quarter },
                         courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
@@ -343,10 +343,10 @@ export default function CourseRenderPane(props: { id?: number }) {
                         if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
                             offeredCourses.push(getQueryParams(course));
                         } else {
-                            unofferedCourses.push(course);
+                            nextUnoffered.push(course);
                         }
                     }
-                    setUnofferedCourses(unofferedCourses);
+                    setUnofferedCourses(nextUnoffered);
                     response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
                 } else {
                     const websocQueryParams = getQueryParams(RightPaneStore.getFormData());

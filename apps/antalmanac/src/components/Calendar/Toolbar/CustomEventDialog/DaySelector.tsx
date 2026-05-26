@@ -11,7 +11,7 @@ export function DaySelector({
     days = [false, false, false, false, false, false, false],
     onSelectDay,
 }: DaySelectorProps) {
-    const daysValue = days.map((day, index) => (day ? DAYS.at(index) : false)).filter(Boolean);
+    const daysValue = days.flatMap((day, index) => (day ? [DAYS[index]] : []));
 
     const handleChange = (_event: unknown, value: typeof DAYS) => {
         const newDays = DAYS.map((d) => value.includes(d));
