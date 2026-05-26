@@ -20,7 +20,7 @@ import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useSearchParams } from 'next/navigation';
-import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
+import { ComponentProps, HTMLAttributes, Key, useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 interface SearchWithPlannerProps {
@@ -139,18 +139,13 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
         );
     };
 
-    const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
+    const renderOption = (props: HTMLAttributes<HTMLLIElement> & { key: Key }, roadmap: Roadmap) => {
+        const { key: _autocompleteKey, ...restProps } = props;
         const menuItem = (
-            <Box
-                key={roadmap.id}
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ paddingRight: 1 }}
-            >
+            <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ paddingRight: 1 }}>
                 <MenuItem
-                    {...props}
                     key={roadmap.id}
+                    {...restProps}
                     onClick={() => search(roadmap.id)}
                     disabled={!doesRoadmapIncludeTerm(roadmap.id)}
                     sx={{ width: '100%' }}
