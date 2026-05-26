@@ -10,16 +10,21 @@ import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, type FormEvent } from 'react';
+import { useCallback, type SyntheticEvent } from 'react';
 
 export const SearchForm = () => {
     const { formData, manualSearchEnabled, resetForm, setFields, setSearchMode, clearView, submitSearch } =
         useCourseSearchPane();
     const isDark = useThemeStore((store) => store.isDark);
+    const { savedManualSearch, saveManualSearch, clearManualSearch } = useSavedSearchStore((store) => ({
+        savedManualSearch: store.savedManualSearch,
+        saveManualSearch: store.saveManualSearch,
+        clearManualSearch: store.clearManualSearch,
+    }));
     const postHog = usePostHog();
 
     const onFormSubmit = useCallback(
-        (event: FormEvent<HTMLFormElement>) => {
+        (event: SyntheticEvent<HTMLFormElement>) => {
             event.preventDefault();
             submitSearch(formData);
         },
@@ -33,13 +38,12 @@ export const SearchForm = () => {
         switch (value) {
             case 'manual':
                 void setSearchMode('manual');
-                const savedManualSearch = useSavedSearchStore.getState().getManualSearch();
                 if (savedManualSearch) {
                     void setFields(savedManualSearch);
                 }
                 return;
             case 'quick':
-                useSavedSearchStore.getState().saveManualSearch(formData);
+                saveManualSearch(formData);
                 void setSearchMode('quick');
                 void resetForm({ preserveTerm: true });
                 void clearView();
@@ -93,7 +97,7 @@ export const SearchForm = () => {
                                 });
                             }}
                             onReset={() => {
-                                useSavedSearchStore.getState().clearManualSearch();
+                                clearManualSearch();
                                 void resetForm();
                             }}
                         />

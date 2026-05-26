@@ -14,7 +14,6 @@ interface SavedSearchStoreState {
     /** Manual search draft preserved when switching to quick search. */
     savedManualSearch: CourseSearchParams | null;
     saveManualSearch: (params: CourseSearchParams) => void;
-    getManualSearch: () => CourseSearchParams | null;
     clearManualSearch: () => void;
 }
 
@@ -29,6 +28,5 @@ export const useSavedSearchStore = create<SavedSearchStoreState>((set, get) => (
 
     savedManualSearch: null,
     saveManualSearch: (params) => set({ savedManualSearch: { ...params, term: params.term } }),
-    getManualSearch: () => get().savedManualSearch,
     clearManualSearch: () => set({ savedManualSearch: null }),
 }));
