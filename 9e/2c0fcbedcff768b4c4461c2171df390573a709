@@ -1,0 +1,19 @@
+apps/antalmanac/src/components/Header/Friends/Friends/FriendCard.tsx
+  s_9d7d98bfbe6e0c::t_4d6f9b0e788523 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "9e2c0fcbedcff768b4c4461c2171df390573a709",
+  "prompts": {},
+  "sessions": {
+    "s_9d7d98bfbe6e0c": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "f6199ba5-0ffa-4409-a413-78db56691a20",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
