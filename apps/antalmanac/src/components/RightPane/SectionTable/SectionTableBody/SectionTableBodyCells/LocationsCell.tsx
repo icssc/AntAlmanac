@@ -13,9 +13,9 @@ interface LocationsCellProps {
 export const LocationsCell = ({ meetings }: LocationsCellProps) => {
     return (
         <TableBodyCellContainer>
-            {meetings.map((meeting) => {
+            {meetings.map((meeting, meetingIndex) => {
                 const meetingKey = meeting.timeIsTBA
-                    ? String(meeting.timeIsTBA)
+                    ? `tba-${meetingIndex}`
                     : `${meeting.days}-${meeting.bldg.join('-')}-${meeting.startTime.hour}-${meeting.startTime.minute}-${meeting.endTime.hour}-${meeting.endTime.minute}`;
 
                 return (
