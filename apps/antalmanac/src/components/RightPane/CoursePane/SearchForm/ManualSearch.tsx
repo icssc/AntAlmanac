@@ -1,6 +1,6 @@
 import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
 import { CourseNumberSearchBar } from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
-import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar';
+import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar';
 import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
 import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
