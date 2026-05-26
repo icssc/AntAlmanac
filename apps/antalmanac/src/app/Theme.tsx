@@ -1,12 +1,13 @@
 'use client';
 
+import { resolveThemeInitState, type ThemeInitState } from '$lib/theme';
 import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
+import { initializeThemeStore, useThemeStore } from '$stores/SettingsStore';
 import { CssBaseline, type PaletteOptions } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Roboto } from 'next/font/google';
 import { usePostHog } from 'posthog-js/react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 const roboto = Roboto({
@@ -77,6 +78,7 @@ const darkTheme: PaletteOptions = {
 
 interface Props {
     children?: React.ReactNode;
+    initialTheme: ThemeInitState;
 }
 
 declare module '@mui/material/styles' {
@@ -120,6 +122,12 @@ declare module '@mui/material/styles' {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
+    const initialized = useRef(false);
+    if (!initialized.current) {
+        initializeThemeStore(resolveThemeInitState(props.initialTheme));
+        initialized.current = true;
+    }
+
     const [isDark, setAppTheme] = useThemeStore(useShallow((store) => [store.isDark, store.setAppTheme]));
     const postHog = usePostHog();
 
