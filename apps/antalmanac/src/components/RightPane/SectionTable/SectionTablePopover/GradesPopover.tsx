@@ -1,4 +1,6 @@
+import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { trpcReact } from '$lib/api/trpc';
+import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import {
     Box,
     ToggleButton,
@@ -59,6 +61,7 @@ interface GradesPopoverProps {
 
 export function GradesPopover(props: GradesPopoverProps) {
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
+    const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
     const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGrades.useQuery(
         { department: deptCode, courseNumber, instructor: '' },
@@ -97,7 +100,7 @@ export function GradesPopover(props: GradesPopoverProps) {
         <Card>
             <CardHeader
                 title={title}
-                subheader={subheader}
+                subheader={<SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
                 action={
                     <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
                         <ToggleButton

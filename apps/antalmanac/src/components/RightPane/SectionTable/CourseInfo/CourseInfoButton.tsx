@@ -79,8 +79,8 @@ export const CourseInfoButton = ({
                     anchorEl={anchorEl}
                     onClose={handleClose}
                     anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
+                        vertical: 'bottom',
+                        horizontal: 'left',
                     }}
                 >
                     <Paper>{popupContent}</Paper>

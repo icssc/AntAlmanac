@@ -1,6 +1,8 @@
+import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
+import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import type { AATerm } from '@packages/antalmanac-types';
@@ -32,6 +34,8 @@ export function EnrollmentHistoryPopover({
     term,
     sectionCode,
 }: EnrollmentHistoryPopoverProps) {
+    const predecessorLabel = getRenamedCoursesLabel(department, courseNumber);
+
     const { data: enrollmentHistory, isLoading: loading } = trpcReact.enrollHist.get.useQuery(
         { department, courseNumber, sectionType },
         { select: parseAndSortEnrollmentHistory }
@@ -66,11 +70,9 @@ export function EnrollmentHistoryPopover({
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
-        currEnrollmentHistory != null ? (
-            `${currEnrollmentHistory.term.shortName} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
-        ) : (
-            <>&nbsp;</>
-        );
+        currEnrollmentHistory != null
+            ? `${currEnrollmentHistory.term.shortName} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
+            : null;
 
     const handleBack = useCallback(() => {
         if (!enrollmentHistory?.length || activeGraphIndex === 0) {
@@ -116,7 +118,7 @@ export function EnrollmentHistoryPopover({
         <Card>
             <CardHeader
                 title={title}
-                subheader={subheader}
+                subheader={<SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
                 action={headerAction}
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
