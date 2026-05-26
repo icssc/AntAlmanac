@@ -2,7 +2,7 @@ import { clearMultiSearchData } from '$components/RightPane/CoursePane/SearchFor
 import {
     COURSE_SEARCH_MODE,
     COURSE_SEARCH_VIEW,
-    defaultFormData,
+    DEFAULT_FORM_DATA,
     COURSE_SEARCH_MODE_KEY,
     COURSE_SEARCH_VIEW_KEY,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
@@ -20,7 +20,7 @@ export function useQuickSearch() {
         (deptValue: string, courseNumber: string, term: AATerm) => {
             clearMultiSearchData();
             const courseSearch = serializeCourseSearchParams({
-                ...defaultFormData,
+                ...DEFAULT_FORM_DATA,
                 term,
                 deptValue,
                 courseNumber,

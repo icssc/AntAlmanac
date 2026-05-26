@@ -3,7 +3,7 @@ import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm
 import { useCourseSearchActions, useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import {
     COURSE_SEARCH_MODE,
-    defaultFormData,
+    DEFAULT_FORM_DATA,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -83,7 +83,7 @@ const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
         }
 
         const baseFormData: CourseSearchParams = {
-            ...defaultFormData,
+            ...DEFAULT_FORM_DATA,
             term,
         };
 

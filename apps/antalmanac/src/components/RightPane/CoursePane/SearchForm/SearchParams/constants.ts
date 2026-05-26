@@ -42,7 +42,7 @@ export const DEFAULT_ADVANCED_SEARCH_VALUES = {
 
 export const DEFAULT_TERM = getDefaultTerm();
 
-export const defaultFormData = {
+export const DEFAULT_FORM_DATA = {
     term: DEFAULT_TERM,
     ...DEFAULT_MANUAL_SEARCH_VALUES,
     ...DEFAULT_ADVANCED_SEARCH_VALUES,

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { defaultFormData } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import type { AATerm } from '@packages/antalmanac-types';
 
@@ -25,7 +25,7 @@ class RightPaneStore extends EventEmitter {
 
     setMultiSearchData = (data: Partial<(typeof this.multiSearchData)[number]>[], term: AATerm) => {
         this.multiSearchData = data.map((params) => ({
-            ...defaultFormData,
+            ...DEFAULT_FORM_DATA,
             ...params,
             term,
         }));
