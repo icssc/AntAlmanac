@@ -1,0 +1,31 @@
+apps/antalmanac/src/components/buttons/MapLink.tsx
+  s_5cc003596c2424::t_14931604793ca3 4,12,21-27,35,37,42
+  s_5cc003596c2424::t_d42709cf5a33a6 1-2,15-16,19-20,28-29,33-34,36,38-39
+  s_5cc003596c2424::t_45cce3e04f8ca9 13
+apps/antalmanac/src/components/Header/Friends/FriendScheduleView.tsx
+  s_5cc003596c2424::t_fa46ff305e1d7f 7
+  s_5cc003596c2424::t_b0bba3f699224b 52-58,61-66,68-80
+apps/antalmanac/src/lib/schedule/FriendScheduleTabContext.tsx
+  s_5cc003596c2424::t_d0ececf6d9b991 10-12,20-22,26-28
+apps/antalmanac/src/components/RightPane/AddedCourses/FriendSchedule.tsx
+  s_5cc003596c2424::t_e0e85e9fda1d18 5,10
+  s_5cc003596c2424::t_a4d4ba0cdc1f6e 21,24-28
+  s_5cc003596c2424::t_1440a4604c83bb 110
+  s_5cc003596c2424::t_f994590cf2a14a 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "ddc8cffbf746e1c9d6f7e2549e8574d829a5ac2f",
+  "prompts": {},
+  "sessions": {
+    "s_5cc003596c2424": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "90b962d9-b718-4310-9f17-483e4aa83bd9",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
