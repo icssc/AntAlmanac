@@ -3,6 +3,7 @@ import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/Manual
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
 import { useCourseSearchPane } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
@@ -36,15 +37,15 @@ export const SearchForm = () => {
         if (!value) return;
 
         switch (value) {
-            case 'manual':
-                void setSearchMode('manual');
+            case COURSE_SEARCH_MODE.MANUAL:
+                void setSearchMode(COURSE_SEARCH_MODE.MANUAL);
                 if (savedManualSearch) {
                     void setFields(savedManualSearch);
                 }
                 return;
-            case 'quick':
+            case COURSE_SEARCH_MODE.QUICK:
                 saveManualSearch(formData);
-                void setSearchMode('quick');
+                void setSearchMode(COURSE_SEARCH_MODE.QUICK);
                 void resetForm({ preserveTerm: true });
                 void clearView();
                 return;
@@ -68,7 +69,7 @@ export const SearchForm = () => {
                         fullWidth
                         size="medium"
                         color="secondary"
-                        value={manualSearchEnabled ? 'manual' : 'quick'}
+                        value={manualSearchEnabled ? COURSE_SEARCH_MODE.MANUAL : COURSE_SEARCH_MODE.QUICK}
                         exclusive
                         aria-label="Search selection"
                         sx={{
@@ -79,8 +80,8 @@ export const SearchForm = () => {
                         }}
                         onChange={toggleSearchMode}
                     >
-                        <ToggleButton value="quick">Quick Search</ToggleButton>
-                        <ToggleButton value="manual">Manual Search</ToggleButton>
+                        <ToggleButton value={COURSE_SEARCH_MODE.QUICK}>Quick Search</ToggleButton>
+                        <ToggleButton value={COURSE_SEARCH_MODE.MANUAL}>Manual Search</ToggleButton>
                     </ToggleButtonGroup>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <TermSelector />

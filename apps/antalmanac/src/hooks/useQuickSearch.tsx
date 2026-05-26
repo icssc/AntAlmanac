@@ -1,5 +1,11 @@
 import { clearMultiSearchData } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
-import { defaultFormData } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import {
+    COURSE_SEARCH_MODE,
+    COURSE_SEARCH_VIEW,
+    defaultFormData,
+    COURSE_SEARCH_MODE_KEY,
+    COURSE_SEARCH_VIEW_KEY,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
 import { AATerm } from '$lib/term';
 import { useTabStore } from '$stores/TabStore';
@@ -20,8 +26,8 @@ export function useQuickSearch() {
                 courseNumber,
             });
             const searchParams = new URLSearchParams(courseSearch);
-            searchParams.set('search', 'quick');
-            searchParams.set('view', 'results');
+            searchParams.set(COURSE_SEARCH_MODE_KEY, COURSE_SEARCH_MODE.QUICK);
+            searchParams.set(COURSE_SEARCH_VIEW_KEY, COURSE_SEARCH_VIEW.RESULTS);
 
             navigate({ pathname: '/', search: searchParams.toString() });
             setActiveTab('search');

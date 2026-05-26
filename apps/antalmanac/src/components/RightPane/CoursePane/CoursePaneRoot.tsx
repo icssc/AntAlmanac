@@ -2,6 +2,7 @@ import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePane
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import { useCourseSearchPane } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
 import { Box } from '@mui/material';
@@ -21,7 +22,7 @@ export function CoursePaneRoot() {
             return;
         }
 
-        void setSearchMode('quick');
+        void setSearchMode(COURSE_SEARCH_MODE.QUICK);
         void resetForm({ preserveTerm: true });
         void clearView();
     }, [clearView, manualSearchEnabled, resetForm, setSearchMode, showSearchForm]);

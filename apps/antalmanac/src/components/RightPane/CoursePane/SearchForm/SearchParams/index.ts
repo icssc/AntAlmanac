@@ -4,10 +4,12 @@ import {
     PLANNER_SEARCH_PARAM,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import {
+    COURSE_SEARCH_MODE,
+    COURSE_SEARCH_VIEW,
     DEFAULT_ADVANCED_SEARCH_VALUES,
     defaultFormData,
-    SEARCH_MODE_URL_KEY,
-    SEARCH_VIEW_URL_KEY,
+    COURSE_SEARCH_MODE_KEY,
+    COURSE_SEARCH_VIEW_KEY,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import {
     advancedSearchParsers,
@@ -116,19 +118,19 @@ export function useCourseSearchFormData(): CourseSearchParams {
 
 /** Mode / view chrome — watches `search`, `view`, and planner import param only. */
 export function useCourseSearchChrome() {
-    const [searchMode, setSearchModeParam] = useQueryState(SEARCH_MODE_URL_KEY, searchModeParser);
-    const [viewParam, setViewParam] = useQueryState(SEARCH_VIEW_URL_KEY, searchViewParser);
+    const [searchMode, setSearchModeParam] = useQueryState(COURSE_SEARCH_MODE_KEY, searchModeParser);
+    const [viewParam, setViewParam] = useQueryState(COURSE_SEARCH_VIEW_KEY, searchViewParser);
     const [plannerSearchParam] = useQueryState(PLANNER_SEARCH_PARAM, plannerSearchParser);
 
-    const manualSearchEnabled = searchMode === 'manual' && plannerSearchParam === null;
+    const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL && plannerSearchParam === null;
 
     const setSearchMode = useCallback((mode: CourseSearchMode) => setSearchModeParam(mode), [setSearchModeParam]);
 
-    const showResults = useCallback(() => setViewParam('results'), [setViewParam]);
+    const showResults = useCallback(() => setViewParam(COURSE_SEARCH_VIEW.RESULTS), [setViewParam]);
 
     const showSearchForm = useCallback(() => {
         clearMultiSearchData();
-        return setViewParam('search');
+        return setViewParam(COURSE_SEARCH_VIEW.SEARCH_FORM);
     }, [setViewParam]);
 
     const clearView = useCallback(() => setViewParam(null), [setViewParam]);
@@ -219,11 +221,13 @@ export function useCourseSearchPane() {
     const chrome = useCourseSearchChrome();
     const actions = useCourseSearchActions();
 
-    const derivedView: CourseSearchView = shouldShowSearchForm(formData) ? 'search' : 'results';
+    const derivedView: CourseSearchView = shouldShowSearchForm(formData)
+        ? COURSE_SEARCH_VIEW.SEARCH_FORM
+        : COURSE_SEARCH_VIEW.RESULTS;
     const view: CourseSearchView = chrome.manualSearchEnabled
-        ? (chrome.viewParam ?? 'search')
+        ? (chrome.viewParam ?? COURSE_SEARCH_VIEW.SEARCH_FORM)
         : (chrome.viewParam ?? derivedView);
-    const searchFormIsDisplayed = view === 'search';
+    const searchFormIsDisplayed = view === COURSE_SEARCH_VIEW.SEARCH_FORM;
 
     return {
         formData,
