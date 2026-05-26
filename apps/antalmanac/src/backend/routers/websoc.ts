@@ -1,4 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
+import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
 import { QuarterSchema, WebsocSearchInputKeysSchema, type CourseInfo } from '@packages/antalmanac-types';
 import { WebsocSearchInputSchema, type WebsocSearchInput } from '@packages/antalmanac-types';
 import type {
@@ -106,13 +107,29 @@ const websocRouter = router({
     getSyllabi: aapiProcedure
         .input(
             z.object({
-                courseId: z.string(),
+                department: z.string(),
+                courseNumber: z.string(),
                 year: z.string().optional(),
                 quarter: QuarterSchema.optional(),
                 instructor: z.string().optional(),
             })
         )
-        .query(({ input }): Promise<WebsocSyllabiResponse> => aapiClient.websoc.getSyllabi(input)),
+        .query(async ({ input }): Promise<WebsocSyllabiResponse> => {
+            const { department, courseNumber, ...rest } = input;
+            const courseIds = getRenamedCoursesIdentifiers(department, courseNumber).map(
+                ({ department, courseNumber }) => department.replaceAll(' ', '') + courseNumber
+            );
+
+            if (courseIds.length === 1) {
+                return aapiClient.websoc.getSyllabi({ ...rest, courseId: courseIds[0] });
+            }
+
+            const results = await Promise.all(
+                courseIds.map((courseId) => aapiClient.websoc.getSyllabi({ ...rest, courseId }))
+            );
+
+            return results.flat();
+        }),
 });
 
 export default websocRouter;

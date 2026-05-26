@@ -64,7 +64,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                 open={Boolean(anchorEl)}
                 onClose={hideDistribution}
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
                 <GradesPopover
                     deptCode={deptCode}
