@@ -1,14 +1,16 @@
+'use client';
+
 import { useSessionStore } from '$stores/SessionStore';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export const NewUserPage = () => {
-    const navigate = useNavigate();
+    const router = useRouter();
     const setIsNewUser = useSessionStore((state) => state.setIsNewUser);
 
     useEffect(() => {
         setIsNewUser(true);
-        navigate('/', { replace: true });
-    }, [navigate, setIsNewUser]);
+        router.replace('/');
+    }, [router, setIsNewUser]);
     return null;
 };

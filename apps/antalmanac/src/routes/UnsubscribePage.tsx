@@ -1,8 +1,10 @@
+'use client';
+
 import { trpcReact } from '$lib/api/trpc';
 import { parseQuarter } from '$lib/termHelpers';
 import { Box, Button } from '@mui/material';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
 
 export const Unsubscribe = () => {
     const { userId } = useParams();
