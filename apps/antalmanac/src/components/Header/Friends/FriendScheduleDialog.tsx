@@ -103,15 +103,7 @@ export function FriendScheduleDialog() {
                         variant="outlined"
                         color="inherit"
                         onClick={handleReturnToManageFriends}
-                        sx={{
-                            ...headerButtonSx,
-                            borderColor: 'common.white',
-                            color: 'common.white',
-                            '&:hover': {
-                                borderColor: 'common.white',
-                                backgroundColor: 'action.hover',
-                            },
-                        }}
+                        sx={headerButtonSx}
                     >
                         Return to Manage Friends
                     </Button>
