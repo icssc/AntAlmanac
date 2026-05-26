@@ -18,14 +18,7 @@ export const ADVANCED_SEARCH_PARAMS = [
 
 export type AdvancedSearchParam = (typeof ADVANCED_SEARCH_PARAMS)[number];
 
-export const MANUAL_SEARCH_PARAMS = [
-    'deptValue',
-    'ge',
-    'courseNumber',
-    'sectionCode',
-    ...BASIC_SEARCH_PARAMS,
-    ...ADVANCED_SEARCH_PARAMS,
-] as const;
+export const MANUAL_SEARCH_PARAMS = ['deptValue', 'ge', 'courseNumber', 'sectionCode', ...BASIC_SEARCH_PARAMS] as const;
 
 export type ManualSearchParam = (typeof MANUAL_SEARCH_PARAMS)[number];
 

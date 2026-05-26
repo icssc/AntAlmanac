@@ -1,5 +1,5 @@
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { ChangeEvent } from 'react';
 
 export function CourseNumberSearchBar() {

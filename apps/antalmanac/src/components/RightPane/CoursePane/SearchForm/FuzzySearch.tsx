@@ -1,11 +1,8 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import {
-    type CourseSearchParams,
-    defaultFormData,
-    useCourseSearchActions,
-    useCourseSearchParam,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchActions, useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { defaultFormData } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';

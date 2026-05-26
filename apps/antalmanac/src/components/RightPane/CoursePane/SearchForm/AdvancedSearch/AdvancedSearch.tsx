@@ -1,5 +1,5 @@
 import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
-import { hasAdvancedParams, useAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { hasAdvancedParams, useAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Button, Collapse, Typography } from '@mui/material';

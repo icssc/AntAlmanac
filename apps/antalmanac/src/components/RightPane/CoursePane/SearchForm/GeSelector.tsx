@@ -5,7 +5,7 @@ import {
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 
 const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;

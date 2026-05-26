@@ -1,7 +1,7 @@
-import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import { create } from 'zustand';
 
-/** Ephemeral UI only — search params live in the URL via nuqs hooks in searchParams.ts. */
+/** Ephemeral UI only — search params live in the URL via nuqs hooks in SearchParams/. */
 interface SavedSearchStoreState {
     /**
      * Tab routes replace the URL when leaving Search; we stash location.search here

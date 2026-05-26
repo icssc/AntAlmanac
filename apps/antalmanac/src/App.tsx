@@ -5,6 +5,7 @@ import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import { ErrorPage } from '$routes/ErrorPage';
 import Home from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v6';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
@@ -13,11 +14,11 @@ import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-rou
  */
 function RouteLayout() {
     return (
-        <>
+        <NuqsAdapter>
             <PosthogPageviewTracker />
             <AutoSignIn />
             <Outlet />
-        </>
+        </NuqsAdapter>
     );
 }
 

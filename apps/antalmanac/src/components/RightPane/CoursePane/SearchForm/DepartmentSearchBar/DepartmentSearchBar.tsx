@@ -1,5 +1,5 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import generatedDepartments from '$generated/departments.json';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 import { useCallback, useState } from 'react';

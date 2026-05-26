@@ -1,4 +1,4 @@
-import { useCourseSearchActions } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchActions } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';

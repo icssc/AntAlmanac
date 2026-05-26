@@ -8,7 +8,7 @@ import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchFo
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
-import { useAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';

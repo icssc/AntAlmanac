@@ -2,7 +2,7 @@ import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
-import { useCourseSearchPane } from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { useCourseSearchPane } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';

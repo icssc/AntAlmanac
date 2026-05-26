@@ -1,8 +1,6 @@
-import {
-    clearMultiSearchData,
-    defaultFormData,
-    serializeCourseSearchParams,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+import { clearMultiSearchData } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { defaultFormData } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
 import { AATerm } from '$lib/term';
 import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';

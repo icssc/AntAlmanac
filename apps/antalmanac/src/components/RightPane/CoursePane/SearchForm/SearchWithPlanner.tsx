@@ -6,7 +6,7 @@ import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm
 import {
     useCourseSearchActions,
     useCourseSearchFormData,
-} from '$components/RightPane/CoursePane/SearchForm/searchParams';
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
