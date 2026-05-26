@@ -1,8 +1,9 @@
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { MenuItem } from '@mui/material';
+import { memo } from 'react';
 
-export function DivisionField() {
+export const DivisionField = memo(() => {
     const [division, setDivision] = useCourseSearchParam('division');
 
     return (
@@ -25,4 +26,6 @@ export function DivisionField() {
             <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
         </LabeledSelect>
     );
-}
+});
+
+DivisionField.displayName = 'DivisionField';

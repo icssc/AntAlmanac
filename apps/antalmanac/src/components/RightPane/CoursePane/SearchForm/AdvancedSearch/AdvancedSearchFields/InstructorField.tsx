@@ -1,7 +1,8 @@
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { memo } from 'react';
 
-export function InstructorField() {
+export const InstructorField = memo(() => {
     const [instructor, setInstructor] = useCourseSearchParam('instructor');
 
     return (
@@ -16,4 +17,6 @@ export function InstructorField() {
             }}
         />
     );
-}
+});
+
+InstructorField.displayName = 'InstructorField';

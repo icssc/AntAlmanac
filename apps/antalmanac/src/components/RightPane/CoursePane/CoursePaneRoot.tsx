@@ -10,7 +10,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
 export function CoursePaneRoot() {
-    const { manualSearchEnabled, searchFormIsDisplayed, showSearchForm, clearView, setSearchMode, resetForm } =
+    const { manualSearchEnabled, searchFormIsDisplayed, showSearchForm, clearView, resetForm, setSearchMode } =
         useCourseSearchUrl();
 
     const postHog = usePostHog();

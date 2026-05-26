@@ -1,7 +1,8 @@
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { memo } from 'react';
 
-export function UnitsField() {
+export const UnitsField = memo(() => {
     const [units, setUnits] = useCourseSearchParam('units');
 
     return (
@@ -16,4 +17,6 @@ export function UnitsField() {
             }}
         />
     );
-}
+});
+
+UnitsField.displayName = 'UnitsField';

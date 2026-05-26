@@ -1,8 +1,9 @@
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { MenuItem } from '@mui/material';
+import { memo } from 'react';
 
-export function CoursesFullField() {
+export const CoursesFullField = memo(() => {
     const [coursesFull, setCoursesFull] = useCourseSearchParam('coursesFull');
 
     return (
@@ -21,4 +22,6 @@ export function CoursesFullField() {
             <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
         </LabeledSelect>
     );
-}
+});
+
+CoursesFullField.displayName = 'CoursesFullField';

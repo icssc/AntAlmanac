@@ -7,11 +7,12 @@ import {
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
+import { memo } from 'react';
 
 const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
 const getShortLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.shortLabel ?? value;
 
-export function GeSelector() {
+export const GeSelector = memo(() => {
     const [ge, setGe] = useCourseSearchParam('ge');
     const selectedGEs = getSelectedGEs(ge);
 
@@ -57,4 +58,6 @@ export function GeSelector() {
             })}
         </LabeledSelect>
     );
-}
+});
+
+GeSelector.displayName = 'GeSelector';

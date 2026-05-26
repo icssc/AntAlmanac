@@ -2,27 +2,14 @@ import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
+import { SearchFormModeToggle } from '$components/RightPane/CoursePane/SearchForm/SearchFormModeToggle';
 import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
-import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
-import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
-import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import { LIGHT_BLUE } from '$src/globals';
-import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { useThemeStore } from '$stores/SettingsStore';
-import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { useCallback, type SyntheticEvent } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 export const SearchForm = () => {
-    const { manualSearchEnabled, resetForm, setFields, setSearchMode, clearView, submitSearch } = useCourseSearchUrl();
-    const isDark = useThemeStore((store) => store.isDark);
-    const { savedManualSearch, saveManualSearch } = useSavedSearchStore(
-        useShallow((store) => ({
-            savedManualSearch: store.savedManualSearch,
-            saveManualSearch: store.saveManualSearch,
-        }))
-    );
+    const { manualSearchEnabled, submitSearch } = useCourseSearchUrl();
 
     const onFormSubmit = useCallback(
         (event: SyntheticEvent<HTMLFormElement>) => {
@@ -31,25 +18,6 @@ export const SearchForm = () => {
         },
         [submitSearch]
     );
-
-    const toggleSearchMode = (_event: React.MouseEvent<HTMLElement>, value: CourseSearchMode | null) => {
-        if (value === null) return;
-
-        switch (value) {
-            case COURSE_SEARCH_MODE.MANUAL:
-                setSearchMode(COURSE_SEARCH_MODE.MANUAL);
-                if (savedManualSearch) {
-                    setFields(savedManualSearch);
-                }
-                break;
-            case COURSE_SEARCH_MODE.QUICK:
-                saveManualSearch(readCourseSearchParams());
-                setSearchMode(COURSE_SEARCH_MODE.QUICK);
-                resetForm({ preserveTerm: true });
-                clearView();
-                break;
-        }
-    };
 
     return (
         <Stack sx={{ height: '100%', overflowX: 'hidden' }}>
@@ -62,24 +30,7 @@ export const SearchForm = () => {
                 }}
             >
                 <Stack spacing={2}>
-                    <ToggleButtonGroup
-                        fullWidth
-                        size="medium"
-                        color="secondary"
-                        value={manualSearchEnabled ? COURSE_SEARCH_MODE.MANUAL : COURSE_SEARCH_MODE.QUICK}
-                        exclusive
-                        aria-label="Search selection"
-                        sx={{
-                            paddingTop: 1,
-                            '& .MuiToggleButton-root.Mui-selected': {
-                                backgroundColor: isDark ? alpha(LIGHT_BLUE, 0.05) : undefined,
-                            },
-                        }}
-                        onChange={toggleSearchMode}
-                    >
-                        <ToggleButton value={COURSE_SEARCH_MODE.QUICK}>Quick Search</ToggleButton>
-                        <ToggleButton value={COURSE_SEARCH_MODE.MANUAL}>Manual Search</ToggleButton>
-                    </ToggleButtonGroup>
+                    <SearchFormModeToggle />
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <TermSelector />
                     </Box>

@@ -2,7 +2,7 @@ import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import generatedDepartments from '$generated/departments.json';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 const ALL_DEPARTMENTS: Record<string, string> = {
     ALL: 'ALL: Include All Departments',
@@ -28,7 +28,7 @@ const parseLocalStorageRecentlySearched = (): string[] => {
     }
 };
 
-export function DepartmentSearchBar() {
+export const DepartmentSearchBar = memo(() => {
     const options = Object.keys(ALL_DEPARTMENTS);
 
     const [deptValue, setDeptValue] = useCourseSearchParam('deptValue');
@@ -74,4 +74,6 @@ export function DepartmentSearchBar() {
             isAligned
         />
     );
-}
+});
+
+DepartmentSearchBar.displayName = 'DepartmentSearchBar';

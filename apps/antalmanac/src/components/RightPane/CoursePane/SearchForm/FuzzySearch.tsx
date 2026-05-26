@@ -1,6 +1,6 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { useCourseSearchUrl, useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchParam, useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import {
     COURSE_SEARCH_MODE,
     DEFAULT_FORM_DATA,

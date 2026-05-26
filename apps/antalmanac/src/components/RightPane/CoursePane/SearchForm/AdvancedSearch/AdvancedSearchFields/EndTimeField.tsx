@@ -1,8 +1,9 @@
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { format, isValid, parse } from 'date-fns';
+import { memo } from 'react';
 
-export function EndTimeField() {
+export const EndTimeField = memo(() => {
     const [endTime, setEndTime] = useCourseSearchParam('endTime');
 
     return (
@@ -21,4 +22,6 @@ export function EndTimeField() {
             textFieldProps={{ fullWidth: true, sx: { minWidth: 120 } }}
         />
     );
-}
+});
+
+EndTimeField.displayName = 'EndTimeField';

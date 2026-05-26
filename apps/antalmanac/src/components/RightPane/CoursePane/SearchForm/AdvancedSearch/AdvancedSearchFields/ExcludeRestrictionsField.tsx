@@ -2,8 +2,9 @@ import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CourseP
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
+import { memo } from 'react';
 
-export function ExcludeRestrictionsField() {
+export const ExcludeRestrictionsField = memo(() => {
     const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useCourseSearchParam('excludeRestrictionCodes');
 
     return (
@@ -31,4 +32,6 @@ export function ExcludeRestrictionsField() {
             ))}
         </LabeledSelect>
     );
-}
+});
+
+ExcludeRestrictionsField.displayName = 'ExcludeRestrictionsField';

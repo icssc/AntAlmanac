@@ -3,14 +3,14 @@ import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchFor
 import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import { getDefaultTerm, termData } from '$lib/term';
 import type { AATerm } from '@packages/antalmanac-types';
-import { ComponentProps } from 'react';
+import { memo, type ComponentProps } from 'react';
 
 type TermSelectorProps = Omit<
     ComponentProps<typeof LabeledAutocomplete>,
     'label' | 'autocompleteProps' | 'textFieldProps' | 'isAligned'
 >;
 
-export function TermSelector(props: TermSelectorProps) {
+export const TermSelector = memo((props: TermSelectorProps) => {
     const [term, setTerm] = useCourseSearchParam('term');
 
     const handleChange = (_: unknown, option: AATerm | null) => {
@@ -41,4 +41,6 @@ export function TermSelector(props: TermSelectorProps) {
             isAligned
         />
     );
-}
+});
+
+TermSelector.displayName = 'TermSelector';

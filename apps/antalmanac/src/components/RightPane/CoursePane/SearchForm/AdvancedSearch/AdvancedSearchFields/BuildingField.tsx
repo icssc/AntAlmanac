@@ -1,7 +1,8 @@
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { memo } from 'react';
 
-export function BuildingField() {
+export const BuildingField = memo(() => {
     const [building, setBuilding] = useCourseSearchParam('building');
 
     return (
@@ -16,4 +17,6 @@ export function BuildingField() {
             }}
         />
     );
-}
+});
+
+BuildingField.displayName = 'BuildingField';

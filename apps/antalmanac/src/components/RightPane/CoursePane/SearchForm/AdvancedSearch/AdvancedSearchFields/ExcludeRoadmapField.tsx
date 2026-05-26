@@ -7,7 +7,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box, MenuItem, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
-import { useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 type RoadmapMenuItemsProps = {
@@ -41,7 +41,7 @@ function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
     ];
 }
 
-export function ExcludeRoadmapField() {
+export const ExcludeRoadmapField = memo(() => {
     const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useCourseSearchParam('excludeRoadmapCourses');
     const { plannerRoadmaps, loadPlannerRoadmaps, updateTakenCourses } = usePlannerStore(
         useShallow((s) => ({
@@ -65,6 +65,9 @@ export function ExcludeRoadmapField() {
         }
 
         setMenuOpen(true);
+        if (plannerRoadmaps.length === 0) {
+            void loadPlannerRoadmaps();
+        }
     }, [loadPlannerRoadmaps, plannerRoadmaps.length, sessionIsValid]);
 
     const handleMenuClose = useCallback(() => {
@@ -110,4 +113,6 @@ export function ExcludeRoadmapField() {
             <SignInDialog open={signInOpen} onClose={handleSignInClose} feature="Planner" />
         </>
     );
-}
+});
+
+ExcludeRoadmapField.displayName = 'ExcludeRoadmapField';

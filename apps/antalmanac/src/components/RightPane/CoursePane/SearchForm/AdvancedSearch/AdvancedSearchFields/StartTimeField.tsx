@@ -1,8 +1,9 @@
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { format, isValid, parse } from 'date-fns';
+import { memo } from 'react';
 
-export function StartTimeField() {
+export const StartTimeField = memo(() => {
     const [startTime, setStartTime] = useCourseSearchParam('startTime');
 
     return (
@@ -21,4 +22,6 @@ export function StartTimeField() {
             textFieldProps={{ fullWidth: true, sx: { minWidth: 120 } }}
         />
     );
-}
+});
+
+StartTimeField.displayName = 'StartTimeField';

@@ -2,8 +2,9 @@ import { DAYS_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/Advanc
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
+import { memo } from 'react';
 
-export function DaysField() {
+export const DaysField = memo(() => {
     const [days, setDays] = useCourseSearchParam('days');
 
     return (
@@ -38,4 +39,6 @@ export function DaysField() {
             ))}
         </LabeledSelect>
     );
-}
+});
+
+DaysField.displayName = 'DaysField';

@@ -1,8 +1,8 @@
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
-import { ChangeEvent } from 'react';
+import { memo, type ChangeEvent } from 'react';
 
-export function CourseNumberSearchBar() {
+export const CourseNumberSearchBar = memo(() => {
     const [courseNumber, setCourseNumber] = useCourseSearchParam('courseNumber');
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -25,4 +25,6 @@ export function CourseNumberSearchBar() {
             isAligned={true}
         />
     );
-}
+});
+
+CourseNumberSearchBar.displayName = 'CourseNumberSearchBar';

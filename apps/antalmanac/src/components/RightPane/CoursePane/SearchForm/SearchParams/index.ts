@@ -93,6 +93,30 @@ export function useCourseSearchUrl() {
 
     const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL && plannerSearchParam === null;
 
+    const setSearchMode = useCallback(
+        (mode: CourseSearchMode) => {
+            void setSearchModeParam(mode);
+        },
+        [setSearchModeParam]
+    );
+
+    const submitSearch = useCallback(
+        (data?: CourseSearchParams) => {
+            const payload = data ?? readCourseSearchParams();
+            if (isValidSearch(payload)) {
+                clearMultiSearchData();
+                void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
+                return true;
+            }
+            openSnackbar(
+                'error',
+                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
+            );
+            return false;
+        },
+        [setViewParam]
+    );
+
     const derivedView: CourseSearchView = shouldShowSearchForm(formData)
         ? COURSE_SEARCH_VIEW.SEARCH_FORM
         : COURSE_SEARCH_VIEW.RESULTS;
@@ -125,13 +149,6 @@ export function useCourseSearchUrl() {
         [formData.term, setFormData]
     );
 
-    const setSearchMode = useCallback(
-        (mode: CourseSearchMode) => {
-            void setSearchModeParam(mode);
-        },
-        [setSearchModeParam]
-    );
-
     const showResults = useCallback(() => {
         void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
     }, [setViewParam]);
@@ -145,35 +162,18 @@ export function useCourseSearchUrl() {
         void setViewParam(null);
     }, [setViewParam]);
 
-    const submitSearch = useCallback(
-        (data?: CourseSearchParams) => {
-            const payload = data ?? readCourseSearchParams();
-            if (isValidSearch(payload)) {
-                clearMultiSearchData();
-                void showResults();
-                return true;
-            }
-            openSnackbar(
-                'error',
-                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
-            );
-            return false;
-        },
-        [showResults]
-    );
-
     return {
         formData,
         manualSearchEnabled,
         searchFormIsDisplayed,
         viewParam,
+        setSearchMode,
+        submitSearch,
         showResults,
         showSearchForm,
         clearView,
-        submitSearch,
         setField,
         setFields,
-        setSearchMode,
         resetForm,
     };
 }

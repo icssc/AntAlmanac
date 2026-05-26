@@ -1,8 +1,9 @@
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { MenuItem, type SelectChangeEvent } from '@mui/material';
+import { memo } from 'react';
 
-export function OnlineField() {
+export const OnlineField = memo(() => {
     const [building, setBuilding] = useCourseSearchParam('building');
     const [, setRoom] = useCourseSearchParam('room');
 
@@ -23,4 +24,6 @@ export function OnlineField() {
             <MenuItem value="true">True</MenuItem>
         </LabeledSelect>
     );
-}
+});
+
+OnlineField.displayName = 'OnlineField';
