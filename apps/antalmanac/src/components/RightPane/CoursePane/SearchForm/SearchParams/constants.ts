@@ -1,4 +1,4 @@
-import { ANY_GE, BASIC_SEARCH_PARAMS } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { ANY_GE } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm } from '$lib/term';
 import { WebsocFullCoursesOptionSchema } from '@packages/antalmanac-types';
 
@@ -16,8 +16,6 @@ export const COURSE_SEARCH_VIEW = {
 } as const;
 export const COURSE_SEARCH_VIEW_KEY = 'view';
 export const COURSE_SEARCH_VIEWS = [COURSE_SEARCH_VIEW.SEARCH_FORM, COURSE_SEARCH_VIEW.RESULTS] as const;
-
-export const MANUAL_SEARCH_FIELDS = [...BASIC_SEARCH_PARAMS, 'deptValue', 'ge', 'courseNumber', 'sectionCode'] as const;
 
 export const DEFAULT_MANUAL_SEARCH_VALUES = {
     deptValue: 'ALL',

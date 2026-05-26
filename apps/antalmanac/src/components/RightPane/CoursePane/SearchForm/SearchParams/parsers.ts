@@ -53,10 +53,11 @@ export const courseSearchParamParsers = {
     ...manualSearchParsers,
     ...advancedSearchParsers,
 };
-export const serializeCourseSearchParams = createSerializer(courseSearchParamParsers);
 
 export const searchModeParser = parseAsStringLiteral(COURSE_SEARCH_MODES).withDefault(DEFAULT_COURSE_SEARCH_MODE);
 
 export const searchViewParser = parseAsStringLiteral(COURSE_SEARCH_VIEWS);
 
 export const plannerSearchParser = parseAsString;
+
+export const serializeCourseSearchParams = createSerializer(courseSearchParamParsers);

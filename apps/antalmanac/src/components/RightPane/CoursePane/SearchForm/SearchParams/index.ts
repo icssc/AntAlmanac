@@ -5,11 +5,11 @@ import {
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import {
     COURSE_SEARCH_MODE,
+    COURSE_SEARCH_MODE_KEY,
     COURSE_SEARCH_VIEW,
+    COURSE_SEARCH_VIEW_KEY,
     DEFAULT_ADVANCED_SEARCH_VALUES,
     DEFAULT_FORM_DATA,
-    COURSE_SEARCH_MODE_KEY,
-    COURSE_SEARCH_VIEW_KEY,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import {
     advancedSearchParsers,

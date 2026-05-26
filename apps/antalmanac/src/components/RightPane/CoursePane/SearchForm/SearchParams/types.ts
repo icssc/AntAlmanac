@@ -1,8 +1,7 @@
-import { ADVANCED_SEARCH_PARAMS } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { ADVANCED_SEARCH_PARAMS, MANUAL_SEARCH_PARAMS } from '$components/RightPane/CoursePane/SearchForm/constants';
 import {
     COURSE_SEARCH_MODES,
     COURSE_SEARCH_VIEWS,
-    MANUAL_SEARCH_FIELDS,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import type { AATerm } from '@packages/antalmanac-types';
 
@@ -28,5 +27,5 @@ export interface CourseSearchParams {
 export type CourseSearchMode = (typeof COURSE_SEARCH_MODES)[number];
 export type CourseSearchView = (typeof COURSE_SEARCH_VIEWS)[number];
 
+export type ManualSearchParams = Pick<CourseSearchParams, (typeof MANUAL_SEARCH_PARAMS)[number]>;
 export type AdvancedSearchParams = Pick<CourseSearchParams, (typeof ADVANCED_SEARCH_PARAMS)[number]>;
-export type ManualSearchParams = Pick<CourseSearchParams, (typeof MANUAL_SEARCH_FIELDS)[number]>;
