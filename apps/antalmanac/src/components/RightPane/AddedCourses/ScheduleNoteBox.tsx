@@ -1,4 +1,5 @@
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { Box, TextField, Typography } from '@mui/material';
@@ -7,18 +8,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export function ScheduleNoteBox() {
+    const scheduleSource = useScheduleViewSource();
+    const isReadonly = scheduleSource.readonly;
     const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore(
         useShallow((store) => ({
             fallbackMode: store.fallbackMode,
             getCurrentFallbackSchedule: store.getCurrentFallbackSchedule,
         }))
     );
-    const [scheduleNote, setScheduleNote] = useState(
-        fallbackMode
-            ? getCurrentFallbackSchedule(AppStore.getCurrentScheduleIndex()).scheduleNote
-            : AppStore.getCurrentScheduleNote()
-    );
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [scheduleNote, setScheduleNote] = useState(() => {
+        if (fallbackMode) {
+            return getCurrentFallbackSchedule(AppStore.getCurrentScheduleIndex()).scheduleNote;
+        }
+        return scheduleSource.getCurrentScheduleNote();
+    });
+    const [scheduleIndex, setScheduleIndex] = useState(scheduleSource.getCurrentScheduleIndex());
 
     const handleNoteChange = useCallback(
         (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -29,28 +33,22 @@ export function ScheduleNoteBox() {
     );
 
     useEffect(() => {
-        const handleScheduleNoteChange = () => {
+        const syncFromSource = () => {
             const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore.getState();
             if (fallbackMode) {
                 const idx = AppStore.getCurrentScheduleIndex();
                 setScheduleNote(getCurrentFallbackSchedule(idx).scheduleNote);
             } else {
-                setScheduleNote(AppStore.getCurrentScheduleNote());
+                setScheduleNote(scheduleSource.getCurrentScheduleNote());
             }
+            setScheduleIndex(scheduleSource.getCurrentScheduleIndex());
         };
 
-        const handleScheduleIndexChange = () => {
-            setScheduleIndex(AppStore.getCurrentScheduleIndex());
-        };
+        syncFromSource();
+        return scheduleSource.subscribe(syncFromSource);
+    }, [scheduleSource]);
 
-        AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-
-        return () => {
-            AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-        };
-    }, []);
+    const disabled = fallbackMode || isReadonly;
 
     return (
         <Box>
@@ -60,12 +58,12 @@ export function ScheduleNoteBox() {
                 type="text"
                 color="secondary"
                 variant="filled"
-                label="Click here to start typing!"
+                label={disabled ? undefined : 'Click here to start typing!'}
                 onChange={handleNoteChange}
                 value={scheduleNote}
                 inputProps={{
                     maxLength: SCHEDULE_NOTE_MAX_LENGTH,
-                    style: { cursor: fallbackMode ? 'not-allowed' : 'text' },
+                    style: { cursor: disabled ? 'not-allowed' : 'text' },
                 }}
                 InputLabelProps={{
                     variant: 'filled',
@@ -73,10 +71,10 @@ export function ScheduleNoteBox() {
                 InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
-                disabled={fallbackMode}
+                disabled={disabled}
                 sx={{
                     '& .MuiInputBase-root': {
-                        cursor: fallbackMode ? 'not-allowed' : 'text',
+                        cursor: disabled ? 'not-allowed' : 'text',
                     },
                 }}
             />

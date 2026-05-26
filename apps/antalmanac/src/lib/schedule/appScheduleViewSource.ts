@@ -25,6 +25,8 @@ export const appScheduleViewSource: ScheduleViewSource = {
     getCurrentScheduleId: () => AppStore.getCurrentScheduleId(),
     getEventsInCalendar: () => AppStore.getEventsInCalendar(),
     getFinalEventsInCalendar: () => AppStore.getFinalEventsInCalendar(),
+    getCourseEventsInCalendar: () => AppStore.getCourseEventsInCalendar(),
+    getCustomEventsInCalendar: () => AppStore.getCustomEventsInCalendar(),
     getCurrentScheduleNote: () => AppStore.getCurrentScheduleNote(),
     getCurrentCustomEvents: () => AppStore.schedule.getCurrentCustomEvents(),
 

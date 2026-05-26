@@ -10,8 +10,8 @@ import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
 import { SectionTableBodyRowColorStrip } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowColorStrip';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
+import { type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { TableRow, useTheme } from '@mui/material';
@@ -29,6 +29,7 @@ interface SectionTableBodyRowProps {
     scheduleConflict: boolean;
     analyticsCategory: AnalyticsCategory;
     formattedTime: string | null;
+    displayColumns: SectionTableColumn[];
 }
 
 // These components have too varied of types, any is fine here
@@ -57,16 +58,17 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         scheduleConflict,
         analyticsCategory,
         formattedTime,
+        displayColumns,
     } = props;
 
     const theme = useTheme();
+    const scheduleSource = useScheduleViewSource();
     const isDark = useThemeStore((store) => store.isDark);
-    const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(
-        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
+        scheduleSource.schedule.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
     );
 
     const handleMouseEnter = useCallback(() => {
@@ -85,19 +87,12 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         const sectionKey = `${section.sectionCode} ${term.shortName}`;
 
         const syncAddedCourse = () => {
-            setAddedCourse(AppStore.getAddedSectionCodes().has(sectionKey));
+            setAddedCourse(scheduleSource.schedule.getAddedSectionCodes().has(sectionKey));
         };
 
         syncAddedCourse();
-
-        AppStore.on('addedCoursesChange', syncAddedCourse);
-        AppStore.on('currentScheduleIndexChange', syncAddedCourse);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', syncAddedCourse);
-            AppStore.removeListener('currentScheduleIndexChange', syncAddedCourse);
-        };
-    }, [section.sectionCode, term]);
+        return scheduleSource.subscribe(syncAddedCourse);
+    }, [scheduleSource, section.sectionCode, term]);
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {
@@ -139,7 +134,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             <SectionTableBodyRowColorStrip section={section} term={term} visible={addedCourse} />
 
             {Object.entries(tableBodyCells)
-                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                .filter(([column]) => displayColumns.includes(column as SectionTableColumn))
                 .map(([column, Component]) => {
                     return (
                         <Component

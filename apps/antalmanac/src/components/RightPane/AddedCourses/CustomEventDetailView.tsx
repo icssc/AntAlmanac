@@ -4,6 +4,7 @@ import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialo
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
@@ -24,9 +25,11 @@ interface CustomEventDetailViewProps {
 
 export function CustomEventDetailView(props: CustomEventDetailViewProps) {
     const { customEvent, skeleton = false } = props;
+    const scheduleSource = useScheduleViewSource();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
+    const disableActions = fallbackMode || scheduleSource.readonly;
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const baseDate = new Date(2000, 0, 1);
@@ -64,7 +67,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
                 />
             </CardContent>
 
-            {!fallbackMode && (
+            {!disableActions && (
                 <CardActions disableSpacing={true}>
                     <ColorPicker
                         color={customEvent.color ?? '#551a8b'}

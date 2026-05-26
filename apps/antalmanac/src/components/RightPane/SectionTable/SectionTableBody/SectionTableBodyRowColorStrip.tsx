@@ -1,7 +1,9 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
+import type { Schedules } from '$stores/Schedules';
 import { Box, Popover, PopoverProps, SxProps, TableCell, Tooltip } from '@mui/material';
 import { AASection, AATerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useState } from 'react';
@@ -18,10 +20,8 @@ const cellSx: SxProps = {
     overflow: 'visible',
 };
 
-const getSectionScheduleColor = (section: AASection, term: AATerm): string =>
-    AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term)?.section.color ??
-    section.color ??
-    '#5ec8e0';
+const getSectionScheduleColor = (schedule: Schedules, section: AASection, term: AATerm): string =>
+    schedule.getExistingCourseInSchedule(section.sectionCode, term)?.section.color ?? section.color ?? '#5ec8e0';
 
 interface SectionTableBodyRowColorStripProps {
     section: AASection;
@@ -31,10 +31,11 @@ interface SectionTableBodyRowColorStripProps {
 
 export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: SectionTableBodyRowColorStripProps) => {
     const isMobile = useIsMobile();
-    const clickable = !isMobile && visible;
+    const scheduleSource = useScheduleViewSource();
+    const clickable = !isMobile && visible && !scheduleSource.readonly;
 
     const [hovered, setHovered] = useState(false);
-    const [currColor, setCurrColor] = useState(() => getSectionScheduleColor(section, term));
+    const [currColor, setCurrColor] = useState(() => getSectionScheduleColor(scheduleSource.schedule, section, term));
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
 
     const stripWidth = visible && clickable && hovered ? STRIP_EXPAND_PX : STRIP_SHRINK_PX;
@@ -61,31 +62,22 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
 
     useEffect(() => {
         const syncColor = () => {
-            setCurrColor(getSectionScheduleColor(section, term));
+            setCurrColor(getSectionScheduleColor(scheduleSource.schedule, section, term));
         };
 
         syncColor();
-
-        AppStore.on('addedCoursesChange', syncColor);
-        AppStore.on('currentScheduleIndexChange', syncColor);
-        AppStore.on('colorChange', syncColor);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', syncColor);
-            AppStore.removeListener('currentScheduleIndexChange', syncColor);
-            AppStore.removeListener('colorChange', syncColor);
-        };
-    }, [section.sectionCode, section.color, term]);
+        return scheduleSource.subscribe(syncColor);
+    }, [scheduleSource, section.sectionCode, section.color, term]);
 
     useEffect(() => {
-        if (!visible) {
+        if (!visible || scheduleSource.readonly) {
             return;
         }
         AppStore.registerColorPicker(section.sectionCode, updateColorFromPicker);
         return () => {
             AppStore.unregisterColorPicker(section.sectionCode, updateColorFromPicker);
         };
-    }, [visible, section.sectionCode, updateColorFromPicker]);
+    }, [visible, scheduleSource.readonly, section.sectionCode, updateColorFromPicker]);
 
     if (!visible) {
         return <TableCell sx={cellSx} />;

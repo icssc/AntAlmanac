@@ -1,4 +1,5 @@
 import { CustomEventDetailView } from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { Box, Typography } from '@mui/material';
@@ -7,39 +8,39 @@ import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export function CustomEventsBox() {
+    const scheduleSource = useScheduleViewSource();
     const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore(
         useShallow((store) => ({
             fallbackMode: store.fallbackMode,
             getCurrentFallbackSchedule: store.getCurrentFallbackSchedule,
         }))
     );
-    const currentScheduleIndex = AppStore.getCurrentScheduleIndex();
+    const currentScheduleIndex = scheduleSource.getCurrentScheduleIndex();
 
-    const [customEvents, setCustomEvents] = useState<RepeatingCustomEvent[]>(
-        fallbackMode
-            ? getCurrentFallbackSchedule(currentScheduleIndex).customEvents
-            : AppStore.schedule.getCurrentCustomEvents()
-    );
+    const [customEvents, setCustomEvents] = useState<RepeatingCustomEvent[]>(() => {
+        if (fallbackMode) {
+            return getCurrentFallbackSchedule(currentScheduleIndex).customEvents;
+        }
+        return scheduleSource.schedule.getCurrentCustomEvents();
+    });
+    const [scheduleNames, setScheduleNames] = useState(scheduleSource.getScheduleNames());
 
     useEffect(() => {
-        const handleCustomEventsChange = () => {
+        const syncFromSource = () => {
             const { fallbackMode, getCurrentFallbackSchedule } = useFallbackStore.getState();
             if (fallbackMode) {
                 const idx = AppStore.getCurrentScheduleIndex();
                 setCustomEvents([...getCurrentFallbackSchedule(idx).customEvents]);
+                setScheduleNames([...AppStore.getScheduleNames()]);
             } else {
-                setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
+                setCustomEvents([...scheduleSource.schedule.getCurrentCustomEvents()]);
+                setScheduleNames([...scheduleSource.getScheduleNames()]);
             }
         };
 
-        AppStore.on('customEventsChange', handleCustomEventsChange);
-        AppStore.on('currentScheduleIndexChange', handleCustomEventsChange);
-
-        return () => {
-            AppStore.off('customEventsChange', handleCustomEventsChange);
-            AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
-        };
-    }, []);
+        syncFromSource();
+        return scheduleSource.subscribe(syncFromSource);
+    }, [scheduleSource]);
 
     if (customEvents.length <= 0) {
         return null;
@@ -52,10 +53,7 @@ export function CustomEventsBox() {
                 {customEvents.map((customEvent) => {
                     return (
                         <Box key={customEvent.customEventID}>
-                            <CustomEventDetailView
-                                customEvent={customEvent}
-                                scheduleNames={AppStore.getScheduleNames()}
-                            />
+                            <CustomEventDetailView customEvent={customEvent} scheduleNames={scheduleNames} />
                         </Box>
                     );
                 })}

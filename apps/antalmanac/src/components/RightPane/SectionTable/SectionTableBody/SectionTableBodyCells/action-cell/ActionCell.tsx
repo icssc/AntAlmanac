@@ -3,8 +3,8 @@ import { DeleteButton } from '$components/RightPane/SectionTable/SectionTableBod
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { SectionActionMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/SectionActionMenu';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import type { AATerm } from '$lib/term';
-import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
@@ -24,17 +24,18 @@ interface ActionCellProps {
 
 export const ActionCell = memo(
     ({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
+        const scheduleSource = useScheduleViewSource();
         const initialized = useNotificationStore((state) => state.initialized);
         const [cycleVisibility, classVisibility] = useHiddenCoursesStore(
             useShallow((state) => [
                 state.cycleVisibility,
-                state.getVisibility(AppStore.getCurrentScheduleId(), section.sectionCode),
+                state.getVisibility(scheduleSource.getCurrentScheduleId(), section.sectionCode),
             ])
         );
 
         const handleVisibilityToggle = useCallback(() => {
-            cycleVisibility(AppStore.getCurrentScheduleId(), section.sectionCode);
-        }, [section.sectionCode, cycleVisibility]);
+            cycleVisibility(scheduleSource.getCurrentScheduleId(), section.sectionCode);
+        }, [scheduleSource, section.sectionCode, cycleVisibility]);
 
         return (
             <TableBodyCellContainer sx={{ paddingX: 0.5 }}>

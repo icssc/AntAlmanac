@@ -10,6 +10,7 @@ import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAvailability';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
@@ -95,7 +96,13 @@ function SectionTable({
 
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
+    const scheduleSource = useScheduleViewSource();
+    const showActionColumn = !scheduleSource.readonly;
     const activeColumns = useColumnStore((store) => store.activeColumns);
+    const displayColumns = useMemo(
+        () => (showActionColumn ? activeColumns : activeColumns.filter((column) => column !== 'action')),
+        [activeColumns, showActionColumn]
+    );
     const activeTab = useTabStore((store) => store.activeTab);
 
     const handleToggleExpand = () => {
@@ -143,9 +150,9 @@ function SectionTable({
      */
     const width = 780;
     const tableMinWidth = useMemo(() => {
-        const numActiveColumns = activeColumns.length;
+        const numActiveColumns = displayColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
-    }, [activeColumns]);
+    }, [displayColumns]);
 
     return (
         <Box sx={{ overflow: 'hidden' }}>
@@ -262,10 +269,12 @@ function SectionTable({
                             <TableHead>
                                 <TableRow>
                                     <TableCell sx={{ padding: 0, width: `${colorStripWidth}px` }} />
-                                    <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
+                                    {showActionColumn && (
+                                        <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
+                                    )}
                                     {(() => {
                                         const visible = tableHeaderColumnEntries.filter(([column]) =>
-                                            activeColumns.includes(column as SectionTableColumn)
+                                            displayColumns.includes(column as SectionTableColumn)
                                         );
                                         const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
                                         return visible.map(([column, { label, weight }]) => (
@@ -294,6 +303,7 @@ function SectionTable({
                                 scheduleNames={scheduleNames}
                                 analyticsCategory={analyticsCategory}
                                 formattedTime={formattedTime}
+                                displayColumns={displayColumns}
                             />
                         </Table>
                     </TableContainer>,

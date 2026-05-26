@@ -14,9 +14,11 @@ import {
     removeLocalStorageAddedCoursesSkeletonBlueprint,
     setLocalStorageAddedCoursesSkeletonBlueprint,
 } from '$lib/localStorage';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import AppStore from '$stores/AppStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { getCourseId } from '$stores/scheduleHelpers';
+import type { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
@@ -67,12 +69,12 @@ function persistSkeletonBlueprint(courses: CourseWithTerm[], customEvents: Repea
     setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(slim));
 }
 
-function persistFromAppStore() {
-    persistSkeletonBlueprint(getCourses(), AppStore.schedule.getCurrentCustomEvents());
+function persistFromSchedule(schedule: Schedules) {
+    persistSkeletonBlueprint(getCourses(schedule), schedule.getCurrentCustomEvents());
 }
 
-function getCourses() {
-    const currentCourses = AppStore.schedule.getCurrentCourses();
+function getCourses(schedule: Schedules) {
+    const currentCourses = schedule.getCurrentCourses();
 
     const formattedCourses: CourseWithTerm[] = [];
 
@@ -118,66 +120,49 @@ function getCourses() {
 }
 
 export function AddedSectionsGrid() {
-    const [courses, setCourses] = useState(getCourses);
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const scheduleSource = useScheduleViewSource();
+    const isReadonly = scheduleSource.readonly;
+    const [courses, setCourses] = useState(() => getCourses(scheduleSource.schedule));
+    const [scheduleNames, setScheduleNames] = useState(scheduleSource.getScheduleNames());
+    const [scheduleIndex, setScheduleIndex] = useState(scheduleSource.getCurrentScheduleIndex());
     const loadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
 
     const handleCourseOrderChange = (updatedCourses: CourseWithTerm[], _activeIndex: number, overIndex: number) => {
+        if (isReadonly) {
+            return;
+        }
+
         setCourses(updatedCourses);
 
         const movedCourse = updatedCourses[overIndex];
         const nextConsecutiveCourse = overIndex + 1 !== updatedCourses.length ? updatedCourses[overIndex + 1] : null;
 
         AppStore.reorderAddedCourses(
-            AppStore.getCurrentScheduleIndex(),
+            scheduleSource.getCurrentScheduleIndex(),
             getCourseId(movedCourse),
             nextConsecutiveCourse !== null ? getCourseId(nextConsecutiveCourse) : null
         );
     };
 
     useEffect(() => {
-        // Persist whatever's already in AppStore at mount, in case it was
-        // populated before this component mounted and no change event fires
-        // later. Skip when both lists are empty so a stale blueprint from a
-        // previous session isn't cleared before loadSchedule has a chance to
-        // populate AppStore.
-        if (courses.length > 0 || AppStore.schedule.getCurrentCustomEvents().length > 0) {
-            persistFromAppStore();
+        const syncFromSource = () => {
+            const nextCourses = getCourses(scheduleSource.schedule);
+            setCourses(nextCourses);
+            setScheduleNames([...scheduleSource.getScheduleNames()]);
+            setScheduleIndex(scheduleSource.getCurrentScheduleIndex());
+
+            if (!isReadonly) {
+                persistFromSchedule(scheduleSource.schedule);
+            }
+        };
+
+        if (!isReadonly && (courses.length > 0 || scheduleSource.schedule.getCurrentCustomEvents().length > 0)) {
+            persistFromSchedule(scheduleSource.schedule);
         }
 
-        const handleCoursesChange = () => {
-            const nextCourses = getCourses();
-            setCourses(nextCourses);
-            persistFromAppStore();
-        };
-
-        const handleCustomEventsChange = () => {
-            persistFromAppStore();
-        };
-
-        const handleScheduleNamesChange = () => {
-            setScheduleNames([...AppStore.getScheduleNames()]);
-        };
-
-        const handleScheduleIndexChange = () => {
-            setScheduleIndex(AppStore.getCurrentScheduleIndex());
-        };
-
-        AppStore.on('addedCoursesChange', handleCoursesChange);
-        AppStore.on('currentScheduleIndexChange', handleCoursesChange);
-        AppStore.on('customEventsChange', handleCustomEventsChange);
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-
-        return () => {
-            AppStore.off('addedCoursesChange', handleCoursesChange);
-            AppStore.off('currentScheduleIndexChange', handleCoursesChange);
-            AppStore.off('customEventsChange', handleCustomEventsChange);
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-        };
-    }, []);
+        syncFromSource();
+        return scheduleSource.subscribe(syncFromSource);
+    }, [scheduleSource, isReadonly]);
 
     const scheduleUnits = useMemo(() => {
         let result = 0;
@@ -198,14 +183,20 @@ export function AddedSectionsGrid() {
     }, [scheduleNames, scheduleIndex]);
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
-                <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-                <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
-                <ColumnToggleDropdown />
-                <NotificationsDialog buttonSx={buttonSx} />
-            </Box>
-            <Box sx={{ marginTop: 7 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, position: 'relative' }}>
+            {isReadonly ? (
+                <Box sx={{ display: 'flex', width: 'fit-content' }}>
+                    <ColumnToggleDropdown />
+                </Box>
+            ) : (
+                <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', top: 0, left: 0, zIndex: 2 }}>
+                    <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
+                    <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
+                    <NotificationsDialog buttonSx={buttonSx} />
+                    <ColumnToggleDropdown />
+                </Box>
+            )}
+            <Box sx={{ marginTop: isReadonly ? 0 : 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {/*
                 TODO (@KevinWu098) Looks too out of place. Will be added back in the calendar toolbar refactor work.
@@ -217,16 +208,47 @@ export function AddedSectionsGrid() {
                     <EmptyState
                         Icon={MenuBook}
                         title="No Courses Added Yet"
-                        description="Search for courses and add sections to build your schedule. You can also import from your study list."
-                        primaryAction={{
-                            label: 'Search Courses',
-                            onClick: () => useTabStore.getState().setActiveTab('search'),
-                        }}
-                        secondaryAction={{
-                            label: 'Import Schedule',
-                            onClick: () => useScheduleComponentsToggleStore.getState().setOpenImportDialog(true),
-                        }}
+                        description={
+                            isReadonly
+                                ? 'This schedule has no courses.'
+                                : 'Search for courses and add sections to build your schedule. You can also import from your study list.'
+                        }
+                        primaryAction={
+                            isReadonly
+                                ? undefined
+                                : {
+                                      label: 'Search Courses',
+                                      onClick: () => useTabStore.getState().setActiveTab('search'),
+                                  }
+                        }
+                        secondaryAction={
+                            isReadonly
+                                ? undefined
+                                : {
+                                      label: 'Import Schedule',
+                                      onClick: () =>
+                                          useScheduleComponentsToggleStore.getState().setOpenImportDialog(true),
+                                  }
+                        }
                     />
+                ) : isReadonly ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        {courses.map((course) => {
+                            const missingSections = getMissingSections(course);
+
+                            return (
+                                <SectionTable
+                                    key={course.id}
+                                    courseDetails={course}
+                                    term={course.term}
+                                    allowHighlight={false}
+                                    analyticsCategory={analyticsEnum.addedClasses}
+                                    scheduleNames={scheduleNames}
+                                    missingSections={missingSections}
+                                />
+                            );
+                        })}
+                    </Box>
                 ) : (
                     <SortableList
                         disableHorizontalScroll

@@ -14,15 +14,15 @@ import LocationMarker from './Marker';
 
 const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
-import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { UserLocator } from '$components/Map/UserLocator';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { notNull } from '$lib/utils';
-import AppStore from '$stores/AppStore';
 
 function getBuildingNameAcronym(name: string): string {
     const open = name.indexOf('(');
@@ -58,9 +58,7 @@ interface MarkerContent {
  * Get an array of courses that occur in every building.
  * Each course's info is used to render a marker to the map.
  */
-export function getCoursesPerBuilding() {
-    const courseEvents = AppStore.getCourseEventsInCalendar();
-
+export function getCoursesPerBuilding(courseEvents: CourseEvent[]) {
     const courseBuildings = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
 
     const allBuildingCodes = [...courseBuildings];
@@ -96,9 +94,7 @@ export function getCoursesPerBuilding() {
     return coursesPerBuilding;
 }
 
-export function getCustomEventPerBuilding() {
-    const customEvents = AppStore.getCustomEventsInCalendar();
-
+export function getCustomEventPerBuilding(customEvents: CustomEvent[]) {
     const customEventBuildings = customEvents.map((e) => e.building).filter(notNull);
 
     // convert all digit to name in customEventBuilding  for example: 83096  ->  ICS
@@ -159,20 +155,23 @@ export function getCustomEventPerBuilding() {
  * Map of all course locations on UCI campus.
  */
 export default function CourseMap() {
+    const scheduleSource = useScheduleViewSource();
     const navigate = useNavigate();
     const map = useRef<Map | null>(null);
     const markerRef = useRef<Marker | null>(null);
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
-    const [markers, setMarkers] = useState(getCoursesPerBuilding());
-    const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
-    const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
+    const [markers, setMarkers] = useState(() => getCoursesPerBuilding(scheduleSource.getCourseEventsInCalendar()));
+    const [customEventMarkers, setCustomEventMarkers] = useState(() =>
+        getCustomEventPerBuilding(scheduleSource.getCustomEventsInCalendar())
+    );
+    const [calendarEvents, setCalendarEvents] = useState(() => scheduleSource.getEventsInCalendar());
     const postHog = usePostHog();
 
     useEffect(() => {
         const updateAllMarkers = () => {
-            setMarkers(getCoursesPerBuilding());
-            setCustomEventMarkers(getCustomEventPerBuilding());
+            setMarkers(getCoursesPerBuilding(scheduleSource.getCourseEventsInCalendar()));
+            setCustomEventMarkers(getCustomEventPerBuilding(scheduleSource.getCustomEventsInCalendar()));
         };
 
         logAnalytics(postHog, {
@@ -180,38 +179,23 @@ export default function CourseMap() {
             action: analyticsEnum.map.actions.OPEN,
         });
 
-        AppStore.on('addedCoursesChange', updateAllMarkers);
-        AppStore.on('customEventsChange', updateAllMarkers);
-        AppStore.on('currentScheduleIndexChange', updateAllMarkers);
-        AppStore.on('colorChange', updateAllMarkers);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', updateAllMarkers);
-            AppStore.removeListener('customEventsChange', updateAllMarkers);
-            AppStore.removeListener('currentScheduleIndexChange', updateAllMarkers);
-            AppStore.removeListener('colorChange', updateAllMarkers);
-        };
-    }, [postHog]);
+        updateAllMarkers();
+        return scheduleSource.subscribe(updateAllMarkers);
+    }, [postHog, scheduleSource]);
 
     useEffect(() => {
         const updateCalendarEvents = () => {
-            setCalendarEvents(AppStore.getEventsInCalendar());
+            setCalendarEvents(scheduleSource.getEventsInCalendar());
         };
 
-        AppStore.on('addedCoursesChange', updateCalendarEvents);
-        AppStore.on('customEventsChange', updateCalendarEvents);
-        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
+        updateCalendarEvents();
+        return scheduleSource.subscribe(updateCalendarEvents);
+    }, [scheduleSource]);
 
-        return () => {
-            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
-            AppStore.removeListener('customEventsChange', updateCalendarEvents);
-            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
-        };
-    }, []);
+    const resolvedLocationId = Number(searchParams.get('location') ?? 0);
 
     useEffect(() => {
-        const locationID = Number(searchParams.get('location') ?? 0);
-        const building = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
+        const building = resolvedLocationId in buildingCatalogue ? buildingCatalogue[resolvedLocationId] : undefined;
 
         if (building == null) {
             return;
@@ -221,7 +205,7 @@ export default function CourseMap() {
             map.current?.flyTo([building.lat + 0.001, building.lng], 18, { duration: 250, animate: false });
             markerRef.current?.openPopup();
         }, 250);
-    }, [searchParams]);
+    }, [resolvedLocationId]);
 
     const handleChange = useCallback(
         (_event: React.SyntheticEvent, newValue: number) => {
@@ -247,9 +231,8 @@ export default function CourseMap() {
     }, [days, selectedDayIndex]);
 
     const focusedLocation = useMemo(() => {
-        const locationID = Number(searchParams.get('location') ?? 0);
-
-        const focusedBuilding = locationID in buildingCatalogue ? buildingCatalogue[locationID] : undefined;
+        const focusedBuilding =
+            resolvedLocationId in buildingCatalogue ? buildingCatalogue[resolvedLocationId] : undefined;
 
         if (focusedBuilding == null) {
             return undefined;
@@ -263,7 +246,7 @@ export default function CourseMap() {
             acronym,
             location: focusedBuilding.name,
         };
-    }, [searchParams]);
+    }, [resolvedLocationId]);
 
     /**
      * Get markers for unique courses (identified by  section ID) that occur today, sorted by start time.

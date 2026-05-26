@@ -1,11 +1,11 @@
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent, CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import type { Schedules } from '$stores/Schedules';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 
 export type ScheduleViewScope = 'home' | 'friend';
 
 /**
- * Abstraction for schedule data + mutations used by calendar UI.
+ * Abstraction for schedule data + mutations used by schedule UI.
  * Home uses AppStore via appScheduleViewSource.
  */
 export interface ScheduleViewSource {
@@ -24,6 +24,8 @@ export interface ScheduleViewSource {
     getCurrentScheduleId(): string;
     getEventsInCalendar(): CalendarEvent[];
     getFinalEventsInCalendar(): CourseEvent[];
+    getCourseEventsInCalendar(): CourseEvent[];
+    getCustomEventsInCalendar(): CustomEvent[];
     getCurrentScheduleNote(): string;
     getCurrentCustomEvents(): RepeatingCustomEvent[];
 

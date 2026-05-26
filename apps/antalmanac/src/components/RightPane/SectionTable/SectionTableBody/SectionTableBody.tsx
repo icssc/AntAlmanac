@@ -1,7 +1,8 @@
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
+import { type SectionTableColumn } from '$stores/ColumnStore';
 import { TableBody } from '@mui/material';
 import { AACourse, AASection, AATerm } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
@@ -13,6 +14,7 @@ interface SectionTableBodyProps {
     allowHighlight: boolean;
     analyticsCategory: AnalyticsCategory;
     formattedTime: string | null;
+    displayColumns: SectionTableColumn[];
 }
 
 export function SectionTableBody({
@@ -22,8 +24,10 @@ export function SectionTableBody({
     allowHighlight,
     analyticsCategory,
     formattedTime,
+    displayColumns,
 }: SectionTableBodyProps) {
-    const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
+    const scheduleSource = useScheduleViewSource();
+    const [calendarEvents, setCalendarEvents] = useState(() => scheduleSource.getCourseEventsInCalendar());
 
     /**
      * Additional information about the current section being rendered.
@@ -68,18 +72,13 @@ export function SectionTableBody({
     );
 
     const updateCalendarEvents = useCallback(() => {
-        setCalendarEvents(AppStore.getCourseEventsInCalendar());
-    }, [setCalendarEvents]);
+        setCalendarEvents(scheduleSource.getCourseEventsInCalendar());
+    }, [scheduleSource]);
 
     useEffect(() => {
-        AppStore.on('addedCoursesChange', updateCalendarEvents);
-        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
-            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
-        };
-    }, [updateCalendarEvents]);
+        updateCalendarEvents();
+        return scheduleSource.subscribe(updateCalendarEvents);
+    }, [scheduleSource, updateCalendarEvents]);
 
     return (
         <TableBody>
@@ -97,6 +96,7 @@ export function SectionTableBody({
                         scheduleConflict={conflict}
                         analyticsCategory={analyticsCategory}
                         formattedTime={formattedTime}
+                        displayColumns={displayColumns}
                     />
                 );
             })}
