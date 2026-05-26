@@ -27,7 +27,7 @@ function FriendScheduleDesktopView() {
             <Stack direction="column">
                 <ScheduleCalendar />
             </Stack>
-            <Stack direction="column" overflow="auto" padding={1}>
+            <Stack direction="column" flexGrow={1} minHeight={0} overflow="hidden">
                 <FriendSchedule />
             </Stack>
         </Split>
@@ -38,7 +38,7 @@ function FriendScheduleMobileView() {
     return (
         <Stack direction="column" flexGrow={1} height="0" gap={1}>
             <ScheduleCalendar />
-            <Stack direction="column" overflow="auto" padding={1} flexGrow={1}>
+            <Stack direction="column" flexGrow={1} minHeight={0} overflow="hidden">
                 <FriendSchedule />
             </Stack>
         </Stack>

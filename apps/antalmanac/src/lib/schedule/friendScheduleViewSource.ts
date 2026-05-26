@@ -17,6 +17,8 @@ export const friendScheduleViewSource: ScheduleViewSource = {
     getCurrentScheduleId: () => FriendsStore.schedule.getCurrentScheduleId(),
     getEventsInCalendar: () => FriendsStore.schedule.getCalendarizedEvents(),
     getFinalEventsInCalendar: () => FriendsStore.schedule.getCalendarizedFinals(),
+    getCourseEventsInCalendar: () => FriendsStore.schedule.getCalendarizedCourseEvents(),
+    getCustomEventsInCalendar: () => FriendsStore.schedule.getCalendarizedCustomEvents(),
     getCurrentScheduleNote: () => FriendsStore.getCurrentFriendSchedule().scheduleNote ?? '',
     getCurrentCustomEvents: () => FriendsStore.getCurrentFriendSchedule().customEvents,
 
