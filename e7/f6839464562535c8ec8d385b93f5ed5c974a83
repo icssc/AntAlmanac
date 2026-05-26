@@ -1,0 +1,19 @@
+apps/antalmanac/src/components/Header/Friends/FriendAvatar.tsx
+  s_040e90c8b70153::t_5becfc0817044a 2-3,15,28-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "e7f6839464562535c8ec8d385b93f5ed5c974a83",
+  "prompts": {},
+  "sessions": {
+    "s_040e90c8b70153": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d004e7d7-f952-41a3-a436-b90e7a7ff8b5",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
