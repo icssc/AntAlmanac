@@ -1,7 +1,7 @@
 import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import type { HourMinute, WebsocSectionFinalExam } from '@packages/anteater-api/types';
+import type { HourMinute } from '@packages/anteater-api/types';
 
 const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
@@ -101,17 +101,12 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
 
 export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
     return currentCourses.flatMap((course) => {
-        if (course.section.finalExam.examStatus !== 'SCHEDULED_FINAL') {
+        const sectionFinalExam = course.section.finalExam;
+        if (sectionFinalExam.examStatus !== 'SCHEDULED_FINAL') {
             return [];
         }
 
-        // This assertion is only necessary because the filter above is not actually a type guard for the finalExam object.
-        // I guess because it's an attribute of another attribute? TypeScript pls
-        const finalExamObject = course.section.finalExam as Extract<
-            WebsocSectionFinalExam,
-            { examStatus: 'SCHEDULED_FINAL' }
-        >;
-        const { bldg, ...finalExam } = finalExamObject;
+        const { bldg, ...finalExam } = sectionFinalExam;
 
         const startHour = finalExam.startTime.hour;
         const startMin = finalExam.startTime.minute;
