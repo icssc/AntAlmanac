@@ -1,0 +1,32 @@
+apps/antalmanac/src/components/Header/Friends/FriendSelectDropdown.tsx
+  s_9d7d98bfbe6e0c::t_a38fb24db2ac54 71-72,75-76
+  s_9d7d98bfbe6e0c::t_6b11026b2e96b4 2-7,9-24,26-28,30-34,37,42-48,50-68,77-103,112,168-172
+  s_9d7d98bfbe6e0c::t_8ee57467af7759 1,8,25,29,35-36,38-41,49,69-70,73-74,104-111,113-119,121-148,150-160,162-167
+  s_9d7d98bfbe6e0c::t_80a4113fc7b5a0 120
+  s_9d7d98bfbe6e0c::t_e619dcfd97e3d9 149,161
+apps/antalmanac/src/components/Header/Friends/Friends/FriendCard.tsx
+  s_9d7d98bfbe6e0c::t_0dbf6efdf5858b 5,13,20
+  s_9d7d98bfbe6e0c::t_4d6f9b0e788523 32-50,52-75,77-80,85-86,89-132
+apps/antalmanac/src/components/Header/Friends/FriendAvatar.tsx
+  s_9d7d98bfbe6e0c::t_fa07f8671407f2 8,11,13,16-27,30,32,34-40,47-53
+apps/antalmanac/src/components/Header/Friends/FriendScheduleDialog.tsx
+  s_9d7d98bfbe6e0c::t_8286c9346ada1e 60-72
+  s_9d7d98bfbe6e0c::t_17823f155c9fd0 2,11
+  s_9d7d98bfbe6e0c::t_7a2cd1acc7f76a 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "158fe8b65b38444eeb60a36c8cf01da3d90f87d9",
+  "prompts": {},
+  "sessions": {
+    "s_9d7d98bfbe6e0c": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "f6199ba5-0ffa-4409-a413-78db56691a20",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
