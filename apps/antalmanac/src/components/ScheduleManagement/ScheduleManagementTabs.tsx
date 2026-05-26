@@ -1,5 +1,5 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { Tabs, useTabStore } from '$stores/TabStore';
+import { TABS, useTabStore } from '$stores/TabStore';
 import { Paper, Tabs as MuiTabs } from '@mui/material';
 
 interface ScheduleManagementTabsProps {
@@ -21,7 +21,7 @@ export function ScheduleManagementTabs({ onTabChange }: ScheduleManagementTabsPr
             }}
         >
             <MuiTabs value={activeTab} indicatorColor="secondary" textColor="secondary" variant="fullWidth" centered>
-                {Tabs.map((tab, index) => (
+                {TABS.map((tab, index) => (
                     <ScheduleManagementTab key={tab.name} tab={tab} value={index} onTabChange={onTabChange} />
                 ))}
             </MuiTabs>

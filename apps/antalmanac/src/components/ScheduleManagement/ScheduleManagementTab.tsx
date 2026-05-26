@@ -43,7 +43,7 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
                           padding: 3,
                           minWidth: '33%',
                       }),
-                display: isMobile || !tab.mobile ? 'flex' : 'none',
+                display: isMobile || !tab.mobileOnly ? 'flex' : 'none',
             }}
             label={tab.label}
             onClick={handleClick}

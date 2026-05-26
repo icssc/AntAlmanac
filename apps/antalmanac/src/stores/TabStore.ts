@@ -1,23 +1,12 @@
 import { Event, FormatListBulleted, MyLocation, Search, type SvgIconComponent } from '@mui/icons-material';
 import { create } from 'zustand';
 
-export type TabName = 'calendar' | 'search' | 'added' | 'map';
-
-export type TabInfo = {
-    name: TabName;
-    label: string;
-    href: string;
-    icon: SvgIconComponent;
-    id?: string;
-    mobile?: true;
-};
-
-export const Tabs: TabInfo[] = [
+export const TABS = [
     {
         name: 'calendar',
         label: 'Calendar',
         icon: Event,
-        mobile: true,
+        mobileOnly: true,
         href: '',
     },
     {
@@ -40,9 +29,20 @@ export const Tabs: TabInfo[] = [
         icon: MyLocation,
         id: 'map-tab',
     },
-];
+] as const;
 
-export const TAB_INDEX = Object.fromEntries(Tabs.map((tab, index) => [tab.name, index])) as Record<TabName, number>;
+export type TabName = (typeof TABS)[number]['name'];
+
+export type TabInfo = {
+    name: TabName;
+    label: string;
+    href: string;
+    icon: SvgIconComponent;
+    id?: string;
+    mobileOnly?: true;
+};
+
+export const TAB_INDEX = Object.fromEntries(TABS.map((tab, index) => [tab.name, index])) as Record<TabName, number>;
 
 interface TabStore {
     activeTab: number;
