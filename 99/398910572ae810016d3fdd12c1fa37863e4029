@@ -1,0 +1,40 @@
+apps/antalmanac/src/lib/schedule/appScheduleViewSource.ts
+  s_5b70ac43383c21::t_15dd3c88e59f4c 12
+apps/antalmanac/src/stores/Schedules.ts
+  s_5b70ac43383c21::t_861311be6917fb 626
+  s_5b70ac43383c21::t_35ceeeda1ce639 748
+  s_5b70ac43383c21::t_a8b6ab032bd964 148
+  s_5b70ac43383c21::t_61228f5176d051 100-112
+  s_5b70ac43383c21::t_074b65539cb8fd 51
+apps/antalmanac/src/backend/lib/rds.ts
+  s_5b70ac43383c21::t_158141e9db1047 447
+  s_5b70ac43383c21::t_e53a2d14d10866 491
+apps/antalmanac/src/stores/AppStore.ts
+  s_5b70ac43383c21::t_98a25d25d96fb7 461-469
+packages/types/src/schedule.ts
+  s_5b70ac43383c21::t_94e42fc620a511 58
+  s_5b70ac43383c21::t_12387addbc9a69 33
+apps/antalmanac/src/actions/AppStoreActions.ts
+  s_5b70ac43383c21::t_0fa55cecde8bad 557-574
+apps/antalmanac/src/components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect.tsx
+  s_5b70ac43383c21::t_a35003ba981c9e 1,144-145,208-228
+  s_5b70ac43383c21::t_e7ae9a19f3149c 78-80
+  s_5b70ac43383c21::t_b0ba80cd714bd9 12-14
+  s_5b70ac43383c21::t_f0217c2e7d77cd 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "99398910572ae810016d3fdd12c1fa37863e4029",
+  "prompts": {},
+  "sessions": {
+    "s_5b70ac43383c21": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "e43f38ed-6f22-4f3a-8395-319be537da3f",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
