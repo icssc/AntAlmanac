@@ -1,27 +1,16 @@
-import { RDS } from '$src/backend/lib/rds';
-import { db } from '@packages/db';
+import { auth } from '$lib/auth/auth';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-
-export const SESSION_COOKIE_NAME = 'aa_session';
+import { headers } from 'next/headers';
 
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
-    const cookieHeader = opts.req.headers.get('cookie') ?? '';
-    const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE_NAME}=([^;]*)`));
-    const sessionToken = match?.[1] || null;
-
-    let userId: string | null = null;
-    if (sessionToken) {
-        const session = await RDS.getCurrentSession(db, sessionToken);
-        if (session && session.expires > new Date()) {
-            userId = session.userId;
-        }
-    }
+    const sessionData = await auth.api.getSession({ headers: await headers() });
 
     return {
         req: opts.req,
         resHeaders: opts.resHeaders,
-        userId,
-        sessionToken,
+        userId: sessionData?.user.id,
+        userEmail: sessionData?.user.email,
+        sessionToken: sessionData?.session?.token,
     };
 };
 

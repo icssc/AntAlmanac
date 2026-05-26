@@ -1,3 +1,4 @@
+import { Providers } from '$src/app/providers';
 import { ANTALMANAC_DESCRIPTION, ANTALMANAC_TITLE } from '$src/app/seo-constants';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
@@ -91,7 +92,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     );`}
                 </Script>
                 <noscript>You need to enable JavaScript to run this app.</noscript>
-                {children}
+                <Providers>{children}</Providers>
             </body>
         </html>
     );

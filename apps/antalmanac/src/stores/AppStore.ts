@@ -21,6 +21,7 @@ import type {
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
 import { useFallbackStore } from '$stores/FallbackStore';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
@@ -166,7 +167,11 @@ class AppStore extends EventEmitter {
     }
 
     deleteCourse(sectionCode: string, term: AATerm, scheduleIndex: number, triggerUnsavedWarning = true) {
+        const scheduleId = this.schedule.getScheduleId(scheduleIndex);
         this.schedule.deleteCourse(sectionCode, term, scheduleIndex);
+        if (scheduleId) {
+            useHiddenCoursesStore.getState().clearCourseVisibility(scheduleId, sectionCode);
+        }
         this.unsavedChanges = triggerUnsavedWarning;
         const action: DeleteCourseAction = {
             type: 'deleteCourse',
@@ -403,7 +408,9 @@ class AppStore extends EventEmitter {
     }
 
     clearSchedule() {
+        const scheduleId = this.schedule.getCurrentScheduleId();
         this.schedule.clearCurrentSchedule();
+        useHiddenCoursesStore.getState().clearScheduleVisibility(scheduleId);
         this.unsavedChanges = true;
         const action: ClearScheduleAction = {
             type: 'clearSchedule',
@@ -414,7 +421,11 @@ class AppStore extends EventEmitter {
     }
 
     deleteSchedule(scheduleIndex: number) {
+        const scheduleId = this.schedule.getScheduleId(scheduleIndex);
         this.schedule.deleteSchedule(scheduleIndex);
+        if (scheduleId) {
+            useHiddenCoursesStore.getState().clearScheduleVisibility(scheduleId);
+        }
         this.unsavedChanges = true;
         const action: DeleteScheduleAction = {
             type: 'deleteSchedule',

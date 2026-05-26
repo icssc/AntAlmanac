@@ -1,4 +1,5 @@
 import { ANTALMANAC_TITLE } from '$src/app/seo-constants';
+import Link from 'next/link';
 
 /**
  * Server-rendered content for search engine indexing and screen readers.
@@ -13,7 +14,7 @@ export function SeoContent() {
             <h1>{ANTALMANAC_TITLE}</h1>
 
             <p>
-                AntAlmanac helps you find any UCI course and plan your UCI schedule in one place — a UCI course planner
+                AntAlmanac helps you find any UCI course and plan your UCI schedule in one place, a UCI course planner
                 and UCI schedule planner trusted by tens of thousands of UC Irvine students. Search UCI courses across
                 140+ departments, build your UCI schedule with conflict detection and unit counts, and explore grade
                 distributions and enrollment history before you enroll.
@@ -22,9 +23,9 @@ export function SeoContent() {
             <h2>UCI course search</h2>
             <p>
                 Run a UCI course search across Computer Science, Informatics, Biological Sciences, Mathematics,
-                Economics, Engineering, Psychology, Political Science, and 130+ more departments. Filter by GE category
-                — Writing, Multicultural Studies, Science &amp; Technology, and more — or search by course number,
-                title, or instructor name.
+                Economics, Engineering, Psychology, Political Science, and 130+ more departments. Filter by GE category:
+                Writing, Multicultural Studies, Science &amp; Technology, and more, or search by course number, title,
+                or instructor name.
             </p>
 
             <h2>UCI class schedule &amp; weekly planner</h2>
@@ -50,23 +51,26 @@ export function SeoContent() {
             <nav aria-label="AntAlmanac sections">
                 <ul>
                     <li>
-                        <a href="/">UCI Course Search</a>
+                        <Link href="/">UCI Course Search</Link>
                     </li>
                     <li>
-                        <a href="/added">My Schedule</a>
+                        <Link href="/added">My Schedule</Link>
                     </li>
                     <li>
-                        <a href="/map">Campus Map</a>
+                        <Link href="/map">Campus Map</Link>
                     </li>
                     <li>
-                        <a href="/feedback">Feedback</a>
+                        <Link href="/feedback">Feedback</Link>
                     </li>
                 </ul>
             </nav>
 
             <footer>
                 <p>
-                    AntAlmanac is an open-source project by <a href="https://github.com/icssc">ICS Student Council</a>{' '}
+                    AntAlmanac is an open-source project by{' '}
+                    <a href="https://github.com/icssc" target="_blank" rel="noopener noreferrer">
+                        ICS Student Council
+                    </a>{' '}
                     at the University of California, Irvine.
                 </p>
             </footer>
