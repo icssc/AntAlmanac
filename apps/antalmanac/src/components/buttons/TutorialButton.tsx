@@ -14,9 +14,9 @@ export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
     const { setSearchMode, resetForm, clearView } = useCourseSearchActions();
 
     const startTutorial = useCallback(() => {
-        void setSearchMode(COURSE_SEARCH_MODE.QUICK);
-        void resetForm();
-        void clearView();
+        setSearchMode(COURSE_SEARCH_MODE.QUICK);
+        resetForm();
+        clearView();
         setCurrentStep(0);
         setIsOpen(true);
     }, [clearView, resetForm, setCurrentStep, setIsOpen, setSearchMode]);

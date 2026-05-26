@@ -127,16 +127,25 @@ export function useCourseSearchChrome() {
 
     const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL && plannerSearchParam === null;
 
-    const setSearchMode = useCallback((mode: CourseSearchMode) => setSearchModeParam(mode), [setSearchModeParam]);
+    const setSearchMode = useCallback(
+        (mode: CourseSearchMode) => {
+            void setSearchModeParam(mode);
+        },
+        [setSearchModeParam]
+    );
 
-    const showResults = useCallback(() => setViewParam(COURSE_SEARCH_VIEW.RESULTS), [setViewParam]);
+    const showResults = useCallback(() => {
+        void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
+    }, [setViewParam]);
 
     const showSearchForm = useCallback(() => {
         clearMultiSearchData();
-        return setViewParam(COURSE_SEARCH_VIEW.SEARCH_FORM);
+        void setViewParam(COURSE_SEARCH_VIEW.SEARCH_FORM);
     }, [setViewParam]);
 
-    const clearView = useCallback(() => setViewParam(null), [setViewParam]);
+    const clearView = useCallback(() => {
+        void setViewParam(null);
+    }, [setViewParam]);
 
     return {
         manualSearchEnabled,

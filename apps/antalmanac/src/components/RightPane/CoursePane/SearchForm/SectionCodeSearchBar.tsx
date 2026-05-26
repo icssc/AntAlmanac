@@ -6,7 +6,7 @@ const SectionCodeSearchBar = () => {
     const [sectionCode, setSectionCode] = useCourseSearchParam('sectionCode');
 
     const handleChange = (event: ChangeEvent<{ value: string }>) => {
-        void setSectionCode(event.target.value);
+        setSectionCode(event.target.value);
     };
 
     return (

@@ -112,8 +112,8 @@ const FuzzySearch = ({ postHog, labelProps }: FuzzySearchProps) => {
                 break;
         }
 
-        void setSearchMode(COURSE_SEARCH_MODE.QUICK);
-        void setFields(nextFormData);
+        setSearchMode(COURSE_SEARCH_MODE.QUICK);
+        setFields(nextFormData);
         submitSearch(nextFormData);
         logAnalytics(postHog, {
             category: analyticsEnum.classSearch,

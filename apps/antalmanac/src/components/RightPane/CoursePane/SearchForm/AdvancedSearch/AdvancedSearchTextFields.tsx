@@ -67,7 +67,7 @@ export function AdvancedSearchTextFields() {
         if (name === 'startTime' || name === 'endTime') {
             if (event instanceof Date || event === null) {
                 const stringTime = event && isValid(event) ? format(event, 'HH:mm') : '';
-                void setField(name, stringTime);
+                setField(name, stringTime);
                 return;
             }
         }
@@ -76,13 +76,13 @@ export function AdvancedSearchTextFields() {
             const checked = (event as ChangeEvent<HTMLInputElement>).target.value === 'true';
             const nextBuilding = checked ? 'ON' : '';
             const nextRoom = checked ? 'LINE' : '';
-            void setAdvanced({ building: nextBuilding, room: nextRoom });
+            setAdvanced({ building: nextBuilding, room: nextRoom });
             return;
         }
 
         const value = (event as Exclude<InputEvent, Date | null>).target.value;
         const stringValue = Array.isArray(value) ? value.join('') : value;
-        void setField(name, stringValue);
+        setField(name, stringValue);
     };
 
     const handleSignInClose = useCallback(() => {
@@ -99,7 +99,7 @@ export function AdvancedSearchTextFields() {
 
         if (!exists) {
             openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
-            void setField('excludeRoadmapCourses', '');
+            setField('excludeRoadmapCourses', '');
         }
     }, [advanced.excludeRoadmapCourses, plannerRoadmaps, setField, updateTakenCourses]);
 

@@ -106,7 +106,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 }));
 
                 RightPaneStore.setMultiSearchData(searchData, term);
-                void showResults();
+                showResults();
             } catch (error) {
                 console.error('Something went wrong while searching with Planner:', error);
                 openSnackbar('error', 'Something went wrong while searching with Planner.');
@@ -204,7 +204,7 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 const success = await search(plannerSearchParam);
                 if (success) {
                     hasSearchedWithUrlParamsRef.current = true;
-                    void setPlannerSearchParam(null);
+                    await setPlannerSearchParam(null);
                 }
             })();
         }

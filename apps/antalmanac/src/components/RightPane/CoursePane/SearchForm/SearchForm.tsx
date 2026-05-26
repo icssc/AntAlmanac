@@ -38,16 +38,16 @@ export const SearchForm = () => {
 
         switch (value) {
             case COURSE_SEARCH_MODE.MANUAL:
-                void setSearchMode(COURSE_SEARCH_MODE.MANUAL);
+                setSearchMode(COURSE_SEARCH_MODE.MANUAL);
                 if (savedManualSearch) {
-                    void setFields(savedManualSearch);
+                    setFields(savedManualSearch);
                 }
                 break;
             case COURSE_SEARCH_MODE.QUICK:
                 saveManualSearch(formData);
-                void setSearchMode(COURSE_SEARCH_MODE.QUICK);
-                void resetForm({ preserveTerm: true });
-                void clearView();
+                setSearchMode(COURSE_SEARCH_MODE.QUICK);
+                resetForm({ preserveTerm: true });
+                clearView();
                 break;
         }
     };
@@ -97,7 +97,7 @@ export const SearchForm = () => {
                             }}
                             onReset={() => {
                                 clearManualSearch();
-                                void resetForm();
+                                resetForm();
                             }}
                         />
                     )}

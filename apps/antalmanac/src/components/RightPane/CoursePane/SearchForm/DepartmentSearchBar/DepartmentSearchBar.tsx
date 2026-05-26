@@ -38,7 +38,7 @@ export function DepartmentSearchBar() {
         (_: unknown, option: string | null) => {
             const newValue = option ?? options[0]; // options[0] corresponds to `ALL`
 
-            void setDeptValue(newValue);
+            setDeptValue(newValue);
 
             if (newValue === 'ALL') return;
 

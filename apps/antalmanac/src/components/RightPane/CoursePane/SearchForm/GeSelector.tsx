@@ -21,7 +21,7 @@ export function GeSelector() {
         const selectedValues = values.includes(ANY_GE) ? [] : values.filter((currentValue) => currentValue !== ANY_GE);
         const searchValue = normalizeGeSelection(selectedValues.join(','));
 
-        void setGe(searchValue);
+        setGe(searchValue);
     };
 
     return (

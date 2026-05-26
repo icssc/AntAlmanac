@@ -6,7 +6,7 @@ export function CourseNumberSearchBar() {
     const [courseNumber, setCourseNumber] = useCourseSearchParam('courseNumber');
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        void setCourseNumber(event.target.value);
+        setCourseNumber(event.target.value);
     };
 
     return (

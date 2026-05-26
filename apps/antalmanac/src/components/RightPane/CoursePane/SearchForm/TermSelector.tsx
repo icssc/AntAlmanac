@@ -16,7 +16,7 @@ export function TermSelector(props: TermSelectorProps) {
     const handleChange = (_: unknown, option: AATerm | null) => {
         const value = option ?? getDefaultTerm();
 
-        void setTerm(value);
+        setTerm(value);
 
         RightPaneStore.clearWarningMessages(CourseSearchWarningType.TermUnavailable);
     };
