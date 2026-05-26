@@ -49,7 +49,7 @@ export function hasManualParams(formData: CourseSearchParams) {
     });
 }
 
-export function hasAdvancedParams(formData: Pick<CourseSearchParams, (typeof ADVANCED_SEARCH_PARAMS)[number]>) {
+export function hasAdvancedParams(formData: AdvancedSearchParams) {
     return ADVANCED_SEARCH_PARAMS.some((key) => formData[key] !== DEFAULT_ADVANCED_SEARCH_VALUES[key]);
 }
 

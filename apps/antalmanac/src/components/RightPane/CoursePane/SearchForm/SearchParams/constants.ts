@@ -40,14 +40,14 @@ export const COURSE_SEARCH_VIEWS = [COURSE_SEARCH_VIEW.SEARCH_FORM, COURSE_SEARC
 
 export const DEFAULT_TERM = getDefaultTerm();
 
-export const DEFAULT_MANUAL_SEARCH_VALUES = {
+export const DEFAULT_MANUAL_SEARCH_VALUES: Record<Exclude<ManualSearchParam, 'term'>, string> = {
     deptValue: 'ALL',
     ge: ANY_GE,
     courseNumber: '',
     sectionCode: '',
-} as const satisfies Record<Exclude<ManualSearchParam, 'term'>, string>;
+};
 
-export const DEFAULT_ADVANCED_SEARCH_VALUES = {
+export const DEFAULT_ADVANCED_SEARCH_VALUES: Record<AdvancedSearchParam, string> = {
     instructor: '',
     units: '',
     endTime: '',
@@ -59,7 +59,7 @@ export const DEFAULT_ADVANCED_SEARCH_VALUES = {
     excludeRoadmapCourses: '',
     excludeRestrictionCodes: '',
     days: '',
-} as const satisfies Record<AdvancedSearchParam, string>;
+};
 
 export const DEFAULT_FORM_DATA = {
     term: DEFAULT_TERM,
