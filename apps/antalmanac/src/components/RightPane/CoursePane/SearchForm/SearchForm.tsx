@@ -11,15 +11,18 @@ import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useCallback, type SyntheticEvent } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export const SearchForm = () => {
     const { formData, manualSearchEnabled, resetForm, setFields, setSearchMode, clearView, submitSearch } =
         useCourseSearchUrl();
     const isDark = useThemeStore((store) => store.isDark);
-    const { savedManualSearch, saveManualSearch } = useSavedSearchStore((store) => ({
-        savedManualSearch: store.savedManualSearch,
-        saveManualSearch: store.saveManualSearch,
-    }));
+    const { savedManualSearch, saveManualSearch } = useSavedSearchStore(
+        useShallow((store) => ({
+            savedManualSearch: store.savedManualSearch,
+            saveManualSearch: store.saveManualSearch,
+        }))
+    );
 
     const onFormSubmit = useCallback(
         (event: SyntheticEvent<HTMLFormElement>) => {
