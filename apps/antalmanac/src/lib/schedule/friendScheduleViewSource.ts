@@ -3,6 +3,32 @@ import FriendsStore from '$stores/FriendsStore';
 
 const FRIEND_STORE_EVENTS = ['friendViewChange', 'scheduleChange'] as const;
 
+const friendScheduleListeners = new Set<() => void>();
+let unsubscribeFromFriendsStore: (() => void) | null = null;
+
+function notifyFriendScheduleListeners() {
+    for (const listener of friendScheduleListeners) {
+        listener();
+    }
+}
+
+function ensureFriendsStoreSubscription() {
+    if (unsubscribeFromFriendsStore) {
+        return;
+    }
+
+    for (const event of FRIEND_STORE_EVENTS) {
+        FriendsStore.on(event, notifyFriendScheduleListeners);
+    }
+
+    unsubscribeFromFriendsStore = () => {
+        for (const event of FRIEND_STORE_EVENTS) {
+            FriendsStore.off(event, notifyFriendScheduleListeners);
+        }
+        unsubscribeFromFriendsStore = null;
+    };
+}
+
 export const friendScheduleViewSource: ScheduleViewSource = {
     scope: 'friend',
     readonly: true,
@@ -27,12 +53,13 @@ export const friendScheduleViewSource: ScheduleViewSource = {
     },
 
     subscribe: (onChange) => {
-        for (const event of FRIEND_STORE_EVENTS) {
-            FriendsStore.on(event, onChange);
-        }
+        friendScheduleListeners.add(onChange);
+        ensureFriendsStoreSubscription();
+
         return () => {
-            for (const event of FRIEND_STORE_EVENTS) {
-                FriendsStore.off(event, onChange);
+            friendScheduleListeners.delete(onChange);
+            if (friendScheduleListeners.size === 0 && unsubscribeFromFriendsStore) {
+                unsubscribeFromFriendsStore();
             }
         };
     },
