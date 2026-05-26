@@ -7,12 +7,16 @@ import {
     Card,
     CardHeader,
     CardContent,
-    useTheme,
     Skeleton,
 } from '@mui/material';
 import type { AggregateGrades } from '@packages/anteater-api/types';
+import dynamic from 'next/dynamic';
 import { useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
+
+const GradesPopoverChart = dynamic(() => import('./GradesPopoverChart'), {
+    ssr: false,
+    loading: () => <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />,
+});
 
 type GradeView = 'instructor' | 'overall';
 
@@ -54,9 +58,6 @@ interface GradesPopoverProps {
 }
 
 export function GradesPopover(props: GradesPopoverProps) {
-    const theme = useTheme();
-    const secondaryColor = theme.palette.secondary.main;
-
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
 
     const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGrades.useQuery(
@@ -132,32 +133,7 @@ export function GradesPopover(props: GradesPopoverProps) {
                     </Box>
                 ) : activeData && hasData ? (
                     <Box sx={{ width, height }}>
-                        <ResponsiveContainer>
-                            <BarChart data={activeData.grades} style={{ cursor: 'pointer' }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis
-                                    dataKey="name"
-                                    tick={{ fontSize: 12, fill: theme.palette.text.primary }}
-                                    height={20}
-                                />
-                                <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} unit="%" width={35} />
-                                <RechartsTooltip
-                                    contentStyle={{
-                                        backgroundColor: theme.palette.background.paper,
-                                        border: 0,
-                                    }}
-                                    labelStyle={{ color: secondaryColor }}
-                                    itemStyle={{ color: secondaryColor }}
-                                    labelFormatter={(gradeLabel) => `Grade ${gradeLabel}`}
-                                    formatter={(value) => {
-                                        const n = typeof value === 'number' ? value : Number(value);
-                                        const pct = Number.isFinite(n) ? n.toFixed(1) : String(value);
-                                        return [`${pct}%`];
-                                    }}
-                                />
-                                <Bar dataKey="all" fill={theme.palette.primary.main} />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        <GradesPopoverChart grades={activeData.grades} />
                     </Box>
                 ) : (
                     <Box
