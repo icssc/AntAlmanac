@@ -19,7 +19,6 @@ import {
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
 import type {
     AdvancedSearchParams,
-    CourseSearchField,
     CourseSearchMode,
     CourseSearchParams,
     CourseSearchView,
@@ -67,7 +66,7 @@ export function clearMultiSearchData() {
 }
 
 /** Subscribe to a single URL-backed form field (nuqs key isolation). */
-export function useCourseSearchParam<K extends CourseSearchField>(field: K) {
+export function useCourseSearchParam<K extends keyof CourseSearchParams>(field: K) {
     const parser = courseSearchParamParsers[field];
     const [value, setValueRaw] = useQueryState(field, parser) as unknown as [
         CourseSearchParams[K],

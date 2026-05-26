@@ -25,8 +25,6 @@ export interface CourseSearchParams {
     days: string;
 }
 
-export type CourseSearchField = keyof CourseSearchParams;
-
 export type CourseSearchMode = (typeof COURSE_SEARCH_MODES)[number];
 export type CourseSearchView = (typeof COURSE_SEARCH_VIEWS)[number];
 
