@@ -133,6 +133,19 @@ export class RDS {
             );
 
         if (prepared.length > 0) {
+            // Scratch indices to not violate the partial unique index (schedules_user_id_index_active_unique)
+            let scratchIndex = 0;
+            for (const { dbId } of prepared) {
+                if (!existingIds.has(dbId)) {
+                    continue;
+                }
+                scratchIndex += 1;
+                await tx
+                    .update(schedules)
+                    .set({ index: -scratchIndex })
+                    .where(and(eq(schedules.id, dbId), eq(schedules.userId, userId), isNull(schedules.archivedAt)));
+            }
+
             const scheduleUpdatePolicy = {
                 id: 'keep',
                 userId: 'keep',
