@@ -24,7 +24,7 @@ export function FriendSchedule() {
 
     return (
         <FriendScheduleTabProvider activeTab={activeTab} setActiveTab={setActiveTab}>
-            <Stack direction="column" flexGrow={1} height="100%" minHeight={0}>
+            <Stack direction="column" flexGrow={1} height={0} minHeight={0} overflow="hidden">
                 <Paper
                     elevation={0}
                     variant="outlined"
@@ -71,11 +71,13 @@ export function FriendSchedule() {
 
                 <Box
                     flexGrow={1}
+                    height={0}
                     minHeight={0}
                     overflow={activeTab === 'map' ? 'hidden' : 'auto'}
                     display="flex"
                     flexDirection="column"
                     padding={1}
+                    sx={{ WebkitOverflowScrolling: 'touch' }}
                 >
                     {activeTab === 'search' ? (
                         <CoursePaneRoot />

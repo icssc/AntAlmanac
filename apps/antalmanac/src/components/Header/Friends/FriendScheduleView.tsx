@@ -2,7 +2,7 @@ import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { FriendSchedule } from '$components/RightPane/AddedCourses/FriendSchedule';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
-import { Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import Split from 'react-split';
 
 function FriendScheduleDesktopView() {
@@ -17,17 +17,17 @@ function FriendScheduleDesktopView() {
             dragInterval={1}
             direction="horizontal"
             cursor="col-resize"
-            style={{ display: 'flex', flexGrow: 1, marginTop: 4 }}
+            style={{ display: 'flex', flex: 1, height: '100%', minHeight: 0, marginTop: 4 }}
             gutterStyle={() => ({
                 backgroundColor: BLUE,
                 width: '10px',
                 paddingRight: '1px',
             })}
         >
-            <Stack direction="column">
+            <Stack direction="column" height="100%" minHeight={0} overflow="hidden">
                 <ScheduleCalendar />
             </Stack>
-            <Stack direction="column" flexGrow={1} minHeight={0} overflow="hidden">
+            <Stack direction="column" height="100%" minHeight={0} overflow="hidden">
                 <FriendSchedule />
             </Stack>
         </Split>
@@ -36,9 +36,9 @@ function FriendScheduleDesktopView() {
 
 function FriendScheduleMobileView() {
     return (
-        <Stack direction="column" flexGrow={1} height="0" gap={1}>
+        <Stack direction="column" flexGrow={1} height={0} minHeight={0} gap={1} overflow="hidden">
             <ScheduleCalendar />
-            <Stack direction="column" flexGrow={1} minHeight={0} overflow="hidden">
+            <Stack direction="column" flexGrow={1} height={0} minHeight={0} overflow="hidden">
                 <FriendSchedule />
             </Stack>
         </Stack>
@@ -47,5 +47,12 @@ function FriendScheduleMobileView() {
 
 export function FriendScheduleView() {
     const isMobile = useIsMobile();
-    return isMobile ? <FriendScheduleMobileView /> : <FriendScheduleDesktopView />;
+
+    return (
+        <Box
+            sx={{ flexGrow: 1, height: 0, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+        >
+            {isMobile ? <FriendScheduleMobileView /> : <FriendScheduleDesktopView />}
+        </Box>
+    );
 }

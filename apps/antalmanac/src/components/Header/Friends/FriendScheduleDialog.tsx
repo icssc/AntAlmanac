@@ -62,17 +62,24 @@ export function FriendScheduleDialog() {
                 </IconButton>
             </Stack>
 
-            <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    height: 0,
+                    minHeight: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden',
+                }}
+            >
                 {loading ? (
                     <Stack flex={1} alignItems="center" justifyContent="center">
                         <CircularProgress />
                     </Stack>
                 ) : (
-                    <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-                        <FriendScheduleViewProvider>
-                            <FriendScheduleView />
-                        </FriendScheduleViewProvider>
-                    </Box>
+                    <FriendScheduleViewProvider>
+                        <FriendScheduleView />
+                    </FriendScheduleViewProvider>
                 )}
             </Box>
         </Dialog>
