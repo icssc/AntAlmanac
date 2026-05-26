@@ -1,0 +1,23 @@
+apps/antalmanac/src/components/Header/Friends/FriendScheduleDialog.tsx
+  s_5cc003596c2424::t_0215a058c5fc22 65-71,73-74,80-82
+apps/antalmanac/src/components/RightPane/AddedCourses/FriendSchedule.tsx
+  s_5cc003596c2424::t_0215a058c5fc22 27,74,80
+apps/antalmanac/src/components/Header/Friends/FriendScheduleView.tsx
+  s_5cc003596c2424::t_0215a058c5fc22 5,20,27,30,39,41,50-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "ad0cad56542bbf0474cc3a28e9621e4205116c05",
+  "prompts": {},
+  "sessions": {
+    "s_5cc003596c2424": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "90b962d9-b718-4310-9f17-483e4aa83bd9",
+        "model": "composer-2.5"
+      },
+      "human_author": "Brendan Lieu <brendanlieu05@gmail.com>"
+    }
+  }
+}
