@@ -2,10 +2,9 @@ import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/Adva
 import { CourseNumberSearchBar } from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
 import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar';
 import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
-import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { ManualSearchResetButton } from '$components/RightPane/CoursePane/SearchForm/ManualSearchResetButton';
 import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { Box, Button, useTheme } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback } from 'react';
@@ -13,9 +12,6 @@ import { useCallback } from 'react';
 export function ManualSearch() {
     const theme = useTheme();
     const postHog = usePostHog();
-
-    const { resetForm } = useCourseSearchUrl();
-    const clearManualSearch = useSavedSearchStore((store) => store.clearManualSearch);
     const manualSearchSingleColumn = `@container manual-search (max-width: ${theme.breakpoints.values.sm}px)`;
 
     const handleSubmit = useCallback(() => {
@@ -24,11 +20,6 @@ export function ManualSearch() {
             action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
         });
     }, [postHog]);
-
-    const handleReset = useCallback(() => {
-        clearManualSearch();
-        resetForm();
-    }, [clearManualSearch, resetForm]);
 
     return (
         <Box
@@ -83,9 +74,7 @@ export function ManualSearch() {
                     Search
                 </Button>
 
-                <Button variant="contained" color="secondary" onClick={handleReset}>
-                    Reset
-                </Button>
+                <ManualSearchResetButton />
             </Box>
         </Box>
     );
