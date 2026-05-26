@@ -2,17 +2,12 @@ import './App.css';
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
-import AppPostHogProvider from '$providers/AppPostHogProvider';
-import AppQueryProvider from '$providers/AppQueryProvider';
-import AppTourProvider from '$providers/AppTourProvider';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
 import { NewUserPage } from '$routes/NewUserPage';
 import { OutagePage } from '$routes/OutagePage';
 import { Unsubscribe } from '$routes/UnsubscribePage';
-import AppThemeProvider from '$src/app/Theme';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
@@ -102,17 +97,5 @@ export default function App() {
         };
     }, []);
 
-    return (
-        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-            <AppThemeProvider>
-                <AppPostHogProvider>
-                    <AppQueryProvider>
-                        <AppTourProvider>
-                            <RouterProvider router={ROUTER} />
-                        </AppTourProvider>
-                    </AppQueryProvider>
-                </AppPostHogProvider>
-            </AppThemeProvider>
-        </AppRouterCacheProvider>
-    );
+    return <RouterProvider router={ROUTER} />;
 }
