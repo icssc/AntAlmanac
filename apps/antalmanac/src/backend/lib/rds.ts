@@ -444,6 +444,7 @@ export class RDS {
                 courses: [],
                 customEvents: [],
                 index: schedule.index,
+                sharedWithFriends: schedule.sharedWithFriends,
             };
 
             if (course) {
@@ -487,6 +488,7 @@ export class RDS {
                 scheduleNote: schedule.notes,
                 courses: [],
                 customEvents: [],
+                sharedWithFriends: schedule.sharedWithFriends,
             };
 
             if (customEvent) {

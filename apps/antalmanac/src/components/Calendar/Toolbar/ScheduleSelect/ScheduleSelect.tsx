@@ -1,3 +1,4 @@
+import { toggleScheduleSharing } from '$actions/AppStoreActions';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
@@ -8,8 +9,9 @@ import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
-import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
+import { useSessionStore } from '$stores/SessionStore';
+import { ArrowDropDown as ArrowDropDownIcon, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Box, Button, IconButton, Popover, Typography, useTheme, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -43,6 +45,8 @@ export function SelectSchedulePopover() {
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => scheduleSource.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(() => getScheduleItems(scheduleSource.getScheduleNames()));
 
+    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+
     const { fallbackMode, getFallbackScheduleNames } = useFallbackStore(
         useShallow((store) => ({
             fallbackMode: store.fallbackMode,
@@ -71,6 +75,9 @@ export function SelectSchedulePopover() {
         return scheduleSource.subscribe(syncFromSource);
     }, [scheduleSource]);
 
+    const scheduleMappingToUse = fallbackMode ? fallbackScheduleMapping : scheduleMapping;
+    const disableActionButtons = fallbackMode || scheduleSource.readonly;
+
     const handleScheduleChange = (index: number) => {
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
@@ -83,9 +90,6 @@ export function SelectSchedulePopover() {
         setScheduleMapping(schedules);
         AppStore.reorderSchedule(activeIndex, overIndex);
     };
-
-    const scheduleMappingToUse = fallbackMode ? fallbackScheduleMapping : scheduleMapping;
-    const disableActionButtons = fallbackMode || scheduleSource.readonly;
 
     return (
         <Box>
@@ -137,6 +141,8 @@ export function SelectSchedulePopover() {
                         items={scheduleMappingToUse}
                         onChange={handleSortableListChange}
                         renderItem={(item, index) => {
+                            const isShared = scheduleSource.schedule.getSharedWithFriends(index);
+
                             return (
                                 <SortableList.Item id={item.id}>
                                     <Box
@@ -199,6 +205,27 @@ export function SelectSchedulePopover() {
                                             <Box display="flex" alignItems="center" gap={0.5}>
                                                 <CopyScheduleButton index={index} />
                                                 <RenameScheduleButton index={index} />
+                                                {sessionIsValid && scheduleSource.scope === 'home' && (
+                                                    <Tooltip
+                                                        title={
+                                                            isShared
+                                                                ? 'Hide Schedule From Friends'
+                                                                : 'Show Schedule to Friends'
+                                                        }
+                                                        disableInteractive
+                                                    >
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => void toggleScheduleSharing(index)}
+                                                        >
+                                                            {isShared ? (
+                                                                <Visibility fontSize="small" />
+                                                            ) : (
+                                                                <VisibilityOff fontSize="small" />
+                                                            )}
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
                                                 <DeleteScheduleButton index={index} />
                                             </Box>
                                         )}

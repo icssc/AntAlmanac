@@ -554,6 +554,24 @@ export const changeCurrentSchedule = (newScheduleIndex: number) => {
     AppStore.changeCurrentSchedule(newScheduleIndex);
 };
 
+export const toggleScheduleSharing = async (scheduleIndex: number) => {
+    const currentValue = AppStore.getSharedWithFriends(scheduleIndex);
+    const newValue = !currentValue;
+    AppStore.setSharedWithFriends(scheduleIndex, newValue);
+
+    const scheduleId = AppStore.schedule.getScheduleId(scheduleIndex);
+    if (!scheduleId) {
+        return;
+    }
+
+    try {
+        const result = await trpc.friends.toggleScheduleSharing.mutate({ scheduleId });
+        AppStore.setSharedWithFriends(scheduleIndex, result.sharedWithFriends);
+    } catch {
+        AppStore.setSharedWithFriends(scheduleIndex, currentValue);
+    }
+};
+
 export const changeCustomEventColor = (customEventID: CustomEventId, newColor: string) => {
     AppStore.changeCustomEventColor(customEventID, newColor);
 };

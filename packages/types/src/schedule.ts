@@ -30,6 +30,7 @@ export type Schedule = {
     customEvents: RepeatingCustomEvent[];
     scheduleNoteId: number;
     scheduleId: string;
+    sharedWithFriends: boolean;
 };
 
 export enum VisibilityState {
@@ -54,6 +55,7 @@ const ShortCourseScheduleFieldsSchema = z.object({
     customEvents: z.array(RepeatingCustomEventSchema),
     scheduleNote: z.string().max(SCHEDULE_NOTE_MAX_LENGTH).optional(),
     id: z.string().optional(),
+    sharedWithFriends: z.boolean().optional(),
 });
 
 export const ShortCourseScheduleSchema = ShortCourseScheduleFieldsSchema.transform((schedule) => ({
