@@ -1,5 +1,5 @@
-import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { notNull, getReferencesOccurring } from '$lib/utils';
+import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/CourseCalendarEvent';
+import { getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import type { HourMinute, WebsocSectionFinalExam } from '@packages/anteater-api/types';
 
@@ -12,152 +12,172 @@ function getLocation(location: string): Location {
     return { building, room };
 }
 
+function getDayIndicesOccurring(daysOccurring: boolean[]): number[] {
+    const indices: number[] = [];
+    for (let index = 0; index < daysOccurring.length; index++) {
+        if (daysOccurring[index]) {
+            indices.push(index);
+        }
+    }
+    return indices;
+}
+
+function mapLocationsWithDay(bldg: string[], dayIndex: number, includeDays: boolean): Location[] {
+    const locations: Location[] = [];
+    for (const bldgEntry of bldg) {
+        const location = getLocation(bldgEntry);
+        locations.push({
+            ...location,
+            ...(includeDays && { days: COURSE_WEEK_DAYS[dayIndex] }),
+        });
+    }
+    return locations;
+}
+
 export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
     return currentCourses.flatMap((course) => {
         const term = course.term;
+        const events: CourseEvent[] = [];
 
-        return course.section.meetings
-            .filter((meeting) => !meeting.timeIsTBA)
-            .flatMap((meeting) => {
-                const startHour = meeting.startTime.hour;
-                const startMin = meeting.startTime.minute;
-                const endHour = meeting.endTime.hour;
-                const endMin = meeting.endTime.minute;
+        for (const meeting of course.section.meetings) {
+            if (meeting.timeIsTBA) {
+                continue;
+            }
 
-                /**
-                 * An array of booleans indicating whether a course meeting occurs on that day.
-                 *
-                 * @example [false, true, false, true, false, true, false], i.e. [M, W, F]
-                 */
-                const daysOccurring = getReferencesOccurring(COURSE_WEEK_DAYS, meeting.days);
+            const startHour = meeting.startTime.hour;
+            const startMin = meeting.startTime.minute;
+            const endHour = meeting.endTime.hour;
+            const endMin = meeting.endTime.minute;
 
-                /**
-                 * Only include the day indices that the meeting occurs.
-                 *
-                 * @example [false, true, false, true, false, true, false] -> [1, 3, 5]
-                 */
-                const dayIndicesOccurring = daysOccurring
-                    .map((day, index) => (day ? index : undefined))
-                    .filter(notNull);
+            /**
+             * An array of booleans indicating whether a course meeting occurs on that day.
+             *
+             * @example [false, true, false, true, false, true, false], i.e. [M, W, F]
+             */
+            const daysOccurring = getReferencesOccurring(COURSE_WEEK_DAYS, meeting.days);
 
-                // Intermediate formatting to subtract `bldg` attribute in favor of `locations`
-                const { bldg: _, ...finalExam } =
-                    course.section.finalExam.examStatus === 'SCHEDULED_FINAL'
-                        ? course.section.finalExam
-                        : { bldg: '', examStatus: course.section.finalExam.examStatus };
+            /**
+             * Only include the day indices that the meeting occurs.
+             *
+             * @example [false, true, false, true, false, true, false] -> [1, 3, 5]
+             */
+            const dayIndicesOccurring = getDayIndicesOccurring(daysOccurring);
 
-                return dayIndicesOccurring.map((dayIndex) => {
-                    return {
-                        color: course.section.color,
-                        term,
-                        title: `${course.deptCode} ${course.courseNumber}`,
-                        deptValue: course.deptCode,
-                        courseNumber: course.courseNumber,
-                        courseTitle: course.courseTitle,
-                        locations: meeting.bldg.map(getLocation).map((location: Location) => {
-                            return {
-                                ...location,
-                                ...(meeting.days && { days: COURSE_WEEK_DAYS[dayIndex] }),
-                            };
-                        }),
-                        showLocationInfo: false,
-                        instructors: course.section.instructors,
-                        sectionCode: course.section.sectionCode,
-                        sectionType: course.section.sectionType,
-                        start: new Date(2018, 0, dayIndex, startHour, startMin),
-                        end: new Date(2018, 0, dayIndex, endHour, endMin),
-                        finalExam: {
-                            ...finalExam,
-                            locations:
-                                course.section.finalExam.examStatus === 'SCHEDULED_FINAL'
-                                    ? course.section.finalExam.bldg.map(getLocation)
-                                    : [],
-                        },
-                        isCustomEvent: false,
-                    };
+            let finalExamField: FinalExam;
+            if (course.section.finalExam.examStatus === 'SCHEDULED_FINAL') {
+                const { bldg, ...finalExamWithoutBldg } = course.section.finalExam;
+                finalExamField = {
+                    ...finalExamWithoutBldg,
+                    locations: bldg.map(getLocation),
+                };
+            } else {
+                finalExamField = { examStatus: course.section.finalExam.examStatus };
+            }
+
+            for (const dayIndex of dayIndicesOccurring) {
+                events.push({
+                    color: course.section.color,
+                    term,
+                    title: `${course.deptCode} ${course.courseNumber}`,
+                    deptValue: course.deptCode,
+                    courseNumber: course.courseNumber,
+                    courseTitle: course.courseTitle,
+                    locations: mapLocationsWithDay(meeting.bldg, dayIndex, Boolean(meeting.days)),
+                    showLocationInfo: false,
+                    instructors: course.section.instructors,
+                    sectionCode: course.section.sectionCode,
+                    sectionType: course.section.sectionType,
+                    start: new Date(2018, 0, dayIndex, startHour, startMin),
+                    end: new Date(2018, 0, dayIndex, endHour, endMin),
+                    finalExam: finalExamField,
+                    isCustomEvent: false,
                 });
-            });
+            }
+        }
+
+        return events;
     });
 };
 
 export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
-    return currentCourses
-        .filter((course) => course.section.finalExam.examStatus === 'SCHEDULED_FINAL')
-        .flatMap((course) => {
-            // This assertion is only necessary because the filter above is not actually a type guard for the finalExam object.
-            // I guess because it's an attribute of another attribute? TypeScript pls
-            const finalExamObject = course.section.finalExam as Extract<
-                WebsocSectionFinalExam,
-                { examStatus: 'SCHEDULED_FINAL' }
-            >;
-            const { bldg, ...finalExam } = finalExamObject;
+    return currentCourses.flatMap((course) => {
+        if (course.section.finalExam.examStatus !== 'SCHEDULED_FINAL') {
+            return [];
+        }
 
-            const startHour = finalExam.startTime.hour;
-            const startMin = finalExam.startTime.minute;
-            const endHour = finalExam.endTime.hour;
-            const endMin = finalExam.endTime.minute;
+        // This assertion is only necessary because the filter above is not actually a type guard for the finalExam object.
+        // I guess because it's an attribute of another attribute? TypeScript pls
+        const finalExamObject = course.section.finalExam as Extract<
+            WebsocSectionFinalExam,
+            { examStatus: 'SCHEDULED_FINAL' }
+        >;
+        const { bldg, ...finalExam } = finalExamObject;
 
-            /**
-             * An array of booleans indicating whether the day at that index is a day that the final.
-             *
-             * @example [false, false, false, true, false, true, false], i.e. [T, Th]
-             */
-            const weekdaysOccurring = getReferencesOccurring(FINALS_WEEK_DAYS, finalExam.dayOfWeek);
+        const startHour = finalExam.startTime.hour;
+        const startMin = finalExam.startTime.minute;
+        const endHour = finalExam.endTime.hour;
+        const endMin = finalExam.endTime.minute;
 
-            /**
-             * Only include the day indices that the final is occurring.
-             *
-             * @example [false, false, false, true, false, true, false] -> [3, 5]
-             */
-            const dayIndicesOccurring = weekdaysOccurring
-                .map((day, index) => (day ? index : undefined))
-                .filter(notNull);
+        /**
+         * An array of booleans indicating whether the day at that index is a day that the final.
+         *
+         * @example [false, false, false, true, false, true, false], i.e. [T, Th]
+         */
+        const weekdaysOccurring = getReferencesOccurring(FINALS_WEEK_DAYS, finalExam.dayOfWeek);
 
-            const locationsWithNoDays = bldg
-                ? bldg.map(getLocation)
-                : !course.section.meetings[0].timeIsTBA
-                  ? course.section.meetings[0].bldg.map(getLocation)
-                  : [];
+        /**
+         * Only include the day indices that the final is occurring.
+         *
+         * @example [false, false, false, true, false, true, false] -> [3, 5]
+         */
+        const dayIndicesOccurring = getDayIndicesOccurring(weekdaysOccurring);
 
-            const term = course.term;
-            const finalsStartDate = term.finalsStart;
+        const locationsWithNoDays = bldg
+            ? bldg.map(getLocation)
+            : !course.section.meetings[0].timeIsTBA
+              ? course.section.meetings[0].bldg.map(getLocation)
+              : [];
 
-            return dayIndicesOccurring.map((dayIndex) => {
-                const startDate = new Date(finalsStartDate);
-                startDate.setDate(finalsStartDate.getDate() + dayIndex);
-                startDate.setHours(startHour, startMin);
+        const term = course.term;
+        const finalsStartDate = term.finalsStart;
+        const finalExamLocations = bldg?.map(getLocation) ?? [];
 
-                // Copy startDate, which already has the correct day
-                const endDate = new Date(startDate);
-                endDate.setHours(endHour, endMin);
+        return dayIndicesOccurring.map((dayIndex) => {
+            const startDate = new Date(finalsStartDate);
+            startDate.setDate(finalsStartDate.getDate() + dayIndex);
+            startDate.setHours(startHour, startMin);
 
-                return {
-                    color: course.section.color,
-                    term,
-                    title: `${course.deptCode} ${course.courseNumber}`,
-                    courseTitle: course.courseTitle,
-                    locations: locationsWithNoDays.map((location: Location) => {
-                        return {
-                            ...location,
-                            days: COURSE_WEEK_DAYS[dayIndex],
-                        };
-                    }),
-                    showLocationInfo: true,
-                    instructors: course.section.instructors,
-                    sectionCode: course.section.sectionCode,
-                    deptValue: course.deptCode,
-                    courseNumber: course.courseNumber,
-                    sectionType: 'Fin',
-                    start: startDate,
-                    end: endDate,
-                    finalExam: {
-                        ...finalExam,
-                        locations: bldg?.map(getLocation) ?? [],
-                    },
-                    isCustomEvent: false,
-                };
-            });
+            // Copy startDate, which already has the correct day
+            const endDate = new Date(startDate);
+            endDate.setHours(endHour, endMin);
+
+            return {
+                color: course.section.color,
+                term,
+                title: `${course.deptCode} ${course.courseNumber}`,
+                courseTitle: course.courseTitle,
+                locations: locationsWithNoDays.map((location: Location) => {
+                    return {
+                        ...location,
+                        days: COURSE_WEEK_DAYS[dayIndex],
+                    };
+                }),
+                showLocationInfo: true,
+                instructors: course.section.instructors,
+                sectionCode: course.section.sectionCode,
+                deptValue: course.deptCode,
+                courseNumber: course.courseNumber,
+                sectionType: 'Fin',
+                start: startDate,
+                end: endDate,
+                finalExam: {
+                    ...finalExam,
+                    locations: finalExamLocations,
+                },
+                isCustomEvent: false,
+            };
         });
+    });
 }
 
 export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
@@ -170,13 +190,15 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
         // Skip events whose time strings are not in HH:mm format (e.g. empty strings from the DB).
         if (isNaN(startHour) || isNaN(startMin) || isNaN(endHour) || isNaN(endMin)) return [];
 
-        const dayIndicesOccurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
-        /**
-         * Only include the day strings that the custom event occurs.
-         *
-         * @example [1, 3, 5] -> ['M', 'W', 'F']
-         */
-        const days = dayIndicesOccurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex]);
+        const dayIndicesOccurring: number[] = [];
+        const days: string[] = [];
+        for (let index = 0; index < customEvent.days.length; index++) {
+            if (customEvent.days[index]) {
+                dayIndicesOccurring.push(index);
+                days.push(COURSE_WEEK_DAYS[index]);
+            }
+        }
+
         return dayIndicesOccurring.map((dayIndex) => {
             return {
                 customEventID: customEvent.customEventID,
