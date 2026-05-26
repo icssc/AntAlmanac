@@ -1,4 +1,5 @@
 import { FriendScheduleView } from '$components/Header/Friends/FriendScheduleView';
+import { FriendSelectDropdown } from '$components/Header/Friends/FriendSelectDropdown';
 import { FriendScheduleViewProvider } from '$lib/schedule/ScheduleViewContext';
 import FriendsStore from '$stores/FriendsStore';
 import { Close } from '@mui/icons-material';
@@ -7,11 +8,13 @@ import { useCallback, useEffect, useState } from 'react';
 
 export function FriendScheduleDialog() {
     const [open, setOpen] = useState(FriendsStore.isDialogOpen());
+    const [friendId, setFriendId] = useState(FriendsStore.getFriendId());
     const [friendName, setFriendName] = useState(FriendsStore.getFriendName() ?? 'Friend');
     const [loading, setLoading] = useState(FriendsStore.isLoading());
 
     const syncFromStore = useCallback(() => {
         setOpen(FriendsStore.isDialogOpen());
+        setFriendId(FriendsStore.getFriendId());
         setFriendName(FriendsStore.getFriendName() ?? 'Friend');
         setLoading(FriendsStore.isLoading());
     }, []);
@@ -54,8 +57,19 @@ export function FriendScheduleDialog() {
                 justifyContent="space-between"
                 sx={{ px: 2, py: 1.5, borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}
             >
-                <Typography variant="h6" component="h2" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                    Viewing <strong>{friendName}</strong>&apos;s schedules
+                <Typography
+                    variant="h6"
+                    component="h2"
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        fontSize: { xs: '1rem', sm: '1.25rem' },
+                    }}
+                >
+                    Viewing
+                    <FriendSelectDropdown currentFriendId={friendId} currentFriendName={friendName} />
+                    &apos;s Schedule
                 </Typography>
                 <IconButton aria-label="Close friend schedule view" onClick={handleClose} edge="end">
                     <Close />
