@@ -1,12 +1,9 @@
-import { ANY_GE_OPTION, GE_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
+import { GE_LABELS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
-import { WebsocFilterGeSchema } from '@packages/antalmanac-types';
+import { WebsocGeSchema } from '@packages/antalmanac-types';
 import { memo } from 'react';
-
-const getLabel = (value: string) => GE_OPTIONS.find((ge) => ge.value === value)?.label ?? value;
-const getShortLabel = (value: string) => GE_OPTIONS.find((ge) => ge.value === value)?.shortLabel ?? value;
 
 export const GeSelector = memo(() => {
     const [ge, setGe] = useCourseSearchParam('ge');
@@ -14,17 +11,29 @@ export const GeSelector = memo(() => {
     const handleChange = (event: SelectChangeEvent<string[]>) => {
         const value = event.target.value;
         const values = typeof value === 'string' ? value.split(',') : value;
-        if (values.includes(ANY_GE_OPTION.value)) {
-            setGe([]);
+        if (values.includes('ANY')) {
+            setGe(['ANY']);
             return;
         }
 
         setGe(
             values.flatMap((currentValue) => {
-                const parsed = WebsocFilterGeSchema.safeParse(currentValue);
-                return parsed.success ? [parsed.data] : [];
+                const parsed = WebsocGeSchema.safeParse(currentValue);
+                return parsed.success && parsed.data !== 'ANY' ? [parsed.data] : [];
             })
         );
+    };
+
+    const renderValue = () => {
+        if (ge.includes('ANY')) {
+            return GE_LABELS.ANY.label;
+        }
+
+        if (ge.length === 1) {
+            return GE_LABELS[ge[0]].label;
+        }
+
+        return ge.map((value) => GE_LABELS[value].shortLabel).join(', ');
     };
 
     return (
@@ -35,28 +44,19 @@ export const GeSelector = memo(() => {
                 displayEmpty: true,
                 value: ge,
                 onChange: handleChange,
-                renderValue: () => {
-                    if (ge.length === 0) return getLabel(ANY_GE_OPTION.value);
-                    if (ge.length === 1) return getLabel(ge[0]);
-                    return ge.map((value) => getShortLabel(value)).join(' and ');
-                },
+                renderValue: renderValue,
                 sx: {
                     width: '100%',
                 },
             }}
             isAligned={true}
         >
-            {GE_OPTIONS.map((category) => {
-                const isChecked =
-                    category.value === ANY_GE_OPTION.value ? ge.length === 0 : ge.includes(category.value);
-
-                return (
-                    <MenuItem key={category.value} value={category.value} sx={{ paddingY: 0.25 }}>
-                        <Checkbox checked={isChecked} size="small" />
-                        <ListItemText primary={category.label} />
-                    </MenuItem>
-                );
-            })}
+            {WebsocGeSchema.options.map((value) => (
+                <MenuItem key={value} value={value} sx={{ paddingY: 0.25 }}>
+                    <Checkbox checked={ge.includes(value)} size="small" />
+                    <ListItemText primary={GE_LABELS[value].label} />
+                </MenuItem>
+            ))}
         </LabeledSelect>
     );
 });

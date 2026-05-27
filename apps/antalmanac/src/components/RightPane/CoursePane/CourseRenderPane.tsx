@@ -1,4 +1,5 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
+import { hasGeFilter } from '$components/RightPane/CoursePane/SearchForm/SearchParams/helpers';
 import {
     useCourseSearchForm,
     useCourseSearchMode,
@@ -197,7 +198,7 @@ const SectionTableWrapped = (
         component = <SchoolDeptCard name={item.schoolName} comment={item.schoolComment} type={'school'} />;
     } else if (isDepartmentEntry(item)) {
         component = <SchoolDeptCard name={`Department of ${item.deptName}`} comment={item.deptComment} type={'dept'} />;
-    } else if (formData.ge.length > 0) {
+    } else if (hasGeFilter(formData.ge)) {
         component = (
             <GeDataFetchProvider
                 term={formData.term}
@@ -310,7 +311,7 @@ export default function CourseRenderPane() {
             year: searchData.term.year,
             quarter: searchData.term.quarter,
             department: searchData.deptValue,
-            ge: searchData.ge.length > 0 ? searchData.ge : undefined,
+            ge: searchData.ge,
             courseNumber: searchData.courseNumber,
             sectionCodes: searchData.sectionCode,
             instructorName: searchData.instructor,
@@ -360,8 +361,9 @@ export default function CourseRenderPane() {
                     response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
                 } else {
                     const websocQueryParams = getQueryParams(formData);
+                    const geFilters = formData.ge.filter((value) => value !== 'ANY');
                     response =
-                        formData.ge.length > 1
+                        geFilters.length > 1
                             ? intersectWebsocResponses(
                                   await trpc.websoc.getManyOfField.query({
                                       params: websocQueryParams,

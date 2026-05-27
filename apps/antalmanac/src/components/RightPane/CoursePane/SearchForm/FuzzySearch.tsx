@@ -14,13 +14,8 @@ import type { CourseSearchParams } from '$components/RightPane/CoursePane/Search
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
-import {
-    WebsocFilterGeSchema,
-    type AATerm,
-    type GESearchResult,
-    type WebsocFilterGe,
-    type SearchResult,
-} from '@packages/antalmanac-types';
+import { WebsocGeSchema, type AATerm, type GESearchResult, type SearchResult } from '@packages/antalmanac-types';
+import type { WebsocGe } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
@@ -61,10 +56,10 @@ const isIpad = () => {
 };
 
 type SearchOption =
-    | { key: WebsocFilterGe; result: GESearchResult }
+    | { key: WebsocGe; result: GESearchResult }
     | { key: string; result: Exclude<SearchResult, GESearchResult> };
 
-function isWebsocFilterGeSearchOption(option: SearchOption): option is { key: WebsocFilterGe; result: GESearchResult } {
+function isGeSearchOption(option: SearchOption): option is { key: WebsocGe; result: GESearchResult } {
     return option.result.type === resultType.GE_CATEGORY;
 }
 
@@ -73,8 +68,8 @@ function toSearchOptions(results: Record<string, SearchResult>): SearchOption[] 
 
     for (const [key, result] of Object.entries(results)) {
         if (result.type === resultType.GE_CATEGORY) {
-            const parsed = WebsocFilterGeSchema.safeParse(key);
-            if (parsed.success) {
+            const parsed = WebsocGeSchema.safeParse(key);
+            if (parsed.success && parsed.data !== 'ANY') {
                 options.push({ key: parsed.data, result });
             }
             continue;
@@ -115,7 +110,7 @@ const FuzzySearch = () => {
         let nextFormData: CourseSearchParams;
         switch (option.result.type) {
             case resultType.GE_CATEGORY: {
-                if (!isWebsocFilterGeSearchOption(option)) return;
+                if (!isGeSearchOption(option)) return;
                 nextFormData = { ...baseFormData, ge: [option.key] };
                 break;
             }

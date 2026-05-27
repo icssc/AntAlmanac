@@ -10,12 +10,17 @@ import type {
     CourseSearchParams,
     CourseSearchView,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+import type { WebsocGe } from '@packages/anteater-api/types';
+
+export function hasGeFilter(ge: WebsocGe[]) {
+    return !ge.includes('ANY');
+}
 
 /** Enough to run a WebSOC search (dept, GE, section, or instructor). */
 export function isValidSearch(formData: CourseSearchParams) {
     const { ge, deptValue, sectionCode, instructor } = formData;
     return (
-        ge.length > 0 ||
+        hasGeFilter(ge) ||
         deptValue !== DEFAULT_FORM_DATA.deptValue ||
         sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
         instructor !== DEFAULT_FORM_DATA.instructor
@@ -28,7 +33,7 @@ export function hasManualParams(formData: CourseSearchParams) {
             return formData.term.shortName !== DEFAULT_FORM_DATA.term.shortName;
         }
         if (key === 'ge') {
-            return formData.ge.length > 0;
+            return hasGeFilter(formData.ge);
         }
         return formData[key] !== DEFAULT_FORM_DATA[key];
     });
@@ -42,7 +47,7 @@ export function shouldShowSearchForm(formData: CourseSearchParams) {
     const hasPrimarySearchInput =
         formData.sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
         formData.courseNumber !== DEFAULT_FORM_DATA.courseNumber ||
-        formData.ge.length > 0 ||
+        hasGeFilter(formData.ge) ||
         formData.deptValue !== DEFAULT_FORM_DATA.deptValue ||
         formData.instructor !== DEFAULT_FORM_DATA.instructor;
 
