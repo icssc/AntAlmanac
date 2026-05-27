@@ -151,11 +151,17 @@ export function getCustomEventPerBuilding(customEvents: CustomEvent[]) {
     return customEventPerBuilding;
 }
 
+interface CourseMapProps {
+    locationId?: number;
+    onLocationChange?: (locationId: number | undefined) => void;
+}
+
 /**
  * Map of all course locations on UCI campus.
  */
-export default function CourseMap() {
+export default function CourseMap({ locationId, onLocationChange }: CourseMapProps = {}) {
     const scheduleSource = useScheduleViewSource();
+    const useControlledLocation = onLocationChange != null;
     const navigate = useNavigate();
     const map = useRef<Map | null>(null);
     const markerRef = useRef<Marker | null>(null);
@@ -192,7 +198,7 @@ export default function CourseMap() {
         return scheduleSource.subscribe(updateCalendarEvents);
     }, [scheduleSource]);
 
-    const resolvedLocationId = Number(searchParams.get('location') ?? 0);
+    const resolvedLocationId = useControlledLocation ? (locationId ?? 0) : Number(searchParams.get('location') ?? 0);
 
     useEffect(() => {
         const building = resolvedLocationId in buildingCatalogue ? buildingCatalogue[resolvedLocationId] : undefined;
@@ -216,9 +222,14 @@ export default function CourseMap() {
 
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
+            if (useControlledLocation) {
+                onLocationChange?.(building?.id != null ? Number(building.id) : undefined);
+                return;
+            }
+
             navigate(`/map?location=${building?.id}`);
         },
-        [navigate]
+        [navigate, onLocationChange, useControlledLocation]
     );
 
     const days = useMemo(() => {

@@ -4,7 +4,7 @@ import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material'
 
 interface SignInDialogProps {
     open: boolean;
-    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'PlannerSearch';
+    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'PlannerSearch' | 'Friends';
     onClose: () => void;
 }
 
@@ -24,6 +24,8 @@ export function SignInDialog(props: SignInDialogProps) {
                 return 'Sign in to Use Filter by Planner';
             case 'PlannerSearch':
                 return 'Sign in to search with Planner';
+            case 'Friends':
+                return 'Sign in to Use Friends';
             case 'Save':
             default:
                 return 'Save';

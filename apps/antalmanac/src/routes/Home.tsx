@@ -1,5 +1,6 @@
 import { AuthInitializer } from '$components/AuthInitializer';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
+import { FriendScheduleDialog } from '$components/Header/Friends/FriendScheduleDialog';
 import { Header } from '$components/Header/Header';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
@@ -93,6 +94,7 @@ export default function Home() {
 
             <NotificationSnackbar />
             <ReviewPrompt />
+            <FriendScheduleDialog />
             <KeyboardShortcutsModal open={shortcutsOpen} onClose={closeShortcutsModal} />
         </LocalizationProvider>
     );

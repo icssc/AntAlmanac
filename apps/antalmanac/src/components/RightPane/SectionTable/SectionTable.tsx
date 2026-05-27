@@ -10,6 +10,7 @@ import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAvailability';
+import { useFriendScheduleTab } from '$lib/schedule/FriendScheduleTabContext';
 import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
@@ -97,13 +98,16 @@ function SectionTable({
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const scheduleSource = useScheduleViewSource();
+    const friendScheduleTab = useFriendScheduleTab();
     const showActionColumn = !scheduleSource.readonly;
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const displayColumns = useMemo(
         () => (showActionColumn ? activeColumns : activeColumns.filter((column) => column !== 'action')),
         [activeColumns, showActionColumn]
     );
-    const activeTab = useTabStore((store) => store.activeTab);
+    const homeActiveTab = useTabStore((store) => store.activeTab);
+    const showCourseInfoSearchButton =
+        scheduleSource.scope === 'friend' ? friendScheduleTab?.activeTab === 'added' : homeActiveTab === 2;
 
     const handleToggleExpand = () => {
         setOpenContent(!openContent);
@@ -194,9 +198,9 @@ function SectionTable({
                     skeleton
                 )}
 
-                {activeTab !== 2
-                    ? null
-                    : wrapSkeleton(<CourseInfoSearchButton courseDetails={courseDetails} term={term} />, skeleton)}
+                {showCourseInfoSearchButton
+                    ? wrapSkeleton(<CourseInfoSearchButton courseDetails={courseDetails} term={term} />, skeleton)
+                    : null}
 
                 {wrapSkeleton(
                     <CourseInfoButton

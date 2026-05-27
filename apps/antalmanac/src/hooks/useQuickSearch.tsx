@@ -1,4 +1,5 @@
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useScheduleViewSource } from '$lib/schedule/ScheduleViewContext';
 import { AATerm } from '$lib/term';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
@@ -7,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 export function useQuickSearch() {
+    const scheduleSource = useScheduleViewSource();
     const { displaySections, forceUpdate } = useCoursePaneStore(
         useShallow((s) => ({ displaySections: s.displaySections, forceUpdate: s.forceUpdate }))
     );
@@ -15,6 +17,17 @@ export function useQuickSearch() {
 
     return useCallback(
         (deptValue: string, courseNumber: string, term: AATerm) => {
+            RightPaneStore.resetFormValues();
+            RightPaneStore.updateFormValue('deptValue', deptValue);
+            RightPaneStore.updateFormValue('courseNumber', courseNumber);
+            RightPaneStore.setTerm(term);
+            displaySections();
+            forceUpdate();
+
+            if (scheduleSource.scope === 'friend') {
+                return;
+            }
+
             const queryParams = {
                 term: term.shortName,
                 deptValue: deptValue,
@@ -25,15 +38,9 @@ export function useQuickSearch() {
                 .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
                 .join('&')}`;
 
-            RightPaneStore.resetFormValues();
-            RightPaneStore.updateFormValue('deptValue', deptValue);
-            RightPaneStore.updateFormValue('courseNumber', courseNumber);
-            RightPaneStore.setTerm(term);
             navigate(href, { replace: false });
             setActiveTab('search');
-            displaySections();
-            forceUpdate();
         },
-        [displaySections, forceUpdate, navigate, setActiveTab]
+        [displaySections, forceUpdate, navigate, scheduleSource.scope, setActiveTab]
     );
 }

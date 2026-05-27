@@ -37,10 +37,10 @@ export const CalendarCourseEventWrapper = memo(function CalendarCourseEventWrapp
                 const courseInfo = props.event as CourseEvent;
                 quickSearch(courseInfo.deptValue, courseInfo.courseNumber, courseInfo.term);
             } else {
-                setSelectedEvent(e, props.event);
+                setSelectedEvent(e, props.event, scheduleSource.scope);
             }
         },
-        [props.event, scheduleSource.readonly, quickSearch, setSelectedEvent]
+        [props.event, scheduleSource.readonly, scheduleSource.scope, quickSearch, setSelectedEvent]
     );
 
     return <div>{isValidElement(children) ? cloneElement(children, { onClick: handleClick }) : children}</div>;
