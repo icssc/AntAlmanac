@@ -12,7 +12,7 @@ import { RecruitmentBanner } from '$components/RightPane/CoursePane/CourseRender
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import RightPaneStore, { type CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { WarningAlert } from '$components/WarningAlert';
 import { trpc } from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
@@ -154,19 +154,6 @@ export function CourseRenderPane() {
         <>
             <Box sx={{ height: '56px' }} />
 
-            {Object.entries(RightPaneStore.getWarningMessages()).map(([warningType, messages]) => {
-                return messages.map((message) => (
-                    <WarningAlert
-                        closable
-                        key={`${warningType}${message}`}
-                        onClose={() =>
-                            RightPaneStore.removeWarningMessage(warningType as CourseSearchWarningType, message)
-                        }
-                    >
-                        {message}
-                    </WarningAlert>
-                ));
-            })}
             {filterTakenCourses && !hasRenderableCourseResults && (
                 <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
             )}
