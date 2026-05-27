@@ -1,4 +1,4 @@
-import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent } from '$components/Calendar/types';
 import { getEventsFromCourses } from '$lib/download';
 import type { AATerm } from '$lib/term';
 import { describe, test, expect } from 'vitest';

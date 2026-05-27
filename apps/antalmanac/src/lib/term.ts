@@ -1,4 +1,4 @@
-import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
 import termJson from '$generated/termData.json';
 import { parseQuarter, termSchema } from '$lib/termHelpers';
 import type { AATerm } from '@packages/antalmanac-types';

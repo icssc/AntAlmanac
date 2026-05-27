@@ -1,4 +1,4 @@
-import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
+import type { CustomEvent, FinalExam } from '$components/Calendar/types';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { type AATerm, getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';

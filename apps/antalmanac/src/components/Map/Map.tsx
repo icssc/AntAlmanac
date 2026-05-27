@@ -14,7 +14,7 @@ import LocationMarker from './Marker';
 
 const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
-import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent } from '$components/Calendar/types';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { UserLocator } from '$components/Map/UserLocator';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';

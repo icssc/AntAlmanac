@@ -18,7 +18,7 @@ import type {
     AddScheduleAction,
     ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent, CourseEvent } from '$components/Calendar/types';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';

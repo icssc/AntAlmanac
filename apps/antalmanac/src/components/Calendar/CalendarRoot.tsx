@@ -2,20 +2,16 @@
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
-import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
-import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
-import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
-import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { CalendarEventPopover } from '$components/Calendar/CalendarEvent/CalendarEventPopover';
+import { CalendarEventTile } from '$components/Calendar/CalendarEvent/CalendarEventTile';
+import { CalendarEventWrapper } from '$components/Calendar/CalendarEvent/CalendarEventWrapper';
+import { CALENDAR_BASE_DATE, createSkeletonEvents } from '$components/Calendar/Skeleton/skeletonHelpers';
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
+import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
-import {
-    getLocalStorageSkeletonBlueprint,
-    removeLocalStorageSkeletonBlueprint,
-    setLocalStorageSkeletonBlueprint,
-} from '$lib/localStorage';
+import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
@@ -48,58 +44,10 @@ const locales: Record<string, Locale> = {
 };
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
-    event: CalendarCourseEvent,
-    eventWrapper: CalendarCourseEventWrapper,
+    event: CalendarEventTile,
+    eventWrapper: CalendarEventWrapper,
 };
-const BASE_DATE = new Date(2018, 0, 1);
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
-
-interface SkeletonBlueprint {
-    dayOffset: number;
-    startHour: number;
-    startMinute: number;
-    endHour: number;
-    endMinute: number;
-}
-
-function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint, color: string): SkeletonEvent {
-    const start = new Date(BASE_DATE);
-    start.setDate(start.getDate() + blueprint.dayOffset);
-    start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
-
-    const end = new Date(start);
-    end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
-
-    return {
-        color,
-        start,
-        end,
-        title: '',
-        isSkeletonEvent: true,
-    } as SkeletonEvent;
-}
-
-function createSkeletonEvents(color: string): SkeletonEvent[] {
-    const savedDataString = getLocalStorageSkeletonBlueprint();
-
-    let skeletonBlueprints: SkeletonBlueprint[] | null = null;
-
-    if (savedDataString) {
-        const parsedData = JSON.parse(savedDataString);
-        if (Array.isArray(parsedData) && parsedData.length > 0) {
-            skeletonBlueprints = parsedData;
-        }
-    }
-
-    if (skeletonBlueprints) {
-        return skeletonBlueprints.map((b) => blueprintToSkeletonEvent(b, color));
-    }
-
-    const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
-    const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
-
-    return fallbackBlueprints.map((b) => blueprintToSkeletonEvent(b, color));
-}
 
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
@@ -164,7 +112,7 @@ export const ScheduleCalendar = memo(() => {
                 hasHadEventsRef.current = true;
                 const skeletonBlueprint = eventsInCalendar
                     .map((event) => {
-                        const dayOffset = differenceInCalendarDays(event.start, BASE_DATE);
+                        const dayOffset = differenceInCalendarDays(event.start, CALENDAR_BASE_DATE);
                         return {
                             dayOffset,
                             startHour: event.start.getHours(),

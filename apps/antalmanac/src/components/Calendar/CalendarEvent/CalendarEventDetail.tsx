@@ -1,6 +1,7 @@
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
 import ColorPicker from '$components/ColorPicker';
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -12,76 +13,10 @@ import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { AATerm, CustomEventId } from '@packages/antalmanac-types';
-import { WebsocSectionFinalExam } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useRef } from 'react';
-import { Event } from 'react-big-calendar';
 
-interface CommonCalendarEvent extends Event {
-    color: string;
-    start: Date;
-    end: Date;
-    title: string;
-}
-
-export interface Location {
-    /**
-     * @example 'ICS'
-     */
-    building: string;
-
-    /**
-     * @example '174'
-     */
-    room: string;
-
-    /**
-     * If the location only applies on specific days, this is non-null.
-     */
-    days?: string;
-}
-
-export type FinalExam =
-    | (Omit<Extract<WebsocSectionFinalExam, { examStatus: 'SCHEDULED_FINAL' }>, 'bldg'> & { locations: Location[] })
-    | Extract<WebsocSectionFinalExam, { examStatus: 'NO_FINAL' | 'TBA_FINAL' }>;
-
-export interface CourseEvent extends CommonCalendarEvent {
-    locations: Location[];
-    showLocationInfo: boolean;
-    finalExam: FinalExam;
-    courseTitle: string;
-    instructors: string[];
-    isCustomEvent: false;
-    sectionCode: string;
-    sectionType: string;
-    deptValue: string;
-    courseNumber: string;
-    term: AATerm;
-}
-
-/**
- * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.  The this one represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days. The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurrences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the `days` array.
- * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
- */
-export interface CustomEvent extends CommonCalendarEvent {
-    customEventID: CustomEventId;
-    isCustomEvent: true;
-    building: string;
-    days: string[];
-}
-
-export interface SkeletonEvent extends CommonCalendarEvent {
-    isSkeletonEvent: true;
-}
-
-export type CalendarEvent = CourseEvent | CustomEvent | SkeletonEvent;
-
-export const isSkeletonEvent = (event: CalendarEvent): event is SkeletonEvent => {
-    return 'isSkeletonEvent' in event && event.isSkeletonEvent;
-};
-
-interface CourseCalendarEventProps {
+interface CalendarEventDetailProps {
     selectedEvent: CourseEvent | CustomEvent;
     scheduleNames: string[];
     closePopover: () => void;
@@ -89,7 +24,7 @@ interface CourseCalendarEventProps {
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
+export function CalendarEventDetail({ selectedEvent, scheduleNames, closePopover }: CalendarEventDetailProps) {
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
@@ -216,47 +151,47 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                 </table>
             </Paper>
         );
-    } else {
-        const { title, customEventID, building } = selectedEvent;
-        return (
-            <Paper sx={{ padding: '0.5rem' }} ref={paperRef}>
-                <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
-                {building && (
-                    <Box sx={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                        Location:&nbsp;
-                        <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
-                    </Box>
-                )}
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <ColorPicker
-                        color={selectedEvent.color}
-                        isCustomEvent={true}
-                        customEventID={selectedEvent.customEventID}
-                        analyticsCategory={analyticsEnum.calendar}
-                    />
-                    <CustomEventDialog
-                        onDialogClose={closePopover}
-                        customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
-                        scheduleNames={scheduleNames}
-                    />
-
-                    <Tooltip title="Delete">
-                        <IconButton
-                            sx={{ padding: 0.5 }}
-                            onClick={() => {
-                                closePopover();
-                                deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
-                                logAnalytics(postHog, {
-                                    category: analyticsEnum.calendar,
-                                    action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
-                                });
-                            }}
-                        >
-                            <Delete fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
-            </Paper>
-        );
     }
-};
+
+    const { title, customEventID, building } = selectedEvent;
+    return (
+        <Paper sx={{ padding: '0.5rem' }} ref={paperRef}>
+            <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
+            {building && (
+                <Box sx={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                    Location:&nbsp;
+                    <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
+                </Box>
+            )}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ColorPicker
+                    color={selectedEvent.color}
+                    isCustomEvent={true}
+                    customEventID={selectedEvent.customEventID}
+                    analyticsCategory={analyticsEnum.calendar}
+                />
+                <CustomEventDialog
+                    onDialogClose={closePopover}
+                    customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
+                    scheduleNames={scheduleNames}
+                />
+
+                <Tooltip title="Delete">
+                    <IconButton
+                        sx={{ padding: 0.5 }}
+                        onClick={() => {
+                            closePopover();
+                            deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
+                            logAnalytics(postHog, {
+                                category: analyticsEnum.calendar,
+                                action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
+                            });
+                        }}
+                    >
+                        <Delete fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            </Box>
+        </Paper>
+    );
+}

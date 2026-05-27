@@ -1,4 +1,4 @@
-import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent } from '$components/Calendar/types';
 import { calendarizeCourseEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 import { AASection, AATerm, ScheduleCourse, CourseDetails } from '@packages/antalmanac-types';
 import { create } from 'zustand';
