@@ -8,6 +8,7 @@ import type {
 import { z } from 'zod';
 
 import { QuarterSchema } from './calendar';
+import { GeSearchValueSchema } from './ge';
 
 export const WebsocSectionTypeSchema = z.enum([
     'Act',
@@ -52,23 +53,6 @@ type AACourseExtendedProperties = {
 };
 
 export type AACourse = Omit<WebsocCourse, 'sections'> & AACourseExtendedProperties;
-
-export const GE_SEARCH_VALUES = [
-    'GE-1A',
-    'GE-1B',
-    'GE-2',
-    'GE-3',
-    'GE-4',
-    'GE-5A',
-    'GE-5B',
-    'GE-6',
-    'GE-7',
-    'GE-8',
-] as const;
-
-export type GeSearchValue = (typeof GE_SEARCH_VALUES)[number];
-
-export const GeSearchValueSchema = z.enum(GE_SEARCH_VALUES);
 
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),

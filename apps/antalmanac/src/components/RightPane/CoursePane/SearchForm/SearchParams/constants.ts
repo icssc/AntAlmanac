@@ -1,5 +1,5 @@
-import { type GeValue } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { getDefaultTerm } from '$lib/term';
+import { type GeSearchValue } from '@packages/antalmanac-types';
 import { WebsocFullCoursesOptionSchema } from '@packages/antalmanac-types';
 
 export const ADVANCED_SEARCH_PARAMS = [
@@ -42,7 +42,7 @@ export const DEFAULT_TERM = getDefaultTerm();
 
 export const DEFAULT_MANUAL_SEARCH_VALUES: {
     deptValue: string;
-    ge: GeValue[];
+    ge: GeSearchValue[];
     courseNumber: string;
     sectionCode: string;
 } = {

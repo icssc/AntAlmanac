@@ -1,5 +1,4 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
-import type { GeValue } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import {
     COURSE_SEARCH_MODE,
@@ -15,7 +14,13 @@ import type { CourseSearchParams } from '$components/RightPane/CoursePane/Search
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
-import type { AATerm, SearchResult } from '@packages/antalmanac-types';
+import {
+    GeSearchValueSchema,
+    type AATerm,
+    type GESearchResult,
+    type GeSearchValue,
+    type SearchResult,
+} from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
@@ -55,9 +60,30 @@ const isIpad = () => {
     return navigator.userAgent.includes('Mac') && 'ontouchend' in document;
 };
 
-interface SearchOption {
-    key: string;
-    result: SearchResult;
+type SearchOption =
+    | { key: GeSearchValue; result: GESearchResult }
+    | { key: string; result: Exclude<SearchResult, GESearchResult> };
+
+function isGeSearchOption(option: SearchOption): option is { key: GeSearchValue; result: GESearchResult } {
+    return option.result.type === resultType.GE_CATEGORY;
+}
+
+function toSearchOptions(results: Record<string, SearchResult>): SearchOption[] {
+    const options: SearchOption[] = [];
+
+    for (const [key, result] of Object.entries(results)) {
+        if (result.type === resultType.GE_CATEGORY) {
+            const parsed = GeSearchValueSchema.safeParse(key);
+            if (parsed.success) {
+                options.push({ key: parsed.data, result });
+            }
+            continue;
+        }
+
+        options.push({ key, result });
+    }
+
+    return options;
 }
 
 const FuzzySearch = () => {
@@ -81,20 +107,16 @@ const FuzzySearch = () => {
     };
 
     const doSearch = (option: SearchOption) => {
-        const result = option.result;
-        if (!result) {
-            return;
-        }
-
         const baseFormData: CourseSearchParams = {
             ...DEFAULT_FORM_DATA,
             term,
         };
 
         let nextFormData: CourseSearchParams;
-        switch (result.type) {
+        switch (option.result.type) {
             case resultType.GE_CATEGORY: {
-                nextFormData = { ...baseFormData, ge: [option.key as GeValue] };
+                if (!isGeSearchOption(option)) return;
+                nextFormData = { ...baseFormData, ge: [option.key] };
                 break;
             }
             case resultType.DEPARTMENT: {
@@ -102,12 +124,12 @@ const FuzzySearch = () => {
                 break;
             }
             case resultType.COURSE: {
-                const { department, number } = result.metadata;
+                const { department, number } = option.result.metadata;
                 nextFormData = { ...baseFormData, deptValue: department, courseNumber: number };
                 break;
             }
             case resultType.SECTION: {
-                nextFormData = { ...baseFormData, sectionCode: result.sectionCode };
+                nextFormData = { ...baseFormData, sectionCode: option.result.sectionCode };
                 break;
             }
             default:
@@ -330,7 +352,7 @@ const FuzzySearch = () => {
             autocompleteProps={{
                 loading: loading,
                 fullWidth: true,
-                options: Object.entries(results ?? {}).map(([key, result]) => ({ key, result })),
+                options: toSearchOptions(results ?? {}),
                 autoHighlight: true,
                 filterOptions: filterOptions,
                 getOptionLabel: getOptionLabel,
