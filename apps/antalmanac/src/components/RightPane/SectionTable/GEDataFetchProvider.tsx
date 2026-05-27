@@ -1,4 +1,4 @@
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { advancedSearchParsers } from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
 import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpc';

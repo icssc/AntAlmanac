@@ -1,5 +1,5 @@
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { memo } from 'react';
 
 export const BuildingField = memo(() => {

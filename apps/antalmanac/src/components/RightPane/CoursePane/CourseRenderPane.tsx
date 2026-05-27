@@ -1,6 +1,6 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import RightPaneStore, { type CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
@@ -292,7 +292,8 @@ const ErrorMessage = ({ formData }: { formData: CourseSearchParams }) => {
 };
 
 export default function CourseRenderPane() {
-    const { formData, manualSearchEnabled } = useCourseSearchUrl();
+    const { formData } = useCourseSearchForm();
+    const { manualSearchEnabled } = useCourseSearchMode();
     const [courseColors, setCourseColors] = useState(getColors);
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);

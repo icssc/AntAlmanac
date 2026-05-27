@@ -1,10 +1,10 @@
-import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { Button } from '@mui/material';
 import { useCallback } from 'react';
 
 export function ManualSearchResetButton() {
-    const { resetForm } = useCourseSearchUrl();
+    const { resetForm } = useCourseSearchForm();
     const clearManualSearch = useSavedSearchStore((store) => store.clearManualSearch);
 
     const handleReset = useCallback(() => {

@@ -1,7 +1,11 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
-import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import {
+    useCourseSearchForm,
+    useCourseSearchMode,
+    useCourseSearchView,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
@@ -10,8 +14,9 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
 export function CoursePaneRoot() {
-    const { manualSearchEnabled, searchFormIsDisplayed, showSearchForm, clearView, resetForm, setSearchMode } =
-        useCourseSearchUrl();
+    const { manualSearchEnabled, setSearchMode } = useCourseSearchMode();
+    const { searchFormIsDisplayed, showSearchForm, clearView } = useCourseSearchView();
+    const { resetForm } = useCourseSearchForm();
 
     const postHog = usePostHog();
     const utils = trpcReact.useUtils();

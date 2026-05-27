@@ -1,12 +1,12 @@
 import {
     COURSE_SEARCH_MODE,
     COURSE_SEARCH_MODE_KEY,
+    COURSE_SEARCH_PLANNER_KEY,
     COURSE_SEARCH_VIEW,
     COURSE_SEARCH_VIEW_KEY,
     DEFAULT_FORM_DATA,
-    COURSE_SEARCH_PLANNER_KEY,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
-import { isValidSearch, shouldShowSearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchParams/helpers';
+import { deriveCourseSearchView, isValidSearch } from '$components/RightPane/CoursePane/SearchForm/SearchParams/helpers';
 import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
 import {
     courseSearchParamParsers,
@@ -14,11 +14,7 @@ import {
     searchModeParser,
     searchViewParser,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
-import type {
-    CourseSearchMode,
-    CourseSearchParams,
-    CourseSearchView,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+import type { CourseSearchMode, CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { useQueryState, useQueryStates } from 'nuqs';
@@ -41,10 +37,8 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(
     return [value, setValue];
 }
 
-export function useCourseSearchUrl() {
-    const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
+export function useCourseSearchMode() {
     const [searchMode, setSearchModeParam] = useQueryState(COURSE_SEARCH_MODE_KEY, searchModeParser);
-    const [viewParam, setViewParam] = useQueryState(COURSE_SEARCH_VIEW_KEY, searchViewParser);
     const [plannerSearchParam] = useQueryState(COURSE_SEARCH_PLANNER_KEY, plannerSearchParser);
 
     const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL && plannerSearchParam === null;
@@ -56,34 +50,14 @@ export function useCourseSearchUrl() {
         [setSearchModeParam]
     );
 
-    const showResults = useCallback(() => {
-        void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
-    }, [setViewParam]);
+    return {
+        manualSearchEnabled,
+        setSearchMode,
+    };
+}
 
-    const submitSearch = useCallback(
-        (data?: CourseSearchParams) => {
-            const payload = data ?? readCourseSearchParams();
-            if (isValidSearch(payload)) {
-                RightPaneStore.clearMultiSearchData();
-                showResults();
-                return true;
-            }
-            openSnackbar(
-                'error',
-                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
-            );
-            return false;
-        },
-        [showResults]
-    );
-
-    const derivedView: CourseSearchView = shouldShowSearchForm(formData)
-        ? COURSE_SEARCH_VIEW.SEARCH_FORM
-        : COURSE_SEARCH_VIEW.RESULTS;
-    const view: CourseSearchView = manualSearchEnabled
-        ? (viewParam ?? COURSE_SEARCH_VIEW.SEARCH_FORM)
-        : (viewParam ?? derivedView);
-    const searchFormIsDisplayed = view === COURSE_SEARCH_VIEW.SEARCH_FORM;
+export function useCourseSearchForm() {
+    const [formData, setFormData] = useQueryStates(courseSearchParamParsers);
 
     const setField = useCallback(
         <Field extends keyof CourseSearchParams>(field: Field, value: CourseSearchParams[Field]) => {
@@ -109,6 +83,25 @@ export function useCourseSearchUrl() {
         [formData.term, setFormData]
     );
 
+    return {
+        formData,
+        setField,
+        setFields,
+        resetForm,
+    };
+}
+
+export function useCourseSearchView() {
+    const { manualSearchEnabled } = useCourseSearchMode();
+    const [formData] = useQueryStates(courseSearchParamParsers);
+    const [viewParam, setViewParam] = useQueryState(COURSE_SEARCH_VIEW_KEY, searchViewParser);
+
+    const { searchFormIsDisplayed } = deriveCourseSearchView(formData, manualSearchEnabled, viewParam);
+
+    const showResults = useCallback(() => {
+        void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
+    }, [setViewParam]);
+
     const showSearchForm = useCallback(() => {
         RightPaneStore.clearMultiSearchData();
         void setViewParam(COURSE_SEARCH_VIEW.SEARCH_FORM);
@@ -119,17 +112,41 @@ export function useCourseSearchUrl() {
     }, [setViewParam]);
 
     return {
-        formData,
-        manualSearchEnabled,
-        searchFormIsDisplayed,
         viewParam,
-        setSearchMode,
-        submitSearch,
+        searchFormIsDisplayed,
         showResults,
         showSearchForm,
         clearView,
-        setField,
-        setFields,
-        resetForm,
     };
 }
+
+export function useCourseSearchSubmit() {
+    const [, setViewParam] = useQueryState(COURSE_SEARCH_VIEW_KEY, searchViewParser);
+
+    const showResults = useCallback(() => {
+        void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
+    }, [setViewParam]);
+
+    const submitSearch = useCallback(
+        (data?: CourseSearchParams) => {
+            const payload = data ?? readCourseSearchParams();
+            if (isValidSearch(payload)) {
+                RightPaneStore.clearMultiSearchData();
+                showResults();
+                return true;
+            }
+            openSnackbar(
+                'error',
+                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
+            );
+            return false;
+        },
+        [showResults]
+    );
+
+    return {
+        submitSearch,
+    };
+}
+
+

@@ -3,13 +3,14 @@ import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/Manual
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
 import { SearchFormModeToggle } from '$components/RightPane/CoursePane/SearchForm/SearchFormModeToggle';
-import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchMode, useCourseSearchSubmit } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import { Box, Stack } from '@mui/material';
 import { useCallback, type SyntheticEvent } from 'react';
 
 export const SearchForm = () => {
-    const { manualSearchEnabled, submitSearch } = useCourseSearchUrl();
+    const { manualSearchEnabled } = useCourseSearchMode();
+    const { submitSearch } = useCourseSearchSubmit();
 
     const onFormSubmit = useCallback(
         (event: SyntheticEvent<HTMLFormElement>) => {

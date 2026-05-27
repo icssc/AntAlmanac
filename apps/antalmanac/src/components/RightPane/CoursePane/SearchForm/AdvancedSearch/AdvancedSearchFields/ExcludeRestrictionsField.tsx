@@ -1,6 +1,6 @@
 import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 import { memo } from 'react';
 

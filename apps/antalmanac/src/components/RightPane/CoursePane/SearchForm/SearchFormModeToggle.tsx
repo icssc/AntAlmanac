@@ -1,4 +1,8 @@
-import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import {
+    useCourseSearchForm,
+    useCourseSearchMode,
+    useCourseSearchView,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
 import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
@@ -9,7 +13,9 @@ import { alpha, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useShallow } from 'zustand/react/shallow';
 
 export function SearchFormModeToggle() {
-    const { manualSearchEnabled, setSearchMode, resetForm, setFields, clearView } = useCourseSearchUrl();
+    const { manualSearchEnabled, setSearchMode } = useCourseSearchMode();
+    const { resetForm, setFields } = useCourseSearchForm();
+    const { clearView } = useCourseSearchView();
     const isDark = useThemeStore((store) => store.isDark);
     const { savedManualSearch, saveManualSearch } = useSavedSearchStore(
         useShallow((store) => ({
