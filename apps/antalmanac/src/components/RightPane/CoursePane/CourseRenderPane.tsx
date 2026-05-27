@@ -1,7 +1,7 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
-import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/hooks';
+import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import RightPaneStore, { type CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';

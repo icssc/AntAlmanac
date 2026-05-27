@@ -6,8 +6,8 @@ import {
     mergeShortCourseSchedules,
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';

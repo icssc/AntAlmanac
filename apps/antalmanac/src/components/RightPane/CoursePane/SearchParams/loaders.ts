@@ -1,14 +1,14 @@
-import { COURSE_SEARCH_MODE_KEY } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import { COURSE_SEARCH_MODE_KEY } from '$components/RightPane/CoursePane/SearchParams/constants';
 import {
     advancedSearchParsers,
     courseSearchParamParsers,
     searchModeParser,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
+} from '$components/RightPane/CoursePane/SearchParams/parsers';
 import type {
     AdvancedSearchParams,
     CourseSearchMode,
     CourseSearchParams,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+} from '$components/RightPane/CoursePane/SearchParams/types';
 import { createLoader } from 'nuqs';
 
 const loadAdvancedSearchParams = createLoader(advancedSearchParsers);

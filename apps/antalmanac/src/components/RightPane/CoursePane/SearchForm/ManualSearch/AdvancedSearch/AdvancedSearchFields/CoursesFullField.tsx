@@ -1,5 +1,5 @@
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { MenuItem } from '@mui/material';
 import { memo } from 'react';
 

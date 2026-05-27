@@ -1,4 +1,4 @@
-import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
+import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearch';
 import { CourseNumberField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchFields/CourseNumberField';
 import { DepartmentField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchFields/DepartmentField';
 import { GeField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchFields/GeField';

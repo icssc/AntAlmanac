@@ -1,9 +1,6 @@
-import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/helpers';
-import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
-import {
-    readCourseSearchParams,
-    readSearchMode,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
+import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
+import { readCourseSearchParams, readSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';

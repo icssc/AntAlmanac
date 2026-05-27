@@ -4,12 +4,12 @@ import {
     DEFAULT_ADVANCED_SEARCH_VALUES,
     DEFAULT_FORM_DATA,
     MANUAL_SEARCH_PARAMS,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+} from '$components/RightPane/CoursePane/SearchParams/constants';
 import type {
     AdvancedSearchParams,
     CourseSearchParams,
     CourseSearchView,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+} from '$components/RightPane/CoursePane/SearchParams/types';
 
 /** Enough to run a WebSOC search (dept, GE, section, or instructor). */
 export function isValidSearch(formData: CourseSearchParams) {

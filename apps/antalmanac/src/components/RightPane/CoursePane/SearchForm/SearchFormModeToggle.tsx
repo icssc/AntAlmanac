@@ -1,11 +1,11 @@
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
 import {
     useCourseSearchForm,
     useCourseSearchMode,
     useCourseSearchView,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
-import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
-import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
-import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+} from '$components/RightPane/CoursePane/SearchParams/hooks';
+import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
+import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/types';
 import { LIGHT_BLUE } from '$src/globals';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useThemeStore } from '$stores/SettingsStore';

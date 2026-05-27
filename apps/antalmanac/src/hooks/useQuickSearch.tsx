@@ -4,8 +4,8 @@ import {
     DEFAULT_FORM_DATA,
     COURSE_SEARCH_MODE_KEY,
     COURSE_SEARCH_VIEW_KEY,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
-import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
+} from '$components/RightPane/CoursePane/SearchParams/constants';
+import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/parsers';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { AATerm } from '$lib/term';
 import { useTabStore } from '$stores/TabStore';

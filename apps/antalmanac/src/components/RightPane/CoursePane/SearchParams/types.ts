@@ -4,7 +4,7 @@ import {
     DEFAULT_FORM_DATA,
     type AdvancedSearchParam,
     type ManualSearchParam,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+} from '$components/RightPane/CoursePane/SearchParams/constants';
 
 export type CourseSearchParams = typeof DEFAULT_FORM_DATA;
 

@@ -3,11 +3,8 @@ import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/Manual
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch/QuickSearch';
 import { SearchFormModeToggle } from '$components/RightPane/CoursePane/SearchForm/SearchFormModeToggle';
-import {
-    useCourseSearchMode,
-    useCourseSearchSubmit,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
+import { useCourseSearchMode, useCourseSearchSubmit } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { Box, Stack } from '@mui/material';
 import { useCallback, type SyntheticEvent } from 'react';
 

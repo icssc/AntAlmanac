@@ -7,8 +7,8 @@ import {
     DEFAULT_ADVANCED_SEARCH_VALUES,
     DEFAULT_MANUAL_SEARCH_VALUES,
     DEFAULT_TERM,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
-import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+} from '$components/RightPane/CoursePane/SearchParams/constants';
+import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import { getTermByShortName } from '$lib/term';
 import { type AATerm } from '@packages/antalmanac-types';
 import { createParser, createSerializer, parseAsString, parseAsStringLiteral, type SingleParserBuilder } from 'nuqs';
