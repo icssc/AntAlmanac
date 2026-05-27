@@ -95,12 +95,16 @@ export function useCourseSearchUrl() {
         [setSearchModeParam]
     );
 
+    const showResults = useCallback(() => {
+        void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
+    }, [setViewParam]);
+
     const submitSearch = useCallback(
         (data?: CourseSearchParams) => {
             const payload = data ?? readCourseSearchParams();
             if (isValidSearch(payload)) {
                 RightPaneStore.clearMultiSearchData();
-                void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
+                showResults();
                 return true;
             }
             openSnackbar(
@@ -109,7 +113,7 @@ export function useCourseSearchUrl() {
             );
             return false;
         },
-        [setViewParam]
+        [showResults]
     );
 
     const derivedView: CourseSearchView = shouldShowSearchForm(formData)
@@ -143,10 +147,6 @@ export function useCourseSearchUrl() {
         },
         [formData.term, setFormData]
     );
-
-    const showResults = useCallback(() => {
-        void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
-    }, [setViewParam]);
 
     const showSearchForm = useCallback(() => {
         RightPaneStore.clearMultiSearchData();

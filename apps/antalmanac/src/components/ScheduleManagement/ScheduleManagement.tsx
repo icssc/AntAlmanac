@@ -23,6 +23,9 @@ import { useShallow } from 'zustand/react/shallow';
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
+    const { tab } = useParams();
+    const isMobile = useIsMobile();
+
     const { activeTab, setActiveTab, setActiveTabValue } = useTabStore(
         useShallow((store) => ({
             activeTab: store.activeTab,
@@ -30,8 +33,12 @@ export function ScheduleManagement() {
             setActiveTabValue: store.setActiveTabValue,
         }))
     );
-    const { tab } = useParams();
-    const isMobile = useIsMobile();
+    const { saveSearch, popSavedSearch } = useSavedSearchStore(
+        useShallow((store) => ({
+            saveSearch: store.saveSearch,
+            popSavedSearch: store.popSavedSearch,
+        }))
+    );
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
@@ -40,7 +47,7 @@ export function ScheduleManagement() {
      * Ref to the scrollable container with all of the tabs-content within it.
      */
     const ref = useRef<HTMLDivElement>(null);
-    const hasAppliedInitialTab = useRef(false);
+    const hasAppliedInitialTabRef = useRef(false);
 
     // Save the current scroll position to the store.
     const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
@@ -54,31 +61,31 @@ export function ScheduleManagement() {
     const handleTabChange = useCallback(
         (nextTab: number) => {
             if (activeTab === TAB_INDEX.search && nextTab !== TAB_INDEX.search) {
-                useSavedSearchStore.getState().saveSearch();
+                saveSearch();
             }
 
             if (nextTab === TAB_INDEX.search) {
-                useSavedSearchStore.getState().popSavedSearch();
+                popSavedSearch();
             }
 
             setActiveTabValue(nextTab);
         },
-        [activeTab, setActiveTabValue]
+        [activeTab, popSavedSearch, saveSearch, setActiveTabValue]
     );
 
     // Sync tab store when the route changes (back/forward, /added, /map).
     useEffect(() => {
         if (tab === 'added') {
-            hasAppliedInitialTab.current = true;
+            hasAppliedInitialTabRef.current = true;
             setActiveTab(tab);
             return;
         }
         if (tab === 'map') {
-            hasAppliedInitialTab.current = true;
+            hasAppliedInitialTabRef.current = true;
             setActiveTab(tab);
             return;
         }
-        if (hasAppliedInitialTab.current) {
+        if (hasAppliedInitialTabRef.current) {
             setActiveTab('search');
         }
     }, [tab, setActiveTab]);
@@ -111,7 +118,7 @@ export function ScheduleManagement() {
             }
         }
 
-        hasAppliedInitialTab.current = true;
+        hasAppliedInitialTabRef.current = true;
 
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps

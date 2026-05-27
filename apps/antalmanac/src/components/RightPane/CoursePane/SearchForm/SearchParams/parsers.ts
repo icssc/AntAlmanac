@@ -13,11 +13,11 @@ import { getTermByShortName } from '$lib/term';
 import { type AATerm } from '@packages/antalmanac-types';
 import { createParser, createSerializer, parseAsString, parseAsStringLiteral, type SingleParserBuilder } from 'nuqs';
 
-export type CourseSearchParamParser<K extends keyof CourseSearchParams> = SingleParserBuilder<CourseSearchParams[K]> & {
+type CourseSearchParamParser<K extends keyof CourseSearchParams> = SingleParserBuilder<CourseSearchParams[K]> & {
     readonly defaultValue: CourseSearchParams[K];
 };
 
-export type CourseSearchParamParserMap = {
+type CourseSearchParamParserMap = {
     [K in keyof CourseSearchParams]: CourseSearchParamParser<K>;
 };
 

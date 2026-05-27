@@ -2,7 +2,7 @@ import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { useCourseSearchParam, useCourseSearchUrl } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
 import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
@@ -32,7 +32,8 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
 }
 
 export const SearchWithPlanner = () => {
-    const { formData, showResults } = useCourseSearchUrl();
+    const [term] = useCourseSearchParam('term');
+    const { showResults } = useCourseSearchUrl();
     const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
         COURSE_SEARCH_PLANNER_KEY,
         parseAsString.withOptions({ history: 'replace' })
@@ -80,7 +81,6 @@ export const SearchWithPlanner = () => {
                 return false;
             }
 
-            const term = formData.term;
             const quarterPlan = getQuarterPlan(roadmap, term);
             if (!quarterPlan) {
                 openSnackbar('error', `The provided roadmap does not contain ${term.shortName}`);
@@ -108,7 +108,7 @@ export const SearchWithPlanner = () => {
             }
             return true;
         },
-        [formData.term, plannerRoadmaps, showResults]
+        [plannerRoadmaps, showResults, term]
     );
 
     const groupBy = (option: Roadmap) => {
@@ -116,7 +116,7 @@ export const SearchWithPlanner = () => {
     };
 
     const renderGroup: AutocompleteProps['renderGroup'] = (params) => {
-        const termShortName = formData.term.shortName;
+        const termShortName = term.shortName;
         const includesTerm = params.group === RoadmapTermRelation.IncludesTerm;
         const keyword = includesTerm ? 'Includes' : "Doesn't Include";
 
@@ -177,14 +177,14 @@ export const SearchWithPlanner = () => {
         const updateTermRoadmaps = () => {
             const roadmapsWithTerm: typeof termRoadmapGrouping = getDefaultTermRoadmapGrouping();
             for (const roadmap of plannerRoadmaps) {
-                const roadmapTermRelation = getRoadmapTermRelation(roadmap, formData.term);
+                const roadmapTermRelation = getRoadmapTermRelation(roadmap, term);
                 roadmapsWithTerm[roadmapTermRelation].add(roadmap.id.toString());
             }
             setTermRoadmapGrouping(roadmapsWithTerm);
         };
 
         updateTermRoadmaps();
-    }, [formData.term, plannerRoadmaps]);
+    }, [plannerRoadmaps, term]);
 
     useEffect(() => {
         if (plannerRoadmaps.length === 0 || hasSearchedWithUrlParamsRef.current) {
