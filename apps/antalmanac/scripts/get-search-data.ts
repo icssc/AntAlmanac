@@ -15,9 +15,6 @@ const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
 
 const MAX_COURSES = 10_000;
 
-// Delay between GraphQL requests to avoid triggering AAPI rate limits / OOM.
-const DELAY_MS = 500;
-
 const ALIASES: Record<string, string | undefined> = {
     COMPSCI: 'CS',
     EARTHSS: 'ESS',
@@ -126,13 +123,10 @@ async function main() {
             string,
             Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
         >();
-        for (let i = 0; i < activeTerms.length; i++) {
-            if (i > 0) {
-                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
-            }
-            const { year, quarter } = activeTerms[i];
-
-            const websocData = await aapiClient.websoc.query({ year, quarter });
+        const websocResponses = await Promise.all(
+            activeTerms.map(({ year, quarter }) => aapiClient.websoc.query({ year, quarter }))
+        );
+        for (const websocData of websocResponses) {
             const chunk = getWebsocCoursesFromResponse(websocData);
             for (const [key, course] of chunk) {
                 fromWebsoc.set(key, course);
@@ -184,58 +178,54 @@ async function main() {
     );
 
     const refreshShortNames = new Set(activeTerms.map((t) => t.shortName));
-    let count = 0;
 
-    /*
-     * Fetch section-code data one term at a time with a fixed delay between requests.
-     * Sequential execution (rather than staggered Promise.all) ensures we never have
-     * concurrent in-flight GraphQL calls, which matters while AAPI has OOM constraints.
-     */
-    let requestsMade = 0;
+    const termsToFetch: AATerm[] = [];
     for (const term of termData) {
+        const { year, quarter } = term;
+        const fileName = join(GENERATED_TERMS_DIR, `${quarter}_${year}.json`);
+
         try {
-            const { year, quarter } = term;
-            const parsedTerm = `${quarter}_${year}`;
-            const fileName = join(GENERATED_TERMS_DIR, `${parsedTerm}.json`);
+            await access(fileName);
 
-            try {
-                await access(fileName);
-
-                if (!refreshShortNames.has(term.shortName)) {
-                    console.log(
-                        `Skipping ${term.shortName}, cache exists and term is outside enrollment refresh window.`
-                    );
-                    continue;
-                }
-                console.log(`Updating section-code cache for active term (${term.shortName})...`);
-            } catch {
-                console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
+            if (!refreshShortNames.has(term.shortName)) {
+                console.log(`Skipping ${term.shortName}, cache exists and term is outside enrollment refresh window.`);
+                continue;
             }
-
-            // Stagger requests to respect AAPI rate limits / avoid OOM
-            if (requestsMade > 0) {
-                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
-            }
-            requestsMade++;
-
-            const query = buildSectionCodesQuery(term);
-            const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
-            if (!res) {
-                throw new Error(`Error fetching section codes for ${term.shortName}.`);
-            }
-
-            const parsedSectionData = parseSectionCodes(res);
-            const numKeys = Object.keys(parsedSectionData).length;
-
-            console.log(`Fetched ${numKeys} section codes for ${term.shortName} from Anteater API.`);
-
-            await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
-            count += numKeys;
-        } catch (error) {
-            console.error(`ERROR for term "${term.shortName}":`);
-            throw error;
+            console.log(`Updating section-code cache for active term (${term.shortName})...`);
+        } catch {
+            console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
         }
+
+        termsToFetch.push(term);
     }
+
+    const counts = await Promise.all(
+        termsToFetch.map(async (term) => {
+            try {
+                const { year, quarter } = term;
+                const fileName = join(GENERATED_TERMS_DIR, `${quarter}_${year}.json`);
+
+                const query = buildSectionCodesQuery(term);
+                const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
+                if (!res) {
+                    throw new Error(`Error fetching section codes for ${term.shortName}.`);
+                }
+
+                const parsedSectionData = parseSectionCodes(res);
+                const numKeys = Object.keys(parsedSectionData).length;
+
+                console.log(`Fetched ${numKeys} section codes for ${term.shortName} from Anteater API.`);
+
+                await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
+                return numKeys;
+            } catch (error) {
+                console.error(`ERROR for term "${term.shortName}":`);
+                throw error;
+            }
+        })
+    );
+
+    const count = counts.reduce((total, numKeys) => total + numKeys, 0);
 
     console.log(`Fetched ${count} section codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
