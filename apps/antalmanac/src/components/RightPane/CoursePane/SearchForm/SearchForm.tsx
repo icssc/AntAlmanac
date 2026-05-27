@@ -1,5 +1,5 @@
 import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
-import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
+import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { QuickSearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch/QuickSearch';
 import { SearchFormModeToggle } from '$components/RightPane/CoursePane/SearchForm/SearchFormModeToggle';

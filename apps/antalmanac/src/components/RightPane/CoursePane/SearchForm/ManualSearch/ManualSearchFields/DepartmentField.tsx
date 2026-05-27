@@ -28,7 +28,7 @@ const parseLocalStorageRecentlySearched = (): string[] => {
     }
 };
 
-export const DepartmentSearchBar = memo(() => {
+export const DepartmentField = memo(() => {
     const options = Object.keys(ALL_DEPARTMENTS);
 
     const [deptValue, setDeptValue] = useCourseSearchParam('deptValue');
@@ -76,4 +76,4 @@ export const DepartmentSearchBar = memo(() => {
     );
 });
 
-DepartmentSearchBar.displayName = 'DepartmentSearchBar';
+DepartmentField.displayName = 'DepartmentField';

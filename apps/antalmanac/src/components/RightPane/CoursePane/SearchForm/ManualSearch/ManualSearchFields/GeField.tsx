@@ -12,7 +12,7 @@ import { memo } from 'react';
 const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
 const getShortLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.shortLabel ?? value;
 
-export const GeSelector = memo(() => {
+export const GeField = memo(() => {
     const [ge, setGe] = useCourseSearchParam('ge');
     const selectedGEs = getSelectedGEs(ge);
 
@@ -60,4 +60,4 @@ export const GeSelector = memo(() => {
     );
 });
 
-GeSelector.displayName = 'GeSelector';
+GeField.displayName = 'GeField';

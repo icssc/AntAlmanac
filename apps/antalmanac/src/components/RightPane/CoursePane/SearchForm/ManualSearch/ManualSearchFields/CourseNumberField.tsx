@@ -2,7 +2,7 @@ import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/La
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { memo, type ChangeEvent } from 'react';
 
-export const CourseNumberSearchBar = memo(() => {
+export const CourseNumberField = memo(() => {
     const [courseNumber, setCourseNumber] = useCourseSearchParam('courseNumber');
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -27,4 +27,4 @@ export const CourseNumberSearchBar = memo(() => {
     );
 });
 
-CourseNumberSearchBar.displayName = 'CourseNumberSearchBar';
+CourseNumberField.displayName = 'CourseNumberField';
