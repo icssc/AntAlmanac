@@ -1,13 +1,13 @@
 import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Grid, Paper, Typography } from '@mui/material';
 
-interface SchoolDeptCardProps {
+interface CourseListSchoolDeptCardProps {
     comment: string;
     name: string;
     type: string;
 }
 
-export function SchoolDeptCard({ name, type, comment }: SchoolDeptCardProps) {
+export function CourseListSchoolDeptCard({ name, type, comment }: CourseListSchoolDeptCardProps) {
     const html = { __html: comment };
 
     return (

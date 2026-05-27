@@ -1,5 +1,5 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
-import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
+import { CourseRenderPane } from '$components/RightPane/CoursePane/CourseRenderPane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
 import {
