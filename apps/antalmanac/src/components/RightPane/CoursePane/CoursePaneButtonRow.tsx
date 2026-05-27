@@ -139,15 +139,6 @@ export function ColumnToggleDropdown() {
 }
 
 interface CoursePaneButtonRowProps {
-    /**
-     * Whether the search results are currently being shown.
-     *
-     * @FIXME
-     * This is an indescribably stupid way of managing app state.
-     * This boolean literally causes components to re-render and fetch data when it's flipped,
-     * and it's controlled by a component's local state.
-     */
-    showSearch: boolean;
     onDismissSearchResults: () => void;
     onRefreshSearch: () => void;
 }
@@ -159,7 +150,6 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
     return (
         <Box
             sx={{
-                display: props.showSearch ? 'block' : 'none',
                 width: 'fit-content',
                 zIndex: 3,
                 position: 'absolute',

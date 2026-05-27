@@ -1,3 +1,4 @@
+import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import { CourseListItem } from '$components/RightPane/CoursePane/CourseRenderPane/CourseList/CourseListItem';
 import {
     estimateCoursePaneLazyHeight,
@@ -14,7 +15,9 @@ import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { WarningAlert } from '$components/WarningAlert';
-import { trpc } from '$lib/api/trpc';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { trpc, trpcReact } from '$lib/api/trpc';
+import { queryKeys } from '$lib/queryKeys';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePlannerStore } from '$stores/PlannerStore';
@@ -24,13 +27,22 @@ import type { WebsocSearchInput } from '@packages/antalmanac-types';
 import type { WebsocAPIResponse } from '@packages/anteater-api/types';
 import { intersectWebsocResponses } from '@packages/anteater-api/utils';
 import { useQuery } from '@tanstack/react-query';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-export function CourseRenderPane() {
+interface CourseRenderPaneProps {
+    onDismissSearchResults: () => void;
+}
+
+export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPaneProps) {
+    const postHog = usePostHog();
+    const utils = trpcReact.useUtils();
+
     const { formData } = useCourseSearchForm();
     const { manualSearchEnabled } = useCourseSearchMode();
-    const [courseColors, setCourseColors] = useState(getCourseColors);
+
+    const [courseColors, setCourseColors] = useState(() => getCourseColors());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => formData.term.longName);
@@ -63,11 +75,12 @@ export function CourseRenderPane() {
 
     const {
         data: searchResponse,
-        isLoading,
+        isFetching,
         isError,
+        refetch,
     } = useQuery({
         staleTime: 5 * 60 * 1000,
-        queryKey: ['searchResults', formData, multiSearchData],
+        queryKey: queryKeys.courseSearch.result(formData, multiSearchData),
         queryFn: async (): Promise<WebsocAPIResponse | null> => {
             setUnofferedCourses([]);
 
@@ -116,6 +129,16 @@ export function CourseRenderPane() {
         },
     });
 
+    const refreshSearch = useCallback(() => {
+        logAnalytics(postHog, {
+            category: analyticsEnum.classSearch,
+            action: analyticsEnum.classSearch.actions.REFRESH,
+        });
+        void refetch();
+        utils.websoc.invalidate();
+        utils.grades.invalidate();
+    }, [postHog, refetch, utils]);
+
     const courseData = useMemo(() => {
         if (!searchResponse) {
             return [];
@@ -152,6 +175,7 @@ export function CourseRenderPane() {
 
     return (
         <>
+            <CoursePaneButtonRow onDismissSearchResults={onDismissSearchResults} onRefreshSearch={refreshSearch} />
             <Box sx={{ height: '56px' }} />
 
             {filterTakenCourses && !hasRenderableCourseResults && (
@@ -164,7 +188,7 @@ export function CourseRenderPane() {
                     </WarningAlert>
                 );
             })}
-            {isLoading ? (
+            {isFetching ? (
                 <LoadingMessage />
             ) : isError || !hasRenderableCourseResults ? (
                 <NoResults formData={formData} />
