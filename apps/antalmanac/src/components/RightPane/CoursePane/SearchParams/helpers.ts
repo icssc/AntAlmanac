@@ -4,13 +4,13 @@ import {
     DEFAULT_ADVANCED_SEARCH_VALUES,
     DEFAULT_FORM_DATA,
     MANUAL_SEARCH_PARAMS,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+} from '$components/RightPane/CoursePane/SearchParams/constants';
 import type {
     AdvancedSearchParams,
     CourseSearchParams,
     CourseSearchView,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
-import type { WebsocGe } from '@packages/anteater-api/types';
+} from '$components/RightPane/CoursePane/SearchParams/types';
+import { WebsocGe } from '@packages/anteater-api/types';
 
 export function hasGeFilter(ge: WebsocGe[]) {
     return !ge.includes('ANY');

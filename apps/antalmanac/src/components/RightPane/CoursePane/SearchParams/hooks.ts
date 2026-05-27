@@ -5,16 +5,16 @@ import {
     COURSE_SEARCH_VIEW,
     COURSE_SEARCH_VIEW_KEY,
     DEFAULT_FORM_DATA,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
-import { deriveCourseSearchView, isValidSearch } from '$components/RightPane/CoursePane/SearchForm/SearchParams/helpers';
-import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
+} from '$components/RightPane/CoursePane/SearchParams/constants';
+import { deriveCourseSearchView, isValidSearch } from '$components/RightPane/CoursePane/SearchParams/helpers';
+import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import {
     courseSearchParamParsers,
     plannerSearchParser,
     searchModeParser,
     searchViewParser,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
-import type { CourseSearchMode, CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+} from '$components/RightPane/CoursePane/SearchParams/parsers';
+import type { CourseSearchMode, CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { useQueryState, useQueryStates } from 'nuqs';
@@ -148,5 +148,3 @@ export function useCourseSearchSubmit() {
         submitSearch,
     };
 }
-
-

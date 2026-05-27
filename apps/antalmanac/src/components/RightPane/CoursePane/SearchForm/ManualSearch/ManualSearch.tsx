@@ -1,9 +1,9 @@
-import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
-import { CourseNumberSearchBar } from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
-import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar';
-import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
-import { ManualSearchResetButton } from '$components/RightPane/CoursePane/SearchForm/ManualSearchResetButton';
-import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
+import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearch';
+import { CourseNumberField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchFields/CourseNumberField';
+import { DepartmentField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchFields/DepartmentField';
+import { GeField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchFields/GeField';
+import { SectionCodeField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchFields/SectionCodeField';
+import { ManualSearchResetButton } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchResetButton';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Box, Button, useTheme } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
@@ -44,19 +44,19 @@ export function ManualSearch() {
                 }}
             >
                 <Box sx={{ minWidth: 0, display: 'flex' }}>
-                    <DepartmentSearchBar />
+                    <DepartmentField />
                 </Box>
 
                 <Box sx={{ minWidth: 0, display: 'flex' }}>
-                    <CourseNumberSearchBar />
+                    <CourseNumberField />
                 </Box>
 
                 <Box sx={{ minWidth: 0, display: 'flex' }}>
-                    <GeSelector />
+                    <GeField />
                 </Box>
 
                 <Box sx={{ minWidth: 0, display: 'flex' }}>
-                    <SectionCodeSearchBar />
+                    <SectionCodeField />
                 </Box>
             </Box>
 

@@ -1,8 +1,8 @@
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { memo, type ChangeEvent } from 'react';
 
-const SectionCodeSearchBar = memo(() => {
+export const SectionCodeField = memo(() => {
     const [sectionCode, setSectionCode] = useCourseSearchParam('sectionCode');
 
     const handleChange = (event: ChangeEvent<{ value: string }>) => {
@@ -24,6 +24,4 @@ const SectionCodeSearchBar = memo(() => {
     );
 });
 
-SectionCodeSearchBar.displayName = 'SectionCodeSearchBar';
-
-export default SectionCodeSearchBar;
+SectionCodeField.displayName = 'SectionCodeField';

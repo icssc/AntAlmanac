@@ -1,11 +1,11 @@
-import { GE_LABELS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
+import { GE_LABELS } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/constants';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 import { WebsocGeSchema } from '@packages/antalmanac-types';
 import { memo } from 'react';
 
-export const GeSelector = memo(() => {
+export const GeField = memo(() => {
     const [ge, setGe] = useCourseSearchParam('ge');
 
     const handleChange = (event: SelectChangeEvent<string[]>) => {
@@ -61,4 +61,4 @@ export const GeSelector = memo(() => {
     );
 });
 
-GeSelector.displayName = 'GeSelector';
+GeField.displayName = 'GeField';

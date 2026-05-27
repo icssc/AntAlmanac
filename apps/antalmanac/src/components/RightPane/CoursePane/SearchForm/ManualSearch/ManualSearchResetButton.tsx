@@ -1,4 +1,4 @@
-import { useCourseSearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
+import { useCourseSearchForm } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { Button } from '@mui/material';
 import { useCallback } from 'react';

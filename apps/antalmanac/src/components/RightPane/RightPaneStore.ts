@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
-import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
-import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams/constants';
+import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import type { AATerm } from '@packages/antalmanac-types';
 
 export enum CourseSearchWarningType {

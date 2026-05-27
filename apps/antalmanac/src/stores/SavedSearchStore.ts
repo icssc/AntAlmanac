@@ -1,4 +1,4 @@
-import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
+import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import { create } from 'zustand';
 
 /** Ephemeral UI only — search params live in the URL via nuqs hooks in SearchParams/. */

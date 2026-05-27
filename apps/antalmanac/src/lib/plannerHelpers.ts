@@ -1,4 +1,4 @@
-import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchParams/constants';
 import { type AATerm, Roadmap } from '@packages/antalmanac-types';
 
 export enum RoadmapTermRelation {

@@ -1,5 +1,5 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import generatedDepartments from '$generated/departments.json';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 import { memo, useCallback, useState } from 'react';
@@ -28,7 +28,7 @@ const parseLocalStorageRecentlySearched = (): string[] => {
     }
 };
 
-export const DepartmentSearchBar = memo(() => {
+export const DepartmentField = memo(() => {
     const options = Object.keys(ALL_DEPARTMENTS);
 
     const [deptValue, setDeptValue] = useCourseSearchParam('deptValue');
@@ -76,4 +76,4 @@ export const DepartmentSearchBar = memo(() => {
     );
 });
 
-DepartmentSearchBar.displayName = 'DepartmentSearchBar';
+DepartmentField.displayName = 'DepartmentField';

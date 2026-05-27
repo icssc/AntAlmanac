@@ -1,9 +1,9 @@
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
 import {
     useCourseSearchForm,
     useCourseSearchMode,
     useCourseSearchView,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
-import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+} from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';

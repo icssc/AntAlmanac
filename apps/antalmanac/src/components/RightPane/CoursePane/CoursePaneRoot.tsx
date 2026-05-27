@@ -1,12 +1,12 @@
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
 import {
     useCourseSearchForm,
     useCourseSearchMode,
     useCourseSearchView,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
-import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+} from '$components/RightPane/CoursePane/SearchParams/hooks';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
 import { Box } from '@mui/material';
