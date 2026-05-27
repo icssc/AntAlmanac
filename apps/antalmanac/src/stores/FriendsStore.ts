@@ -104,6 +104,11 @@ class FriendsStore extends EventEmitter {
         this.emit('scheduleChange');
     }
 
+    returnToManageFriends() {
+        this.closeFriendView();
+        this.emit('openManageFriends');
+    }
+
     changeCurrentSchedule(newScheduleIndex: number) {
         this.schedule.setCurrentScheduleIndex(newScheduleIndex);
         this.emit('scheduleChange');

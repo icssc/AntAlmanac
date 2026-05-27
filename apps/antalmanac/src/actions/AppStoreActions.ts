@@ -7,6 +7,7 @@ import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStora
 import { isNativeIosApp } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
+import FriendsStore from '$stores/FriendsStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -214,6 +215,76 @@ export const mergeShortCourseSchedules = (
         };
     });
     currentSchedules.push(...cacheSchedule);
+};
+
+export const importSharedScheduleById = async (scheduleId: string, friendName?: string) => {
+    const sharedSchedule = await trpc.schedule.getSharedSchedule.query({ scheduleId });
+
+    const incomingSchedule: ShortCourseSchedule = {
+        id: undefined,
+        scheduleName: sharedSchedule.scheduleName,
+        scheduleNote: sharedSchedule.scheduleNote || '',
+        courses: sharedSchedule.courses,
+        customEvents: sharedSchedule.customEvents,
+    };
+
+    const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
+    const prefix = friendName ? `(${friendName})-` : '(shared)-';
+
+    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], prefix);
+    currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
+
+    useScheduleComponentsToggleStore.setState({ openLoadingSchedule: true });
+
+    const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
+
+    if (!isScheduleLoaded) {
+        useScheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+        return { imported: false, error: new Error('Failed to load shared schedule') };
+    }
+
+    await autoSaveSchedule({});
+    openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
+
+    useScheduleComponentsToggleStore.setState({
+        openScheduleSelect: true,
+        openScheduleSelectScope: 'home',
+        openLoadingSchedule: false,
+    });
+
+    changeCurrentSchedule(currentSchedules.scheduleIndex);
+
+    return { imported: true, error: null };
+};
+
+export const addFriendScheduleToMySchedule = async (friendName: string) => {
+    const scheduleId = FriendsStore.getCurrentFriendSchedule().id;
+    if (!scheduleId) {
+        return false;
+    }
+
+    try {
+        useScheduleComponentsToggleStore.setState({ openLoadingSchedule: true });
+
+        const userDataResponse = await trpc.schedule.get.query();
+        if (userDataResponse?.userData) {
+            await AppStore.loadSchedule(userDataResponse.userData);
+        }
+
+        const result = await importSharedScheduleById(scheduleId, friendName);
+
+        if (!result.imported) {
+            return false;
+        }
+
+        FriendsStore.closeFriendView();
+        return true;
+    } catch (err) {
+        console.error('Error adding schedule to account:', err);
+        return false;
+    } finally {
+        useScheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+    }
 };
 
 const handleScheduleImport = async (username: string, skipImportedCheck = false, postHog?: PostHog) => {
@@ -481,6 +552,24 @@ export const redoAction = () => {
 
 export const changeCurrentSchedule = (newScheduleIndex: number) => {
     AppStore.changeCurrentSchedule(newScheduleIndex);
+};
+
+export const toggleScheduleSharing = async (scheduleIndex: number) => {
+    const currentValue = AppStore.getSharedWithFriends(scheduleIndex);
+    const newValue = !currentValue;
+    AppStore.setSharedWithFriends(scheduleIndex, newValue);
+
+    const scheduleId = AppStore.schedule.getScheduleId(scheduleIndex);
+    if (!scheduleId) {
+        return;
+    }
+
+    try {
+        const result = await trpc.friends.toggleScheduleSharing.mutate({ scheduleId });
+        AppStore.setSharedWithFriends(scheduleIndex, result.sharedWithFriends);
+    } catch {
+        AppStore.setSharedWithFriends(scheduleIndex, currentValue);
+    }
 };
 
 export const changeCustomEventColor = (customEventID: CustomEventId, newColor: string) => {

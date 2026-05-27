@@ -41,6 +41,7 @@ const SCHEDULE_VIEW_EVENTS = [
     'currentScheduleIndexChange',
     'scheduleNamesChange',
     'scheduleNotesChange',
+    'scheduleSharingChange',
 ] as const;
 
 class AppStore extends EventEmitter implements ScheduleViewSource {
@@ -487,6 +488,15 @@ class AppStore extends EventEmitter implements ScheduleViewSource {
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
         this.emit('scheduleNotesChange');
+    }
+
+    getSharedWithFriends(scheduleIndex: number) {
+        return this.schedule.getSharedWithFriends(scheduleIndex);
+    }
+
+    setSharedWithFriends(scheduleIndex: number, sharedWithFriends: boolean) {
+        this.schedule.setSharedWithFriends(scheduleIndex, sharedWithFriends);
+        this.emit('scheduleSharingChange');
     }
 
     termsInSchedule = (term: AATerm): Set<AATerm> => {

@@ -48,6 +48,7 @@ export class Schedules {
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
                 scheduleId: createId(),
+                sharedWithFriends: true,
             },
         ];
         this.currentScheduleIndex = 0;
@@ -96,6 +97,19 @@ export class Schedules {
         return this.schedules[scheduleIndex]?.scheduleId;
     }
 
+    getSharedWithFriends(scheduleIndex: number) {
+        return this.schedules[scheduleIndex]?.sharedWithFriends ?? true;
+    }
+
+    setSharedWithFriends(scheduleIndex: number, sharedWithFriends: boolean) {
+        const schedule = this.schedules[scheduleIndex];
+        if (!schedule) {
+            return;
+        }
+
+        schedule.sharedWithFriends = sharedWithFriends;
+    }
+
     /**
      * Get the name of schedule.
      */
@@ -131,6 +145,7 @@ export class Schedules {
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
             scheduleId: createId(),
+            sharedWithFriends: true,
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
@@ -608,6 +623,7 @@ export class Schedules {
                 id: schedule.scheduleId,
                 scheduleName: schedule.scheduleName,
                 customEvents: schedule.customEvents,
+                sharedWithFriends: schedule.sharedWithFriends,
                 courses: schedule.courses.map((course) => {
                     return {
                         color: course.section.color,
@@ -729,6 +745,7 @@ export class Schedules {
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
                     scheduleId: shortCourseSchedule.id ?? createId(),
+                    sharedWithFriends: shortCourseSchedule.sharedWithFriends ?? true,
                 });
             }
         } catch (e) {
