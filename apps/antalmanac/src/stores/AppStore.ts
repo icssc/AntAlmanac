@@ -19,7 +19,6 @@ import type {
     ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -306,7 +305,6 @@ class AppStore extends EventEmitter {
 
     saveSchedule() {
         this.unsavedChanges = false;
-        removeLocalStorageUnsavedActions();
     }
 
     copySchedule(scheduleIndex: number, newScheduleName: string) {
