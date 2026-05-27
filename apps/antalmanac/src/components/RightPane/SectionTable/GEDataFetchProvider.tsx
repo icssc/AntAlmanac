@@ -22,7 +22,7 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             year: term.year,
             quarter: term.quarter,
             department: props.courseDetails.deptCode,
-            ge: 'ANY',
+            ge: undefined,
             courseNumber: props.courseDetails.courseNumber,
             courseTitle: props.courseDetails.courseTitle,
             instructorName: advanced.instructor,

@@ -310,7 +310,7 @@ export default function CourseRenderPane() {
             year: searchData.term.year,
             quarter: searchData.term.quarter,
             department: searchData.deptValue,
-            ge: searchData.ge.length > 0 ? searchData.ge.join(',') : undefined,
+            ge: searchData.ge.length > 0 ? searchData.ge : undefined,
             courseNumber: searchData.courseNumber,
             sectionCodes: searchData.sectionCode,
             instructorName: searchData.instructor,
@@ -360,12 +360,11 @@ export default function CourseRenderPane() {
                     response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
                 } else {
                     const websocQueryParams = getQueryParams(formData);
-                    const selectedGEs = formData.ge;
                     response =
-                        selectedGEs.length > 1
+                        formData.ge.length > 1
                             ? intersectWebsocResponses(
                                   await trpc.websoc.getManyOfField.query({
-                                      params: { ...websocQueryParams, ge: selectedGEs.join(',') },
+                                      params: websocQueryParams,
                                       fieldName: 'ge',
                                   })
                               )

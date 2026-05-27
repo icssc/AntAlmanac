@@ -1,7 +1,6 @@
 import type {
     WebsocSection,
     WebsocCourse,
-    WebsocQueryParams,
     WebsocSectionStatus,
     WebsocSectionType,
     WebsocFullCoursesOption,
@@ -54,11 +53,28 @@ type AACourseExtendedProperties = {
 
 export type AACourse = Omit<WebsocCourse, 'sections'> & AACourseExtendedProperties;
 
+export const GE_SEARCH_VALUES = [
+    'GE-1A',
+    'GE-1B',
+    'GE-2',
+    'GE-3',
+    'GE-4',
+    'GE-5A',
+    'GE-5B',
+    'GE-6',
+    'GE-7',
+    'GE-8',
+] as const;
+
+export type GeSearchValue = (typeof GE_SEARCH_VALUES)[number];
+
+export const GeSearchValueSchema = z.enum(GE_SEARCH_VALUES);
+
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,
     department: z.string().optional(),
-    ge: z.string().optional(),
+    ge: z.array(GeSearchValueSchema).optional(),
     courseNumber: z.string().optional(),
     courseTitle: z.string().optional(),
     sectionCodes: z.string().optional(),
@@ -75,11 +91,7 @@ export const WebsocSearchInputSchema = z.object({
     endTime: z.string().optional(),
     excludeRestrictionCodes: z.string().optional(),
     includeRelatedCourses: z.string().nullable().optional(),
-}) satisfies z.ZodType<{
-    [K in keyof WebsocQueryParams]: NonNullable<WebsocQueryParams[K]> extends string
-        ? string | WebsocQueryParams[K]
-        : WebsocQueryParams[K];
-}>;
+});
 export type WebsocSearchInput = z.infer<typeof WebsocSearchInputSchema>;
 
 export const WebsocSearchInputKeysSchema = WebsocSearchInputSchema.keyof();

@@ -1,3 +1,9 @@
+import { GE_SEARCH_VALUES, type GeSearchValue } from '@packages/antalmanac-types';
+
+export type GeValue = GeSearchValue;
+
+export const GE_VALUES = GE_SEARCH_VALUES;
+
 export const GE_OPTIONS = [
     { value: 'ANY', label: "ANY: Don't filter for GE", shortLabel: 'Any GEs' },
     { value: 'GE-1A', label: 'GE Ia (1a): Lower Division Writing', shortLabel: 'GE Ia (1a)' },
@@ -11,12 +17,6 @@ export const GE_OPTIONS = [
     { value: 'GE-7', label: 'GE VII (7): Multicultural Studies', shortLabel: 'GE VII (7)' },
     { value: 'GE-8', label: 'GE VIII (8): International/Global Issues', shortLabel: 'GE VIII (8)' },
 ] as const;
-
-export type GeValue = Exclude<(typeof GE_OPTIONS)[number]['value'], 'ANY'>;
-
-export const GE_VALUES = GE_OPTIONS.filter((option) => option.value !== 'ANY').map(
-    (option) => option.value
-) as readonly GeValue[];
 
 export const EXCLUDE_RESTRICTION_CODES_OPTIONS = [
     { value: 'A', label: 'A: Prerequisite required' },
