@@ -300,16 +300,14 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
                 const result = await trpc.schedule.getGuest.query({ username });
                 const scheduleSaveState = result.userData;
 
-                let error = false;
-
                 if (await AppStore.loadSchedule(scheduleSaveState)) {
-                    openSnackbar('success', `Schedule loaded.`);
+                    logAnalytics(postHog, {
+                        category: analyticsEnum.auth,
+                        action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY,
+                        customProps: { providerId: username, rememberMe },
+                    });
                 } else {
                     AppStore.loadFallbackSchedule(scheduleSaveState);
-                    error = true;
-                }
-
-                if (error) {
                     logAnalytics(postHog, {
                         category: analyticsEnum.auth,
                         action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
@@ -318,15 +316,9 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
                     });
                     openSnackbar(
                         'error',
-                        `Network error loading course information for "${username}". 	              
+                        `Network error loading course information for "${username}".
                         If this continues to happen, please submit a feedback form.`
                     );
-                } else {
-                    logAnalytics(postHog, {
-                        category: analyticsEnum.auth,
-                        action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY,
-                        customProps: { providerId: username, rememberMe },
-                    });
                 }
             } catch (e) {
                 logAnalytics(postHog, {
@@ -372,7 +364,6 @@ export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions)
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
             useHiddenCoursesStore.getState().hydrateFromSchedules(scheduleSaveState.schedules);
             analyticsIdentifyUser(postHog, userId);
-            openSnackbar('success', `Schedule loaded.`);
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
                 action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
