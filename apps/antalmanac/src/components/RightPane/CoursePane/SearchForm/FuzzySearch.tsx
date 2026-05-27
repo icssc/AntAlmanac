@@ -1,12 +1,22 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import {
+    useCourseSearchForm,
+    useCourseSearchMode,
+    useCourseSearchParam,
+    useCourseSearchSubmit,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
+import {
+    COURSE_SEARCH_MODE,
+    DEFAULT_FORM_DATA,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import type { AATerm, SearchResult } from '@packages/antalmanac-types';
-import { PostHog } from 'posthog-js/react';
-import { ComponentProps, useCallback, useEffect, useRef, useState } from 'react';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
 
 const SEARCH_TIMEOUT_MS = 150;
@@ -44,25 +54,24 @@ const isIpad = () => {
     return navigator.userAgent.includes('Mac') && 'ontouchend' in document;
 };
 
-interface FuzzySearchProps {
-    toggleSearch: () => void;
-    postHog?: PostHog;
-    labelProps?: ComponentProps<typeof LabeledAutocomplete>['labelProps'];
-}
-
 interface SearchOption {
     key: string;
     result: SearchResult;
 }
 
-const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) => {
+const FuzzySearch = () => {
+    const postHog = usePostHog();
+    const [term] = useCourseSearchParam('term');
+    const { setFields } = useCourseSearchForm();
+    const { setSearchMode } = useCourseSearchMode();
+    const { submitSearch } = useCourseSearchSubmit();
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
     const [open, setOpen] = useState<boolean>(false);
     const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});
     const [value, setValue] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [pendingRequest, setPendingRequest] = useState<number | undefined>(undefined);
-    const [currentTerm, setCurrentTerm] = useState<AATerm>(RightPaneStore.getFormData().term);
+    const [currentTerm, setCurrentTerm] = useState<AATerm>(term);
 
     const requestTimestampRef = useRef<number | undefined>(undefined);
 
@@ -75,32 +84,40 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         if (!result) {
             return;
         }
-        const term = RightPaneStore.getFormData().term;
-        RightPaneStore.resetFormValues();
-        RightPaneStore.setTerm(term);
+
+        const baseFormData: CourseSearchParams = {
+            ...DEFAULT_FORM_DATA,
+            term,
+        };
+
+        let nextFormData: CourseSearchParams;
         switch (result.type) {
             case resultType.GE_CATEGORY: {
                 const geCode = option.key.split('-')[1].toUpperCase();
-                RightPaneStore.updateFormValue('ge', `GE-${geCode}`);
+                nextFormData = { ...baseFormData, ge: `GE-${geCode}` };
                 break;
             }
-            case resultType.DEPARTMENT:
-                RightPaneStore.updateFormValue('deptValue', option.key);
+            case resultType.DEPARTMENT: {
+                nextFormData = { ...baseFormData, deptValue: option.key };
                 break;
+            }
             case resultType.COURSE: {
                 const { department, number } = result.metadata;
-                RightPaneStore.updateFormValue('deptValue', department);
-                RightPaneStore.updateFormValue('courseNumber', number);
+                nextFormData = { ...baseFormData, deptValue: department, courseNumber: number };
                 break;
             }
             case resultType.SECTION: {
-                RightPaneStore.updateFormValue('sectionCode', result.sectionCode);
+                nextFormData = { ...baseFormData, sectionCode: result.sectionCode };
                 break;
             }
             default:
+                nextFormData = baseFormData;
                 break;
         }
-        toggleSearch();
+
+        setSearchMode(COURSE_SEARCH_MODE.QUICK);
+        setFields(nextFormData);
+        submitSearch(nextFormData);
         logAnalytics(postHog, {
             category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,
@@ -143,8 +160,6 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         (requestTimestamp: number, requestQuery: string) => () => {
             if (!requestIsCurrent(requestTimestamp)) return;
 
-            const term = RightPaneStore.getFormData().term;
-
             trpc.search.doSearch
                 .query({ query: requestQuery, term })
                 .then((result) => {
@@ -168,11 +183,11 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
                     console.error(e);
                 });
         },
-        [requestIsCurrent]
+        [term, requestIsCurrent]
     );
 
     const handleFormDataChange = useCallback(() => {
-        const newTerm = RightPaneStore.getFormData().term;
+        const newTerm = term;
 
         if (newTerm !== currentTerm && value.length >= MIN_QUERY_LENGTH) {
             const cacheKey = getCacheKey(newTerm, value);
@@ -196,7 +211,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
         } else if (newTerm !== currentTerm) {
             setCurrentTerm(newTerm);
         }
-    }, [cache, currentTerm, value, maybeDoSearchFactory, pendingRequest]);
+    }, [cache, currentTerm, term, value, maybeDoSearchFactory, pendingRequest]);
 
     const onInputChange = (_event: unknown, inputValue: string, reason: AutocompleteInputChangeReason) => {
         const lowerCaseValue = inputValue.toLowerCase().trim();
@@ -255,7 +270,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
             return <Box key={params.key}>{params.children}</Box>;
         }
 
-        const termName = RightPaneStore.getFormData().term.longName;
+        const termName = term.longName;
         const label = params.group === groupType.OFFERED ? `Offered in ${termName}` : `Not Offered`;
 
         return (
@@ -306,11 +321,7 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
     };
 
     useEffect(() => {
-        RightPaneStore.on('formDataChange', handleFormDataChange);
-
-        return () => {
-            RightPaneStore.off('formDataChange', handleFormDataChange);
-        };
+        handleFormDataChange();
     }, [handleFormDataChange]);
 
     return (
@@ -335,7 +346,6 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
                 popupIcon: '',
                 clearOnBlur: false,
             }}
-            labelProps={labelProps}
             textFieldProps={{
                 autoFocus: !isMobile(),
                 placeholder: 'Search for courses, departments, GEs...',

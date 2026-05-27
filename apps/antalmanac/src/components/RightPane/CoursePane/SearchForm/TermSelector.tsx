@@ -1,42 +1,25 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import RightPaneStore, { CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import { getDefaultTerm, termData } from '$lib/term';
 import type { AATerm } from '@packages/antalmanac-types';
-import { ComponentProps, useCallback, useEffect, useState } from 'react';
+import { memo, type ComponentProps } from 'react';
 
 type TermSelectorProps = Omit<
     ComponentProps<typeof LabeledAutocomplete>,
     'label' | 'autocompleteProps' | 'textFieldProps' | 'isAligned'
 >;
 
-export function TermSelector(props: TermSelectorProps) {
-    const [term, setTerm] = useState<AATerm>(() => RightPaneStore.getFormData().term);
+export const TermSelector = memo((props: TermSelectorProps) => {
+    const [term, setTerm] = useCourseSearchParam('term');
 
     const handleChange = (_: unknown, option: AATerm | null) => {
         const value = option ?? getDefaultTerm();
 
         setTerm(value);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('term', value.shortName);
-        history.replaceState({ url: 'url' }, 'url', `/?${urlParams}`);
-
-        RightPaneStore.setTerm(value);
-
         RightPaneStore.clearWarningMessages(CourseSearchWarningType.TermUnavailable);
     };
-
-    const resetField = useCallback(() => {
-        setTerm(RightPaneStore.getFormData().term);
-    }, []);
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.off('formReset', resetField);
-        };
-    }, [resetField]);
 
     return (
         <LabeledAutocomplete
@@ -58,4 +41,6 @@ export function TermSelector(props: TermSelectorProps) {
             isAligned
         />
     );
-}
+});
+
+TermSelector.displayName = 'TermSelector';

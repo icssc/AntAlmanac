@@ -1,18 +1,25 @@
 import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
 import { CourseNumberSearchBar } from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
-import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar';
+import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar';
 import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
+import { ManualSearchResetButton } from '$components/RightPane/CoursePane/SearchForm/ManualSearchResetButton';
 import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Box, Button, useTheme } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback } from 'react';
 
-interface ManualSearchProps {
-    onSubmit: VoidFunction;
-    onReset: VoidFunction;
-}
-
-export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
+export function ManualSearch() {
     const theme = useTheme();
+    const postHog = usePostHog();
     const manualSearchSingleColumn = `@container manual-search (max-width: ${theme.breakpoints.values.sm}px)`;
+
+    const handleSubmit = useCallback(() => {
+        logAnalytics(postHog, {
+            category: analyticsEnum.classSearch,
+            action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
+        });
+    }, [postHog]);
 
     return (
         <Box
@@ -63,13 +70,11 @@ export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
                     justifyContent: 'center',
                 }}
             >
-                <Button color="primary" variant="contained" type="submit" onClick={onSubmit} sx={{ width: '50%' }}>
+                <Button color="primary" variant="contained" type="submit" onClick={handleSubmit} sx={{ width: '50%' }}>
                     Search
                 </Button>
 
-                <Button variant="contained" color="secondary" onClick={onReset}>
-                    Reset
-                </Button>
+                <ManualSearchResetButton />
             </Box>
         </Box>
     );

@@ -1,31 +1,22 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
-import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import { useCourseSearchParam, useCourseSearchView } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
+import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
-import {
-    getQuarterPlan,
-    getRoadmapTermRelation,
-    RoadmapTermRelation,
-    shouldSearchPlannerFromParams,
-} from '$lib/plannerHelpers';
+import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
-import { useSearchParams } from 'next/navigation';
-import { ComponentProps, HTMLAttributes, Key, useCallback, useEffect, useMemo, useState } from 'react';
+import { parseAsString, useQueryState } from 'nuqs';
+import { ComponentProps, HTMLAttributes, Key, useCallback, useRef, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-
-interface SearchWithPlannerProps {
-    labelProps?: ComponentProps<typeof LabeledAutocomplete>['labelProps'];
-}
 
 type AutocompleteProps = ComponentProps<typeof LabeledAutocomplete>['autocompleteProps'];
 
@@ -40,10 +31,17 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
     };
 }
 
-export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
+export const SearchWithPlanner = () => {
+    const [term] = useCourseSearchParam('term');
+    const { showResults } = useCourseSearchView();
+    const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
+        COURSE_SEARCH_PLANNER_KEY,
+        parseAsString.withOptions({ history: 'replace' })
+    );
     const [termRoadmapGrouping, setTermRoadmapGrouping] = useState<TermRoadmapGrouping>(getDefaultTermRoadmapGrouping);
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
+    const hasSearchedWithUrlParamsRef = useRef(false);
 
     const { sessionIsValid, hasCheckedAuth } = useSessionStore(
         useShallow((state) => ({
@@ -56,16 +54,6 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
     const { isPlannerLoading, plannerRoadmaps } = usePlannerStore(
         useShallow((state) => ({ isPlannerLoading: state.isPlannerLoading, plannerRoadmaps: state.plannerRoadmaps }))
     );
-
-    const { displaySections, hasSearchedWithUrlParams, setHasSearchedWithUrlParams } = useCoursePaneStore(
-        useShallow((state) => ({
-            displaySections: state.displaySections,
-            hasSearchedWithUrlParams: state.hasSearchedWithUrlParams,
-            setHasSearchedWithUrlParams: state.setHasSearchedWithUrlParams,
-        }))
-    );
-
-    const searchParams = useSearchParams();
 
     const doesRoadmapIncludeTerm = useCallback(
         (roadmapId: Roadmap['id']) => {
@@ -85,45 +73,50 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
         });
     }, [plannerRoadmaps, doesRoadmapIncludeTerm]);
 
-    const search = async (roadmapId: Roadmap['id']): Promise<boolean> => {
-        const roadmap = plannerRoadmaps.find((roadmap) => roadmap.id.toString() === roadmapId.toString());
-        if (!roadmap) {
-            openSnackbar('error', "Couldn't find selected roadmap!");
-            return false;
-        }
+    const search = useCallback(
+        async (roadmapId: Roadmap['id']): Promise<boolean> => {
+            const roadmap = plannerRoadmaps.find((roadmap) => roadmap.id.toString() === roadmapId.toString());
+            if (!roadmap) {
+                openSnackbar('error', "Couldn't find selected roadmap!");
+                return false;
+            }
 
-        const term = RightPaneStore.getFormData().term;
-        const quarterPlan = getQuarterPlan(roadmap, term);
-        if (!quarterPlan) {
-            openSnackbar('error', `The provided roadmap does not contain ${term.shortName}`);
-            return false;
-        }
-        try {
-            setIsLoadingSearch(true);
-            const courseIds = quarterPlan.courses
-                .filter((coursePlan) => !coursePlan.courseId.startsWith('CUSTOM#'))
-                .map((coursePlan) => coursePlan.courseId);
-            const courses = await trpc.course.getMultiple.query({ courseIds });
-            const searchData = courses.map(({ department, courseNumber }) => ({ deptValue: department, courseNumber }));
+            const quarterPlan = getQuarterPlan(roadmap, term);
+            if (!quarterPlan) {
+                openSnackbar('error', `The provided roadmap does not contain ${term.shortName}`);
+                return false;
+            }
+            try {
+                setIsLoadingSearch(true);
+                const courseIds = quarterPlan.courses
+                    .filter((coursePlan) => !coursePlan.courseId.startsWith('CUSTOM#'))
+                    .map((coursePlan) => coursePlan.courseId);
+                const courses = await trpc.course.getMultiple.query({ courseIds });
+                const searchData = courses.map(({ department, courseNumber }) => ({
+                    deptValue: department,
+                    courseNumber,
+                }));
 
-            RightPaneStore.setMultiSearchData(searchData);
-            displaySections();
-        } catch (error) {
-            console.error('Something went wrong while searching with Planner:', error);
-            openSnackbar('error', 'Something went wrong while searching with Planner.');
-            return false;
-        } finally {
-            setIsLoadingSearch(false);
-        }
-        return true;
-    };
+                RightPaneStore.setMultiSearchData(searchData, term);
+                showResults();
+            } catch (error) {
+                console.error('Something went wrong while searching with Planner:', error);
+                openSnackbar('error', 'Something went wrong while searching with Planner.');
+                return false;
+            } finally {
+                setIsLoadingSearch(false);
+            }
+            return true;
+        },
+        [plannerRoadmaps, showResults, term]
+    );
 
     const groupBy = (option: Roadmap) => {
         return doesRoadmapIncludeTerm(option.id) ? RoadmapTermRelation.IncludesTerm : RoadmapTermRelation.ExcludesTerm;
     };
 
     const renderGroup: AutocompleteProps['renderGroup'] = (params) => {
-        const termShortName = RightPaneStore.getFormData().term.shortName;
+        const termShortName = term.shortName;
         const includesTerm = params.group === RoadmapTermRelation.IncludesTerm;
         const keyword = includesTerm ? 'Includes' : "Doesn't Include";
 
@@ -182,7 +175,6 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
 
     useEffect(() => {
         const updateTermRoadmaps = () => {
-            const term = RightPaneStore.getFormData().term;
             const roadmapsWithTerm: typeof termRoadmapGrouping = getDefaultTermRoadmapGrouping();
             for (const roadmap of plannerRoadmaps) {
                 const roadmapTermRelation = getRoadmapTermRelation(roadmap, term);
@@ -192,35 +184,29 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
         };
 
         updateTermRoadmaps();
-
-        RightPaneStore.addListener('formDataChange', updateTermRoadmaps);
-
-        return () => {
-            RightPaneStore.removeListener('formDataChange', updateTermRoadmaps);
-        };
-    }, [plannerRoadmaps]);
+    }, [plannerRoadmaps, term]);
 
     useEffect(() => {
-        if (plannerRoadmaps.length === 0 || hasSearchedWithUrlParams) {
+        if (plannerRoadmaps.length === 0 || hasSearchedWithUrlParamsRef.current) {
             return;
         }
 
-        const roadmapId = searchParams.get(PLANNER_SEARCH_PARAM);
-        if (roadmapId) {
+        if (plannerSearchParam) {
             (async () => {
-                const success = await search(roadmapId);
+                const success = await search(plannerSearchParam);
                 if (success) {
-                    setHasSearchedWithUrlParams(true);
+                    hasSearchedWithUrlParamsRef.current = true;
+                    await setPlannerSearchParam(null);
                 }
             })();
         }
-    }, [searchParams, plannerRoadmaps, hasSearchedWithUrlParams]);
+    }, [plannerSearchParam, plannerRoadmaps, search, setPlannerSearchParam]);
 
     useEffect(() => {
-        if (hasCheckedAuth && !sessionIsValid && shouldSearchPlannerFromParams()) {
+        if (hasCheckedAuth && !sessionIsValid && plannerSearchParam !== null) {
             setOpenSignInDialog(true);
         }
-    }, [sessionIsValid, hasCheckedAuth]);
+    }, [plannerSearchParam, sessionIsValid, hasCheckedAuth]);
 
     const searchComponent = (
         <LabeledAutocomplete
@@ -244,7 +230,6 @@ export const SearchWithPlanner = ({ labelProps }: SearchWithPlannerProps) => {
                 placeholder: isLoadingSearch ? 'Loading...' : 'Select roadmap from Planner',
                 fullWidth: true,
             }}
-            labelProps={labelProps}
             loading={isLoadingSearch}
             isAligned
         />

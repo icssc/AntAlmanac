@@ -5,16 +5,15 @@ import {
     normalizeGeSelection,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { replaceUrlSearchParams } from '$lib/utils';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
-import { useEffect, useCallback, useState } from 'react';
+import { memo } from 'react';
 
 const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
 const getShortLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.shortLabel ?? value;
 
-export function GeSelector() {
-    const [ge, setGe] = useState(() => RightPaneStore.getFormData().ge);
+export const GeSelector = memo(() => {
+    const [ge, setGe] = useCourseSearchParam('ge');
     const selectedGEs = getSelectedGEs(ge);
 
     const handleChange = (event: SelectChangeEvent<string[]>) => {
@@ -24,27 +23,7 @@ export function GeSelector() {
         const searchValue = normalizeGeSelection(selectedValues.join(','));
 
         setGe(searchValue);
-        RightPaneStore.updateFormValue('ge', searchValue);
-
-        replaceUrlSearchParams((params) => {
-            params.delete('ge');
-            if (searchValue !== ANY_GE) {
-                params.set('ge', searchValue);
-            }
-        });
     };
-
-    const resetField = useCallback(() => {
-        setGe(normalizeGeSelection(RightPaneStore.getFormData().ge));
-    }, []);
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.off('formReset', resetField);
-        };
-    }, [resetField]);
 
     return (
         <LabeledSelect
@@ -79,4 +58,6 @@ export function GeSelector() {
             })}
         </LabeledSelect>
     );
-}
+});
+
+GeSelector.displayName = 'GeSelector';

@@ -1,4 +1,3 @@
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { LightMode, SettingsBrightness, DarkMode } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
@@ -18,12 +17,9 @@ export function ThemeSelector() {
     const segment = theme.palette.settingsSegment;
 
     const [themeSetting, setTheme] = useThemeStore(useShallow((store) => [store.themeSetting, store.setAppTheme]));
-
-    const forceUpdate = useCoursePaneStore((store) => store.forceUpdate);
     const postHog = usePostHog();
 
     const handleThemeChange = (value: 'light' | 'dark' | 'system') => {
-        forceUpdate();
         setTheme(value, postHog);
     };
 

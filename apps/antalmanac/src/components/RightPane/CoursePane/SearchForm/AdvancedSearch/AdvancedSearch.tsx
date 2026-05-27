@@ -1,47 +1,28 @@
-import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { AdvancedSearchFieldRow } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/AdvancedSearchFieldRow';
+import { BuildingField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/BuildingField';
+import { CoursesFullField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/CoursesFullField';
+import { DaysField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/DaysField';
+import { DivisionField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/DivisionField';
+import { EndTimeField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/EndTimeField';
+import { ExcludeRestrictionsField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/ExcludeRestrictionsField';
+import { ExcludeRoadmapField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/ExcludeRoadmapField';
+import { InstructorField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/InstructorField';
+import { OnlineField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/OnlineField';
+import { RoomField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/RoomField';
+import { StartTimeField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/StartTimeField';
+import { UnitsField } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchFields/UnitsField';
+import { hasAdvancedParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/helpers';
+import { readAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { Button, Collapse, Typography } from '@mui/material';
-import { useCallback, useEffect } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { Box, Button, Collapse, Typography } from '@mui/material';
+import { useState } from 'react';
 
 export function AdvancedSearch() {
-    const { advancedSearchEnabled, toggleAdvancedSearch } = useCoursePaneStore(
-        useShallow((store) => ({
-            advancedSearchEnabled: store.advancedSearchEnabled,
-            toggleAdvancedSearch: store.toggleAdvancedSearch,
-        }))
-    );
+    const [expanded, setExpanded] = useState(() => hasAdvancedParams(readAdvancedSearchParams()));
     const isDark = useThemeStore((store) => store.isDark);
 
-    const handleExpand = () => {
-        toggleAdvancedSearch();
-    };
-
-    const resetField = useCallback(() => {
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-
-        const formData = RightPaneStore.getFormData();
-        for (const key of Object.keys(formData)) {
-            urlParam.delete(key);
-        }
-
-        const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
-    }, []);
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.off('formReset', resetField);
-        };
-    }, [resetField]);
+    const handleExpand = () => setExpanded((value) => !value);
 
     return (
         <>
@@ -55,10 +36,42 @@ export function AdvancedSearch() {
                 }}
             >
                 <Typography noWrap>Advanced Search Options</Typography>
-                {advancedSearchEnabled ? <ExpandLess /> : <ExpandMore />}
+                {expanded ? <ExpandLess /> : <ExpandMore />}
             </Button>
-            <Collapse in={advancedSearchEnabled}>
-                <AdvancedSearchTextFields />
+
+            <Collapse in={expanded}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                        marginBottom: '1rem',
+                    }}
+                >
+                    <AdvancedSearchFieldRow>
+                        <InstructorField />
+                        <UnitsField />
+                        <CoursesFullField />
+                    </AdvancedSearchFieldRow>
+
+                    <AdvancedSearchFieldRow>
+                        <DivisionField />
+                        <StartTimeField />
+                        <EndTimeField />
+                    </AdvancedSearchFieldRow>
+
+                    <AdvancedSearchFieldRow>
+                        <OnlineField />
+                        <BuildingField />
+                        <RoomField />
+                    </AdvancedSearchFieldRow>
+
+                    <AdvancedSearchFieldRow>
+                        <ExcludeRoadmapField />
+                        <ExcludeRestrictionsField />
+                        <DaysField />
+                    </AdvancedSearchFieldRow>
+                </Box>
             </Collapse>
         </>
     );

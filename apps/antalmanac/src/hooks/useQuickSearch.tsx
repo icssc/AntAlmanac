@@ -1,39 +1,37 @@
+import {
+    COURSE_SEARCH_MODE,
+    COURSE_SEARCH_VIEW,
+    DEFAULT_FORM_DATA,
+    COURSE_SEARCH_MODE_KEY,
+    COURSE_SEARCH_VIEW_KEY,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { AATerm } from '$lib/term';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useShallow } from 'zustand/react/shallow';
 
 export function useQuickSearch() {
-    const { displaySections, forceUpdate } = useCoursePaneStore(
-        useShallow((s) => ({ displaySections: s.displaySections, forceUpdate: s.forceUpdate }))
-    );
-    const setActiveTab = useTabStore((s) => s.setActiveTab);
     const navigate = useNavigate();
+    const setActiveTab = useTabStore((s) => s.setActiveTab);
 
     return useCallback(
         (deptValue: string, courseNumber: string, term: AATerm) => {
-            const queryParams = {
-                term: term.shortName,
-                deptValue: deptValue,
-                courseNumber: courseNumber,
-            };
+            RightPaneStore.clearMultiSearchData();
+            const courseSearch = serializeCourseSearchParams({
+                ...DEFAULT_FORM_DATA,
+                term,
+                deptValue,
+                courseNumber,
+            });
+            const searchParams = new URLSearchParams(courseSearch);
+            searchParams.set(COURSE_SEARCH_MODE_KEY, COURSE_SEARCH_MODE.QUICK);
+            searchParams.set(COURSE_SEARCH_VIEW_KEY, COURSE_SEARCH_VIEW.RESULTS);
 
-            const href = `/?${Object.entries(queryParams)
-                .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-                .join('&')}`;
-
-            RightPaneStore.resetFormValues();
-            RightPaneStore.updateFormValue('deptValue', deptValue);
-            RightPaneStore.updateFormValue('courseNumber', courseNumber);
-            RightPaneStore.setTerm(term);
-            navigate(href, { replace: false });
+            navigate({ pathname: '/', search: searchParams.toString() });
             setActiveTab('search');
-            displaySections();
-            forceUpdate();
         },
-        [displaySections, forceUpdate, navigate, setActiveTab]
+        [navigate, setActiveTab]
     );
 }
