@@ -1,4 +1,4 @@
-import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams';
+import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/helpers';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import {
     readCourseSearchParams,

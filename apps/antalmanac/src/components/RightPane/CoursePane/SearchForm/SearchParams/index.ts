@@ -1,14 +1,12 @@
 import {
-    ADVANCED_SEARCH_PARAMS,
     COURSE_SEARCH_MODE,
     COURSE_SEARCH_MODE_KEY,
     COURSE_SEARCH_VIEW,
     COURSE_SEARCH_VIEW_KEY,
-    DEFAULT_ADVANCED_SEARCH_VALUES,
     DEFAULT_FORM_DATA,
-    MANUAL_SEARCH_PARAMS,
     COURSE_SEARCH_PLANNER_KEY,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import { isValidSearch, shouldShowSearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchParams/helpers';
 import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/loaders';
 import {
     courseSearchParamParsers,
@@ -17,7 +15,6 @@ import {
     searchViewParser,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/parsers';
 import type {
-    AdvancedSearchParams,
     CourseSearchMode,
     CourseSearchParams,
     CourseSearchView,
@@ -26,42 +23,6 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { useQueryState, useQueryStates } from 'nuqs';
 import { useCallback } from 'react';
-
-/** Enough to run a WebSOC search (dept, GE, section, or instructor). */
-export function isValidSearch(formData: CourseSearchParams) {
-    const { ge, deptValue, sectionCode, instructor } = formData;
-    return (
-        ge !== DEFAULT_FORM_DATA.ge ||
-        deptValue !== DEFAULT_FORM_DATA.deptValue ||
-        sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
-        instructor !== DEFAULT_FORM_DATA.instructor
-    );
-}
-
-export function hasManualParams(formData: CourseSearchParams) {
-    return MANUAL_SEARCH_PARAMS.some((key) => {
-        if (key === 'term') {
-            return formData.term.shortName !== DEFAULT_FORM_DATA.term.shortName;
-        }
-        return formData[key] !== DEFAULT_FORM_DATA[key];
-    });
-}
-
-export function hasAdvancedParams(formData: AdvancedSearchParams) {
-    return ADVANCED_SEARCH_PARAMS.some((key) => formData[key] !== DEFAULT_ADVANCED_SEARCH_VALUES[key]);
-}
-
-/** Show the search form when params are empty or present but not valid enough for results. */
-export function shouldShowSearchForm(formData: CourseSearchParams) {
-    const hasPrimarySearchInput =
-        formData.sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
-        formData.courseNumber !== DEFAULT_FORM_DATA.courseNumber ||
-        formData.ge !== DEFAULT_FORM_DATA.ge ||
-        formData.deptValue !== DEFAULT_FORM_DATA.deptValue ||
-        formData.instructor !== DEFAULT_FORM_DATA.instructor;
-
-    return !hasPrimarySearchInput || !isValidSearch(formData);
-}
 
 export function useCourseSearchParam<K extends keyof CourseSearchParams>(
     field: K
