@@ -43,4 +43,24 @@ export type WebsocSyllabiResponse = WebsocSyllabiAPIResult['data'];
 
 export type WebsocQueryParams = NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']>;
 
+export type WebsocGe = NonNullable<WebsocQueryParams['ge']>;
+
+export const WEBSOC_GE_VALUES = [
+    'ANY',
+    'GE-1A',
+    'GE-1B',
+    'GE-2',
+    'GE-3',
+    'GE-4',
+    'GE-5A',
+    'GE-5B',
+    'GE-6',
+    'GE-7',
+    'GE-8',
+] as const satisfies readonly WebsocGe[];
+
+export type WebsocFilterGe = Exclude<WebsocGe, 'ANY'>;
+
+export const WEBSOC_FILTER_GE_VALUES = WEBSOC_GE_VALUES.filter((value): value is WebsocFilterGe => value !== 'ANY');
+
 export type WebsocFullCoursesOption = NonNullable<WebsocQueryParams['fullCourses']>;

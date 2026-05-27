@@ -4,8 +4,8 @@ import { join } from 'node:path';
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
 import {
-    GeSearchValueSchema,
-    type GeSearchValue,
+    WebsocFilterGeSchema,
+    type WebsocFilterGe,
     type GESearchResult,
     type SearchResult,
     type SectionSearchResult,
@@ -73,8 +73,8 @@ const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge8: { type: 'GE_CATEGORY', name: 'International/Global Issues' },
 };
 
-const toGESearchResult = (key: GECategoryKey): [GeSearchValue, SearchResult] => [
-    GeSearchValueSchema.parse(key.toUpperCase().replace('GE', 'GE-')),
+const toGESearchResult = (key: GECategoryKey): [WebsocFilterGe, SearchResult] => [
+    WebsocFilterGeSchema.parse(key.toUpperCase().replace('GE', 'GE-')),
     geCategories[key],
 ];
 

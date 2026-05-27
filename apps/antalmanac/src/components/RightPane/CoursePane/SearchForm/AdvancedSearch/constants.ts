@@ -1,4 +1,4 @@
-import { GE_CATEGORY_VALUES, type GeSearchValue } from '@packages/antalmanac-types';
+import { WEBSOC_FILTER_GE_VALUES, WEBSOC_GE_VALUES, type WebsocFilterGe } from '@packages/anteater-api/types';
 
 export const GE_LABELS = {
     'GE-1A': { label: 'GE Ia (1a): Lower Division Writing', shortLabel: 'GE Ia (1a)' },
@@ -11,17 +11,17 @@ export const GE_LABELS = {
     'GE-6': { label: 'GE VI (6): Language other than English', shortLabel: 'GE VI (6)' },
     'GE-7': { label: 'GE VII (7): Multicultural Studies', shortLabel: 'GE VII (7)' },
     'GE-8': { label: 'GE VIII (8): International/Global Issues', shortLabel: 'GE VIII (8)' },
-} satisfies Record<GeSearchValue, { label: string; shortLabel: string }>;
+} satisfies Record<WebsocFilterGe, { label: string; shortLabel: string }>;
 
 export const ANY_GE_OPTION = {
-    value: 'ANY',
+    value: WEBSOC_GE_VALUES[0],
     label: "ANY: Don't filter for GE",
     shortLabel: 'Any GEs',
 } as const;
 
 export const GE_OPTIONS = [
     ANY_GE_OPTION,
-    ...GE_CATEGORY_VALUES.map((value) => ({
+    ...WEBSOC_FILTER_GE_VALUES.map((value) => ({
         value,
         ...GE_LABELS[value],
     })),

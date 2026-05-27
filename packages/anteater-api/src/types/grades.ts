@@ -1,6 +1,6 @@
 import { paths } from './generated/anteater-api-types';
 
-export type GE = NonNullable<NonNullable<paths['/v2/rest/grades/raw']['get']['parameters']['query']>['ge']>;
+export type { WebsocGe as GE } from './websoc';
 
 export type AggregateGradesAPIResult =
     paths['/v2/rest/grades/aggregate']['get']['responses']['200']['content']['application/json'];

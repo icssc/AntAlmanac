@@ -15,10 +15,10 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import {
-    GeSearchValueSchema,
+    WebsocFilterGeSchema,
     type AATerm,
     type GESearchResult,
-    type GeSearchValue,
+    type WebsocFilterGe,
     type SearchResult,
 } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -61,10 +61,10 @@ const isIpad = () => {
 };
 
 type SearchOption =
-    | { key: GeSearchValue; result: GESearchResult }
+    | { key: WebsocFilterGe; result: GESearchResult }
     | { key: string; result: Exclude<SearchResult, GESearchResult> };
 
-function isGeSearchOption(option: SearchOption): option is { key: GeSearchValue; result: GESearchResult } {
+function isWebsocFilterGeSearchOption(option: SearchOption): option is { key: WebsocFilterGe; result: GESearchResult } {
     return option.result.type === resultType.GE_CATEGORY;
 }
 
@@ -73,7 +73,7 @@ function toSearchOptions(results: Record<string, SearchResult>): SearchOption[] 
 
     for (const [key, result] of Object.entries(results)) {
         if (result.type === resultType.GE_CATEGORY) {
-            const parsed = GeSearchValueSchema.safeParse(key);
+            const parsed = WebsocFilterGeSchema.safeParse(key);
             if (parsed.success) {
                 options.push({ key: parsed.data, result });
             }
@@ -115,7 +115,7 @@ const FuzzySearch = () => {
         let nextFormData: CourseSearchParams;
         switch (option.result.type) {
             case resultType.GE_CATEGORY: {
-                if (!isGeSearchOption(option)) return;
+                if (!isWebsocFilterGeSearchOption(option)) return;
                 nextFormData = { ...baseFormData, ge: [option.key] };
                 break;
             }

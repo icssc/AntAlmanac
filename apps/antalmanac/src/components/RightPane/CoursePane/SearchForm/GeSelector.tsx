@@ -2,7 +2,7 @@ import { ANY_GE_OPTION, GE_OPTIONS } from '$components/RightPane/CoursePane/Sear
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
-import { GeSearchValueSchema } from '@packages/antalmanac-types';
+import { WebsocFilterGeSchema } from '@packages/antalmanac-types';
 import { memo } from 'react';
 
 const getLabel = (value: string) => GE_OPTIONS.find((ge) => ge.value === value)?.label ?? value;
@@ -21,7 +21,7 @@ export const GeSelector = memo(() => {
 
         setGe(
             values.flatMap((currentValue) => {
-                const parsed = GeSearchValueSchema.safeParse(currentValue);
+                const parsed = WebsocFilterGeSchema.safeParse(currentValue);
                 return parsed.success ? [parsed.data] : [];
             })
         );

@@ -14,8 +14,8 @@ import { z } from 'zod';
 import { router } from '../trpc';
 
 function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
-    const { department, courseNumber, ...rest } = params;
-    const sanitized: typeof params = { ...rest };
+    const { department, courseNumber, ge, ...rest } = params;
+    const sanitized = { ...rest } as WebsocQueryParams;
 
     if (department && department.toUpperCase() !== 'ALL') {
         sanitized.department = department.toUpperCase();
@@ -25,14 +25,18 @@ function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
         sanitized.courseNumber = courseNumber.toUpperCase();
     }
 
-    for (const key of Object.keys(sanitized) as (keyof typeof sanitized)[]) {
+    if (ge?.length === 1) {
+        sanitized.ge = ge[0];
+    }
+
+    for (const key of Object.keys(sanitized) as (keyof WebsocQueryParams)[]) {
         const value = sanitized[key];
         if (value === '' || value === null || value === undefined) {
             delete sanitized[key];
         }
     }
 
-    return sanitized as WebsocQueryParams;
+    return sanitized;
 }
 
 async function queryWebsoc(rawParams: WebsocSearchInput): Promise<WebsocAPIResponse> {

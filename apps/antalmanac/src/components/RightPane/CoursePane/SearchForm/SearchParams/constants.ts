@@ -1,6 +1,6 @@
 import { getDefaultTerm } from '$lib/term';
-import { type GeSearchValue } from '@packages/antalmanac-types';
 import { WebsocFullCoursesOptionSchema } from '@packages/antalmanac-types';
+import { type WebsocFilterGe } from '@packages/anteater-api/types';
 
 export const ADVANCED_SEARCH_PARAMS = [
     'instructor',
@@ -42,7 +42,7 @@ export const DEFAULT_TERM = getDefaultTerm();
 
 export const DEFAULT_MANUAL_SEARCH_VALUES: {
     deptValue: string;
-    ge: GeSearchValue[];
+    ge: WebsocFilterGe[];
     courseNumber: string;
     sectionCode: string;
 } = {

@@ -1,1 +1,1 @@
-export { GeCategorySchema as GradesGeSchema, type GeCategory } from './ge';
+export { WebsocGeSchema as GradesGeSchema, type WebsocGe } from '@packages/antalmanac-types/websoc';

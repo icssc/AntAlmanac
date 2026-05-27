@@ -1,14 +1,21 @@
+import { QuarterSchema } from '@packages/antalmanac-types/calendar';
 import type {
     WebsocSection,
     WebsocCourse,
     WebsocSectionStatus,
     WebsocSectionType,
     WebsocFullCoursesOption,
+    WebsocFilterGe,
+    WebsocGe,
 } from '@packages/anteater-api/types';
+import { WEBSOC_FILTER_GE_VALUES, WEBSOC_GE_VALUES } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
-import { QuarterSchema } from './calendar';
-import { GeSearchValueSchema } from './ge';
+export type { WebsocFilterGe, WebsocGe };
+
+export const WebsocGeSchema = z.enum(WEBSOC_GE_VALUES);
+
+export const WebsocFilterGeSchema = z.enum(WEBSOC_FILTER_GE_VALUES as unknown as [WebsocFilterGe, ...WebsocFilterGe[]]);
 
 export const WebsocSectionTypeSchema = z.enum([
     'Act',
@@ -58,7 +65,7 @@ export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,
     department: z.string().optional(),
-    ge: z.array(GeSearchValueSchema).optional(),
+    ge: z.array(WebsocFilterGeSchema).optional(),
     courseNumber: z.string().optional(),
     courseTitle: z.string().optional(),
     sectionCodes: z.string().optional(),
