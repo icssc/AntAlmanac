@@ -1,5 +1,5 @@
-import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
-import { SearchWithPlanner } from '$components/RightPane/CoursePane/SearchForm/SearchWithPlanner';
+import { FuzzySearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch/FuzzySearch';
+import { SearchWithPlanner } from '$components/RightPane/CoursePane/SearchForm/QuickSearch/SearchWithPlanner';
 import { Box, Stack, Typography, useTheme } from '@mui/material';
 
 export const QuickSearch = () => {

@@ -2,8 +2,11 @@ import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { useCourseSearchParam, useCourseSearchView } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import {
+    useCourseSearchParam,
+    useCourseSearchView,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';

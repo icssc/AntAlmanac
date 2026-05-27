@@ -1,15 +1,15 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import {
+    COURSE_SEARCH_MODE,
+    DEFAULT_FORM_DATA,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
+import {
     useCourseSearchForm,
     useCourseSearchMode,
     useCourseSearchParam,
     useCourseSearchSubmit,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
-import {
-    COURSE_SEARCH_MODE,
-    DEFAULT_FORM_DATA,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
@@ -59,7 +59,7 @@ interface SearchOption {
     result: SearchResult;
 }
 
-const FuzzySearch = () => {
+export function FuzzySearch() {
     const postHog = usePostHog();
     const [term] = useCourseSearchParam('term');
     const { setFields } = useCourseSearchForm();
@@ -355,6 +355,4 @@ const FuzzySearch = () => {
             isAligned
         />
     );
-};
-
-export default FuzzySearch;
+}
