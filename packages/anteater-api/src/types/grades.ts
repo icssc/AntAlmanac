@@ -1,7 +1,5 @@
 import { paths } from './generated/anteater-api-types';
 
-export type { WebsocGe as GE } from './websoc';
-
 export type AggregateGradesAPIResult =
     paths['/v2/rest/grades/aggregate']['get']['responses']['200']['content']['application/json'];
 

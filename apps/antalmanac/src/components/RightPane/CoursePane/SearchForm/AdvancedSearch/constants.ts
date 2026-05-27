@@ -1,6 +1,7 @@
-import { WEBSOC_FILTER_GE_VALUES, WEBSOC_GE_VALUES, type WebsocFilterGe } from '@packages/anteater-api/types';
+import type { WebsocGe } from '@packages/anteater-api/types';
 
 export const GE_LABELS = {
+    ANY: { label: "ANY: Don't filter for GE", shortLabel: 'Any GEs' },
     'GE-1A': { label: 'GE Ia (1a): Lower Division Writing', shortLabel: 'GE Ia (1a)' },
     'GE-1B': { label: 'GE Ib (1b): Upper Division Writing', shortLabel: 'GE Ib (1b)' },
     'GE-2': { label: 'GE II (2): Science and Technology', shortLabel: 'GE II (2)' },
@@ -11,21 +12,7 @@ export const GE_LABELS = {
     'GE-6': { label: 'GE VI (6): Language other than English', shortLabel: 'GE VI (6)' },
     'GE-7': { label: 'GE VII (7): Multicultural Studies', shortLabel: 'GE VII (7)' },
     'GE-8': { label: 'GE VIII (8): International/Global Issues', shortLabel: 'GE VIII (8)' },
-} satisfies Record<WebsocFilterGe, { label: string; shortLabel: string }>;
-
-export const ANY_GE_OPTION = {
-    value: WEBSOC_GE_VALUES[0],
-    label: "ANY: Don't filter for GE",
-    shortLabel: 'Any GEs',
-} as const;
-
-export const GE_OPTIONS = [
-    ANY_GE_OPTION,
-    ...WEBSOC_FILTER_GE_VALUES.map((value) => ({
-        value,
-        ...GE_LABELS[value],
-    })),
-];
+} satisfies Record<WebsocGe, { label: string; shortLabel: string }>;
 
 export const EXCLUDE_RESTRICTION_CODES_OPTIONS = [
     { value: 'A', label: 'A: Prerequisite required' },

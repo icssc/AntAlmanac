@@ -4,8 +4,6 @@ import { join } from 'node:path';
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
 import {
-    WebsocFilterGeSchema,
-    type WebsocFilterGe,
     type GESearchResult,
     type SearchResult,
     type SectionSearchResult,
@@ -46,9 +44,22 @@ const MAX_AUTOCOMPLETE_RESULTS = 12;
 
 const termsFolderPath = join(process.cwd(), 'src', 'generated', 'terms');
 
-const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
+const geCategories = {
+    'GE-1A': { type: 'GE_CATEGORY', name: 'Lower Division Writing' },
+    'GE-1B': { type: 'GE_CATEGORY', name: 'Upper Division Writing' },
+    'GE-2': { type: 'GE_CATEGORY', name: 'Science and Technology' },
+    'GE-3': { type: 'GE_CATEGORY', name: 'Social and Behavioral Sciences' },
+    'GE-4': { type: 'GE_CATEGORY', name: 'Arts and Humanities' },
+    'GE-5A': { type: 'GE_CATEGORY', name: 'Quantitative Literacy' },
+    'GE-5B': { type: 'GE_CATEGORY', name: 'Formal Reasoning' },
+    'GE-6': { type: 'GE_CATEGORY', name: 'Language other than English' },
+    'GE-7': { type: 'GE_CATEGORY', name: 'Multicultural Studies' },
+    'GE-8': { type: 'GE_CATEGORY', name: 'International/Global Issues' },
+} as const satisfies Record<string, GESearchResult>;
 
-type GECategoryKey = (typeof geCategoryKeys)[number];
+function isGECategoryKey(key: string): key is keyof typeof geCategories {
+    return Object.hasOwn(geCategories, key);
+}
 
 const bareCourseSchema = z.object({
     department: z.string(),
@@ -59,24 +70,6 @@ type BareCourse = z.infer<typeof bareCourseSchema>;
 
 const termInputSchema = WebsocSearchInputSchema.pick({ year: true, quarter: true });
 type SearchTermInput = z.infer<typeof termInputSchema>;
-
-const geCategories: Record<GECategoryKey, GESearchResult> = {
-    ge1a: { type: 'GE_CATEGORY', name: 'Lower Division Writing' },
-    ge1b: { type: 'GE_CATEGORY', name: 'Upper Division Writing' },
-    ge2: { type: 'GE_CATEGORY', name: 'Science and Technology' },
-    ge3: { type: 'GE_CATEGORY', name: 'Social and Behavioral Sciences' },
-    ge4: { type: 'GE_CATEGORY', name: 'Arts and Humanities' },
-    ge5a: { type: 'GE_CATEGORY', name: 'Quantitative Literacy' },
-    ge5b: { type: 'GE_CATEGORY', name: 'Formal Reasoning' },
-    ge6: { type: 'GE_CATEGORY', name: 'Language other than English' },
-    ge7: { type: 'GE_CATEGORY', name: 'Multicultural Studies' },
-    ge8: { type: 'GE_CATEGORY', name: 'International/Global Issues' },
-};
-
-const toGESearchResult = (key: GECategoryKey): [WebsocFilterGe, SearchResult] => [
-    WebsocFilterGeSchema.parse(key.toUpperCase().replace('GE', 'GE-')),
-    geCategories[key],
-];
 
 async function getTermSectionCodes(term: SearchTermInput): Promise<Record<string, SectionSearchResult>> {
     const parsedTerm = `${term.quarter}_${term.year}`;
@@ -127,10 +120,12 @@ const searchRouter = router({
             }
 
             const matchedGEs = fuzzysort
-                .go(query, [...geCategoryKeys])
+                .go(query, Object.keys(geCategories))
                 .map((r) => r.target)
-                .filter((t): t is GECategoryKey => t in geCategories);
-            if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
+                .filter(isGECategoryKey);
+            if (matchedGEs.length) {
+                return Object.fromEntries(matchedGEs.map((key) => [key, geCategories[key]]));
+            }
 
             const matchedDepts =
                 matchedSections.length === MAX_AUTOCOMPLETE_RESULTS

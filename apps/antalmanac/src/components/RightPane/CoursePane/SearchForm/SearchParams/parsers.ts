@@ -9,8 +9,7 @@ import {
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import { getTermByShortName } from '$lib/term';
-import { type AATerm } from '@packages/antalmanac-types';
-import { WEBSOC_FILTER_GE_VALUES } from '@packages/anteater-api/types';
+import { WebsocGeSchema, type AATerm } from '@packages/antalmanac-types';
 import {
     createParser,
     createSerializer,
@@ -37,7 +36,7 @@ const parseAsCourseSearchTerm = createParser<AATerm>({
 export const courseSearchParamParsers: CourseSearchParamParserMap = {
     term: parseAsCourseSearchTerm,
     deptValue: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.deptValue),
-    ge: parseAsArrayOf(parseAsStringLiteral(WEBSOC_FILTER_GE_VALUES)).withDefault(DEFAULT_MANUAL_SEARCH_VALUES.ge),
+    ge: parseAsArrayOf(parseAsStringLiteral(WebsocGeSchema.options)).withDefault(DEFAULT_MANUAL_SEARCH_VALUES.ge),
     courseNumber: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.courseNumber),
     sectionCode: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.sectionCode),
     instructor: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.instructor),

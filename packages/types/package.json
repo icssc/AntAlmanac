@@ -5,11 +5,6 @@
     "main": "./src/index.ts",
     "types": "./src/index.ts",
     "type": "module",
-    "exports": {
-        ".": "./src/index.ts",
-        "./calendar": "./src/calendar.ts",
-        "./websoc": "./src/websoc.ts"
-    },
     "scripts": {},
     "dependencies": {
         "@packages/anteater-api": "workspace:*",
