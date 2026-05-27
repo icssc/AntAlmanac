@@ -6,7 +6,7 @@ export type ScheduleViewScope = 'home' | 'friend';
 
 /**
  * Abstraction for schedule data + mutations used by schedule UI.
- * Home uses AppStore via appScheduleViewSource.
+ * Home uses AppStore directly; friend view uses friendScheduleViewSource.
  */
 export interface ScheduleViewSource {
     readonly scope: ScheduleViewScope;

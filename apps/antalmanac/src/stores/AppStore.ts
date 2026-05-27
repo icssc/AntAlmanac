@@ -20,6 +20,7 @@ import type {
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
+import type { ScheduleViewSource } from '$lib/schedule/ScheduleViewSource';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -33,7 +34,22 @@ import type {
     AATerm,
 } from '@packages/antalmanac-types';
 
-class AppStore extends EventEmitter {
+const SCHEDULE_VIEW_EVENTS = [
+    'addedCoursesChange',
+    'customEventsChange',
+    'colorChange',
+    'currentScheduleIndexChange',
+    'scheduleNamesChange',
+    'scheduleNotesChange',
+] as const;
+
+class AppStore extends EventEmitter implements ScheduleViewSource {
+    readonly scope = 'home' as const;
+
+    readonly readonly = false;
+
+    readonly appliesCourseVisibility = true;
+
     schedule: Schedules;
 
     customEvents: RepeatingCustomEvent[];
@@ -142,6 +158,21 @@ class AppStore extends EventEmitter {
 
     getCurrentScheduleNote() {
         return this.schedule.getCurrentScheduleNote();
+    }
+
+    getCurrentCustomEvents() {
+        return this.schedule.getCurrentCustomEvents();
+    }
+
+    subscribe(onChange: () => void) {
+        for (const event of SCHEDULE_VIEW_EVENTS) {
+            this.on(event, onChange);
+        }
+        return () => {
+            for (const event of SCHEDULE_VIEW_EVENTS) {
+                this.off(event, onChange);
+            }
+        };
     }
 
     hasUnsavedChanges() {
