@@ -63,11 +63,6 @@ export function shouldShowSearchForm(formData: CourseSearchParams) {
     return !hasPrimarySearchInput || !isValidSearch(formData);
 }
 
-/** Drop planner batch search so URL-driven queries take precedence. */
-export function clearMultiSearchData() {
-    RightPaneStore.clearMultiSearchData();
-}
-
 export function useCourseSearchParam<K extends keyof CourseSearchParams>(
     field: K
 ): readonly [CourseSearchParams[K], (next: CourseSearchParams[K]) => void] {
@@ -76,7 +71,7 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(
 
     const setValue = useCallback(
         (next: CourseSearchParams[K]) => {
-            clearMultiSearchData();
+            RightPaneStore.clearMultiSearchData();
             void setValueRaw(next);
         },
         [setValueRaw]
@@ -104,7 +99,7 @@ export function useCourseSearchUrl() {
         (data?: CourseSearchParams) => {
             const payload = data ?? readCourseSearchParams();
             if (isValidSearch(payload)) {
-                clearMultiSearchData();
+                RightPaneStore.clearMultiSearchData();
                 void setViewParam(COURSE_SEARCH_VIEW.RESULTS);
                 return true;
             }
@@ -127,7 +122,7 @@ export function useCourseSearchUrl() {
 
     const setField = useCallback(
         <Field extends keyof CourseSearchParams>(field: Field, value: CourseSearchParams[Field]) => {
-            clearMultiSearchData();
+            RightPaneStore.clearMultiSearchData();
             void setFormData({ [field]: value });
         },
         [setFormData]
@@ -135,7 +130,7 @@ export function useCourseSearchUrl() {
 
     const setFields = useCallback(
         (values: Partial<CourseSearchParams> | null) => {
-            clearMultiSearchData();
+            RightPaneStore.clearMultiSearchData();
             void setFormData(values);
         },
         [setFormData]
@@ -143,7 +138,7 @@ export function useCourseSearchUrl() {
 
     const resetForm = useCallback(
         ({ preserveTerm = false }: { preserveTerm?: boolean } = {}) => {
-            clearMultiSearchData();
+            RightPaneStore.clearMultiSearchData();
             void setFormData(preserveTerm ? { ...DEFAULT_FORM_DATA, term: formData.term } : DEFAULT_FORM_DATA);
         },
         [formData.term, setFormData]
@@ -154,7 +149,7 @@ export function useCourseSearchUrl() {
     }, [setViewParam]);
 
     const showSearchForm = useCallback(() => {
-        clearMultiSearchData();
+        RightPaneStore.clearMultiSearchData();
         void setViewParam(COURSE_SEARCH_VIEW.SEARCH_FORM);
     }, [setViewParam]);
 

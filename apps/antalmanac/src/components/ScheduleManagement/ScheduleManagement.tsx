@@ -70,12 +70,12 @@ export function ScheduleManagement() {
     useEffect(() => {
         if (tab === 'added') {
             hasAppliedInitialTab.current = true;
-            setActiveTab('added');
+            setActiveTab(tab);
             return;
         }
         if (tab === 'map') {
             hasAppliedInitialTab.current = true;
-            setActiveTab('map');
+            setActiveTab(tab);
             return;
         }
         if (hasAppliedInitialTab.current) {
