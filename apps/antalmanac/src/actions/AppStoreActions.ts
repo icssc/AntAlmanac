@@ -302,9 +302,7 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
 
                 let error = false;
 
-                if (await AppStore.loadSchedule(scheduleSaveState)) {
-                    openSnackbar('success', `Schedule loaded.`);
-                } else {
+                if (!(await AppStore.loadSchedule(scheduleSaveState))) {
                     AppStore.loadFallbackSchedule(scheduleSaveState);
                     error = true;
                 }
@@ -372,7 +370,6 @@ export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions)
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
             useHiddenCoursesStore.getState().hydrateFromSchedules(scheduleSaveState.schedules);
             analyticsIdentifyUser(postHog, userId);
-            openSnackbar('success', `Schedule loaded.`);
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
                 action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
