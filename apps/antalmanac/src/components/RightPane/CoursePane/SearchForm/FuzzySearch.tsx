@@ -1,15 +1,16 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
+import type { GeValue } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import {
+    COURSE_SEARCH_MODE,
+    DEFAULT_FORM_DATA,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import {
     useCourseSearchForm,
     useCourseSearchMode,
     useCourseSearchParam,
     useCourseSearchSubmit,
 } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
-import {
-    COURSE_SEARCH_MODE,
-    DEFAULT_FORM_DATA,
-} from '$components/RightPane/CoursePane/SearchForm/SearchParams/constants';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
@@ -94,7 +95,7 @@ const FuzzySearch = () => {
         switch (result.type) {
             case resultType.GE_CATEGORY: {
                 const geCode = option.key.split('-')[1].toUpperCase();
-                nextFormData = { ...baseFormData, ge: `GE-${geCode}` };
+                nextFormData = { ...baseFormData, ge: [`GE-${geCode}` as GeValue] };
                 break;
             }
             case resultType.DEPARTMENT: {

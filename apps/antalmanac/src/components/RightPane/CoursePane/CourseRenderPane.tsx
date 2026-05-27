@@ -1,6 +1,8 @@
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
-import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
+import {
+    useCourseSearchForm,
+    useCourseSearchMode,
+} from '$components/RightPane/CoursePane/SearchForm/SearchParams/hooks';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import RightPaneStore, { type CourseSearchWarningType } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
@@ -195,7 +197,7 @@ const SectionTableWrapped = (
         component = <SchoolDeptCard name={item.schoolName} comment={item.schoolComment} type={'school'} />;
     } else if (isDepartmentEntry(item)) {
         component = <SchoolDeptCard name={`Department of ${item.deptName}`} comment={item.deptComment} type={'dept'} />;
-    } else if (formData.ge !== 'ANY') {
+    } else if (formData.ge.length > 0) {
         component = (
             <GeDataFetchProvider
                 term={formData.term}
@@ -308,7 +310,7 @@ export default function CourseRenderPane() {
             year: searchData.term.year,
             quarter: searchData.term.quarter,
             department: searchData.deptValue,
-            ge: searchData.ge,
+            ge: searchData.ge.length > 0 ? searchData.ge.join(',') : undefined,
             courseNumber: searchData.courseNumber,
             sectionCodes: searchData.sectionCode,
             instructorName: searchData.instructor,
@@ -358,7 +360,7 @@ export default function CourseRenderPane() {
                     response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
                 } else {
                     const websocQueryParams = getQueryParams(formData);
-                    const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
+                    const selectedGEs = formData.ge;
                     response =
                         selectedGEs.length > 1
                             ? intersectWebsocResponses(

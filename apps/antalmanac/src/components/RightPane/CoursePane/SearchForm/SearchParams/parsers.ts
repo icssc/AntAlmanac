@@ -1,4 +1,4 @@
-import { normalizeGeSelection } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { GE_VALUES } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import {
     AdvancedSearchParam,
     COURSE_SEARCH_MODE,
@@ -11,7 +11,14 @@ import {
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchForm/SearchParams/types';
 import { getTermByShortName } from '$lib/term';
 import { type AATerm } from '@packages/antalmanac-types';
-import { createParser, createSerializer, parseAsString, parseAsStringLiteral, type SingleParserBuilder } from 'nuqs';
+import {
+    createParser,
+    createSerializer,
+    parseAsArrayOf,
+    parseAsString,
+    parseAsStringLiteral,
+    type SingleParserBuilder,
+} from 'nuqs';
 
 type CourseSearchParamParser<K extends keyof CourseSearchParams> = SingleParserBuilder<CourseSearchParams[K]> & {
     readonly defaultValue: CourseSearchParams[K];
@@ -27,16 +34,10 @@ const parseAsCourseSearchTerm = createParser<AATerm>({
     eq: (a: AATerm, b: AATerm) => a.shortName === b.shortName,
 }).withDefault(DEFAULT_TERM);
 
-const parseAsNormalizedGe = createParser<string>({
-    parse: (value: string) => normalizeGeSelection(value),
-    serialize: (value: string) => normalizeGeSelection(value),
-    eq: (a: string, b: string) => normalizeGeSelection(a) === normalizeGeSelection(b),
-}).withDefault(DEFAULT_MANUAL_SEARCH_VALUES.ge);
-
 export const courseSearchParamParsers: CourseSearchParamParserMap = {
     term: parseAsCourseSearchTerm,
     deptValue: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.deptValue),
-    ge: parseAsNormalizedGe,
+    ge: parseAsArrayOf(parseAsStringLiteral(GE_VALUES)).withDefault(DEFAULT_MANUAL_SEARCH_VALUES.ge),
     courseNumber: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.courseNumber),
     sectionCode: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.sectionCode),
     instructor: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.instructor),
