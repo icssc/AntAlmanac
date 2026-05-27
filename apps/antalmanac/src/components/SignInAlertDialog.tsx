@@ -13,7 +13,7 @@ interface Props {
 export const SignInAlertDialog = ({ open, title, severity = 'info', onClose }: Props) => {
     return (
         <AlertDialog open={open} onClose={onClose} title={title} severity={severity}>
-            <DialogContentText>Sign in to load your schedule</DialogContentText>
+            <DialogContentText sx={{ mb: 1 }}>Sign in to load your schedule</DialogContentText>
             <Stack spacing={1}>
                 <SignInButtons />
             </Stack>
