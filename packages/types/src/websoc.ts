@@ -4,6 +4,7 @@ import type {
     WebsocSectionType,
     WebsocDivisionOption,
     WebsocFullCoursesOption,
+    WebsocCancelledCoursesOption,
 } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
@@ -47,6 +48,12 @@ export const WebsocFullCoursesOptionSchema = z.enum([
     'Overenrolled',
 ] as const satisfies readonly WebsocFullCoursesOption[]);
 
+export const WebsocCancelledCoursesOptionSchema = z.enum([
+    'Exclude',
+    'Include',
+    'Only',
+] as const satisfies readonly WebsocCancelledCoursesOption[]);
+
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,
@@ -62,7 +69,7 @@ export const WebsocSearchInputSchema = z.object({
     division: WebsocDivisionOptionSchema.optional(),
     sectionType: z.string().optional(),
     fullCourses: WebsocFullCoursesOptionSchema.optional(),
-    cancelledCourses: z.string().optional(),
+    cancelledCourses: WebsocCancelledCoursesOptionSchema.optional(),
     units: z.string().optional(),
     startTime: z.string().optional(),
     endTime: z.string().optional(),

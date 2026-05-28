@@ -46,3 +46,5 @@ export type WebsocQueryParams = NonNullable<paths['/v2/rest/websoc']['get']['par
 export type WebsocDivisionOption = NonNullable<WebsocQueryParams['division']>;
 
 export type WebsocFullCoursesOption = NonNullable<WebsocQueryParams['fullCourses']>;
+
+export type WebsocCancelledCoursesOption = NonNullable<WebsocQueryParams['cancelledCourses']>;
