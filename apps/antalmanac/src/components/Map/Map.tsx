@@ -164,12 +164,8 @@ export default function CourseMap() {
     const [selectedDayIndex, setSelectedDay] = useState(0);
 
     const [rawCalendarEvents, setRawCalendarEvents] = useState(() => AppStore.getEventsInCalendar());
-    const [currentCourses, setCurrentCourses] = useState(() => AppStore.schedule.getCurrentCourses());
-    const [customEventIds, setCustomEventIds] = useState<(string | number)[]>(() =>
-        AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID)
-    );
 
-    const { setting, palette, assignments } = useSectionThemeAssignments(currentCourses, customEventIds);
+    const { setting, palette, assignments } = useSectionThemeAssignments();
 
     const themedEvents = useMemo<CalendarEvent[]>(
         () => applyThemeToCalendarEvents(rawCalendarEvents, setting, assignments, palette),
@@ -204,8 +200,6 @@ export default function CourseMap() {
     useEffect(() => {
         const updateFromStore = () => {
             setRawCalendarEvents(AppStore.getEventsInCalendar());
-            setCurrentCourses(AppStore.schedule.getCurrentCourses());
-            setCustomEventIds(AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID));
         };
 
         AppStore.on('addedCoursesChange', updateFromStore);

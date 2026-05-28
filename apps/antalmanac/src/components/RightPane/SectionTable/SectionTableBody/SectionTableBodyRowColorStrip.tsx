@@ -61,17 +61,13 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
     const activeSectionColor = useSectionThemeStore(selectActiveSectionColor);
     const setManualColor = useSectionThemeStore((s) => s.setManualColor);
-    const assignmentsByTheme = useSectionThemeStore((s) => s.assignments);
+    // Read the single resolved source of truth so the strip always matches the calendar
+    // (which reads the same map via useSectionThemeAssignments).
+    const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
     const isDark = useThemeStore((s) => s.isDark);
 
     const palette = useMemo(() => getPalette(activeSectionColor, isDark), [activeSectionColor, isDark]);
-    const assignments = useMemo(
-        () =>
-            activeSectionColor === 'custom'
-                ? EMPTY_ASSIGNMENTS
-                : (assignmentsByTheme[activeSectionColor] ?? EMPTY_ASSIGNMENTS),
-        [activeSectionColor, assignmentsByTheme]
-    );
+    const assignments = activeSectionColor === 'custom' ? EMPTY_ASSIGNMENTS : activeAssignments;
 
     const [hovered, setHovered] = useState(false);
     const [currColor, setCurrColor] = useState(() =>

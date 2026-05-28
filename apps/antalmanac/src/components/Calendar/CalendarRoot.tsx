@@ -71,11 +71,7 @@ export const ScheduleCalendar = memo(() => {
     );
     const isDark = useThemeStore((store) => store.isDark);
 
-    const customEventIds = useMemo(
-        () => currentScheduleCustomEvents.map((event) => event.customEventID),
-        [currentScheduleCustomEvents]
-    );
-    const { setting, palette, assignments } = useSectionThemeAssignments(currentScheduleCourses, customEventIds);
+    const { setting, palette, assignments } = useSectionThemeAssignments();
 
     const eventsInCalendar = useMemo(
         () => applyThemeToCalendarEvents(rawEventsInCalendar, setting, assignments, palette),

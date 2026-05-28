@@ -1,7 +1,6 @@
-import { computeAssignments, getPalette, type SectionColorSetting, type ThemeAssignmentMap } from '$lib/sectionThemes';
+import { getPalette, type SectionColorSetting, type ThemeAssignmentMap } from '$lib/sectionThemes';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import type { ScheduleCourse } from '@packages/antalmanac-types';
 import { useMemo } from 'react';
 
 export interface SectionThemeContext {
@@ -12,25 +11,20 @@ export interface SectionThemeContext {
 }
 
 /**
- * Resolve the active theme's complete color assignments for the given schedule contents.
- * Existing (persisted) assignments are preserved so survivors keep their colors; only
- * not-yet-assigned sections are filled in. Returns an empty map for the custom setting.
+ * Resolve the active theme's complete color assignments for the current schedule.
+ *
+ * Reads the single source of truth ({@link useSectionThemeStore.activeAssignments}), which the
+ * store keeps in sync with the schedule and the previewed/chosen theme. Every color consumer
+ * (calendar, map, section-table color strips, color picker) reads from the same place, so they
+ * always agree. Returns an empty map for the custom setting.
  */
-export function useSectionThemeAssignments(
-    courses: readonly ScheduleCourse[],
-    customEventIds: readonly (string | number)[]
-): SectionThemeContext {
+export function useSectionThemeAssignments(): SectionThemeContext {
     const setting = useSectionThemeStore(selectActiveSectionColor);
-    const assignmentsByTheme = useSectionThemeStore((s) => s.assignments);
+    const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
     const isDark = useThemeStore((s) => s.isDark);
 
     return useMemo(() => {
         const palette = getPalette(setting, isDark);
-        if (setting === 'custom') {
-            return { setting, palette, assignments: {} };
-        }
-        const persisted = assignmentsByTheme[setting] ?? {};
-        const { map } = computeAssignments(persisted, courses, customEventIds, palette);
-        return { setting, palette, assignments: map };
-    }, [setting, assignmentsByTheme, isDark, courses, customEventIds]);
+        return { setting, palette, assignments: setting === 'custom' ? {} : activeAssignments };
+    }, [setting, activeAssignments, isDark]);
 }

@@ -28,6 +28,14 @@ interface SectionThemeStore {
     previewSectionColor: SectionColorSetting | null;
     /** Per-theme color assignments (palette slots + manual overrides). */
     assignments: AssignmentsByTheme;
+    /**
+     * Resolved assignment map (palette slots + overrides) for the *active* theme — i.e. the
+     * preview theme while hovering, otherwise the chosen one — covering every current section
+     * and custom event. This is the single source of truth all color consumers read from
+     * (calendar, map, section-table color strips, and the color picker), so they always agree.
+     * Empty on the custom setting.
+     */
+    activeAssignments: ThemeAssignmentMap;
 
     setSectionColor: (value: SectionColorSetting, postHog?: PostHog) => void;
     setPreviewSectionColor: (value: SectionColorSetting | null) => void;
@@ -37,6 +45,8 @@ interface SectionThemeStore {
     resetTheme: (theme: SectionThemeId) => void;
     /** Fill assignments for the active theme's current sections; prune removed ones. */
     ensureAssignments: () => void;
+    /** Recompute {@link activeAssignments} for the currently active (preview-aware) theme. */
+    recomputeActiveAssignments: () => void;
 }
 
 function readStoredSectionColor(): SectionColorSetting {
@@ -60,60 +70,99 @@ function persistAssignments(assignments: AssignmentsByTheme) {
     setLocalStorageSectionColorAssignments(JSON.stringify(assignments));
 }
 
-export const useSectionThemeStore = create<SectionThemeStore>((set, get) => ({
-    sectionColor: readStoredSectionColor(),
-    previewSectionColor: null,
-    assignments: readStoredAssignments(),
+/**
+ * Compute the resolved assignment map (palette slots + overrides) for `setting` over the
+ * current schedule. Mirrors the calendar's resolution exactly so every consumer agrees.
+ * Slots are palette-shape based and identical across light/dark, so `isDark` is irrelevant here.
+ */
+function computeActiveMap(assignments: AssignmentsByTheme, setting: SectionColorSetting): ThemeAssignmentMap {
+    if (setting === 'custom') return {};
+    const courses = AppStore.schedule.getCurrentCourses();
+    const customEventIds = AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID);
+    const palette = getPalette(setting, false);
+    const { map } = computeAssignments(assignments[setting] ?? {}, courses, customEventIds, palette);
+    return map;
+}
 
-    setSectionColor: (value, postHog) => {
-        setLocalStorageSectionColor(value);
-        set({ sectionColor: value, previewSectionColor: null });
-        get().ensureAssignments();
-        logAnalytics(postHog, {
-            category: analyticsEnum.nav,
-            action: analyticsEnum.nav.actions.CHANGE_SECTION_COLOR,
-            customProps: { sectionColor: value },
-        });
-    },
+function mapsEqual(a: ThemeAssignmentMap, b: ThemeAssignmentMap): boolean {
+    const aKeys = Object.keys(a);
+    if (aKeys.length !== Object.keys(b).length) return false;
+    return aKeys.every((key) => a[key] === b[key]);
+}
 
-    setPreviewSectionColor: (value) => set({ previewSectionColor: value }),
+export const useSectionThemeStore = create<SectionThemeStore>((set, get) => {
+    const initialAssignments = readStoredAssignments();
+    const initialSectionColor = readStoredSectionColor();
 
-    setManualColor: (theme, key, color) => {
-        const assignments = { ...get().assignments, [theme]: { ...get().assignments[theme], [key]: color } };
-        persistAssignments(assignments);
-        set({ assignments });
-    },
+    return {
+        sectionColor: initialSectionColor,
+        previewSectionColor: null,
+        assignments: initialAssignments,
+        activeAssignments: computeActiveMap(initialAssignments, initialSectionColor),
 
-    resetTheme: (theme) => {
-        const assignments = { ...get().assignments };
-        delete assignments[theme];
-        persistAssignments(assignments);
-        set({ assignments });
-        get().ensureAssignments();
-    },
+        setSectionColor: (value, postHog) => {
+            setLocalStorageSectionColor(value);
+            set({ sectionColor: value, previewSectionColor: null });
+            get().ensureAssignments();
+            get().recomputeActiveAssignments();
+            logAnalytics(postHog, {
+                category: analyticsEnum.nav,
+                action: analyticsEnum.nav.actions.CHANGE_SECTION_COLOR,
+                customProps: { sectionColor: value },
+            });
+        },
 
-    ensureAssignments: () => {
-        const { sectionColor, assignments } = get();
-        if (sectionColor === 'custom') return;
+        setPreviewSectionColor: (value) => {
+            set({ previewSectionColor: value });
+            get().recomputeActiveAssignments();
+        },
 
-        const courses = AppStore.schedule.getCurrentCourses();
-        const customEventIds = AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID);
-        const palette = getPalette(sectionColor, useThemeStore.getState().isDark);
+        setManualColor: (theme, key, color) => {
+            const assignments = { ...get().assignments, [theme]: { ...get().assignments[theme], [key]: color } };
+            persistAssignments(assignments);
+            set({ assignments });
+            get().recomputeActiveAssignments();
+        },
 
-        const existing = assignments[sectionColor] ?? {};
-        const { map } = computeAssignments(existing, courses, customEventIds, palette);
+        resetTheme: (theme) => {
+            const assignments = { ...get().assignments };
+            delete assignments[theme];
+            persistAssignments(assignments);
+            set({ assignments });
+            get().ensureAssignments();
+            get().recomputeActiveAssignments();
+        },
 
-        // Merge rather than replace: assignment keys are global (term|sectionCode), and
-        // computeAssignments only returns the *current* schedule's keys. Replacing would
-        // drop assignments/overrides belonging to other schedules, losing them on switch.
-        const hasNew = Object.keys(map).some((key) => existing[key] !== map[key]);
-        if (!hasNew) return;
+        ensureAssignments: () => {
+            const { sectionColor, assignments } = get();
+            if (sectionColor === 'custom') return;
 
-        const nextAssignments = { ...assignments, [sectionColor]: { ...existing, ...map } };
-        persistAssignments(nextAssignments);
-        set({ assignments: nextAssignments });
-    },
-}));
+            const courses = AppStore.schedule.getCurrentCourses();
+            const customEventIds = AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID);
+            const palette = getPalette(sectionColor, useThemeStore.getState().isDark);
+
+            const existing = assignments[sectionColor] ?? {};
+            const { map } = computeAssignments(existing, courses, customEventIds, palette);
+
+            // Merge rather than replace: assignment keys are global (term|sectionCode), and
+            // computeAssignments only returns the *current* schedule's keys. Replacing would
+            // drop assignments/overrides belonging to other schedules, losing them on switch.
+            const hasNew = Object.keys(map).some((key) => existing[key] !== map[key]);
+            if (!hasNew) return;
+
+            const nextAssignments = { ...assignments, [sectionColor]: { ...existing, ...map } };
+            persistAssignments(nextAssignments);
+            set({ assignments: nextAssignments });
+        },
+
+        recomputeActiveAssignments: () => {
+            const { assignments, previewSectionColor, sectionColor, activeAssignments } = get();
+            const next = computeActiveMap(assignments, previewSectionColor ?? sectionColor);
+            if (mapsEqual(activeAssignments, next)) return;
+            set({ activeAssignments: next });
+        },
+    };
+});
 
 /**
  * The section color setting currently in effect — preview (if hovering) or persisted otherwise.
@@ -124,7 +173,13 @@ export const selectActiveSectionColor = (s: SectionThemeStore): SectionColorSett
 // Keep assignments in sync with the schedule: assign colors to newly added sections.
 // Existing assignments are preserved (never reassigned), so deletions don't reshuffle the
 // survivors' colors and switching schedules doesn't discard other schedules' assignments.
-const syncAssignments = () => useSectionThemeStore.getState().ensureAssignments();
+const syncAssignments = () => {
+    const state = useSectionThemeStore.getState();
+    state.ensureAssignments();
+    // Keep the resolved active map current so the calendar, color strips, and color picker
+    // all reflect newly added/removed sections (and the previewed theme) consistently.
+    state.recomputeActiveAssignments();
+};
 AppStore.on('addedCoursesChange', syncAssignments);
 AppStore.on('customEventsChange', syncAssignments);
 AppStore.on('currentScheduleIndexChange', syncAssignments);
