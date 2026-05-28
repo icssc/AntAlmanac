@@ -2,8 +2,8 @@ import type { WebsocSectionType } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
 import type { AATerm } from './calendar';
+import { AASection } from './course';
 import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customEvent';
-import { AASection } from './websoc';
 
 /** Max length for schedule notes (UI and server validation). */
 export const SCHEDULE_NOTE_MAX_LENGTH = 5000;

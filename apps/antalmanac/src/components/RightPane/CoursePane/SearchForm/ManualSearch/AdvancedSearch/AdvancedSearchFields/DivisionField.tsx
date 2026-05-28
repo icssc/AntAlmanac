@@ -1,4 +1,5 @@
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
+import { DIVISION_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/constants';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { MenuItem } from '@mui/material';
 import { memo } from 'react';
@@ -12,7 +13,6 @@ export const DivisionField = memo(() => {
             selectProps={{
                 value: division,
                 onChange: (event) => setDivision(event.target.value),
-                displayEmpty: true,
                 MenuProps: {
                     anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
                     transformOrigin: { vertical: 'top', horizontal: 'left' },
@@ -20,10 +20,11 @@ export const DivisionField = memo(() => {
                 sx: { width: '100%' },
             }}
         >
-            <MenuItem value={''}>Any Division</MenuItem>
-            <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
-            <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
-            <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
+            {DIVISION_OPTIONS.map(({ value, label }) => (
+                <MenuItem key={value} value={value}>
+                    {label}
+                </MenuItem>
+            ))}
         </LabeledSelect>
     );
 });

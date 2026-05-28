@@ -1,4 +1,4 @@
-import type { WebsocGe } from '@packages/anteater-api/types';
+import type { WebsocDivisionOption, WebsocFullCoursesOption, WebsocGeOption } from '@packages/anteater-api/types';
 
 export const GE_LABELS = {
     ANY: { label: "ANY: Don't filter for GE", shortLabel: 'Any GEs' },
@@ -12,7 +12,22 @@ export const GE_LABELS = {
     'GE-6': { label: 'GE VI (6): Language other than English', shortLabel: 'GE VI (6)' },
     'GE-7': { label: 'GE VII (7): Multicultural Studies', shortLabel: 'GE VII (7)' },
     'GE-8': { label: 'GE VIII (8): International/Global Issues', shortLabel: 'GE VIII (8)' },
-} satisfies Record<WebsocGe, { label: string; shortLabel: string }>;
+} satisfies Record<WebsocGeOption, { label: string; shortLabel: string }>;
+
+export const DIVISION_OPTIONS = [
+    { value: 'ANY', label: 'Any Division' },
+    { value: 'LowerDiv', label: 'Lower Division' },
+    { value: 'UpperDiv', label: 'Upper Division' },
+    { value: 'Graduate', label: 'Graduate/Professional' },
+] as const satisfies readonly { value: WebsocDivisionOption; label: string }[];
+
+export const FULL_COURSES_OPTIONS = [
+    { value: 'ANY', label: 'Include all classes' },
+    { value: 'SkipFull', label: 'Skip full courses' },
+    { value: 'SkipFullWaitlist', label: 'Include full courses if space on waitlist' },
+    { value: 'FullOnly', label: 'Show only full or waitlisted courses' },
+    { value: 'Overenrolled', label: 'Show only over-enrolled courses' },
+] as const satisfies readonly { value: WebsocFullCoursesOption; label: string }[];
 
 export const EXCLUDE_RESTRICTION_CODES_OPTIONS = [
     { value: 'A', label: 'A: Prerequisite required' },

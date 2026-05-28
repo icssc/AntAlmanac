@@ -1,16 +1,14 @@
 import type { Quarter, Year } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
-export const QUARTERS = [
+export const QuarterSchema = z.enum([
     'Fall',
     'Winter',
     'Spring',
     'Summer1',
     'Summer10wk',
     'Summer2',
-] as const satisfies readonly Quarter[];
-
-export const QuarterSchema = z.enum(QUARTERS);
+] as const satisfies readonly Quarter[]);
 
 export type AATerm = {
     year: Year;

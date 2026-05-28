@@ -1,23 +1,23 @@
 'use client';
 
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent, CourseEvent } from '$components/Calendar/types';
+import { isSkeletonEvent } from '$components/Calendar/types';
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { cloneElement, isValidElement, memo, useCallback } from 'react';
 import type { EventWrapperProps } from 'react-big-calendar';
 
-interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEvent> {
+interface CalendarEventWrapperProps extends EventWrapperProps<CalendarEvent> {
     children?: React.ReactElement<{ onClick: (e: React.MouseEvent) => void }>;
 }
 
 /**
- * CalendarCourseEventWrapper allows us to override the default onClick event behavior which problematically rerenders the entire calendar.
+ * CalendarEventWrapper allows us to override the default onClick event behavior which problematically rerenders the entire calendar.
  */
-export const CalendarCourseEventWrapper = memo(function CalendarCourseEventWrapper({
+export const CalendarEventWrapper = memo(function CalendarEventWrapper({
     children,
     ...props
-}: CalendarCourseEventWrapperProps) {
+}: CalendarEventWrapperProps) {
     const quickSearch = useQuickSearch();
 
     const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent);

@@ -29,7 +29,7 @@ function key(label: string): ShortcutKey {
 
 /**
  * All shortcuts we currently support in the app.
- * Keep in sync with actual handlers (App.tsx, CoursePaneRoot, CalendarCourseEventWrapper, etc.).
+ * Keep in sync with actual handlers (App.tsx, CoursePaneRoot, CalendarEventWrapper, etc.).
  */
 export const KEYBOARD_SHORTCUT_SECTIONS: ShortcutSection[] = [
     {

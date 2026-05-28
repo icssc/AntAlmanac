@@ -1,6 +1,7 @@
 'use client';
 
-import { CourseCalendarEvent, isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CalendarEventDetail } from '$components/Calendar/CalendarEvent/CalendarEventDetail';
+import { isSkeletonEvent } from '$components/Calendar/types';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { Popover } from '@mui/material';
 import { useCallback } from 'react';
@@ -37,7 +38,7 @@ export function CalendarEventPopover({ scheduleNames }: CalendarEventPopoverProp
                 horizontal: 'left',
             }}
         >
-            <CourseCalendarEvent
+            <CalendarEventDetail
                 closePopover={handleClosePopover}
                 selectedEvent={selectedEvent}
                 scheduleNames={scheduleNames}

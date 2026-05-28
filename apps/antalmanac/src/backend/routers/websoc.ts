@@ -1,7 +1,12 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
-import { QuarterSchema, WebsocSearchInputKeysSchema, type CourseInfo } from '@packages/antalmanac-types';
-import { WebsocSearchInputSchema, type WebsocSearchInput } from '@packages/antalmanac-types';
+import {
+    QuarterSchema,
+    WebsocSearchInputKeysSchema,
+    WebsocSearchInputSchema,
+    type AACourse,
+    type WebsocSearchInput,
+} from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,
     WebsocQueryParams,
@@ -75,32 +80,25 @@ const websocRouter = router({
 
     getCourseInfo: aapiProcedure
         .input(WebsocSearchInputSchema)
-        .query(async ({ input }): Promise<Record<string, CourseInfo>> => {
+        .query(async ({ input }): Promise<Record<string, AACourse>> => {
             const res = await queryWebsoc(input);
 
             const entries = res.schools.flatMap((school) =>
                 school.departments.flatMap((dept) =>
                     dept.courses.flatMap((course) => {
                         const sectionTypes = [...new Set<WebsocSectionType>(course.sections.map((s) => s.sectionType))];
-                        return course.sections.map(
-                            (section) =>
-                                [
-                                    section.sectionCode,
-                                    {
-                                        courseDetails: {
-                                            deptCode: dept.deptCode,
-                                            courseNumber: course.courseNumber,
-                                            courseTitle: course.courseTitle,
-                                            courseComment: course.courseComment,
-                                            prerequisiteLink: course.prerequisiteLink,
-                                            sections: course.sections,
-                                            updatedAt: course.updatedAt,
-                                            sectionTypes,
-                                        },
-                                        section,
-                                    } satisfies CourseInfo,
-                                ] as const
-                        );
+                        const aaCourse = {
+                            deptCode: course.deptCode,
+                            courseNumber: course.courseNumber,
+                            courseTitle: course.courseTitle,
+                            courseComment: course.courseComment,
+                            prerequisiteLink: course.prerequisiteLink,
+                            updatedAt: course.updatedAt,
+                            sectionTypes,
+                            sections: course.sections.map((section) => ({ ...section, color: '' })),
+                        } satisfies AACourse;
+
+                        return course.sections.map((section) => [section.sectionCode, aaCourse] as const);
                     })
                 )
             );

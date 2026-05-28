@@ -1,4 +1,4 @@
-import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/types';
 import { getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import type { HourMinute } from '@packages/anteater-api/types';

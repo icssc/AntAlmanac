@@ -1,10 +1,10 @@
 import type {
-    WebsocSection,
-    WebsocCourse,
     WebsocSectionStatus,
     WebsocSectionType,
+    WebsocDivisionOption,
     WebsocFullCoursesOption,
-    WebsocGe,
+    WebsocCancelledCoursesOption,
+    WebsocGeOption,
 } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
@@ -22,7 +22,7 @@ export const WebsocGeSchema = z.enum([
     'GE-6',
     'GE-7',
     'GE-8',
-] as const satisfies readonly WebsocGe[]);
+] as const satisfies readonly WebsocGeOption[]);
 
 export const WebsocSectionTypeSchema = z.enum([
     'Act',
@@ -47,26 +47,26 @@ export const WebsocSectionStatusSchema = z.enum([
     'NewOnly',
 ] as const satisfies readonly WebsocSectionStatus[]);
 
+export const WebsocDivisionOptionSchema = z.enum([
+    'LowerDiv',
+    'UpperDiv',
+    'Graduate',
+    'ANY',
+] as const satisfies readonly WebsocDivisionOption[]);
+
 export const WebsocFullCoursesOptionSchema = z.enum([
     'ANY',
-    'SkipFullWaitlist',
     'SkipFull',
+    'SkipFullWaitlist',
     'FullOnly',
     'Overenrolled',
 ] as const satisfies readonly WebsocFullCoursesOption[]);
 
-type AASectionExtendedProperties = {
-    color: string;
-};
-
-export type AASection = WebsocSection & AASectionExtendedProperties;
-
-type AACourseExtendedProperties = {
-    sections: AASection[];
-    sectionTypes: WebsocSectionType[];
-};
-
-export type AACourse = Omit<WebsocCourse, 'sections'> & AACourseExtendedProperties;
+export const WebsocCancelledCoursesOptionSchema = z.enum([
+    'Exclude',
+    'Include',
+    'Only',
+] as const satisfies readonly WebsocCancelledCoursesOption[]);
 
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
@@ -80,10 +80,10 @@ export const WebsocSearchInputSchema = z.object({
     days: z.string().optional(),
     building: z.string().optional(),
     room: z.string().optional(),
-    division: z.string().optional(),
+    division: WebsocDivisionOptionSchema.optional(),
     sectionType: z.string().optional(),
-    fullCourses: z.string().optional(),
-    cancelledCourses: z.string().optional(),
+    fullCourses: WebsocFullCoursesOptionSchema.optional(),
+    cancelledCourses: WebsocCancelledCoursesOptionSchema.optional(),
     units: z.string().optional(),
     startTime: z.string().optional(),
     endTime: z.string().optional(),

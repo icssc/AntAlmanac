@@ -1,7 +1,6 @@
 import { ShortCourse, VisibilityState } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
-export { VisibilityState };
 type VisibilityMap = Record<string, Record<string, VisibilityState>>;
 
 const NEXT_VISIBILITY: Record<VisibilityState, VisibilityState> = {

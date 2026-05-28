@@ -1,6 +1,7 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { COURSE_SEARCH_MODE, DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams/constants';
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
+import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import {
     useCourseSearchForm,
     useCourseSearchMode,
@@ -12,7 +13,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import { WebsocGeSchema, type AATerm, type GESearchResult, type SearchResult } from '@packages/antalmanac-types';
-import type { WebsocGe } from '@packages/anteater-api/types';
+import type { WebsocGeOption } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
@@ -53,10 +54,10 @@ const isIpad = () => {
 };
 
 type SearchOption =
-    | { key: WebsocGe; result: GESearchResult }
+    | { key: WebsocGeOption; result: GESearchResult }
     | { key: string; result: Exclude<SearchResult, GESearchResult> };
 
-function isGeSearchOption(option: SearchOption): option is { key: WebsocGe; result: GESearchResult } {
+function isGeSearchOption(option: SearchOption): option is { key: WebsocGeOption; result: GESearchResult } {
     return option.result.type === resultType.GE_CATEGORY;
 }
 

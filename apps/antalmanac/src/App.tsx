@@ -26,44 +26,60 @@ const OUTAGE = false;
 
 const HOME_PAGE = <Home />;
 
-const BROWSER_ROUTER = createBrowserRouter([
-    {
-        element: <RouteLayout />,
-        children: [
-            {
-                path: '/',
-                element: HOME_PAGE,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/:tab',
-                element: HOME_PAGE,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '*',
-                element: <Navigate to="/" replace />,
-            },
-        ],
+const ROUTER_OPTIONS = {
+    future: {
+        v7_fetcherPersist: true,
+        v7_normalizeFormMethod: true,
+        v7_partialHydration: true,
+        v7_relativeSplatPath: true,
+        v7_skipActionErrorRevalidation: true,
     },
-]);
+} as const;
 
-const OUTAGE_ROUTER = createBrowserRouter([
-    {
-        element: <RouteLayout />,
-        children: [
-            {
-                path: '/outage',
-                element: <OutagePage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '*',
-                element: <Navigate to="/outage" replace />,
-            },
-        ],
-    },
-]);
+const BROWSER_ROUTER = createBrowserRouter(
+    [
+        {
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/',
+                    element: HOME_PAGE,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/:tab',
+                    element: HOME_PAGE,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/" replace />,
+                },
+            ],
+        },
+    ],
+    ROUTER_OPTIONS
+);
+
+const OUTAGE_ROUTER = createBrowserRouter(
+    [
+        {
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/outage',
+                    element: <OutagePage />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/outage" replace />,
+                },
+            ],
+        },
+    ],
+    ROUTER_OPTIONS
+);
 
 const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 
@@ -80,5 +96,5 @@ export default function App() {
         };
     }, []);
 
-    return <RouterProvider router={ROUTER} />;
+    return <RouterProvider router={ROUTER} future={{ v7_startTransition: true }} />;
 }
