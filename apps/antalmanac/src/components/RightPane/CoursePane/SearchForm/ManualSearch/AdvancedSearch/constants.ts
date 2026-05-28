@@ -1,4 +1,11 @@
-import type { WebsocFullCoursesOption } from '@packages/anteater-api/types';
+import type { WebsocDivisionOption, WebsocFullCoursesOption } from '@packages/anteater-api/types';
+
+export const DIVISION_OPTIONS = [
+    { value: 'ANY', label: 'Any Division' },
+    { value: 'LowerDiv', label: 'Lower Division' },
+    { value: 'UpperDiv', label: 'Upper Division' },
+    { value: 'Graduate', label: 'Graduate/Professional' },
+] as const satisfies readonly { value: WebsocDivisionOption; label: string }[];
 
 export const FULL_COURSES_OPTIONS = [
     { value: 'ANY', label: 'Include all classes' },

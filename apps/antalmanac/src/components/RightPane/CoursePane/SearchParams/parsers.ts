@@ -11,7 +11,7 @@ import {
     DEFAULT_TERM,
 } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { getTermByShortName } from '$lib/term';
-import { WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
+import { WebsocDivisionOptionSchema, WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
 import { createParser, createSerializer, parseAsString, parseAsStringLiteral } from 'nuqs';
 
 const parseAsCourseSearchTerm = createParser<AATerm>({
@@ -41,7 +41,9 @@ export const courseSearchParamParsers = {
     ),
     building: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.building),
     room: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.room),
-    division: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.division),
+    division: parseAsStringLiteral(WebsocDivisionOptionSchema.options).withDefault(
+        DEFAULT_ADVANCED_SEARCH_VALUES.division
+    ),
     excludeRoadmapCourses: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRoadmapCourses),
     excludeRestrictionCodes: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRestrictionCodes),
     days: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.days),

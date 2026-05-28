@@ -43,4 +43,6 @@ export type WebsocSyllabiResponse = WebsocSyllabiAPIResult['data'];
 
 export type WebsocQueryParams = NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']>;
 
+export type WebsocDivisionOption = NonNullable<WebsocQueryParams['division']>;
+
 export type WebsocFullCoursesOption = NonNullable<WebsocQueryParams['fullCourses']>;

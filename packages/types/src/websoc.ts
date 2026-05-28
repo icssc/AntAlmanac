@@ -2,6 +2,7 @@ import type {
     WebsocQueryParams,
     WebsocSectionStatus,
     WebsocSectionType,
+    WebsocDivisionOption,
     WebsocFullCoursesOption,
 } from '@packages/anteater-api/types';
 import { z } from 'zod';
@@ -31,6 +32,13 @@ export const WebsocSectionStatusSchema = z.enum([
     'NewOnly',
 ] as const satisfies readonly WebsocSectionStatus[]);
 
+export const WebsocDivisionOptionSchema = z.enum([
+    'LowerDiv',
+    'UpperDiv',
+    'Graduate',
+    'ANY',
+] as const satisfies readonly WebsocDivisionOption[]);
+
 export const WebsocFullCoursesOptionSchema = z.enum([
     'ANY',
     'SkipFull',
@@ -51,7 +59,7 @@ export const WebsocSearchInputSchema = z.object({
     days: z.string().optional(),
     building: z.string().optional(),
     room: z.string().optional(),
-    division: z.string().optional(),
+    division: WebsocDivisionOptionSchema.optional(),
     sectionType: z.string().optional(),
     fullCourses: WebsocFullCoursesOptionSchema.optional(),
     cancelledCourses: z.string().optional(),
