@@ -307,12 +307,15 @@ export function Import() {
     };
 
     const addCoursesMultiple = (courseInfo: Record<string, AACourse>, term: AATerm, scheduleIndex: number) => {
+        let sectionsAdded = 0;
+
         for (const [sectionCode, course] of Object.entries(courseInfo)) {
             const section = course.sections.find((s) => s.sectionCode === sectionCode);
             if (!section) {
                 continue;
             }
             addCourse(section, course, term, scheduleIndex, true, postHog);
+            sectionsAdded += 1;
         }
 
         const terms = AppStore.termsInSchedule(term);
@@ -320,7 +323,7 @@ export function Import() {
             warnMultipleTerms(terms);
         }
 
-        return Object.values(courseInfo).length;
+        return sectionsAdded;
     };
 
     const handleImportSourceChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
