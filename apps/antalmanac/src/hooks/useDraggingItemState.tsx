@@ -1,5 +1,5 @@
 import { SortableItemContext } from '$components/drag-and-drop/SortableItem';
-import { SortableListContext, DraggingItemContext, DraggingItemState } from '$components/drag-and-drop/SortableList';
+import { DraggingItemContext, DraggingItemState, SortableListContext } from '$components/drag-and-drop/SortableList';
 import { useContext, useEffect } from 'react';
 
 /**
@@ -17,7 +17,7 @@ export const useDraggingItemState = (getDraggingItemState: () => DraggingItemSta
         if (setDraggingItemState && isDragging) {
             setDraggingItemState(getDraggingItemState());
         }
-    }, [isDragging, setDraggingItemState]);
+    }, [isDragging, setDraggingItemState, getDraggingItemState]);
 
     return state;
 };
