@@ -12,16 +12,16 @@ import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { VisibilityState } from '@packages/antalmanac-types';
-import type {
-    AATerm,
-    AACourse,
-    CustomEventId,
-    RepeatingCustomEvent,
-    ScheduleCourse,
-    ShortCourseSchedule,
+import {
+    VisibilityState,
+    type AATerm,
+    type AACourse,
+    type AASection,
+    type CustomEventId,
+    type RepeatingCustomEvent,
+    type ScheduleCourse,
+    type ShortCourseSchedule,
 } from '@packages/antalmanac-types';
-import type { AASection } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
 import type { PostHog } from 'posthog-js/react';
 

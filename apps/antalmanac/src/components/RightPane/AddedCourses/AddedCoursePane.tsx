@@ -6,8 +6,6 @@ import { Box } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect } from 'react';
 
-export type { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedSectionsGrid';
-
 export function AddedCoursePane() {
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const postHog = usePostHog();

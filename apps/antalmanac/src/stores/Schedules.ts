@@ -3,16 +3,16 @@ import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { moveArrayElements } from '$lib/utils';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
-import type { AATerm } from '@packages/antalmanac-types';
 import type {
+    AATerm,
+    AACourse,
+    CustomEventId,
+    RepeatingCustomEvent,
     Schedule,
     ScheduleCourse,
     ScheduleSaveState,
     ScheduleUndoState,
     ShortCourseSchedule,
-    RepeatingCustomEvent,
-    AACourse,
-    CustomEventId,
 } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 

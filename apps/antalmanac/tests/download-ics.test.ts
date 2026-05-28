@@ -1,6 +1,6 @@
 import type { CalendarEvent } from '$components/Calendar/types';
 import { getEventsFromCourses } from '$lib/download';
-import type { AATerm } from '$lib/term';
+import type { AATerm } from '@packages/antalmanac-types';
 import { describe, test, expect } from 'vitest';
 
 const FALL_2023: AATerm = {
