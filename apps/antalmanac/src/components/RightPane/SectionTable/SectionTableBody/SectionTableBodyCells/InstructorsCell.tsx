@@ -1,7 +1,6 @@
-import { Box, Typography, SxProps } from '@mui/material';
-import { Link } from 'react-router-dom';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { Box, SxProps, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 interface InstructorsCellProps {
     instructors: string[];

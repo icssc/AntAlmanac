@@ -1,6 +1,6 @@
 import { BLUE } from '$src/globals';
-import { Dialog, DialogContent, LinearProgress, Stack, Box } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { Box, Dialog, DialogContent, LinearProgress, Stack } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import { Logo } from './Header/Logo';
 

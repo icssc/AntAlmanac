@@ -73,7 +73,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
             AppStore.removeListener('currentScheduleIndexChange', syncColor);
             AppStore.removeListener('colorChange', syncColor);
         };
-    }, [section.sectionCode, section.color, term]);
+    }, [section, term]);
 
     useEffect(() => {
         if (!visible) {

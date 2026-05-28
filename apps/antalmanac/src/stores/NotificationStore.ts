@@ -3,7 +3,7 @@ import { Notifications } from '$lib/notifications';
 import { getTermByYearAndQuarter } from '$lib/term';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
-import { type AATerm, type AASection, type AACourse, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
+import { type AACourse, type AASection, type AATerm, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 export type NotifyOn = {

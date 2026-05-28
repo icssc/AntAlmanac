@@ -6,7 +6,7 @@ import { openSnackbar } from '$stores/SnackbarStore';
 import type { AATerm } from '@packages/antalmanac-types';
 import type { HourMinute, Quarter } from '@packages/anteater-api/types';
 import { saveAs } from 'file-saver';
-import { createEvents, type EventAttributes } from 'ics';
+import { type EventAttributes, createEvents } from 'ics';
 
 import { notNull } from './utils';
 

@@ -10,30 +10,30 @@ import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import {
-    Undo as UndoIcon,
-    Redo as RedoIcon,
+    DeleteOutline,
     Description as DescriptionIcon,
     DescriptionOutlined as DescriptionOutlinedIcon,
+    Download,
     MoreVert as MoreVertIcon,
     Panorama,
-    Download,
-    DeleteOutline,
+    Redo as RedoIcon,
+    Undo as UndoIcon,
 } from '@mui/icons-material';
 import {
-    useTheme,
-    useMediaQuery,
     Box,
     Button,
     IconButton,
-    Paper,
-    Tooltip,
-    Menu,
-    MenuItem,
     ListItemIcon,
     ListItemText,
+    Menu,
+    MenuItem,
+    Paper,
+    Tooltip,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState, useCallback, memo, useRef } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 
 interface CalendarPaneToolbarProps {
     scheduleNames: string[];

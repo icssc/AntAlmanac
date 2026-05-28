@@ -142,7 +142,7 @@ export function AddedSectionsGrid() {
         // later. Skip when both lists are empty so a stale blueprint from a
         // previous session isn't cleared before loadSchedule has a chance to
         // populate AppStore.
-        if (courses.length > 0 || AppStore.schedule.getCurrentCustomEvents().length > 0) {
+        if (getCourses().length > 0 || AppStore.schedule.getCurrentCustomEvents().length > 0) {
             persistFromAppStore();
         }
 

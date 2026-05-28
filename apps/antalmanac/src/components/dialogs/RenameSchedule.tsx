@@ -6,9 +6,9 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    type DialogProps,
     DialogTitle,
     TextField,
-    type DialogProps,
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 

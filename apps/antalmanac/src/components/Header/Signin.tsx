@@ -28,7 +28,7 @@ import {
     TextField,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useState, type KeyboardEvent } from 'react';
+import { type KeyboardEvent, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Signin = () => {

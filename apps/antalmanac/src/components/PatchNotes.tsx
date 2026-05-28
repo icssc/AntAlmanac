@@ -2,15 +2,15 @@ import { setLocalStoragePatchNotesKey } from '$lib/localStorage';
 import { LATEST_PATCH_NOTES_UPDATE, usePatchNotesStore } from '$stores/PatchNotesStore';
 import {
     Backdrop,
-    Box,
     type BackdropProps,
+    Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    Typography,
     Stack,
+    Typography,
 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';

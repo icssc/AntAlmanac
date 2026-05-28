@@ -1,7 +1,7 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
-import type { AATerm, Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { describe, test, expect } from 'vitest';
+import type { AATerm, RepeatingCustomEvent, Schedule } from '@packages/antalmanac-types';
+import { describe, expect, test } from 'vitest';
 
 const WINTER_2024: AATerm = {
     year: '2024',

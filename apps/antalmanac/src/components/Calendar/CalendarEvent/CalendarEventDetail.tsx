@@ -12,7 +12,7 @@ import AppStore from '$stores/AppStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
+import { Box, Button, Chip, IconButton, Paper, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useRef } from 'react';
 

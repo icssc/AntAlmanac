@@ -2,7 +2,7 @@ import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { getDefaultTerm, termData } from '$lib/term';
 import type { AATerm } from '@packages/antalmanac-types';
-import { memo, type ComponentProps } from 'react';
+import { type ComponentProps, memo } from 'react';
 
 type TermSelectorProps = Omit<
     ComponentProps<typeof LabeledAutocomplete>,

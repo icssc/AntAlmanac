@@ -1,6 +1,6 @@
 import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
 import { Notification, NotifyOn, useNotificationStore } from '$stores/NotificationStore';
-import { TableCell, Checkbox } from '@mui/material';
+import { Checkbox, TableCell } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';

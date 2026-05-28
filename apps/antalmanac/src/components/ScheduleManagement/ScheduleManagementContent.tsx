@@ -4,7 +4,7 @@ import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot'
 import { useThemeStore } from '$stores/SettingsStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
-import { lazy, Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 
 const UCIMap = lazy(() => import('../Map/Map'));
 

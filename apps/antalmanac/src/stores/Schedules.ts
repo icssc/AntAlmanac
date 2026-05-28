@@ -4,8 +4,8 @@ import { moveArrayElements } from '$lib/utils';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
-    AATerm,
     AACourse,
+    AATerm,
     CustomEventId,
     RepeatingCustomEvent,
     Schedule,

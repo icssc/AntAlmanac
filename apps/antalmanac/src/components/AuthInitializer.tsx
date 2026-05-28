@@ -1,4 +1,4 @@
-import { isEmptySchedule, loadSchedule, mergeShortCourseSchedules, UserData } from '$actions/AppStoreActions';
+import { UserData, isEmptySchedule, loadSchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
@@ -47,18 +47,18 @@ export const AuthInitializer = () => {
 
     const postHog = usePostHog();
 
-    const handleAuthChecked = () => {
+    const handleAuthChecked = useEffectEvent(() => {
         hasInitializedRef.current = true;
         setHasCheckedAuth(true);
-    };
+    });
 
-    const handleInitialized = () => {
+    const handleInitialized = useEffectEvent(() => {
         setOpenLoadingSchedule(false);
         loadNotifications();
         if (useSessionStore.getState().areSchedulesLoaded) {
             void loadPlannerRoadmaps();
         }
-    };
+    });
 
     const loadUnsavedChanges = useEffectEvent(async (userData: UserData) => {
         if (!sessionData) {
