@@ -8,7 +8,7 @@ import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
 import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import { VisibilityState, type AASection, type AACourse, type AATerm } from '@packages/antalmanac-types';
+import { type AACourse, type AASection, type AATerm, VisibilityState } from '@packages/antalmanac-types';
 import { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 

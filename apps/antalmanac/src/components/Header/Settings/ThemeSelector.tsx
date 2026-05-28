@@ -1,5 +1,5 @@
 import { useThemeStore } from '$stores/SettingsStore';
-import { LightMode, SettingsBrightness, DarkMode } from '@mui/icons-material';
+import { DarkMode, LightMode, SettingsBrightness } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';

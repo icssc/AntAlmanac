@@ -1,6 +1,6 @@
 import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/types';
 import { getReferencesOccurring } from '$lib/utils';
-import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 import type { HourMinute } from '@packages/anteater-api/types';
 
 const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];

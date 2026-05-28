@@ -1,6 +1,5 @@
-import { create } from 'zustand';
-
 import { getLocalStorageColumnToggles, setLocalStorageColumnToggles } from '$lib/localStorage';
+import { create } from 'zustand';
 
 /**
  * Search results are displayed in a tabular format.

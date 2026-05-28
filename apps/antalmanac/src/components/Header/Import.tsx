@@ -1,6 +1,6 @@
 import {
-    addCustomEvent,
     addCourse,
+    addCustomEvent,
     importScheduleWithUsername,
     importValidatedSchedule,
     mergeShortCourseSchedules,
@@ -45,7 +45,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { AATerm, AACourse, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { AACourse, AATerm, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';

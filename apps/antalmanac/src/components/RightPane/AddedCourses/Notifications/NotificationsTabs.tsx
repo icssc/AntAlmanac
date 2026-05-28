@@ -2,7 +2,7 @@ import { NotificationsTable } from '$components/RightPane/AddedCourses/Notificat
 import { type Notification, useNotificationStore } from '$stores/NotificationStore';
 import { NotificationAddOutlined } from '@mui/icons-material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Tab, Paper, CircularProgress, Typography, useTheme } from '@mui/material';
+import { Box, CircularProgress, Paper, Tab, Typography, useTheme } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 

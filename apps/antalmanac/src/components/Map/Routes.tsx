@@ -1,11 +1,10 @@
+import { MAPBOX_PROXY_DIRECTIONS_ENDPOINT } from '$lib/api/endpoints';
 // eslint-disable-next-line import/default
 import L from 'leaflet';
-import type { LatLngTuple } from 'leaflet';
 import 'leaflet-routing-machine';
+import type { LatLngTuple } from 'leaflet';
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
-
-import { MAPBOX_PROXY_DIRECTIONS_ENDPOINT } from '$lib/api/endpoints';
 
 interface ClassRoutesProps {
     /**

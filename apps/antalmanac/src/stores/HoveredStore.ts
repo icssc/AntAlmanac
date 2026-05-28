@@ -1,6 +1,6 @@
 import type { CourseEvent } from '$components/Calendar/types';
 import { calendarizeCourseEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
-import { AASection, AATerm, ScheduleCourse, AACourse } from '@packages/antalmanac-types';
+import { AACourse, AASection, AATerm, ScheduleCourse } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 const HOVERED_SECTION_COLOR = '#80808080';

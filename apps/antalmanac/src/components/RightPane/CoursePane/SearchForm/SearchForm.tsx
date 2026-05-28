@@ -6,7 +6,7 @@ import { SearchFormModeToggle } from '$components/RightPane/CoursePane/SearchFor
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import { useCourseSearchMode, useCourseSearchSubmit } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { Box, Stack } from '@mui/material';
-import { useCallback, type SyntheticEvent } from 'react';
+import { type SyntheticEvent, useCallback } from 'react';
 
 export const SearchForm = () => {
     const { manualSearchEnabled } = useCourseSearchMode();

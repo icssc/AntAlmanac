@@ -1,10 +1,10 @@
 import type {
+    WebsocCancelledCoursesOption,
+    WebsocDivisionOption,
+    WebsocFullCoursesOption,
     WebsocQueryParams,
     WebsocSectionStatus,
     WebsocSectionType,
-    WebsocDivisionOption,
-    WebsocFullCoursesOption,
-    WebsocCancelledCoursesOption,
 } from '@packages/anteater-api/types';
 import { z } from 'zod';
 

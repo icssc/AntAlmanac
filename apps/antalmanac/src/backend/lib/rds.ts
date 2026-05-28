@@ -1,38 +1,38 @@
 import {
-    VISIBILITY_STATES,
-    VisibilityState,
     type Notification,
     type RepeatingCustomEvent,
     type ScheduleSaveState,
     type ShortCourse,
     type ShortCourseSchedule,
+    VISIBILITY_STATES,
+    VisibilityState,
 } from '@packages/antalmanac-types';
 import type { Quarter, Year } from '@packages/anteater-api/types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
 import {
-    schedules,
-    users,
+    Account,
+    type CourseInSchedule,
+    type CustomEvent,
+    type Schedule,
+    User,
     accounts,
     coursesInSchedule,
     customEvents,
-    type Schedule,
-    type CourseInSchedule,
-    type CustomEvent,
-    sessions,
-    Account,
     friendships,
+    schedules,
+    sessions,
     subscriptions,
-    User,
+    users,
 } from '@packages/db/src/schema';
 import {
+    type ConflictUpdatePolicy,
     buildConflictUpdateSet,
     buildConflictUpdateWhereChanged,
-    type ConflictUpdatePolicy,
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
-import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray, sql } from 'drizzle-orm';
-import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { ExtractTablesWithRelations, and, eq, gt, ne, not, notInArray, or, sql } from 'drizzle-orm';
+import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;

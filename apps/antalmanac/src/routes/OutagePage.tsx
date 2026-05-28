@@ -1,4 +1,4 @@
-import { Box, Typography, Stack } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 export const OutagePage = () => {
