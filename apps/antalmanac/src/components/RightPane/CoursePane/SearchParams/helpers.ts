@@ -1,10 +1,12 @@
 import {
     ADVANCED_SEARCH_PARAMS,
     COURSE_SEARCH_VIEW,
-    DEFAULT_ADVANCED_SEARCH_VALUES,
-    DEFAULT_FORM_DATA,
     MANUAL_SEARCH_PARAMS,
 } from '$components/RightPane/CoursePane/SearchParams/constants';
+import {
+    DEFAULT_ADVANCED_SEARCH_VALUES,
+    DEFAULT_FORM_DATA,
+} from '$components/RightPane/CoursePane/SearchParams/defaults';
 import type {
     AdvancedSearchParams,
     CourseSearchParams,

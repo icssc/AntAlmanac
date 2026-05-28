@@ -1,3 +1,13 @@
+import type { WebsocFullCoursesOption } from '@packages/anteater-api/types';
+
+export const COURSES_FULL_OPTIONS = [
+    { value: 'ANY', label: 'Include all classes' },
+    { value: 'SkipFull', label: 'Skip full courses' },
+    { value: 'SkipFullWaitlist', label: 'Include full courses if space on waitlist' },
+    { value: 'FullOnly', label: 'Show only full or waitlisted courses' },
+    { value: 'Overenrolled', label: 'Show only over-enrolled courses' },
+] as const satisfies readonly { value: WebsocFullCoursesOption; label: string }[];
+
 export const EXCLUDE_RESTRICTION_CODES_OPTIONS = [
     { value: 'A', label: 'A: Prerequisite required' },
     { value: 'B', label: 'B: Authorization code required' },
