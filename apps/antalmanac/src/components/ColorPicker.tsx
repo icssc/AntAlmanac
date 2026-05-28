@@ -1,14 +1,15 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { courseColorKey, customEventColorKey } from '$lib/sectionThemes';
+import { courseColorKey, customEventColorKey, getPalette, resolveAssignment } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
-import { useSectionThemeStore } from '$stores/SectionThemeStore';
+import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { CustomEventId, type AATerm } from '@packages/antalmanac-types';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 interface ColorPickerProps {
@@ -36,9 +37,29 @@ const ColorPicker = memo(function ColorPicker({
     const [currColor, setCurrColor] = useState(color);
 
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
+    const activeSectionColor = useSectionThemeStore(selectActiveSectionColor);
+    const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
     const setManualColor = useSectionThemeStore((s) => s.setManualColor);
+    const isDark = useThemeStore((s) => s.isDark);
 
     const postHog = usePostHog();
+
+    // When a preset theme is active (including while previewing one on hover), show the theme's
+    // resolved color for this section/custom event instead of the stored color, so the swatch and
+    // picker track the theme. Falls back to the live/stored color on the custom setting.
+    const themedColor = useMemo(() => {
+        if (activeSectionColor === 'custom') return null;
+        const key =
+            isCustomEvent && customEventID != null
+                ? customEventColorKey(customEventID)
+                : sectionCode != null && term != null
+                  ? courseColorKey(term, sectionCode)
+                  : null;
+        const value = key != null ? activeAssignments[key] : undefined;
+        return value != null ? resolveAssignment(value, getPalette(activeSectionColor, isDark)) : null;
+    }, [activeSectionColor, activeAssignments, isDark, isCustomEvent, customEventID, sectionCode, term]);
+
+    const displayColor = themedColor ?? currColor;
 
     // Reflect color changes that come from the parent (e.g. theme switch repaints).
     useEffect(() => {
@@ -104,7 +125,7 @@ const ColorPicker = memo(function ColorPicker({
         <>
             <Tooltip title="Change Color">
                 <IconButton
-                    sx={{ color: currColor, padding: 0.5 }}
+                    sx={{ color: displayColor, padding: 0.5 }}
                     onClick={(e) => {
                         handleClick(e, postHog);
                     }}
@@ -127,7 +148,11 @@ const ColorPicker = memo(function ColorPicker({
                     horizontal: 'left',
                 }}
             >
-                <SketchPicker color={currColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
+                <SketchPicker
+                    color={displayColor}
+                    onChange={handleColorChange}
+                    presetColors={colorPickerPresetColors}
+                />
             </Popover>
         </>
     );
