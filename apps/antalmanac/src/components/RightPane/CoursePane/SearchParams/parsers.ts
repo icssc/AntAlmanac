@@ -36,8 +36,8 @@ export const courseSearchParamParsers = {
     units: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.units),
     endTime: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.endTime),
     startTime: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.startTime),
-    coursesFull: parseAsStringLiteral(WebsocFullCoursesOptionSchema.options).withDefault(
-        DEFAULT_ADVANCED_SEARCH_VALUES.coursesFull
+    fullCourses: parseAsStringLiteral(WebsocFullCoursesOptionSchema.options).withDefault(
+        DEFAULT_ADVANCED_SEARCH_VALUES.fullCourses
     ),
     building: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.building),
     room: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.room),
@@ -52,7 +52,7 @@ export const advancedSearchParsers: Pick<typeof courseSearchParamParsers, Advanc
     units: courseSearchParamParsers.units,
     endTime: courseSearchParamParsers.endTime,
     startTime: courseSearchParamParsers.startTime,
-    coursesFull: courseSearchParamParsers.coursesFull,
+    fullCourses: courseSearchParamParsers.fullCourses,
     building: courseSearchParamParsers.building,
     room: courseSearchParamParsers.room,
     division: courseSearchParamParsers.division,

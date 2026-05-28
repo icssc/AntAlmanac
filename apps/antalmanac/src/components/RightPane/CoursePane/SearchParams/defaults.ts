@@ -16,7 +16,7 @@ export const DEFAULT_ADVANCED_SEARCH_VALUES = {
     units: '',
     endTime: '',
     startTime: '',
-    coursesFull: WebsocFullCoursesOptionSchema.enum.ANY,
+    fullCourses: WebsocFullCoursesOptionSchema.enum.ANY,
     building: '',
     room: '',
     division: '',

@@ -1,6 +1,6 @@
 import type { WebsocFullCoursesOption } from '@packages/anteater-api/types';
 
-export const COURSES_FULL_OPTIONS = [
+export const FULL_COURSES_OPTIONS = [
     { value: 'ANY', label: 'Include all classes' },
     { value: 'SkipFull', label: 'Skip full courses' },
     { value: 'SkipFullWaitlist', label: 'Include full courses if space on waitlist' },

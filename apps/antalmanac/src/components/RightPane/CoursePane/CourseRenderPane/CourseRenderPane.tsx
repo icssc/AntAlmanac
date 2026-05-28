@@ -63,7 +63,7 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             units: searchData.units,
             endTime: searchData.endTime,
             startTime: searchData.startTime,
-            fullCourses: searchData.coursesFull,
+            fullCourses: searchData.fullCourses,
             building: searchData.building,
             room: searchData.room,
             division: searchData.division,

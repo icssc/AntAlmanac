@@ -3,7 +3,7 @@ export const ADVANCED_SEARCH_PARAMS = [
     'units',
     'endTime',
     'startTime',
-    'coursesFull',
+    'fullCourses',
     'building',
     'room',
     'division',
