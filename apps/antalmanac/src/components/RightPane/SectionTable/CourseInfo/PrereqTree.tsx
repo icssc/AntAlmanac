@@ -1,6 +1,5 @@
-import { CourseInfo } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { Button, Popover, useTheme } from '@mui/material';
-import { Prerequisite, PrerequisiteTree } from '@packages/anteater-api/types';
+import type { Course, Prerequisite, PrerequisiteTree } from '@packages/anteater-api/types';
 import { FC, useState } from 'react';
 
 import './PrereqTree.css';
@@ -36,7 +35,6 @@ const Node: FC<NodeProps> = (props) => {
 };
 
 interface TreeProps {
-    prerequisiteNames: string[];
     prerequisite: PrerequisiteNode;
     key?: string;
     index?: number;
@@ -79,12 +77,7 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
                     <div className={'prereq-clump'}>
                         <ul className="prereq-list">
                             {prereqTree[Object.keys(prerequisite)[0]].map((child, index) => (
-                                <PrereqTreeNode
-                                    key={`tree-${index}`}
-                                    prerequisiteNames={props.prerequisiteNames}
-                                    index={index}
-                                    prerequisite={child}
-                                />
+                                <PrereqTreeNode key={`tree-${index}`} index={index} prerequisite={child} />
                             ))}
                         </ul>
                     </div>
@@ -94,11 +87,14 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
     }
 };
 
-type PrereqProps = CourseInfo;
+interface PrereqTreeProps {
+    course: Course;
+}
 
-const PrereqTree: FC<PrereqProps> = (props) => {
-    const hasPrereqs = Object.keys(props.prerequisite_tree).length > 0;
-    const hasDependencies = Object.keys(props.prerequisite_for).length !== 0;
+const PrereqTree: FC<PrereqTreeProps> = ({ course }) => {
+    const { id, department, courseNumber, prerequisiteTree, dependencies } = course;
+    const hasPrereqs = Object.keys(prerequisiteTree).length > 0;
+    const hasDependencies = dependencies.length > 0;
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -112,7 +108,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
 
     const open = Boolean(anchorEl);
 
-    if (props.id === undefined) return <></>;
+    if (!id) return <></>;
     else if (!hasPrereqs && !hasDependencies)
         return (
             <div className={'missing-tree'}>
@@ -151,9 +147,9 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                                 <>
                                     <ul style={{ padding: '0', display: 'flex' }}>
                                         <div className={'dependency-list-branch'}>
-                                            {Object.values(props.prerequisite_for).map((dependency, index) => (
+                                            {dependencies.map((dependency, index) => (
                                                 <li key={`dependencyNode-${index}`} className={'dependency-node'}>
-                                                    <Node label={dependency} node={'dependencyNode'} />
+                                                    <Node label={dependency.id} node={'dependencyNode'} />
                                                 </li>
                                             ))}
                                         </div>
@@ -166,14 +162,11 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                                 </>
                             )}
                             {/* Display the class id */}
-                            <Node label={`${props.department} ${props.courseNumber}`} node={'course-node'} />
+                            <Node label={`${department} ${courseNumber}`} node={'course-node'} />
                             {/* Spawns the root of the prerequisite tree */}
                             {hasPrereqs && (
                                 <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
-                                    <PrereqTreeNode
-                                        prerequisiteNames={props.prerequisite_list}
-                                        prerequisite={props.prerequisite_tree}
-                                    />
+                                    <PrereqTreeNode prerequisite={prerequisiteTree} />
                                 </div>
                             )}
                         </div>
