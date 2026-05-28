@@ -3,8 +3,7 @@ import { Notifications } from '$lib/notifications';
 import { getTermByYearAndQuarter } from '$lib/term';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
-import { type AATerm, type AASection, type CourseInfo, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
-import type { Course } from '@packages/anteater-api/types';
+import { type AATerm, type AASection, type AACourse, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 export type NotifyOn = {
@@ -19,7 +18,7 @@ export type Notification = {
     sectionCode: AASection['sectionCode'];
     units: number;
     sectionNum: string;
-    courseTitle: Course['title'];
+    courseTitle: AACourse['courseTitle'];
     sectionType: AASection['sectionType'];
     notifyOn: NotifyOn;
     lastUpdatedStatus: AASection['status'] | null;
@@ -178,10 +177,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     group.sectionCodes.add(sectionCode.toString());
                 }
 
-                const courseInfoDict = new Map<
-                    string,
-                    { term: AATerm; courseInfo: { [sectionCode: string]: CourseInfo } }
-                >();
+                const courseInfoDict = new Map<string, { term: AATerm; courseInfo: Record<string, AACourse> }>();
                 await Promise.all(
                     Array.from(termGroups, async ([key, { term, sectionCodes }]) => {
                         const courseInfo = await trpc.websoc.getCourseInfo.query({
@@ -198,6 +194,11 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 for (const { term, courseInfo } of courseInfoDict.values()) {
                     for (const sectionCode in courseInfo) {
                         const course = courseInfo[sectionCode];
+                        const section = course.sections.find((s) => s.sectionCode === sectionCode);
+                        if (!section) {
+                            continue;
+                        }
+
                         const key = `${sectionCode} ${term.shortName}`;
 
                         const existingNotification = existingNotifications.find(
@@ -216,15 +217,15 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                     ? null
                                     : parsedStatus.success
                                       ? parsedStatus.data
-                                      : course.section.status;
+                                      : section.status;
 
                             notifications[key] = {
                                 term,
                                 sectionCode,
-                                courseTitle: course.courseDetails.courseTitle,
-                                sectionType: course.section.sectionType,
-                                units: Number(course.section.units),
-                                sectionNum: course.section.sectionNum,
+                                courseTitle: course.courseTitle,
+                                sectionType: section.sectionType,
+                                units: Number(section.units),
+                                sectionNum: section.sectionNum,
                                 notifyOn: {
                                     notifyOnOpen: existingNotification.notifyOnOpen ?? false,
                                     notifyOnWaitlist: existingNotification.notifyOnWaitlist ?? false,
@@ -232,10 +233,10 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                     notifyOnRestriction: existingNotification.notifyOnRestriction ?? false,
                                 },
                                 lastUpdatedStatus: lastUpdatedStatus,
-                                lastCodes: existingNotification.lastCodes ?? course.section.restrictions,
-                                deptCode: course.courseDetails.deptCode,
-                                courseNumber: course.courseDetails.courseNumber,
-                                instructors: course.section.instructors,
+                                lastCodes: existingNotification.lastCodes ?? section.restrictions,
+                                deptCode: course.deptCode,
+                                courseNumber: course.courseNumber,
+                                instructors: section.instructors,
                             };
                         }
                     }

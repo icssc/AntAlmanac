@@ -5,8 +5,6 @@ import type { AATerm } from '@packages/antalmanac-types';
 import { Year } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
-export type { AATerm } from '@packages/antalmanac-types';
-
 const allTerms: AATerm[] = z.array(termSchema).parse(termJson);
 
 export const termData = allTerms.filter((term) => term.socAvailable <= new Date());

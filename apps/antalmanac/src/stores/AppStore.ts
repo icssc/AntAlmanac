@@ -1,22 +1,21 @@
 import { EventEmitter } from 'events';
 
-import actionTypesStore from '$actions/ActionTypesStore';
-import type {
-    AddCourseAction,
-    DeleteCourseAction,
-    AddCustomEventAction,
-    DeleteCustomEventAction,
-    EditCustomEventAction,
-    ChangeCustomEventColorAction,
-    ClearScheduleAction,
-    CopyScheduleAction,
-    RenameScheduleAction,
-    DeleteScheduleAction,
-    ReorderScheduleAction,
-    ChangeCourseColorAction,
-    UndoRedoAction,
-    AddScheduleAction,
-    ReorderAddedCoursesAction,
+import actionTypesStore, {
+    type AddCourseAction,
+    type DeleteCourseAction,
+    type AddCustomEventAction,
+    type DeleteCustomEventAction,
+    type EditCustomEventAction,
+    type ChangeCustomEventColorAction,
+    type ClearScheduleAction,
+    type CopyScheduleAction,
+    type RenameScheduleAction,
+    type DeleteScheduleAction,
+    type ReorderScheduleAction,
+    type ChangeCourseColorAction,
+    type UndoRedoAction,
+    type AddScheduleAction,
+    type ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/types';
 import { useFallbackStore } from '$stores/FallbackStore';

@@ -12,16 +12,16 @@ import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { VisibilityState } from '@packages/antalmanac-types';
-import type {
-    AATerm,
-    CourseDetails,
-    CustomEventId,
-    RepeatingCustomEvent,
-    ScheduleCourse,
-    ShortCourseSchedule,
+import {
+    VisibilityState,
+    type AATerm,
+    type AACourse,
+    type AASection,
+    type CustomEventId,
+    type RepeatingCustomEvent,
+    type ScheduleCourse,
+    type ShortCourseSchedule,
 } from '@packages/antalmanac-types';
-import type { WebsocSection } from '@packages/anteater-api/types';
 import { TRPCClientError } from '@trpc/client';
 import type { PostHog } from 'posthog-js/react';
 
@@ -47,8 +47,8 @@ interface LoginUserOptions {
 }
 
 export const addCourse = (
-    section: WebsocSection,
-    courseDetails: CourseDetails,
+    section: AASection,
+    course: AACourse,
     term: AATerm,
     scheduleIndex: number,
     quiet?: boolean,
@@ -58,8 +58,8 @@ export const addCourse = (
         category: analyticsEnum.classSearch,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
         customProps: {
-            courseDept: courseDetails.deptCode,
-            courseNumber: courseDetails.courseNumber,
+            courseDept: course.deptCode,
+            courseNumber: course.courseNumber,
         },
     });
     const terms = AppStore.termsInSchedule(term);
@@ -68,13 +68,13 @@ export const addCourse = (
 
     const newCourse: ScheduleCourse = {
         term,
-        deptCode: courseDetails.deptCode,
-        courseNumber: courseDetails.courseNumber,
-        courseTitle: courseDetails.courseTitle,
-        courseComment: courseDetails.courseComment,
-        prerequisiteLink: courseDetails.prerequisiteLink,
+        deptCode: course.deptCode,
+        courseNumber: course.courseNumber,
+        courseTitle: course.courseTitle,
+        courseComment: course.courseComment,
+        prerequisiteLink: course.prerequisiteLink,
         section: { ...section, color: '' },
-        sectionTypes: courseDetails.sectionTypes,
+        sectionTypes: course.sectionTypes,
     };
 
     return AppStore.addCourse(newCourse, scheduleIndex);
