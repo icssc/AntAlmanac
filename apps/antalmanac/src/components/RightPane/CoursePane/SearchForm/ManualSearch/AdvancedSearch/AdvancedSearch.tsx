@@ -1,11 +1,11 @@
 import { AdvancedSearchFieldRow } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/AdvancedSearchFieldRow';
 import { BuildingField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/BuildingField';
-import { CoursesFullField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/CoursesFullField';
 import { DaysField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/DaysField';
 import { DivisionField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/DivisionField';
 import { EndTimeField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/EndTimeField';
 import { ExcludeRestrictionsField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/ExcludeRestrictionsField';
 import { ExcludeRoadmapField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/ExcludeRoadmapField';
+import { FullCoursesField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/FullCoursesField';
 import { InstructorField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/InstructorField';
 import { OnlineField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/OnlineField';
 import { RoomField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/RoomField';
@@ -51,7 +51,7 @@ export function AdvancedSearch() {
                     <AdvancedSearchFieldRow>
                         <InstructorField />
                         <UnitsField />
-                        <CoursesFullField />
+                        <FullCoursesField />
                     </AdvancedSearchFieldRow>
 
                     <AdvancedSearchFieldRow>

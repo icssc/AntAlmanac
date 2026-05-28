@@ -4,8 +4,8 @@ import {
     COURSE_SEARCH_PLANNER_KEY,
     COURSE_SEARCH_VIEW,
     COURSE_SEARCH_VIEW_KEY,
-    DEFAULT_FORM_DATA,
 } from '$components/RightPane/CoursePane/SearchParams/constants';
+import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { deriveCourseSearchView, isValidSearch } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import {
@@ -23,18 +23,19 @@ import { useCallback } from 'react';
 export function useCourseSearchParam<K extends keyof CourseSearchParams>(
     field: K
 ): readonly [CourseSearchParams[K], (next: CourseSearchParams[K]) => void] {
-    const parser = courseSearchParamParsers[field];
+    // NB: generic K widens `parsers[field]` to a union; cast keeps single-field `useQueryState` perf.
+    const parser = courseSearchParamParsers[field] as (typeof courseSearchParamParsers)[K];
     const [value, setValueRaw] = useQueryState(field, parser);
 
     const setValue = useCallback(
         (next: CourseSearchParams[K]) => {
             RightPaneStore.clearMultiSearchData();
-            void setValueRaw(next);
+            void (setValueRaw as (next: CourseSearchParams[K]) => ReturnType<typeof setValueRaw>)(next);
         },
         [setValueRaw]
     );
 
-    return [value, setValue];
+    return [value as CourseSearchParams[K], setValue];
 }
 
 export function useCourseSearchMode() {

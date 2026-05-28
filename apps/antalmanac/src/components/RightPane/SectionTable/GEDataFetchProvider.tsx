@@ -29,7 +29,7 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             units: advanced.units,
             endTime: advanced.endTime,
             startTime: advanced.startTime,
-            fullCourses: advanced.coursesFull,
+            fullCourses: advanced.fullCourses,
             building: advanced.building,
             room: advanced.room,
             division: advanced.division,

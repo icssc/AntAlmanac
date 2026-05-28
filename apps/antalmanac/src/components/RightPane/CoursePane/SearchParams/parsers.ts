@@ -1,25 +1,18 @@
 import { normalizeGeSelection } from '$components/RightPane/CoursePane/SearchForm/constants';
 import {
-    AdvancedSearchParam,
+    type AdvancedSearchParam,
     COURSE_SEARCH_MODE,
     COURSE_SEARCH_MODES,
     COURSE_SEARCH_VIEWS,
+} from '$components/RightPane/CoursePane/SearchParams/constants';
+import {
     DEFAULT_ADVANCED_SEARCH_VALUES,
     DEFAULT_MANUAL_SEARCH_VALUES,
     DEFAULT_TERM,
-} from '$components/RightPane/CoursePane/SearchParams/constants';
-import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
+} from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { getTermByShortName } from '$lib/term';
-import { type AATerm } from '@packages/antalmanac-types';
-import { createParser, createSerializer, parseAsString, parseAsStringLiteral, type SingleParserBuilder } from 'nuqs';
-
-type CourseSearchParamParser<K extends keyof CourseSearchParams> = SingleParserBuilder<CourseSearchParams[K]> & {
-    readonly defaultValue: CourseSearchParams[K];
-};
-
-type CourseSearchParamParserMap = {
-    [K in keyof CourseSearchParams]: CourseSearchParamParser<K>;
-};
+import { WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
+import { createParser, createSerializer, parseAsString, parseAsStringLiteral } from 'nuqs';
 
 const parseAsCourseSearchTerm = createParser<AATerm>({
     parse: (value: string) => getTermByShortName(value) ?? null,
@@ -33,7 +26,7 @@ const parseAsNormalizedGe = createParser<string>({
     eq: (a: string, b: string) => normalizeGeSelection(a) === normalizeGeSelection(b),
 }).withDefault(DEFAULT_MANUAL_SEARCH_VALUES.ge);
 
-export const courseSearchParamParsers: CourseSearchParamParserMap = {
+export const courseSearchParamParsers = {
     term: parseAsCourseSearchTerm,
     deptValue: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.deptValue),
     ge: parseAsNormalizedGe,
@@ -43,7 +36,9 @@ export const courseSearchParamParsers: CourseSearchParamParserMap = {
     units: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.units),
     endTime: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.endTime),
     startTime: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.startTime),
-    coursesFull: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.coursesFull),
+    fullCourses: parseAsStringLiteral(WebsocFullCoursesOptionSchema.options).withDefault(
+        DEFAULT_ADVANCED_SEARCH_VALUES.fullCourses
+    ),
     building: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.building),
     room: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.room),
     division: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.division),
@@ -52,12 +47,12 @@ export const courseSearchParamParsers: CourseSearchParamParserMap = {
     days: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.days),
 };
 
-export const advancedSearchParsers: Pick<CourseSearchParamParserMap, AdvancedSearchParam> = {
+export const advancedSearchParsers: Pick<typeof courseSearchParamParsers, AdvancedSearchParam> = {
     instructor: courseSearchParamParsers.instructor,
     units: courseSearchParamParsers.units,
     endTime: courseSearchParamParsers.endTime,
     startTime: courseSearchParamParsers.startTime,
-    coursesFull: courseSearchParamParsers.coursesFull,
+    fullCourses: courseSearchParamParsers.fullCourses,
     building: courseSearchParamParsers.building,
     room: courseSearchParamParsers.room,
     division: courseSearchParamParsers.division,

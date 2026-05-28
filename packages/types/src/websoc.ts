@@ -33,8 +33,8 @@ export const WebsocSectionStatusSchema = z.enum([
 
 export const WebsocFullCoursesOptionSchema = z.enum([
     'ANY',
-    'SkipFullWaitlist',
     'SkipFull',
+    'SkipFullWaitlist',
     'FullOnly',
     'Overenrolled',
 ] as const satisfies readonly WebsocFullCoursesOption[]);
@@ -53,7 +53,7 @@ export const WebsocSearchInputSchema = z.object({
     room: z.string().optional(),
     division: z.string().optional(),
     sectionType: z.string().optional(),
-    fullCourses: z.string().optional(),
+    fullCourses: WebsocFullCoursesOptionSchema.optional(),
     cancelledCourses: z.string().optional(),
     units: z.string().optional(),
     startTime: z.string().optional(),
