@@ -37,7 +37,6 @@ export function flattenSOCObject(
 
             dept.courses.forEach((course) => {
                 accumulator.push({
-                    deptCode: dept.deptCode,
                     ...course,
                     sections: course.sections.map((section) => ({
                         ...section,
