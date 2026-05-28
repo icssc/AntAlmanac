@@ -1,5 +1,5 @@
-import type { Context } from '$backend/context';
-import { initTRPC, TRPCError } from '@trpc/server';
+import type { Context } from '$src/backend/context';
+import { TRPCError, initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 
 const t = initTRPC.context<Context>().create({

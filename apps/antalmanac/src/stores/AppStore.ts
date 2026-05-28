@@ -2,20 +2,20 @@ import { EventEmitter } from 'events';
 
 import actionTypesStore, {
     type AddCourseAction,
-    type DeleteCourseAction,
     type AddCustomEventAction,
-    type DeleteCustomEventAction,
-    type EditCustomEventAction,
+    type AddScheduleAction,
+    type ChangeCourseColorAction,
     type ChangeCustomEventColorAction,
     type ClearScheduleAction,
     type CopyScheduleAction,
-    type RenameScheduleAction,
+    type DeleteCourseAction,
+    type DeleteCustomEventAction,
     type DeleteScheduleAction,
-    type ReorderScheduleAction,
-    type ChangeCourseColorAction,
-    type UndoRedoAction,
-    type AddScheduleAction,
+    type EditCustomEventAction,
+    type RenameScheduleAction,
     type ReorderAddedCoursesAction,
+    type ReorderScheduleAction,
+    type UndoRedoAction,
 } from '$actions/ActionTypesStore';
 import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -23,12 +23,11 @@ import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import type {
-    AACourseWithTerm,
-    AASection,
-    ScheduleSaveState,
-    RepeatingCustomEvent,
-    CustomEventId,
     AATerm,
+    CustomEventId,
+    RepeatingCustomEvent,
+    ScheduleCourse,
+    ScheduleSaveState,
 } from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {

@@ -6,7 +6,10 @@ import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type { AATerm } from '@packages/antalmanac-types';
 import type { HourMinute, Quarter } from '@packages/anteater-api/types';
-import type { EventAttributes } from 'ics';
+import { saveAs } from 'file-saver';
+import { type EventAttributes, createEvents } from 'ics';
+
+import { notNull } from './utils';
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 

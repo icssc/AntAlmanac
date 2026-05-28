@@ -2,13 +2,14 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import { type CustomEventId } from '@packages/antalmanac-types';
-import { Marker, type Map, type LatLngTuple } from 'leaflet';
+import { CustomEventId } from '@packages/antalmanac-types';
+import { type LatLngTuple, type Map, Marker } from 'leaflet';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
-import { Fragment, useEffect, useRef, useCallback, useState, useMemo } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { LocationMarker } from './Marker';
 

@@ -4,9 +4,8 @@ import { NotificationTableRowCheckbox } from '$components/RightPane/AddedCourses
 import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell';
-import analyticsEnum from '$lib/analytics/analytics';
-import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
-import { TableRow, TableCell } from '@mui/material';
+import { NotifyOn, useNotificationStore } from '$stores/NotificationStore';
+import { TableCell, TableRow } from '@mui/material';
 import { memo } from 'react';
 
 interface NotificationTableRowProps {

@@ -6,7 +6,7 @@ import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/Sear
 import { useCourseSearchParam, useCourseSearchView } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
-import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
+import { RoadmapTermRelation, getQuarterPlan, getRoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -15,16 +15,7 @@ import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { type Roadmap } from '@packages/antalmanac-types';
 import { parseAsString, useQueryState } from 'nuqs';
-import {
-    type ComponentProps,
-    type HTMLAttributes,
-    type Key,
-    useCallback,
-    useRef,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { ComponentProps, HTMLAttributes, Key, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 type AutocompleteProps = ComponentProps<typeof LabeledAutocomplete>['autocompleteProps'];

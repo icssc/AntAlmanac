@@ -23,13 +23,12 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { CalendarMonth } from '@mui/icons-material';
-import { Box, Backdrop, useTheme } from '@mui/material';
+import { Backdrop, Box, useTheme } from '@mui/material';
 import { VisibilityState } from '@packages/antalmanac-types';
-import { differenceInCalendarDays, format, getDay, startOfWeek, type Locale } from 'date-fns';
-import { enUS } from 'date-fns/locale/en-US';
-import { useRouter } from 'next/navigation';
+import { type Locale, differenceInCalendarDays, format, getDay, startOfWeek } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, type Components, DateLocalizer, dateFnsLocalizer, Views, type ViewsProps } from 'react-big-calendar';
+import { Calendar, Components, DateLocalizer, Views, ViewsProps, dateFnsLocalizer } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 
 /*

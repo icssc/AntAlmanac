@@ -1,7 +1,7 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
-import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
+import { type EnrollmentHistory, parseAndSortEnrollmentHistory } from '$lib/enrollmentHistory';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';

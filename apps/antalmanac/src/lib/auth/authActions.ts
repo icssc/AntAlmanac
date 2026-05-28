@@ -1,5 +1,5 @@
 'use server';
-import { auth, type AuthorizationUrlParams } from '$lib/auth/auth';
+import { AuthorizationUrlParams, auth } from '$lib/auth/auth';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { type AuthAdditionalData, Provider } from '$lib/auth/authTypes';
 import { getProviderIcsscName } from '$lib/auth/authUtils';

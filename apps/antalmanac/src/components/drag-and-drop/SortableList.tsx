@@ -9,7 +9,7 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, type SortingStrategy, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { List, type SxProps } from '@mui/material';
 import type { ContextType, ReactNode } from 'react';
-import { createContext, Fragment, useMemo, useState } from 'react';
+import { Fragment, createContext, useMemo, useState } from 'react';
 
 interface SortableListProps<T> {
     items: T[];

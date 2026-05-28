@@ -17,27 +17,3 @@ body {
     white-space: nowrap;
     border-width: 0;
 }
-
-.gutter {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: col-resize;
-}
-
-.gutter::before {
-    content: '⋮';
-    font-size: 30pt;
-    color: white;
-}
-
-/* Hide the scrollbars on mobile devices */
-@media (max-width: 799px) {
-    ::-webkit-scrollbar {
-        display: none;
-    }
-
-    * {
-        scrollbar-width: none;
-    }
-}

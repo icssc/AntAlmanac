@@ -1,6 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { Box, Link, Typography, type SxProps } from '@mui/material';
-import type { AASection } from '@packages/antalmanac-types';
+import { Box, SxProps, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 interface InstructorsCellProps {
     section: Pick<AASection, 'instructors'>;

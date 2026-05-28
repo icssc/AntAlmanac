@@ -3,8 +3,7 @@ import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { Close, InfoOutlined } from '@mui/icons-material';
-import { IconButton, Alert, AlertTitle, Box, Typography, Fade } from '@mui/material';
-import type { AATerm } from '@packages/antalmanac-types';
+import { Alert, AlertTitle, Box, Fade, IconButton, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 interface TbaSection {

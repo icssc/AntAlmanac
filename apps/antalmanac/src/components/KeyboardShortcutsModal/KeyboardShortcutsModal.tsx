@@ -2,13 +2,13 @@
 
 import {
     KEYBOARD_SHORTCUT_SECTIONS,
-    formatShortcutKeys,
-    isMacPlatform,
     type ShortcutKey,
     type ShortcutSectionIcon,
+    formatShortcutKeys,
+    isMacPlatform,
 } from '$lib/keyboardShortcuts';
 import { ChatBubbleOutlineOutlined, Close, Keyboard, SearchOutlined, SettingsOutlined } from '@mui/icons-material';
-import { Box, Dialog, IconButton, Stack, Typography, useMediaQuery, useTheme, alpha, type Theme } from '@mui/material';
+import { Box, Dialog, IconButton, Stack, Typography, alpha, useMediaQuery, useTheme } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 
 function SectionHeaderIcon({ icon }: { icon: ShortcutSectionIcon }) {

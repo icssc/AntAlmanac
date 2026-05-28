@@ -1,7 +1,6 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { useActiveTab } from '$lib/tabs/hooks';
-import { TAB_INDEX, TABS, type TabName } from '$lib/tabs/tabs';
-import { Paper, Tabs as MuiTabs } from '@mui/material';
+import { TABS, useTabStore } from '$stores/TabStore';
+import { Tabs as MuiTabs, Paper } from '@mui/material';
 
 interface ScheduleManagementTabsProps {
     onTabChange: (tabName: TabName) => void;
