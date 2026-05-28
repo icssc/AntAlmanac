@@ -1,6 +1,4 @@
 import type {
-    WebsocSection,
-    WebsocCourse,
     WebsocQueryParams,
     WebsocSectionStatus,
     WebsocSectionType,
@@ -40,19 +38,6 @@ export const WebsocFullCoursesOptionSchema = z.enum([
     'FullOnly',
     'Overenrolled',
 ] as const satisfies readonly WebsocFullCoursesOption[]);
-
-type AASectionExtendedProperties = {
-    color: string;
-};
-
-export type AASection = WebsocSection & AASectionExtendedProperties;
-
-type AACourseExtendedProperties = {
-    sections: AASection[];
-    sectionTypes: WebsocSectionType[];
-};
-
-export type AACourse = Omit<WebsocCourse, 'sections'> & AACourseExtendedProperties;
 
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),

@@ -4,12 +4,12 @@ import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Add } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { AASection, AACourse } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 
 interface AddButtonProps {
     section: AASection;
-    courseDetails: CourseDetails;
+    courseDetails: AACourse;
     term: AATerm;
     scheduleConflict: boolean;
 }

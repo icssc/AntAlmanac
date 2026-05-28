@@ -11,7 +11,7 @@ import type {
     ScheduleUndoState,
     ShortCourseSchedule,
     RepeatingCustomEvent,
-    CourseInfo,
+    AACourse,
     CustomEventId,
 } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
@@ -660,7 +660,7 @@ export class Schedules {
             }
 
             // Get the course info for each course
-            const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
+            const courseInfoDict = new Map<string, Record<string, AACourse>>();
 
             const websocRequests = Object.entries(courseDict).map(async ([termShortName, courseSet]) => {
                 const term = getTermByShortName(termShortName);
@@ -688,9 +688,15 @@ export class Schedules {
                 for (const shortCourse of shortCourseSchedule.courses) {
                     const courseInfoMap = courseInfoDict.get(shortCourse.term);
                     if (courseInfoMap !== undefined) {
-                        const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, '0')];
-                        if (courseInfo === undefined) {
+                        const sectionCode = shortCourse.sectionCode.padStart(5, '0');
+                        const course = courseInfoMap[sectionCode];
+                        if (course === undefined) {
                             // Class doesn't exist/was cancelled
+                            continue;
+                        }
+
+                        const section = course.sections.find((s) => s.sectionCode === sectionCode);
+                        if (section === undefined) {
                             continue;
                         }
 
@@ -700,11 +706,15 @@ export class Schedules {
                         }
 
                         courses.push({
-                            ...shortCourse,
-                            ...courseInfo.courseDetails,
+                            courseComment: course.courseComment,
+                            courseNumber: course.courseNumber,
+                            courseTitle: course.courseTitle,
+                            deptCode: course.deptCode,
+                            prerequisiteLink: course.prerequisiteLink,
+                            sectionTypes: course.sectionTypes,
                             term,
                             section: {
-                                ...courseInfo.section,
+                                ...section,
                                 color: shortCourse.color,
                             },
                         });

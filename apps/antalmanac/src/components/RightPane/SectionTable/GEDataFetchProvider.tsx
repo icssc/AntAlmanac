@@ -65,6 +65,7 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             }, {});
 
         return {
+            deptCode: props.courseDetails.deptCode,
             ...course,
             sections: course.sections.map((s) => ({ ...s, color: courseColors[s.sectionCode] ?? '' })),
             sectionTypes: [...new Set(course.sections.map((s) => s.sectionType))],

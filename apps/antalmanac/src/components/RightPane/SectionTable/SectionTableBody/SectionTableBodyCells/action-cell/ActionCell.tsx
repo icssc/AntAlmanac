@@ -9,14 +9,14 @@ import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesSto
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
 import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import type { AASection, CourseDetails } from '@packages/antalmanac-types';
+import type { AASection, AACourse } from '@packages/antalmanac-types';
 import { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
     section: AASection;
     term: AATerm;
-    courseDetails: CourseDetails;
+    courseDetails: AACourse;
     scheduleConflict: boolean;
     addedCourse: boolean;
     scheduleNames: string[];
