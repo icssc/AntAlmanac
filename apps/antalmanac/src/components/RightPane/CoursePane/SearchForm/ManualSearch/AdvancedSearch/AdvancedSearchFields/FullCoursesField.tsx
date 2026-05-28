@@ -9,7 +9,7 @@ export const FullCoursesField = memo(() => {
 
     return (
         <LabeledSelect
-            label="Class Full Option"
+            label="Courses Full Option"
             selectProps={{
                 value: fullCourses,
                 onChange: (event) => setFullCourses(event.target.value),
