@@ -11,7 +11,18 @@
     "bracketSpacing": true,
     "arrowParens": "always",
     "endOfLine": "lf",
-    "ignorePatterns": ["node_modules/**", ".next/**", "dist/**", "build/**"],
+    "ignorePatterns": [
+        "**/node_modules/**",
+        "**/.next/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/.turbo/**",
+        "**/coverage/**",
+        "**/public/**",
+        "apps/antalmanac/src/generated/**",
+        "packages/db/migrations/**",
+        "apps/ios/**"
+    ],
     "experimentalSortImports": {
         "enabled": true,
         "groupImports": true
