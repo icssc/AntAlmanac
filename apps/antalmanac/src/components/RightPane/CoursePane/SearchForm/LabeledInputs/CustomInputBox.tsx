@@ -15,6 +15,7 @@ export const CustomInputBox = ({ children, boxProps }: CustomInputBoxProps) => {
         <Box
             {...boxProps}
             flexGrow={1}
+            minWidth={0}
             sx={{
                 '& .MuiOutlinedInput-root': {
                     minWidth: 100,

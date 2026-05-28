@@ -1,4 +1,4 @@
-import { isSkeletonEvent, type CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import { isSkeletonEvent, type CalendarEvent } from '$components/Calendar/types';
 import type { AATerm, ScheduleCourse } from '@packages/antalmanac-types';
 
 import { SECTION_THEMES, type SectionTheme, type SectionThemeId } from './themes';

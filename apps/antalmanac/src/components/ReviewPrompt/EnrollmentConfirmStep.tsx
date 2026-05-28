@@ -64,11 +64,11 @@ export function EnrollmentConfirmStep() {
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button size="small" color="inherit" onClick={handleDismiss}>
-                    I did not
+                    No, I did not
                 </Button>
 
                 <Button size="small" variant="contained" onClick={confirm}>
-                    Yes!
+                    Yes, continue
                 </Button>
             </CardActions>
         </>

@@ -1,28 +1,34 @@
-import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useTabStore } from '$stores/TabStore';
+import { useSavedSearchStore } from '$stores/SavedSearchStore';
+import { TAB_INDEX, type TabInfo } from '$stores/TabStore';
 import { Tab } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 interface ScheduleManagementTabProps {
-    tab: ScheduleManagementTabInfo;
+    tab: TabInfo;
     value: number;
+    onTabChange: (tabIndex: number) => void;
 }
 
-export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
-    const setActiveTabValue = useTabStore((store) => store.setActiveTabValue);
+export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManagementTabProps) => {
     const isMobile = useIsMobile();
+    const savedSearch = useSavedSearchStore((store) => store.savedSearch);
+
+    const to =
+        value === TAB_INDEX.search && savedSearch
+            ? { pathname: tab.href || '/', search: savedSearch }
+            : tab.href || '/';
 
     const handleClick = () => {
-        setActiveTabValue(value);
+        onTabChange(value);
     };
 
     return (
         <Tab
             id={tab.id}
             component={Link}
-            to={tab.href}
-            icon={tab.icon}
+            to={to}
+            icon={<tab.icon />}
             iconPosition={isMobile ? 'top' : 'start'}
             sx={{
                 ...(isMobile
@@ -37,7 +43,7 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
                           padding: 3,
                           minWidth: '33%',
                       }),
-                display: isMobile || !tab.mobile ? 'flex' : 'none',
+                display: isMobile || !tab.mobileOnly ? 'flex' : 'none',
             }}
             label={tab.label}
             onClick={handleClick}

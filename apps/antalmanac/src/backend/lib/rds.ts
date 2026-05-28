@@ -1,11 +1,12 @@
-import type {
-    ShortCourse,
-    ShortCourseSchedule,
-    RepeatingCustomEvent,
-    Notification,
-    ScheduleSaveState,
+import {
+    VISIBILITY_STATES,
+    VisibilityState,
+    type Notification,
+    type RepeatingCustomEvent,
+    type ScheduleSaveState,
+    type ShortCourse,
+    type ShortCourseSchedule,
 } from '@packages/antalmanac-types';
-import { VISIBILITY_STATES, VisibilityState } from '@packages/antalmanac-types';
 import type { Quarter, Year } from '@packages/anteater-api/types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';

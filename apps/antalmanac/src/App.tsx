@@ -2,17 +2,10 @@ import './App.css';
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
-import AppPostHogProvider from '$providers/AppPostHogProvider';
-import AppQueryProvider from '$providers/AppQueryProvider';
-import AppTourProvider from '$providers/AppTourProvider';
 import { ErrorPage } from '$routes/ErrorPage';
-import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
-import { NewUserPage } from '$routes/NewUserPage';
 import { OutagePage } from '$routes/OutagePage';
-import { Unsubscribe } from '$routes/UnsubscribePage';
-import AppThemeProvider from '$src/app/Theme';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v6';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
@@ -21,11 +14,11 @@ import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-rou
  */
 function RouteLayout() {
     return (
-        <>
+        <NuqsAdapter>
             <PosthogPageviewTracker />
             <AutoSignIn />
             <Outlet />
-        </>
+        </NuqsAdapter>
     );
 }
 
@@ -33,59 +26,60 @@ const OUTAGE = false;
 
 const HOME_PAGE = <Home />;
 
-const BROWSER_ROUTER = createBrowserRouter([
-    {
-        element: <RouteLayout />,
-        children: [
-            {
-                path: '/',
-                element: HOME_PAGE,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/unsubscribe/:userId',
-                element: <Unsubscribe />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/:tab',
-                element: HOME_PAGE,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/feedback',
-                element: <Feedback />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/welcome',
-                element: <NewUserPage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '*',
-                element: <Navigate to="/" replace />,
-            },
-        ],
+const ROUTER_OPTIONS = {
+    future: {
+        v7_fetcherPersist: true,
+        v7_normalizeFormMethod: true,
+        v7_partialHydration: true,
+        v7_relativeSplatPath: true,
+        v7_skipActionErrorRevalidation: true,
     },
-]);
+} as const;
 
-const OUTAGE_ROUTER = createBrowserRouter([
-    {
-        element: <RouteLayout />,
-        children: [
-            {
-                path: '/outage',
-                element: <OutagePage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '*',
-                element: <Navigate to="/outage" replace />,
-            },
-        ],
-    },
-]);
+const BROWSER_ROUTER = createBrowserRouter(
+    [
+        {
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/',
+                    element: HOME_PAGE,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/:tab',
+                    element: HOME_PAGE,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/" replace />,
+                },
+            ],
+        },
+    ],
+    ROUTER_OPTIONS
+);
+
+const OUTAGE_ROUTER = createBrowserRouter(
+    [
+        {
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/outage',
+                    element: <OutagePage />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/outage" replace />,
+                },
+            ],
+        },
+    ],
+    ROUTER_OPTIONS
+);
 
 const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 
@@ -102,17 +96,5 @@ export default function App() {
         };
     }, []);
 
-    return (
-        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-            <AppThemeProvider>
-                <AppPostHogProvider>
-                    <AppQueryProvider>
-                        <AppTourProvider>
-                            <RouterProvider router={ROUTER} />
-                        </AppTourProvider>
-                    </AppQueryProvider>
-                </AppPostHogProvider>
-            </AppThemeProvider>
-        </AppRouterCacheProvider>
-    );
+    return <RouterProvider router={ROUTER} future={{ v7_startTransition: true }} />;
 }

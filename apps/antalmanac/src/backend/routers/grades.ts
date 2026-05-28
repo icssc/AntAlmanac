@@ -1,4 +1,6 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
+import { getRenamedCoursesIdentifiers, mergeAggregateGrades } from '$src/lib/renames/utils';
+import { isNotEmpty } from '$src/lib/utils';
 import { GradesGeSchema } from '@packages/antalmanac-types';
 import type { AggregateGrades, AggregateGradesByOffering } from '@packages/anteater-api/types';
 import { z } from 'zod';
@@ -15,7 +17,31 @@ const gradesRouter = router({
                 ge: GradesGeSchema.optional(),
             })
         )
-        .query(({ input }): Promise<AggregateGrades> => aapiClient.grades.aggregate(input)),
+        .query(async ({ input }): Promise<AggregateGrades> => {
+            const { department, courseNumber } = input;
+
+            if (!department || !courseNumber) {
+                return aapiClient.grades.aggregate(input);
+            }
+
+            const identifiers = getRenamedCoursesIdentifiers(department, courseNumber);
+
+            if (identifiers.length === 1) {
+                return aapiClient.grades.aggregate(input);
+            }
+
+            const results = await Promise.all(
+                identifiers.map((ci) =>
+                    aapiClient.grades.aggregate({ ...input, department: ci.department, courseNumber: ci.courseNumber })
+                )
+            );
+
+            if (!isNotEmpty(results)) {
+                return aapiClient.grades.aggregate(input);
+            }
+
+            return mergeAggregateGrades(results);
+        }),
 
     // Mutation so tRPC doesn't batch it with concurrent WebSOC queries.
     aggregateByOffering: aapiProcedure

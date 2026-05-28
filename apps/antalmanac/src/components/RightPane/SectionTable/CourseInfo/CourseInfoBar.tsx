@@ -1,25 +1,11 @@
-import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
+import { CourseInfoBarPopover } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBarPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { trpc } from '$lib/api/trpc';
+import { trpcReact } from '$lib/api/trpc';
 import { InfoOutlined } from '@mui/icons-material';
-import { Box, Button, Popover, Skeleton } from '@mui/material';
-import type { PrerequisiteTree } from '@packages/anteater-api/types';
+import { Button, Popover } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
-
-const noCourseInfo = {
-    id: '',
-    department: '',
-    courseNumber: '',
-    title: 'No description available',
-    prerequisite_tree: {},
-    prerequisite_list: [],
-    prerequisite_text: '',
-    prerequisite_for: [],
-    description: '',
-    ge_list: '',
-};
 
 interface CourseInfoBarProps {
     courseTitle: string;
@@ -29,19 +15,6 @@ interface CourseInfoBarProps {
     analyticsCategory: AnalyticsCategory;
 }
 
-export interface CourseInfo {
-    id: string;
-    department: string;
-    courseNumber: string;
-    title: string;
-    prerequisite_tree: PrerequisiteTree;
-    prerequisite_list: string[];
-    prerequisite_text: string;
-    prerequisite_for: string[];
-    description: string;
-    ge_list: string;
-}
-
 export const CourseInfoBar = ({
     courseTitle,
     courseNumber,
@@ -49,112 +22,24 @@ export const CourseInfoBar = ({
     prerequisiteLink,
     analyticsCategory,
 }: CourseInfoBarProps) => {
+    const postHog = usePostHog();
     const isMobile = useIsMobile();
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-    const [courseInfo, setCourseInfo] = useState<CourseInfo | null>(null);
+    const popoverOpen = Boolean(anchorEl);
 
-    const postHog = usePostHog();
+    const {
+        data: courseInfo,
+        isLoading,
+        isError,
+    } = trpcReact.course.get.useQuery({ department: deptCode, courseNumber }, { enabled: popoverOpen });
 
-    const togglePopover = async (currentTarget: HTMLElement | null) => {
-        if (anchorEl) {
-            setAnchorEl(null);
-            return;
-        }
-
-        setAnchorEl(currentTarget);
-        if (courseInfo !== null) {
-            return;
-        }
-
-        try {
-            const res = await trpc.course.get.query({
-                id: `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`,
-            });
-
-            if (!res) {
-                setCourseInfo(noCourseInfo);
-                return;
-            }
-
-            setCourseInfo({
-                id: res.id,
-                department: res.department,
-                courseNumber: res.courseNumber,
-                title: res.title,
-                prerequisite_tree: res.prerequisiteTree,
-                prerequisite_list: res.prerequisites.map((x) => x.id),
-                prerequisite_text: res.prerequisiteText,
-                prerequisite_for: res.dependencies.map((x) => x.id),
-                description: res.description,
-                ge_list: res.geList.join(', '),
-            });
-        } catch {
-            setCourseInfo(noCourseInfo);
-        }
-    };
-
-    const getPopoverContent = () => {
-        if (courseInfo === null) {
-            return (
-                <Box sx={{ margin: 1.5, width: 500, height: 150 }}>
-                    <p>
-                        <Skeleton variant="text" animation="wave" height={30} width="50%" />
-                    </p>
-                    <p>
-                        <Skeleton variant="text" animation="wave" />
-                        <Skeleton variant="text" animation="wave" />
-                        <Skeleton variant="text" animation="wave" />
-                        <Skeleton variant="text" animation="wave" />
-                        <Skeleton variant="text" animation="wave" />
-                    </p>
-                </Box>
-            );
-        } else {
-            const { title, prerequisite_tree, prerequisite_text, prerequisite_for, description, ge_list } = courseInfo;
-
-            return (
-                <Box sx={{ margin: 1.5, maxWidth: 500 }}>
-                    <p>
-                        <strong>{title}</strong>
-                    </p>
-                    <p>{description}</p>
-                    {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
-
-                    {prerequisite_text !== '' && (
-                        <p>
-                            <a
-                                onClick={() => {
-                                    logAnalytics(postHog, {
-                                        category: analyticsCategory,
-                                        action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
-                                    });
-                                }}
-                                href={prerequisiteLink}
-                                rel="noopener noreferrer"
-                                target="_blank"
-                            >
-                                <span style={{ marginRight: 4 }}>Prerequisites:</span>
-                            </a>
-                            {prerequisite_text}
-                        </p>
-                    )}
-                    {prerequisite_for.length !== 0 && (
-                        <p>
-                            <span style={{ marginRight: 4 }}>Prerequisite for:</span>
-                            {prerequisite_for.join(', ')}
-                        </p>
-                    )}
-
-                    {ge_list !== '' && (
-                        <p>
-                            <span style={{ marginRight: 4 }}>General Education Categories:</span>
-                            {ge_list}
-                        </p>
-                    )}
-                </Box>
-            );
-        }
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        logAnalytics(postHog, {
+            category: analyticsCategory,
+            action: analyticsEnum.classSearch.actions.CLICK_INFO,
+        });
+        setAnchorEl(anchorEl ? null : event.currentTarget);
     };
 
     return (
@@ -164,14 +49,7 @@ export const CourseInfoBar = ({
                 color="secondary"
                 startIcon={!isMobile && <InfoOutlined />}
                 size="small"
-                onClick={(event) => {
-                    logAnalytics(postHog, {
-                        category: analyticsCategory,
-                        action: analyticsEnum.classSearch.actions.CLICK_INFO,
-                    });
-                    const currentTarget = event.currentTarget;
-                    void togglePopover(currentTarget);
-                }}
+                onClick={handleClick}
             >
                 <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
@@ -180,18 +58,19 @@ export const CourseInfoBar = ({
 
             <Popover
                 anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={() => togglePopover(null)}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
+                open={popoverOpen}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
-                {getPopoverContent()}
+                <CourseInfoBarPopover
+                    deptCode={deptCode}
+                    courseNumber={courseNumber}
+                    prerequisiteLink={prerequisiteLink}
+                    analyticsCategory={analyticsCategory}
+                    courseInfo={courseInfo}
+                    isLoading={isLoading}
+                    isError={isError}
+                />
             </Popover>
         </>
     );

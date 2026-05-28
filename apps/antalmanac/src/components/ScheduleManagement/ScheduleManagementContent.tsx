@@ -2,7 +2,7 @@ import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { useThemeStore } from '$stores/SettingsStore';
-import { useTabStore } from '$stores/TabStore';
+import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
@@ -13,13 +13,13 @@ export function ScheduleManagementContent() {
     const isDark = useThemeStore((store) => store.isDark);
 
     switch (activeTab) {
-        case 0:
+        case TAB_INDEX.calendar:
             return <ScheduleCalendar />;
-        case 1:
+        case TAB_INDEX.search:
             return <CoursePaneRoot />;
-        case 2:
+        case TAB_INDEX.added:
             return <AddedCoursePane />;
-        case 3:
+        case TAB_INDEX.map:
             return (
                 <Suspense
                     fallback={

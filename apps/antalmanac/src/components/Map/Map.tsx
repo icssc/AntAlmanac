@@ -14,12 +14,7 @@ import LocationMarker from './Marker';
 
 const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
-import {
-    isSkeletonEvent,
-    type CalendarEvent,
-    type CourseEvent,
-    type CustomEvent,
-} from '$components/Calendar/CourseCalendarEvent';
+import { isSkeletonEvent, type CalendarEvent, type CourseEvent, type CustomEvent } from '$components/Calendar/types';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { UserLocator } from '$components/Map/UserLocator';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';

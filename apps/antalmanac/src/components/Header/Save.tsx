@@ -11,8 +11,7 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Stack, Snackbar, Alert, Link, IconButton } from '@mui/material';
+import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
 import { TRPCClientError } from '@trpc/client';
 import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect } from 'react';
@@ -114,7 +113,7 @@ export const Save = () => {
 
     return (
         <Stack direction="row">
-            <LoadingButton
+            <Button
                 id="save-button"
                 color="inherit"
                 startIcon={<SaveIcon />}
@@ -125,7 +124,7 @@ export const Save = () => {
                 loading={saving}
             >
                 Save
-            </LoadingButton>
+            </Button>
 
             <Snackbar open={openAutoSaveWarning} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
                 <Alert

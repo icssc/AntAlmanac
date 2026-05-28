@@ -1,9 +1,13 @@
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
+import {
+    useCourseSearchForm,
+    useCourseSearchMode,
+    useCourseSearchView,
+} from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
 import { useCallback } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 interface TutorialButtonProps {
     onMenuClose?: () => void;
@@ -11,16 +15,17 @@ interface TutorialButtonProps {
 
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
     const { setCurrentStep, setIsOpen } = useTour();
-    const [displaySearch, disableManualSearch] = useCoursePaneStore(
-        useShallow((state) => [state.displaySearch, state.disableManualSearch])
-    );
+    const { setSearchMode } = useCourseSearchMode();
+    const { resetForm } = useCourseSearchForm();
+    const { clearView } = useCourseSearchView();
 
     const startTutorial = useCallback(() => {
-        displaySearch();
-        disableManualSearch();
+        setSearchMode(COURSE_SEARCH_MODE.QUICK);
+        resetForm();
+        clearView();
         setCurrentStep(0);
         setIsOpen(true);
-    }, [displaySearch, disableManualSearch, setCurrentStep, setIsOpen]);
+    }, [clearView, resetForm, setCurrentStep, setIsOpen, setSearchMode]);
 
     const handleClick = useCallback(() => {
         onMenuClose?.();

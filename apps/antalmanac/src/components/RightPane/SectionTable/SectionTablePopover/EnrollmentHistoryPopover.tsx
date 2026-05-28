@@ -1,22 +1,19 @@
+import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
+import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import type { AATerm } from '@packages/antalmanac-types';
 import type { WebsocSectionType } from '@packages/anteater-api/types';
+import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
-import {
-    CartesianGrid,
-    Legend,
-    Line,
-    LineChart,
-    Tooltip as RechartsTooltip,
-    ResponsiveContainer,
-    XAxis,
-    YAxis,
-} from 'recharts';
+
+const EnrollmentHistoryPopoverChart = dynamic(() => import('./EnrollmentHistoryPopoverChart'), {
+    ssr: false,
+    loading: () => <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />,
+});
 
 interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
@@ -37,13 +34,14 @@ export function EnrollmentHistoryPopover({
     term,
     sectionCode,
 }: EnrollmentHistoryPopoverProps) {
+    const predecessorLabel = getRenamedCoursesLabel(department, courseNumber);
+
     const { data: enrollmentHistory, isLoading: loading } = trpcReact.enrollHist.get.useQuery(
         { department, courseNumber, sectionType },
         { select: parseAndSortEnrollmentHistory }
     );
     const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
 
-    const theme = useTheme();
     const isMobile = useIsMobile();
 
     const width = isMobile ? 280 : 400;
@@ -72,13 +70,9 @@ export function EnrollmentHistoryPopover({
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
-        currEnrollmentHistory != null ? (
-            `${currEnrollmentHistory.term.shortName} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
-        ) : (
-            <>&nbsp;</>
-        );
-
-    const chartColors = theme.palette.enrollmentStatus;
+        currEnrollmentHistory != null
+            ? `${currEnrollmentHistory.term.shortName} | ${sectionType} | ${currEnrollmentHistory.sectionCode}`
+            : null;
 
     const handleBack = useCallback(() => {
         if (!enrollmentHistory?.length || activeGraphIndex === 0) {
@@ -124,7 +118,7 @@ export function EnrollmentHistoryPopover({
         <Card>
             <CardHeader
                 title={title}
-                subheader={subheader}
+                subheader={<SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
                 action={headerAction}
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
@@ -155,49 +149,7 @@ export function EnrollmentHistoryPopover({
                     </Box>
                 ) : (
                     <Box sx={{ display: 'flex', height, width }}>
-                        <ResponsiveContainer>
-                            <LineChart data={enrollmentHistory[activeGraphIndex].days} style={{ cursor: 'pointer' }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <RechartsTooltip contentStyle={{ backgroundColor: theme.palette.background.paper }} />
-                                <Legend wrapperStyle={{ left: 0, width: '100%' }} />
-
-                                <XAxis dataKey="date" tick={{ fontSize: 12, fill: theme.palette.text.primary }} />
-                                <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} width={35} />
-
-                                <Line
-                                    type="monotone"
-                                    dataKey="totalEnrolled"
-                                    stroke={chartColors.open}
-                                    name="Enrolled"
-                                    strokeWidth={2}
-                                    dot={false}
-                                    activeDot={{ r: 4 }}
-                                    isAnimationActive={false}
-                                />
-                                <Line
-                                    type="monotone"
-                                    dataKey="maxCapacity"
-                                    stroke={chartColors.full}
-                                    name="Capacity"
-                                    strokeWidth={2}
-                                    strokeDasharray="16 24"
-                                    dot={false}
-                                    activeDot={{ r: 3 }}
-                                    isAnimationActive={false}
-                                />
-                                <Line
-                                    type="monotone"
-                                    dataKey="waitlist"
-                                    stroke={chartColors.waitlist}
-                                    name="Waitlist"
-                                    strokeWidth={2}
-                                    dot={false}
-                                    connectNulls
-                                    activeDot={{ r: 3 }}
-                                    isAnimationActive={false}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
+                        <EnrollmentHistoryPopoverChart days={enrollmentHistory[activeGraphIndex].days} />
                     </Box>
                 )}
             </CardContent>

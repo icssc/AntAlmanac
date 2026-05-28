@@ -1,14 +1,17 @@
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
+import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
+import { readCourseSearchParams, readSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
-import { paramsAreInURL } from '$stores/CoursePaneStore';
+import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useTabStore } from '$stores/TabStore';
+import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -17,11 +20,22 @@ import { useShallow } from 'zustand/react/shallow';
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
-    const { activeTab, setActiveTab } = useTabStore(
-        useShallow((store) => ({ activeTab: store.activeTab, setActiveTab: store.setActiveTab }))
-    );
     const { tab } = useParams();
     const isMobile = useIsMobile();
+
+    const { activeTab, setActiveTab, setActiveTabValue } = useTabStore(
+        useShallow((store) => ({
+            activeTab: store.activeTab,
+            setActiveTab: store.setActiveTab,
+            setActiveTabValue: store.setActiveTabValue,
+        }))
+    );
+    const { saveSearch, popSavedSearch } = useSavedSearchStore(
+        useShallow((store) => ({
+            saveSearch: store.saveSearch,
+            popSavedSearch: store.popSavedSearch,
+        }))
+    );
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
@@ -30,6 +44,7 @@ export function ScheduleManagement() {
      * Ref to the scrollable container with all of the tabs-content within it.
      */
     const ref = useRef<HTMLDivElement>(null);
+    const hasAppliedInitialTabRef = useRef(false);
 
     // Save the current scroll position to the store.
     const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
@@ -40,50 +55,68 @@ export function ScheduleManagement() {
         });
     };
 
-    useEffect(() => {
-        if (tab) {
-            switch (tab) {
-                case 'added':
-                    setActiveTab('added');
-                    break;
-                case 'map':
-                    setActiveTab('map');
-                    break;
+    const handleTabChange = useCallback(
+        (nextTab: number) => {
+            if (activeTab === TAB_INDEX.search && nextTab !== TAB_INDEX.search) {
+                saveSearch();
             }
 
+            if (nextTab === TAB_INDEX.search) {
+                popSavedSearch();
+            }
+
+            setActiveTabValue(nextTab);
+        },
+        [activeTab, popSavedSearch, saveSearch, setActiveTabValue]
+    );
+
+    // Sync tab store when the route changes (back/forward, /added, /map).
+    useEffect(() => {
+        if (tab === 'added') {
+            hasAppliedInitialTabRef.current = true;
+            setActiveTab(tab);
             return;
         }
+        if (tab === 'map') {
+            hasAppliedInitialTabRef.current = true;
+            setActiveTab(tab);
+            return;
+        }
+        if (hasAppliedInitialTabRef.current) {
+            setActiveTab('search');
+        }
+    }, [tab, setActiveTab]);
+
+    // Sets a smart default on mount
+    useEffect(() => {
+        if (tab) {
+            return;
+        }
+
+        const formData = readCourseSearchParams();
+        const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
+        const isManualSearchMode = readSearchMode() === COURSE_SEARCH_MODE.MANUAL;
 
         if (shouldSearchPlannerFromParams()) {
             setActiveTab('search');
-            return;
-        }
-
-        const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-        const urlHasManualSearchParams = paramsAreInURL();
-        const hasLocalScheduleData = () =>
-            AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
-
-        if (urlHasManualSearchParams) {
+        } else if (hasParams || isManualSearchMode) {
             setActiveTab('search');
-            return;
-        }
+        } else if (!isMobile) {
+            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
+            setActiveTab(hasSession ? 'added' : 'search');
+        } else {
+            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
+            const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
-        if (!isMobile) {
-            if (!hasSession) {
-                setActiveTab('search');
+            if (hasSession || hasLocalScheduleData) {
+                setActiveTab('calendar');
             } else {
-                setActiveTab('added');
+                setActiveTab('search');
             }
-            return;
         }
 
-        if (hasSession || hasLocalScheduleData()) {
-            setActiveTab('calendar');
-            return;
-        }
+        hasAppliedInitialTabRef.current = true;
 
-        setActiveTab('search');
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isMobile, setActiveTab]);
@@ -109,7 +142,7 @@ export function ScheduleManagement() {
         <Stack direction="column" flexGrow={1} height="0">
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            {!isMobile && <ScheduleManagementTabs />}
+            {!isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
 
             <Stack width="100%" height="0" flexGrow={1} padding={1}>
                 <Stack
@@ -125,7 +158,7 @@ export function ScheduleManagement() {
                 </Stack>
             </Stack>
 
-            {isMobile && <ScheduleManagementTabs />}
+            {isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
         </Stack>
     );
 }
