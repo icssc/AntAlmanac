@@ -1,12 +1,11 @@
-import { ANY_GE } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm } from '$lib/term';
-import { WebsocDivisionOptionSchema, WebsocFullCoursesOptionSchema } from '@packages/antalmanac-types';
+import { WebsocDivisionOptionSchema, WebsocFullCoursesOptionSchema, WebsocGeSchema } from '@packages/antalmanac-types';
 
 export const DEFAULT_TERM = getDefaultTerm();
 
 export const DEFAULT_MANUAL_SEARCH_VALUES = {
     deptValue: 'ALL',
-    ge: ANY_GE,
+    ge: [WebsocGeSchema.enum.ANY],
     courseNumber: '',
     sectionCode: '',
 } as const;

@@ -10,7 +10,6 @@ import {
 import { LoadingMessage } from '$components/RightPane/CoursePane/CourseRenderPane/LoadingMessage';
 import { NoResults } from '$components/RightPane/CoursePane/CourseRenderPane/NoResults';
 import { RecruitmentBanner } from '$components/RightPane/CoursePane/CourseRenderPane/RecruitmentBanner';
-import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
@@ -51,12 +50,14 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
-    const getQueryParams = useCallback(
-        (searchData: CourseSearchParams): WebsocSearchInput => ({
+    const getQueryParams = useCallback((searchData: CourseSearchParams): WebsocSearchInput => {
+        const selectedGEs = searchData.ge.filter((ge) => ge !== 'ANY');
+
+        return {
             year: searchData.term.year,
             quarter: searchData.term.quarter,
             department: searchData.deptValue,
-            ge: searchData.ge,
+            ...(selectedGEs.length > 0 ? { ge: selectedGEs } : {}),
             courseNumber: searchData.courseNumber,
             sectionCodes: searchData.sectionCode,
             instructorName: searchData.instructor,
@@ -69,9 +70,8 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             division: searchData.division,
             excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','),
             days: searchData.days.split(/(?=[A-Z])/).join(','),
-        }),
-        []
-    );
+        };
+    }, []);
 
     const {
         data: searchResponse,
@@ -107,12 +107,12 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
                     response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
                 } else {
                     const websocQueryParams = getQueryParams(formData);
-                    const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
+                    const selectedGEs = formData.ge.filter((ge) => ge !== 'ANY');
                     response =
                         selectedGEs.length > 1
                             ? intersectWebsocResponses(
                                   await trpc.websoc.getManyOfField.query({
-                                      params: { ...websocQueryParams, ge: selectedGEs.join(',') },
+                                      params: { ...websocQueryParams, ge: selectedGEs },
                                       fieldName: 'ge',
                                   })
                               )

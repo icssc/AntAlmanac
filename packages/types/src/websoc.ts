@@ -72,7 +72,7 @@ export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,
     department: z.string().optional(),
-    ge: WebsocGeSchema.optional(),
+    ge: z.array(WebsocGeSchema).optional(),
     courseNumber: z.string().optional(),
     courseTitle: z.string().optional(),
     sectionCodes: z.string().optional(),
