@@ -86,6 +86,12 @@ export function SectionColorSelector() {
 
     const buttonRef = useRef<HTMLDivElement>(null);
     const [menuOpen, setMenuOpen] = useState(false);
+    // Synchronous mirror of `menuOpen` used to gate hover previews. MUI keeps menu items mounted
+    // (and firing mouse events) during the close animation, so a stray `onMouseEnter` from a
+    // continuing swipe can set a preview *after* a selection commits — with no matching
+    // `onMouseLeave` to clear it — leaving the colors and the selected theme mismatched. Reading
+    // a ref avoids the stale-closure problem a state value would have here.
+    const menuOpenRef = useRef(false);
 
     // Presets first, "Custom" last. Computed each render (not memoized) so the Custom
     // swatches reflect the user's current schedule colors rather than going stale.
@@ -109,17 +115,36 @@ export function SectionColorSelector() {
         sectionColor !== 'custom' &&
         Object.values(assignmentsByTheme[sectionColor] ?? {}).some((value) => value.startsWith('#'));
 
+    const openMenu = useCallback(() => {
+        menuOpenRef.current = true;
+        setMenuOpen(true);
+    }, []);
+
     const handleClose = useCallback(() => {
+        menuOpenRef.current = false;
         setMenuOpen(false);
         setPreviewSectionColor(null);
     }, [setPreviewSectionColor]);
 
     const handleSelect = useCallback(
         (value: SectionColorSetting) => {
-            setSectionColor(value, postHog);
+            // Close (and stop accepting previews) before committing so a stray hover from the
+            // closing menu can't re-preview a different theme on top of the selection.
+            menuOpenRef.current = false;
             setMenuOpen(false);
+            setSectionColor(value, postHog);
+            setPreviewSectionColor(null);
         },
-        [setSectionColor, postHog]
+        [setSectionColor, setPreviewSectionColor, postHog]
+    );
+
+    // Preview a theme on hover/focus, but only while the menu is genuinely open.
+    const handlePreview = useCallback(
+        (value: SectionColorSetting) => {
+            if (!menuOpenRef.current) return;
+            setPreviewSectionColor(value);
+        },
+        [setPreviewSectionColor]
     );
 
     return (
@@ -130,13 +155,13 @@ export function SectionColorSelector() {
 
             <Box
                 ref={buttonRef}
-                onClick={() => setMenuOpen(true)}
+                onClick={openMenu}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        setMenuOpen(true);
+                        openMenu();
                     }
                 }}
                 sx={{
@@ -181,8 +206,8 @@ export function SectionColorSelector() {
                         <MenuItem
                             key={option.id}
                             selected={isSelected}
-                            onMouseEnter={() => setPreviewSectionColor(option.id)}
-                            onFocus={() => setPreviewSectionColor(option.id)}
+                            onMouseEnter={() => handlePreview(option.id)}
+                            onFocus={() => handlePreview(option.id)}
                             onMouseLeave={() => setPreviewSectionColor(null)}
                             onClick={() => handleSelect(option.id)}
                             sx={{ gap: 1 }}
