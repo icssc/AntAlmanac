@@ -11,7 +11,7 @@ import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBod
 import { SectionTableBodyRowColorStrip } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowColorStrip';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
+import type { SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { TableRow, useTheme } from '@mui/material';
@@ -29,6 +29,7 @@ interface SectionTableBodyRowProps {
     scheduleConflict: boolean;
     analyticsCategory: AnalyticsCategory;
     formattedTime: string | null;
+    activeColumns: SectionTableColumn[];
 }
 
 // These components have too varied of types, any is fine here
@@ -57,11 +58,11 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         scheduleConflict,
         analyticsCategory,
         formattedTime,
+        activeColumns,
     } = props;
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
-    const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 

@@ -28,7 +28,7 @@ import {
     TableRow,
 } from '@mui/material';
 import { AACourse, AATerm } from '@packages/antalmanac-types';
-import { useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
@@ -78,7 +78,7 @@ export interface SectionTableProps {
     skeleton?: boolean;
 }
 
-function SectionTable({
+const SectionTable = memo(function SectionTable({
     courseDetails,
     term,
     allowHighlight,
@@ -98,9 +98,9 @@ function SectionTable({
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const activeTab = useTabStore((store) => store.activeTab);
 
-    const handleToggleExpand = () => {
-        setOpenContent(!openContent);
-    };
+    const handleToggleExpand = useCallback(() => {
+        setOpenContent((previous) => !previous);
+    }, []);
 
     const handleCollapseExit = () => {
         forceCheck();
@@ -293,6 +293,7 @@ function SectionTable({
                                 scheduleNames={scheduleNames}
                                 analyticsCategory={analyticsCategory}
                                 formattedTime={formattedTime}
+                                activeColumns={activeColumns}
                             />
                         </Table>
                     </TableContainer>,
@@ -301,6 +302,8 @@ function SectionTable({
             </Collapse>
         </Box>
     );
-}
+});
+
+SectionTable.displayName = 'SectionTable';
 
 export default SectionTable;

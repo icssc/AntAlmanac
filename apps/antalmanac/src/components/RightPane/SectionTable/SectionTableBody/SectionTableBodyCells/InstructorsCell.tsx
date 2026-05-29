@@ -1,14 +1,14 @@
-import { Box, Typography, SxProps } from '@mui/material';
-import { Link } from 'react-router-dom';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { Box, Typography, SxProps } from '@mui/material';
+import { memo } from 'react';
+import { Link } from 'react-router-dom';
 
 interface InstructorsCellProps {
     instructors: string[];
     sx?: SxProps;
 }
 
-export const InstructorsCell = ({ instructors, sx }: InstructorsCellProps) => {
+export const InstructorsCell = memo(function InstructorsCell({ instructors, sx }: InstructorsCellProps) {
     const links = instructors.map((profName, index) => {
         if (profName === 'STAFF') {
             return <Box key={profName + index}>{profName}</Box>; // The key should be fine as we're not changing ['STAFF, 'STAFF']
@@ -38,4 +38,6 @@ export const InstructorsCell = ({ instructors, sx }: InstructorsCellProps) => {
     });
 
     return <TableBodyCellContainer sx={sx}>{links}</TableBodyCellContainer>;
-};
+});
+
+InstructorsCell.displayName = 'InstructorsCell';

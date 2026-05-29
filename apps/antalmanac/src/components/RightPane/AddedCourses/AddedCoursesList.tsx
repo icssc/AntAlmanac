@@ -9,7 +9,7 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 
 interface AddedCoursesListProps {
     courses: CourseWithTerm[];
@@ -21,6 +21,27 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
     const openLoadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
     const setActiveTab = useTabStore((state) => state.setActiveTab);
     const setOpenImportDialog = useScheduleComponentsToggleStore((state) => state.setOpenImportDialog);
+
+    const renderCourseItem = useCallback(
+        (course: CourseWithTerm) => {
+            const missingSections = getMissingSections(course);
+
+            return (
+                <SortableList.Item id={course.id}>
+                    <SectionTable
+                        sortable
+                        courseDetails={course}
+                        term={course.term}
+                        allowHighlight={false}
+                        analyticsCategory={analyticsEnum.addedClasses}
+                        scheduleNames={scheduleNames}
+                        missingSections={missingSections}
+                    />
+                </SortableList.Item>
+            );
+        },
+        [scheduleNames]
+    );
 
     if (courses.length === 0) {
         return (
@@ -51,23 +72,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
             onChange={onCourseOrderChange}
             sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
             sortingStrategy={verticalListSortingStrategy}
-            renderItem={(course: CourseWithTerm) => {
-                const missingSections = getMissingSections(course);
-
-                return (
-                    <SortableList.Item id={course.id}>
-                        <SectionTable
-                            sortable
-                            courseDetails={course}
-                            term={course.term}
-                            allowHighlight={false}
-                            analyticsCategory={analyticsEnum.addedClasses}
-                            scheduleNames={scheduleNames}
-                            missingSections={missingSections}
-                        />
-                    </SortableList.Item>
-                );
-            }}
+            renderItem={renderCourseItem}
         />
     );
 });

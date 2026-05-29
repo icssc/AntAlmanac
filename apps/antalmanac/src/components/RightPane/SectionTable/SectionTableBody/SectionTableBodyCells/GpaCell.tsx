@@ -3,7 +3,7 @@ import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePo
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { ButtonBase, Popover, useTheme } from '@mui/material';
-import { useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 
 interface GpaCellProps {
     deptCode: string;
@@ -11,23 +11,28 @@ interface GpaCellProps {
     instructors: string[];
 }
 
-export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
+export const GpaCell = memo(function GpaCell({ deptCode, courseNumber, instructors }: GpaCellProps) {
     const isMobile = useIsMobile();
     const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<Element>();
+    const [loadGrades, setLoadGrades] = useState(false);
 
     const namedInstructors = useMemo(() => instructors.filter((i) => i !== 'STAFF'), [instructors]);
+    const shouldFetchGrades = loadGrades && namedInstructors.length > 0;
 
     const instructorResults = trpcReact.useQueries((t) =>
         namedInstructors.map((instructor) =>
             t.grades.aggregateGrades(
                 { department: deptCode, courseNumber, instructor },
-                { select: (data) => data?.gradeDistribution ?? null }
+                {
+                    select: (data) => data?.gradeDistribution ?? null,
+                    enabled: shouldFetchGrades,
+                }
             )
         )
     );
 
-    const loading = instructorResults.some((r) => r.isLoading);
+    const loading = shouldFetchGrades && instructorResults.some((r) => r.isLoading);
 
     const { gpa, instructor } = useMemo(() => {
         const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
@@ -38,7 +43,12 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
         return { gpa: '', instructor: namedInstructors[0] ?? '' };
     }, [instructorResults, namedInstructors]);
 
+    const handlePrefetch = useCallback(() => {
+        setLoadGrades(true);
+    }, []);
+
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+        setLoadGrades(true);
         setAnchorEl((current) => (current ? undefined : event.currentTarget));
     }, []);
 
@@ -55,6 +65,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                     color: theme.palette.secondary.main,
                     fontWeight: 700,
                 }}
+                onMouseEnter={handlePrefetch}
                 onClick={handleClick}
             >
                 {loading ? null : gpa || 'GPA'}
@@ -75,4 +86,6 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
             </Popover>
         </TableBodyCellContainer>
     );
-};
+});
+
+GpaCell.displayName = 'GpaCell';

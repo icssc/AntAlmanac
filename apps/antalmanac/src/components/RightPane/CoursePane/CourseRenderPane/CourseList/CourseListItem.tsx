@@ -8,6 +8,7 @@ import type { CourseSearchParams } from '$components/RightPane/CoursePane/Search
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
+import { memo } from 'react';
 
 interface CourseListItemProps {
     item: CourseListEntry;
@@ -15,7 +16,7 @@ interface CourseListItemProps {
     formData: CourseSearchParams;
 }
 
-export function CourseListItem({ item, scheduleNames, formData }: CourseListItemProps) {
+export const CourseListItem = memo(function CourseListItem({ item, scheduleNames, formData }: CourseListItemProps) {
     return (
         <div>
             {isSchoolEntry(item) ? (
@@ -45,4 +46,6 @@ export function CourseListItem({ item, scheduleNames, formData }: CourseListItem
             )}
         </div>
     );
-}
+});
+
+CourseListItem.displayName = 'CourseListItem';

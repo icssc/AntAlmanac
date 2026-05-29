@@ -50,6 +50,8 @@ export function SortableList<T extends BaseItem>({
 
     const activeItem = useMemo(() => items.find((item) => item.id === active?.id), [active, items]);
 
+    const sortableListContextValue = useMemo(() => ({ setDraggingItemState }), [setDraggingItemState]);
+
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -84,7 +86,7 @@ export function SortableList<T extends BaseItem>({
                 document.body.style.cursor = '';
             }}
         >
-            <SortableListContext value={{ setDraggingItemState }}>
+            <SortableListContext value={sortableListContextValue}>
                 <SortableContext items={items} strategy={sortingStrategy}>
                     <List sx={mergeSx({ padding: 0 }, sx)}>
                         {items.map((item, index) => (

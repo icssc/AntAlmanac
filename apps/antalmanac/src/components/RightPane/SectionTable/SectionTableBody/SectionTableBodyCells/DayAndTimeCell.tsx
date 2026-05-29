@@ -3,12 +3,13 @@ import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Box } from '@mui/material';
 import { WebsocSectionMeeting } from '@packages/anteater-api/types';
+import { memo } from 'react';
 
 interface DayAndTimeCellProps {
     meetings: WebsocSectionMeeting[];
 }
 
-export const DayAndTimeCell = ({ meetings }: DayAndTimeCellProps) => {
+export const DayAndTimeCell = memo(function DayAndTimeCell({ meetings }: DayAndTimeCellProps) {
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     return (
@@ -26,4 +27,6 @@ export const DayAndTimeCell = ({ meetings }: DayAndTimeCellProps) => {
             })}
         </TableBodyCellContainer>
     );
-};
+});
+
+DayAndTimeCell.displayName = 'DayAndTimeCell';

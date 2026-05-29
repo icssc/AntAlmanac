@@ -55,6 +55,22 @@ export function estimateCoursePaneLazyHeight(entry: CourseListEntry): number {
     return isCourseEntry(entry) ? entry.sections.length * 60 + 20 + 40 : 200;
 }
 
+export function getCourseListEntryKey(entry: CourseListEntry, index: number): string {
+    if (isCourseEntry(entry)) {
+        return `course-${entry.deptCode}-${entry.courseNumber}`;
+    }
+
+    if (isDepartmentEntry(entry)) {
+        return `dept-${entry.deptName}`;
+    }
+
+    if (isSchoolEntry(entry)) {
+        return `school-${entry.schoolName}`;
+    }
+
+    return `entry-${index}`;
+}
+
 function cleanHeaders(items: CourseListEntry[]): CourseListEntry[] {
     const result: CourseListEntry[] = [];
     let pendingSchool: WebsocSchool | null = null;
