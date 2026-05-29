@@ -1,28 +1,20 @@
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
-import { SortableList } from '$components/drag-and-drop/SortableList';
-import { EmptyState } from '$components/EmptyState';
-import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/AddedCoursesLoadingSkeleton';
+import { AddedCoursesList } from '$components/RightPane/AddedCourses/AddedCoursesList';
 import { CustomEventsBox } from '$components/RightPane/AddedCourses/CustomEventsBox';
-import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { ScheduleNoteBox } from '$components/RightPane/AddedCourses/ScheduleNoteBox';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
-import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import {
     removeLocalStorageAddedCoursesSkeletonBlueprint,
     setLocalStorageAddedCoursesSkeletonBlueprint,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { getCourseId } from '$stores/scheduleHelpers';
-import { useTabStore } from '$stores/TabStore';
-import { verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { MenuBook } from '@mui/icons-material';
 import { Box, SxProps, Typography } from '@mui/material';
 import { AACourse, AATerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface CourseWithTerm extends AACourse {
     term: AATerm;
@@ -117,24 +109,27 @@ function getCourses() {
     return formattedCourses;
 }
 
-export function AddedSectionsGrid() {
+export function AddedCourses() {
     const [courses, setCourses] = useState(getCourses);
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
-    const loadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
 
-    const handleCourseOrderChange = (updatedCourses: CourseWithTerm[], _activeIndex: number, overIndex: number) => {
-        setCourses(updatedCourses);
+    const handleCourseOrderChange = useCallback(
+        (updatedCourses: CourseWithTerm[], _activeIndex: number, overIndex: number) => {
+            setCourses(updatedCourses);
 
-        const movedCourse = updatedCourses[overIndex];
-        const nextConsecutiveCourse = overIndex + 1 !== updatedCourses.length ? updatedCourses[overIndex + 1] : null;
+            const movedCourse = updatedCourses[overIndex];
+            const nextConsecutiveCourse =
+                overIndex + 1 !== updatedCourses.length ? updatedCourses[overIndex + 1] : null;
 
-        AppStore.reorderAddedCourses(
-            AppStore.getCurrentScheduleIndex(),
-            getCourseId(movedCourse),
-            nextConsecutiveCourse !== null ? getCourseId(nextConsecutiveCourse) : null
-        );
-    };
+            AppStore.reorderAddedCourses(
+                AppStore.getCurrentScheduleIndex(),
+                getCourseId(movedCourse),
+                nextConsecutiveCourse !== null ? getCourseId(nextConsecutiveCourse) : null
+            );
+        },
+        []
+    );
 
     useEffect(() => {
         // Persist whatever's already in AppStore at mount, in case it was
@@ -211,48 +206,11 @@ export function AddedSectionsGrid() {
                 TODO (@KevinWu098) Looks too out of place. Will be added back in the calendar toolbar refactor work.
                 {isMobile && <SelectSchedulePopover />} 
                 */}
-                {loadingSchedule ? (
-                    <AddedCoursesLoadingSkeleton />
-                ) : courses.length === 0 ? (
-                    <EmptyState
-                        Icon={MenuBook}
-                        title="No Courses Added Yet"
-                        description="Search for courses and add sections to build your schedule. You can also import from your study list."
-                        primaryAction={{
-                            label: 'Search Courses',
-                            onClick: () => useTabStore.getState().setActiveTab('search'),
-                        }}
-                        secondaryAction={{
-                            label: 'Import Schedule',
-                            onClick: () => useScheduleComponentsToggleStore.getState().setOpenImportDialog(true),
-                        }}
-                    />
-                ) : (
-                    <SortableList
-                        disableHorizontalScroll
-                        items={courses}
-                        onChange={handleCourseOrderChange}
-                        sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
-                        sortingStrategy={verticalListSortingStrategy}
-                        renderItem={(course: CourseWithTerm) => {
-                            const missingSections = getMissingSections(course);
-
-                            return (
-                                <SortableList.Item id={course.id}>
-                                    <SectionTable
-                                        sortable
-                                        courseDetails={course}
-                                        term={course.term}
-                                        allowHighlight={false}
-                                        analyticsCategory={analyticsEnum.addedClasses}
-                                        scheduleNames={scheduleNames}
-                                        missingSections={missingSections}
-                                    />
-                                </SortableList.Item>
-                            );
-                        }}
-                    />
-                )}
+                <AddedCoursesList
+                    courses={courses}
+                    scheduleNames={scheduleNames}
+                    onCourseOrderChange={handleCourseOrderChange}
+                />
             </Box>
 
             <CustomEventsBox />

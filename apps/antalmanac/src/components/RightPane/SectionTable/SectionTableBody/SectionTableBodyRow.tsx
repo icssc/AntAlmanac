@@ -101,7 +101,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {
-            /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
+            /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursesRoot */
             const computedAddedCourseStyle = allowHighlight
                 ? isDark
                     ? { backgroundColor: '#b0b04fa0' }
