@@ -22,10 +22,6 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
     const setActiveTab = useTabStore((state) => state.setActiveTab);
     const setOpenImportDialog = useScheduleComponentsToggleStore((state) => state.setOpenImportDialog);
 
-    if (openLoadingSchedule) {
-        return <AddedCoursesLoadingSkeleton />;
-    }
-
     if (courses.length === 0) {
         return (
             <EmptyState
@@ -42,6 +38,10 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
                 }}
             />
         );
+    }
+
+    if (openLoadingSchedule) {
+        return <AddedCoursesLoadingSkeleton />;
     }
 
     return (
