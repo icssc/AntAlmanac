@@ -21,6 +21,7 @@ export const CalendarEventWrapper = memo(function CalendarEventWrapper({
     const quickSearch = useQuickSearch();
 
     const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent);
+    const isSelected = useSelectedEventStore((state) => state.selectedEvent === props.event);
 
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
@@ -41,5 +42,9 @@ export const CalendarEventWrapper = memo(function CalendarEventWrapper({
         [props.event, quickSearch, setSelectedEvent]
     );
 
-    return <div>{isValidElement(children) ? cloneElement(children, { onClick: handleClick }) : children}</div>;
+    return (
+        <div style={isSelected ? { zIndex: 10 } : undefined}>
+            {isValidElement(children) ? cloneElement(children, { onClick: handleClick }) : children}
+        </div>
+    );
 });
