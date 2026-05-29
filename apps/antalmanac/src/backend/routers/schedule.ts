@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 const scheduleRouter = router({
     get: protectedProcedure.query(async ({ ctx }) => {
-        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
+        return await RDS.fetchUserDataByUserId(db, ctx.userId);
     }),
 
     save: protectedProcedure

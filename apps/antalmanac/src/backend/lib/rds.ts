@@ -19,7 +19,6 @@ import {
     type Schedule,
     type CourseInSchedule,
     type CustomEvent,
-    sessions,
     Account,
     friendships,
     subscriptions,
@@ -31,7 +30,7 @@ import {
     type ConflictUpdatePolicy,
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
-import { and, eq, ExtractTablesWithRelations, gt, ne, or, not, notInArray, sql } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, ne, or, not, notInArray, sql } from 'drizzle-orm';
 import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -511,29 +510,21 @@ export class RDS {
         return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
     }
 
-    private static async getUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
-        return db
-            .select()
-            .from(users)
-            .leftJoin(sessions, eq(users.id, sessions.userId))
-            .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
-            .then((res) => res[0].users);
-    }
-
     /**
-     * Fetches user data associated with a valid session using a refresh token.
+     * Fetches schedule save state for an authenticated user.
      *
-     * Retrieves user information based on the provided refresh token. If a user is
-     * found, gathers the user's schedules and custom events, aggregates them, and
-     * determines the current schedule index.
+     * Caller must already have validated the session (e.g. TRPC protectedProcedure).
      *
      * @param db - The database or transaction object to perform the operation.
-     * @param refreshToken - The refresh token used to identify the session.
-     * @returns A promise that resolves to an object containing the user's ID and user data,
-     *          including schedules and the current schedule index, or null if no user is found.
+     * @param userId - The authenticated user's ID.
+     * @returns User id and schedule save state, or null if the user does not exist.
      */
-    static async fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
-        const user = await this.getUserDataWithSession(db, refreshToken);
+    static async fetchUserDataByUserId(db: DatabaseOrTransaction, userId: string) {
+        const user = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, userId))
+            .then((res) => res[0] ?? null);
 
         if (!user) {
             return null;
@@ -543,12 +534,12 @@ export class RDS {
             db
                 .select()
                 .from(schedules)
-                .where(eq(schedules.userId, user.id))
+                .where(eq(schedules.userId, userId))
                 .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
             db
                 .select()
                 .from(schedules)
-                .where(eq(schedules.userId, user.id))
+                .where(eq(schedules.userId, userId))
                 .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
         ]);
 
