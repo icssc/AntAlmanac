@@ -1,4 +1,4 @@
-import { AddedSectionsGrid } from '$components/RightPane/AddedCourses/AddedSectionsGrid';
+import { AddedCourses } from '$components/RightPane/AddedCourses/AddedCourses';
 import { FallbackSchedule } from '$components/RightPane/AddedCourses/FallbackSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -6,7 +6,7 @@ import { Box } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect } from 'react';
 
-export function AddedCoursePane() {
+export function AddedCoursesRoot() {
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const postHog = usePostHog();
 
@@ -17,5 +17,5 @@ export function AddedCoursePane() {
         });
     }, [postHog]);
 
-    return <Box>{fallbackMode ? <FallbackSchedule /> : <AddedSectionsGrid />}</Box>;
+    return <Box>{fallbackMode ? <FallbackSchedule /> : <AddedCourses />}</Box>;
 }

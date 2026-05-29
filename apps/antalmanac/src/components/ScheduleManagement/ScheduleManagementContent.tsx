@@ -1,5 +1,5 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
-import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
+import { AddedCoursesRoot } from '$components/RightPane/AddedCourses/AddedCoursesRoot';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { useThemeStore } from '$stores/SettingsStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
@@ -18,7 +18,7 @@ export function ScheduleManagementContent() {
         case TAB_INDEX.search:
             return <CoursePaneRoot />;
         case TAB_INDEX.added:
-            return <AddedCoursePane />;
+            return <AddedCoursesRoot />;
         case TAB_INDEX.map:
             return (
                 <Suspense

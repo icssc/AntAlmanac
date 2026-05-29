@@ -17,7 +17,6 @@ import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
@@ -49,6 +48,7 @@ const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     eventWrapper: CalendarEventWrapper,
 };
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
+const noop = () => {};
 
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
@@ -69,7 +69,6 @@ export const ScheduleCalendar = memo(() => {
     );
     const isDark = useThemeStore((store) => store.isDark);
     const visibilityMap = useHiddenCoursesStore((state) => state.visibilityMap);
-    const selectedEvent = useSelectedEventStore((state) => state.selectedEvent);
 
     const openLoadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
     const hasHadEventsRef = useRef(false);
@@ -163,8 +162,6 @@ export const ScheduleCalendar = memo(() => {
                       VisibilityState.Visible)
                     : VisibilityState.Visible;
 
-            const isSelected = event === selectedEvent;
-
             const style =
                 visibility === VisibilityState.Outlined
                     ? {
@@ -173,7 +170,6 @@ export const ScheduleCalendar = memo(() => {
                           borderRadius: '4px',
                           color: event.color,
                           cursor: 'pointer',
-                          ...(isSelected && { zIndex: 10 }),
                       }
                     : {
                           backgroundColor: event.color,
@@ -186,12 +182,11 @@ export const ScheduleCalendar = memo(() => {
                               : colorContrastSufficient(event.color)
                                 ? 'white'
                                 : 'black',
-                          ...(isSelected && { zIndex: 10 }),
                       };
 
             return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
         },
-        [currentScheduleId, selectedEvent, theme, visibilityMap]
+        [currentScheduleId, theme, visibilityMap]
     );
 
     /**
@@ -378,7 +373,6 @@ export const ScheduleCalendar = memo(() => {
                 </Backdrop>
 
                 <Calendar<CalendarEvent, object>
-                    key={`${culture}-${calendarView}`}
                     localizer={calendarLocalizer}
                     culture={culture}
                     toolbar={false}
@@ -386,15 +380,11 @@ export const ScheduleCalendar = memo(() => {
                     views={CALENDAR_VIEWS}
                     defaultView={Views.WORK_WEEK}
                     view={calendarView}
-                    onView={() => {
-                        return;
-                    }}
-                    step={15}
-                    timeslots={2}
+                    onView={noop}
+                    step={30}
+                    timeslots={1}
                     date={date}
-                    onNavigate={() => {
-                        return;
-                    }}
+                    onNavigate={noop}
                     min={startTime}
                     max={CALENDAR_MAX_DATE}
                     scrollToTime={startTime}
