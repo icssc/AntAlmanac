@@ -44,7 +44,6 @@ export function ScheduleManagement() {
      * Ref to the scrollable container with all of the tabs-content within it.
      */
     const ref = useRef<HTMLDivElement>(null);
-    const hasAppliedInitialTabRef = useRef(false);
 
     // Save the current scroll position to the store.
     const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
@@ -71,19 +70,10 @@ export function ScheduleManagement() {
     );
 
     // Sync tab store when the route changes (back/forward, /added, /map).
+    // Calendar and search both live at `/`, so leave tab state alone for that route.
     useEffect(() => {
-        if (tab === 'added') {
-            hasAppliedInitialTabRef.current = true;
+        if (tab === 'added' || tab === 'map') {
             setActiveTab(tab);
-            return;
-        }
-        if (tab === 'map') {
-            hasAppliedInitialTabRef.current = true;
-            setActiveTab(tab);
-            return;
-        }
-        if (hasAppliedInitialTabRef.current) {
-            setActiveTab('search');
         }
     }, [tab, setActiveTab]);
 
@@ -114,8 +104,6 @@ export function ScheduleManagement() {
                 setActiveTab('search');
             }
         }
-
-        hasAppliedInitialTabRef.current = true;
 
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
