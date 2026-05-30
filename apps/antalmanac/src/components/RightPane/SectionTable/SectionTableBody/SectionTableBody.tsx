@@ -17,54 +17,56 @@ interface SectionTableBodyProps {
     activeColumns: SectionTableColumn[];
 }
 
-export const SectionTableBody = memo(function SectionTableBody({
-    courseDetails,
-    term,
-    scheduleNames,
-    allowHighlight,
-    analyticsCategory,
-    formattedTime,
-    activeColumns,
-}: SectionTableBodyProps) {
-    const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
+export const SectionTableBody = memo(
+    ({
+        courseDetails,
+        term,
+        scheduleNames,
+        allowHighlight,
+        analyticsCategory,
+        formattedTime,
+        activeColumns,
+    }: SectionTableBodyProps) => {
+        const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
 
-    const sectionConflicts = useMemo(
-        () => buildSectionConflictMap(courseDetails.sections, calendarEvents),
-        [calendarEvents, courseDetails.sections]
-    );
+        const sectionConflicts = useMemo(
+            () => buildSectionConflictMap(courseDetails.sections, calendarEvents),
+            [calendarEvents, courseDetails.sections]
+        );
 
-    const updateCalendarEvents = useCallback(() => {
-        setCalendarEvents(AppStore.getCourseEventsInCalendar());
-    }, []);
+        const updateCalendarEvents = useCallback(() => {
+            setCalendarEvents(AppStore.getCourseEventsInCalendar());
+        }, []);
 
-    useEffect(() => {
-        AppStore.on('addedCoursesChange', updateCalendarEvents);
-        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
+        useEffect(() => {
+            AppStore.on('addedCoursesChange', updateCalendarEvents);
+            AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
 
-        return () => {
-            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
-            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
-        };
-    }, [updateCalendarEvents]);
+            return () => {
+                AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
+                AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
+            };
+        }, [updateCalendarEvents]);
 
-    return (
-        <TableBody>
-            {courseDetails.sections.map((section) => (
-                <SectionTableBodyRow
-                    key={section.sectionCode}
-                    section={section}
-                    courseDetails={courseDetails}
-                    term={term}
-                    allowHighlight={allowHighlight}
-                    scheduleNames={scheduleNames}
-                    scheduleConflict={sectionConflicts.get(section.sectionCode) ?? false}
-                    analyticsCategory={analyticsCategory}
-                    formattedTime={formattedTime}
-                    activeColumns={activeColumns}
-                />
-            ))}
-        </TableBody>
-    );
-});
+        return (
+            <TableBody>
+                {courseDetails.sections.map((section) => (
+                    <SectionTableBodyRow
+                        key={section.sectionCode}
+                        section={section}
+                        courseDetails={courseDetails}
+                        term={term}
+                        allowHighlight={allowHighlight}
+                        scheduleNames={scheduleNames}
+                        scheduleConflict={sectionConflicts.get(section.sectionCode) ?? false}
+                        analyticsCategory={analyticsCategory}
+                        formattedTime={formattedTime}
+                        activeColumns={activeColumns}
+                    />
+                ))}
+            </TableBody>
+        );
+    }
+);
 
 SectionTableBody.displayName = 'SectionTableBody';

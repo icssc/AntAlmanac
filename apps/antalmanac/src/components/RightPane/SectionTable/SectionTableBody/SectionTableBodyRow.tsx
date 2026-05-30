@@ -48,120 +48,122 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     syllabus: SyllabusCell,
 };
 
-export const SectionTableBodyRow = memo(function SectionTableBodyRow({
-    section,
-    courseDetails,
-    term,
-    allowHighlight,
-    scheduleNames,
-    scheduleConflict,
-    analyticsCategory,
-    formattedTime,
-    activeColumns,
-}: SectionTableBodyRowProps) {
-    const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
-    const previewMode = usePreviewStore((store) => store.previewMode);
-    const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
+export const SectionTableBodyRow = memo(
+    ({
+        section,
+        courseDetails,
+        term,
+        allowHighlight,
+        scheduleNames,
+        scheduleConflict,
+        analyticsCategory,
+        formattedTime,
+        activeColumns,
+    }: SectionTableBodyRowProps) => {
+        const theme = useTheme();
+        const isDark = useThemeStore((store) => store.isDark);
+        const previewMode = usePreviewStore((store) => store.previewMode);
+        const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
-    const [addedCourse, setAddedCourse] = useState(() =>
-        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
-    );
+        const [addedCourse, setAddedCourse] = useState(() =>
+            AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
+        );
 
-    const handleMouseEnter = useCallback(() => {
-        if (!previewMode || addedCourse) {
+        const handleMouseEnter = useCallback(() => {
+            if (!previewMode || addedCourse) {
+                setHoveredEvent(undefined);
+            } else {
+                setHoveredEvent(section, courseDetails, term);
+            }
+        }, [previewMode, addedCourse, setHoveredEvent, section, courseDetails, term]);
+
+        const handleMouseLeave = useCallback(() => {
             setHoveredEvent(undefined);
-        } else {
-            setHoveredEvent(section, courseDetails, term);
-        }
-    }, [previewMode, addedCourse, setHoveredEvent, section, courseDetails, term]);
+        }, [setHoveredEvent]);
 
-    const handleMouseLeave = useCallback(() => {
-        setHoveredEvent(undefined);
-    }, [setHoveredEvent]);
+        useEffect(() => {
+            const sectionKey = `${section.sectionCode} ${term.shortName}`;
 
-    useEffect(() => {
-        const sectionKey = `${section.sectionCode} ${term.shortName}`;
+            const syncAddedCourse = () => {
+                setAddedCourse(AppStore.getAddedSectionCodes().has(sectionKey));
+            };
 
-        const syncAddedCourse = () => {
-            setAddedCourse(AppStore.getAddedSectionCodes().has(sectionKey));
-        };
+            syncAddedCourse();
 
-        syncAddedCourse();
+            AppStore.on('addedCoursesChange', syncAddedCourse);
+            AppStore.on('currentScheduleIndexChange', syncAddedCourse);
 
-        AppStore.on('addedCoursesChange', syncAddedCourse);
-        AppStore.on('currentScheduleIndexChange', syncAddedCourse);
+            return () => {
+                AppStore.removeListener('addedCoursesChange', syncAddedCourse);
+                AppStore.removeListener('currentScheduleIndexChange', syncAddedCourse);
+            };
+        }, [section.sectionCode, term]);
 
-        return () => {
-            AppStore.removeListener('addedCoursesChange', syncAddedCourse);
-            AppStore.removeListener('currentScheduleIndexChange', syncAddedCourse);
-        };
-    }, [section.sectionCode, term]);
+        const computedRowStyle = useMemo(() => {
+            if (addedCourse) {
+                /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursesRoot */
+                const computedAddedCourseStyle = allowHighlight
+                    ? isDark
+                        ? { backgroundColor: '#b0b04fa0' }
+                        : { backgroundColor: '#fcfc97' }
+                    : {};
 
-    const computedRowStyle = useMemo(() => {
-        if (addedCourse) {
-            /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursesRoot */
-            const computedAddedCourseStyle = allowHighlight
-                ? isDark
-                    ? { backgroundColor: '#b0b04fa0' }
-                    : { backgroundColor: '#fcfc97' }
-                : {};
+                return computedAddedCourseStyle;
+            }
 
-            return computedAddedCourseStyle;
-        }
+            if (scheduleConflict) {
+                const computedScheduleConflictStyle = isDark
+                    ? { backgroundColor: '#121212', opacity: '0.6' }
+                    : { backgroundColor: '#a0a0a0', opacity: '1' };
 
-        if (scheduleConflict) {
-            const computedScheduleConflictStyle = isDark
-                ? { backgroundColor: '#121212', opacity: '0.6' }
-                : { backgroundColor: '#a0a0a0', opacity: '1' };
+                return computedScheduleConflictStyle;
+            }
 
-            return computedScheduleConflictStyle;
-        }
+            return {};
+        }, [addedCourse, allowHighlight, isDark, scheduleConflict]);
 
-        return {};
-    }, [addedCourse, allowHighlight, isDark, scheduleConflict]);
+        return (
+            <TableRow
+                /**
+                 * CSS errors occur when combining the `nth-of-type` selector with the computed styling, so it's split into two separate props
+                 */
+                sx={{
+                    '&:nth-of-type(odd)': {
+                        backgroundColor: theme.palette.action.hover,
+                    },
+                }}
+                style={computedRowStyle}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+            >
+                <SectionTableBodyRowColorStrip section={section} term={term} visible={addedCourse} />
 
-    return (
-        <TableRow
-            /**
-             * CSS errors occur when combining the `nth-of-type` selector with the computed styling, so it's split into two separate props
-             */
-            sx={{
-                '&:nth-of-type(odd)': {
-                    backgroundColor: theme.palette.action.hover,
-                },
-            }}
-            style={computedRowStyle}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            <SectionTableBodyRowColorStrip section={section} term={term} visible={addedCourse} />
-
-            {Object.entries(tableBodyCells)
-                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
-                .map(([column, Component]) => {
-                    return (
-                        <Component
-                            addedCourse={addedCourse}
-                            key={column}
-                            section={section}
-                            courseDetails={courseDetails}
-                            term={term}
-                            scheduleConflict={scheduleConflict}
-                            scheduleNames={scheduleNames}
-                            {...section}
-                            sectionType={section.sectionType}
-                            maxCapacity={parseInt(section.maxCapacity, 10)}
-                            units={parseFloat(section.units)}
-                            courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
-                            {...courseDetails}
-                            analyticsCategory={analyticsCategory}
-                            formattedTime={formattedTime}
-                        />
-                    );
-                })}
-        </TableRow>
-    );
-});
+                {Object.entries(tableBodyCells)
+                    .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                    .map(([column, Component]) => {
+                        return (
+                            <Component
+                                addedCourse={addedCourse}
+                                key={column}
+                                section={section}
+                                courseDetails={courseDetails}
+                                term={term}
+                                scheduleConflict={scheduleConflict}
+                                scheduleNames={scheduleNames}
+                                {...section}
+                                sectionType={section.sectionType}
+                                maxCapacity={parseInt(section.maxCapacity, 10)}
+                                units={parseFloat(section.units)}
+                                courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
+                                {...courseDetails}
+                                analyticsCategory={analyticsCategory}
+                                formattedTime={formattedTime}
+                            />
+                        );
+                    })}
+            </TableRow>
+        );
+    }
+);
 
 SectionTableBodyRow.displayName = 'SectionTableBodyRow';

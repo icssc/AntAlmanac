@@ -16,7 +16,7 @@ interface CourseListItemProps {
     formData: CourseSearchParams;
 }
 
-export const CourseListItem = memo(function CourseListItem({ item, scheduleNames, formData }: CourseListItemProps) {
+export const CourseListItem = memo(({ item, scheduleNames, formData }: CourseListItemProps) => {
     return (
         <div>
             {isSchoolEntry(item) ? (
