@@ -48,7 +48,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     syllabus: SyllabusCell,
 };
 
-const SectionTableBodyRow = memo(function SectionTableBodyRow({
+export const SectionTableBodyRow = memo(function SectionTableBodyRow({
     section,
     courseDetails,
     term,
@@ -165,5 +165,3 @@ const SectionTableBodyRow = memo(function SectionTableBodyRow({
 });
 
 SectionTableBodyRow.displayName = 'SectionTableBodyRow';
-
-export { SectionTableBodyRow };

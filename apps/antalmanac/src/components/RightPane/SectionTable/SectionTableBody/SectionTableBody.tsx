@@ -1,10 +1,10 @@
+import { buildSectionConflictMap } from '$components/RightPane/SectionTable/SectionTableBody/helpers';
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
 import type { SectionTableColumn } from '$stores/ColumnStore';
 import { TableBody } from '@mui/material';
-import { AACourse, AASection, AATerm } from '@packages/antalmanac-types';
+import { AACourse, AATerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface SectionTableBodyProps {
@@ -17,34 +17,7 @@ interface SectionTableBodyProps {
     activeColumns: SectionTableColumn[];
 }
 
-function hasScheduleConflict(
-    section: AASection,
-    calendarEvents: ReturnType<typeof AppStore.getCourseEventsInCalendar>
-) {
-    const daysOccurring = parseDaysString(section.meetings[0].timeIsTBA ? null : section.meetings[0].days);
-    const normalizedTime = normalizeTime(section.meetings[0]);
-
-    if (calendarEvents.length === 0 || !normalizedTime) {
-        return false;
-    }
-
-    const { startTime, endTime } = normalizedTime;
-
-    return calendarEvents.some((event) => {
-        if (!daysOccurring?.includes(event.start.getDay())) {
-            return false;
-        }
-
-        const eventStartTime = event.start.toTimeString().slice(0, 5);
-        const eventEndTime = event.end.toTimeString().slice(0, 5);
-        const happensBefore = endTime <= eventStartTime;
-        const happensAfter = startTime >= eventEndTime;
-
-        return !(happensBefore || happensAfter);
-    });
-}
-
-const SectionTableBody = memo(function SectionTableBody({
+export const SectionTableBody = memo(function SectionTableBody({
     courseDetails,
     term,
     scheduleNames,
@@ -55,15 +28,10 @@ const SectionTableBody = memo(function SectionTableBody({
 }: SectionTableBodyProps) {
     const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
 
-    const sectionConflicts = useMemo(() => {
-        const conflicts = new Map<string, boolean>();
-
-        for (const section of courseDetails.sections) {
-            conflicts.set(section.sectionCode, hasScheduleConflict(section, calendarEvents));
-        }
-
-        return conflicts;
-    }, [calendarEvents, courseDetails.sections]);
+    const sectionConflicts = useMemo(
+        () => buildSectionConflictMap(courseDetails.sections, calendarEvents),
+        [calendarEvents, courseDetails.sections]
+    );
 
     const updateCalendarEvents = useCallback(() => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
@@ -100,5 +68,3 @@ const SectionTableBody = memo(function SectionTableBody({
 });
 
 SectionTableBody.displayName = 'SectionTableBody';
-
-export { SectionTableBody };

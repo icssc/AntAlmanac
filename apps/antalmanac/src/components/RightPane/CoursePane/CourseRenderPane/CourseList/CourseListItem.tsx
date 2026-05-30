@@ -16,7 +16,7 @@ interface CourseListItemProps {
     formData: CourseSearchParams;
 }
 
-const CourseListItem = memo(function CourseListItem({ item, scheduleNames, formData }: CourseListItemProps) {
+export const CourseListItem = memo(function CourseListItem({ item, scheduleNames, formData }: CourseListItemProps) {
     return (
         <div>
             {isSchoolEntry(item) ? (
@@ -49,5 +49,3 @@ const CourseListItem = memo(function CourseListItem({ item, scheduleNames, formD
 });
 
 CourseListItem.displayName = 'CourseListItem';
-
-export { CourseListItem };
