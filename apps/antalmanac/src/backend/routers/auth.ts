@@ -27,7 +27,12 @@ function accountTypeFromSub(sub: string): 'OIDC' | 'APPLE' {
 
 const authRouter = router({
     getUserAndAccount: protectedProcedure.query(async ({ ctx }) => {
-        return await getUserAndAccountBySessionToken(db, ctx.sessionToken);
+        const result = await getUserAndAccountBySessionToken(db, ctx.sessionToken);
+        if (!result) {
+            throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
+
+        return result;
     }),
 
     /**
