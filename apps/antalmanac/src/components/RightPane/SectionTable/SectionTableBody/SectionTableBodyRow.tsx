@@ -48,19 +48,17 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     syllabus: SyllabusCell,
 };
 
-export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
-    const {
-        section,
-        courseDetails,
-        term,
-        allowHighlight,
-        scheduleNames,
-        scheduleConflict,
-        analyticsCategory,
-        formattedTime,
-        activeColumns,
-    } = props;
-
+const SectionTableBodyRow = memo(function SectionTableBodyRow({
+    section,
+    courseDetails,
+    term,
+    allowHighlight,
+    scheduleNames,
+    scheduleConflict,
+    analyticsCategory,
+    formattedTime,
+    activeColumns,
+}: SectionTableBodyRowProps) {
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
     const previewMode = usePreviewStore((store) => store.previewMode);
@@ -167,3 +165,5 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 });
 
 SectionTableBodyRow.displayName = 'SectionTableBodyRow';
+
+export { SectionTableBodyRow };

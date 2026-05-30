@@ -44,7 +44,7 @@ function hasScheduleConflict(
     });
 }
 
-export const SectionTableBody = memo(function SectionTableBody({
+const SectionTableBody = memo(function SectionTableBody({
     courseDetails,
     term,
     scheduleNames,
@@ -100,3 +100,5 @@ export const SectionTableBody = memo(function SectionTableBody({
 });
 
 SectionTableBody.displayName = 'SectionTableBody';
+
+export { SectionTableBody };
