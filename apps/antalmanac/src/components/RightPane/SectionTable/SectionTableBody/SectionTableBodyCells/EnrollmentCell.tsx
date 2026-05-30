@@ -4,7 +4,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import type { AATerm } from '@packages/antalmanac-types';
 import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/anteater-api/types';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 interface EnrollmentCellProps {
     sectionType: WebsocSectionType;
@@ -29,7 +29,7 @@ interface EnrollmentCellProps {
     formattedTime: string | null;
 }
 
-export const EnrollmentCell = memo(function EnrollmentCell({
+export const EnrollmentCell = ({
     sectionType,
     deptCode,
     courseNumber,
@@ -41,7 +41,7 @@ export const EnrollmentCell = memo(function EnrollmentCell({
     numWaitlistCap,
     numNewOnlyReserved,
     formattedTime,
-}: EnrollmentCellProps) {
+}: EnrollmentCellProps) => {
     const isMobile = useIsMobile();
     const theme = useTheme();
     const secondaryColor = theme.palette.secondary.main;
@@ -111,6 +111,4 @@ export const EnrollmentCell = memo(function EnrollmentCell({
             </Popover>
         </TableBodyCellContainer>
     );
-});
-
-EnrollmentCell.displayName = 'EnrollmentCell';
+};
