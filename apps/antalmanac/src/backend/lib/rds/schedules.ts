@@ -13,8 +13,8 @@ import {
 import { createId } from '@paralleldrive/cuid2';
 import { and, eq, not, notInArray, or } from 'drizzle-orm';
 
+import { aggregateUserData } from './helpers';
 import type { DatabaseOrTransaction, Transaction } from './types';
-import { aggregateUserData } from './users';
 
 /**
  * Upserts the given user's schedules and selected schedule index.
