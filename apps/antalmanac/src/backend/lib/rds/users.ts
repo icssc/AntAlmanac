@@ -11,7 +11,7 @@ export async function getUserByEmail(db: DatabaseOrTransaction, email: string) {
         .from(users)
         .where(sql`lower(${users.email}) = lower(${email.trim()})`)
         .limit(1)
-        .then((res) => res[0]);
+        .then((res) => res[0] ?? null);
 }
 
 /**
@@ -61,16 +61,18 @@ export async function getUserFriendDataByUid(
         .select()
         .from(users)
         .where(eq(users.id, userId))
-        .then((res) => res[0]);
+        .then((res) => res[0] ?? null);
 
     if (!user) {
         return null;
     }
 
-    const userSchedules = await loadSchedules(
-        db,
-        and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true))!
-    );
+    const sharedScheduleFilter = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
+    if (sharedScheduleFilter === undefined) {
+        throw new Error('Failed to build filter');
+    }
+
+    const userSchedules = await loadSchedules(db, sharedScheduleFilter);
 
     return {
         ...user,

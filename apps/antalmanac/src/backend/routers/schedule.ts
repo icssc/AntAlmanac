@@ -33,7 +33,7 @@ const scheduleRouter = router({
             try {
                 return await upsertUserData(db, ctx.userId, userData);
             } catch (error) {
-                console.error('RDS Failed to upsert user data:', error);
+                console.error('Failed to upsert user data:', error);
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
                     message: 'Failed to save user data',
