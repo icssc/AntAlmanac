@@ -222,34 +222,33 @@ export async function getScheduleById(
     db: DatabaseOrTransaction,
     scheduleId: string
 ): Promise<(ShortCourseSchedule & { id: string; index: number; userId: string }) | null> {
-    return db.transaction(async (tx) => {
-        const schedule = await tx
+    const schedule = await db
+        .select()
+        .from(schedules)
+        .where(eq(schedules.id, scheduleId))
+        .then((res) => res[0]);
+
+    if (!schedule) {
+        return null;
+    }
+
+    const [sectionResults, customEventResults] = await Promise.all([
+        db
             .select()
             .from(schedules)
             .where(eq(schedules.id, scheduleId))
-            .then((res) => res[0]);
-
-        if (!schedule) {
-            return null;
-        }
-
-        const sectionResults = await tx
+            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+        db
             .select()
             .from(schedules)
             .where(eq(schedules.id, scheduleId))
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
+    ]);
 
-        const customEventResults = await tx
-            .select()
-            .from(schedules)
-            .where(eq(schedules.id, scheduleId))
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
-
-        const scheduleArray = aggregateUserData(sectionResults, customEventResults);
-        const result = scheduleArray[0];
-        if (!result) return null;
-        return { ...result, userId: schedule.userId };
-    });
+    const scheduleArray = aggregateUserData(sectionResults, customEventResults);
+    const result = scheduleArray[0];
+    if (!result) return null;
+    return { ...result, userId: schedule.userId };
 }
 
 /**

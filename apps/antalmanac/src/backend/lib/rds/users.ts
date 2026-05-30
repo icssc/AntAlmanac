@@ -90,41 +90,40 @@ export async function getUserFriendDataByUid(
     db: DatabaseOrTransaction,
     userId: string
 ): Promise<(User & { userData: ScheduleSaveState }) | null> {
-    return db.transaction(async (tx) => {
-        const user = await tx
-            .select()
-            .from(users)
-            .where(eq(users.id, userId))
-            .then((res) => res[0]);
+    const user = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .then((res) => res[0]);
 
-        if (!user) {
-            return null;
-        }
+    if (!user) {
+        return null;
+    }
 
-        const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
+    const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
 
-        const sectionResults = await tx
-            .select()
-            .from(schedules)
-            .where(sharedCondition)
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-        const customEventResults = await tx
+    const [sectionResults, customEventResults] = await Promise.all([
+        db
             .select()
             .from(schedules)
             .where(sharedCondition)
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+        db
+            .select()
+            .from(schedules)
+            .where(sharedCondition)
+            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
+    ]);
 
-        const userSchedules = aggregateUserData(sectionResults, customEventResults);
+    const userSchedules = aggregateUserData(sectionResults, customEventResults);
 
-        return {
-            ...user,
-            userData: {
-                schedules: userSchedules,
-                scheduleIndex: 0,
-            },
-        };
-    });
+    return {
+        ...user,
+        userData: {
+            schedules: userSchedules,
+            scheduleIndex: 0,
+        },
+    };
 }
 
 /**

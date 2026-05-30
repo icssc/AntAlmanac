@@ -1,6 +1,6 @@
 import { accounts, sessions, users, type Account } from '@packages/db/src/schema';
 import { buildConflictUpdateSet } from '@packages/db/src/utils';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gt } from 'drizzle-orm';
 
 import type { DatabaseOrTransaction } from './types';
 import { getUserByEmail } from './users';
@@ -91,17 +91,20 @@ export async function registerUserAccount(
 }
 
 /**
- * Returns the user and account associated with a session token.
+ * Returns the user and account associated with a valid, non-expired session token.
  */
 export async function getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
-    return db
+    const row = await db
         .select()
         .from(sessions)
         .innerJoin(users, eq(sessions.userId, users.id))
         .innerJoin(accounts, eq(users.id, accounts.userId))
-        .where(eq(sessions.refreshToken, refreshToken))
-        .execute()
-        .then((res) => {
-            return { users: res[0].users, accounts: res[0].accounts };
-        });
+        .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
+        .then((res) => res[0]);
+
+    if (!row) {
+        return null;
+    }
+
+    return { users: row.users, accounts: row.accounts };
 }
