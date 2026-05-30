@@ -37,7 +37,7 @@ export const schedules = pgTable('schedules', {
      * Updates to content in schedule will not bump this column.
      * Only direct updates to the schedule table will bump this column (e.g. name, notes, index).
      *
-     * {@see} backend/lib/rds.ts, `upsertSchedulesAndContents`
+     * {@see} backend/lib/rds/schedules.ts, `upsertSchedulesAndContents`
      */
     lastUpdated: timestamp('last_updated', { withTimezone: true })
         .defaultNow()

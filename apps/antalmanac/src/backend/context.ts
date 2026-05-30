@@ -1,4 +1,4 @@
-import { getCurrentSession } from '$src/backend/lib/rds/sessions';
+import { getUserIdBySessionToken } from '$src/backend/lib/rds/users';
 import { db } from '@packages/db';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 
@@ -9,13 +9,7 @@ export const createContext = async (opts: FetchCreateContextFnOptions) => {
     const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE_NAME}=([^;]*)`));
     const sessionToken = match?.[1] || null;
 
-    let userId: string | null = null;
-    if (sessionToken) {
-        const session = await getCurrentSession(db, sessionToken);
-        if (session && session.expires > new Date()) {
-            userId = session.userId;
-        }
-    }
+    const userId = sessionToken ? await getUserIdBySessionToken(db, sessionToken) : null;
 
     return {
         req: opts.req,

@@ -1,8 +1,9 @@
 import { accounts, sessions, users, type Account } from '@packages/db/src/schema';
 import { buildConflictUpdateSet } from '@packages/db/src/utils';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 import type { DatabaseOrTransaction } from './types';
+import { getUserByEmail } from './users';
 
 /**
  * Retrieves an account with the specified account type and provider ID.
@@ -43,14 +44,7 @@ export async function registerUserAccount(
             return { ...existingAccount, newUser: false };
         }
 
-        const existingUser = email
-            ? await tx
-                  .select()
-                  .from(users)
-                  .where(sql`lower(${users.email}) = lower(${email.trim()})`)
-                  .limit(1)
-                  .then((res) => res[0] ?? null)
-            : null;
+        const existingUser = email ? await getUserByEmail(tx, email) : null;
 
         let userId: string;
         let newUser: boolean;
