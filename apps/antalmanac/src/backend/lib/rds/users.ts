@@ -1,16 +1,8 @@
 import type { ScheduleSaveState } from '@packages/antalmanac-types';
-import {
-    accounts,
-    coursesInSchedule,
-    customEvents,
-    schedules,
-    sessions,
-    users,
-    type User,
-} from '@packages/db/src/schema';
+import { accounts, schedules, sessions, users, type User } from '@packages/db/src/schema';
 import { and, eq, gt, sql } from 'drizzle-orm';
 
-import { aggregateUserData } from './helpers';
+import { loadSchedules } from './helpers';
 import { getCurrentSession } from './sessions';
 import type { DatabaseOrTransaction } from './types';
 
@@ -55,20 +47,7 @@ export async function getGuestScheduleByUsername(
 
     const userId = row.users.id;
 
-    const [sectionResults, customEventResults] = await Promise.all([
-        db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
-        db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
-    ]);
-
-    const userSchedules = aggregateUserData(sectionResults, customEventResults);
+    const userSchedules = await loadSchedules(db, eq(schedules.userId, userId));
 
     const scheduleIndex = row.users.currentScheduleId
         ? userSchedules.findIndex((s) => s.id === row.users.currentScheduleId)
@@ -100,22 +79,10 @@ export async function getUserFriendDataByUid(
         return null;
     }
 
-    const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
-
-    const [sectionResults, customEventResults] = await Promise.all([
-        db
-            .select()
-            .from(schedules)
-            .where(sharedCondition)
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
-        db
-            .select()
-            .from(schedules)
-            .where(sharedCondition)
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
-    ]);
-
-    const userSchedules = aggregateUserData(sectionResults, customEventResults);
+    const userSchedules = await loadSchedules(
+        db,
+        and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true))!
+    );
 
     return {
         ...user,
@@ -160,39 +127,22 @@ export async function flagImportedUser(db: DatabaseOrTransaction, username: stri
     });
 }
 
-async function getUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
-    return db
-        .select()
-        .from(users)
-        .leftJoin(sessions, eq(users.id, sessions.userId))
-        .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
-        .then((res) => res[0].users);
-}
-
 /**
  * Fetches user data associated with a valid session using a refresh token.
  */
 export async function fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
-    const user = await getUserDataWithSession(db, refreshToken);
+    const user = await db
+        .select()
+        .from(users)
+        .leftJoin(sessions, eq(users.id, sessions.userId))
+        .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
+        .then((res) => res[0]?.users);
 
     if (!user) {
         return null;
     }
 
-    const [sectionResults, customEventResults] = await Promise.all([
-        db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, user.id))
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
-        db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, user.id))
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
-    ]);
-
-    const userSchedules = aggregateUserData(sectionResults, customEventResults);
+    const userSchedules = await loadSchedules(db, eq(schedules.userId, user.id));
 
     const scheduleIndex = user.currentScheduleId
         ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)

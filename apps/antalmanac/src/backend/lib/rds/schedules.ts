@@ -13,7 +13,7 @@ import {
 import { createId } from '@paralleldrive/cuid2';
 import { and, eq, not, notInArray, or } from 'drizzle-orm';
 
-import { aggregateUserData } from './helpers';
+import { loadSchedules } from './helpers';
 import type { DatabaseOrTransaction, Transaction } from './types';
 
 /**
@@ -232,20 +232,7 @@ export async function getScheduleById(
         return null;
     }
 
-    const [sectionResults, customEventResults] = await Promise.all([
-        db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.id, scheduleId))
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
-        db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.id, scheduleId))
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
-    ]);
-
-    const scheduleArray = aggregateUserData(sectionResults, customEventResults);
+    const scheduleArray = await loadSchedules(db, eq(schedules.id, scheduleId));
     const result = scheduleArray[0];
     if (!result) return null;
     return { ...result, userId: schedule.userId };

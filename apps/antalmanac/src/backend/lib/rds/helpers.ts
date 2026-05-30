@@ -1,10 +1,39 @@
 import type { ShortCourseSchedule } from '@packages/antalmanac-types';
-import { type CourseInSchedule, type CustomEvent, type Schedule } from '@packages/db/src/schema';
+import {
+    coursesInSchedule,
+    customEvents,
+    schedules,
+    type CourseInSchedule,
+    type CustomEvent,
+    type Schedule,
+} from '@packages/db/src/schema';
+import { eq, type SQL } from 'drizzle-orm';
+
+import type { DatabaseOrTransaction } from './types';
+
+/**
+ * Loads schedules matching the given condition with courses and custom events joined in parallel.
+ */
+export async function loadSchedules(
+    db: DatabaseOrTransaction,
+    where: SQL
+): Promise<(ShortCourseSchedule & { id: string; index: number })[]> {
+    const [sectionResults, customEventResults] = await Promise.all([
+        db
+            .select()
+            .from(schedules)
+            .where(where)
+            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+        db.select().from(schedules).where(where).leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
+    ]);
+
+    return aggregateUserData(sectionResults, customEventResults);
+}
 
 /**
  * Aggregates the user's schedule data from the results of two joined queries.
  */
-export function aggregateUserData(
+function aggregateUserData(
     sectionResults: { schedules: Schedule; coursesInSchedule: CourseInSchedule | null }[],
     customEventResults: { schedules: Schedule; customEvents: CustomEvent | null }[]
 ): (ShortCourseSchedule & { id: string; index: number })[] {
