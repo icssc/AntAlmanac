@@ -8,17 +8,22 @@ import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete } from '@mui/icons-material';
-import { Card, CardActions, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
+import { Card, CardActions, CardContent, CardHeader, IconButton, Skeleton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { format, isValid, set } from 'date-fns';
 
 interface CustomEventDetailViewProps {
     scheduleNames: string[];
     customEvent: RepeatingCustomEvent;
+    /**
+     * Wraps the rendered card in MUI's children-aware Skeleton so the card
+     * sizes to its real layout while displaying as a loading placeholder.
+     */
+    skeleton?: boolean;
 }
 
 export function CustomEventDetailView(props: CustomEventDetailViewProps) {
-    const { customEvent } = props;
+    const { customEvent, skeleton = false } = props;
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -39,7 +44,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
         return `${format(startTime, timeFormat)} — ${format(endTime, timeFormat)} • ${daysString}`;
     };
 
-    return (
+    const card = (
         <Card>
             <CardHeader
                 title={customEvent.title}
@@ -83,5 +88,13 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
                 </CardActions>
             )}
         </Card>
+    );
+
+    return skeleton ? (
+        <Skeleton variant="rounded" component="div" width="100%" sx={{ pointerEvents: 'none' }}>
+            {card}
+        </Skeleton>
+    ) : (
+        card
     );
 }

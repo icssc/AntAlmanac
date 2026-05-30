@@ -3,41 +3,35 @@ enum LocalStorageKeys {
     userId = 'userID',
     patchNotesKey = 'latestPatchSeen',
     recruitmentDismissalTime = 'recruitmentDismissalTime',
-    recentlySearched = 'recentlySearched',
     tourHasRun = 'tourHasRun',
     theme = 'theme',
     show24HourTime = 'show24HourTime',
     previewMode = 'previewMode',
     autoSave = 'autoSave',
     devMode = 'devMode',
-    unsavedActions = 'unsavedActions',
     columnToggles = 'columnToggles',
+    wasLoggedIn = 'wasLoggedIn',
+    dataCache = 'dataCache',
+    importedUser = 'importedUser',
+    tempSaveData = 'tempSaveData',
+    skeletonBlueprint = 'skeletonBlueprint',
+    addedCoursesSkeletonBlueprint = 'addedCoursesSkeletonBlueprint',
+
+    /** @deprecated No longer used. Low impact feature. */
+    recentlySearched = 'recentlySearched',
+    /** @deprecated Removed for being a net negative on UX and confusing schedule persistence behavior */
+    unsavedActions = 'unsavedActions',
     /** @deprecated Removed with the PWA install banner in PR #1678; the banner had already been disabled in PR #1213. Key retained for stale client data. */
     pwaDismissalTime = 'pwaDismissalTime',
     /** @deprecated Session token is now stored in an HttpOnly cookie (aa_session). */
     sessionId = 'sessionId',
-    wasLoggedIn = 'wasLoggedIn',
-    dataCache = 'dataCache',
+    /** @deprecated As part of migration to better auth */
     newUser = 'newUser',
-    importedUser = 'importedUser',
+    /** @deprecated As part of migration to better auth */
     fromLoading = 'fromLoading',
-    tempSaveData = 'tempSaveData',
-    skeletonBlueprint = 'skeletonBlueprint',
 }
 
 const LSK = LocalStorageKeys;
-
-export function setLocalStorageFromLoading(value: string) {
-    window.localStorage.setItem(LSK.fromLoading, value);
-}
-
-export function getLocalStorageFromLoading() {
-    return window.localStorage.getItem(LSK.fromLoading);
-}
-
-export function removeLocalStorageFromLoading() {
-    window.localStorage.removeItem(LSK.fromLoading);
-}
 
 export function setLocalStorageImportedUser(value: string) {
     window.localStorage.setItem(LSK.importedUser, value);
@@ -49,18 +43,6 @@ export function getLocalStorageImportedUser() {
 
 export function removeLocalStorageImportedUser() {
     window.localStorage.removeItem(LSK.importedUser);
-}
-
-export function setLocalStorageOnFirstSignin(value: string) {
-    window.localStorage.setItem(LSK.newUser, value);
-}
-
-export function getLocalStorageOnFirstSignin() {
-    return window.localStorage.getItem(LSK.newUser);
-}
-
-export function removeLocalStorageOnFirstSignin() {
-    window.localStorage.removeItem(LSK.newUser);
 }
 
 export function setLocalStorageDataCache(value: string) {
@@ -117,15 +99,6 @@ export function getLocalStorageRecruitmentDismissalTime() {
     return window.localStorage.getItem(LSK.recruitmentDismissalTime);
 }
 
-// Helper functions for recently searched
-export function setLocalStorageRecentlySearched(value: string) {
-    window.localStorage.setItem(LSK.recentlySearched, value);
-}
-
-export function getLocalStorageRecentlySearched() {
-    return window.localStorage.getItem(LSK.recentlySearched);
-}
-
 // Helper functions for tourHasRun
 export function setLocalStorageTourHasRun(value: string) {
     window.localStorage.setItem(LSK.tourHasRun, value);
@@ -180,10 +153,6 @@ export function getLocalStorageDevMode() {
     return localStorage.getItem(LocalStorageKeys.devMode);
 }
 
-export function removeLocalStorageUnsavedActions() {
-    window.localStorage.removeItem(LSK.unsavedActions);
-}
-
 // Helper functions for columnToggles
 export function setLocalStorageColumnToggles(value: string) {
     window.localStorage.setItem(LSK.columnToggles, value);
@@ -215,4 +184,16 @@ export function getLocalStorageSkeletonBlueprint() {
 
 export function removeLocalStorageSkeletonBlueprint() {
     window.localStorage.removeItem(LSK.skeletonBlueprint);
+}
+
+export function setLocalStorageAddedCoursesSkeletonBlueprint(value: string) {
+    window.localStorage.setItem(LSK.addedCoursesSkeletonBlueprint, value);
+}
+
+export function getLocalStorageAddedCoursesSkeletonBlueprint() {
+    return window.localStorage.getItem(LSK.addedCoursesSkeletonBlueprint);
+}
+
+export function removeLocalStorageAddedCoursesSkeletonBlueprint() {
+    window.localStorage.removeItem(LSK.addedCoursesSkeletonBlueprint);
 }

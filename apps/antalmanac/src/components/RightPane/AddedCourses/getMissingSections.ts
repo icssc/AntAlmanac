@@ -1,4 +1,4 @@
-import { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedSectionsGrid';
+import { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCourses';
 import { WebsocSectionType } from '@packages/anteater-api/types';
 
 export const getMissingSections = (userCourses: CourseWithTerm): string[] => {

@@ -1,21 +1,9 @@
 import type { ScheduleSaveState } from '@packages/antalmanac-types';
-import { accounts, schedules, sessions, users, type User } from '@packages/db/src/schema';
-import { and, eq, gt, sql } from 'drizzle-orm';
+import { accounts, schedules, users, type User } from '@packages/db/src/schema';
+import { and, eq, sql } from 'drizzle-orm';
 
 import { loadSchedules } from './helpers';
-import { getCurrentSession } from './sessions';
 import type { DatabaseOrTransaction } from './types';
-
-/**
- * Retrieves a user by their ID from the database.
- */
-export async function getUserById(db: DatabaseOrTransaction, userId: string) {
-    return db
-        .select()
-        .from(users)
-        .where(eq(users.id, userId))
-        .then((res) => res[0]);
-}
 
 export async function getUserByEmail(db: DatabaseOrTransaction, email: string) {
     return db
@@ -94,16 +82,6 @@ export async function getUserFriendDataByUid(
 }
 
 /**
- * Resolves a session token to a userId, verifying the session is valid and not expired.
- * Returns null if the session is invalid or expired.
- */
-export async function getUserIdBySessionToken(db: DatabaseOrTransaction, sessionToken: string): Promise<string | null> {
-    const session = await getCurrentSession(db, sessionToken);
-    if (!session || session.expires <= new Date()) return null;
-    return session.userId;
-}
-
-/**
  * Flags the guest user with the given username as imported.
  *
  * @returns true if the user was successfully flagged, false if already flagged or not found.
@@ -128,21 +106,22 @@ export async function flagImportedUser(db: DatabaseOrTransaction, username: stri
 }
 
 /**
- * Fetches user data associated with a valid session using a refresh token.
+ * Fetches schedule save state for an authenticated user.
+ *
+ * Caller must already have validated the session (e.g. TRPC protectedProcedure).
  */
-export async function fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
+export async function fetchUserDataByUserId(db: DatabaseOrTransaction, userId: string) {
     const user = await db
         .select()
         .from(users)
-        .leftJoin(sessions, eq(users.id, sessions.userId))
-        .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
-        .then((res) => res[0]?.users);
+        .where(eq(users.id, userId))
+        .then((res) => res[0] ?? null);
 
     if (!user) {
         return null;
     }
 
-    const userSchedules = await loadSchedules(db, eq(schedules.userId, user.id));
+    const userSchedules = await loadSchedules(db, eq(schedules.userId, userId));
 
     const scheduleIndex = user.currentScheduleId
         ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)

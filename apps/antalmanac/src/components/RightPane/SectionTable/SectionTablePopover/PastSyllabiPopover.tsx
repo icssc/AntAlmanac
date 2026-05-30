@@ -1,5 +1,7 @@
+import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
+import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { OpenInNew } from '@mui/icons-material';
 import {
     Card,
@@ -18,14 +20,17 @@ import { useMemo } from 'react';
 interface PastSyllabiPopoverProps {
     deptCode: string;
     courseNumber: string;
-    courseId: string;
 }
 
 export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const isMobile = useIsMobile();
-    const { deptCode, courseNumber, courseId } = props;
+    const { deptCode, courseNumber } = props;
+    const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
-    const { data: syllabi = [], isLoading: loading } = trpcReact.websoc.getSyllabi.useQuery({ courseId });
+    const { data: syllabi = [], isLoading: loading } = trpcReact.websoc.getSyllabi.useQuery({
+        department: deptCode,
+        courseNumber,
+    });
 
     const width = isMobile ? 250 : 400;
     const height = isMobile ? 150 : 200;
@@ -45,17 +50,15 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     }, [syllabi]);
 
     const title = `${deptCode} ${courseNumber}`;
-    const subheader = loading ? (
-        <>&nbsp;</>
-    ) : (
-        `${syllabi.length} ${syllabi.length === 1 ? 'syllabus' : 'syllabi'} across ${Object.keys(syllabiByTerm).length} ${Object.keys(syllabiByTerm).length === 1 ? 'term' : 'terms'}`
-    );
+    const subheader = loading
+        ? null
+        : `${syllabi.length} ${syllabi.length === 1 ? 'syllabus' : 'syllabi'} across ${Object.keys(syllabiByTerm).length} ${Object.keys(syllabiByTerm).length === 1 ? 'term' : 'terms'}`;
 
     return (
         <Card>
             <CardHeader
                 title={title}
-                subheader={subheader}
+                subheader={<SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                 }}

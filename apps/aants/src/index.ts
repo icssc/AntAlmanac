@@ -8,8 +8,7 @@ import type {
 } from '@packages/anteater-api/types';
 import { flattenSectionsWithCourse } from '@packages/anteater-api/utils';
 
-import type { CourseDetails } from './helpers/notificationDispatch';
-import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
+import { batchCourseCodes, sendNotification, type CourseDetails } from './helpers/notificationDispatch';
 import {
     filterUsersToNotify,
     getLastUpdatedStatus,

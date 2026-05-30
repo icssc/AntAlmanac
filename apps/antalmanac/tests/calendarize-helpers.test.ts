@@ -1,4 +1,4 @@
-import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 import type { AATerm, Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { describe, test, expect } from 'vitest';

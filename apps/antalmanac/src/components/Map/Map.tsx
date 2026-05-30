@@ -14,7 +14,7 @@ import LocationMarker from './Marker';
 
 const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
-import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent } from '$components/Calendar/types';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { UserLocator } from '$components/Map/UserLocator';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -164,9 +164,9 @@ export default function CourseMap() {
     const markerRef = useRef<Marker | null>(null);
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
-    const [markers, setMarkers] = useState(getCoursesPerBuilding());
-    const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
-    const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
+    const [markers, setMarkers] = useState(() => getCoursesPerBuilding());
+    const [customEventMarkers, setCustomEventMarkers] = useState(() => getCustomEventPerBuilding());
+    const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getEventsInCalendar());
     const postHog = usePostHog();
 
     useEffect(() => {

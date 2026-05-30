@@ -1,4 +1,4 @@
-import type { ShortCourseSchedule } from '@packages/antalmanac-types';
+import { VisibilityState, VISIBILITY_STATES, type ShortCourseSchedule } from '@packages/antalmanac-types';
 import {
     coursesInSchedule,
     customEvents,
@@ -59,6 +59,9 @@ function aggregateUserData(
                 sectionCode,
                 term: course.term,
                 color: course.color,
+                visibility: VISIBILITY_STATES.includes(course.visibility as VisibilityState)
+                    ? (course.visibility as VisibilityState)
+                    : VisibilityState.Visible,
             });
 
             if (course.index !== null) {

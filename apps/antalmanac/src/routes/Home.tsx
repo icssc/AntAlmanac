@@ -1,3 +1,4 @@
+import { AuthInitializer } from '$components/AuthInitializer';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
@@ -82,6 +83,7 @@ export default function Home() {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <TutorialInitializer />
+            <AuthInitializer />
             <PatchNotes />
 
             <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">

@@ -1,7 +1,7 @@
 import { areFriends } from '$src/backend/lib/rds/friendships';
 import { getScheduleById, upsertUserData } from '$src/backend/lib/rds/schedules';
 import {
-    fetchUserDataWithSession,
+    fetchUserDataByUserId,
     flagImportedUser,
     getGuestScheduleByUsername,
     getUserFriendDataByUid,
@@ -14,7 +14,7 @@ import { z } from 'zod';
 
 const scheduleRouter = router({
     get: protectedProcedure.query(async ({ ctx }) => {
-        return await fetchUserDataWithSession(db, ctx.sessionToken);
+        return await fetchUserDataByUserId(db, ctx.userId);
     }),
 
     save: protectedProcedure

@@ -1,8 +1,6 @@
 import { plannerEnvSchema } from '$src/backend/env';
-import { getUserById } from '$src/backend/lib/rds/users';
 import { protectedProcedure, router } from '$src/backend/trpc';
 import type { Roadmap } from '@packages/antalmanac-types';
-import { db } from '@packages/db';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 
@@ -37,15 +35,13 @@ function getPlannerApiDomain(domain: string) {
 
 const roadmapRouter = router({
     fetchUserPlannerRoadmaps: protectedProcedure.query(async ({ ctx }): Promise<Roadmap[]> => {
-        const user = await getUserById(db, ctx.userId);
-
-        if (!user?.email) {
+        if (!ctx.userEmail) {
             return [];
         }
 
         const { PLANNER_CLIENT_API_KEY: apiKey } = plannerEnvSchema.parse(process.env);
         const domain = (await headers()).get('host') ?? 'antalmanac.com';
-        const url = `https://${getPlannerApiDomain(domain)}${PLANNER_API_URL_PATH}?${new URLSearchParams({ input: JSON.stringify({ email: user.email }) })}`;
+        const url = `https://${getPlannerApiDomain(domain)}${PLANNER_API_URL_PATH}?${new URLSearchParams({ input: JSON.stringify({ email: ctx.userEmail }) })}`;
 
         try {
             const response = await fetch(url, {

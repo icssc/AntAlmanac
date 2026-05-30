@@ -1,13 +1,10 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
-import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
+import { AddedCoursesRoot } from '$components/RightPane/AddedCourses/AddedCoursesRoot';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { useThemeStore } from '$stores/SettingsStore';
-import { useTabStore } from '$stores/TabStore';
+import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
-
-import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 
 const UCIMap = lazy(() => import('../Map/Map'));
 
@@ -16,13 +13,13 @@ export function ScheduleManagementContent() {
     const isDark = useThemeStore((store) => store.isDark);
 
     switch (activeTab) {
-        case 0:
+        case TAB_INDEX.calendar:
             return <ScheduleCalendar />;
-        case 1:
+        case TAB_INDEX.search:
             return <CoursePaneRoot />;
-        case 2:
-            return <AddedCoursePane />;
-        case 3:
+        case TAB_INDEX.added:
+            return <AddedCoursesRoot />;
+        case TAB_INDEX.map:
             return (
                 <Suspense
                     fallback={
@@ -35,7 +32,13 @@ export function ScheduleManagementContent() {
                                 alignItems: 'center',
                             }}
                         >
-                            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" unoptimized />
+                            <Image
+                                src={isDark ? '/course-search/dark-loading.gif' : '/course-search/loading.gif'}
+                                alt="Loading map"
+                                width={370}
+                                height={220}
+                                unoptimized
+                            />
                         </div>
                     }
                 >

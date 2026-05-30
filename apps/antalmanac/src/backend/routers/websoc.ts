@@ -1,6 +1,12 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { QuarterSchema, WebsocSearchInputKeysSchema, type CourseInfo } from '@packages/antalmanac-types';
-import { WebsocSearchInputSchema, type WebsocSearchInput } from '@packages/antalmanac-types';
+import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
+import {
+    QuarterSchema,
+    WebsocSearchInputKeysSchema,
+    WebsocSearchInputSchema,
+    type AACourse,
+    type WebsocSearchInput,
+} from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,
     WebsocQueryParams,
@@ -65,37 +71,31 @@ const websocRouter = router({
     getMultiple: aapiProcedure
         .input(z.object({ params: z.array(WebsocSearchInputSchema) }))
         .query(
-            ({ input }): Promise<WebsocAPIResponse> => Promise.all(input.params.map(queryWebsoc)).then(unionWebsocResponses)
+            ({ input }): Promise<WebsocAPIResponse> =>
+                Promise.all(input.params.map(queryWebsoc)).then(unionWebsocResponses)
         ),
 
     getCourseInfo: aapiProcedure
         .input(WebsocSearchInputSchema)
-        .query(async ({ input }): Promise<Record<string, CourseInfo>> => {
+        .query(async ({ input }): Promise<Record<string, AACourse>> => {
             const res = await queryWebsoc(input);
 
             const entries = res.schools.flatMap((school) =>
                 school.departments.flatMap((dept) =>
                     dept.courses.flatMap((course) => {
                         const sectionTypes = [...new Set<WebsocSectionType>(course.sections.map((s) => s.sectionType))];
-                        return course.sections.map(
-                            (section) =>
-                                [
-                                    section.sectionCode,
-                                    {
-                                        courseDetails: {
-                                            deptCode: dept.deptCode,
-                                            courseNumber: course.courseNumber,
-                                            courseTitle: course.courseTitle,
-                                            courseComment: course.courseComment,
-                                            prerequisiteLink: course.prerequisiteLink,
-                                            sections: course.sections,
-                                            updatedAt: course.updatedAt,
-                                            sectionTypes,
-                                        },
-                                        section,
-                                    } satisfies CourseInfo,
-                                ] as const
-                        );
+                        const aaCourse = {
+                            deptCode: course.deptCode,
+                            courseNumber: course.courseNumber,
+                            courseTitle: course.courseTitle,
+                            courseComment: course.courseComment,
+                            prerequisiteLink: course.prerequisiteLink,
+                            updatedAt: course.updatedAt,
+                            sectionTypes,
+                            sections: course.sections.map((section) => ({ ...section, color: '' })),
+                        } satisfies AACourse;
+
+                        return course.sections.map((section) => [section.sectionCode, aaCourse] as const);
                     })
                 )
             );
@@ -105,13 +105,29 @@ const websocRouter = router({
     getSyllabi: aapiProcedure
         .input(
             z.object({
-                courseId: z.string(),
+                department: z.string(),
+                courseNumber: z.string(),
                 year: z.string().optional(),
                 quarter: QuarterSchema.optional(),
                 instructor: z.string().optional(),
             })
         )
-        .query(({ input }): Promise<WebsocSyllabiResponse> => aapiClient.websoc.getSyllabi(input)),
+        .query(async ({ input }): Promise<WebsocSyllabiResponse> => {
+            const { department, courseNumber, ...rest } = input;
+            const courseIds = getRenamedCoursesIdentifiers(department, courseNumber).map(
+                ({ department, courseNumber }) => department.replaceAll(' ', '') + courseNumber
+            );
+
+            if (courseIds.length === 1) {
+                return aapiClient.websoc.getSyllabi({ ...rest, courseId: courseIds[0] });
+            }
+
+            const results = await Promise.all(
+                courseIds.map((courseId) => aapiClient.websoc.getSyllabi({ ...rest, courseId }))
+            );
+
+            return results.flat();
+        }),
 });
 
 export default websocRouter;

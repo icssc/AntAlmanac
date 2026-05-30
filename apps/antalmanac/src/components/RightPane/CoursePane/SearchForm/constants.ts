@@ -1,38 +1,5 @@
-export const BASIC_SEARCH_PARAMS = ['term'] as const;
-
-export type BasicSearchParam = (typeof BASIC_SEARCH_PARAMS)[number];
-
-export const ADVANCED_SEARCH_PARAMS = [
-    'instructor',
-    'units',
-    'endTime',
-    'startTime',
-    'coursesFull',
-    'building',
-    'room',
-    'division',
-    'excludeRoadmapCourses',
-    'excludeRestrictionCodes',
-    'days',
-] as const;
-
-export type AdvancedSearchParam = (typeof ADVANCED_SEARCH_PARAMS)[number];
-
-export const MANUAL_SEARCH_PARAMS = [
-    'deptValue',
-    'ge',
-    'courseNumber',
-    'sectionCode',
-    ...BASIC_SEARCH_PARAMS,
-    ...ADVANCED_SEARCH_PARAMS,
-] as const;
-
-export type ManualSearchParam = (typeof MANUAL_SEARCH_PARAMS)[number];
-
-export const PLANNER_SEARCH_PARAM = 'importRoadmap';
-
 export const GE_LIST = [
-    { value: 'ANY', label: "All: Don't filter for GE", shortLabel: 'All GEs' },
+    { value: 'ANY', label: "ANY: Don't filter for GE", shortLabel: 'Any GEs' },
     { value: 'GE-1A', label: 'GE Ia (1a): Lower Division Writing', shortLabel: 'GE Ia (1a)' },
     { value: 'GE-1B', label: 'GE Ib (1b): Upper Division Writing', shortLabel: 'GE Ib (1b)' },
     { value: 'GE-2', label: 'GE II (2): Science and Technology', shortLabel: 'GE II (2)' },
@@ -46,3 +13,19 @@ export const GE_LIST = [
 ] as const;
 
 export const ANY_GE = GE_LIST[0].value;
+
+const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
+
+export const getSelectedGEs = (ge: string) => {
+    const validGEs = ge
+        .split(',')
+        .map((value) => value.trim().toUpperCase())
+        .filter((value) => VALID_GES.has(value));
+
+    return validGEs.length === 0 ? [] : [...new Set(validGEs)];
+};
+
+export const normalizeGeSelection = (ge: string) => {
+    const selectedGEs = getSelectedGEs(ge);
+    return selectedGEs.length > 0 ? selectedGEs.join(',') : ANY_GE;
+};

@@ -1,4 +1,5 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
+import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
 import { WebsocSectionTypeSchema } from '@packages/antalmanac-types';
 import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
 import { z } from 'zod';
@@ -15,10 +16,21 @@ const enrollHistRouter = router({
             })
         )
         .query(async ({ input }): Promise<EnrollmentHistoryEntry[]> => {
-            const data = await aapiClient.enrollmentHistory.get(input);
+            const { department, courseNumber, sectionType } = input;
+            const identifiers = getRenamedCoursesIdentifiers(department, courseNumber);
+
+            const results = await Promise.all(
+                identifiers.map((ci) =>
+                    aapiClient.enrollmentHistory.get({
+                        department: ci.department,
+                        courseNumber: ci.courseNumber,
+                        sectionType,
+                    })
+                )
+            );
 
             // FIXME: remove this filter once the API stops returning entries with empty date arrays
-            return data.filter((x: EnrollmentHistoryEntry) => x.dates.length);
+            return results.flat().filter((x: EnrollmentHistoryEntry) => x.dates.length);
         }),
 });
 

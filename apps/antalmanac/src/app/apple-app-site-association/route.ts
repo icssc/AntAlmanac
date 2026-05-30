@@ -9,7 +9,7 @@ import { NextResponse } from 'next/server';
  * 1. Authorize the AntAlmanac iOS app to claim Universal Links for the
  *    `/auth/native` path — i.e. the OAuth redirect URI that the iOS wrapper
  *    hands to `ASWebAuthenticationSession` as its HTTPS callback
- *    (see `apps/pwa/src/AntAlmanac/ViewController.swift`). This binding is
+ *    (see `apps/ios/src/AntAlmanac/ViewController.swift`). This binding is
  *    what makes the callback non-spoofable by other apps on the device.
  * 2. Authorize AA for shared web credentials, which enables passkey autofill
  *    and the Associated Domains `webcredentials` entitlement.
@@ -51,7 +51,7 @@ const TEAM_ID = '66682RDDDK';
 // flow never returns to the WKWebView wrapper.
 //
 // Keep historical IDs until no installs remain; Xcode `PRODUCT_BUNDLE_IDENTIFIER` lives
-// in apps/pwa/src/AntAlmanac.xcodeproj/project.pbxproj.
+// in apps/ios/src/AntAlmanac.xcodeproj/project.pbxproj.
 const BUNDLE_IDS: readonly string[] = [
     'com.antalmanac',
     // 'com.icssc.antalmanac', // App Store production — uncomment when registered
@@ -66,7 +66,7 @@ const aasa = {
                 appIDs,
                 components: [
                     // OAuth callback for the native iOS wrapper. See
-                    // `apps/pwa/src/AntAlmanac/ViewController.swift` startAuthSession.
+                    // `apps/ios/src/AntAlmanac/ViewController.swift` startAuthSession.
                     {
                         '/': '/auth/native',
                         comment: 'AntAlmanac iOS OAuth callback (ASWebAuthenticationSession)',

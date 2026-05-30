@@ -1,8 +1,9 @@
-import type {
-    ShortCourse,
-    ShortCourseSchedule,
-    RepeatingCustomEvent,
-    ScheduleSaveState,
+import {
+    VisibilityState,
+    type ShortCourse,
+    type ShortCourseSchedule,
+    type RepeatingCustomEvent,
+    type ScheduleSaveState,
 } from '@packages/antalmanac-types';
 import { coursesInSchedule, customEvents, schedules, users } from '@packages/db/src/schema';
 import {
@@ -120,12 +121,17 @@ async function upsertSchedulesAndContents(
 }
 
 async function upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
-    const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string }>();
+    const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string; visibility: string }>();
     for (const course of courses) {
         const sectionCode = parseInt(course.sectionCode);
         const key = `${sectionCode}-${course.term}`;
         if (!uniqueByKey.has(key)) {
-            uniqueByKey.set(key, { sectionCode, term: course.term, color: course.color });
+            uniqueByKey.set(key, {
+                sectionCode,
+                term: course.term,
+                color: course.color,
+                visibility: course.visibility ?? VisibilityState.Visible,
+            });
         }
     }
     const incoming = [...uniqueByKey.values()];
@@ -151,6 +157,7 @@ async function upsertCourses(tx: Transaction, scheduleId: string, courses: Short
         sectionCode: 'keep',
         term: 'keep',
         color: 'update',
+        visibility: 'update',
         index: 'update',
         createdAt: 'keep',
         lastUpdated: 'update',

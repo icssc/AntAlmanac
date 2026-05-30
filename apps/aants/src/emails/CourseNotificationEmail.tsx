@@ -106,7 +106,7 @@ export function CourseNotificationEmail({
                     >
                         <Link href="https://antalmanac.com" style={{ textDecoration: 'none', color: '#ffffff' }}>
                             <Img
-                                src="https://antalmanac.com/assets/logo.png"
+                                src="https://antalmanac.com/logos/logo.png"
                                 alt="AntAlmanac"
                                 width={180}
                                 height={28}

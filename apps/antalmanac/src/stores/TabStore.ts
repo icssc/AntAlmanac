@@ -1,36 +1,61 @@
+import { Event, FormatListBulleted, MyLocation, Search, type SvgIconComponent } from '@mui/icons-material';
 import { create } from 'zustand';
 
-type TabName = 'calendar' | 'search' | 'added' | 'map';
+export const TABS = [
+    {
+        name: 'calendar',
+        label: 'Calendar',
+        icon: Event,
+        mobileOnly: true,
+        href: '',
+    },
+    {
+        name: 'search',
+        label: 'Search',
+        href: '/',
+        icon: Search,
+    },
+    {
+        name: 'added',
+        label: 'Added',
+        href: '/added',
+        icon: FormatListBulleted,
+        id: 'added-courses-tab',
+    },
+    {
+        name: 'map',
+        label: 'Map',
+        href: '/map',
+        icon: MyLocation,
+        id: 'map-tab',
+    },
+] as const;
 
-const TabMap: Record<TabName, number> = {
-    calendar: 0,
-    search: 1,
-    added: 2,
-    map: 3,
+export type TabName = (typeof TABS)[number]['name'];
+
+export type TabInfo = {
+    name: TabName;
+    label: string;
+    href: string;
+    icon: SvgIconComponent;
+    id?: string;
+    mobileOnly?: true;
 };
+
+export const TAB_INDEX = Object.fromEntries(TABS.map((tab, index) => [tab.name, index])) as Record<TabName, number>;
 
 interface TabStore {
     activeTab: number;
-
-    /**
-     * Sets the appropriate tab value given a string literal union
-     */
     setActiveTab: (name: TabName) => void;
-
-    /**
-     * Sets the appropriate tab value given a tab index.
-     *
-     * `setActiveTab` (which accepts a string literal union) should be preferred if trying to change tabs programmatically (and not as part of an event handler)
-     */
     setActiveTabValue: (value: number) => void;
 }
 
 export const useTabStore = create<TabStore>((set) => {
     return {
-        activeTab: 1,
+        activeTab: TAB_INDEX.search,
         setActiveTab: (name: TabName) => {
             set(() => ({
-                activeTab: TabMap[name],
+                activeTab: TAB_INDEX[name],
             }));
         },
         setActiveTabValue: (value: number) => {

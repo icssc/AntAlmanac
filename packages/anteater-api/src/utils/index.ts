@@ -1,10 +1,4 @@
-import type {
-    WebsocAPIResponse,
-    WebsocCourse,
-    WebsocDepartment,
-    WebsocSchool,
-    WebsocSection,
-} from '@packages/anteater-api/types';
+import type { WebsocAPIResponse, WebsocCourse, WebsocSection } from '@packages/anteater-api/types';
 
 function compareCourses(a: WebsocCourse, b: WebsocCourse) {
     const aNum = Number.parseInt(a.courseNumber.replaceAll(/\D/g, ''), 10);
@@ -94,29 +88,16 @@ export function unionWebsocResponses(responses: WebsocAPIResponse[]): WebsocAPIR
     return combined;
 }
 
-/**
- * Splits several WebSOC responses into two trees for “all queries” vs “some only” UIs.
- *
- * - {@link intersect}: courses that appear in **every** response (layout from the **first**
- *   response). Sections are **not** merged across responses.
- * - {@link rest}: courses that appear in **some** but not all responses, deduped by
- *   {@link websocCourseKey} (first occurrence wins).
- *
- * Each value is a {@link WebsocAPIResponse} with a rebuilt `schools` tree so callers can
- * flatten/render independently. For a single merged tree, use {@link unionWebsocResponses};
- * for one concatenated list (legacy), combine `schools` yourself.
- */
-export function splitWebsocIntersectAndRest(responses: WebsocAPIResponse[]): {
-    intersect: WebsocAPIResponse;
-    rest: WebsocAPIResponse;
-} {
-    if (responses.length === 0) {
-        return { intersect: { schools: [] }, rest: { schools: [] } };
+/** Courses that appear in every response. Sections are not merged. */
+export function intersectWebsocResponses(responses: WebsocAPIResponse[]): WebsocAPIResponse {
+    const first = responses[0];
+    if (first === undefined) {
+        return { schools: [] };
     }
 
-    const first = responses[0]!;
+    let intersectionCourseKeys: Set<string> | null = null;
 
-    const perResponseKeys = responses.map((response) => {
+    for (const response of responses) {
         const keys = new Set<string>();
         for (const school of response.schools) {
             for (const dept of school.departments) {
@@ -125,23 +106,22 @@ export function splitWebsocIntersectAndRest(responses: WebsocAPIResponse[]): {
                 }
             }
         }
-        return keys;
-    });
 
-    let intersectionCourseKeys = perResponseKeys[0]!;
-    for (let i = 1; i < perResponseKeys.length; i++) {
-        const nextKeys = perResponseKeys[i]!;
-        const [smaller, larger] =
-            intersectionCourseKeys.size <= nextKeys.size
-                ? [intersectionCourseKeys, nextKeys]
-                : [nextKeys, intersectionCourseKeys];
-        intersectionCourseKeys = new Set([...smaller].filter((k) => larger.has(k)));
-        if (intersectionCourseKeys.size === 0) {
-            break;
+        if (intersectionCourseKeys === null) {
+            intersectionCourseKeys = keys;
+        } else {
+            intersectionCourseKeys = intersectionCourseKeys.intersection(keys);
+            if (intersectionCourseKeys.size === 0) {
+                return { schools: [] };
+            }
         }
     }
 
-    const intersectSchools = first.schools
+    if (intersectionCourseKeys === null) {
+        return { schools: [] };
+    }
+
+    const schools = first.schools
         .map((school) => ({
             ...school,
             departments: school.departments
@@ -155,44 +135,7 @@ export function splitWebsocIntersectAndRest(responses: WebsocAPIResponse[]): {
         }))
         .filter((school) => school.departments.length > 0);
 
-    const assigned = new Set<string>(intersectionCourseKeys);
-    const restSchools: WebsocSchool[] = [];
-    const schoolByName = new Map<string, WebsocSchool>();
-    const deptByKey = new Map<string, WebsocDepartment>();
-
-    for (const res of responses) {
-        for (const school of res.schools) {
-            for (const dept of school.departments) {
-                for (const course of dept.courses) {
-                    const key = websocCourseKey(course.deptCode, course.courseNumber);
-                    if (assigned.has(key)) continue;
-                    assigned.add(key);
-
-                    let targetSchool = schoolByName.get(school.schoolName);
-                    if (!targetSchool) {
-                        targetSchool = { ...school, departments: [] };
-                        restSchools.push(targetSchool);
-                        schoolByName.set(school.schoolName, targetSchool);
-                    }
-
-                    const deptKey = `${school.schoolName}::${dept.deptCode}`;
-                    let targetDept = deptByKey.get(deptKey);
-                    if (!targetDept) {
-                        targetDept = { ...dept, courses: [] };
-                        targetSchool.departments.push(targetDept);
-                        deptByKey.set(deptKey, targetDept);
-                    }
-
-                    targetDept.courses.push(course);
-                }
-            }
-        }
-    }
-
-    return {
-        intersect: { schools: intersectSchools },
-        rest: { schools: restSchools },
-    };
+    return { schools };
 }
 
 export function flattenCourses(response: WebsocAPIResponse): WebsocCourse[] {

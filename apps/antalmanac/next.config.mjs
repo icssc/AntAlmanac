@@ -9,9 +9,25 @@ const nextConfig = {
                 hostname: 'lh3.googleusercontent.com',
             },
         ],
+        // TODO: Remove this once Next.js/Opennext fixes image optimization
+        unoptimized: true,
     },
     serverExternalPackages: ['@node-rs/argon2'],
     turbopack: {},
+    async redirects() {
+        return [
+            {
+                source: '/auth',
+                destination: '/api/auth/oauth2/callback/icssc',
+                permanent: false,
+            },
+            {
+                source: '/assets/:path*',
+                destination: '/logos/:path*',
+                permanent: true,
+            },
+        ];
+    },
     async rewrites() {
         return [
             // Apple's Associated Domains verifier fetches the AASA from this

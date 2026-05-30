@@ -1,11 +1,10 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
-import { CustomEventId } from '@packages/antalmanac-types';
+import { CustomEventId, type AATerm } from '@packages/antalmanac-types';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
@@ -57,15 +56,17 @@ const ColorPicker = memo(function ColorPicker({
         };
     }, [isCustomEvent, customEventID, sectionCode, updateColor]);
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
-        event.stopPropagation();
-
-        setAnchorEl(event.currentTarget);
-
+    const openPicker = (target: HTMLElement, postHog?: PostHog) => {
+        setAnchorEl(target);
         logAnalytics(postHog, {
             category: analyticsCategory,
             action: analyticsCategory.actions.CHANGE_COURSE_COLOR,
         });
+    };
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
+        event.stopPropagation();
+        openPicker(event.currentTarget, postHog);
     };
 
     const handleClose = (event: Event) => {

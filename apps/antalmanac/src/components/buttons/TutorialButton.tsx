@@ -1,33 +1,31 @@
-import { removeSampleClasses } from '$lib/tourExampleGeneration';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
+import {
+    useCourseSearchForm,
+    useCourseSearchMode,
+    useCourseSearchView,
+} from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
-import { useCallback, useEffect } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useCallback } from 'react';
 
 interface TutorialButtonProps {
     onMenuClose?: () => void;
 }
 
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
-    const { setCurrentStep, setIsOpen, isOpen } = useTour();
-    const [displaySearch, disableManualSearch] = useCoursePaneStore(
-        useShallow((state) => [state.displaySearch, state.disableManualSearch])
-    );
+    const { setCurrentStep, setIsOpen } = useTour();
+    const { setSearchMode } = useCourseSearchMode();
+    const { resetForm } = useCourseSearchForm();
+    const { clearView } = useCourseSearchView();
 
     const startTutorial = useCallback(() => {
-        displaySearch();
-        disableManualSearch();
+        setSearchMode(COURSE_SEARCH_MODE.QUICK);
+        resetForm();
+        clearView();
         setCurrentStep(0);
         setIsOpen(true);
-    }, [displaySearch, disableManualSearch, setCurrentStep, setIsOpen]);
-
-    useEffect(() => {
-        return () => {
-            removeSampleClasses();
-        };
-    }, [isOpen]);
+    }, [clearView, resetForm, setCurrentStep, setIsOpen, setSearchMode]);
 
     const handleClick = useCallback(() => {
         onMenuClose?.();

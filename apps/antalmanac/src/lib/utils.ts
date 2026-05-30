@@ -2,6 +2,10 @@ export function notNull<T>(value: T): value is NonNullable<T> {
     return value != null;
 }
 
+export function isNotEmpty<T>(array: T[]): array is [T, ...T[]] {
+    return array.length > 0;
+}
+
 /**
  * Given a reference array and an input, generate an array of booleans for each position in the
  * reference array, indicating whether the value at that position is in the input.

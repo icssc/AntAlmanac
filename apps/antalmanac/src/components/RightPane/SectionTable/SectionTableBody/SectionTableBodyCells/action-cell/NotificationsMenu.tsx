@@ -1,12 +1,12 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
-import { canTermEnrollmentChange, type AATerm } from '$lib/term';
+import { canTermEnrollmentChange } from '$lib/termHelpers';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
-import type { AASection } from '@packages/antalmanac-types';
+import type { AASection, AATerm } from '@packages/antalmanac-types';
 import type { Course } from '@packages/anteater-api/types';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useState } from 'react';
@@ -39,7 +39,7 @@ export const NotificationsMenu = memo(
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
         const [signInOpen, setSignInOpen] = useState(false);
 
-        const isGoogleUser = useSessionStore((state) => state.isGoogleUser);
+        const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
 
         const isTermCurrent = canTermEnrollmentChange(term);
         const notifyOn = notification?.notifyOn;
@@ -78,7 +78,7 @@ export const NotificationsMenu = memo(
 
         const handleNotificationClick = useCallback(
             (event: React.MouseEvent<HTMLButtonElement>) => {
-                if (!isGoogleUser) {
+                if (!sessionIsValid) {
                     setSignInOpen(true);
                     return;
                 }
@@ -89,7 +89,7 @@ export const NotificationsMenu = memo(
                 });
                 setAnchorEl(event.currentTarget);
             },
-            [isGoogleUser, postHog, section.sectionCode, term]
+            [sessionIsValid, postHog, section.sectionCode, term]
         );
 
         const handleSignInClose = useCallback(() => {
@@ -98,7 +98,7 @@ export const NotificationsMenu = memo(
 
         const tooltipText = !isTermCurrent
             ? "Notifications are only available for the current enrollment period's courses"
-            : !isGoogleUser
+            : !sessionIsValid
               ? 'Sign in to access notifications'
               : null;
 
@@ -107,7 +107,7 @@ export const NotificationsMenu = memo(
                 <Tooltip title={tooltipText}>
                     <span>
                         <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent} sx={{ p: 0.5 }}>
-                            {isGoogleUser ? (
+                            {sessionIsValid ? (
                                 hasNotifications ? (
                                     <EditNotifications fontSize="small" />
                                 ) : (

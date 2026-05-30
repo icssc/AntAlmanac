@@ -2,20 +2,23 @@
 
 import { EnrollmentConfirmStep } from '$components/ReviewPrompt/EnrollmentConfirmStep';
 import { ReviewStep } from '$components/ReviewPrompt/ReviewStep';
+import { SuccessStep } from '$components/ReviewPrompt/SuccessStep';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Paper, Snackbar } from '@mui/material';
 import { useEffect, useRef } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 const PROMPT_DELAY_MS = 15_000;
 
 export function ReviewPrompt() {
-    const userId = useSessionStore((s) => s.userId);
-    const sessionIsValid = useSessionStore((s) => s.sessionIsValid);
+    const { userId, sessionIsValid } = useSessionStore(
+        useShallow((s) => ({ userId: s.userId, sessionIsValid: s.sessionIsValid }))
+    );
 
-    const step = useReviewPromptStore((s) => s.step);
-    const candidate = useReviewPromptStore((s) => s.candidate);
-    const initPrompt = useReviewPromptStore((s) => s.initPrompt);
+    const { step, candidate, initPrompt } = useReviewPromptStore(
+        useShallow((s) => ({ step: s.step, candidate: s.candidate, initPrompt: s.initPrompt }))
+    );
 
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const promptInitialized = useRef(false);
@@ -39,9 +42,10 @@ export function ReviewPrompt() {
 
     return (
         <Snackbar open={open} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-            <Paper>
+            <Paper sx={{ width: 500 }}>
                 {step === 'enrollment-confirm' && candidate && <EnrollmentConfirmStep />}
                 {step === 'review' && candidate && <ReviewStep />}
+                {step === 'success' && candidate && <SuccessStep />}
             </Paper>
         </Snackbar>
     );
