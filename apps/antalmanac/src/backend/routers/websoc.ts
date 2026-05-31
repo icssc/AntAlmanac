@@ -1,7 +1,6 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
 import {
-    formatExcludeRestrictionCodesForApi,
     QuarterSchema,
     WebsocSearchInputKeysSchema,
     WebsocSearchInputSchema,
@@ -34,7 +33,7 @@ function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
     }
 
     if (excludeRestrictionCodes && excludeRestrictionCodes.length > 0) {
-        sanitized.excludeRestrictionCodes = formatExcludeRestrictionCodesForApi(excludeRestrictionCodes);
+        sanitized.excludeRestrictionCodes = excludeRestrictionCodes.join(',');
     }
 
     for (const key of Object.keys(sanitized) as (keyof typeof sanitized)[]) {

@@ -80,10 +80,6 @@ export const WebsocRestrictionCodeSchema = z.enum(WEBSOC_RESTRICTION_CODES);
 
 export type WebsocRestrictionCode = z.infer<typeof WebsocRestrictionCodeSchema>;
 
-export function formatExcludeRestrictionCodesForApi(codes: readonly WebsocRestrictionCode[]): string {
-    return codes.join(',');
-}
-
 type WebsocSearchInputBase = {
     [K in keyof WebsocQueryParams]: NonNullable<WebsocQueryParams[K]> extends string
         ? string | WebsocQueryParams[K]
