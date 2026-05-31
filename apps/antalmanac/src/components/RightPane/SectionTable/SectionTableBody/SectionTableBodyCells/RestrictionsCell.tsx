@@ -8,6 +8,10 @@ interface RestrictionsCellProps {
     restrictions: string;
 }
 
+const RESTRICTION_CODE_LABELS = Object.fromEntries(
+    EXCLUDE_RESTRICTION_CODES_OPTIONS.map(({ value, label }) => [value, label])
+);
+
 export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
     const isMobile = useIsMobile();
     const theme = useTheme();
@@ -20,11 +24,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 if (code !== 'and' && code !== 'or') {
                     return (
                         <Fragment key={index}>
-                            {
-                                Object.fromEntries(
-                                    EXCLUDE_RESTRICTION_CODES_OPTIONS.map(({ value, label }) => [value, label])
-                                )[code]
-                            }
+                            {RESTRICTION_CODE_LABELS[code]}
                             <br />
                         </Fragment>
                     );
