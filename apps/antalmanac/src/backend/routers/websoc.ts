@@ -19,10 +19,11 @@ import { z } from 'zod';
 import { router } from '../trpc';
 
 function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
-    const { department, courseNumber, excludeRestrictionCodes, ...rest } = params;
+    const { department, courseNumber, excludeRestrictionCodes, days, ...rest } = params;
     const sanitized = {
         ...rest,
         excludeRestrictionCodes: excludeRestrictionCodes.join(','),
+        days: days.join(','),
     } as WebsocQueryParams;
 
     const normalizedDepartment = department?.toUpperCase();

@@ -12,6 +12,7 @@ import {
 } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { getTermByShortName } from '$lib/term';
 import {
+    WebsocDayOptionSchema,
     WebsocDivisionOptionSchema,
     WebsocFullCoursesOptionSchema,
     WebsocRestrictionCodeOptionSchema,
@@ -53,7 +54,9 @@ export const courseSearchParamParsers = {
     excludeRestrictionCodes: parseAsArrayOf(
         parseAsStringLiteral(WebsocRestrictionCodeOptionSchema.options)
     ).withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRestrictionCodes),
-    days: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.days),
+    days: parseAsArrayOf(parseAsStringLiteral(WebsocDayOptionSchema.options)).withDefault(
+        DEFAULT_ADVANCED_SEARCH_VALUES.days
+    ),
 };
 
 export const advancedSearchParsers: Pick<typeof courseSearchParamParsers, AdvancedSearchParam> = {
