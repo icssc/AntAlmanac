@@ -11,8 +11,13 @@ import {
     DEFAULT_TERM,
 } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { getTermByShortName } from '$lib/term';
-import { WebsocDivisionOptionSchema, WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
-import { createParser, createSerializer, parseAsString, parseAsStringLiteral } from 'nuqs';
+import {
+    WebsocDivisionOptionSchema,
+    WebsocFullCoursesOptionSchema,
+    WebsocRestrictionCodeOptionSchema,
+    type AATerm,
+} from '@packages/antalmanac-types';
+import { createParser, createSerializer, parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs';
 
 const parseAsCourseSearchTerm = createParser<AATerm>({
     parse: (value: string) => getTermByShortName(value) ?? null,
@@ -45,7 +50,9 @@ export const courseSearchParamParsers = {
         DEFAULT_ADVANCED_SEARCH_VALUES.division
     ),
     excludeRoadmapCourses: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRoadmapCourses),
-    excludeRestrictionCodes: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRestrictionCodes),
+    excludeRestrictionCodes: parseAsArrayOf(
+        parseAsStringLiteral(WebsocRestrictionCodeOptionSchema.options)
+    ).withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRestrictionCodes),
     days: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.days),
 };
 

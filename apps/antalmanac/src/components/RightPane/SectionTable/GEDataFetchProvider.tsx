@@ -33,7 +33,7 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             building: advanced.building,
             room: advanced.room,
             division: advanced.division,
-            excludeRestrictionCodes: advanced.excludeRestrictionCodes.split('').join(','),
+            excludeRestrictionCodes: advanced.excludeRestrictionCodes,
             days: advanced.days.split(/(?=[A-Z])/).join(','),
         };
     }, [

@@ -1,3 +1,4 @@
+import type { WebsocRestrictionCodeOption } from '@packages/antalmanac-types';
 import type { WebsocDivisionOption, WebsocFullCoursesOption } from '@packages/anteater-api/types';
 
 export const DIVISION_OPTIONS = [
@@ -34,7 +35,7 @@ export const EXCLUDE_RESTRICTION_CODES_OPTIONS = [
     { value: 'R', label: 'R: Biomedical Pass/Fail course (School of Medicine only)' },
     { value: 'S', label: 'S: Satisfactory/Unsatisfactory only' },
     { value: 'X', label: 'X: Separate authorization codes required to add, drop, or change enrollment' },
-];
+] as const satisfies readonly { value: WebsocRestrictionCodeOption; label: string }[];
 
 export const DAYS_OPTIONS = [
     { value: 'Su', label: 'Su: Sunday' },

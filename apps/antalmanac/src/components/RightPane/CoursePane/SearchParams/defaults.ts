@@ -1,6 +1,10 @@
 import { ANY_GE } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm } from '$lib/term';
-import { WebsocDivisionOptionSchema, WebsocFullCoursesOptionSchema } from '@packages/antalmanac-types';
+import {
+    WebsocDivisionOptionSchema,
+    WebsocFullCoursesOptionSchema,
+    WebsocRestrictionCodeOptionSchema,
+} from '@packages/antalmanac-types';
 
 export const DEFAULT_TERM = getDefaultTerm();
 
@@ -21,9 +25,9 @@ export const DEFAULT_ADVANCED_SEARCH_VALUES = {
     room: '',
     division: WebsocDivisionOptionSchema.enum.ANY,
     excludeRoadmapCourses: '',
-    excludeRestrictionCodes: '',
+    excludeRestrictionCodes: [] satisfies (typeof WebsocRestrictionCodeOptionSchema.options)[number][],
     days: '',
-} as const;
+};
 
 export const DEFAULT_FORM_DATA = {
     term: DEFAULT_TERM,

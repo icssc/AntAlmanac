@@ -67,7 +67,7 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             building: searchData.building,
             room: searchData.room,
             division: searchData.division,
-            excludeRestrictionCodes: searchData.excludeRestrictionCodes.split('').join(','),
+            excludeRestrictionCodes: searchData.excludeRestrictionCodes,
             days: searchData.days.split(/(?=[A-Z])/).join(','),
         }),
         []
