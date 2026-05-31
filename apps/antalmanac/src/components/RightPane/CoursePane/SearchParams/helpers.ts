@@ -35,10 +35,13 @@ export function hasManualParams(formData: CourseSearchParams) {
 
 export function hasAdvancedParams(formData: AdvancedSearchParams) {
     return ADVANCED_SEARCH_PARAMS.some((key) => {
-        if (key === 'excludeRestrictionCodes') {
-            return formData.excludeRestrictionCodes.length > 0;
+        const value = formData[key];
+        const defaultValue = DEFAULT_ADVANCED_SEARCH_VALUES[key];
+
+        if (Array.isArray(value) && Array.isArray(defaultValue)) {
+            return value.length > 0;
         }
-        return formData[key] !== DEFAULT_ADVANCED_SEARCH_VALUES[key];
+        return value !== defaultValue;
     });
 }
 
