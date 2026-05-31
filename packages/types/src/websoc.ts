@@ -1,4 +1,5 @@
 import type {
+    WebsocQueryParams,
     WebsocSectionStatus,
     WebsocSectionType,
     WebsocDivisionOption,
@@ -98,7 +99,18 @@ export const WebsocSearchInputSchema = z.object({
     endTime: z.string().optional(),
     excludeRestrictionCodes: z.array(WebsocRestrictionCodeOptionSchema).default([]),
     includeRelatedCourses: z.string().nullable().optional(),
-});
+}) satisfies z.ZodType<
+    Omit<
+        {
+            [K in keyof WebsocQueryParams]: NonNullable<WebsocQueryParams[K]> extends string
+                ? string | WebsocQueryParams[K]
+                : WebsocQueryParams[K];
+        },
+        'excludeRestrictionCodes'
+    > & {
+        excludeRestrictionCodes?: WebsocRestrictionCodeOption[];
+    }
+>;
 export type WebsocSearchInput = z.infer<typeof WebsocSearchInputSchema>;
 
 export const WebsocSearchInputKeysSchema = WebsocSearchInputSchema.keyof();
