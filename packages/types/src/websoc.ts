@@ -1,5 +1,4 @@
 import type {
-    WebsocQueryParams,
     WebsocSectionStatus,
     WebsocSectionType,
     WebsocDivisionOption,
@@ -80,16 +79,6 @@ export const WebsocRestrictionCodeSchema = z.enum(WEBSOC_RESTRICTION_CODES);
 
 export type WebsocRestrictionCode = z.infer<typeof WebsocRestrictionCodeSchema>;
 
-type WebsocSearchInputBase = {
-    [K in keyof WebsocQueryParams]: NonNullable<WebsocQueryParams[K]> extends string
-        ? string | WebsocQueryParams[K]
-        : WebsocQueryParams[K];
-};
-
-type WebsocSearchInputShape = Omit<WebsocSearchInputBase, 'excludeRestrictionCodes'> & {
-    excludeRestrictionCodes?: WebsocRestrictionCode[];
-};
-
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,
@@ -109,9 +98,9 @@ export const WebsocSearchInputSchema = z.object({
     units: z.string().optional(),
     startTime: z.string().optional(),
     endTime: z.string().optional(),
-    excludeRestrictionCodes: z.array(WebsocRestrictionCodeSchema).optional(),
+    excludeRestrictionCodes: z.array(WebsocRestrictionCodeSchema).default([]),
     includeRelatedCourses: z.string().nullable().optional(),
-}) satisfies z.ZodType<WebsocSearchInputShape>;
+});
 export type WebsocSearchInput = z.infer<typeof WebsocSearchInputSchema>;
 
 export const WebsocSearchInputKeysSchema = WebsocSearchInputSchema.keyof();
