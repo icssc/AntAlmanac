@@ -5,10 +5,19 @@ const restrictionCodeItemParser = parseAsStringLiteral(WebsocRestrictionCodeSche
 
 const restrictionCodeArrayParser = parseAsArrayOf(restrictionCodeItemParser);
 
-const validRestrictionCodes = new Set<string>(WebsocRestrictionCodeSchema.options);
-
 function parseLegacyExcludeRestrictionCodes(value: string): WebsocRestrictionCode[] {
-    return [...value].filter((code): code is WebsocRestrictionCode => validRestrictionCodes.has(code));
+    return [...value].flatMap((code) => {
+        const parsed = WebsocRestrictionCodeSchema.safeParse(code);
+        return parsed.success ? [parsed.data] : [];
+    });
+}
+
+export function parseExcludeRestrictionCodeSelection(value: string | string[]): WebsocRestrictionCode[] {
+    const parts = Array.isArray(value) ? value : [value];
+    return parts.flatMap((code) => {
+        const parsed = WebsocRestrictionCodeSchema.safeParse(code);
+        return parsed.success ? [parsed.data] : [];
+    });
 }
 
 /** Comma-separated restriction codes; also accepts legacy concatenated values (e.g. `AE` → `A`,`E`). */

@@ -1,8 +1,8 @@
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/constants';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
+import { parseExcludeRestrictionCodeSelection } from '$components/RightPane/CoursePane/SearchParams/restrictionCodeParser';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
-import type { WebsocRestrictionCode } from '@packages/antalmanac-types';
 import { memo } from 'react';
 
 export const ExcludeRestrictionsField = memo(() => {
@@ -16,9 +16,9 @@ export const ExcludeRestrictionsField = memo(() => {
                 value: excludeRestrictionCodes,
                 onChange: (event: SelectChangeEvent<string | string[]>) => {
                     const value = event.target.value;
-                    setExcludeRestrictionCodes((Array.isArray(value) ? value : [value]) as WebsocRestrictionCode[]);
+                    setExcludeRestrictionCodes(parseExcludeRestrictionCodeSelection(value));
                 },
-                renderValue: (selected) => (selected as string[]).join(', '),
+                renderValue: (selected) => (Array.isArray(selected) ? selected : []).join(', '),
                 sx: { width: '100%' },
             }}
         >

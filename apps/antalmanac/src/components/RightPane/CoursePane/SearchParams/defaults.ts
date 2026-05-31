@@ -25,9 +25,9 @@ export const DEFAULT_ADVANCED_SEARCH_VALUES = {
     room: '',
     division: WebsocDivisionOptionSchema.enum.ANY,
     excludeRoadmapCourses: '',
-    excludeRestrictionCodes: [] as WebsocRestrictionCode[],
+    excludeRestrictionCodes: [] satisfies WebsocRestrictionCode[],
     days: '',
-} as const;
+};
 
 export const DEFAULT_FORM_DATA = {
     term: DEFAULT_TERM,
