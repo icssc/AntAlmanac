@@ -132,6 +132,7 @@ export function ReviewStep() {
         if (!candidate || rating === 0 || difficulty === 0) {
             return;
         }
+
         submitReview({
             professorId: candidate.professorId,
             courseId: candidate.courseId,
