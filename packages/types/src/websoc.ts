@@ -54,6 +54,46 @@ export const WebsocCancelledCoursesOptionSchema = z.enum([
     'Only',
 ] as const satisfies readonly WebsocCancelledCoursesOption[]);
 
+/** UCI WebSoc restriction codes (https://www.reg.uci.edu/enrollment/restrict_codes.html). */
+export const WEBSOC_RESTRICTION_CODES = [
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'R',
+    'S',
+    'X',
+] as const;
+
+export const WebsocRestrictionCodeSchema = z.enum(WEBSOC_RESTRICTION_CODES);
+
+export type WebsocRestrictionCode = z.infer<typeof WebsocRestrictionCodeSchema>;
+
+export function formatExcludeRestrictionCodesForApi(codes: readonly WebsocRestrictionCode[]): string {
+    return codes.join(',');
+}
+
+type WebsocSearchInputBase = {
+    [K in keyof WebsocQueryParams]: NonNullable<WebsocQueryParams[K]> extends string
+        ? string | WebsocQueryParams[K]
+        : WebsocQueryParams[K];
+};
+
+type WebsocSearchInputShape = Omit<WebsocSearchInputBase, 'excludeRestrictionCodes'> & {
+    excludeRestrictionCodes?: WebsocRestrictionCode[];
+};
+
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,
@@ -73,13 +113,9 @@ export const WebsocSearchInputSchema = z.object({
     units: z.string().optional(),
     startTime: z.string().optional(),
     endTime: z.string().optional(),
-    excludeRestrictionCodes: z.string().optional(),
+    excludeRestrictionCodes: z.array(WebsocRestrictionCodeSchema).optional(),
     includeRelatedCourses: z.string().nullable().optional(),
-}) satisfies z.ZodType<{
-    [K in keyof WebsocQueryParams]: NonNullable<WebsocQueryParams[K]> extends string
-        ? string | WebsocQueryParams[K]
-        : WebsocQueryParams[K];
-}>;
+}) satisfies z.ZodType<WebsocSearchInputShape>;
 export type WebsocSearchInput = z.infer<typeof WebsocSearchInputSchema>;
 
 export const WebsocSearchInputKeysSchema = WebsocSearchInputSchema.keyof();

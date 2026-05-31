@@ -1,6 +1,7 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
 import {
+    formatExcludeRestrictionCodesForApi,
     QuarterSchema,
     WebsocSearchInputKeysSchema,
     WebsocSearchInputSchema,
@@ -19,8 +20,10 @@ import { z } from 'zod';
 import { router } from '../trpc';
 
 function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
-    const { department, courseNumber, ...rest } = params;
-    const sanitized: typeof params = { ...rest };
+    const { department, courseNumber, excludeRestrictionCodes, ...rest } = params;
+    const sanitized: Omit<WebsocSearchInput, 'excludeRestrictionCodes'> & {
+        excludeRestrictionCodes?: string;
+    } = { ...rest };
 
     if (department && department.toUpperCase() !== 'ALL') {
         sanitized.department = department.toUpperCase();
@@ -28,6 +31,10 @@ function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
 
     if (courseNumber) {
         sanitized.courseNumber = courseNumber.toUpperCase();
+    }
+
+    if (excludeRestrictionCodes && excludeRestrictionCodes.length > 0) {
+        sanitized.excludeRestrictionCodes = formatExcludeRestrictionCodesForApi(excludeRestrictionCodes);
     }
 
     for (const key of Object.keys(sanitized) as (keyof typeof sanitized)[]) {

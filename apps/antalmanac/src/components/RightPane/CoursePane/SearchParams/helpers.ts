@@ -34,7 +34,12 @@ export function hasManualParams(formData: CourseSearchParams) {
 }
 
 export function hasAdvancedParams(formData: AdvancedSearchParams) {
-    return ADVANCED_SEARCH_PARAMS.some((key) => formData[key] !== DEFAULT_ADVANCED_SEARCH_VALUES[key]);
+    return ADVANCED_SEARCH_PARAMS.some((key) => {
+        if (key === 'excludeRestrictionCodes') {
+            return formData.excludeRestrictionCodes.length > 0;
+        }
+        return formData[key] !== DEFAULT_ADVANCED_SEARCH_VALUES[key];
+    });
 }
 
 export function shouldShowSearchForm(formData: CourseSearchParams) {

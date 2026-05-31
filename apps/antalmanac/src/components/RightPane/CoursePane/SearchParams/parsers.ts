@@ -10,6 +10,7 @@ import {
     DEFAULT_MANUAL_SEARCH_VALUES,
     DEFAULT_TERM,
 } from '$components/RightPane/CoursePane/SearchParams/defaults';
+import { parseAsExcludeRestrictionCodes } from '$components/RightPane/CoursePane/SearchParams/restrictionCodeParser';
 import { getTermByShortName } from '$lib/term';
 import { WebsocDivisionOptionSchema, WebsocFullCoursesOptionSchema, type AATerm } from '@packages/antalmanac-types';
 import { createParser, createSerializer, parseAsString, parseAsStringLiteral } from 'nuqs';
@@ -45,7 +46,7 @@ export const courseSearchParamParsers = {
         DEFAULT_ADVANCED_SEARCH_VALUES.division
     ),
     excludeRoadmapCourses: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRoadmapCourses),
-    excludeRestrictionCodes: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRestrictionCodes),
+    excludeRestrictionCodes: parseAsExcludeRestrictionCodes,
     days: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.days),
 };
 
