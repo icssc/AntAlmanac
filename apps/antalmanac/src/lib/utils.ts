@@ -29,7 +29,7 @@ export function isNotEmpty<T>(array: T[]): array is [T, ...T[]] {
  * const indices = indicesOrNull.filter(notNull)
  * ```
  */
-export function getReferencesOccurring(reference: string[], input?: string | string[] | null): boolean[] {
+export function getReferencesOccurring(reference: readonly string[], input?: string | string[] | null): boolean[] {
     return input ? reference.map((reference) => input.includes(reference)) : reference.map(() => false);
 }
 

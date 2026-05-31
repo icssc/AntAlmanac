@@ -4,7 +4,7 @@ import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-
 import { WEBSOC_DAYS } from '@packages/antalmanac-types';
 import type { HourMinute } from '@packages/anteater-api/types';
 
-export const COURSE_WEEK_DAYS: string[] = [...WEBSOC_DAYS];
+export const COURSE_WEEK_DAYS = WEBSOC_DAYS;
 
 const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -225,7 +225,8 @@ export function parseDaysString(daysString: string | null): number[] | null {
     let match: RegExpExecArray | null;
 
     while ((match = SHORT_DAY_REGEX.exec(daysString))) {
-        days.push(COURSE_WEEK_DAYS.indexOf(match[1]));
+        const matchedDay = match[1];
+        days.push(COURSE_WEEK_DAYS.findIndex((day) => day === matchedDay));
     }
 
     return days;
