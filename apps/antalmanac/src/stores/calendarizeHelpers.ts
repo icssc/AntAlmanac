@@ -4,7 +4,7 @@ import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-
 import { WEBSOC_DAYS } from '@packages/antalmanac-types';
 import type { HourMinute } from '@packages/anteater-api/types';
 
-const COURSE_WEEK_DAYS: string[] = [...WEBSOC_DAYS];
+export const SHORT_DAYS: string[] = [...WEBSOC_DAYS];
 
 const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -29,7 +29,7 @@ function mapLocationsWithDay(bldg: string[], dayIndex: number, includeDays: bool
         const location = getLocation(bldgEntry);
         locations.push({
             ...location,
-            ...(includeDays && { days: COURSE_WEEK_DAYS[dayIndex] }),
+            ...(includeDays && { days: SHORT_DAYS[dayIndex] }),
         });
     }
     return locations;
@@ -55,7 +55,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
              *
              * @example [false, true, false, true, false, true, false], i.e. [M, W, F]
              */
-            const daysOccurring = getReferencesOccurring(COURSE_WEEK_DAYS, meeting.days);
+            const daysOccurring = getReferencesOccurring(SHORT_DAYS, meeting.days);
 
             /**
              * Only include the day indices that the meeting occurs.
@@ -155,7 +155,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                 locations: locationsWithNoDays.map((location: Location) => {
                     return {
                         ...location,
-                        days: COURSE_WEEK_DAYS[dayIndex],
+                        days: SHORT_DAYS[dayIndex],
                     };
                 }),
                 showLocationInfo: true,
@@ -187,7 +187,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
         if (isNaN(startHour) || isNaN(startMin) || isNaN(endHour) || isNaN(endMin)) return [];
 
         const dayIndicesOccurring = getDayIndicesOccurring(customEvent.days);
-        const days = dayIndicesOccurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex]);
+        const days = dayIndicesOccurring.map((dayIndex) => SHORT_DAYS[dayIndex]);
 
         return dayIndicesOccurring.map((dayIndex) => {
             return {
@@ -203,8 +203,6 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
         });
     });
 }
-
-export const SHORT_DAYS: string[] = [...WEBSOC_DAYS];
 
 const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join('|')})`, 'g');
 
