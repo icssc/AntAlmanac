@@ -26,7 +26,7 @@ export const DaysField = memo(() => {
                         );
                     }
                 },
-                renderValue: (selected) => (selected as WebsocDayOption[]).join(', '),
+                renderValue: (selected) => selected.join(', '),
                 sx: { width: '100%' },
             }}
         >
