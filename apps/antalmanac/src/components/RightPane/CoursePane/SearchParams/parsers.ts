@@ -14,7 +14,7 @@ import { getTermByShortName } from '$lib/term';
 import {
     WebsocDivisionOptionSchema,
     WebsocFullCoursesOptionSchema,
-    WebsocRestrictionCodeSchema,
+    WebsocRestrictionCodeOptionSchema,
     type AATerm,
 } from '@packages/antalmanac-types';
 import { createParser, createSerializer, parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs';
@@ -50,9 +50,9 @@ export const courseSearchParamParsers = {
         DEFAULT_ADVANCED_SEARCH_VALUES.division
     ),
     excludeRoadmapCourses: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRoadmapCourses),
-    excludeRestrictionCodes: parseAsArrayOf(parseAsStringLiteral(WebsocRestrictionCodeSchema.options)).withDefault(
-        DEFAULT_ADVANCED_SEARCH_VALUES.excludeRestrictionCodes
-    ),
+    excludeRestrictionCodes: parseAsArrayOf(
+        parseAsStringLiteral(WebsocRestrictionCodeOptionSchema.options)
+    ).withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.excludeRestrictionCodes),
     days: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.days),
 };
 

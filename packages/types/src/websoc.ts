@@ -74,10 +74,8 @@ export const WEBSOC_RESTRICTION_CODES = [
     'S',
     'X',
 ] as const;
-
-export const WebsocRestrictionCodeSchema = z.enum(WEBSOC_RESTRICTION_CODES);
-
-export type WebsocRestrictionCode = z.infer<typeof WebsocRestrictionCodeSchema>;
+export const WebsocRestrictionCodeOptionSchema = z.enum(WEBSOC_RESTRICTION_CODES);
+export type WebsocRestrictionCodeOption = z.infer<typeof WebsocRestrictionCodeOptionSchema>;
 
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
@@ -98,7 +96,7 @@ export const WebsocSearchInputSchema = z.object({
     units: z.string().optional(),
     startTime: z.string().optional(),
     endTime: z.string().optional(),
-    excludeRestrictionCodes: z.array(WebsocRestrictionCodeSchema).default([]),
+    excludeRestrictionCodes: z.array(WebsocRestrictionCodeOptionSchema).default([]),
     includeRelatedCourses: z.string().nullable().optional(),
 });
 export type WebsocSearchInput = z.infer<typeof WebsocSearchInputSchema>;

@@ -3,7 +3,7 @@ import { getDefaultTerm } from '$lib/term';
 import {
     WebsocDivisionOptionSchema,
     WebsocFullCoursesOptionSchema,
-    type WebsocRestrictionCode,
+    WebsocRestrictionCodeOptionSchema,
 } from '@packages/antalmanac-types';
 
 export const DEFAULT_TERM = getDefaultTerm();
@@ -25,7 +25,7 @@ export const DEFAULT_ADVANCED_SEARCH_VALUES = {
     room: '',
     division: WebsocDivisionOptionSchema.enum.ANY,
     excludeRoadmapCourses: '',
-    excludeRestrictionCodes: [] satisfies WebsocRestrictionCode[],
+    excludeRestrictionCodes: [] satisfies (typeof WebsocRestrictionCodeOptionSchema.options)[number][],
     days: '',
 };
 

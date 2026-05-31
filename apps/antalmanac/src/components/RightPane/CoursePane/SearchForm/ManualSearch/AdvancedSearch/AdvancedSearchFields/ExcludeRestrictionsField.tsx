@@ -2,19 +2,19 @@ import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/Label
 import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/constants';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
-import type { WebsocRestrictionCode } from '@packages/antalmanac-types';
+import type { WebsocRestrictionCodeOption } from '@packages/antalmanac-types';
 import { memo } from 'react';
 
 export const ExcludeRestrictionsField = memo(() => {
     const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useCourseSearchParam('excludeRestrictionCodes');
 
     return (
-        <LabeledSelect<WebsocRestrictionCode[]>
+        <LabeledSelect<WebsocRestrictionCodeOption[]>
             label="Exclude Restrictions"
             selectProps={{
                 multiple: true,
                 value: excludeRestrictionCodes,
-                onChange: (event: SelectChangeEvent<WebsocRestrictionCode[]>) => {
+                onChange: (event: SelectChangeEvent<WebsocRestrictionCodeOption[]>) => {
                     const { value } = event.target;
                     if (Array.isArray(value)) {
                         setExcludeRestrictionCodes(value);
