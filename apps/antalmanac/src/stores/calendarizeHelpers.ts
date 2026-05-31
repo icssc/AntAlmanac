@@ -1,9 +1,10 @@
 import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/types';
 import { getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { WEBSOC_DAYS } from '@packages/antalmanac-types';
 import type { HourMinute } from '@packages/anteater-api/types';
 
-const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+const COURSE_WEEK_DAYS: string[] = [...WEBSOC_DAYS];
 
 const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -203,7 +204,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
     });
 }
 
-export const SHORT_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+export const SHORT_DAYS: string[] = [...WEBSOC_DAYS];
 
 const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join('|')})`, 'g');
 

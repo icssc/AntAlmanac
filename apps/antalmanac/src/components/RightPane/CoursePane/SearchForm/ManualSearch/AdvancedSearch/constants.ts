@@ -1,4 +1,4 @@
-import type { WebsocRestrictionCodeOption } from '@packages/antalmanac-types';
+import type { WebsocDayOption, WebsocRestrictionCodeOption } from '@packages/antalmanac-types';
 import type { WebsocDivisionOption, WebsocFullCoursesOption } from '@packages/anteater-api/types';
 
 export const DIVISION_OPTIONS = [
@@ -45,4 +45,4 @@ export const DAYS_OPTIONS = [
     { value: 'Th', label: 'Th: Thursday' },
     { value: 'F', label: 'F: Friday' },
     { value: 'Sa', label: 'Sa: Saturday' },
-];
+] as const satisfies readonly { value: WebsocDayOption; label: string }[];

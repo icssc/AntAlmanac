@@ -2,29 +2,31 @@ import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/Label
 import { DAYS_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/constants';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
+import type { WebsocDayOption } from '@packages/antalmanac-types';
 import { memo } from 'react';
 
 export const DaysField = memo(() => {
     const [days, setDays] = useCourseSearchParam('days');
 
     return (
-        <LabeledSelect
+        <LabeledSelect<WebsocDayOption[]>
             label="Days"
             selectProps={{
                 multiple: true,
-                value: days ? days.split(/(?=[A-Z])/) : [],
-                onChange: (event: SelectChangeEvent<string | string[]>) => {
-                    const value = event.target.value;
-                    setDays(Array.isArray(value) ? value.join('') : value);
+                value: days,
+                onChange: (event: SelectChangeEvent<WebsocDayOption[]>) => {
+                    const { value } = event.target;
+                    if (Array.isArray(value)) {
+                        setDays(
+                            value.sort(
+                                (a, b) =>
+                                    DAYS_OPTIONS.findIndex((day) => day.value === a) -
+                                    DAYS_OPTIONS.findIndex((day) => day.value === b)
+                            )
+                        );
+                    }
                 },
-                renderValue: (selected) =>
-                    (selected as string[])
-                        .sort((a, b) => {
-                            const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
-                            const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
-                            return orderA - orderB;
-                        })
-                        .join(', '),
+                renderValue: (selected) => (selected as WebsocDayOption[]).join(', '),
                 sx: { width: '100%' },
             }}
         >

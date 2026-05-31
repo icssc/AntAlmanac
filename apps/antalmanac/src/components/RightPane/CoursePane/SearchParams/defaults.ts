@@ -1,6 +1,7 @@
 import { ANY_GE } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm } from '$lib/term';
 import {
+    WebsocDayOptionSchema,
     WebsocDivisionOptionSchema,
     WebsocFullCoursesOptionSchema,
     WebsocRestrictionCodeOptionSchema,
@@ -26,7 +27,7 @@ export const DEFAULT_ADVANCED_SEARCH_VALUES = {
     division: WebsocDivisionOptionSchema.enum.ANY,
     excludeRoadmapCourses: '',
     excludeRestrictionCodes: [] satisfies (typeof WebsocRestrictionCodeOptionSchema.options)[number][],
-    days: '',
+    days: [] satisfies (typeof WebsocDayOptionSchema.options)[number][],
 };
 
 export const DEFAULT_FORM_DATA = {

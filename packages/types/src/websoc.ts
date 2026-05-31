@@ -78,6 +78,11 @@ export const WEBSOC_RESTRICTION_CODES = [
 export const WebsocRestrictionCodeOptionSchema = z.enum(WEBSOC_RESTRICTION_CODES);
 export type WebsocRestrictionCodeOption = z.infer<typeof WebsocRestrictionCodeOptionSchema>;
 
+/** UCI WebSoc day abbreviations (Su, M, Tu, W, Th, F, Sa). */
+export const WEBSOC_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
+export const WebsocDayOptionSchema = z.enum(WEBSOC_DAYS);
+export type WebsocDayOption = z.infer<typeof WebsocDayOptionSchema>;
+
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,
@@ -87,7 +92,7 @@ export const WebsocSearchInputSchema = z.object({
     courseTitle: z.string().optional(),
     sectionCodes: z.string().optional(),
     instructorName: z.string().optional(),
-    days: z.string().optional(),
+    days: z.array(WebsocDayOptionSchema).default([]),
     building: z.string().optional(),
     room: z.string().optional(),
     division: WebsocDivisionOptionSchema.optional(),
@@ -106,9 +111,10 @@ export const WebsocSearchInputSchema = z.object({
                 ? string | WebsocQueryParams[K]
                 : WebsocQueryParams[K];
         },
-        'excludeRestrictionCodes'
+        'excludeRestrictionCodes' | 'days'
     > & {
         excludeRestrictionCodes?: WebsocRestrictionCodeOption[];
+        days?: WebsocDayOption[];
     }
 >;
 export type WebsocSearchInput = z.infer<typeof WebsocSearchInputSchema>;
