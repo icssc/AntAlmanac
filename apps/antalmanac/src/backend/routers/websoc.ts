@@ -18,18 +18,21 @@ import { z } from 'zod';
 
 import { router } from '../trpc';
 
-function sanitizeWebsocParams({
-    department,
-    courseNumber,
-    excludeRestrictionCodes,
-    ...rest
-}: WebsocSearchInput): WebsocQueryParams {
+function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
+    const { department, courseNumber, excludeRestrictionCodes, ...rest } = params;
     const sanitized = {
         ...rest,
         excludeRestrictionCodes: excludeRestrictionCodes.join(','),
-        ...(department && department.toUpperCase() !== 'ALL' ? { department: department.toUpperCase() } : {}),
-        ...(courseNumber ? { courseNumber: courseNumber.toUpperCase() } : {}),
-    };
+    } as WebsocQueryParams;
+
+    const normalizedDepartment = department?.toUpperCase();
+    if (normalizedDepartment && normalizedDepartment !== 'ALL') {
+        sanitized.department = normalizedDepartment;
+    }
+
+    if (courseNumber) {
+        sanitized.courseNumber = courseNumber.toUpperCase();
+    }
 
     for (const key of Object.keys(sanitized) as (keyof typeof sanitized)[]) {
         const value = sanitized[key];
@@ -38,7 +41,7 @@ function sanitizeWebsocParams({
         }
     }
 
-    return sanitized as WebsocQueryParams;
+    return sanitized;
 }
 
 async function queryWebsoc(rawParams: WebsocSearchInput): Promise<WebsocAPIResponse> {
