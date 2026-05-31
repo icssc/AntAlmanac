@@ -3,6 +3,7 @@ import { DAYS_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/Manual
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 import type { WebsocDayOption } from '@packages/antalmanac-types';
+import { WEBSOC_DAYS } from '@packages/antalmanac-types';
 import { memo } from 'react';
 
 export const DaysField = memo(() => {
@@ -17,13 +18,7 @@ export const DaysField = memo(() => {
                 onChange: (event: SelectChangeEvent<WebsocDayOption[]>) => {
                     const { value } = event.target;
                     if (Array.isArray(value)) {
-                        setDays(
-                            value.sort(
-                                (a, b) =>
-                                    DAYS_OPTIONS.findIndex((day) => day.value === a) -
-                                    DAYS_OPTIONS.findIndex((day) => day.value === b)
-                            )
-                        );
+                        setDays([...value].sort((a, b) => WEBSOC_DAYS.indexOf(a) - WEBSOC_DAYS.indexOf(b)));
                     }
                 },
                 renderValue: (selected) => selected.join(', '),
