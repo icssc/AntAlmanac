@@ -11,7 +11,9 @@ import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
+import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -56,8 +58,8 @@ export const ScheduleCalendar = memo(() => {
     const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
         AppStore.schedule.getCurrentCustomEvents()
     );
-    const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
-    const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
+    const [rawEventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
+    const [rawFinalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [currentScheduleId, setCurrentScheduleId] = useState(() => AppStore.getCurrentScheduleId());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
@@ -68,6 +70,17 @@ export const ScheduleCalendar = memo(() => {
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
     const isDark = useThemeStore((store) => store.isDark);
+
+    const { setting, palette, assignments } = useSectionThemeAssignments();
+
+    const eventsInCalendar = useMemo(
+        () => applyThemeToCalendarEvents(rawEventsInCalendar, setting, assignments, palette),
+        [rawEventsInCalendar, setting, assignments, palette]
+    );
+    const finalsEventsInCalendar = useMemo(
+        () => applyThemeToCalendarEvents(rawFinalsEventsInCalendar, setting, assignments, palette),
+        [rawFinalsEventsInCalendar, setting, assignments, palette]
+    );
     const visibilityMap = useHiddenCoursesStore((state) => state.visibilityMap);
 
     const openLoadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
