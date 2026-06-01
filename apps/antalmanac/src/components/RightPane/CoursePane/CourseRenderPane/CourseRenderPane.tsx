@@ -51,8 +51,8 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
-    const getQueryParams = useCallback(
-        (searchData: CourseSearchParams): WebsocSearchInput => ({
+    const getQueryParams = useCallback((searchData: CourseSearchParams): WebsocSearchInput => {
+        const params: WebsocSearchInput = {
             year: searchData.term.year,
             quarter: searchData.term.quarter,
             department: searchData.deptValue,
@@ -69,9 +69,14 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             division: searchData.division,
             excludeRestrictionCodes: searchData.excludeRestrictionCodes,
             days: searchData.days,
-        }),
-        []
-    );
+        };
+
+        if (getSelectedGEs(searchData.ge).length > 0) {
+            params.includeRelatedCourses = 'true';
+        }
+
+        return params;
+    }, []);
 
     const {
         data: searchResponse,

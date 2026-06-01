@@ -5,7 +5,6 @@ import {
     isSchoolEntry,
 } from '$components/RightPane/CoursePane/CourseRenderPane/CourseList/helpers';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 
@@ -25,14 +24,6 @@ export function CourseListItem({ item, scheduleNames, formData }: CourseListItem
                     name={`Department of ${item.deptName}`}
                     comment={item.deptComment}
                     type={'dept'}
-                />
-            ) : formData.ge !== 'ANY' ? (
-                <GeDataFetchProvider
-                    term={formData.term}
-                    courseDetails={item}
-                    allowHighlight={true}
-                    scheduleNames={scheduleNames}
-                    analyticsCategory={analyticsEnum.classSearch}
                 />
             ) : (
                 <SectionTable
