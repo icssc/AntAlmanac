@@ -90,6 +90,7 @@ const websocRouter = router({
                     dept.courses.flatMap((course) => {
                         const sectionTypes = [...new Set<WebsocSectionType>(course.sections.map((s) => s.sectionType))];
                         const aaCourse = {
+                            courseId: course.courseId,
                             deptCode: course.deptCode,
                             courseNumber: course.courseNumber,
                             courseTitle: course.courseTitle,
