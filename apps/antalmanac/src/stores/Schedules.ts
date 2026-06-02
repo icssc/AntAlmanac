@@ -709,6 +709,7 @@ export class Schedules {
                             courseComment: course.courseComment,
                             courseNumber: course.courseNumber,
                             courseTitle: course.courseTitle,
+                            courseId: course.deptCode.replaceAll(' ', '') + course.courseNumber,
                             deptCode: course.deptCode,
                             prerequisiteLink: course.prerequisiteLink,
                             sectionTypes: course.sectionTypes,

@@ -202,10 +202,13 @@ function sampleClassFactory({
     meetings,
     finalExam,
 }: sampleClassOptions): ScheduleCourse {
+    const resolvedCourseNumber = courseNumber == '-1' ? randint(100, 199).toString() : courseNumber;
+
     return {
         sectionTypes: ['Lec'],
         courseComment: courseComment,
-        courseNumber: courseNumber == '-1' ? randint(100, 199).toString() : courseNumber,
+        courseId: deptCode.replaceAll(' ', '') + resolvedCourseNumber,
+        courseNumber: resolvedCourseNumber,
         courseTitle: courseTitle,
         deptCode: deptCode,
         prerequisiteLink: '',

@@ -9,6 +9,7 @@ import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customEvent'
 export const SCHEDULE_NOTE_MAX_LENGTH = 5000;
 
 export type ScheduleCourse = {
+    courseId: string;
     courseComment: string;
     courseNumber: string;
     courseTitle: string;

@@ -70,6 +70,7 @@ export const addCourse = (
         term,
         deptCode: course.deptCode,
         courseNumber: course.courseNumber,
+        courseId: course.courseId,
         courseTitle: course.courseTitle,
         courseComment: course.courseComment,
         prerequisiteLink: course.prerequisiteLink,

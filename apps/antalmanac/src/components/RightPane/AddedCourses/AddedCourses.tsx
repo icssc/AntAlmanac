@@ -87,6 +87,7 @@ function getCourses() {
                 prerequisiteLink: course.prerequisiteLink,
                 courseNumber: course.courseNumber,
                 courseTitle: course.courseTitle,
+                courseId: course.courseId,
                 sectionTypes: course.sectionTypes,
                 sections: [
                     {
