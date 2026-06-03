@@ -1,5 +1,4 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
 import {
     QuarterSchema,
     WebsocSearchInputKeysSchema,
@@ -13,6 +12,7 @@ import type {
     WebsocSectionType,
     WebsocSyllabiResponse,
 } from '@packages/anteater-api/types';
+import { getRenamedCourseIds } from '$src/lib/renames/utils';
 import { buildCourseId } from '@packages/anteater-api/utils';
 import { sortWebsocResponse, unionWebsocResponses } from '@packages/anteater-api/utils';
 import { z } from 'zod';
@@ -121,9 +121,7 @@ const websocRouter = router({
         )
         .query(async ({ input }): Promise<WebsocSyllabiResponse> => {
             const { department, courseNumber, ...rest } = input;
-            const courseIds = getRenamedCoursesIdentifiers(department, courseNumber).map(
-                ({ department, courseNumber }) => buildCourseId(department, courseNumber)
-            );
+            const courseIds = getRenamedCourseIds(buildCourseId(department, courseNumber));
 
             if (courseIds.length === 1) {
                 return aapiClient.websoc.getSyllabi({ ...rest, courseId: courseIds[0] });
