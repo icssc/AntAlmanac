@@ -21,7 +21,7 @@ export const REVIEW_TAGS = [
 type ReviewTag = (typeof REVIEW_TAGS)[number];
 
 type ReviewCandidate = {
-    /** e.g. "ICS 31" */
+    /** Anteater API course id, e.g. "ICS31" */
     courseId: string;
     courseTitle: string;
     /** Raw WebSOC instructor name, e.g. "PATTIS, R." */
@@ -126,8 +126,7 @@ export const useReviewPromptStore = create(
                         continue;
                     }
 
-                    const courseId = `${course.deptCode} ${course.courseNumber}`;
-                    const dedupKey = `${courseId}::${instructor}::${term.shortName}`;
+                    const dedupKey = `${course.courseId}::${instructor}::${term.shortName}`;
                     const group = courseGroups.get(dedupKey);
                     if (group) {
                         group.push(course);
@@ -145,7 +144,7 @@ export const useReviewPromptStore = create(
                     }
 
                     candidates.push({
-                        courseId: `${picked.deptCode} ${picked.courseNumber}`,
+                        courseId: picked.courseId,
                         courseTitle: picked.courseTitle,
                         professorId: instructor,
                         term: picked.term,
