@@ -109,9 +109,7 @@ function SectionTable({
     const colorStripWidth = isMobile ? 5 : 8;
     const actionColumnWidth = 77;
 
-    const courseId = useMemo(() => {
-        return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
-    }, [courseDetails.deptCode, courseDetails.courseNumber]);
+    const courseId = courseDetails.courseId;
 
     const cancellationWarning = useMemo(
         () => getCourseCancellationWarning(courseDetails.sections),

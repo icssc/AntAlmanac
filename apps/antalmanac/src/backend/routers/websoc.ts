@@ -13,6 +13,7 @@ import type {
     WebsocSectionType,
     WebsocSyllabiResponse,
 } from '@packages/anteater-api/types';
+import { buildCourseId } from '@packages/anteater-api/utils';
 import { sortWebsocResponse, unionWebsocResponses } from '@packages/anteater-api/utils';
 import { z } from 'zod';
 
@@ -121,7 +122,7 @@ const websocRouter = router({
         .query(async ({ input }): Promise<WebsocSyllabiResponse> => {
             const { department, courseNumber, ...rest } = input;
             const courseIds = getRenamedCoursesIdentifiers(department, courseNumber).map(
-                ({ department, courseNumber }) => department.replaceAll(' ', '') + courseNumber
+                ({ department, courseNumber }) => buildCourseId(department, courseNumber)
             );
 
             if (courseIds.length === 1) {

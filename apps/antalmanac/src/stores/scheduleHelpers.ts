@@ -117,13 +117,6 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
 }
 
 /**
- * Combines department code, course number, and course title to create an ID unique to a course.
- */
-export function getCourseId(course: Pick<ScheduleCourse, 'deptCode' | 'courseNumber' | 'courseTitle'>) {
-    return course.deptCode + course.courseNumber + course.courseTitle;
-}
-
-/**
  * Temporary measure to group each course's sections together
  * since previous courses were unsorted.
  *
@@ -137,15 +130,14 @@ export function groupCourseSections(courses: ScheduleCourse[]): ScheduleCourse[]
     const groupedCourses: ScheduleCourse[][] = [];
     let index = 0;
     for (const course of courses) {
-        const courseId = getCourseId(course);
-        if (!Object.hasOwn(courseIndexes, courseId)) {
-            courseIndexes[courseId] = index;
+        if (!Object.hasOwn(courseIndexes, course.courseId)) {
+            courseIndexes[course.courseId] = index;
             groupedCourses.push([]);
             index++;
         }
     }
     for (const course of courses) {
-        const courseIndex = courseIndexes[getCourseId(course)];
+        const courseIndex = courseIndexes[course.courseId];
         groupedCourses[courseIndex].push(course);
     }
     return groupedCourses.flat();

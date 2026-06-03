@@ -87,8 +87,7 @@ export function getFilteredCourses(allCourses: CourseListEntry[], manualSearchEn
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
         const filtered = allCourses.filter((item) => {
             if (isCourseEntry(item)) {
-                const courseKey = `${item.deptCode}${item.courseNumber}`.replace(/\s+/g, '');
-                return !userTakenCourses.has(courseKey);
+                return !userTakenCourses.has(item.courseId);
             }
             return true;
         });

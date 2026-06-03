@@ -1,7 +1,7 @@
 import { trpc } from '$lib/api/trpc';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { moveArrayElements } from '$lib/utils';
-import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
+import { getColorForNewSection, groupCourseSections } from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     AATerm,
@@ -210,7 +210,7 @@ export class Schedules {
         this.addUndoState();
         const courses = this.schedules[scheduleIndex].courses;
 
-        const fromIndex = courses.findIndex((course) => getCourseId(course) === movedCourseId);
+        const fromIndex = courses.findIndex((course) => course.courseId === movedCourseId);
         if (fromIndex === -1) {
             console.error(`Course id ${movedCourseId} was not found in schedule courses`);
             openSnackbar('error', 'Could not reorder added courses');
@@ -218,16 +218,14 @@ export class Schedules {
         }
 
         const toIndex =
-            nextCourseId !== null
-                ? courses.findIndex((course) => getCourseId(course) === nextCourseId)
-                : courses.length;
+            nextCourseId !== null ? courses.findIndex((course) => course.courseId === nextCourseId) : courses.length;
         if (toIndex === -1) {
             console.error(`Course id ${toIndex} was not found in schedule courses`);
             openSnackbar('error', 'Could not reorder added courses');
             return;
         }
 
-        const sectionCount = courses.findLastIndex((course) => getCourseId(course) === movedCourseId) - fromIndex + 1;
+        const sectionCount = courses.findLastIndex((course) => course.courseId === movedCourseId) - fromIndex + 1;
 
         moveArrayElements(courses, fromIndex, toIndex, { elementMoveCount: sectionCount });
     }
@@ -321,8 +319,7 @@ export class Schedules {
         };
 
         const courses = this.schedules[scheduleIndex].courses;
-        const sectionCourseId = getCourseId(sectionToAdd);
-        const courseLastSectionIndex = courses.findLastIndex((course) => getCourseId(course) === sectionCourseId);
+        const courseLastSectionIndex = courses.findLastIndex((course) => course.courseId === sectionToAdd.courseId);
         if (courseLastSectionIndex !== -1) {
             courses.splice(courseLastSectionIndex + 1, 0, sectionToAdd);
         } else {
@@ -709,7 +706,7 @@ export class Schedules {
                             courseComment: course.courseComment,
                             courseNumber: course.courseNumber,
                             courseTitle: course.courseTitle,
-                            courseId: course.deptCode.replaceAll(' ', '') + course.courseNumber,
+                            courseId: course.courseId,
                             deptCode: course.deptCode,
                             prerequisiteLink: course.prerequisiteLink,
                             sectionTypes: course.sectionTypes,

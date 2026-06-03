@@ -2,6 +2,7 @@ import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
 import { AAPIError } from '@packages/anteater-api/client';
 import type { Course, CoursesBatchAPIResult } from '@packages/anteater-api/types';
+import { buildCourseId } from '@packages/anteater-api/utils';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
@@ -12,7 +13,7 @@ const courseRouter = router({
         .input(z.object({ department: z.string(), courseNumber: z.string() }))
         .query(async ({ input }): Promise<Course> => {
             for (const id of getRenamedCoursesIdentifiers(input.department, input.courseNumber).map(
-                ({ department, courseNumber }) => department.replaceAll(' ', '') + courseNumber
+                ({ department, courseNumber }) => buildCourseId(department, courseNumber)
             )) {
                 try {
                     return await aapiClient.courses.get(id);

@@ -37,9 +37,12 @@ export function sortWebsocResponse(response: WebsocAPIResponse): WebsocAPIRespon
     return response;
 }
 
-/** Stable identity for a course across WebSOC responses (dept + number, whitespace stripped). */
-export function websocCourseKey(deptCode: string, courseNumber: string): string {
-    return `${deptCode}::${courseNumber}`.replace(/\s+/g, '');
+/**
+ * Builds a course id when only dept and number are available (e.g. search form input).
+ * Prefer {@link WebsocCourse.courseId} from API responses when you have a course object.
+ */
+export function buildCourseId(deptCode: string, courseNumber: string): string {
+    return `${deptCode}${courseNumber}`.replace(/\s+/g, '').toUpperCase();
 }
 
 /**
@@ -68,7 +71,7 @@ export function unionWebsocResponses(responses: WebsocAPIResponse[]): WebsocAPIR
                 }
 
                 for (const course of dept.courses) {
-                    const existingCourse = combinedDept.courses.find((c) => c.courseNumber === course.courseNumber);
+                    const existingCourse = combinedDept.courses.find((c) => c.courseId === course.courseId);
                     if (existingCourse) {
                         const sectionMap = new Map(existingCourse.sections.map((s) => [s.sectionCode, s]));
                         for (const section of course.sections) {
@@ -102,7 +105,7 @@ export function intersectWebsocResponses(responses: WebsocAPIResponse[]): Websoc
         for (const school of response.schools) {
             for (const dept of school.departments) {
                 for (const course of dept.courses) {
-                    keys.add(websocCourseKey(course.deptCode, course.courseNumber));
+                    keys.add(course.courseId);
                 }
             }
         }
@@ -127,9 +130,7 @@ export function intersectWebsocResponses(responses: WebsocAPIResponse[]): Websoc
             departments: school.departments
                 .map((dept) => ({
                     ...dept,
-                    courses: dept.courses.filter((c) =>
-                        intersectionCourseKeys.has(websocCourseKey(c.deptCode, c.courseNumber))
-                    ),
+                    courses: dept.courses.filter((c) => intersectionCourseKeys.has(c.courseId)),
                 }))
                 .filter((dept) => dept.courses.length > 0),
         }))

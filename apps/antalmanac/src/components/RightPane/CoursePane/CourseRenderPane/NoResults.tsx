@@ -1,8 +1,7 @@
+import { PlannerCourseLinkBanner } from '$components/RightPane/CoursePane/CourseRenderPane/PlannerCourseLinkBanner';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
-import { Alert, Box, Link } from '@mui/material';
+import { Box } from '@mui/material';
 import Image from 'next/image';
 
 interface NoResultsProps {
@@ -11,11 +10,6 @@ interface NoResultsProps {
 
 export function NoResults({ formData }: NoResultsProps) {
     const isDark = useThemeStore((store) => store.isDark);
-
-    const multiSearchData = RightPaneStore.getMultiSearchData();
-    const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
-    const courseNumber = formData.courseNumber.replace(/\s+/g, '').toUpperCase() || null;
-    const courseId = deptValue && courseNumber ? `${deptValue}${courseNumber}` : null;
 
     return (
         <Box
@@ -26,33 +20,7 @@ export function NoResults({ formData }: NoResultsProps) {
                 flexDirection: 'column',
             }}
         >
-            {courseId && multiSearchData.length === 0 ? (
-                <Link
-                    href={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
-                    target="_blank"
-                    sx={{ width: '100%' }}
-                >
-                    <Alert
-                        variant="filled"
-                        severity="info"
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            fontSize: 14,
-                            backgroundColor: BLUE,
-                            color: 'white',
-                        }}
-                    >
-                        <span>
-                            Search for{' '}
-                            <span style={{ textDecoration: 'underline' }}>
-                                {deptValue} {courseNumber}
-                            </span>{' '}
-                            on AntAlmanac Planner!
-                        </span>
-                    </Alert>
-                </Link>
-            ) : null}
+            <PlannerCourseLinkBanner deptValue={formData.deptValue} courseNumber={formData.courseNumber} />
 
             <Image
                 src={isDark ? '/course-search/dark-no-results.png' : '/course-search/no-results.png'}
