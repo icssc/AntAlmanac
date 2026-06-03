@@ -4,8 +4,6 @@ import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import type { AATerm } from '@packages/antalmanac-types';
 
-export const MULTI_SEARCH_DATA_CHANGE = 'multiSearchDataChange';
-
 class RightPaneStore extends EventEmitter {
     private multiSearchData: CourseSearchParams[];
 
@@ -23,12 +21,10 @@ class RightPaneStore extends EventEmitter {
             ...params,
             term,
         }));
-        this.emit(MULTI_SEARCH_DATA_CHANGE);
     };
 
     clearMultiSearchData = () => {
         this.multiSearchData = [];
-        this.emit(MULTI_SEARCH_DATA_CHANGE);
     };
 }
 
