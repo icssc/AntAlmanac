@@ -22,7 +22,7 @@ const enrollHistRouter = router({
             const results = await Promise.all(
                 identifiers.map((ci) =>
                     aapiClient.enrollmentHistory.get({
-                        department: ci.department,
+                        department: ci.deptCode,
                         courseNumber: ci.courseNumber,
                         sectionType,
                     })

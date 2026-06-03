@@ -32,7 +32,7 @@ const gradesRouter = router({
 
             const results = await Promise.all(
                 identifiers.map((ci) =>
-                    aapiClient.grades.aggregate({ ...input, department: ci.department, courseNumber: ci.courseNumber })
+                    aapiClient.grades.aggregate({ ...input, department: ci.deptCode, courseNumber: ci.courseNumber })
                 )
             );
 

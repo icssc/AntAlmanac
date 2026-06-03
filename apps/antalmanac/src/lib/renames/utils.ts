@@ -1,20 +1,20 @@
-import { COURSE_RENAMES, type CourseId, type CourseRename } from '$lib/renames/renames';
+import { COURSE_RENAMES, type CourseRenameKey, type CourseRename } from '$lib/renames/renames';
 import type { AggregateGrades } from '@packages/anteater-api/types';
 import { buildCourseId } from '@packages/anteater-api/utils';
 
-function findRenameForCurrent(current: CourseId): CourseRename | undefined {
+function findRenameForCurrent(current: CourseRenameKey): CourseRename | undefined {
     return COURSE_RENAMES.find(
         (r) =>
-            r.courseId === current.courseId ||
-            (r.department === current.department && r.courseNumber === current.courseNumber)
+            r.current.courseId === current.courseId ||
+            (r.current.deptCode === current.deptCode && r.current.courseNumber === current.courseNumber)
     );
 }
 
-function* iterateRenameChain(department: string, courseNumber: string): Generator<CourseRename> {
-    let current: CourseId = {
-        courseId: buildCourseId(department, courseNumber),
-        department,
+function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<CourseRename> {
+    let current: CourseRenameKey = {
+        deptCode,
         courseNumber,
+        courseId: buildCourseId(deptCode, courseNumber),
     };
 
     for (let i = 0; i < COURSE_RENAMES.length; i++) {
@@ -25,14 +25,14 @@ function* iterateRenameChain(department: string, courseNumber: string): Generato
     }
 }
 
-function lookupCourseIdentifier(courseId: string, fallbackDept: string, fallbackCourseNumber: string): CourseId {
+function lookupCourseIdentifier(
+    courseId: string,
+    fallbackDeptCode: string,
+    fallbackCourseNumber: string
+): CourseRenameKey {
     for (const rename of COURSE_RENAMES) {
-        if (rename.courseId === courseId) {
-            return {
-                courseId,
-                department: rename.department,
-                courseNumber: rename.courseNumber,
-            };
+        if (rename.current.courseId === courseId) {
+            return rename.current;
         }
         if (rename.previously.courseId === courseId) {
             return rename.previously;
@@ -41,7 +41,7 @@ function lookupCourseIdentifier(courseId: string, fallbackDept: string, fallback
 
     return {
         courseId,
-        department: fallbackDept,
+        deptCode: fallbackDeptCode,
         courseNumber: fallbackCourseNumber,
     };
 }
@@ -51,7 +51,7 @@ function lookupCourseIdentifier(courseId: string, fallbackDept: string, fallback
  * The input id is always first; predecessors follow in rename order.
  */
 export function getRenamedCourseIds(courseId: string): string[] {
-    const head = COURSE_RENAMES.find((r) => r.courseId === courseId);
+    const head = COURSE_RENAMES.find((r) => r.current.courseId === courseId);
     if (!head) {
         return [courseId];
     }
@@ -60,7 +60,7 @@ export function getRenamedCourseIds(courseId: string): string[] {
     let previous = head.previously;
     while (true) {
         ids.push(previous.courseId);
-        const next = COURSE_RENAMES.find((r) => r.courseId === previous.courseId);
+        const next = COURSE_RENAMES.find((r) => r.current.courseId === previous.courseId);
         if (!next) break;
         previous = next.previously;
     }
@@ -68,18 +68,18 @@ export function getRenamedCourseIds(courseId: string): string[] {
     return ids;
 }
 
-export function getRenamedCoursesIdentifiers(department: string, courseNumber: string): CourseId[] {
-    const rootId = buildCourseId(department, courseNumber);
-    return getRenamedCourseIds(rootId).map((id) => lookupCourseIdentifier(id, department, courseNumber));
+export function getRenamedCoursesIdentifiers(deptCode: string, courseNumber: string): CourseRenameKey[] {
+    const rootId = buildCourseId(deptCode, courseNumber);
+    return getRenamedCourseIds(rootId).map((id) => lookupCourseIdentifier(id, deptCode, courseNumber));
 }
 
-export function getRenamedCoursesLabel(department: string, courseNumber: string): string | null {
+export function getRenamedCoursesLabel(deptCode: string, courseNumber: string): string | null {
     const parts: string[] = [];
 
-    for (const entry of iterateRenameChain(department, courseNumber)) {
+    for (const entry of iterateRenameChain(deptCode, courseNumber)) {
         const yr = entry.effectiveYear;
         const yearLabel = `${String(yr).slice(-2)}/${String(yr + 1).slice(-2)}`; // 2026 -> 26/27
-        parts.push(`${entry.previously.department} ${entry.previously.courseNumber} (before ${yearLabel})`);
+        parts.push(`${entry.previously.deptCode} ${entry.previously.courseNumber} (before ${yearLabel})`);
     }
 
     return parts.length > 0 ? `Previously ${parts.join(', ')}` : null;
