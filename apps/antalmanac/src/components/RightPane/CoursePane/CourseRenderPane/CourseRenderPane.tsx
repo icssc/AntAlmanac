@@ -13,7 +13,7 @@ import { RecruitmentBanner } from '$components/RightPane/CoursePane/CourseRender
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useMultiSearchData } from '$components/RightPane/hooks/useMultiSearchData';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
@@ -46,7 +46,7 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
     const [searchedTerm, setSearchedTerm] = useState(() => formData.term.longName);
-    const multiSearchData = RightPaneStore.getMultiSearchData();
+    const multiSearchData = useMultiSearchData();
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
     const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
@@ -85,7 +85,6 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             setUnofferedCourses([]);
 
             try {
-                const multiSearchData = RightPaneStore.getMultiSearchData();
                 let response: WebsocAPIResponse;
 
                 if (multiSearchData.length > 0) {

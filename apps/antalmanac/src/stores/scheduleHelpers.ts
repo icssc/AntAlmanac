@@ -78,12 +78,11 @@ function generateColorVariant(originalColor: string, usedColors: Set<string>): s
 }
 
 export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: ScheduleCourse[]): string {
-    // Use the color of the closest section with the same title
+    // Use the color of the closest section with the same course id
 
-    // Array of sections that have the same course title (i.e., they're under the same course),
-    // sorted by their distance from the new section's section code
+    // Sections for the same course, sorted by distance from the new section's section code
     const existingSections: Array<ScheduleCourse> = sectionsInSchedule
-        .filter((course) => course.courseTitle === newSection.courseTitle)
+        .filter((course) => course.courseId === newSection.courseId)
         .sort(
             // Sort by distance from new section's section code
             (a, b) =>
@@ -91,7 +90,6 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
                 Math.abs(parseInt(b.section.sectionCode) - parseInt(newSection.section.sectionCode))
         );
 
-    // New array of courses that share the same sectionType & courseTitle
     const existingSectionsType = existingSections.filter(
         (course) => course.section.sectionType === newSection.section.sectionType
     );
@@ -104,12 +102,12 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
     // If the same sectionType exists, return that color
     if (existingSectionsType.length > 0) return existingSectionsType[0].section.color;
 
-    // If the same courseTitle exists, but not the same sectionType, return a close color
+    // Same course, different section type — return a close color variant
     if (existingSections.length > 0) {
         return generateColorVariant(existingSections[0].section.color, new Set(usedColors));
     }
 
-    // If there are no existing sections with the same course title, generate a new color. If we run out of unique colors, return the next color up after the last default color in use, looping after reaching the end.
+    // No existing sections for this course — pick a new default color
     return (
         defaultColors.find((materialColor) => !usedColors.includes(materialColor)) ||
         defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length]
