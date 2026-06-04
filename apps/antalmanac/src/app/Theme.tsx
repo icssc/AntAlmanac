@@ -6,6 +6,7 @@ import { CssBaseline, type PaletteOptions } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Roboto } from 'next/font/google';
 import { useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -118,8 +119,7 @@ declare module '@mui/material/styles' {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const isDark = useThemeStore((store) => store.isDark);
-    const syncSystemTheme = useThemeStore((store) => store.syncSystemTheme);
+    const [isDark, syncSystemTheme] = useThemeStore(useShallow((store) => [store.isDark, store.syncSystemTheme]));
 
     useEffect(() => {
         const onChange = (e: MediaQueryListEvent) => {

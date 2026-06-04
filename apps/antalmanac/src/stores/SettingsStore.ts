@@ -27,7 +27,6 @@ interface ThemeStore {
     isDark: boolean;
 
     setAppTheme: (themeSetting: ThemeSetting, postHog?: PostHog) => void;
-    /** Updates appearance when OS theme changes; only applies while themeSetting is 'system'. */
     syncSystemTheme: (isDark: boolean) => void;
 }
 
