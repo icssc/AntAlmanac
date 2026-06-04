@@ -17,10 +17,6 @@ function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<
     }
 }
 
-/**
- * Course identifiers to query for a course, including predecessor names after renames.
- * The searched course is always first; predecessors follow in rename order.
- */
 export function getRenamedCoursesIdentifiers(deptCode: string, courseNumber: string): CourseRenameKey[] {
     const identifiers: CourseRenameKey[] = [
         { deptCode, courseNumber, courseId: buildCourseId(deptCode, courseNumber) },
