@@ -8,7 +8,7 @@ export const env = createEnv({
         QUEUE_URL: z.string().min(1),
         ANTEATER_API_KEY: z.string().min(1),
         STAGE: z.string().default('local'),
-        NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
+        NODE_ENV: z.enum(['development', 'production']).optional(),
     },
     runtimeEnv: {
         DB_URL: process.env.DB_URL,
@@ -18,5 +18,4 @@ export const env = createEnv({
         NODE_ENV: process.env.NODE_ENV,
     },
     emptyStringAsUndefined: true,
-    skipValidation: process.env.SKIP_ENV_VALIDATION === 'true',
 });
