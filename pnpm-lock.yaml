@@ -342,13 +342,16 @@ importers:
         version: 2.2.2
       '@t3-oss/env-core':
         specifier: 0.13.11
-        version: 0.13.11(typescript@5.9.3)(zod@4.4.3)
+        version: 0.13.11(typescript@5.9.3)(zod@3.24.3)
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.15.6)(gel@2.2.0)(knex@0.8.6)(kysely@0.28.17)(pg@8.16.3)(postgres@3.4.5)
       pg:
         specifier: ^8.16.3
         version: 8.16.3
+      zod:
+        specifier: 3.24.3
+        version: 3.24.3
     devDependencies:
       '@types/pg':
         specifier: ^8.15.6
@@ -8358,8 +8361,8 @@ snapshots:
       express-rate-limit: 7.5.1(express@5.1.0)
       pkce-challenge: 4.1.0
       raw-body: 3.0.1
-      zod: 3.23.8
-      zod-to-json-schema: 3.24.3(zod@3.23.8)
+      zod: 3.24.3
+      zod-to-json-schema: 3.24.3(zod@3.24.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -9425,11 +9428,6 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
       zod: 3.24.3
-
-  '@t3-oss/env-core@0.13.11(typescript@5.9.3)(zod@4.4.3)':
-    optionalDependencies:
-      typescript: 5.9.3
-      zod: 4.4.3
 
   '@t3-oss/env-nextjs@0.13.11(typescript@5.9.3)(zod@3.23.8)':
     dependencies:
@@ -13256,13 +13254,13 @@ snapshots:
       toposort: 2.0.2
       type-fest: 2.19.0
 
-  zod-to-json-schema@3.24.3(zod@3.23.8):
-    dependencies:
-      zod: 3.23.8
-
   zod-to-json-schema@3.24.3(zod@3.24.2):
     dependencies:
       zod: 3.24.2
+
+  zod-to-json-schema@3.24.3(zod@3.24.3):
+    dependencies:
+      zod: 3.24.3
 
   zod@3.23.8: {}
 
