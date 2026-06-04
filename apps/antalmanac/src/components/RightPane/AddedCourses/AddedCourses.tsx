@@ -17,7 +17,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface CourseWithTerm extends AACourse {
     term: AATerm;
-    id: string;
 }
 
 const buttonSx: SxProps = {
@@ -93,7 +92,6 @@ function getCourses() {
                     },
                 ],
                 updatedAt: sectionUpdatedAt ?? null,
-                id: course.courseId,
             };
             formattedCourses.push(formattedCourse);
         }
