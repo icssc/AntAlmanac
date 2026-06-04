@@ -1,5 +1,5 @@
+import { getRenamedCoursesIdentifiers, mergeAggregateGrades } from '$lib/renames/utils';
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { getRenamedCoursesIdentifiers, mergeAggregateGrades } from '$src/lib/renames/utils';
 import { isNotEmpty } from '$src/lib/utils';
 import { GradesGeSchema } from '@packages/antalmanac-types';
 import type { AggregateGrades, AggregateGradesByOffering } from '@packages/anteater-api/types';

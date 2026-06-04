@@ -3,11 +3,7 @@ import type { AggregateGrades } from '@packages/anteater-api/types';
 import { buildCourseId } from '@packages/anteater-api/utils';
 
 function findRenameForCurrent(current: CourseRenameKey): CourseRename | undefined {
-    return COURSE_RENAMES.find(
-        (r) =>
-            r.current.courseId === current.courseId ||
-            (r.current.deptCode === current.deptCode && r.current.courseNumber === current.courseNumber)
-    );
+    return COURSE_RENAMES.find((r) => r.current.courseId === current.courseId);
 }
 
 function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<CourseRename> {
@@ -25,52 +21,28 @@ function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<
     }
 }
 
-function lookupCourseIdentifier(
-    courseId: string,
-    fallbackDeptCode: string,
-    fallbackCourseNumber: string
-): CourseRenameKey {
-    for (const rename of COURSE_RENAMES) {
-        if (rename.current.courseId === courseId) {
-            return rename.current;
-        }
-        if (rename.previously.courseId === courseId) {
-            return rename.previously;
-        }
+/**
+ * Course identifiers to query for a course, including predecessor names after renames.
+ * The searched course is always first; predecessors follow in rename order.
+ */
+export function getRenamedCoursesIdentifiers(deptCode: string, courseNumber: string): CourseRenameKey[] {
+    const identifiers: CourseRenameKey[] = [
+        { deptCode, courseNumber, courseId: buildCourseId(deptCode, courseNumber) },
+    ];
+
+    for (const entry of iterateRenameChain(deptCode, courseNumber)) {
+        identifiers.push(entry.previously);
     }
 
-    return {
-        courseId,
-        deptCode: fallbackDeptCode,
-        courseNumber: fallbackCourseNumber,
-    };
+    return identifiers;
 }
 
 /**
  * All course ids to query for a course, including predecessor names after renames.
- * The input id is always first; predecessors follow in rename order.
+ * The searched course is always first; predecessors follow in rename order.
  */
-export function getRenamedCourseIds(courseId: string): string[] {
-    const head = COURSE_RENAMES.find((r) => r.current.courseId === courseId);
-    if (!head) {
-        return [courseId];
-    }
-
-    const ids = [courseId];
-    let previous = head.previously;
-    while (true) {
-        ids.push(previous.courseId);
-        const next = COURSE_RENAMES.find((r) => r.current.courseId === previous.courseId);
-        if (!next) break;
-        previous = next.previously;
-    }
-
-    return ids;
-}
-
-export function getRenamedCoursesIdentifiers(deptCode: string, courseNumber: string): CourseRenameKey[] {
-    const rootId = buildCourseId(deptCode, courseNumber);
-    return getRenamedCourseIds(rootId).map((id) => lookupCourseIdentifier(id, deptCode, courseNumber));
+export function getRenamedCourseIds(deptCode: string, courseNumber: string): string[] {
+    return getRenamedCoursesIdentifiers(deptCode, courseNumber).map((key) => key.courseId);
 }
 
 export function getRenamedCoursesLabel(deptCode: string, courseNumber: string): string | null {
