@@ -27,6 +27,8 @@ interface ThemeStore {
     isDark: boolean;
 
     setAppTheme: (themeSetting: ThemeSetting, postHog?: PostHog) => void;
+    /** Updates appearance when OS theme changes; only applies while themeSetting is 'system'. */
+    syncSystemTheme: (isDark: boolean) => void;
 }
 
 function themeShouldBeDark(themeSetting: ThemeSetting) {
@@ -38,7 +40,7 @@ function themeShouldBeDark(themeSetting: ThemeSetting) {
     return themeSetting == 'dark';
 }
 
-export const useThemeStore = create<ThemeStore>((set) => {
+export const useThemeStore = create<ThemeStore>((set, get) => {
     const storedThemeSetting: ThemeSetting = ((typeof Storage !== 'undefined' ? getLocalStorageTheme() : null) ??
         'system') as ThemeSetting;
     const isDark = themeShouldBeDark(storedThemeSetting);
@@ -61,6 +63,13 @@ export const useThemeStore = create<ThemeStore>((set) => {
                     themeSetting,
                 },
             });
+        },
+
+        syncSystemTheme: (isDark) => {
+            if (get().themeSetting !== 'system') {
+                return;
+            }
+            set({ isDark });
         },
     };
 });
