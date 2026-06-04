@@ -10,23 +10,23 @@ config({ path: resolve(appRoot, '.env') });
 
 export const env = createEnv({
     server: {
-        DB_URL: z.string(),
-        MAPBOX_ACCESS_TOKEN: z.string().optional(),
-        ANTEATER_API_KEY: z.string(),
-        OIDC_CLIENT_ID: z.string(),
-        OIDC_ISSUER_URL: z.string(),
-        BETTER_AUTH_SECRET: z.string(),
-        BETTER_AUTH_URL: z.string(),
-        PLANNER_CLIENT_API_KEY: z.string().optional(),
-        STAGE: z.string().default('production'),
+        DB_URL: z.string().min(1),
+        ANTEATER_API_KEY: z.string().min(1),
+        OIDC_CLIENT_ID: z.string().min(1),
+        OIDC_ISSUER_URL: z.string().min(1),
+        BETTER_AUTH_SECRET: z.string().min(1),
+        BETTER_AUTH_URL: z.string().min(1),
+        MAPBOX_ACCESS_TOKEN: z.string().min(1).optional(),
+        PLANNER_CLIENT_API_KEY: z.string().min(1).optional(),
+        STAGE: z.string().min(1).default('production'),
     },
     client: {
-        NEXT_PUBLIC_TILES_ENDPOINT: z.string().optional(),
-        NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: z.string().optional(),
-        NEXT_PUBLIC_PUBLIC_POSTHOG_HOST: z.string().optional(),
-        NEXT_PUBLIC_ENDPOINT: z.string().optional(),
-        NEXT_PUBLIC_LOCAL_SERVER: z.string().optional(),
-        NEXT_PUBLIC_BASE_URL: z.string().optional(),
+        NEXT_PUBLIC_TILES_ENDPOINT: z.string().min(1).optional(),
+        NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: z.string().min(1).optional(),
+        NEXT_PUBLIC_PUBLIC_POSTHOG_HOST: z.string().min(1).optional(),
+        NEXT_PUBLIC_ENDPOINT: z.string().min(1).optional(),
+        NEXT_PUBLIC_LOCAL_SERVER: z.string().min(1).optional(),
+        NEXT_PUBLIC_BASE_URL: z.string().min(1).optional(),
     },
     runtimeEnv: {
         DB_URL: process.env.DB_URL,
@@ -45,6 +45,5 @@ export const env = createEnv({
         NEXT_PUBLIC_LOCAL_SERVER: process.env.NEXT_PUBLIC_LOCAL_SERVER,
         NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     },
-    // Keep empty .env placeholders as "" so local dev matches legacy zod.string() behavior.
-    emptyStringAsUndefined: false,
+    emptyStringAsUndefined: true,
 });
