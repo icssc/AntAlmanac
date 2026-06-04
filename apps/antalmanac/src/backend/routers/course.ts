@@ -1,4 +1,4 @@
-import { getRenamedCourseIds } from '$lib/renames/utils';
+import { getRenamedCoursesIdentifiers } from '$lib/renames/utils';
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import { AAPIError } from '@packages/anteater-api/client';
 import type { Course, CoursesBatchAPIResult } from '@packages/anteater-api/types';
@@ -11,9 +11,9 @@ const courseRouter = router({
     get: aapiProcedure
         .input(z.object({ department: z.string(), courseNumber: z.string() }))
         .query(async ({ input }): Promise<Course> => {
-            for (const id of getRenamedCourseIds(input.department, input.courseNumber)) {
+            for (const { courseId } of getRenamedCoursesIdentifiers(input.department, input.courseNumber)) {
                 try {
-                    return await aapiClient.courses.get(id);
+                    return await aapiClient.courses.get(courseId);
                 } catch (e) {
                     // AAPI returns 404 when the courseId does not exist — try predecessor names.
                     if (e instanceof AAPIError && e.status === 404) {

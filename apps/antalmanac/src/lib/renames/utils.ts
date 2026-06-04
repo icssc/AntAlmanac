@@ -2,10 +2,6 @@ import { COURSE_RENAMES, type CourseRenameKey, type CourseRename } from '$lib/re
 import type { AggregateGrades } from '@packages/anteater-api/types';
 import { buildCourseId } from '@packages/anteater-api/utils';
 
-function findRenameForCurrent(current: CourseRenameKey): CourseRename | undefined {
-    return COURSE_RENAMES.find((r) => r.current.courseId === current.courseId);
-}
-
 function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<CourseRename> {
     let current: CourseRenameKey = {
         deptCode,
@@ -14,7 +10,7 @@ function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<
     };
 
     for (let i = 0; i < COURSE_RENAMES.length; i++) {
-        const entry = findRenameForCurrent(current);
+        const entry = COURSE_RENAMES.find((r) => r.current.courseId === current.courseId);
         if (!entry) break;
         yield entry;
         current = entry.previously;
@@ -35,14 +31,6 @@ export function getRenamedCoursesIdentifiers(deptCode: string, courseNumber: str
     }
 
     return identifiers;
-}
-
-/**
- * All course ids to query for a course, including predecessor names after renames.
- * The searched course is always first; predecessors follow in rename order.
- */
-export function getRenamedCourseIds(deptCode: string, courseNumber: string): string[] {
-    return getRenamedCoursesIdentifiers(deptCode, courseNumber).map((key) => key.courseId);
 }
 
 export function getRenamedCoursesLabel(deptCode: string, courseNumber: string): string | null {
