@@ -6,7 +6,9 @@ import { type User as DbUser, users } from '@packages/db/src/schema/auth/user';
 import { type Subscription, subscriptions } from '@packages/db/src/schema/subscription';
 import { and, eq, inArray } from 'drizzle-orm';
 
-const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
+import { env } from '../env';
+
+const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 
 export interface TermGroup {
     quarter: Quarter;
@@ -55,7 +57,7 @@ async function getUpdatedClasses(
  */
 async function getSubscriptionSectionCodes(): Promise<TermGroup[] | undefined> {
     try {
-        const stage = process.env.STAGE!;
+        const stage = env.STAGE;
         const result = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
@@ -108,7 +110,7 @@ async function updateSubscriptionStatus(
     lastCodes: string
 ): Promise<void> {
     try {
-        const stage = process.env.STAGE!;
+        const stage = env.STAGE;
         await db
             .update(subscriptions)
             .set({ lastUpdatedStatus: lastUpdatedStatus, lastCodes: lastCodes })
@@ -144,7 +146,7 @@ async function getLastUpdatedStatus(
     }
 
     try {
-        const stage = process.env.STAGE!;
+        const stage = env.STAGE;
         const rows = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
@@ -196,7 +198,7 @@ async function getSubscriptionsForSections(
     if (sectionCodes.length === 0) return result;
 
     try {
-        const stage = process.env.STAGE!;
+        const stage = env.STAGE;
         const rows = await db
             .select({
                 sectionCode: subscriptions.sectionCode,

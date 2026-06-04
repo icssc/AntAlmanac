@@ -24,7 +24,7 @@
         "drizzle-orm": "^0.45.2",
         "react": "19.2.6",
         "react-dom": "19.2.6",
-        "zod": "3.23.8"
+        "zod": "3.24.3"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.130",
