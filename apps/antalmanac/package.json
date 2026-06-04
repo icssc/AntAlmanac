@@ -52,6 +52,7 @@
         "fuzzysort": "3.1.0",
         "html2canvas": "^1.4.1",
         "ics": "^3.8.1",
+        "jiti": "2.4.2",
         "leaflet": "^1.9.4",
         "leaflet-routing-machine": "^3.2.12",
         "leaflet.locatecontrol": "^0.79.0",
@@ -72,7 +73,7 @@
         "schema-dts": "^2.0.0",
         "superjson": "^1.12.3",
         "ua-parser-js": "^1.0.37",
-        "zod": "3.23.8",
+        "zod": "3.24.3",
         "zustand": "^4.3.2"
     },
     "devDependencies": {

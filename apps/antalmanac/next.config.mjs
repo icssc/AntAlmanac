@@ -1,4 +1,8 @@
+import { createJiti } from 'jiti';
 import withPWA from 'next-pwa';
+
+const jiti = createJiti(import.meta.url);
+await jiti.import('./src/env.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

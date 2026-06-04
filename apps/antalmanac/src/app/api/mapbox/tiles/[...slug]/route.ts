@@ -1,11 +1,8 @@
+import { env } from '$src/env';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { backendEnvSchema } from '$src/backend/env';
-
 const MAPBOX_API_URL = 'https://api.mapbox.com';
-
-const env = backendEnvSchema.parse(process.env);
 
 export const dynamic = 'force-dynamic';
 
