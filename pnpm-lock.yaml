@@ -372,8 +372,8 @@ importers:
         specifier: workspace:*
         version: link:../anteater-api
       zod:
-        specifier: 3.23.8
-        version: 3.23.8
+        specifier: 3.24.3
+        version: 3.24.3
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -6610,9 +6610,6 @@ packages:
     resolution: {integrity: sha512-HIAfWdYIt1sssHfYZFCXp4rU1w2r8hVVXYIlmoa0r0gABLs5di3RCqPU5DDROogVz1pAdYBaz7HK5n9pSUNs3A==}
     peerDependencies:
       zod: ^3.24.1
-
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
   zod@3.24.2:
     resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
@@ -13265,8 +13262,6 @@ snapshots:
   zod-to-json-schema@3.24.3(zod@3.24.3):
     dependencies:
       zod: 3.24.3
-
-  zod@3.23.8: {}
 
   zod@3.24.2: {}
 

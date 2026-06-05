@@ -8,7 +8,7 @@
     "scripts": {},
     "dependencies": {
         "@packages/anteater-api": "workspace:*",
-        "zod": "3.23.8"
+        "zod": "3.24.3"
     },
     "devDependencies": {
         "typescript": "^5.9.3"
