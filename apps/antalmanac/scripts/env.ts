@@ -8,7 +8,7 @@ import { z } from 'zod';
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 config({ path: resolve(appRoot, '.env') });
 
-export const scriptEnv = createEnv({
+export const env = createEnv({
     server: {
         ANTEATER_API_KEY: z.string().min(1),
     },
