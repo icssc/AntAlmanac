@@ -19,11 +19,12 @@
         "@packages/db": "workspace:*",
         "@react-email/components": "^1.0.8",
         "@react-email/render": "^2.0.4",
+        "@t3-oss/env-core": "0.13.11",
         "dotenv": "^16.4.5",
         "drizzle-orm": "^0.45.2",
         "react": "19.2.6",
         "react-dom": "19.2.6",
-        "zod": "3.23.8"
+        "zod": "3.24.3"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.130",

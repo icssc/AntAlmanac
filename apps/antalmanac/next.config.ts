@@ -1,7 +1,8 @@
+import './src/env';
+import type { NextConfig } from 'next';
 import withPWA from 'next-pwa';
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
     images: {
         remotePatterns: [
             {

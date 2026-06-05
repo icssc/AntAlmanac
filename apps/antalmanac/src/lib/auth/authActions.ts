@@ -4,15 +4,13 @@ import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { AuthAdditionalData, Provider } from '$lib/auth/authTypes';
 import { getProviderIcsscName } from '$lib/auth/authUtils';
 import { getNativeIosRedirectUri } from '$lib/platform';
-import { oidcOAuthEnvSchema } from '$src/backend/env';
+import { env } from '$src/env';
 
 interface GetSignInUrlOptions {
     authorizationUrlParams?: AuthorizationUrlParams;
     returnUrl?: string;
     isNativeIosApp?: boolean;
 }
-
-const { BETTER_AUTH_URL, OIDC_ISSUER_URL } = oidcOAuthEnvSchema.parse(process.env);
 
 export async function getSignInUrl(
     provider: Provider,
@@ -22,7 +20,7 @@ export async function getSignInUrl(
         body: {
             providerId: AUTH_PROVIDER_ID,
             newUserCallbackURL: '/welcome',
-            callbackURL: isNativeIosApp ? getNativeIosRedirectUri(BETTER_AUTH_URL) : undefined,
+            callbackURL: isNativeIosApp ? getNativeIosRedirectUri(env.BETTER_AUTH_URL) : undefined,
             additionalData: {
                 returnUrl,
                 provider,
@@ -39,8 +37,8 @@ export async function getSignInUrl(
 }
 
 export async function getSignOutUrl(redirectUrl: string) {
-    const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
-    const redirectTo = redirectUrl || BETTER_AUTH_URL;
+    const oidcLogoutUrl = new URL(`${env.OIDC_ISSUER_URL}/logout`);
+    const redirectTo = redirectUrl || env.BETTER_AUTH_URL;
     oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
     return oidcLogoutUrl.toString();
 }

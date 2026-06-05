@@ -1,8 +1,7 @@
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 
-import { aantsEnvSchema } from '../env';
+import { env } from '../env';
 
-const env = aantsEnvSchema.parse(process.env);
 const sqsClient = new SQSClient({});
 
 export interface EmailRequest {

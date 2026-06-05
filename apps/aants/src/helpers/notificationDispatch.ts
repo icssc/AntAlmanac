@@ -2,7 +2,7 @@ import type { Quarter, WebsocSection, Year } from '@packages/anteater-api/types'
 import { render, toPlainText } from '@react-email/render';
 
 import { CourseNotificationEmail } from '../emails/CourseNotificationEmail';
-import { aantsEnvSchema } from '../env';
+import { env } from '../env';
 import { queueEmail } from './emailQueue';
 import { User } from './subscriptionData';
 
@@ -24,8 +24,6 @@ export interface CourseDetails {
 }
 
 const BATCH_SIZE = 450;
-
-const env = aantsEnvSchema.parse(process.env);
 
 /**
  * Batches an array of course codes into smaller arrays based on a predefined BATCH_SIZE.
