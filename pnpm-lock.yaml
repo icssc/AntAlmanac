@@ -365,6 +365,9 @@ importers:
       drizzle-kit:
         specifier: ^0.30.6
         version: 0.30.6
+      jiti:
+        specifier: 2.4.2
+        version: 2.4.2
 
   packages/types:
     dependencies:
