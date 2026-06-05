@@ -13,7 +13,7 @@ export const env = createEnv({
         DB_URL: z.string().min(1),
         QUEUE_URL: z.string().min(1),
         ANTEATER_API_KEY: z.string().min(1),
-        STAGE: z.string().default('local'),
+        STAGE: z.string().min(1),
         NODE_ENV: z.enum(['development', 'production']).optional(),
     },
     runtimeEnv: {

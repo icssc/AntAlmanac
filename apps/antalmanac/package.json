@@ -52,7 +52,6 @@
         "fuzzysort": "3.1.0",
         "html2canvas": "^1.4.1",
         "ics": "^3.8.1",
-        "jiti": "2.4.2",
         "leaflet": "^1.9.4",
         "leaflet-routing-machine": "^3.2.12",
         "leaflet.locatecontrol": "^0.79.0",

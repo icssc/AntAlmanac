@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
  * Apple App Site Association (AASA) file.
  *
  * Served at `https://antalmanac.com/.well-known/apple-app-site-association`
- * (via a rewrite in `next.config.mjs`). Apple's CDN fetches this to:
+ * (via a rewrite in `next.config.ts`). Apple's CDN fetches this to:
  *
  * 1. Authorize the AntAlmanac iOS app to claim Universal Links for the
  *    `/auth/native` path — i.e. the OAuth redirect URI that the iOS wrapper
@@ -35,7 +35,7 @@ import { NextResponse } from 'next/server';
  *
  * - The file must be served with `Content-Type: application/json` and MUST
  *   NOT have a `.json` extension on the URL. The rewrite in
- *   `next.config.mjs` preserves the extensionless URL.
+ *   `next.config.ts` preserves the extensionless URL.
  *
  * - References:
  *   - https://developer.apple.com/documentation/xcode/supporting-associated-domains

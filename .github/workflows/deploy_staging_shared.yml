@@ -21,6 +21,7 @@ env:
     NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
     BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
     BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+    STAGE: staging-shared
 
 jobs:
     deploy-staging-shared:
