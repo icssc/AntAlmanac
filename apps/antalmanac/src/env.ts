@@ -1,3 +1,4 @@
+import { stageSchema } from '@packages/antalmanac-types';
 import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
 
@@ -11,7 +12,7 @@ export const env = createEnv({
         BETTER_AUTH_URL: z.string().min(1),
         MAPBOX_ACCESS_TOKEN: z.string().min(1).optional(),
         PLANNER_CLIENT_API_KEY: z.string().min(1).optional(),
-        STAGE: z.string().min(1),
+        STAGE: stageSchema,
     },
     client: {
         NEXT_PUBLIC_TILES_ENDPOINT: z.string().min(1).optional(),

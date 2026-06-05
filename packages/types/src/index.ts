@@ -7,3 +7,4 @@ export * from './search';
 export * from './websoc';
 export * from './planner';
 export * from './notification';
+export * from './stage';
