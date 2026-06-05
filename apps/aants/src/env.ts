@@ -1,7 +1,6 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { stageSchema } from '@packages/antalmanac-types';
 import { createEnv } from '@t3-oss/env-core';
 import { config } from 'dotenv';
 import { z } from 'zod';
@@ -14,7 +13,7 @@ export const env = createEnv({
         DB_URL: z.string().min(1),
         QUEUE_URL: z.string().min(1),
         ANTEATER_API_KEY: z.string().min(1),
-        STAGE: stageSchema,
+        STAGE: z.string().min(1),
         NODE_ENV: z.enum(['development', 'production']).optional(),
     },
     runtimeEnv: {
