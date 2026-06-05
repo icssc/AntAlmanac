@@ -1,7 +1,7 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { createEnv } from '@t3-oss/env-core';
+import { createEnv } from '@t3-oss/env-nextjs';
 import { config } from 'dotenv';
 import { z } from 'zod';
 
