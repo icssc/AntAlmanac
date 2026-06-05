@@ -25,7 +25,6 @@ env:
     PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
     BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
     BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-    STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
 jobs:
     deploy-staging:
