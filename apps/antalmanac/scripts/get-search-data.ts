@@ -16,7 +16,7 @@ const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 const MAX_COURSES = 10_000;
 
 // Full parallelism trips AAPI's Cloudflare Worker resource limit (error 1102).
-const CONCURRENCY = 5;
+const CONCURRENCY = 10;
 
 async function mapWithConcurrency<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
     const results: R[] = Array.from({ length: items.length });
