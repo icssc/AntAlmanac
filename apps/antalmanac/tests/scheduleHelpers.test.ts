@@ -1,4 +1,9 @@
-import { getColorForNewSection, groupCourseSections, scheduleOfferingKey } from '$stores/scheduleHelpers';
+import {
+    getColorForNewSection,
+    groupCourseSections,
+    scheduleOfferingKey,
+    scheduleSectionKey,
+} from '$stores/scheduleHelpers';
 import { blue } from '@mui/material/colors';
 import type { AATerm, ScheduleCourse } from '@packages/antalmanac-types';
 import { describe, expect, test } from 'vitest';
@@ -64,6 +69,16 @@ function scheduleCourse({
         },
     };
 }
+
+describe('scheduleSectionKey', () => {
+    test('formats term and section code', () => {
+        expect(scheduleSectionKey(FALL_2024, '00100')).toBe('2024 Fall::00100');
+    });
+
+    test('differs across terms for the same section code', () => {
+        expect(scheduleSectionKey(FALL_2024, '00100')).not.toBe(scheduleSectionKey(WINTER_2025, '00100'));
+    });
+});
 
 describe('scheduleOfferingKey', () => {
     test('formats term, courseId, and title', () => {

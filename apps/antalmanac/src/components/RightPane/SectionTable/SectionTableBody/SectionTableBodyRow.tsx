@@ -13,6 +13,7 @@ import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { TableRow, useTheme } from '@mui/material';
 import { AASection, AATerm, AACourse } from '@packages/antalmanac-types';
@@ -66,7 +67,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(() =>
-        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term.shortName}`)
+        AppStore.getAddedSectionCodes().has(scheduleSectionKey(term, section.sectionCode))
     );
 
     const handleMouseEnter = useCallback(() => {
@@ -82,7 +83,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     }, [setHoveredEvent]);
 
     useEffect(() => {
-        const sectionKey = `${section.sectionCode} ${term.shortName}`;
+        const sectionKey = scheduleSectionKey(term, section.sectionCode);
 
         const syncAddedCourse = () => {
             setAddedCourse(AppStore.getAddedSectionCodes().has(sectionKey));

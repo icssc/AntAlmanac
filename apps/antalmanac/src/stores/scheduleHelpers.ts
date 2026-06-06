@@ -15,10 +15,16 @@ import {
     teal,
     yellow,
 } from '@mui/material/colors';
-import { ScheduleCourse } from '@packages/antalmanac-types';
+import type { AATerm, ScheduleCourse } from '@packages/antalmanac-types';
 
 export function scheduleOfferingKey(course: Pick<ScheduleCourse, 'term' | 'courseId' | 'courseTitle'>): string {
     return `${course.term.shortName}::${course.courseId}::${course.courseTitle}`;
+}
+
+/** Stable section-row identity (one section in one term). */
+export function scheduleSectionKey(term: AATerm | string, sectionCode: string): string {
+    const termId = typeof term === 'string' ? term : term.shortName;
+    return `${termId}::${sectionCode}`;
 }
 
 const colorVariants: Record<string, string[]> = {

@@ -1,7 +1,12 @@
 import { trpc } from '$lib/api/trpc';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { moveArrayElements } from '$lib/utils';
-import { getColorForNewSection, groupCourseSections, scheduleOfferingKey } from '$stores/scheduleHelpers';
+import {
+    getColorForNewSection,
+    groupCourseSections,
+    scheduleOfferingKey,
+    scheduleSectionKey,
+} from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     AATerm,
@@ -237,12 +242,10 @@ export class Schedules {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
 
-    /**
-     * Get a set of "{sectionCode} {term}" section codes in current schedule.
-     */
+    /** Section-row keys for every section in the current schedule. */
     getAddedSectionCodes() {
         return new Set(
-            this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term.shortName}`)
+            this.getCurrentCourses().map((course) => scheduleSectionKey(course.term, course.section.sectionCode))
         );
     }
 
