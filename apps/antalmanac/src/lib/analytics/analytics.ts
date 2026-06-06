@@ -1,4 +1,3 @@
-import { ensurePostHogInitialized } from '$providers/AppPostHogProvider';
 import type { NotifyOn } from '$stores/NotificationStore';
 import { PostHog } from 'posthog-js/react';
 /**
@@ -158,23 +157,18 @@ interface AnalyticsProps {
  */
 export function logAnalytics(postHog: PostHog | undefined, { category, action, error, customProps }: AnalyticsProps) {
     if (!postHog) return;
-
-    void ensurePostHogInitialized().then(() => {
-        postHog.capture(action, {
-            ...customProps,
-            category: category.title,
-            error,
-        });
+    postHog.capture(action, {
+        ...customProps,
+        category: category.title,
+        error,
     });
 }
 
 export function analyticsIdentifyUser(postHog: PostHog | undefined, userId?: string) {
     if (!postHog || !userId) return;
 
-    void ensurePostHogInitialized().then(() => {
-        const currentId = postHog.get_distinct_id();
-        if (currentId !== userId) {
-            postHog.identify(userId);
-        }
-    });
+    const currentId = postHog.get_distinct_id();
+    if (currentId !== userId) {
+        postHog.identify(userId);
+    }
 }
