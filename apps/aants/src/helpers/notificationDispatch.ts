@@ -24,6 +24,21 @@ export interface CourseDetails {
 }
 
 const BATCH_SIZE = 450;
+const PACIFIC_TIME_ZONE = 'America/Los_Angeles';
+
+const PACIFIC_TIME_FORMATTER = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: PACIFIC_TIME_ZONE,
+});
+
+const PACIFIC_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+    month: 'numeric',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: PACIFIC_TIME_ZONE,
+});
 
 /**
  * Batches an array of course codes into smaller arrays based on a predefined BATCH_SIZE.
@@ -44,23 +59,8 @@ function batchCourseCodes(codes: string[]): string[][] {
  */
 function getFormattedTime(): string {
     const now = new Date();
-    const timeZone = 'America/Los_Angeles'; // PST/PDT
 
-    return (
-        new Intl.DateTimeFormat('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true,
-            timeZone,
-        }).format(now) +
-        ' on ' +
-        new Intl.DateTimeFormat('en-US', {
-            month: 'numeric',
-            day: 'numeric',
-            year: 'numeric',
-            timeZone,
-        }).format(now)
-    );
+    return `${PACIFIC_TIME_FORMATTER.format(now)} on ${PACIFIC_DATE_FORMATTER.format(now)}`;
 }
 
 /**
