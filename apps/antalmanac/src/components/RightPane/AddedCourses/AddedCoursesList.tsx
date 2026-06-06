@@ -12,6 +12,8 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { memo } from 'react';
 
+const getOfferingId = (course: CourseWithTerm) => scheduleOfferingKey(course);
+
 interface AddedCoursesListProps {
     courses: CourseWithTerm[];
     scheduleNames: string[];
@@ -49,7 +51,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
         <SortableList
             disableHorizontalScroll
             items={courses}
-            getItemId={(course) => scheduleOfferingKey(course)}
+            getItemId={getOfferingId}
             onChange={onCourseOrderChange}
             sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
             sortingStrategy={verticalListSortingStrategy}
@@ -57,7 +59,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
                 const missingSections = getMissingSections(course);
 
                 return (
-                    <SortableList.Item id={scheduleOfferingKey(course)}>
+                    <SortableList.Item id={getOfferingId(course)}>
                         <SectionTable
                             sortable
                             courseDetails={course}

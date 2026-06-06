@@ -71,6 +71,7 @@ export function resolveAssignment(value: string, palette: readonly (readonly str
     return palette[slot.family]?.[slot.variant] ?? palette[slot.family]?.[0] ?? palette[0][0];
 }
 
+// TODO: consolidate with scheduleSectionKey once theme assignment keys are migrated off `term|sectionCode`.
 export function courseColorKey(term: AATerm | string, sectionCode: string): string {
     // Use the term's stable short name (e.g. "2024 Fall"); stringifying the AATerm object
     // would collapse every term to "[object Object]" and collide on shared section codes.
