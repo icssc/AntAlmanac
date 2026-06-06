@@ -8,7 +8,7 @@ import { CalendarEventWrapper } from '$components/Calendar/CalendarEvent/Calenda
 import { CALENDAR_BASE_DATE, createSkeletonEvents } from '$components/Calendar/Skeleton/skeletonHelpers';
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
-import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/types';
+import { isCourseEvent, isSkeletonEvent, type CalendarEvent, type SkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
@@ -88,10 +88,7 @@ export const ScheduleCalendar = memo(() => {
 
     const isMobile = useIsMobile();
 
-    const onlyCourseEvents = useMemo(
-        () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
-        [eventsInCalendar]
-    );
+    const onlyCourseEvents = useMemo(() => eventsInCalendar.filter(isCourseEvent), [eventsInCalendar]);
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         const raw = showFinalsSchedule
@@ -103,12 +100,10 @@ export const ScheduleCalendar = memo(() => {
               : eventsInCalendar;
 
         return raw.filter((e) => {
-            if ('isCustomEvent' in e && e.isCustomEvent) return true;
-            if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
-            const courseEvent = e as CourseEvent;
+            if (isSkeletonEvent(e) || ('isCustomEvent' in e && e.isCustomEvent)) return true;
+            if (!isCourseEvent(e)) return true;
             const visibility: VisibilityState =
-                visibilityMap[currentScheduleId]?.[courseColorKey(courseEvent.term, courseEvent.sectionCode)] ??
-                VisibilityState.Visible;
+                visibilityMap[currentScheduleId]?.[courseColorKey(e.term, e.sectionCode)] ?? VisibilityState.Visible;
             return visibility !== VisibilityState.Disappeared;
         });
     }, [
@@ -169,14 +164,10 @@ export const ScheduleCalendar = memo(() => {
 
     const eventStyleGetter = useCallback(
         (event: CalendarEvent | SkeletonEvent) => {
-            const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
-
-            const courseEvent = event as CourseEvent;
-            const visibility: VisibilityState =
-                !isSkeletonEvent && !('isCustomEvent' in event && event.isCustomEvent)
-                    ? (visibilityMap[currentScheduleId]?.[courseColorKey(courseEvent.term, courseEvent.sectionCode)] ??
-                      VisibilityState.Visible)
-                    : VisibilityState.Visible;
+            const visibility: VisibilityState = isCourseEvent(event)
+                ? (visibilityMap[currentScheduleId]?.[courseColorKey(event.term, event.sectionCode)] ??
+                  VisibilityState.Visible)
+                : VisibilityState.Visible;
 
             const style =
                 visibility === VisibilityState.Outlined
@@ -193,14 +184,14 @@ export const ScheduleCalendar = memo(() => {
                           border: '2px solid transparent',
                           borderRadius: '4px',
                           // Skeleton text is empty so contrast doesn't matter — skip the check.
-                          color: isSkeletonEvent
+                          color: isSkeletonEvent(event)
                               ? 'transparent'
                               : colorContrastSufficient(event.color)
                                 ? 'white'
                                 : 'black',
                       };
 
-            return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
+            return isSkeletonEvent(event) ? { style, className: 'calendar-loading-event' } : { style };
         },
         [currentScheduleId, theme, visibilityMap]
     );

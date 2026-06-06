@@ -65,3 +65,7 @@ export type CalendarEvent = CourseEvent | CustomEvent | SkeletonEvent;
 export function isSkeletonEvent(event: CalendarEvent): event is SkeletonEvent {
     return 'isSkeletonEvent' in event && event.isSkeletonEvent;
 }
+
+export function isCourseEvent(event: CalendarEvent): event is CourseEvent {
+    return 'isCustomEvent' in event && !event.isCustomEvent;
+}
