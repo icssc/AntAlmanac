@@ -223,10 +223,14 @@ export default function CourseMap() {
             return;
         }
 
-        setTimeout(() => {
+        const timeoutId = window.setTimeout(() => {
             map.current?.flyTo([building.lat + 0.001, building.lng], 18, { duration: 250, animate: false });
             markerRef.current?.openPopup();
         }, 250);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
     }, [searchParams]);
 
     const handleChange = useCallback(
