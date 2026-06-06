@@ -9,6 +9,8 @@ if (env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY) {
         api_host: env.NEXT_PUBLIC_PUBLIC_POSTHOG_HOST,
         capture_pageview: false,
         autocapture: false,
+        disable_surveys: true,
+        capture_dead_clicks: false,
     });
 } else {
     console.warn('PostHog not initialized: Missing API key');
