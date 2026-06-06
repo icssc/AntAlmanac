@@ -15,6 +15,22 @@ const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 
 const MAX_COURSES = 10_000;
 
+// Full parallelism trips AAPI's Cloudflare Worker resource limit (error 1102).
+const CONCURRENCY = 5;
+
+async function mapWithConcurrency<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+    const results: R[] = Array.from({ length: items.length });
+    let next = 0;
+    async function worker() {
+        while (next < items.length) {
+            const index = next++;
+            results[index] = await fn(items[index]);
+        }
+    }
+    await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+    return results;
+}
+
 const ALIASES: Record<string, string | undefined> = {
     COMPSCI: 'CS',
     EARTHSS: 'ESS',
@@ -123,10 +139,11 @@ async function main() {
             string,
             Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
         >();
-        for (const { year, quarter } of activeTerms) {
-            const websocData = await aapiClient.websoc.query({ year, quarter });
-            const chunk = getWebsocCoursesFromResponse(websocData);
-            for (const [key, course] of chunk) {
+        const websocResponses = await mapWithConcurrency(activeTerms, CONCURRENCY, ({ year, quarter }) =>
+            aapiClient.websoc.query({ year, quarter })
+        );
+        for (const websocData of websocResponses) {
+            for (const [key, course] of getWebsocCoursesFromResponse(websocData)) {
                 fromWebsoc.set(key, course);
             }
         }
@@ -176,28 +193,31 @@ async function main() {
     );
 
     const refreshShortNames = new Set(activeTerms.map((t) => t.shortName));
-    let count = 0;
 
-    // Fetch section-code data one term at a time to avoid concurrent GraphQL OOMs on AAPI.
+    const termsToFetch: AATerm[] = [];
     for (const term of termData) {
+        const { year, quarter } = term;
+        const fileName = join(GENERATED_TERMS_DIR, `${quarter}_${year}.json`);
+
+        try {
+            await access(fileName);
+
+            if (!refreshShortNames.has(term.shortName)) {
+                console.log(`Skipping ${term.shortName}, cache exists and term is outside enrollment refresh window.`);
+                continue;
+            }
+            console.log(`Updating section-code cache for active term (${term.shortName})...`);
+        } catch {
+            console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
+        }
+
+        termsToFetch.push(term);
+    }
+
+    const counts = await mapWithConcurrency(termsToFetch, CONCURRENCY, async (term) => {
         try {
             const { year, quarter } = term;
-            const parsedTerm = `${quarter}_${year}`;
-            const fileName = join(GENERATED_TERMS_DIR, `${parsedTerm}.json`);
-
-            try {
-                await access(fileName);
-
-                if (!refreshShortNames.has(term.shortName)) {
-                    console.log(
-                        `Skipping ${term.shortName}, cache exists and term is outside enrollment refresh window.`
-                    );
-                    continue;
-                }
-                console.log(`Updating section-code cache for active term (${term.shortName})...`);
-            } catch {
-                console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
-            }
+            const fileName = join(GENERATED_TERMS_DIR, `${quarter}_${year}.json`);
 
             const query = buildSectionCodesQuery(term);
             const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
@@ -211,12 +231,14 @@ async function main() {
             console.log(`Fetched ${numKeys} section codes for ${term.shortName} from Anteater API.`);
 
             await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
-            count += numKeys;
+            return numKeys;
         } catch (error) {
             console.error(`ERROR for term "${term.shortName}":`);
             throw error;
         }
-    }
+    });
+
+    const count = counts.reduce((total, numKeys) => total + numKeys, 0);
 
     console.log(`Fetched ${count} section codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
