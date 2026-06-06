@@ -31,37 +31,32 @@ interface CachedBlueprint {
     customEvents: RepeatingCustomEvent[];
 }
 
-/** Legacy skeleton caches used `id` before `courseId` was required on CourseWithTerm. */
-type CachedCourseShape = Partial<CourseWithTerm> & { id?: string };
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
+}
 
-function normalizeCachedCourse(value: unknown): CourseWithTerm | null {
-    if (typeof value !== 'object' || value === null) return null;
-    const course = value as CachedCourseShape;
-    const courseId = course.courseId ?? course.id;
-    if (
-        typeof courseId !== 'string' ||
-        typeof course.deptCode !== 'string' ||
-        typeof course.courseNumber !== 'string' ||
-        typeof course.courseTitle !== 'string' ||
-        !Array.isArray(course.sections) ||
-        typeof course.term !== 'object' ||
-        course.term === null
-    ) {
-        return null;
-    }
+function isValidCachedCourse(value: unknown): value is CourseWithTerm {
+    if (!isRecord(value)) return false;
 
-    return { ...course, courseId, id: courseId } as CourseWithTerm;
+    return (
+        typeof value.courseId === 'string' &&
+        typeof value.deptCode === 'string' &&
+        typeof value.courseNumber === 'string' &&
+        typeof value.courseTitle === 'string' &&
+        Array.isArray(value.sections) &&
+        isRecord(value.term)
+    );
 }
 
 function isValidCachedCustomEvent(value: unknown): value is RepeatingCustomEvent {
-    if (typeof value !== 'object' || value === null) return false;
-    const ev = value as Partial<RepeatingCustomEvent>;
+    if (!isRecord(value)) return false;
+
     return (
-        typeof ev.title === 'string' &&
-        typeof ev.start === 'string' &&
-        typeof ev.end === 'string' &&
-        Array.isArray(ev.days) &&
-        (typeof ev.customEventID === 'string' || typeof ev.customEventID === 'number')
+        typeof value.title === 'string' &&
+        typeof value.start === 'string' &&
+        typeof value.end === 'string' &&
+        Array.isArray(value.days) &&
+        (typeof value.customEventID === 'string' || typeof value.customEventID === 'number')
     );
 }
 
@@ -70,33 +65,19 @@ function readCachedBlueprint(): CachedBlueprint | null {
     if (!raw) return null;
 
     try {
-        const parsed = JSON.parse(raw);
-
-        // Legacy format: just an array of courses.
-        if (Array.isArray(parsed)) {
-            const courses = (parsed as unknown[])
-                .map(normalizeCachedCourse)
-                .filter((c): c is CourseWithTerm => c !== null);
-            return courses.length > 0 ? { courses, customEvents: [] } : null;
+        const parsed: unknown = JSON.parse(raw);
+        if (!isRecord(parsed) || !Array.isArray(parsed.courses) || !Array.isArray(parsed.customEvents)) {
+            return null;
         }
 
-        // Current format: { courses, customEvents }.
-        if (parsed && typeof parsed === 'object') {
-            const courses = Array.isArray(parsed.courses)
-                ? (parsed.courses as unknown[])
-                      .map(normalizeCachedCourse)
-                      .filter((c): c is CourseWithTerm => c !== null)
-                : [];
-            const customEvents = Array.isArray(parsed.customEvents)
-                ? parsed.customEvents.filter(isValidCachedCustomEvent)
-                : [];
-            if (courses.length === 0 && customEvents.length === 0) return null;
-            return { courses, customEvents };
-        }
+        const courses = parsed.courses.filter(isValidCachedCourse);
+        const customEvents = parsed.customEvents.filter(isValidCachedCustomEvent);
+        if (courses.length === 0 && customEvents.length === 0) return null;
+
+        return { courses, customEvents };
     } catch {
-        // ignore malformed data
+        return null;
     }
-    return null;
 }
 
 /**
@@ -127,7 +108,7 @@ export function AddedCoursesLoadingSkeleton() {
             <Box display="flex" flexDirection="column" gap={1}>
                 {blueprint.courses.map((course) => (
                     <SectionTable
-                        key={course.id}
+                        key={course.courseId}
                         skeleton
                         sortable
                         courseDetails={course}

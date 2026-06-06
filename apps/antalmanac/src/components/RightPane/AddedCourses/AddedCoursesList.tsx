@@ -48,6 +48,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
         <SortableList
             disableHorizontalScroll
             items={courses}
+            getItemId={(course) => course.courseId}
             onChange={onCourseOrderChange}
             sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
             sortingStrategy={verticalListSortingStrategy}
@@ -55,7 +56,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
                 const missingSections = getMissingSections(course);
 
                 return (
-                    <SortableList.Item id={course.id}>
+                    <SortableList.Item id={course.courseId}>
                         <SectionTable
                             sortable
                             courseDetails={course}

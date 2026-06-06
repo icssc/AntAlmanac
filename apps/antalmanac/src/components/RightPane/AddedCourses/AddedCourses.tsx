@@ -15,10 +15,8 @@ import { Box, SxProps, Typography } from '@mui/material';
 import { AACourse, AATerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-/** `id` is required by SortableList and always equals `courseId`. */
 export interface CourseWithTerm extends AACourse {
     term: AATerm;
-    id: string;
 }
 
 const buttonSx: SxProps = {
@@ -94,7 +92,6 @@ function getCourses() {
                     },
                 ],
                 updatedAt: sectionUpdatedAt ?? null,
-                id: course.courseId,
             };
             formattedCourses.push(formattedCourse);
         }

@@ -164,6 +164,7 @@ export function SelectSchedulePopover() {
                 <Box padding={1}>
                     <SortableList
                         items={scheduleMappingToUse}
+                        getItemId={(item) => item.id}
                         onChange={handleSortableListChange}
                         renderItem={(item, index) => {
                             return (

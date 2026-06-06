@@ -11,12 +11,9 @@ import { List, SxProps } from '@mui/material';
 import type { ContextType, ReactNode } from 'react';
 import { createContext, Fragment, useMemo, useState } from 'react';
 
-interface BaseItem {
-    id: UniqueIdentifier;
-}
-
-interface SortableListProps<T extends BaseItem> {
+interface SortableListProps<T> {
     items: T[];
+    getItemId: (item: T) => UniqueIdentifier;
     onChange(items: T[], activeIndex?: number, overIndex?: number): void;
     renderItem(item: T, index: number): ReactNode;
     sx?: SxProps;
@@ -37,8 +34,9 @@ export const SortableListContext = createContext<SortableListContext>({});
 export const DraggingItemContext = createContext<DraggingItemState | null>(null);
 
 // ref: https://codesandbox.io/p/sandbox/dnd-kit-sortable-starter-template-22x1ix
-export function SortableList<T extends BaseItem>({
+export function SortableList<T>({
     items,
+    getItemId,
     onChange,
     renderItem,
     sx,
@@ -48,7 +46,9 @@ export function SortableList<T extends BaseItem>({
     const [active, setActive] = useState<Active | null>(null);
     const [draggingItemState, setDraggingItemState] = useState<ContextType<typeof DraggingItemContext>>(null);
 
-    const activeItem = useMemo(() => items.find((item) => item.id === active?.id), [active, items]);
+    const itemIds = useMemo(() => items.map(getItemId), [items, getItemId]);
+
+    const activeItem = useMemo(() => items.find((item) => getItemId(item) === active?.id), [active, getItemId, items]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -68,8 +68,8 @@ export function SortableList<T extends BaseItem>({
             }}
             onDragEnd={({ active, over }) => {
                 if (over && active.id !== over?.id) {
-                    const activeIndex = items.findIndex(({ id }) => id === active.id);
-                    const overIndex = items.findIndex(({ id }) => id === over.id);
+                    const activeIndex = items.findIndex((item) => getItemId(item) === active.id);
+                    const overIndex = items.findIndex((item) => getItemId(item) === over.id);
                     if (activeIndex !== -1 && overIndex !== -1) {
                         onChange(arrayMove(items, activeIndex, overIndex), activeIndex, overIndex);
                     } else {
@@ -85,10 +85,10 @@ export function SortableList<T extends BaseItem>({
             }}
         >
             <SortableListContext value={{ setDraggingItemState }}>
-                <SortableContext items={items} strategy={sortingStrategy}>
+                <SortableContext items={itemIds} strategy={sortingStrategy}>
                     <List sx={mergeSx({ padding: 0 }, sx)}>
                         {items.map((item, index) => (
-                            <Fragment key={item.id}>{renderItem(item, index)}</Fragment>
+                            <Fragment key={getItemId(item)}>{renderItem(item, index)}</Fragment>
                         ))}
                     </List>
                 </SortableContext>
@@ -98,7 +98,7 @@ export function SortableList<T extends BaseItem>({
                     {activeItem
                         ? renderItem(
                               activeItem,
-                              items.findIndex(({ id }) => id === activeItem.id)
+                              items.findIndex((item) => getItemId(item) === getItemId(activeItem))
                           )
                         : null}
                 </SortableOverlay>
