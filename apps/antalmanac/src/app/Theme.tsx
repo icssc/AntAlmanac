@@ -5,7 +5,6 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { CssBaseline, type PaletteOptions } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Roboto } from 'next/font/google';
-import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -120,12 +119,11 @@ declare module '@mui/material/styles' {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const [isDark, setAppTheme] = useThemeStore(useShallow((store) => [store.isDark, store.setAppTheme]));
-    const postHog = usePostHog();
+    const [isDark, syncSystemTheme] = useThemeStore(useShallow((store) => [store.isDark, store.syncSystemTheme]));
 
     useEffect(() => {
         const onChange = (e: MediaQueryListEvent) => {
-            setAppTheme(e.matches ? 'dark' : 'light', postHog);
+            syncSystemTheme(e.matches);
         };
 
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
@@ -135,7 +133,7 @@ export default function AppThemeProvider(props: Props) {
         return () => {
             mediaQueryList.removeEventListener('change', onChange);
         };
-    }, [setAppTheme, postHog]);
+    }, [syncSystemTheme]);
 
     const theme = useMemo(
         () =>

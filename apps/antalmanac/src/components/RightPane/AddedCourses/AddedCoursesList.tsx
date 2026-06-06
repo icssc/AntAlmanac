@@ -55,7 +55,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
                 const missingSections = getMissingSections(course);
 
                 return (
-                    <SortableList.Item id={course.courseId}>
+                    <SortableList.Item id={course.id}>
                         <SectionTable
                             sortable
                             courseDetails={course}

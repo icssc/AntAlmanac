@@ -37,10 +37,3 @@ export function mergeSx(
         return acc;
     }, [] as any);
 }
-
-export const QUARTER_ORDER_IN_YEAR: Record<string, number> = {
-    Winter: 0,
-    Spring: 1,
-    Summer: 2,
-    Fall: 3,
-};

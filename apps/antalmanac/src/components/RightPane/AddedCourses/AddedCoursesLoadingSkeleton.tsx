@@ -50,7 +50,7 @@ function normalizeCachedCourse(value: unknown): CourseWithTerm | null {
         return null;
     }
 
-    return { ...course, courseId } as CourseWithTerm;
+    return { ...course, courseId, id: courseId } as CourseWithTerm;
 }
 
 function isValidCachedCustomEvent(value: unknown): value is RepeatingCustomEvent {
@@ -74,14 +74,18 @@ function readCachedBlueprint(): CachedBlueprint | null {
 
         // Legacy format: just an array of courses.
         if (Array.isArray(parsed)) {
-            const courses = parsed.map(normalizeCachedCourse).filter((c): c is CourseWithTerm => c !== null);
+            const courses = (parsed as unknown[])
+                .map(normalizeCachedCourse)
+                .filter((c): c is CourseWithTerm => c !== null);
             return courses.length > 0 ? { courses, customEvents: [] } : null;
         }
 
         // Current format: { courses, customEvents }.
         if (parsed && typeof parsed === 'object') {
             const courses = Array.isArray(parsed.courses)
-                ? parsed.courses.map(normalizeCachedCourse).filter((c): c is CourseWithTerm => c !== null)
+                ? (parsed.courses as unknown[])
+                      .map(normalizeCachedCourse)
+                      .filter((c): c is CourseWithTerm => c !== null)
                 : [];
             const customEvents = Array.isArray(parsed.customEvents)
                 ? parsed.customEvents.filter(isValidCachedCustomEvent)
@@ -123,7 +127,7 @@ export function AddedCoursesLoadingSkeleton() {
             <Box display="flex" flexDirection="column" gap={1}>
                 {blueprint.courses.map((course) => (
                     <SectionTable
-                        key={course.courseId}
+                        key={course.id}
                         skeleton
                         sortable
                         courseDetails={course}

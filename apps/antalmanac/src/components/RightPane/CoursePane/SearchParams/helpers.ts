@@ -45,7 +45,7 @@ export function hasAdvancedParams(formData: AdvancedSearchParams) {
     });
 }
 
-export function shouldShowSearchForm(formData: CourseSearchParams) {
+function shouldShowSearchForm(formData: CourseSearchParams) {
     const hasPrimarySearchInput =
         formData.sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
         formData.courseNumber !== DEFAULT_FORM_DATA.courseNumber ||
