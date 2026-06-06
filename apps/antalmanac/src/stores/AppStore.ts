@@ -34,8 +34,6 @@ import type {
 class AppStore extends EventEmitter {
     schedule: Schedules;
 
-    customEvents: RepeatingCustomEvent[];
-
     colorPickers: Record<string, EventEmitter>;
 
     unsavedChanges: boolean;
@@ -43,7 +41,6 @@ class AppStore extends EventEmitter {
     constructor() {
         super();
         this.setMaxListeners(300);
-        this.customEvents = [];
         this.schedule = new Schedules();
         this.colorPickers = {};
         this.unsavedChanges = false;
