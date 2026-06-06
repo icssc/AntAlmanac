@@ -88,6 +88,3 @@ export const SECTION_THEMES: readonly SectionTheme[] = [
     { id: 'catppuccin', name: 'Catppuccin', light: catppuccinLatte, dark: catppuccinMocha },
     { id: 'quietLuxury', name: 'Quiet Luxury', light: quietLuxuryPalette },
 ];
-
-/** The default theme — also the source of truth for colors when a user picks "custom". */
-export const DEFAULT_THEME_ID: SectionThemeId = 'default';
