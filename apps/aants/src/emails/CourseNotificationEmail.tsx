@@ -235,5 +235,3 @@ export function CourseNotificationEmail({
         </Html>
     );
 }
-
-export default CourseNotificationEmail;
