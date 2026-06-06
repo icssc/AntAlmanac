@@ -13,12 +13,13 @@ import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
-import { applyThemeToCalendarEvents, courseColorKey } from '$lib/sectionThemes';
+import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
@@ -102,7 +103,8 @@ export const ScheduleCalendar = memo(() => {
         return raw.filter((e) => {
             if (!isCourseEvent(e)) return true;
             const visibility: VisibilityState =
-                visibilityMap[currentScheduleId]?.[courseColorKey(e.term, e.sectionCode)] ?? VisibilityState.Visible;
+                visibilityMap[currentScheduleId]?.[scheduleSectionKey(e.term, e.sectionCode)] ??
+                VisibilityState.Visible;
             return visibility !== VisibilityState.Disappeared;
         });
     }, [
@@ -164,7 +166,7 @@ export const ScheduleCalendar = memo(() => {
     const eventStyleGetter = useCallback(
         (event: CalendarEvent | SkeletonEvent) => {
             const visibility: VisibilityState = isCourseEvent(event)
-                ? (visibilityMap[currentScheduleId]?.[courseColorKey(event.term, event.sectionCode)] ??
+                ? (visibilityMap[currentScheduleId]?.[scheduleSectionKey(event.term, event.sectionCode)] ??
                   VisibilityState.Visible)
                 : VisibilityState.Visible;
 

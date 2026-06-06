@@ -28,9 +28,10 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
-import { applyThemeToCalendarEvents, courseColorKey } from '$lib/sectionThemes';
+import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 
 function getBuildingNameAcronym(name: string): string {
     const open = name.indexOf('(');
@@ -288,8 +289,8 @@ export default function CourseMap() {
                 (marker, i, arr) =>
                     arr.findIndex(
                         (other) =>
-                            courseColorKey(other.term, other.sectionCode) ===
-                            courseColorKey(marker.term, marker.sectionCode)
+                            scheduleSectionKey(other.term, other.sectionCode) ===
+                            scheduleSectionKey(marker.term, marker.sectionCode)
                     ) === i
             );
     }, [markers, today]);
@@ -394,7 +395,7 @@ export default function CourseMap() {
                             .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
 
                         return (
-                            <Fragment key={courseColorKey(marker.term, marker.sectionCode)}>
+                            <Fragment key={scheduleSectionKey(marker.term, marker.sectionCode)}>
                                 <LocationMarker
                                     {...marker}
                                     label={today === 'All' ? undefined : (index + 1).toString()}

@@ -1,4 +1,4 @@
-import { courseColorKey } from '$lib/sectionThemes';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { ShortCourse, VisibilityState, type AATerm } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
@@ -23,12 +23,12 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
     visibilityMap: {},
 
     getVisibility: (scheduleId, term, sectionCode) => {
-        return get().visibilityMap[scheduleId]?.[courseColorKey(term, sectionCode)] ?? VisibilityState.Visible;
+        return get().visibilityMap[scheduleId]?.[scheduleSectionKey(term, sectionCode)] ?? VisibilityState.Visible;
     },
 
     cycleVisibility: (scheduleId, term, sectionCode) => {
         const visibilityMap = get().visibilityMap;
-        const key = courseColorKey(term, sectionCode);
+        const key = scheduleSectionKey(term, sectionCode);
         const currentVisibility = get().getVisibility(scheduleId, term, sectionCode);
         const nextVisibility = NEXT_VISIBILITY[currentVisibility];
 
@@ -50,7 +50,7 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
 
     clearCourseVisibility: (scheduleId, term, sectionCode) => {
         const visibilityMap = get().visibilityMap;
-        const key = courseColorKey(term, sectionCode);
+        const key = scheduleSectionKey(term, sectionCode);
         if (!visibilityMap[scheduleId]?.[key]) {
             return;
         }
@@ -84,7 +84,7 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
                 const visibility = course.visibility ?? VisibilityState.Visible;
                 if (visibility !== VisibilityState.Visible) {
                     newMap[schedule.id] ??= {};
-                    newMap[schedule.id][courseColorKey(course.term, course.sectionCode)] = visibility;
+                    newMap[schedule.id][scheduleSectionKey(course.term, course.sectionCode)] = visibility;
                 }
             }
         }
