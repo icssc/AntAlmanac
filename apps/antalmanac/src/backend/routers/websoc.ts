@@ -122,10 +122,6 @@ const websocRouter = router({
             const { department, courseNumber, ...rest } = input;
             const identifiers = getRenamedCoursesIdentifiers(department, courseNumber);
 
-            if (identifiers.length === 1) {
-                return aapiClient.websoc.getSyllabi({ ...rest, courseId: identifiers[0].courseId });
-            }
-
             const results = await Promise.all(
                 identifiers.map(({ courseId }) => aapiClient.websoc.getSyllabi({ ...rest, courseId }))
             );

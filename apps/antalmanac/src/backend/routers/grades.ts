@@ -26,10 +26,6 @@ const gradesRouter = router({
 
             const identifiers = getRenamedCoursesIdentifiers(department, courseNumber);
 
-            if (identifiers.length === 1) {
-                return aapiClient.grades.aggregate(input);
-            }
-
             const results = await Promise.all(
                 identifiers.map((ci) =>
                     aapiClient.grades.aggregate({ ...input, department: ci.deptCode, courseNumber: ci.courseNumber })
