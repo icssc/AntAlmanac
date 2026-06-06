@@ -25,11 +25,6 @@ export function getPalette(theme: SectionColorSetting | string, isDark: boolean)
     return isDark && def.dark ? def.dark : def.light;
 }
 
-/** Primary color (variant 0) of each family in a theme. */
-export function getPrimaryColors(theme: SectionColorSetting | string, isDark: boolean): string[] {
-    return getPalette(theme, isDark).map((family) => family[0]);
-}
-
 /* ------------------------------------------------------------------ *
  * Theme color assignments
  *

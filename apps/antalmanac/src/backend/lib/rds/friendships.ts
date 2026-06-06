@@ -51,7 +51,7 @@ export async function acceptFriendRequest(db: DatabaseOrTransaction, requesterId
 /**
  * Returns accepted friends where the given user sent the request.
  */
-export async function getFriendshipsSent(db: DatabaseOrTransaction, userId: string) {
+async function getFriendshipsSent(db: DatabaseOrTransaction, userId: string) {
     return db
         .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
         .from(friendships)
@@ -62,7 +62,7 @@ export async function getFriendshipsSent(db: DatabaseOrTransaction, userId: stri
 /**
  * Returns accepted friends where the given user received the request.
  */
-export async function getFriendshipsReceived(db: DatabaseOrTransaction, userId: string) {
+async function getFriendshipsReceived(db: DatabaseOrTransaction, userId: string) {
     return db
         .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
         .from(friendships)
