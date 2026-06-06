@@ -242,7 +242,6 @@ export class Schedules {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
 
-    /** Section-row keys for every section in the current schedule. */
     getAddedSectionCodes() {
         return new Set(
             this.getCurrentCourses().map((course) => scheduleSectionKey(course.term, course.section.sectionCode))

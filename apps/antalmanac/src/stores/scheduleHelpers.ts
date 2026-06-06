@@ -21,7 +21,6 @@ export function scheduleOfferingKey(course: Pick<ScheduleCourse, 'term' | 'cours
     return `${course.term.shortName}::${course.courseId}::${course.courseTitle}`;
 }
 
-/** Stable section-row identity (one section in one term). */
 export function scheduleSectionKey(term: AATerm | string, sectionCode: string): string {
     const termId = typeof term === 'string' ? term : term.shortName;
     return `${termId}::${sectionCode}`;
