@@ -130,11 +130,13 @@ async function processBatch(batch: string[], quarter: Quarter, year: Year) {
         getSubscriptionsForSections(year, quarter, sectionCodes),
     ]);
 
-    for (const { section, course } of flatSections) {
-        const previousState = previousStatuses.get(section.sectionCode);
-        const sectionSubscriptions = allSubscriptions.get(section.sectionCode) || [];
-        await processSection(section, course, quarter, year, previousState, sectionSubscriptions);
-    }
+    await Promise.all(
+        flatSections.map(async ({ section, course }) => {
+            const previousState = previousStatuses.get(section.sectionCode);
+            const sectionSubscriptions = allSubscriptions.get(section.sectionCode) || [];
+            await processSection(section, course, quarter, year, previousState, sectionSubscriptions);
+        })
+    );
 }
 
 /**

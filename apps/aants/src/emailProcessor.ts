@@ -48,16 +48,28 @@ export async function handler(event: SQSEvent): Promise<SQSBatchResponse> {
     const batchItemFailures: SQSBatchItemFailure[] = [];
     console.log(`[EMAIL PROCESSOR] Processing ${event.Records.length} email(s) from SQS`);
 
-    for (const record of event.Records) {
-        try {
-            await processEmailRecord(record);
-        } catch (error) {
-            const emailRequest: EmailRequest = JSON.parse(record.body);
-            const logPrefix = emailRequest.LogContext
-                ? `${emailRequest.LogContext.deptCode} ${emailRequest.LogContext.courseNumber} ${emailRequest.LogContext.sectionCode}`
-                : emailRequest.Content.Subject;
-            console.error(`[EMAIL ERROR] Failed to send email for ${logPrefix} (record ${record.messageId}):`, error);
-            batchItemFailures.push({ itemIdentifier: record.messageId });
+    const failures = await Promise.all(
+        event.Records.map(async (record) => {
+            try {
+                await processEmailRecord(record);
+                return null;
+            } catch (error) {
+                const emailRequest: EmailRequest = JSON.parse(record.body);
+                const logPrefix = emailRequest.LogContext
+                    ? `${emailRequest.LogContext.deptCode} ${emailRequest.LogContext.courseNumber} ${emailRequest.LogContext.sectionCode}`
+                    : emailRequest.Content.Subject;
+                console.error(
+                    `[EMAIL ERROR] Failed to send email for ${logPrefix} (record ${record.messageId}):`,
+                    error
+                );
+                return record.messageId;
+            }
+        })
+    );
+
+    for (const messageId of failures) {
+        if (messageId != null) {
+            batchItemFailures.push({ itemIdentifier: messageId });
         }
     }
 

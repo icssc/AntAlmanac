@@ -11,19 +11,23 @@ const courseRouter = router({
     get: aapiProcedure
         .input(z.object({ department: z.string(), courseNumber: z.string() }))
         .query(async ({ input }): Promise<Course> => {
-            for (const id of getRenamedCoursesIdentifiers(input.department, input.courseNumber).map(
+            const courseIds = getRenamedCoursesIdentifiers(input.department, input.courseNumber).map(
                 ({ department, courseNumber }) => department.replaceAll(' ', '') + courseNumber
-            )) {
-                try {
-                    return await aapiClient.courses.get(id);
-                } catch (e) {
-                    // AAPI returns 404 when the courseId does not exist — try predecessor names.
-                    if (e instanceof AAPIError && e.status === 404) {
-                        continue;
-                    }
+            );
+            const results = await Promise.allSettled(courseIds.map((id) => aapiClient.courses.get(id)));
 
-                    throw e;
+            for (const result of results) {
+                if (result.status === 'fulfilled') {
+                    return result.value;
                 }
+
+                const e = result.reason;
+                // AAPI returns 404 when the courseId does not exist — try predecessor names.
+                if (e instanceof AAPIError && e.status === 404) {
+                    continue;
+                }
+
+                throw e;
             }
 
             throw new TRPCError({ code: 'NOT_FOUND', message: 'Course not found' });

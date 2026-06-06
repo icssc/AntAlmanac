@@ -662,22 +662,22 @@ export class Schedules {
             // Get the course info for each course
             const courseInfoDict = new Map<string, Record<string, AACourse>>();
 
-            const websocRequests = Object.entries(courseDict).map(async ([termShortName, courseSet]) => {
-                const term = getTermByShortName(termShortName);
-                if (!term) {
-                    return;
-                }
+            await Promise.all(
+                Object.entries(courseDict).map(async ([termShortName, courseSet]) => {
+                    const term = getTermByShortName(termShortName);
+                    if (!term) {
+                        return;
+                    }
 
-                const sectionCodes = Array.from(courseSet).join(',');
-                const courseInfo = await trpc.websoc.getCourseInfo.query({
-                    year: term.year,
-                    quarter: term.quarter,
-                    sectionCodes,
-                });
-                courseInfoDict.set(termShortName, courseInfo);
-            });
-
-            await Promise.all(websocRequests);
+                    const sectionCodes = Array.from(courseSet).join(',');
+                    const courseInfo = await trpc.websoc.getCourseInfo.query({
+                        year: term.year,
+                        quarter: term.quarter,
+                        sectionCodes,
+                    });
+                    courseInfoDict.set(termShortName, courseInfo);
+                })
+            );
 
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
