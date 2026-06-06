@@ -3,17 +3,16 @@ import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Add } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import { AASection, AACourse, type AATerm } from '@packages/antalmanac-types';
+import { AASection, AACourseWithTerm } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 
 interface AddButtonProps {
     section: AASection;
-    courseDetails: AACourse;
-    term: AATerm;
+    course: AACourseWithTerm;
     scheduleConflict: boolean;
 }
 
-export function AddButton({ section, courseDetails, term, scheduleConflict }: AddButtonProps) {
+export function AddButton({ section, course, scheduleConflict }: AddButtonProps) {
     const handleClick = useCallback(() => {
         for (const meeting of section.meetings) {
             if (meeting.timeIsTBA) {
@@ -21,8 +20,8 @@ export function AddButton({ section, courseDetails, term, scheduleConflict }: Ad
                 break;
             }
         }
-        addCourse(section, courseDetails, term, AppStore.getCurrentScheduleIndex());
-    }, [section, courseDetails, term]);
+        addCourse(section, course, AppStore.getCurrentScheduleIndex());
+    }, [section, course]);
 
     const button = (
         <IconButton onClick={handleClick} size="small" sx={{ p: 0.5 }}>

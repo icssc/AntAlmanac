@@ -314,7 +314,7 @@ export function Import() {
             if (!section) {
                 continue;
             }
-            addCourse(section, course, term, scheduleIndex, true, postHog);
+            addCourse(section, { ...course, term }, scheduleIndex, true, postHog);
             sectionsAdded += 1;
         }
 

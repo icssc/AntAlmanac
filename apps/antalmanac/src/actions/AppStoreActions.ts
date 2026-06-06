@@ -13,9 +13,9 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import {
-    type AATerm,
-    type AACourse,
+    type AACourseWithTerm,
     type AASection,
+    type AATerm,
     type CustomEventId,
     type RepeatingCustomEvent,
     type ScheduleCourse,
@@ -47,8 +47,7 @@ interface LoginUserOptions {
 
 export const addCourse = (
     section: AASection,
-    course: AACourse,
-    term: AATerm,
+    course: AACourseWithTerm,
     scheduleIndex: number,
     quiet?: boolean,
     postHog?: PostHog
@@ -61,12 +60,12 @@ export const addCourse = (
             courseNumber: course.courseNumber,
         },
     });
-    const terms = AppStore.termsInSchedule(term);
+    const terms = AppStore.termsInSchedule(course.term);
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
     const newCourse: ScheduleCourse = {
-        term,
+        term: course.term,
         deptCode: course.deptCode,
         courseNumber: course.courseNumber,
         courseId: course.courseId,

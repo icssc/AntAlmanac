@@ -180,7 +180,7 @@ function SectionTable({
 
                 {activeTab !== TAB_INDEX.added
                     ? null
-                    : wrapSkeleton(<CourseInfoSearchButton courseDetails={course} term={course.term} />, skeleton)}
+                    : wrapSkeleton(<CourseInfoSearchButton course={course} />, skeleton)}
 
                 {wrapSkeleton(
                     <CourseInfoButton

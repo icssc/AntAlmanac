@@ -3,20 +3,18 @@ import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MoreHoriz } from '@mui/icons-material';
 import { IconButton, Menu, MenuItem } from '@mui/material';
-import { AASection, AACourse, type AATerm } from '@packages/antalmanac-types';
+import { AASection, AACourseWithTerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useState } from 'react';
 
 interface SectionActionMenuProps {
     section: AASection;
-    courseDetails: AACourse;
-    term: AATerm;
+    course: AACourseWithTerm;
     scheduleNames: string[];
 }
 
 export const SectionActionMenu = memo(function SectionActionMenu({
     section,
-    courseDetails,
-    term,
+    course,
     scheduleNames,
 }: SectionActionMenuProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -31,16 +29,16 @@ export const SectionActionMenu = memo(function SectionActionMenu({
 
     const handleAddToSchedule = useCallback(
         (scheduleIndex: number) => {
-            addCourse(section, courseDetails, term, scheduleIndex);
+            addCourse(section, course, scheduleIndex);
             handleClose();
         },
-        [section, courseDetails, term, handleClose]
+        [section, course, handleClose]
     );
 
     const handleAddToAll = useCallback(() => {
-        addCourse(section, courseDetails, term, AppStore.schedule.getNumberOfSchedules());
+        addCourse(section, course, AppStore.schedule.getNumberOfSchedules());
         handleClose();
-    }, [section, courseDetails, term, handleClose]);
+    }, [section, course, handleClose]);
 
     const handleCopyLink = useCallback(() => {
         const url = new URL(window.location.href);

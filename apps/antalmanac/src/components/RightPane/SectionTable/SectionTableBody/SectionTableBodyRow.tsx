@@ -65,7 +65,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         if (!previewMode || addedCourse) {
             setHoveredEvent(undefined);
         } else {
-            setHoveredEvent(section, course, course.term);
+            setHoveredEvent(section, course);
         }
     }, [previewMode, addedCourse, setHoveredEvent, section, course]);
 
@@ -138,7 +138,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             addedCourse={addedCourse}
                             key={column}
                             section={section}
-                            courseDetails={course}
+                            course={course}
                             scheduleConflict={scheduleConflict}
                             scheduleNames={scheduleNames}
                             {...section}
