@@ -17,7 +17,6 @@ import actionTypesStore, {
     type AddScheduleAction,
     type ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/types';
 import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -39,10 +38,6 @@ class AppStore extends EventEmitter {
 
     colorPickers: Record<string, EventEmitter>;
 
-    eventsInCalendar: CalendarEvent[];
-
-    finalsEventsInCalendar: CourseEvent[];
-
     unsavedChanges: boolean;
 
     constructor() {
@@ -51,8 +46,6 @@ class AppStore extends EventEmitter {
         this.customEvents = [];
         this.schedule = new Schedules();
         this.colorPickers = {};
-        this.eventsInCalendar = [];
-        this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
 
         if (typeof window !== 'undefined') {
