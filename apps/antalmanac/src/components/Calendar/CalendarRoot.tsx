@@ -8,7 +8,7 @@ import { CalendarEventWrapper } from '$components/Calendar/CalendarEvent/Calenda
 import { CALENDAR_BASE_DATE, createSkeletonEvents } from '$components/Calendar/Skeleton/skeletonHelpers';
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
-import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/types';
+import { isCourseEvent, isSkeletonEvent, type CalendarEvent, type SkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
@@ -19,6 +19,7 @@ import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
@@ -88,10 +89,7 @@ export const ScheduleCalendar = memo(() => {
 
     const isMobile = useIsMobile();
 
-    const onlyCourseEvents = useMemo(
-        () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
-        [eventsInCalendar]
-    );
+    const onlyCourseEvents = useMemo(() => eventsInCalendar.filter(isCourseEvent), [eventsInCalendar]);
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         const raw = showFinalsSchedule
@@ -103,10 +101,10 @@ export const ScheduleCalendar = memo(() => {
               : eventsInCalendar;
 
         return raw.filter((e) => {
-            if ('isCustomEvent' in e && e.isCustomEvent) return true;
-            if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
+            if (!isCourseEvent(e)) return true;
             const visibility: VisibilityState =
-                visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? VisibilityState.Visible;
+                visibilityMap[currentScheduleId]?.[scheduleSectionKey(e.term, e.sectionCode)] ??
+                VisibilityState.Visible;
             return visibility !== VisibilityState.Disappeared;
         });
     }, [
@@ -167,13 +165,10 @@ export const ScheduleCalendar = memo(() => {
 
     const eventStyleGetter = useCallback(
         (event: CalendarEvent | SkeletonEvent) => {
-            const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
-
-            const visibility: VisibilityState =
-                !isSkeletonEvent && !('isCustomEvent' in event && event.isCustomEvent)
-                    ? (visibilityMap[currentScheduleId]?.[(event as CourseEvent).sectionCode] ??
-                      VisibilityState.Visible)
-                    : VisibilityState.Visible;
+            const visibility: VisibilityState = isCourseEvent(event)
+                ? (visibilityMap[currentScheduleId]?.[scheduleSectionKey(event.term, event.sectionCode)] ??
+                  VisibilityState.Visible)
+                : VisibilityState.Visible;
 
             const style =
                 visibility === VisibilityState.Outlined
@@ -190,14 +185,14 @@ export const ScheduleCalendar = memo(() => {
                           border: '2px solid transparent',
                           borderRadius: '4px',
                           // Skeleton text is empty so contrast doesn't matter — skip the check.
-                          color: isSkeletonEvent
+                          color: isSkeletonEvent(event)
                               ? 'transparent'
                               : colorContrastSufficient(event.color)
                                 ? 'white'
                                 : 'black',
                       };
 
-            return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
+            return isSkeletonEvent(event) ? { style, className: 'calendar-loading-event' } : { style };
         },
         [currentScheduleId, theme, visibilityMap]
     );

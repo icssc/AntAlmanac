@@ -1,7 +1,7 @@
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
+import { isCourseEvent, type CourseEvent, type CustomEvent } from '$components/Calendar/types';
 import ColorPicker from '$components/ColorPicker';
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -31,7 +31,7 @@ export function CalendarEventDetail({ selectedEvent, scheduleNames, closePopover
 
     const postHog = usePostHog();
 
-    if (!selectedEvent.isCustomEvent) {
+    if (isCourseEvent(selectedEvent)) {
         const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
             selectedEvent;
 
@@ -140,9 +140,9 @@ export function CalendarEventDetail({ selectedEvent, scheduleNames, closePopover
                             <td style={{ textAlign: 'right' }}>
                                 <ColorPicker
                                     color={selectedEvent.color}
-                                    isCustomEvent={selectedEvent.isCustomEvent}
-                                    sectionCode={selectedEvent.sectionCode}
-                                    term={selectedEvent.term}
+                                    isCustomEvent={false}
+                                    sectionCode={sectionCode}
+                                    term={term}
                                     analyticsCategory={analyticsEnum.calendar}
                                 />
                             </td>

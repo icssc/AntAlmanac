@@ -1,4 +1,5 @@
-import { isSkeletonEvent, type CalendarEvent } from '$components/Calendar/types';
+import { isCustomEvent, isSkeletonEvent, type CalendarEvent } from '$components/Calendar/types';
+import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import type { AATerm, ScheduleCourse } from '@packages/antalmanac-types';
 
 import { SECTION_THEMES, type SectionTheme, type SectionThemeId } from './themes';
@@ -70,6 +71,7 @@ export function resolveAssignment(value: string, palette: readonly (readonly str
     return palette[slot.family]?.[slot.variant] ?? palette[slot.family]?.[0] ?? palette[0][0];
 }
 
+// TODO: consolidate with scheduleSectionKey once theme assignment keys are migrated off `term|sectionCode`.
 export function courseColorKey(term: AATerm | string, sectionCode: string): string {
     // Use the term's stable short name (e.g. "2024 Fall"); stringifying the AATerm object
     // would collapse every term to "[object Object]" and collide on shared section codes.
@@ -82,25 +84,26 @@ export function customEventColorKey(customEventID: unknown): string {
 }
 
 /**
- * Choose a palette slot for a course, mirroring the long-standing color logic but in
+ * Choose a palette slot for a course, mirroring custom-color offering logic in
  * slot (index) space:
- *   1. Same courseTitle + sectionType already assigned -> reuse that slot.
- *   2. Same courseTitle, different sectionType -> same family, next unused variant.
- *   3. New courseTitle -> next unused family (variant 0), wrapping when exhausted.
+ *   1. Same offering + sectionType already assigned -> reuse that slot.
+ *   2. Same offering, different sectionType -> same family, next unused variant.
+ *   3. New offering -> next unused family (variant 0), wrapping when exhausted.
  */
 function pickCourseSlot(
     course: ScheduleCourse,
     assigned: { course: ScheduleCourse; slot: PaletteSlot }[],
     palette: readonly (readonly string[])[]
 ): PaletteSlot {
+    const offeringKey = scheduleOfferingKey(course);
     const sameType = assigned.find(
         (a) =>
-            a.course.courseTitle === course.courseTitle && a.course.section.sectionType === course.section.sectionType
+            scheduleOfferingKey(a.course) === offeringKey && a.course.section.sectionType === course.section.sectionType
     );
     if (sameType) return sameType.slot;
 
     const sameCourse = assigned
-        .filter((a) => a.course.courseTitle === course.courseTitle)
+        .filter((a) => scheduleOfferingKey(a.course) === offeringKey)
         .sort(
             (a, b) =>
                 Math.abs(parseInt(a.course.section.sectionCode) - parseInt(course.section.sectionCode)) -
@@ -203,7 +206,7 @@ export function applyThemeToCalendarEvents<E extends CalendarEvent>(
 
     return events.map((event): E => {
         if (isSkeletonEvent(event)) return event;
-        const key = event.isCustomEvent
+        const key = isCustomEvent(event)
             ? customEventColorKey(event.customEventID)
             : courseColorKey(event.term, event.sectionCode);
         const value = assignments[key];

@@ -1,6 +1,7 @@
 import { trpc } from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
 import { getTermByYearAndQuarter } from '$lib/term';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useSessionStore } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
 import { type AATerm, type AASection, type AACourse, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
@@ -71,7 +72,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             courseNumber,
             instructors,
         }) => {
-            const key = `${sectionCode} ${term.shortName}`;
+            const key = scheduleSectionKey(term, sectionCode);
 
             set((state) => {
                 const notifications = state.notifications;
@@ -199,7 +200,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                             continue;
                         }
 
-                        const key = `${sectionCode} ${term.shortName}`;
+                        const key = scheduleSectionKey(term, sectionCode);
 
                         const existingNotification = existingNotifications.find(
                             (notification) =>

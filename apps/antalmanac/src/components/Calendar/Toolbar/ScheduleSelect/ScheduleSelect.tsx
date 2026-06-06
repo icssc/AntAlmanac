@@ -27,6 +27,8 @@ type ScheduleItem = {
     name: string;
 };
 
+const getScheduleItemId = (item: ScheduleItem) => item.id;
+
 function getScheduleItems(items?: string[]): ScheduleItem[] {
     const scheduleNames: string[] = items || AppStore.getScheduleNames();
     return scheduleNames.map((name, index) => ({ id: index, name }));
@@ -164,6 +166,7 @@ export function SelectSchedulePopover() {
                 <Box padding={1}>
                     <SortableList
                         items={scheduleMappingToUse}
+                        getItemId={getScheduleItemId}
                         onChange={handleSortableListChange}
                         renderItem={(item, index) => {
                             return (

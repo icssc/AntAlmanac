@@ -3,6 +3,7 @@ import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Not
 import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
 import { canTermEnrollmentChange } from '$lib/termHelpers';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useSessionStore } from '$stores/SessionStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
@@ -29,7 +30,7 @@ interface NotificationsMenuProps {
 
 export const NotificationsMenu = memo(
     ({ section, term, courseTitle, deptCode, courseNumber }: NotificationsMenuProps) => {
-        const notificationKey = `${section.sectionCode} ${term.shortName}`;
+        const notificationKey = scheduleSectionKey(term, section.sectionCode);
         const [notification, setNotifications] = useNotificationStore(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
         );

@@ -1,5 +1,5 @@
+import { getRenamedCoursesIdentifiers, mergeAggregateGrades } from '$lib/renames/utils';
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { getRenamedCoursesIdentifiers, mergeAggregateGrades } from '$src/lib/renames/utils';
 import { isNotEmpty } from '$src/lib/utils';
 import { GradesGeSchema } from '@packages/antalmanac-types';
 import type { AggregateGrades, AggregateGradesByOffering } from '@packages/anteater-api/types';
@@ -26,13 +26,9 @@ const gradesRouter = router({
 
             const identifiers = getRenamedCoursesIdentifiers(department, courseNumber);
 
-            if (identifiers.length === 1) {
-                return aapiClient.grades.aggregate(input);
-            }
-
             const results = await Promise.all(
                 identifiers.map((ci) =>
-                    aapiClient.grades.aggregate({ ...input, department: ci.department, courseNumber: ci.courseNumber })
+                    aapiClient.grades.aggregate({ ...input, department: ci.deptCode, courseNumber: ci.courseNumber })
                 )
             );
 

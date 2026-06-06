@@ -1,37 +1,41 @@
-import { COURSE_RENAMES, type CourseId, type CourseRename } from '$lib/renames/renames';
+import { COURSE_RENAMES, type CourseRenameKey, type CourseRename } from '$lib/renames/renames';
 import type { AggregateGrades } from '@packages/anteater-api/types';
+import { buildCourseId } from '@packages/anteater-api/utils';
 
-function* iterateRenameChain(department: string, courseNumber: string): Generator<CourseRename> {
-    let current: CourseId = { department, courseNumber };
+function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<CourseRename> {
+    let current: CourseRenameKey = {
+        deptCode,
+        courseNumber,
+        courseId: buildCourseId(deptCode, courseNumber),
+    };
 
     for (let i = 0; i < COURSE_RENAMES.length; i++) {
-        const entry = COURSE_RENAMES.find(
-            (r) => r.department === current.department && r.courseNumber === current.courseNumber
-        );
-
+        const entry = COURSE_RENAMES.find((r) => r.current.courseId === current.courseId);
         if (!entry) break;
         yield entry;
         current = entry.previously;
     }
 }
 
-export function getRenamedCoursesIdentifiers(department: string, courseNumber: string): CourseId[] {
-    const identifiers: CourseId[] = [{ department, courseNumber }];
+export function getRenamedCoursesIdentifiers(deptCode: string, courseNumber: string): CourseRenameKey[] {
+    const identifiers: CourseRenameKey[] = [
+        { deptCode, courseNumber, courseId: buildCourseId(deptCode, courseNumber) },
+    ];
 
-    for (const entry of iterateRenameChain(department, courseNumber)) {
+    for (const entry of iterateRenameChain(deptCode, courseNumber)) {
         identifiers.push(entry.previously);
     }
 
     return identifiers;
 }
 
-export function getRenamedCoursesLabel(department: string, courseNumber: string): string | null {
+export function getRenamedCoursesLabel(deptCode: string, courseNumber: string): string | null {
     const parts: string[] = [];
 
-    for (const entry of iterateRenameChain(department, courseNumber)) {
+    for (const entry of iterateRenameChain(deptCode, courseNumber)) {
         const yr = entry.effectiveYear;
         const yearLabel = `${String(yr).slice(-2)}/${String(yr + 1).slice(-2)}`; // 2026 -> 26/27
-        parts.push(`${entry.previously.department} ${entry.previously.courseNumber} (before ${yearLabel})`);
+        parts.push(`${entry.previously.deptCode} ${entry.previously.courseNumber} (before ${yearLabel})`);
     }
 
     return parts.length > 0 ? `Previously ${parts.join(', ')}` : null;

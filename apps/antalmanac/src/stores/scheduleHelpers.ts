@@ -15,7 +15,16 @@ import {
     teal,
     yellow,
 } from '@mui/material/colors';
-import { ScheduleCourse } from '@packages/antalmanac-types';
+import type { AATerm, ScheduleCourse } from '@packages/antalmanac-types';
+
+export function scheduleOfferingKey(course: Pick<ScheduleCourse, 'term' | 'courseId' | 'courseTitle'>): string {
+    return `${course.term.shortName}::${course.courseId}::${course.courseTitle}`;
+}
+
+export function scheduleSectionKey(term: AATerm | string, sectionCode: string): string {
+    const termId = typeof term === 'string' ? term : term.shortName;
+    return `${termId}::${sectionCode}`;
+}
 
 const colorVariants: Record<string, string[]> = {
     blue: [blue[300], blue[200], blue[100], blue[400], blue[500]],
@@ -78,49 +87,30 @@ function generateColorVariant(originalColor: string, usedColors: Set<string>): s
 }
 
 export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: ScheduleCourse[]): string {
-    // Use the color of the closest section with the same title
+    const defaultColors: string[] = Object.values(colorVariants).map((variants) => variants[0]);
+    const usedColors = sectionsInSchedule.map((course) => course.section.color);
+    const lastDefaultIndex = usedColors.findLastIndex((color) => defaultColors.includes(color));
 
-    // Array of sections that have the same course title (i.e., they're under the same course),
-    // sorted by their distance from the new section's section code
-    const existingSections: Array<ScheduleCourse> = sectionsInSchedule
-        .filter((course) => course.courseTitle === newSection.courseTitle)
+    const offeringKey = scheduleOfferingKey(newSection);
+    const sameOfferingSections = sectionsInSchedule
+        .filter((course) => scheduleOfferingKey(course) === offeringKey)
         .sort(
-            // Sort by distance from new section's section code
             (a, b) =>
                 Math.abs(parseInt(a.section.sectionCode) - parseInt(newSection.section.sectionCode)) -
                 Math.abs(parseInt(b.section.sectionCode) - parseInt(newSection.section.sectionCode))
         );
 
-    // New array of courses that share the same sectionType & courseTitle
-    const existingSectionsType = existingSections.filter(
+    const sameSectionType = sameOfferingSections.filter(
         (course) => course.section.sectionType === newSection.section.sectionType
     );
-    const defaultColors = Object.values(colorVariants).map((variants) => variants[0]);
-    const usedColors = sectionsInSchedule.map((course) => course.section.color);
-    const lastDefaultColor = usedColors.findLast((materialColor) =>
-        (defaultColors as string[]).includes(materialColor)
-    ) as unknown as (typeof defaultColors)[number];
+    if (sameSectionType.length > 0) return sameSectionType[0].section.color;
 
-    // If the same sectionType exists, return that color
-    if (existingSectionsType.length > 0) return existingSectionsType[0].section.color;
-
-    // If the same courseTitle exists, but not the same sectionType, return a close color
-    if (existingSections.length > 0) {
-        return generateColorVariant(existingSections[0].section.color, new Set(usedColors));
+    if (sameOfferingSections.length > 0) {
+        return generateColorVariant(sameOfferingSections[0].section.color, new Set(usedColors));
     }
 
-    // If there are no existing sections with the same course title, generate a new color. If we run out of unique colors, return the next color up after the last default color in use, looping after reaching the end.
-    return (
-        defaultColors.find((materialColor) => !usedColors.includes(materialColor)) ||
-        defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length]
-    );
-}
-
-/**
- * Combines department code, course number, and course title to create an ID unique to a course.
- */
-export function getCourseId(course: Pick<ScheduleCourse, 'deptCode' | 'courseNumber' | 'courseTitle'>) {
-    return course.deptCode + course.courseNumber + course.courseTitle;
+    const nextDefaultIndex = (lastDefaultIndex + 1) % defaultColors.length;
+    return defaultColors.find((color) => !usedColors.includes(color)) ?? defaultColors[nextDefaultIndex];
 }
 
 /**
@@ -133,20 +123,20 @@ export function getCourseId(course: Pick<ScheduleCourse, 'deptCode' | 'courseNum
  * Date written: March 2026
  */
 export function groupCourseSections(courses: ScheduleCourse[]): ScheduleCourse[] {
-    const courseIndexes: { [courseId: string]: number } = {};
+    const offeringIndexes: Record<string, number> = {};
     const groupedCourses: ScheduleCourse[][] = [];
     let index = 0;
     for (const course of courses) {
-        const courseId = getCourseId(course);
-        if (!Object.hasOwn(courseIndexes, courseId)) {
-            courseIndexes[courseId] = index;
+        const key = scheduleOfferingKey(course);
+        if (!Object.hasOwn(offeringIndexes, key)) {
+            offeringIndexes[key] = index;
             groupedCourses.push([]);
             index++;
         }
     }
     for (const course of courses) {
-        const courseIndex = courseIndexes[getCourseId(course)];
-        groupedCourses[courseIndex].push(course);
+        const key = scheduleOfferingKey(course);
+        groupedCourses[offeringIndexes[key]].push(course);
     }
     return groupedCourses.flat();
 }

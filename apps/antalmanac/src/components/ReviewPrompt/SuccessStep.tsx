@@ -4,14 +4,20 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { CheckCircleOutline, Close } from '@mui/icons-material';
 import { Box, Button, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
+import { useShallow } from 'zustand/react/shallow';
 
 export function SuccessStep() {
-    const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
-    const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
-    const eligibleCandidates = useReviewPromptStore((s) => s.eligibleCandidates);
-    const eligibleIndex = useReviewPromptStore((s) => s.eligibleIndex);
-    const advanceToNext = useReviewPromptStore((s) => s.advanceToNext);
-    const finishReviewing = useReviewPromptStore((s) => s.finishReviewing);
+    const { candidate, eligibleCandidates, eligibleIndex, advanceToNext, finishReviewing } = useReviewPromptStore(
+        useShallow((s) => ({
+            candidate: s.candidate,
+            eligibleCandidates: s.eligibleCandidates,
+            eligibleIndex: s.eligibleIndex,
+            advanceToNext: s.advanceToNext,
+            finishReviewing: s.finishReviewing,
+        }))
+    );
+    const courseId = candidate?.courseId ?? '';
+    const professorId = candidate?.professorId ?? '';
 
     const hasMore = eligibleIndex + 1 < eligibleCandidates.length;
 

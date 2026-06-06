@@ -1,5 +1,5 @@
+import { getRenamedCoursesIdentifiers } from '$lib/renames/utils';
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
 import {
     QuarterSchema,
     WebsocSearchInputKeysSchema,
@@ -120,16 +120,10 @@ const websocRouter = router({
         )
         .query(async ({ input }): Promise<WebsocSyllabiResponse> => {
             const { department, courseNumber, ...rest } = input;
-            const courseIds = getRenamedCoursesIdentifiers(department, courseNumber).map(
-                ({ department, courseNumber }) => department.replaceAll(' ', '') + courseNumber
-            );
-
-            if (courseIds.length === 1) {
-                return aapiClient.websoc.getSyllabi({ ...rest, courseId: courseIds[0] });
-            }
+            const identifiers = getRenamedCoursesIdentifiers(department, courseNumber);
 
             const results = await Promise.all(
-                courseIds.map((courseId) => aapiClient.websoc.getSyllabi({ ...rest, courseId }))
+                identifiers.map(({ courseId }) => aapiClient.websoc.getSyllabi({ ...rest, courseId }))
             );
 
             return results.flat();

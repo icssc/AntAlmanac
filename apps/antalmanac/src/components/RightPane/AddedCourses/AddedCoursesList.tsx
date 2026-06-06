@@ -6,10 +6,13 @@ import { getMissingSections } from '$components/RightPane/AddedCourses/getMissin
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { memo } from 'react';
+
+const getOfferingId = (course: CourseWithTerm) => scheduleOfferingKey(course);
 
 interface AddedCoursesListProps {
     courses: CourseWithTerm[];
@@ -48,6 +51,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
         <SortableList
             disableHorizontalScroll
             items={courses}
+            getItemId={getOfferingId}
             onChange={onCourseOrderChange}
             sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
             sortingStrategy={verticalListSortingStrategy}
@@ -55,7 +59,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
                 const missingSections = getMissingSections(course);
 
                 return (
-                    <SortableList.Item id={course.id}>
+                    <SortableList.Item id={getOfferingId(course)}>
                         <SectionTable
                             sortable
                             courseDetails={course}

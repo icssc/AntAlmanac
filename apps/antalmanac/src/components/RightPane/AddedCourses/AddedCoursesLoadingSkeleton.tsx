@@ -4,6 +4,7 @@ import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { Box, Typography } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { Component, type ReactNode, useEffect, useState } from 'react';
@@ -31,29 +32,32 @@ interface CachedBlueprint {
     customEvents: RepeatingCustomEvent[];
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
+}
+
 function isValidCachedCourse(value: unknown): value is CourseWithTerm {
-    if (typeof value !== 'object' || value === null) return false;
-    const course = value as Partial<CourseWithTerm>;
+    if (!isRecord(value)) return false;
+
     return (
-        typeof course.id === 'string' &&
-        typeof course.deptCode === 'string' &&
-        typeof course.courseNumber === 'string' &&
-        typeof course.courseTitle === 'string' &&
-        Array.isArray(course.sections) &&
-        typeof course.term === 'object' &&
-        course.term !== null
+        typeof value.courseId === 'string' &&
+        typeof value.deptCode === 'string' &&
+        typeof value.courseNumber === 'string' &&
+        typeof value.courseTitle === 'string' &&
+        Array.isArray(value.sections) &&
+        isRecord(value.term)
     );
 }
 
 function isValidCachedCustomEvent(value: unknown): value is RepeatingCustomEvent {
-    if (typeof value !== 'object' || value === null) return false;
-    const ev = value as Partial<RepeatingCustomEvent>;
+    if (!isRecord(value)) return false;
+
     return (
-        typeof ev.title === 'string' &&
-        typeof ev.start === 'string' &&
-        typeof ev.end === 'string' &&
-        Array.isArray(ev.days) &&
-        (typeof ev.customEventID === 'string' || typeof ev.customEventID === 'number')
+        typeof value.title === 'string' &&
+        typeof value.start === 'string' &&
+        typeof value.end === 'string' &&
+        Array.isArray(value.days) &&
+        (typeof value.customEventID === 'string' || typeof value.customEventID === 'number')
     );
 }
 
@@ -62,27 +66,19 @@ function readCachedBlueprint(): CachedBlueprint | null {
     if (!raw) return null;
 
     try {
-        const parsed = JSON.parse(raw);
-
-        // Legacy format: just an array of courses.
-        if (Array.isArray(parsed)) {
-            const courses = parsed.filter(isValidCachedCourse);
-            return courses.length > 0 ? { courses, customEvents: [] } : null;
+        const parsed: unknown = JSON.parse(raw);
+        if (!isRecord(parsed) || !Array.isArray(parsed.courses) || !Array.isArray(parsed.customEvents)) {
+            return null;
         }
 
-        // Current format: { courses, customEvents }.
-        if (parsed && typeof parsed === 'object') {
-            const courses = Array.isArray(parsed.courses) ? parsed.courses.filter(isValidCachedCourse) : [];
-            const customEvents = Array.isArray(parsed.customEvents)
-                ? parsed.customEvents.filter(isValidCachedCustomEvent)
-                : [];
-            if (courses.length === 0 && customEvents.length === 0) return null;
-            return { courses, customEvents };
-        }
+        const courses = parsed.courses.filter(isValidCachedCourse);
+        const customEvents = parsed.customEvents.filter(isValidCachedCustomEvent);
+        if (courses.length === 0 && customEvents.length === 0) return null;
+
+        return { courses, customEvents };
     } catch {
-        // ignore malformed data
+        return null;
     }
-    return null;
 }
 
 /**
@@ -113,7 +109,7 @@ export function AddedCoursesLoadingSkeleton() {
             <Box display="flex" flexDirection="column" gap={1}>
                 {blueprint.courses.map((course) => (
                     <SectionTable
-                        key={course.id}
+                        key={scheduleOfferingKey(course)}
                         skeleton
                         sortable
                         courseDetails={course}

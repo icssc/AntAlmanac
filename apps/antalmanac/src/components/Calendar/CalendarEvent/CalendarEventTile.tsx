@@ -1,5 +1,5 @@
 import type { CalendarEvent, Location } from '$components/Calendar/types';
-import { isSkeletonEvent } from '$components/Calendar/types';
+import { isCustomEvent, isSkeletonEvent } from '$components/Calendar/types';
 import { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
 import { Box } from '@mui/material';
 import { memo } from 'react';
@@ -9,7 +9,7 @@ export const CalendarEventTile = memo(({ event }: { event: CalendarEvent }) => {
         return null;
     }
 
-    if (event.isCustomEvent) {
+    if (isCustomEvent(event)) {
         return (
             <Box>
                 <Box

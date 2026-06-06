@@ -91,7 +91,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
                     start: new Date(2018, 0, dayIndex, startHour, startMin),
                     end: new Date(2018, 0, dayIndex, endHour, endMin),
                     finalExam: finalExamField,
-                    isCustomEvent: false,
+                    eventKind: 'course',
                 });
             }
         }
@@ -170,7 +170,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                     ...finalExam,
                     locations: finalExamLocations,
                 },
-                isCustomEvent: false,
+                eventKind: 'course',
             };
         });
     });
@@ -194,7 +194,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
                 customEventID: customEvent.customEventID,
                 color: customEvent.color ?? '#000000',
                 start: new Date(2018, 0, dayIndex, startHour, startMin),
-                isCustomEvent: true,
+                eventKind: 'custom',
                 end: new Date(2018, 0, dayIndex, endHour, endMin),
                 title: customEvent.title,
                 building: customEvent.building ?? '',

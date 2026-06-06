@@ -1,4 +1,5 @@
-import { ShortCourse, VisibilityState } from '@packages/antalmanac-types';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
+import { ShortCourse, VisibilityState, type AATerm } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 type VisibilityMap = Record<string, Record<string, VisibilityState>>;
@@ -11,9 +12,9 @@ const NEXT_VISIBILITY: Record<VisibilityState, VisibilityState> = {
 
 interface HiddenCoursesStore {
     visibilityMap: VisibilityMap;
-    getVisibility: (scheduleId: string, sectionCode: string) => VisibilityState;
-    cycleVisibility: (scheduleId: string, sectionCode: string) => void;
-    clearCourseVisibility: (scheduleId: string, sectionCode: string) => void;
+    getVisibility: (scheduleId: string, term: AATerm | string, sectionCode: string) => VisibilityState;
+    cycleVisibility: (scheduleId: string, term: AATerm | string, sectionCode: string) => void;
+    clearCourseVisibility: (scheduleId: string, term: AATerm | string, sectionCode: string) => void;
     clearScheduleVisibility: (scheduleId: string) => void;
     hydrateFromSchedules: (schedules: Array<{ id?: string; courses: ShortCourse[] }>) => void;
 }
@@ -21,20 +22,21 @@ interface HiddenCoursesStore {
 export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
     visibilityMap: {},
 
-    getVisibility: (scheduleId, sectionCode) => {
-        return get().visibilityMap[scheduleId]?.[sectionCode] ?? VisibilityState.Visible;
+    getVisibility: (scheduleId, term, sectionCode) => {
+        return get().visibilityMap[scheduleId]?.[scheduleSectionKey(term, sectionCode)] ?? VisibilityState.Visible;
     },
 
-    cycleVisibility: (scheduleId, sectionCode) => {
+    cycleVisibility: (scheduleId, term, sectionCode) => {
         const visibilityMap = get().visibilityMap;
-        const currentVisibility: VisibilityState = visibilityMap[scheduleId]?.[sectionCode] ?? VisibilityState.Visible;
+        const key = scheduleSectionKey(term, sectionCode);
+        const currentVisibility = get().getVisibility(scheduleId, term, sectionCode);
         const nextVisibility = NEXT_VISIBILITY[currentVisibility];
 
         const scheduleMap = { ...visibilityMap[scheduleId] };
         if (nextVisibility === VisibilityState.Visible) {
-            delete scheduleMap[sectionCode];
+            delete scheduleMap[key];
         } else {
-            scheduleMap[sectionCode] = nextVisibility;
+            scheduleMap[key] = nextVisibility;
         }
 
         const newVisibilityMap = { ...visibilityMap };
@@ -46,19 +48,23 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
         set({ visibilityMap: newVisibilityMap });
     },
 
-    clearCourseVisibility: (scheduleId, sectionCode) => {
+    clearCourseVisibility: (scheduleId, term, sectionCode) => {
         const visibilityMap = get().visibilityMap;
-        if (visibilityMap[scheduleId]?.[sectionCode]) {
-            const scheduleMap = { ...visibilityMap[scheduleId] };
-            delete scheduleMap[sectionCode];
-            const newVisibilityMap = { ...visibilityMap };
-            if (Object.keys(scheduleMap).length === 0) {
-                delete newVisibilityMap[scheduleId];
-            } else {
-                newVisibilityMap[scheduleId] = scheduleMap;
-            }
-            set({ visibilityMap: newVisibilityMap });
+        const key = scheduleSectionKey(term, sectionCode);
+        if (!visibilityMap[scheduleId]?.[key]) {
+            return;
         }
+
+        const scheduleMap = { ...visibilityMap[scheduleId] };
+        delete scheduleMap[key];
+
+        const newVisibilityMap = { ...visibilityMap };
+        if (Object.keys(scheduleMap).length === 0) {
+            delete newVisibilityMap[scheduleId];
+        } else {
+            newVisibilityMap[scheduleId] = scheduleMap;
+        }
+        set({ visibilityMap: newVisibilityMap });
     },
 
     clearScheduleVisibility: (scheduleId) => {
@@ -78,7 +84,7 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
                 const visibility = course.visibility ?? VisibilityState.Visible;
                 if (visibility !== VisibilityState.Visible) {
                     newMap[schedule.id] ??= {};
-                    newMap[schedule.id][course.sectionCode] = visibility;
+                    newMap[schedule.id][scheduleSectionKey(course.term, course.sectionCode)] = visibility;
                 }
             }
         }

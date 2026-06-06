@@ -24,7 +24,7 @@ const reviewTagsEnum = z.enum([
 const submitReviewInput = z.object({
     /** Raw WebSOC instructor name, e.g. "PATTIS, R." */
     professorId: z.string(),
-    /** Course string, e.g. "ICS 31" */
+    /** Canonical Anteater API course id, e.g. "ICS31" */
     courseId: z.string(),
     /** AntAlmanac term shortName, e.g. "2024 Fall" */
     termShortName: z.string(),

@@ -18,6 +18,7 @@ import actionTypesStore, {
     type ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/types';
+import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -168,7 +169,7 @@ class AppStore extends EventEmitter {
         const scheduleId = this.schedule.getScheduleId(scheduleIndex);
         this.schedule.deleteCourse(sectionCode, term, scheduleIndex);
         if (scheduleId) {
-            useHiddenCoursesStore.getState().clearCourseVisibility(scheduleId, sectionCode);
+            useHiddenCoursesStore.getState().clearCourseVisibility(scheduleId, term, sectionCode);
         }
         this.unsavedChanges = triggerUnsavedWarning;
         const action: DeleteCourseAction = {
@@ -336,14 +337,14 @@ class AppStore extends EventEmitter {
         this.emit('reorderSchedule');
     }
 
-    reorderAddedCourses(scheduleIndex: number, movedCourseId: string, nextCourseId: string | null) {
-        this.schedule.reorderAddedCourses(scheduleIndex, movedCourseId, nextCourseId);
+    reorderAddedCourses(scheduleIndex: number, movedOfferingKey: string, nextOfferingKey: string | null) {
+        this.schedule.reorderAddedCourses(scheduleIndex, movedOfferingKey, nextOfferingKey);
         this.unsavedChanges = true;
         const action: ReorderAddedCoursesAction = {
             type: 'reorderAddedCourses',
             scheduleIndex: scheduleIndex,
-            movedCourseId: movedCourseId,
-            nextCourseId: nextCourseId,
+            movedOfferingKey,
+            nextOfferingKey,
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
@@ -446,7 +447,7 @@ class AppStore extends EventEmitter {
             newColor: newColor,
         };
         actionTypesStore.autoSaveSchedule(action);
-        this.colorPickers[sectionCode].emit('colorChange', newColor);
+        this.colorPickers[courseColorKey(term, sectionCode)]?.emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
 

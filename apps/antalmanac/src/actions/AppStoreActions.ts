@@ -13,7 +13,6 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import {
-    VisibilityState,
     type AATerm,
     type AACourse,
     type AASection,
@@ -100,14 +99,14 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
 }
 
 function enrichSaveStateWithVisibility(saveState: ReturnType<typeof AppStore.schedule.getScheduleAsSaveState>) {
-    const visibilityMap = useHiddenCoursesStore.getState().visibilityMap;
+    const { getVisibility } = useHiddenCoursesStore.getState();
     return {
         ...saveState,
         schedules: saveState.schedules.map((schedule) => ({
             ...schedule,
             courses: schedule.courses.map((course) => ({
                 ...course,
-                visibility: visibilityMap[schedule.id!]?.[course.sectionCode] ?? VisibilityState.Visible,
+                visibility: getVisibility(schedule.id!, course.term, course.sectionCode),
             })),
         })),
     };

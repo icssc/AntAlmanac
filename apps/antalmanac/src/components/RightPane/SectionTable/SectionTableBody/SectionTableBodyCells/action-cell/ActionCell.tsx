@@ -27,13 +27,13 @@ export const ActionCell = memo(
         const [cycleVisibility, classVisibility] = useHiddenCoursesStore(
             useShallow((state) => [
                 state.cycleVisibility,
-                state.getVisibility(AppStore.getCurrentScheduleId(), section.sectionCode),
+                state.getVisibility(AppStore.getCurrentScheduleId(), term, section.sectionCode),
             ])
         );
 
         const handleVisibilityToggle = useCallback(() => {
-            cycleVisibility(AppStore.getCurrentScheduleId(), section.sectionCode);
-        }, [section.sectionCode, cycleVisibility]);
+            cycleVisibility(AppStore.getCurrentScheduleId(), term, section.sectionCode);
+        }, [section.sectionCode, term, cycleVisibility]);
 
         return (
             <TableBodyCellContainer sx={{ paddingX: 0.5 }}>

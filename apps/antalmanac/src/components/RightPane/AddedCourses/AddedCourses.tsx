@@ -11,14 +11,13 @@ import {
     setLocalStorageAddedCoursesSkeletonBlueprint,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-import { getCourseId } from '$stores/scheduleHelpers';
+import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { Box, SxProps, Typography } from '@mui/material';
 import { AACourse, AATerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface CourseWithTerm extends AACourse {
     term: AATerm;
-    id: string;
 }
 
 const buttonSx: SxProps = {
@@ -69,8 +68,9 @@ function getCourses() {
     const formattedCourses: CourseWithTerm[] = [];
 
     for (const course of currentCourses) {
-        const courseId = getCourseId(course);
-        let formattedCourse = formattedCourses.find((formattedCourse) => getCourseId(formattedCourse) === courseId);
+        let formattedCourse = formattedCourses.find(
+            (formattedCourse) => scheduleOfferingKey(formattedCourse) === scheduleOfferingKey(course)
+        );
 
         const sectionUpdatedAt = course.section?.updatedAt ?? null;
 
@@ -95,7 +95,6 @@ function getCourses() {
                     },
                 ],
                 updatedAt: sectionUpdatedAt ?? null,
-                id: getCourseId(course),
             };
             formattedCourses.push(formattedCourse);
         }
@@ -125,8 +124,8 @@ export function AddedCourses() {
 
             AppStore.reorderAddedCourses(
                 AppStore.getCurrentScheduleIndex(),
-                getCourseId(movedCourse),
-                nextConsecutiveCourse !== null ? getCourseId(nextConsecutiveCourse) : null
+                scheduleOfferingKey(movedCourse),
+                nextConsecutiveCourse !== null ? scheduleOfferingKey(nextConsecutiveCourse) : null
             );
         },
         []

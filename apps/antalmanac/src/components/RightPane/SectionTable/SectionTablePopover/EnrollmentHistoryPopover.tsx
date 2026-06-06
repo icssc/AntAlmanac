@@ -3,6 +3,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, Card, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import type { AATerm } from '@packages/antalmanac-types';
@@ -24,7 +25,7 @@ interface EnrollmentHistoryPopoverProps {
 }
 
 function graphKey(enrollment: EnrollmentHistory) {
-    return `${enrollment.sectionCode} ${enrollment.term.shortName}`;
+    return scheduleSectionKey(enrollment.term, enrollment.sectionCode);
 }
 
 export function EnrollmentHistoryPopover({

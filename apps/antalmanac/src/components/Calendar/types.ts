@@ -31,12 +31,12 @@ export type FinalExam =
     | Extract<WebsocSectionFinalExam, { examStatus: 'NO_FINAL' | 'TBA_FINAL' }>;
 
 export interface CourseEvent extends CommonCalendarEvent {
+    eventKind: 'course';
     locations: Location[];
     showLocationInfo: boolean;
     finalExam: FinalExam;
     courseTitle: string;
     instructors: string[];
-    isCustomEvent: false;
     sectionCode: string;
     sectionType: string;
     deptValue: string;
@@ -50,18 +50,26 @@ export interface CourseEvent extends CommonCalendarEvent {
  * The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurrences of an event on multiple days.
  */
 export interface CustomEvent extends CommonCalendarEvent {
+    eventKind: 'custom';
     customEventID: CustomEventId;
-    isCustomEvent: true;
     building: string;
     days: string[];
 }
 
 export interface SkeletonEvent extends CommonCalendarEvent {
-    isSkeletonEvent: true;
+    eventKind: 'skeleton';
 }
 
 export type CalendarEvent = CourseEvent | CustomEvent | SkeletonEvent;
 
+export function isCourseEvent(event: CalendarEvent): event is CourseEvent {
+    return event.eventKind === 'course';
+}
+
+export function isCustomEvent(event: CalendarEvent): event is CustomEvent {
+    return event.eventKind === 'custom';
+}
+
 export function isSkeletonEvent(event: CalendarEvent): event is SkeletonEvent {
-    return 'isSkeletonEvent' in event && event.isSkeletonEvent;
+    return event.eventKind === 'skeleton';
 }

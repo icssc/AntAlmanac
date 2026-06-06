@@ -20,8 +20,8 @@ function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint, color: string): 
         start,
         end,
         title: '',
-        isSkeletonEvent: true,
-    } as SkeletonEvent;
+        eventKind: 'skeleton',
+    };
 }
 
 export function createSkeletonEvents(color: string): SkeletonEvent[] {

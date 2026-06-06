@@ -1,12 +1,15 @@
 import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Close, InfoOutlined } from '@mui/icons-material';
 import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '@mui/material';
+import type { AATerm } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
 
 interface TbaSection {
+    term: AATerm;
     deptCode: string;
     courseNumber: string;
     sectionCode: string;
@@ -98,10 +101,7 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
 
             <Box sx={{ gap: 0.5 }}>
                 {tbaSections.map((section) => (
-                    <Typography
-                        key={`${section.deptCode}-${section.courseNumber}-${section.sectionCode}`}
-                        variant="body2"
-                    >
+                    <Typography key={scheduleSectionKey(section.term, section.sectionCode)} variant="body2">
                         {isMobile
                             ? `${section.deptCode} ${section.courseNumber}`
                             : `${section.deptCode} ${section.courseNumber} — ${section.sectionCode}`}
@@ -135,6 +135,7 @@ export function TbaCalendarCard() {
                 const meetings = section.meetings ?? [];
                 if (meetings.some((m) => m.timeIsTBA)) {
                     sectionsWithTBA.push({
+                        term: course.term,
                         deptCode: course.deptCode,
                         courseNumber: course.courseNumber,
                         sectionCode: section.sectionCode,

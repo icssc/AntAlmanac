@@ -14,7 +14,13 @@ import LocationMarker from './Marker';
 
 const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
-import { isSkeletonEvent, type CalendarEvent, type CourseEvent, type CustomEvent } from '$components/Calendar/types';
+import {
+    isCourseEvent,
+    isCustomEvent,
+    type CalendarEvent,
+    type CourseEvent,
+    type CustomEvent,
+} from '$components/Calendar/types';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { UserLocator } from '$components/Map/UserLocator';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
@@ -25,6 +31,7 @@ import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/l
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 
 function getBuildingNameAcronym(name: string): string {
     const open = name.indexOf('(');
@@ -174,18 +181,9 @@ export default function CourseMap() {
 
     const calendarEvents = themedEvents;
 
-    const markers = useMemo(
-        () =>
-            getCoursesPerBuilding(
-                themedEvents.filter((e): e is CourseEvent => !isSkeletonEvent(e) && !e.isCustomEvent)
-            ),
-        [themedEvents]
-    );
+    const markers = useMemo(() => getCoursesPerBuilding(themedEvents.filter(isCourseEvent)), [themedEvents]);
     const customEventMarkers = useMemo(
-        () =>
-            getCustomEventPerBuilding(
-                themedEvents.filter((e): e is CustomEvent => !isSkeletonEvent(e) && e.isCustomEvent)
-            ),
+        () => getCustomEventPerBuilding(themedEvents.filter(isCustomEvent)),
         [themedEvents]
     );
     const postHog = usePostHog();
@@ -276,8 +274,8 @@ export default function CourseMap() {
     }, [searchParams]);
 
     /**
-     * Get markers for unique courses (identified by  section ID) that occur today, sorted by start time.
-     * A duplicate section code found later in the array will have a higher index.
+     * Get markers for unique courses (identified by term + section code) that occur today, sorted by start time.
+     * A duplicate section found later in the array will have a higher index.
      */
     const markersToDisplay = useMemo(() => {
         const markerValues = Object.keys(markers).flatMap((markerKey) => markers[markerKey]);
@@ -287,7 +285,14 @@ export default function CourseMap() {
 
         return markersToday
             .sort((a, b) => a.start.getTime() - b.start.getTime())
-            .filter((marker, i, arr) => arr.findIndex((other) => other.sectionCode === marker.sectionCode) === i);
+            .filter(
+                (marker, i, arr) =>
+                    arr.findIndex(
+                        (other) =>
+                            scheduleSectionKey(other.term, other.sectionCode) ===
+                            scheduleSectionKey(marker.term, marker.sectionCode)
+                    ) === i
+            );
     }, [markers, today]);
 
     const customEventMarkersToDisplay = useMemo(() => {
@@ -390,7 +395,7 @@ export default function CourseMap() {
                             .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
 
                         return (
-                            <Fragment key={marker.sectionCode}>
+                            <Fragment key={scheduleSectionKey(marker.term, marker.sectionCode)}>
                                 <LocationMarker
                                     {...marker}
                                     label={today === 'All' ? undefined : (index + 1).toString()}

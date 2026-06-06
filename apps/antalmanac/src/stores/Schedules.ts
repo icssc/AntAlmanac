@@ -1,7 +1,12 @@
 import { trpc } from '$lib/api/trpc';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { moveArrayElements } from '$lib/utils';
-import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
+import {
+    getColorForNewSection,
+    groupCourseSections,
+    scheduleOfferingKey,
+    scheduleSectionKey,
+} from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     AATerm,
@@ -202,32 +207,33 @@ export class Schedules {
      * Moves a course's sections from one position to another.
      *
      * @param scheduleIndex Index of the schedule to reorder courses for.
-     * @param movedCourseId ID of the course whose sections should be moved.
-     * @param nextCourseId ID of the course directly after the moved course after reordering.
+     * @param movedOfferingKey Offering key (`term::courseId::title`) whose sections should be moved.
+     * @param nextOfferingKey Offering key directly after the moved course after reordering.
      * Pass `null` if the course is being moved to the end.
      */
-    reorderAddedCourses(scheduleIndex: number, movedCourseId: string, nextCourseId: string | null) {
+    reorderAddedCourses(scheduleIndex: number, movedOfferingKey: string, nextOfferingKey: string | null) {
         this.addUndoState();
         const courses = this.schedules[scheduleIndex].courses;
 
-        const fromIndex = courses.findIndex((course) => getCourseId(course) === movedCourseId);
+        const fromIndex = courses.findIndex((course) => scheduleOfferingKey(course) === movedOfferingKey);
         if (fromIndex === -1) {
-            console.error(`Course id ${movedCourseId} was not found in schedule courses`);
+            console.error(`Offering ${movedOfferingKey} was not found in schedule courses`);
             openSnackbar('error', 'Could not reorder added courses');
             return;
         }
 
         const toIndex =
-            nextCourseId !== null
-                ? courses.findIndex((course) => getCourseId(course) === nextCourseId)
+            nextOfferingKey !== null
+                ? courses.findIndex((course) => scheduleOfferingKey(course) === nextOfferingKey)
                 : courses.length;
         if (toIndex === -1) {
-            console.error(`Course id ${toIndex} was not found in schedule courses`);
+            console.error(`Offering ${nextOfferingKey} was not found in schedule courses`);
             openSnackbar('error', 'Could not reorder added courses');
             return;
         }
 
-        const sectionCount = courses.findLastIndex((course) => getCourseId(course) === movedCourseId) - fromIndex + 1;
+        const sectionCount =
+            courses.findLastIndex((course) => scheduleOfferingKey(course) === movedOfferingKey) - fromIndex + 1;
 
         moveArrayElements(courses, fromIndex, toIndex, { elementMoveCount: sectionCount });
     }
@@ -236,12 +242,9 @@ export class Schedules {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
 
-    /**
-     * Get a set of "{sectionCode} {term}" section codes in current schedule.
-     */
     getAddedSectionCodes() {
         return new Set(
-            this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term.shortName}`)
+            this.getCurrentCourses().map((course) => scheduleSectionKey(course.term, course.section.sectionCode))
         );
     }
 
@@ -321,8 +324,8 @@ export class Schedules {
         };
 
         const courses = this.schedules[scheduleIndex].courses;
-        const sectionCourseId = getCourseId(sectionToAdd);
-        const courseLastSectionIndex = courses.findLastIndex((course) => getCourseId(course) === sectionCourseId);
+        const offeringKey = scheduleOfferingKey(sectionToAdd);
+        const courseLastSectionIndex = courses.findLastIndex((course) => scheduleOfferingKey(course) === offeringKey);
         if (courseLastSectionIndex !== -1) {
             courses.splice(courseLastSectionIndex + 1, 0, sectionToAdd);
         } else {
@@ -613,7 +616,7 @@ export class Schedules {
                         color: course.section.color,
                         term: course.term.shortName,
                         sectionCode: course.section.sectionCode,
-                        visibility: getVisibility(schedule.scheduleId, course.section.sectionCode),
+                        visibility: getVisibility(schedule.scheduleId, course.term, course.section.sectionCode),
                     };
                 }),
                 scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],
@@ -709,7 +712,7 @@ export class Schedules {
                             courseComment: course.courseComment,
                             courseNumber: course.courseNumber,
                             courseTitle: course.courseTitle,
-                            courseId: course.deptCode.replaceAll(' ', '') + course.courseNumber,
+                            courseId: course.courseId,
                             deptCode: course.deptCode,
                             prerequisiteLink: course.prerequisiteLink,
                             sectionTypes: course.sectionTypes,

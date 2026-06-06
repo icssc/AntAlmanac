@@ -22,7 +22,7 @@ describe('termData', () => {
             },
             courseTitle: '',
             instructors: [],
-            isCustomEvent: false,
+            eventKind: 'course',
             sectionCode: '',
             sectionType: '',
             term,

@@ -1,7 +1,6 @@
 'use client';
 
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/types';
-import { isSkeletonEvent } from '$components/Calendar/types';
+import { isCourseEvent, isSkeletonEvent, type CalendarEvent } from '$components/Calendar/types';
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { cloneElement, isValidElement, memo, useCallback } from 'react';
@@ -32,9 +31,8 @@ export const CalendarEventWrapper = memo(function CalendarEventWrapper({
             e.preventDefault();
             e.stopPropagation();
 
-            if (!props.event.isCustomEvent && (e.metaKey || e.ctrlKey)) {
-                const courseInfo = props.event as CourseEvent;
-                quickSearch(courseInfo.deptValue, courseInfo.courseNumber, courseInfo.term);
+            if (isCourseEvent(props.event) && (e.metaKey || e.ctrlKey)) {
+                quickSearch(props.event.deptValue, props.event.courseNumber, props.event.term);
             } else {
                 setSelectedEvent(e, props.event);
             }
