@@ -27,6 +27,7 @@ export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCour
         <Link
             href={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
             target="_blank"
+            rel="noopener noreferrer"
             sx={{ width: '100%' }}
         >
             <Alert
