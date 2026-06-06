@@ -1,4 +1,5 @@
 import { SortableList } from '$components/drag-and-drop/SortableList';
+import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
@@ -27,7 +28,7 @@ import {
     TableHead,
     TableRow,
 } from '@mui/material';
-import { AACourse, AATerm } from '@packages/antalmanac-types';
+import { AACourseWithTerm } from '@packages/antalmanac-types';
 import { useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
 
@@ -62,13 +63,11 @@ const wrapSkeleton = (children: React.ReactNode, skeleton: boolean) =>
     );
 
 export interface SectionTableProps {
-    courseDetails: AACourse;
-    term: AATerm;
+    course: AACourseWithTerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: AnalyticsCategory;
     updatedAt?: string;
-    missingSections?: string[];
     sortable?: boolean;
     /**
      * Wraps each interactive element (each button, the table) in MUI's
@@ -79,12 +78,10 @@ export interface SectionTableProps {
 }
 
 function SectionTable({
-    courseDetails,
-    term,
+    course,
     allowHighlight,
     scheduleNames,
     analyticsCategory,
-    missingSections = [],
     sortable = false,
     skeleton = false,
 }: SectionTableProps) {
@@ -109,19 +106,12 @@ function SectionTable({
     const colorStripWidth = isMobile ? 5 : 8;
     const actionColumnWidth = 77;
 
-    const courseId = courseDetails.courseId;
-
-    const cancellationWarning = useMemo(
-        () => getCourseCancellationWarning(courseDetails.sections),
-        [courseDetails.sections]
-    );
-
     const formattedTime = useMemo(() => {
-        if (!courseDetails.updatedAt) {
+        if (!course.updatedAt) {
             return null;
         }
 
-        const date = new Date(courseDetails.updatedAt);
+        const date = new Date(course.updatedAt);
 
         if (Number.isNaN(date.getTime())) {
             return null;
@@ -134,7 +124,7 @@ function SectionTable({
         });
 
         return timeString.replace(/^0(\d)/, '$1');
-    }, [courseDetails.updatedAt, isMilitaryTime]);
+    }, [course.updatedAt, isMilitaryTime]);
 
     /**
      * Limit table width to force side scrolling.
@@ -144,6 +134,9 @@ function SectionTable({
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [activeColumns]);
+
+    const cancellationWarning = useMemo(() => getCourseCancellationWarning(course.sections), [course.sections]);
+    const missingSections = useMemo(() => getMissingSections(course), [course]);
 
     return (
         <Box sx={{ overflow: 'hidden' }}>
@@ -176,10 +169,10 @@ function SectionTable({
 
                 {wrapSkeleton(
                     <CourseInfoBar
-                        deptCode={courseDetails.deptCode}
-                        courseTitle={courseDetails.courseTitle}
-                        courseNumber={courseDetails.courseNumber}
-                        prerequisiteLink={courseDetails.prerequisiteLink}
+                        deptCode={course.deptCode}
+                        courseTitle={course.courseTitle}
+                        courseNumber={course.courseNumber}
+                        prerequisiteLink={course.prerequisiteLink}
                         analyticsCategory={analyticsCategory}
                     />,
                     skeleton
@@ -187,7 +180,7 @@ function SectionTable({
 
                 {activeTab !== TAB_INDEX.added
                     ? null
-                    : wrapSkeleton(<CourseInfoSearchButton courseDetails={courseDetails} term={term} />, skeleton)}
+                    : wrapSkeleton(<CourseInfoSearchButton courseDetails={course} term={course.term} />, skeleton)}
 
                 {wrapSkeleton(
                     <CourseInfoButton
@@ -195,7 +188,7 @@ function SectionTable({
                         analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
                         text="Planner"
                         icon={<Route />}
-                        redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
+                        redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(course.courseId)}`}
                     />,
                     skeleton
                 )}
@@ -207,10 +200,7 @@ function SectionTable({
                         text="Past Syllabi"
                         icon={<HistoryEdu />}
                         popupContent={
-                            <PastSyllabiPopover
-                                deptCode={courseDetails.deptCode}
-                                courseNumber={courseDetails.courseNumber}
-                            />
+                            <PastSyllabiPopover deptCode={course.deptCode} courseNumber={course.courseNumber} />
                         }
                     />,
                     skeleton
@@ -285,8 +275,7 @@ function SectionTable({
                             </TableHead>
 
                             <SectionTableBody
-                                courseDetails={courseDetails}
-                                term={term}
+                                course={course}
                                 allowHighlight={allowHighlight}
                                 scheduleNames={scheduleNames}
                                 analyticsCategory={analyticsCategory}

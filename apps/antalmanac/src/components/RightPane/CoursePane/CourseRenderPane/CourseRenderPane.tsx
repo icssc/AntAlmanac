@@ -144,8 +144,8 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             return [];
         }
 
-        return getFilteredCourses(flattenSOCObject(searchResponse, courseColors), manualSearchEnabled);
-    }, [searchResponse, courseColors, manualSearchEnabled]);
+        return getFilteredCourses(flattenSOCObject(searchResponse, formData.term, courseColors), manualSearchEnabled);
+    }, [searchResponse, formData.term, courseColors, manualSearchEnabled]);
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());

@@ -16,15 +16,14 @@ import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { TableRow, useTheme } from '@mui/material';
-import { AASection, AATerm, AACourse } from '@packages/antalmanac-types';
+import { AASection, AACourseWithTerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 interface SectionTableBodyRowProps {
     section: AASection;
-    courseDetails: AACourse;
-    term: AATerm;
+    course: AACourseWithTerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
@@ -49,16 +48,8 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
-    const {
-        section,
-        courseDetails,
-        term,
-        allowHighlight,
-        scheduleNames,
-        scheduleConflict,
-        analyticsCategory,
-        formattedTime,
-    } = props;
+    const { section, course, allowHighlight, scheduleNames, scheduleConflict, analyticsCategory, formattedTime } =
+        props;
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
@@ -67,23 +58,23 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(() =>
-        AppStore.getAddedSectionCodes().has(scheduleSectionKey(term, section.sectionCode))
+        AppStore.getAddedSectionCodes().has(scheduleSectionKey(course.term, section.sectionCode))
     );
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
             setHoveredEvent(undefined);
         } else {
-            setHoveredEvent(section, courseDetails, term);
+            setHoveredEvent(section, course, course.term);
         }
-    }, [previewMode, addedCourse, setHoveredEvent, section, courseDetails, term]);
+    }, [previewMode, addedCourse, setHoveredEvent, section, course]);
 
     const handleMouseLeave = useCallback(() => {
         setHoveredEvent(undefined);
     }, [setHoveredEvent]);
 
     useEffect(() => {
-        const sectionKey = scheduleSectionKey(term, section.sectionCode);
+        const sectionKey = scheduleSectionKey(course.term, section.sectionCode);
 
         const syncAddedCourse = () => {
             setAddedCourse(AppStore.getAddedSectionCodes().has(sectionKey));
@@ -98,7 +89,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             AppStore.removeListener('addedCoursesChange', syncAddedCourse);
             AppStore.removeListener('currentScheduleIndexChange', syncAddedCourse);
         };
-    }, [section.sectionCode, term]);
+    }, [section.sectionCode, course.term]);
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {
@@ -137,7 +128,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <SectionTableBodyRowColorStrip section={section} term={term} visible={addedCourse} />
+            <SectionTableBodyRowColorStrip section={section} term={course.term} visible={addedCourse} />
 
             {Object.entries(tableBodyCells)
                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
@@ -147,16 +138,15 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             addedCourse={addedCourse}
                             key={column}
                             section={section}
-                            courseDetails={courseDetails}
-                            term={term}
+                            courseDetails={course}
                             scheduleConflict={scheduleConflict}
                             scheduleNames={scheduleNames}
                             {...section}
                             sectionType={section.sectionType}
                             maxCapacity={parseInt(section.maxCapacity, 10)}
                             units={parseFloat(section.units)}
-                            courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
-                            {...courseDetails}
+                            courseName={`${course.deptCode} ${course.courseNumber}`}
+                            {...course}
                             analyticsCategory={analyticsCategory}
                             formattedTime={formattedTime}
                         />

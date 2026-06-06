@@ -1,7 +1,7 @@
-import { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCourses';
+import { AACourseWithTerm } from '@packages/antalmanac-types';
 import { WebsocSectionType } from '@packages/anteater-api/types';
 
-export const getMissingSections = (userCourses: CourseWithTerm): string[] => {
+export const getMissingSections = (userCourses: AACourseWithTerm): string[] => {
     const requiredTypes = new Set<WebsocSectionType>(userCourses.sectionTypes ?? []);
 
     if (requiredTypes.size === 0) {

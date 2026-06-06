@@ -28,16 +28,14 @@ export function CourseListItem({ item, scheduleNames, formData }: CourseListItem
                 />
             ) : formData.ge !== 'ANY' ? (
                 <GeDataFetchProvider
-                    term={formData.term}
-                    courseDetails={item}
+                    course={item}
                     allowHighlight={true}
                     scheduleNames={scheduleNames}
                     analyticsCategory={analyticsEnum.classSearch}
                 />
             ) : (
                 <SectionTable
-                    term={formData.term}
-                    courseDetails={item}
+                    course={item}
                     allowHighlight={true}
                     scheduleNames={scheduleNames}
                     analyticsCategory={analyticsEnum.classSearch}

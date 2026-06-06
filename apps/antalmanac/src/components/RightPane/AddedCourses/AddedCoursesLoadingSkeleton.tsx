@@ -1,4 +1,3 @@
-import type { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCourses';
 import { CustomEventDetailView } from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
@@ -6,7 +5,7 @@ import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage'
 import AppStore from '$stores/AppStore';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { Box, Typography } from '@mui/material';
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { AACourseWithTerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { Component, type ReactNode, useEffect, useState } from 'react';
 
 /**
@@ -28,7 +27,7 @@ class SkeletonErrorBoundary extends Component<{ children: ReactNode }, { hasErro
 }
 
 interface CachedBlueprint {
-    courses: CourseWithTerm[];
+    courses: AACourseWithTerm[];
     customEvents: RepeatingCustomEvent[];
 }
 
@@ -36,7 +35,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null;
 }
 
-function isValidCachedCourse(value: unknown): value is CourseWithTerm {
+function isValidCachedCourse(value: unknown): value is AACourseWithTerm {
     if (!isRecord(value)) return false;
 
     return (
@@ -112,8 +111,7 @@ export function AddedCoursesLoadingSkeleton() {
                         key={scheduleOfferingKey(course)}
                         skeleton
                         sortable
-                        courseDetails={course}
-                        term={course.term}
+                        course={course}
                         allowHighlight={false}
                         analyticsCategory={analyticsEnum.addedClasses}
                         scheduleNames={scheduleNames}
