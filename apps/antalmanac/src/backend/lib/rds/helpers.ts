@@ -23,7 +23,8 @@ export async function loadSchedules(
             .select()
             .from(schedules)
             .where(where)
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId)),
+            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId))
+            .orderBy(coursesInSchedule.index),
         db.select().from(schedules).where(where).leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId)),
     ]);
 
@@ -38,8 +39,6 @@ function aggregateUserData(
     customEventResults: { schedules: Schedule; customEvents: CustomEvent | null }[]
 ): (ShortCourseSchedule & { id: string; index: number })[] {
     const schedulesMapping: Record<string, ShortCourseSchedule & { id: string; index: number }> = {};
-
-    const courseIndexes: Record<Schedule['id'], Record<string, CourseInSchedule['index']>> = {};
 
     sectionResults.forEach(({ schedules: schedule, coursesInSchedule: course }) => {
         const scheduleId = schedule.id;
@@ -63,28 +62,10 @@ function aggregateUserData(
                     ? (course.visibility as VisibilityState)
                     : VisibilityState.Visible,
             });
-
-            if (course.index !== null) {
-                if (!courseIndexes[scheduleId]) {
-                    courseIndexes[scheduleId] = {};
-                }
-                courseIndexes[scheduleId][`${sectionCode}-${course.term}`] = course.index;
-            }
         }
 
         schedulesMapping[scheduleId] = scheduleAggregate;
     });
-
-    for (const [scheduleId, indexes] of Object.entries(courseIndexes)) {
-        schedulesMapping[scheduleId].courses.sort((a, b) => {
-            const aIndex = indexes[`${a.sectionCode}-${a.term}`];
-            const bIndex = indexes[`${b.sectionCode}-${b.term}`];
-            if (typeof aIndex !== 'number' || typeof bIndex !== 'number') {
-                return 0;
-            }
-            return aIndex - bIndex;
-        });
-    }
 
     customEventResults.forEach(({ schedules: schedule, customEvents: customEvent }) => {
         const scheduleId = schedule.id;
