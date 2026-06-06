@@ -1,4 +1,4 @@
-import type { CustomEvent, FinalExam } from '$components/Calendar/types';
+import { isCustomEvent, type FinalExam } from '$components/Calendar/types';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
@@ -225,11 +225,11 @@ function getRRule(bydays: string[], quarter: Quarter) {
 export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCalendar()): EventAttributes[] {
     const customEventIDs = new Set();
     const calendarEvents = events.flatMap((event) => {
-        if (event.isCustomEvent) {
+        if (isCustomEvent(event)) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
             const term = getDefaultTerm(events);
-            const { title, start, end, building } = event as CustomEvent;
+            const { title, start, end, building } = event;
             const days = getByDays(event.days.join(''));
             const rrule = getRRule(days, term.quarter);
             const eventStartDate = getClassStartDate(term, days);

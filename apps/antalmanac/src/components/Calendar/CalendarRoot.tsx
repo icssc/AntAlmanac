@@ -8,7 +8,13 @@ import { CalendarEventWrapper } from '$components/Calendar/CalendarEvent/Calenda
 import { CALENDAR_BASE_DATE, createSkeletonEvents } from '$components/Calendar/Skeleton/skeletonHelpers';
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
-import { isCourseEvent, isSkeletonEvent, type CalendarEvent, type SkeletonEvent } from '$components/Calendar/types';
+import {
+    isCourseEvent,
+    isCustomEvent,
+    isSkeletonEvent,
+    type CalendarEvent,
+    type SkeletonEvent,
+} from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
@@ -100,7 +106,7 @@ export const ScheduleCalendar = memo(() => {
               : eventsInCalendar;
 
         return raw.filter((e) => {
-            if (isSkeletonEvent(e) || ('isCustomEvent' in e && e.isCustomEvent)) return true;
+            if (isSkeletonEvent(e) || isCustomEvent(e)) return true;
             if (!isCourseEvent(e)) return true;
             const visibility: VisibilityState =
                 visibilityMap[currentScheduleId]?.[courseColorKey(e.term, e.sectionCode)] ?? VisibilityState.Visible;

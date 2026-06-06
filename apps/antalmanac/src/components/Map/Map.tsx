@@ -14,7 +14,13 @@ import LocationMarker from './Marker';
 
 const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
-import { isSkeletonEvent, type CalendarEvent, type CourseEvent, type CustomEvent } from '$components/Calendar/types';
+import {
+    isCourseEvent,
+    isCustomEvent,
+    type CalendarEvent,
+    type CourseEvent,
+    type CustomEvent,
+} from '$components/Calendar/types';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { UserLocator } from '$components/Map/UserLocator';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
@@ -174,18 +180,9 @@ export default function CourseMap() {
 
     const calendarEvents = themedEvents;
 
-    const markers = useMemo(
-        () =>
-            getCoursesPerBuilding(
-                themedEvents.filter((e): e is CourseEvent => !isSkeletonEvent(e) && !e.isCustomEvent)
-            ),
-        [themedEvents]
-    );
+    const markers = useMemo(() => getCoursesPerBuilding(themedEvents.filter(isCourseEvent)), [themedEvents]);
     const customEventMarkers = useMemo(
-        () =>
-            getCustomEventPerBuilding(
-                themedEvents.filter((e): e is CustomEvent => !isSkeletonEvent(e) && e.isCustomEvent)
-            ),
+        () => getCustomEventPerBuilding(themedEvents.filter(isCustomEvent)),
         [themedEvents]
     );
     const postHog = usePostHog();

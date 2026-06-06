@@ -1,4 +1,4 @@
-import { isSkeletonEvent, type CalendarEvent } from '$components/Calendar/types';
+import { isCustomEvent, isSkeletonEvent, type CalendarEvent } from '$components/Calendar/types';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import type { AATerm, ScheduleCourse } from '@packages/antalmanac-types';
 
@@ -205,7 +205,7 @@ export function applyThemeToCalendarEvents<E extends CalendarEvent>(
 
     return events.map((event): E => {
         if (isSkeletonEvent(event)) return event;
-        const key = event.isCustomEvent
+        const key = isCustomEvent(event)
             ? customEventColorKey(event.customEventID)
             : courseColorKey(event.term, event.sectionCode);
         const value = assignments[key];

@@ -1,4 +1,4 @@
-import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
+import { isCourseEvent, type CourseEvent, type CustomEvent } from '$components/Calendar/types';
 import termJson from '$generated/termData.json';
 import { parseQuarter, termSchema } from '$lib/termHelpers';
 import type { AATerm } from '@packages/antalmanac-types';
@@ -18,7 +18,7 @@ const defaultTermIndex = termData.findIndex((term) => !term.isSummerTerm);
  */
 export function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): AATerm {
     for (const event of events) {
-        if (!event.isCustomEvent) {
+        if (isCourseEvent(event)) {
             return event.term;
         }
     }

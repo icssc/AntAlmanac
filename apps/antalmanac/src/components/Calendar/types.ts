@@ -9,6 +9,12 @@ interface CommonCalendarEvent extends Event {
     title: string;
 }
 
+export enum CalendarEventKind {
+    Course = 'course',
+    Custom = 'custom',
+    Skeleton = 'skeleton',
+}
+
 export interface Location {
     /**
      * @example 'ICS'
@@ -31,12 +37,12 @@ export type FinalExam =
     | Extract<WebsocSectionFinalExam, { examStatus: 'NO_FINAL' | 'TBA_FINAL' }>;
 
 export interface CourseEvent extends CommonCalendarEvent {
+    eventKind: CalendarEventKind.Course;
     locations: Location[];
     showLocationInfo: boolean;
     finalExam: FinalExam;
     courseTitle: string;
     instructors: string[];
-    isCustomEvent: false;
     sectionCode: string;
     sectionType: string;
     deptValue: string;
@@ -50,22 +56,26 @@ export interface CourseEvent extends CommonCalendarEvent {
  * The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurrences of an event on multiple days.
  */
 export interface CustomEvent extends CommonCalendarEvent {
+    eventKind: CalendarEventKind.Custom;
     customEventID: CustomEventId;
-    isCustomEvent: true;
     building: string;
     days: string[];
 }
 
 export interface SkeletonEvent extends CommonCalendarEvent {
-    isSkeletonEvent: true;
+    eventKind: CalendarEventKind.Skeleton;
 }
 
 export type CalendarEvent = CourseEvent | CustomEvent | SkeletonEvent;
 
-export function isSkeletonEvent(event: CalendarEvent): event is SkeletonEvent {
-    return 'isSkeletonEvent' in event && event.isSkeletonEvent;
+export function isCourseEvent(event: CalendarEvent): event is CourseEvent {
+    return event.eventKind === CalendarEventKind.Course;
 }
 
-export function isCourseEvent(event: CalendarEvent): event is CourseEvent {
-    return 'isCustomEvent' in event && !event.isCustomEvent;
+export function isCustomEvent(event: CalendarEvent): event is CustomEvent {
+    return event.eventKind === CalendarEventKind.Custom;
+}
+
+export function isSkeletonEvent(event: CalendarEvent): event is SkeletonEvent {
+    return event.eventKind === CalendarEventKind.Skeleton;
 }
