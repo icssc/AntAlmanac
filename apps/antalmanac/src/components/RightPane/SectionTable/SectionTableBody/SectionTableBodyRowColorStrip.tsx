@@ -1,26 +1,16 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
-import {
-    courseColorKey,
-    getPalette,
-    resolveAssignment,
-    type SectionColorSetting,
-    type ThemeAssignmentMap,
-} from '$lib/sectionThemes';
-import AppStore from '$stores/AppStore';
+import { useSectionDisplayColor } from '$hooks/useSectionDisplayColor';
+import { courseColorKey } from '$lib/sectionThemes';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
-import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useSectionThemeStore } from '$stores/SectionThemeStore';
 import { Box, Popover, PopoverProps, SxProps, TableCell, Tooltip } from '@mui/material';
 import { AASection, AATerm } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 const STRIP_SHRINK_PX = 5;
 const STRIP_EXPAND_PX = 8;
-
-/** Stable empty map so the color-sync effect doesn't re-run (and re-subscribe) every render. */
-const EMPTY_ASSIGNMENTS: ThemeAssignmentMap = {};
 
 const cellSx: SxProps = {
     position: 'relative',
@@ -29,24 +19,6 @@ const cellSx: SxProps = {
     verticalAlign: 'stretch',
     overflow: 'visible',
 };
-
-function getDisplayColor(
-    section: AASection,
-    term: AATerm,
-    setting: SectionColorSetting,
-    assignments: ThemeAssignmentMap,
-    palette: readonly (readonly string[])[]
-): string {
-    const course = AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term);
-    if (!course) {
-        return section.color ?? '#5ec8e0';
-    }
-    if (setting === 'custom') {
-        return course.section.color;
-    }
-    const value = assignments[courseColorKey(term, section.sectionCode)];
-    return value != null ? resolveAssignment(value, palette) : course.section.color;
-}
 
 interface SectionTableBodyRowColorStripProps {
     section: AASection;
@@ -59,27 +31,26 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     const clickable = !isMobile && visible;
 
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
-    const activeSectionColor = useSectionThemeStore(selectActiveSectionColor);
     const setManualColor = useSectionThemeStore((s) => s.setManualColor);
-    // Read the single resolved source of truth so the strip always matches the calendar
-    // (which reads the same map via useSectionThemeAssignments).
-    const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
-    const isDark = useThemeStore((s) => s.isDark);
-
-    const palette = useMemo(() => getPalette(activeSectionColor, isDark), [activeSectionColor, isDark]);
-    const assignments = activeSectionColor === 'custom' ? EMPTY_ASSIGNMENTS : activeAssignments;
 
     const [hovered, setHovered] = useState(false);
-    const [currColor, setCurrColor] = useState(() =>
-        getDisplayColor(section, term, activeSectionColor, assignments, palette)
-    );
+    const [draftColor, setDraftColor] = useState<string | null>(null);
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
 
+    const displayColor = useSectionDisplayColor({
+        term,
+        sectionCode: section.sectionCode,
+        fallbackColor: section.color ?? '#5ec8e0',
+    });
+
+    const swatchColor = draftColor ?? displayColor;
     const stripWidth = visible && clickable && hovered ? STRIP_EXPAND_PX : STRIP_SHRINK_PX;
 
-    const updateColorFromPicker = useCallback((newColor: string) => {
-        setCurrColor(newColor);
-    }, []);
+    useEffect(() => {
+        if (!anchorEl) {
+            setDraftColor(null);
+        }
+    }, [anchorEl]);
 
     const handleOpenPicker = useCallback((anchorEl: HTMLElement) => {
         setAnchorEl((prev) => (prev === anchorEl ? null : anchorEl));
@@ -91,7 +62,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
 
     const handleColorChange = useCallback(
         (newColor: { hex: string }) => {
-            setCurrColor(newColor.hex);
+            setDraftColor(newColor.hex);
             // On a preset theme, store an override layered on the theme; on custom, edit
             // the section's stored color directly.
             if (sectionColor !== 'custom') {
@@ -102,35 +73,6 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
         },
         [section.sectionCode, term, sectionColor, setManualColor]
     );
-
-    useEffect(() => {
-        const syncColor = () => {
-            setCurrColor(getDisplayColor(section, term, activeSectionColor, assignments, palette));
-        };
-
-        syncColor();
-
-        AppStore.on('addedCoursesChange', syncColor);
-        AppStore.on('currentScheduleIndexChange', syncColor);
-        AppStore.on('colorChange', syncColor);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', syncColor);
-            AppStore.removeListener('currentScheduleIndexChange', syncColor);
-            AppStore.removeListener('colorChange', syncColor);
-        };
-    }, [section, term, activeSectionColor, assignments, palette]);
-
-    useEffect(() => {
-        if (!visible) {
-            return;
-        }
-        const pickerId = courseColorKey(term, section.sectionCode);
-        AppStore.registerColorPicker(pickerId, updateColorFromPicker);
-        return () => {
-            AppStore.unregisterColorPicker(pickerId, updateColorFromPicker);
-        };
-    }, [visible, section.sectionCode, term, updateColorFromPicker]);
 
     if (!visible) {
         return <TableCell sx={cellSx} />;
@@ -158,7 +100,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
                                 bottom: 0,
                                 width: stripWidth,
                                 transition: 'width 120ms ease-out',
-                                bgcolor: currColor,
+                                bgcolor: swatchColor,
                                 border: 'none',
                                 p: 0,
                                 cursor: 'pointer',
@@ -175,7 +117,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
                             top: 0,
                             bottom: 0,
                             width: STRIP_SHRINK_PX,
-                            bgcolor: currColor,
+                            bgcolor: swatchColor,
                         }}
                     />
                 )}
@@ -196,7 +138,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
                     }}
                 >
                     <SketchPicker
-                        color={currColor}
+                        color={swatchColor}
                         onChange={handleColorChange}
                         presetColors={colorPickerPresetColors}
                     />

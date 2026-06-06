@@ -1,15 +1,14 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
+import { useSectionDisplayColor } from '$hooks/useSectionDisplayColor';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { courseColorKey, customEventColorKey, getPalette, resolveAssignment } from '$lib/sectionThemes';
-import AppStore from '$stores/AppStore';
+import { courseColorKey, customEventColorKey } from '$lib/sectionThemes';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
-import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useSectionThemeStore } from '$stores/SectionThemeStore';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { CustomEventId, type AATerm } from '@packages/antalmanac-types';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 interface ColorPickerProps {
@@ -34,53 +33,27 @@ const ColorPicker = memo(function ColorPicker({
     sectionCode,
 }: ColorPickerProps) {
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
-    const [currColor, setCurrColor] = useState(color);
+    const [draftColor, setDraftColor] = useState<string | null>(null);
 
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
-    const activeSectionColor = useSectionThemeStore(selectActiveSectionColor);
-    const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
     const setManualColor = useSectionThemeStore((s) => s.setManualColor);
-    const isDark = useThemeStore((s) => s.isDark);
 
     const postHog = usePostHog();
 
-    // When a preset theme is active (including while previewing one on hover), show the theme's
-    // resolved color for this section/custom event instead of the stored color, so the swatch and
-    // picker track the theme. Falls back to the live/stored color on the custom setting.
-    const themedColor = useMemo(() => {
-        if (activeSectionColor === 'custom') return null;
-        const key =
-            isCustomEvent && customEventID != null
-                ? customEventColorKey(customEventID)
-                : sectionCode != null && term != null
-                  ? courseColorKey(term, sectionCode)
-                  : null;
-        const value = key != null ? activeAssignments[key] : undefined;
-        return value != null ? resolveAssignment(value, getPalette(activeSectionColor, isDark)) : null;
-    }, [activeSectionColor, activeAssignments, isDark, isCustomEvent, customEventID, sectionCode, term]);
+    const displayColor = useSectionDisplayColor({
+        term,
+        sectionCode,
+        customEventID: isCustomEvent ? customEventID : undefined,
+        fallbackColor: color,
+    });
 
-    const displayColor = themedColor ?? currColor;
-
-    // Reflect color changes that come from the parent (e.g. theme switch repaints).
-    useEffect(() => {
-        setCurrColor(color);
-    }, [color]);
-
-    const updateColor = useCallback((newColor: string) => {
-        setCurrColor((prev) => (prev === newColor ? prev : newColor));
-    }, []);
+    const swatchColor = draftColor ?? displayColor;
 
     useEffect(() => {
-        let colorPickerId;
-        if (isCustomEvent && customEventID) colorPickerId = customEventID.toString();
-        else if (sectionCode && term) colorPickerId = courseColorKey(term, sectionCode);
-        else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
-        AppStore.registerColorPicker(colorPickerId, updateColor);
-
-        return () => {
-            AppStore.unregisterColorPicker(colorPickerId, updateColor);
-        };
-    }, [isCustomEvent, customEventID, sectionCode, term, updateColor]);
+        if (!anchorEl) {
+            setDraftColor(null);
+        }
+    }, [anchorEl]);
 
     const openPicker = (target: HTMLElement, postHog?: PostHog) => {
         setAnchorEl(target);
@@ -100,32 +73,35 @@ const ColorPicker = memo(function ColorPicker({
         setAnchorEl(null);
     };
 
-    const handleColorChange = (newColor: { hex: string }) => {
-        setCurrColor(newColor.hex);
+    const handleColorChange = useCallback(
+        (newColor: { hex: string }) => {
+            setDraftColor(newColor.hex);
 
-        // On a preset theme, store the change as a per-section override layered on the
-        // theme (keeps the theme selected and leaves the user's custom palette untouched).
-        if (sectionColor !== 'custom') {
-            const key =
-                isCustomEvent && customEventID
-                    ? customEventColorKey(customEventID)
-                    : sectionCode != null && term != null
-                      ? courseColorKey(term, sectionCode)
-                      : null;
-            if (key != null) setManualColor(sectionColor, key, newColor.hex);
-            return;
-        }
+            // On a preset theme, store the change as a per-section override layered on the
+            // theme (keeps the theme selected and leaves the user's custom palette untouched).
+            if (sectionColor !== 'custom') {
+                const key =
+                    isCustomEvent && customEventID
+                        ? customEventColorKey(customEventID)
+                        : sectionCode != null && term != null
+                          ? courseColorKey(term, sectionCode)
+                          : null;
+                if (key != null) setManualColor(sectionColor, key, newColor.hex);
+                return;
+            }
 
-        // On custom, edit the course/event's stored color directly.
-        if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, newColor.hex);
-        else if (sectionCode && term) changeCourseColor(sectionCode, term, newColor.hex);
-    };
+            // On custom, edit the course/event's stored color directly.
+            if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, newColor.hex);
+            else if (sectionCode && term) changeCourseColor(sectionCode, term, newColor.hex);
+        },
+        [sectionColor, isCustomEvent, customEventID, sectionCode, term, setManualColor]
+    );
 
     return (
         <>
             <Tooltip title="Change Color">
                 <IconButton
-                    sx={{ color: displayColor, padding: 0.5 }}
+                    sx={{ color: swatchColor, padding: 0.5 }}
                     onClick={(e) => {
                         handleClick(e, postHog);
                     }}
@@ -148,11 +124,7 @@ const ColorPicker = memo(function ColorPicker({
                     horizontal: 'left',
                 }}
             >
-                <SketchPicker
-                    color={displayColor}
-                    onChange={handleColorChange}
-                    presetColors={colorPickerPresetColors}
-                />
+                <SketchPicker color={swatchColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
             </Popover>
         </>
     );

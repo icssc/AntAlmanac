@@ -18,7 +18,6 @@ import actionTypesStore, {
     type ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/types';
-import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -37,8 +36,6 @@ class AppStore extends EventEmitter {
 
     customEvents: RepeatingCustomEvent[];
 
-    colorPickers: Record<string, EventEmitter>;
-
     eventsInCalendar: CalendarEvent[];
 
     finalsEventsInCalendar: CourseEvent[];
@@ -50,7 +47,6 @@ class AppStore extends EventEmitter {
         this.setMaxListeners(300);
         this.customEvents = [];
         this.schedule = new Schedules();
-        this.colorPickers = {};
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
@@ -145,24 +141,6 @@ class AppStore extends EventEmitter {
 
     hasUnsavedChanges() {
         return this.unsavedChanges;
-    }
-
-    registerColorPicker(id: string, update: (color: string) => void) {
-        if (id in this.colorPickers) {
-            this.colorPickers[id].on('colorChange', update);
-        } else {
-            this.colorPickers[id] = new EventEmitter();
-            this.colorPickers[id].on('colorChange', update);
-        }
-    }
-
-    unregisterColorPicker(id: string, update: (color: string) => void) {
-        if (id in this.colorPickers) {
-            this.colorPickers[id].removeListener('colorChange', update);
-            if (this.colorPickers[id].listenerCount('colorChange') === 0) {
-                delete this.colorPickers[id];
-            }
-        }
     }
 
     deleteCourse(sectionCode: string, term: AATerm, scheduleIndex: number, triggerUnsavedWarning = true) {
@@ -271,7 +249,6 @@ class AppStore extends EventEmitter {
             newColor: newColor,
         };
         actionTypesStore.autoSaveSchedule(action);
-        this.colorPickers[customEventId].emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
 
@@ -447,7 +424,6 @@ class AppStore extends EventEmitter {
             newColor: newColor,
         };
         actionTypesStore.autoSaveSchedule(action);
-        this.colorPickers[courseColorKey(term, sectionCode)]?.emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
 
