@@ -37,6 +37,7 @@
     },
     "pnpm": {
         "overrides": {
+            "@types/minimatch": "5.1.2",
             "@types/react": "19.2.14",
             "@types/react-dom": "19.2.3",
             "react-is": "^19.0.0"
