@@ -57,6 +57,44 @@ interface SearchOption {
     result: SearchResult;
 }
 
+function getCacheKey(term: AATerm, query: string): string {
+    return `${term.shortName}:${query}`;
+}
+
+function filterOptions(options: SearchOption[]) {
+    return options;
+}
+
+function getOptionLabel(option: SearchOption) {
+    const object = option.result;
+    if (!object) return option.key;
+    switch (object.type) {
+        case resultType.GE_CATEGORY: {
+            const cat = option.key.split('-')[1].toLowerCase();
+            const num = parseInt(cat);
+            return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
+                object.name
+            }`;
+        }
+        case resultType.DEPARTMENT:
+            return `${emojiMap.DEPARTMENT} ${option.key}: ${object.name}`;
+        case resultType.COURSE:
+            return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
+        case resultType.SECTION:
+            return `${emojiMap.SECTION} ${object.sectionCode} ${object.sectionType} ${object.sectionNum}: ${object.department} ${object.courseNumber}`;
+        default:
+            return '';
+    }
+}
+
+function groupBy(option: SearchOption) {
+    const isCourse = option.result.type === resultType.COURSE;
+    if (!isCourse) return groupType.UNGROUPED;
+
+    const isOffered = 'isOffered' in option.result && option.result.isOffered;
+    return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
+}
+
 export function FuzzySearch() {
     const postHog = usePostHog();
     const [term] = useCourseSearchParam('term');
@@ -72,10 +110,6 @@ export function FuzzySearch() {
     const [currentTerm, setCurrentTerm] = useState<AATerm>(term);
 
     const requestTimestampRef = useRef<number | undefined>(undefined);
-
-    const getCacheKey = (term: AATerm, query: string): string => {
-        return `${term.shortName}:${query}`;
-    };
 
     const doSearch = (option: SearchOption) => {
         const result = option.result;
@@ -120,30 +154,6 @@ export function FuzzySearch() {
             category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,
         });
-    };
-
-    const filterOptions = (options: SearchOption[]) => options;
-
-    const getOptionLabel = (option: SearchOption) => {
-        const object = option.result;
-        if (!object) return option.key;
-        switch (object.type) {
-            case resultType.GE_CATEGORY: {
-                const cat = option.key.split('-')[1].toLowerCase();
-                const num = parseInt(cat);
-                return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
-                    object.name
-                }`;
-            }
-            case resultType.DEPARTMENT:
-                return `${emojiMap.DEPARTMENT} ${option.key}: ${object.name}`;
-            case resultType.COURSE:
-                return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
-            case resultType.SECTION:
-                return `${emojiMap.SECTION} ${object.sectionCode} ${object.sectionType} ${object.sectionNum}: ${object.department} ${object.courseNumber}`;
-            default:
-                return '';
-        }
     };
 
     const requestIsCurrent = useCallback(
@@ -253,14 +263,6 @@ export function FuzzySearch() {
 
     const onClose = () => {
         setOpen(false);
-    };
-
-    const groupBy = (option: SearchOption) => {
-        const isCourse = option.result.type === resultType.COURSE;
-        if (!isCourse) return groupType.UNGROUPED;
-
-        const isOffered = 'isOffered' in option.result && option.result.isOffered;
-        return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
     };
 
     const renderGroup = (params: AutocompleteRenderGroupParams) => {
