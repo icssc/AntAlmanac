@@ -125,11 +125,12 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
         if (!visible) {
             return;
         }
-        AppStore.registerColorPicker(section.sectionCode, updateColorFromPicker);
+        const pickerId = courseColorKey(term, section.sectionCode);
+        AppStore.registerColorPicker(pickerId, updateColorFromPicker);
         return () => {
-            AppStore.unregisterColorPicker(section.sectionCode, updateColorFromPicker);
+            AppStore.unregisterColorPicker(pickerId, updateColorFromPicker);
         };
-    }, [visible, section.sectionCode, updateColorFromPicker]);
+    }, [visible, section.sectionCode, term, updateColorFromPicker]);
 
     if (!visible) {
         return <TableCell sx={cellSx} />;

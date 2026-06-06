@@ -73,14 +73,14 @@ const ColorPicker = memo(function ColorPicker({
     useEffect(() => {
         let colorPickerId;
         if (isCustomEvent && customEventID) colorPickerId = customEventID.toString();
-        else if (sectionCode) colorPickerId = sectionCode;
+        else if (sectionCode && term) colorPickerId = courseColorKey(term, sectionCode);
         else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
         AppStore.registerColorPicker(colorPickerId, updateColor);
 
         return () => {
             AppStore.unregisterColorPicker(colorPickerId, updateColor);
         };
-    }, [isCustomEvent, customEventID, sectionCode, updateColor]);
+    }, [isCustomEvent, customEventID, sectionCode, term, updateColor]);
 
     const openPicker = (target: HTMLElement, postHog?: PostHog) => {
         setAnchorEl(target);

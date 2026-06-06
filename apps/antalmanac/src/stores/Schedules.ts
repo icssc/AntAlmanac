@@ -614,7 +614,7 @@ export class Schedules {
                         color: course.section.color,
                         term: course.term.shortName,
                         sectionCode: course.section.sectionCode,
-                        visibility: getVisibility(schedule.scheduleId, course.section.sectionCode),
+                        visibility: getVisibility(schedule.scheduleId, course.term, course.section.sectionCode),
                     };
                 }),
                 scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],

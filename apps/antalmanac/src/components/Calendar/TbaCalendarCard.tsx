@@ -7,6 +7,7 @@ import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '
 import { useEffect, useState } from 'react';
 
 interface TbaSection {
+    termShortName: string;
     deptCode: string;
     courseNumber: string;
     sectionCode: string;
@@ -99,7 +100,7 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
             <Box sx={{ gap: 0.5 }}>
                 {tbaSections.map((section) => (
                     <Typography
-                        key={`${section.deptCode}-${section.courseNumber}-${section.sectionCode}`}
+                        key={`${section.termShortName}|${section.deptCode}|${section.courseNumber}|${section.sectionCode}`}
                         variant="body2"
                     >
                         {isMobile
@@ -135,6 +136,7 @@ export function TbaCalendarCard() {
                 const meetings = section.meetings ?? [];
                 if (meetings.some((m) => m.timeIsTBA)) {
                     sectionsWithTBA.push({
+                        termShortName: course.term.shortName,
                         deptCode: course.deptCode,
                         courseNumber: course.courseNumber,
                         sectionCode: section.sectionCode,

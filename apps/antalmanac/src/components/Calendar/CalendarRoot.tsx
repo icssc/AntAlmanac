@@ -13,7 +13,7 @@ import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
-import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
+import { applyThemeToCalendarEvents, courseColorKey } from '$lib/sectionThemes';
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -105,8 +105,11 @@ export const ScheduleCalendar = memo(() => {
         return raw.filter((e) => {
             if ('isCustomEvent' in e && e.isCustomEvent) return true;
             if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
+            const courseEvent = e as CourseEvent;
             const visibility: VisibilityState =
-                visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? VisibilityState.Visible;
+                visibilityMap[currentScheduleId]?.[courseColorKey(courseEvent.term, courseEvent.sectionCode)] ??
+                visibilityMap[currentScheduleId]?.[courseEvent.sectionCode] ??
+                VisibilityState.Visible;
             return visibility !== VisibilityState.Disappeared;
         });
     }, [
@@ -169,9 +172,11 @@ export const ScheduleCalendar = memo(() => {
         (event: CalendarEvent | SkeletonEvent) => {
             const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
 
+            const courseEvent = event as CourseEvent;
             const visibility: VisibilityState =
                 !isSkeletonEvent && !('isCustomEvent' in event && event.isCustomEvent)
-                    ? (visibilityMap[currentScheduleId]?.[(event as CourseEvent).sectionCode] ??
+                    ? (visibilityMap[currentScheduleId]?.[courseColorKey(courseEvent.term, courseEvent.sectionCode)] ??
+                      visibilityMap[currentScheduleId]?.[courseEvent.sectionCode] ??
                       VisibilityState.Visible)
                     : VisibilityState.Visible;
 

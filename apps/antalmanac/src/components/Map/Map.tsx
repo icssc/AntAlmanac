@@ -22,7 +22,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
-import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
+import { applyThemeToCalendarEvents, courseColorKey } from '$lib/sectionThemes';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 
@@ -276,8 +276,8 @@ export default function CourseMap() {
     }, [searchParams]);
 
     /**
-     * Get markers for unique courses (identified by  section ID) that occur today, sorted by start time.
-     * A duplicate section code found later in the array will have a higher index.
+     * Get markers for unique courses (identified by term + section code) that occur today, sorted by start time.
+     * A duplicate section found later in the array will have a higher index.
      */
     const markersToDisplay = useMemo(() => {
         const markerValues = Object.keys(markers).flatMap((markerKey) => markers[markerKey]);
@@ -287,7 +287,14 @@ export default function CourseMap() {
 
         return markersToday
             .sort((a, b) => a.start.getTime() - b.start.getTime())
-            .filter((marker, i, arr) => arr.findIndex((other) => other.sectionCode === marker.sectionCode) === i);
+            .filter(
+                (marker, i, arr) =>
+                    arr.findIndex(
+                        (other) =>
+                            courseColorKey(other.term, other.sectionCode) ===
+                            courseColorKey(marker.term, marker.sectionCode)
+                    ) === i
+            );
     }, [markers, today]);
 
     const customEventMarkersToDisplay = useMemo(() => {
@@ -390,7 +397,7 @@ export default function CourseMap() {
                             .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
 
                         return (
-                            <Fragment key={marker.sectionCode}>
+                            <Fragment key={courseColorKey(marker.term, marker.sectionCode)}>
                                 <LocationMarker
                                     {...marker}
                                     label={today === 'All' ? undefined : (index + 1).toString()}
