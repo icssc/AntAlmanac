@@ -41,6 +41,7 @@ const roadmapRouter = router({
 
         const apiKey = env.PLANNER_CLIENT_API_KEY;
         if (!apiKey) {
+            console.warn('PLANNER_CLIENT_API_KEY is not set; skipping planner roadmap fetch');
             return [];
         }
         const domain = (await headers()).get('host') ?? 'antalmanac.com';
