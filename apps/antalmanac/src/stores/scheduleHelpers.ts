@@ -82,11 +82,9 @@ function generateColorVariant(originalColor: string, usedColors: Set<string>): s
 }
 
 export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: ScheduleCourse[]): string {
-    const defaultColors = Object.values(colorVariants).map((variants) => variants[0]);
+    const defaultColors: string[] = Object.values(colorVariants).map((variants) => variants[0]);
     const usedColors = sectionsInSchedule.map((course) => course.section.color);
-    const lastDefaultColor = usedColors.findLast((materialColor) =>
-        (defaultColors as string[]).includes(materialColor)
-    ) as unknown as (typeof defaultColors)[number];
+    const lastDefaultIndex = usedColors.findLastIndex((color) => defaultColors.includes(color));
 
     const offeringKey = scheduleOfferingKey(newSection);
     const sameOfferingSections = sectionsInSchedule
@@ -106,10 +104,8 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
         return generateColorVariant(sameOfferingSections[0].section.color, new Set(usedColors));
     }
 
-    return (
-        defaultColors.find((materialColor) => !usedColors.includes(materialColor)) ||
-        defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length]
-    );
+    const nextDefaultIndex = (lastDefaultIndex + 1) % defaultColors.length;
+    return defaultColors.find((color) => !usedColors.includes(color)) ?? defaultColors[nextDefaultIndex];
 }
 
 /**
@@ -134,7 +130,8 @@ export function groupCourseSections(courses: ScheduleCourse[]): ScheduleCourse[]
         }
     }
     for (const course of courses) {
-        groupedCourses[offeringIndexes[scheduleOfferingKey(course)]].push(course);
+        const key = scheduleOfferingKey(course);
+        groupedCourses[offeringIndexes[key]].push(course);
     }
     return groupedCourses.flat();
 }
