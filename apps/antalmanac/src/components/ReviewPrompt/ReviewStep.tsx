@@ -3,8 +3,7 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
 import { postHog } from '$providers/AppPostHogProvider';
-import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
-import { useReviewPromptStore } from '$stores/ReviewPromptStore';
+import { REVIEW_TAGS, useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import {
@@ -69,7 +68,7 @@ export function ReviewStep() {
         setTextReview,
         toggleTag,
         dismiss,
-        resetReview,
+        onSubmitSuccess,
     } = useReviewPromptStore(
         useShallow((s) => ({
             candidate: s.candidate,
@@ -82,7 +81,7 @@ export function ReviewStep() {
             setTextReview: s.setTextReview,
             toggleTag: s.toggleTag,
             dismiss: s.dismiss,
-            resetReview: s.resetReview,
+            onSubmitSuccess: s.onSubmitSuccess,
         }))
     );
     const courseId = candidate?.courseId ?? '';
@@ -95,7 +94,6 @@ export function ReviewStep() {
             if (!candidate) {
                 return;
             }
-
             logAnalytics(postHog, {
                 category: analyticsEnum.review,
                 action: analyticsEnum.review.actions.SUBMITTED,
@@ -108,8 +106,7 @@ export function ReviewStep() {
                     tags: selectedTags,
                 },
             });
-            resetReview();
-            openSnackbar('success', 'Review submitted — thanks for helping other Anteaters!');
+            onSubmitSuccess();
         },
         onError: () => {
             openSnackbar('error', 'Failed to submit review. Please try again.');
@@ -230,7 +227,7 @@ export function ReviewStep() {
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button size="small" color="inherit" onClick={handleDismiss}>
-                    Skip
+                    Cancel
                 </Button>
 
                 <Button

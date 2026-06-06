@@ -1,9 +1,10 @@
+import { env } from '$src/env';
 import { AAPIError, createClient } from '@packages/anteater-api/client';
 import { TRPCError } from '@trpc/server';
 
 import { middleware, procedure } from '../trpc';
 
-export const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
+export const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 
 const withAAPI = middleware(async ({ next }) => {
     try {

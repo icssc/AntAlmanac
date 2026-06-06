@@ -1,15 +1,14 @@
 import { addCourse } from '$actions/AppStoreActions';
-import { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MoreHoriz } from '@mui/icons-material';
 import { IconButton, Menu, MenuItem } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { AASection, AACourse, type AATerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useState } from 'react';
 
 interface SectionActionMenuProps {
     section: AASection;
-    courseDetails: CourseDetails;
+    courseDetails: AACourse;
     term: AATerm;
     scheduleNames: string[];
 }

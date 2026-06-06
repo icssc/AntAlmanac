@@ -62,6 +62,7 @@ const analyticsEnum: AnalyticsEnum = {
             CLICK_SAVE: 'Click Save Button',
             CLICK_LOAD: 'Click Load Button',
             CHANGE_THEME: 'Change Theme',
+            CHANGE_SECTION_COLOR: 'Change Section Color',
             IMPORT_STUDY_LIST: 'Import Study List',
             IMPORT_ZOTCOURSE: 'Import Zotcourse Schedule',
             IMPORT_LEGACY: 'Import From Legacy Username',
@@ -124,6 +125,9 @@ const analyticsEnum: AnalyticsEnum = {
             ENROLLMENT_CONFIRMED: 'Review Enrollment Confirmed',
             DISMISSED: 'Review Prompt Dismissed',
             SUBMITTED: 'Review Submitted',
+            REVIEW_ANOTHER_CLICKED: 'Review Another Clicked',
+            REVIEW_DONE_CLICKED: 'Review Done Clicked',
+            REVIEW_SUCCESS_DISMISSED: 'Review Success Dismissed',
         },
     },
 };

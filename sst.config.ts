@@ -87,6 +87,7 @@ export default $config({
                 memory: '512 MB',
                 environment: {
                     DB_URL: dbUrl,
+                    ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
                     NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
                     STAGE: $app.stage,
                     QUEUE_URL: emailQueue.url,

@@ -2,7 +2,7 @@ import 'server-only';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { AuthAdditionalData } from '$lib/auth/authTypes';
 import { getSafeAuthRedirectPath } from '$lib/auth/authUtils';
-import { oidcOAuthEnvSchema } from '$src/backend/env';
+import { env } from '$src/env';
 import { db } from '@packages/db';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { createAuthMiddleware, getOAuthState } from 'better-auth/api';
@@ -10,20 +10,19 @@ import { betterAuth } from 'better-auth/minimal';
 import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
 
-const { OIDC_CLIENT_ID, OIDC_ISSUER_URL, BETTER_AUTH_URL } = oidcOAuthEnvSchema.parse(process.env);
-
 export const auth = betterAuth({
     appName: 'AntAlmanac',
-    baseURL: BETTER_AUTH_URL,
+    secret: env.BETTER_AUTH_SECRET,
+    baseURL: env.BETTER_AUTH_URL,
     database: drizzleAdapter(db, { provider: 'pg', usePlural: true }),
     plugins: [
         genericOAuth({
             config: [
                 {
                     providerId: AUTH_PROVIDER_ID,
-                    issuer: OIDC_ISSUER_URL,
-                    discoveryUrl: `${OIDC_ISSUER_URL}/.well-known/openid-configuration`,
-                    clientId: OIDC_CLIENT_ID,
+                    issuer: env.OIDC_ISSUER_URL,
+                    discoveryUrl: `${env.OIDC_ISSUER_URL}/.well-known/openid-configuration`,
+                    clientId: env.OIDC_CLIENT_ID,
                     scopes: ['openid', 'profile', 'email'],
                     pkce: true,
                     mapProfileToUser: (profile) => {
@@ -51,7 +50,7 @@ export const auth = betterAuth({
                         const returnUrl = getSafeAuthRedirectPath(
                             additionalData.returnUrl,
                             ctx.request?.url,
-                            new URL(BETTER_AUTH_URL).origin
+                            new URL(env.BETTER_AUTH_URL).origin
                         );
                         ctx.redirect(returnUrl);
                     }
@@ -106,6 +105,7 @@ export const auth = betterAuth({
             token: 'refreshToken',
             expiresAt: 'expires',
         },
+        expiresIn: 30 * 24 * 60 * 60, // 30 days
         cookieCache: {
             enabled: true,
             maxAge: 5 * 60, // 5 minutes

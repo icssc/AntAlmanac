@@ -1,4 +1,4 @@
-import { useQuickSearch } from '$src/hooks/useQuickSearch';
+import { useQuickSearch } from '$hooks/useQuickSearch';
 import { Search } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { AACourse, AATerm } from '@packages/antalmanac-types';

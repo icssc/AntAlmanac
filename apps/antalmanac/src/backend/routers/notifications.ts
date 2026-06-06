@@ -1,5 +1,12 @@
-import { RDS } from '$src/backend/lib/rds';
+import {
+    deleteAllNotifications,
+    deleteNotification,
+    retrieveNotifications,
+    updateAllNotifications,
+    upsertNotification,
+} from '$src/backend/lib/rds/notifications';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
+import { env } from '$src/env';
 import { QuarterSchema, WebsocSectionStatusSchema, WebsocSectionTypeSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { z } from 'zod';
@@ -21,28 +28,25 @@ const NotificationSchema = z.object({
     lastCodes: z.string(),
     notifyOn: NotifyOnSchema,
 });
-export type Notification = z.infer<typeof NotificationSchema>;
-
-const getStage = () => process.env.STAGE?.trim() || 'production';
 
 const notificationsRouter = router({
     get: protectedProcedure.query(async ({ ctx }) => {
-        const stage = getStage();
-        return await RDS.retrieveNotifications(db, ctx.userId, stage);
+        const stage = env.STAGE;
+        return await retrieveNotifications(db, ctx.userId, stage);
     }),
 
     set: protectedProcedure
         .input(z.object({ notifications: z.array(NotificationSchema) }))
         .mutation(async ({ input, ctx }) => {
-            const stage = getStage();
+            const stage = env.STAGE;
             await Promise.all(
-                input.notifications.map((notification) => RDS.upsertNotification(db, ctx.userId, notification, stage))
+                input.notifications.map((notification) => upsertNotification(db, ctx.userId, notification, stage))
             );
         }),
 
     updateNotifications: procedure.input(z.object({ notification: NotificationSchema })).mutation(async ({ input }) => {
-        const stage = getStage();
-        await RDS.updateAllNotifications(db, input.notification, stage);
+        const stage = env.STAGE;
+        await updateAllNotifications(db, input.notification, stage);
     }),
 
     // Intentionally public: used by unauthenticated unsubscribe links
@@ -56,14 +60,14 @@ const notificationsRouter = router({
             })
         )
         .mutation(async ({ input }) => {
-            const stage = getStage();
-            await RDS.deleteNotification(db, input.userId, input.sectionCode, input.year, input.quarter, stage);
+            const stage = env.STAGE;
+            await deleteNotification(db, input.userId, input.sectionCode, input.year, input.quarter, stage);
         }),
 
     // Intentionally public: used by unauthenticated unsubscribe links
     deleteAllNotifications: procedure.input(z.object({ userId: z.string() })).mutation(async ({ input }) => {
-        const stage = getStage();
-        await RDS.deleteAllNotifications(db, input.userId, stage);
+        const stage = env.STAGE;
+        await deleteAllNotifications(db, input.userId, stage);
     }),
 });
 

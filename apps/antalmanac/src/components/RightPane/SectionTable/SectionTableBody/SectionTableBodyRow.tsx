@@ -15,14 +15,14 @@ import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { TableRow, useTheme } from '@mui/material';
-import { AASection, AATerm, CourseDetails } from '@packages/antalmanac-types';
+import { AASection, AATerm, AACourse } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 interface SectionTableBodyRowProps {
     section: AASection;
-    courseDetails: CourseDetails;
+    courseDetails: AACourse;
     term: AATerm;
     allowHighlight: boolean;
     scheduleNames: string[];
@@ -101,7 +101,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {
-            /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
+            /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursesRoot */
             const computedAddedCourseStyle = allowHighlight
                 ? isDark
                     ? { backgroundColor: '#b0b04fa0' }

@@ -1,5 +1,5 @@
-import { plannerEnvSchema } from '$src/backend/env';
 import { protectedProcedure, router } from '$src/backend/trpc';
+import { env } from '$src/env';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { headers } from 'next/headers';
 import { z } from 'zod';
@@ -39,7 +39,11 @@ const roadmapRouter = router({
             return [];
         }
 
-        const { PLANNER_CLIENT_API_KEY: apiKey } = plannerEnvSchema.parse(process.env);
+        const apiKey = env.PLANNER_CLIENT_API_KEY;
+        if (!apiKey) {
+            console.warn('PLANNER_CLIENT_API_KEY is not set; skipping planner roadmap fetch');
+            return [];
+        }
         const domain = (await headers()).get('host') ?? 'antalmanac.com';
         const url = `https://${getPlannerApiDomain(domain)}${PLANNER_API_URL_PATH}?${new URLSearchParams({ input: JSON.stringify({ email: ctx.userEmail }) })}`;
 

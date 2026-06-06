@@ -30,7 +30,7 @@ export function NotificationsTabs() {
     const groups = useMemo(() => groupNotificationsByTerm(notifications), [notifications]);
     const sortedTerms = useMemo(() => Object.keys(groups).sort(), [groups]);
 
-    const [activeTab, setActiveTab] = useState(sortedTerms.at(0));
+    const [activeTab, setActiveTab] = useState(() => sortedTerms.at(0));
     const displayTab = activeTab ?? sortedTerms.at(0);
     const handleTabChange = (_: React.SyntheticEvent, newValue: string) => {
         setActiveTab(newValue);

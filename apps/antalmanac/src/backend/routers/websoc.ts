@@ -1,7 +1,12 @@
 import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import { getRenamedCoursesIdentifiers } from '$src/lib/renames/utils';
-import { QuarterSchema, WebsocSearchInputKeysSchema, type CourseInfo } from '@packages/antalmanac-types';
-import { WebsocSearchInputSchema, type WebsocSearchInput } from '@packages/antalmanac-types';
+import {
+    QuarterSchema,
+    WebsocSearchInputKeysSchema,
+    WebsocSearchInputSchema,
+    type AACourse,
+    type WebsocSearchInput,
+} from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,
     WebsocQueryParams,
@@ -14,11 +19,16 @@ import { z } from 'zod';
 import { router } from '../trpc';
 
 function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
-    const { department, courseNumber, ...rest } = params;
-    const sanitized: typeof params = { ...rest };
+    const { department, courseNumber, excludeRestrictionCodes, days, ...rest } = params;
+    const sanitized = {
+        ...rest,
+        excludeRestrictionCodes: excludeRestrictionCodes.join(','),
+        days: days.join(','),
+    } as WebsocQueryParams;
 
-    if (department && department.toUpperCase() !== 'ALL') {
-        sanitized.department = department.toUpperCase();
+    const normalizedDepartment = department?.toUpperCase();
+    if (normalizedDepartment && normalizedDepartment !== 'ALL') {
+        sanitized.department = normalizedDepartment;
     }
 
     if (courseNumber) {
@@ -32,7 +42,7 @@ function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
         }
     }
 
-    return sanitized as WebsocQueryParams;
+    return sanitized;
 }
 
 async function queryWebsoc(rawParams: WebsocSearchInput): Promise<WebsocAPIResponse> {
@@ -72,32 +82,26 @@ const websocRouter = router({
 
     getCourseInfo: aapiProcedure
         .input(WebsocSearchInputSchema)
-        .query(async ({ input }): Promise<Record<string, CourseInfo>> => {
+        .query(async ({ input }): Promise<Record<string, AACourse>> => {
             const res = await queryWebsoc(input);
 
             const entries = res.schools.flatMap((school) =>
                 school.departments.flatMap((dept) =>
                     dept.courses.flatMap((course) => {
                         const sectionTypes = [...new Set<WebsocSectionType>(course.sections.map((s) => s.sectionType))];
-                        return course.sections.map(
-                            (section) =>
-                                [
-                                    section.sectionCode,
-                                    {
-                                        courseDetails: {
-                                            deptCode: dept.deptCode,
-                                            courseNumber: course.courseNumber,
-                                            courseTitle: course.courseTitle,
-                                            courseComment: course.courseComment,
-                                            prerequisiteLink: course.prerequisiteLink,
-                                            sections: course.sections,
-                                            updatedAt: course.updatedAt,
-                                            sectionTypes,
-                                        },
-                                        section,
-                                    } satisfies CourseInfo,
-                                ] as const
-                        );
+                        const aaCourse = {
+                            courseId: course.courseId,
+                            deptCode: course.deptCode,
+                            courseNumber: course.courseNumber,
+                            courseTitle: course.courseTitle,
+                            courseComment: course.courseComment,
+                            prerequisiteLink: course.prerequisiteLink,
+                            updatedAt: course.updatedAt,
+                            sectionTypes,
+                            sections: course.sections.map((section) => ({ ...section, color: '' })),
+                        } satisfies AACourse;
+
+                        return course.sections.map((section) => [section.sectionCode, aaCourse] as const);
                     })
                 )
             );

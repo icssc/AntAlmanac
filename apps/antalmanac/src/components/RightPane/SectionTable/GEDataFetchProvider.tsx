@@ -1,9 +1,11 @@
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
+import { advancedSearchParsers } from '$components/RightPane/CoursePane/SearchParams/parsers';
 import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import type { AACourse } from '@packages/antalmanac-types';
 import { flattenCourses } from '@packages/anteater-api/utils';
+import { useQueryStates } from 'nuqs';
 import { useMemo } from 'react';
 
 /**
@@ -12,28 +14,35 @@ import { useMemo } from 'react';
  * GE criteria will miss them.
  */
 const GeDataFetchProvider = (props: SectionTableProps) => {
+    const [term] = useCourseSearchParam('term');
+    const [advanced] = useQueryStates(advancedSearchParsers);
+
     const params = useMemo(() => {
-        const formData = RightPaneStore.getFormData();
         return {
-            year: formData.term.year,
-            quarter: formData.term.quarter,
+            year: term.year,
+            quarter: term.quarter,
             department: props.courseDetails.deptCode,
             ge: 'ANY',
             courseNumber: props.courseDetails.courseNumber,
             courseTitle: props.courseDetails.courseTitle,
-            instructorName: formData.instructor,
-            units: formData.units,
-            endTime: formData.endTime,
-            startTime: formData.startTime,
-            fullCourses: formData.coursesFull,
-            building: formData.building,
-            room: formData.room,
-            division: formData.division,
-            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
-            days: formData.days.split(/(?=[A-Z])/).join(','),
+            instructorName: advanced.instructor,
+            units: advanced.units,
+            endTime: advanced.endTime,
+            startTime: advanced.startTime,
+            fullCourses: advanced.fullCourses,
+            building: advanced.building,
+            room: advanced.room,
+            division: advanced.division,
+            excludeRestrictionCodes: advanced.excludeRestrictionCodes,
+            days: advanced.days,
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [
+        advanced,
+        props.courseDetails.courseNumber,
+        props.courseDetails.courseTitle,
+        props.courseDetails.deptCode,
+        term,
+    ]);
 
     const { data } = trpcReact.websoc.getOne.useQuery(params);
 

@@ -7,7 +7,7 @@ import {
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
@@ -45,7 +45,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { AATerm, CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { AATerm, AACourse, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -59,6 +59,7 @@ enum ImportSource {
 }
 
 export function Import() {
+    const [term] = useCourseSearchParam('term');
     const [alertDialogTitle, setAlertDialogTitle] = useState('');
     const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>('error');
     const [alertDialog, setAlertDialog] = useState(false);
@@ -259,7 +260,6 @@ export function Import() {
         importSource: ImportSource.STUDY_LIST_IMPORT | ImportSource.ZOT_COURSE_IMPORT
     ) => {
         try {
-            const term = RightPaneStore.getFormData().term;
             const courseInfo = await trpc.websoc.getCourseInfo.query({
                 year: term.year,
                 quarter: term.quarter,
@@ -306,13 +306,16 @@ export function Import() {
         }
     };
 
-    const addCoursesMultiple = (
-        courseInfo: { [sectionCode: string]: CourseInfo },
-        term: AATerm,
-        scheduleIndex: number
-    ) => {
-        for (const section of Object.values(courseInfo)) {
-            addCourse(section.section, section.courseDetails, term, scheduleIndex, true, postHog);
+    const addCoursesMultiple = (courseInfo: Record<string, AACourse>, term: AATerm, scheduleIndex: number) => {
+        let sectionsAdded = 0;
+
+        for (const [sectionCode, course] of Object.entries(courseInfo)) {
+            const section = course.sections.find((s) => s.sectionCode === sectionCode);
+            if (!section) {
+                continue;
+            }
+            addCourse(section, course, term, scheduleIndex, true, postHog);
+            sectionsAdded += 1;
         }
 
         const terms = AppStore.termsInSchedule(term);
@@ -320,7 +323,7 @@ export function Import() {
             warnMultipleTerms(terms);
         }
 
-        return Object.values(courseInfo).length;
+        return sectionsAdded;
     };
 
     const handleImportSourceChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {

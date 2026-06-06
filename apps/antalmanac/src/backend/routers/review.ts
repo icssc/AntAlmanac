@@ -1,8 +1,12 @@
+import {
+    getDismissedCombos,
+    getReviewPromptLastInteractionAt,
+    getReviewedCombos,
+    insertInstructorReview,
+    insertReviewDismissal,
+} from '$src/backend/lib/rds/reviews';
 import { db } from '@packages/db';
-import { instructorReviews, reviewDismissals } from '@packages/db/src/schema';
 import { TRPCError } from '@trpc/server';
-import { max as maxDate } from 'date-fns';
-import { and, eq, max } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { protectedProcedure, router } from '../trpc';
@@ -38,40 +42,18 @@ const reviewRouter = router({
      * Enforces one review per (userId, professorId, courseId, term) combination.
      */
     submitReview: protectedProcedure.input(submitReviewInput).mutation(async ({ ctx, input }) => {
-        const existing = await db
-            .select({ id: instructorReviews.id })
-            .from(instructorReviews)
-            .where(
-                and(
-                    eq(instructorReviews.userId, ctx.userId),
-                    eq(instructorReviews.professorId, input.professorId),
-                    eq(instructorReviews.courseId, input.courseId),
-                    eq(instructorReviews.quarter, input.termShortName)
-                )
-            )
-            .limit(1);
+        const { termShortName, ...review } = input;
+        const inserted = await insertInstructorReview(db, ctx.userId, {
+            ...review,
+            quarter: termShortName,
+        });
 
-        if (existing.length > 0) {
+        if (inserted == null) {
             throw new TRPCError({
                 code: 'CONFLICT',
                 message: 'You have already reviewed this course with this professor.',
             });
         }
-
-        const [inserted] = await db
-            .insert(instructorReviews)
-            .values({
-                userId: ctx.userId,
-                professorId: input.professorId,
-                courseId: input.courseId,
-                quarter: input.termShortName,
-                rating: input.rating,
-                difficulty: input.difficulty,
-                tags: input.tags,
-                anonymous: input.anonymous,
-                content: input.content,
-            })
-            .returning({ id: instructorReviews.id });
 
         return inserted;
     }),
@@ -81,14 +63,7 @@ const reviewRouter = router({
      * Used on the client to filter out candidates that don't need a prompt.
      */
     getReviewedCombos: protectedProcedure.query(async ({ ctx }) => {
-        return db
-            .select({
-                professorId: instructorReviews.professorId,
-                courseId: instructorReviews.courseId,
-                term: instructorReviews.quarter,
-            })
-            .from(instructorReviews)
-            .where(eq(instructorReviews.userId, ctx.userId));
+        return getReviewedCombos(db, ctx.userId);
     }),
 
     /**
@@ -97,56 +72,21 @@ const reviewRouter = router({
     dismissReview: protectedProcedure
         .input(z.object({ professorId: z.string(), courseId: z.string(), termShortName: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            await db
-                .insert(reviewDismissals)
-                .values({
-                    userId: ctx.userId,
-                    professorId: input.professorId,
-                    courseId: input.courseId,
-                    term: input.termShortName,
-                })
-                .onConflictDoNothing();
+            await insertReviewDismissal(db, ctx.userId, input.professorId, input.courseId, input.termShortName);
         }),
 
     /**
      * Returns all (professorId, courseId, term) combos dismissed by this user.
      */
     getDismissedCombos: protectedProcedure.query(async ({ ctx }) => {
-        return db
-            .select({
-                professorId: reviewDismissals.professorId,
-                courseId: reviewDismissals.courseId,
-                term: reviewDismissals.term,
-            })
-            .from(reviewDismissals)
-            .where(eq(reviewDismissals.userId, ctx.userId));
+        return getDismissedCombos(db, ctx.userId);
     }),
 
     /**
      * Latest time the user dismissed a review prompt or submitted a quick review.
      */
     getReviewPromptLastInteractionAt: protectedProcedure.query(async ({ ctx }) => {
-        const [[dismissRow], [reviewRow]] = await Promise.all([
-            db
-                .select({ createdAt: max(reviewDismissals.createdAt) })
-                .from(reviewDismissals)
-                .where(eq(reviewDismissals.userId, ctx.userId)),
-            db
-                .select({ createdAt: max(instructorReviews.createdAt) })
-                .from(instructorReviews)
-                .where(eq(instructorReviews.userId, ctx.userId)),
-        ]);
-
-        const dismissedAt = dismissRow?.createdAt;
-        const reviewedAt = reviewRow?.createdAt;
-
-        const dates = [dismissedAt, reviewedAt]
-            .filter((d): d is NonNullable<typeof d> => d != null)
-            .map((d) => new Date(d));
-
-        const lastInteractionAt = dates.length === 0 ? null : maxDate(dates);
-
-        return { lastInteractionAt };
+        return getReviewPromptLastInteractionAt(db, ctx.userId);
     }),
 });
 

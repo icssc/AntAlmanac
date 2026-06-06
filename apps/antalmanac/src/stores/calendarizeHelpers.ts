@@ -1,9 +1,10 @@
-import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/types';
 import { getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { WEBSOC_DAYS } from '@packages/antalmanac-types';
 import type { HourMinute } from '@packages/anteater-api/types';
 
-const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+export const COURSE_WEEK_DAYS = WEBSOC_DAYS;
 
 const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -203,9 +204,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
     });
 }
 
-export const SHORT_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
-
-const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join('|')})`, 'g');
+const SHORT_DAY_REGEX = new RegExp(`(${COURSE_WEEK_DAYS.join('|')})`, 'g');
 
 /**
  * Parses a day string into an array of numbers.
@@ -226,7 +225,8 @@ export function parseDaysString(daysString: string | null): number[] | null {
     let match: RegExpExecArray | null;
 
     while ((match = SHORT_DAY_REGEX.exec(daysString))) {
-        days.push(SHORT_DAYS.indexOf(match[1]));
+        const matchedDay = match[1];
+        days.push(COURSE_WEEK_DAYS.findIndex((day) => day === matchedDay));
     }
 
     return days;

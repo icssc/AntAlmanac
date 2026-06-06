@@ -1,5 +1,5 @@
+import { parseDaysString, COURSE_WEEK_DAYS } from '$stores/calendarizeHelpers';
 import { describe, test, expect } from 'vitest';
-import { parseDaysString, SHORT_DAYS } from '$stores/calendarizeHelpers';
 
 describe('parse days string', () => {
     // This is a hardcoded example.
@@ -17,27 +17,30 @@ describe('parse days string', () => {
     // TODO: it might be possible to do all these tests with a single for loop.
 
     test('one day', () => {
-        for (const day of SHORT_DAYS) {
-            expect(parseDaysString(day)).toEqual([SHORT_DAYS.indexOf(day)]);
+        for (const day of COURSE_WEEK_DAYS) {
+            expect(parseDaysString(day)).toEqual([COURSE_WEEK_DAYS.indexOf(day)]);
         }
     });
 
     test('two days', () => {
-        for (const day1 of SHORT_DAYS) {
-            for (const day2 of SHORT_DAYS) {
-                expect(parseDaysString(`${day1}${day2}`)).toEqual([SHORT_DAYS.indexOf(day1), SHORT_DAYS.indexOf(day2)]);
+        for (const day1 of COURSE_WEEK_DAYS) {
+            for (const day2 of COURSE_WEEK_DAYS) {
+                expect(parseDaysString(`${day1}${day2}`)).toEqual([
+                    COURSE_WEEK_DAYS.indexOf(day1),
+                    COURSE_WEEK_DAYS.indexOf(day2),
+                ]);
             }
         }
     });
 
     test('three days', () => {
-        for (const day1 of SHORT_DAYS) {
-            for (const day2 of SHORT_DAYS) {
-                for (const day3 of SHORT_DAYS) {
+        for (const day1 of COURSE_WEEK_DAYS) {
+            for (const day2 of COURSE_WEEK_DAYS) {
+                for (const day3 of COURSE_WEEK_DAYS) {
                     expect(parseDaysString(`${day1}${day2}${day3}`)).toEqual([
-                        SHORT_DAYS.indexOf(day1),
-                        SHORT_DAYS.indexOf(day2),
-                        SHORT_DAYS.indexOf(day3),
+                        COURSE_WEEK_DAYS.indexOf(day1),
+                        COURSE_WEEK_DAYS.indexOf(day2),
+                        COURSE_WEEK_DAYS.indexOf(day3),
                     ]);
                 }
             }
@@ -45,15 +48,15 @@ describe('parse days string', () => {
     });
 
     test('four days', () => {
-        for (const day1 of SHORT_DAYS) {
-            for (const day2 of SHORT_DAYS) {
-                for (const day3 of SHORT_DAYS) {
-                    for (const day4 of SHORT_DAYS) {
+        for (const day1 of COURSE_WEEK_DAYS) {
+            for (const day2 of COURSE_WEEK_DAYS) {
+                for (const day3 of COURSE_WEEK_DAYS) {
+                    for (const day4 of COURSE_WEEK_DAYS) {
                         expect(parseDaysString(`${day1}${day2}${day3}${day4}`)).toEqual([
-                            SHORT_DAYS.indexOf(day1),
-                            SHORT_DAYS.indexOf(day2),
-                            SHORT_DAYS.indexOf(day3),
-                            SHORT_DAYS.indexOf(day4),
+                            COURSE_WEEK_DAYS.indexOf(day1),
+                            COURSE_WEEK_DAYS.indexOf(day2),
+                            COURSE_WEEK_DAYS.indexOf(day3),
+                            COURSE_WEEK_DAYS.indexOf(day4),
                         ]);
                     }
                 }
@@ -62,21 +65,24 @@ describe('parse days string', () => {
     });
 
     test('two days scrambled order', () => {
-        for (const day1 of SHORT_DAYS) {
-            for (const day2 of SHORT_DAYS) {
-                expect(parseDaysString(`${day2}${day1}`)).toEqual([SHORT_DAYS.indexOf(day2), SHORT_DAYS.indexOf(day1)]);
+        for (const day1 of COURSE_WEEK_DAYS) {
+            for (const day2 of COURSE_WEEK_DAYS) {
+                expect(parseDaysString(`${day2}${day1}`)).toEqual([
+                    COURSE_WEEK_DAYS.indexOf(day2),
+                    COURSE_WEEK_DAYS.indexOf(day1),
+                ]);
             }
         }
     });
 
     test('three days scrambled order', () => {
-        for (const day1 of SHORT_DAYS) {
-            for (const day2 of SHORT_DAYS) {
-                for (const day3 of SHORT_DAYS) {
+        for (const day1 of COURSE_WEEK_DAYS) {
+            for (const day2 of COURSE_WEEK_DAYS) {
+                for (const day3 of COURSE_WEEK_DAYS) {
                     expect(parseDaysString(`${day2}${day3}${day1}`)).toEqual([
-                        SHORT_DAYS.indexOf(day2),
-                        SHORT_DAYS.indexOf(day3),
-                        SHORT_DAYS.indexOf(day1),
+                        COURSE_WEEK_DAYS.indexOf(day2),
+                        COURSE_WEEK_DAYS.indexOf(day3),
+                        COURSE_WEEK_DAYS.indexOf(day1),
                     ]);
                 }
             }
@@ -84,15 +90,15 @@ describe('parse days string', () => {
     });
 
     test('four days scrambled order', () => {
-        for (const day1 of SHORT_DAYS) {
-            for (const day2 of SHORT_DAYS) {
-                for (const day3 of SHORT_DAYS) {
-                    for (const day4 of SHORT_DAYS) {
+        for (const day1 of COURSE_WEEK_DAYS) {
+            for (const day2 of COURSE_WEEK_DAYS) {
+                for (const day3 of COURSE_WEEK_DAYS) {
+                    for (const day4 of COURSE_WEEK_DAYS) {
                         expect(parseDaysString(`${day4}${day3}${day1}${day2}`)).toEqual([
-                            SHORT_DAYS.indexOf(day4),
-                            SHORT_DAYS.indexOf(day3),
-                            SHORT_DAYS.indexOf(day1),
-                            SHORT_DAYS.indexOf(day2),
+                            COURSE_WEEK_DAYS.indexOf(day4),
+                            COURSE_WEEK_DAYS.indexOf(day3),
+                            COURSE_WEEK_DAYS.indexOf(day1),
+                            COURSE_WEEK_DAYS.indexOf(day2),
                         ]);
                     }
                 }

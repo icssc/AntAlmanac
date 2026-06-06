@@ -1,11 +1,9 @@
-import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
 import termJson from '$generated/termData.json';
 import { parseQuarter, termSchema } from '$lib/termHelpers';
 import type { AATerm } from '@packages/antalmanac-types';
 import { Year } from '@packages/anteater-api/types';
 import { z } from 'zod';
-
-export type { AATerm } from '@packages/antalmanac-types';
 
 const allTerms: AATerm[] = z.array(termSchema).parse(termJson);
 

@@ -1,4 +1,4 @@
-import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchParams/constants';
 import { type AATerm, Roadmap } from '@packages/antalmanac-types';
 
 export enum RoadmapTermRelation {
@@ -29,5 +29,5 @@ export function getRoadmapTermRelation(roadmap: Roadmap, term: AATerm): RoadmapT
 
 export function shouldSearchPlannerFromParams() {
     const searchParams = new URLSearchParams(window.location.search);
-    return searchParams.get(PLANNER_SEARCH_PARAM) !== null;
+    return searchParams.get(COURSE_SEARCH_PLANNER_KEY) !== null;
 }

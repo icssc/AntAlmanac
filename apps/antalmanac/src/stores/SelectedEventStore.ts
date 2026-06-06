@@ -1,4 +1,4 @@
-import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent } from '$components/Calendar/types';
 import { SyntheticEvent } from 'react';
 import { create } from 'zustand';
 

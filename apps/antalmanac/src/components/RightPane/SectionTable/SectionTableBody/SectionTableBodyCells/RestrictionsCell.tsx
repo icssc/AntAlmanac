@@ -1,5 +1,5 @@
+import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/constants';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import restrictionsMapping from '$components/RightPane/SectionTable/static/restrictionsMapping.json';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { Box, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import { Fragment, useCallback, useMemo, useState } from 'react';
@@ -7,6 +7,10 @@ import { Fragment, useCallback, useMemo, useState } from 'react';
 interface RestrictionsCellProps {
     restrictions: string;
 }
+
+const RESTRICTION_CODE_LABELS = Object.fromEntries(
+    EXCLUDE_RESTRICTION_CODES_OPTIONS.map(({ value, label }) => [value, label])
+);
 
 export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
     const isMobile = useIsMobile();
@@ -20,7 +24,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 if (code !== 'and' && code !== 'or') {
                     return (
                         <Fragment key={index}>
-                            {restrictionsMapping[code as keyof typeof restrictionsMapping]}
+                            {RESTRICTION_CODE_LABELS[code]}
                             <br />
                         </Fragment>
                     );

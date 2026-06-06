@@ -1,6 +1,6 @@
-import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';
 
+import { env } from '$scripts/env';
 import { createClient } from '@packages/anteater-api/client';
 import type { WebsocAPIDepartmentsResponse } from '@packages/anteater-api/types';
 
@@ -8,7 +8,7 @@ import { DEPARTMENTS_FILE, GENERATED_DIR } from './lib/paths.js';
 
 const DEPARTMENT_YEAR_RANGE = 10;
 
-const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
+const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 
 async function main() {
     const sinceYear = String(new Date().getFullYear() - DEPARTMENT_YEAR_RANGE);

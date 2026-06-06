@@ -3,20 +3,19 @@ import { DeleteButton } from '$components/RightPane/SectionTable/SectionTableBod
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { SectionActionMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/SectionActionMenu';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import type { AATerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
-import { useHiddenCoursesStore, VisibilityState } from '$stores/HiddenCoursesStore';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
 import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import type { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { VisibilityState, type AASection, type AACourse, type AATerm } from '@packages/antalmanac-types';
 import { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 interface ActionCellProps {
     section: AASection;
     term: AATerm;
-    courseDetails: CourseDetails;
+    courseDetails: AACourse;
     scheduleConflict: boolean;
     addedCourse: boolean;
     scheduleNames: string[];

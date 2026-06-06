@@ -7,16 +7,6 @@
 export const BLUE = '#305db7';
 
 /**
- * Enrollment status text colors — matches lightTheme.enrollmentStatus in Theme.tsx.
- * Used as the semantic color anchor; pill variants below are derived from these hues.
- */
-export const ENROLLMENT_STATUS_COLORS = {
-    open: '#00c853',
-    waitlist: '#ff9800',
-    full: '#e53935',
-} as const;
-
-/**
  * Email pill styles for each enrollment status.
  * Background is a pale tint of the status hue; text is a darker shade for WCAG contrast.
  */

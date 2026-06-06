@@ -1,4 +1,4 @@
-import type { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedSectionsGrid';
+import type { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCourses';
 import { CustomEventDetailView } from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';

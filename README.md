@@ -139,7 +139,10 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
     This will start a PostgreSQL database on port 5432 with the credentials specified in `docker-compose.yml`.
 
-4. Set up environment variables. Create a `.env` file in the root directory based on the `.env.example`.
+4. Set up environment variables:
+    - Copy `apps/antalmanac/.env.example` to `apps/antalmanac/.env` and fill in values.
+    - Copy `packages/db/.env.example` to `packages/db/.env` (same `DB_URL` as above is fine).
+    - For AANTS local runs, use `apps/aants/.env.example` as a template.
 
 5. Run database migrations to set up the database schema.
 

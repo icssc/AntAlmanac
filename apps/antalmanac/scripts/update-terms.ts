@@ -1,7 +1,7 @@
-import 'dotenv/config';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
+import { env } from '$scripts/env';
 import { createClient } from '@packages/anteater-api/client';
 import type { WebsocTerm } from '@packages/anteater-api/types';
 import { flattenSections } from '@packages/anteater-api/utils';
@@ -16,7 +16,7 @@ interface DeployedTermsData {
     reason?: string;
 }
 
-const aapiClient = createClient({ apiKey: process.env.ANTEATER_API_KEY });
+const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 
 async function getSectionCount(term: WebsocTerm) {
     const { shortName } = term;

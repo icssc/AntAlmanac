@@ -1,14 +1,26 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
+import {
+    courseColorKey,
+    getPalette,
+    resolveAssignment,
+    type SectionColorSetting,
+    type ThemeAssignmentMap,
+} from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
+import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Box, Popover, PopoverProps, SxProps, TableCell, Tooltip } from '@mui/material';
 import { AASection, AATerm } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 const STRIP_SHRINK_PX = 5;
 const STRIP_EXPAND_PX = 8;
+
+/** Stable empty map so the color-sync effect doesn't re-run (and re-subscribe) every render. */
+const EMPTY_ASSIGNMENTS: ThemeAssignmentMap = {};
 
 const cellSx: SxProps = {
     position: 'relative',
@@ -18,10 +30,23 @@ const cellSx: SxProps = {
     overflow: 'visible',
 };
 
-const getSectionScheduleColor = (section: AASection, term: AATerm): string =>
-    AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term)?.section.color ??
-    section.color ??
-    '#5ec8e0';
+function getDisplayColor(
+    section: AASection,
+    term: AATerm,
+    setting: SectionColorSetting,
+    assignments: ThemeAssignmentMap,
+    palette: readonly (readonly string[])[]
+): string {
+    const course = AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term);
+    if (!course) {
+        return section.color ?? '#5ec8e0';
+    }
+    if (setting === 'custom') {
+        return course.section.color;
+    }
+    const value = assignments[courseColorKey(term, section.sectionCode)];
+    return value != null ? resolveAssignment(value, palette) : course.section.color;
+}
 
 interface SectionTableBodyRowColorStripProps {
     section: AASection;
@@ -33,8 +58,21 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     const isMobile = useIsMobile();
     const clickable = !isMobile && visible;
 
+    const sectionColor = useSectionThemeStore((s) => s.sectionColor);
+    const activeSectionColor = useSectionThemeStore(selectActiveSectionColor);
+    const setManualColor = useSectionThemeStore((s) => s.setManualColor);
+    // Read the single resolved source of truth so the strip always matches the calendar
+    // (which reads the same map via useSectionThemeAssignments).
+    const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
+    const isDark = useThemeStore((s) => s.isDark);
+
+    const palette = useMemo(() => getPalette(activeSectionColor, isDark), [activeSectionColor, isDark]);
+    const assignments = activeSectionColor === 'custom' ? EMPTY_ASSIGNMENTS : activeAssignments;
+
     const [hovered, setHovered] = useState(false);
-    const [currColor, setCurrColor] = useState(() => getSectionScheduleColor(section, term));
+    const [currColor, setCurrColor] = useState(() =>
+        getDisplayColor(section, term, activeSectionColor, assignments, palette)
+    );
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
 
     const stripWidth = visible && clickable && hovered ? STRIP_EXPAND_PX : STRIP_SHRINK_PX;
@@ -54,15 +92,23 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     const handleColorChange = useCallback(
         (newColor: { hex: string }) => {
             setCurrColor(newColor.hex);
-            changeCourseColor(section.sectionCode, term, newColor.hex);
+            // On a preset theme, store an override layered on the theme; on custom, edit
+            // the section's stored color directly.
+            if (sectionColor !== 'custom') {
+                setManualColor(sectionColor, courseColorKey(term, section.sectionCode), newColor.hex);
+            } else {
+                changeCourseColor(section.sectionCode, term, newColor.hex);
+            }
         },
-        [section.sectionCode, term]
+        [section.sectionCode, term, sectionColor, setManualColor]
     );
 
     useEffect(() => {
         const syncColor = () => {
-            setCurrColor(getSectionScheduleColor(section, term));
+            setCurrColor(getDisplayColor(section, term, activeSectionColor, assignments, palette));
         };
+
+        syncColor();
 
         AppStore.on('addedCoursesChange', syncColor);
         AppStore.on('currentScheduleIndexChange', syncColor);
@@ -73,7 +119,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
             AppStore.removeListener('currentScheduleIndexChange', syncColor);
             AppStore.removeListener('colorChange', syncColor);
         };
-    }, [section.sectionCode, section.color, term]);
+    }, [section, term, activeSectionColor, assignments, palette]);
 
     useEffect(() => {
         if (!visible) {
