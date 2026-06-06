@@ -108,7 +108,6 @@ export const ScheduleCalendar = memo(() => {
             const courseEvent = e as CourseEvent;
             const visibility: VisibilityState =
                 visibilityMap[currentScheduleId]?.[courseColorKey(courseEvent.term, courseEvent.sectionCode)] ??
-                visibilityMap[currentScheduleId]?.[courseEvent.sectionCode] ??
                 VisibilityState.Visible;
             return visibility !== VisibilityState.Disappeared;
         });
@@ -176,7 +175,6 @@ export const ScheduleCalendar = memo(() => {
             const visibility: VisibilityState =
                 !isSkeletonEvent && !('isCustomEvent' in event && event.isCustomEvent)
                     ? (visibilityMap[currentScheduleId]?.[courseColorKey(courseEvent.term, courseEvent.sectionCode)] ??
-                      visibilityMap[currentScheduleId]?.[courseEvent.sectionCode] ??
                       VisibilityState.Visible)
                     : VisibilityState.Visible;
 

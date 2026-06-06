@@ -99,10 +99,7 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
 
             <Box sx={{ gap: 0.5 }}>
                 {tbaSections.map((section) => (
-                    <Typography
-                        key={`${section.termShortName}|${section.deptCode}|${section.courseNumber}|${section.sectionCode}`}
-                        variant="body2"
-                    >
+                    <Typography key={`${section.termShortName}::${section.sectionCode}`} variant="body2">
                         {isMobile
                             ? `${section.deptCode} ${section.courseNumber}`
                             : `${section.deptCode} ${section.courseNumber} — ${section.sectionCode}`}

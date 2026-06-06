@@ -19,30 +19,20 @@ interface HiddenCoursesStore {
     hydrateFromSchedules: (schedules: Array<{ id?: string; courses: ShortCourse[] }>) => void;
 }
 
-function sectionVisibilityKey(term: AATerm | string, sectionCode: string): string {
-    return courseColorKey(term, sectionCode);
-}
-
 export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
     visibilityMap: {},
 
     getVisibility: (scheduleId, term, sectionCode) => {
-        const key = sectionVisibilityKey(term, sectionCode);
-        const scheduleMap = get().visibilityMap[scheduleId];
-        if (!scheduleMap) return VisibilityState.Visible;
-        if (scheduleMap[key] != null) return scheduleMap[key];
-        // Legacy: sectionCode-only keys from before term-scoped visibility.
-        return scheduleMap[sectionCode] ?? VisibilityState.Visible;
+        return get().visibilityMap[scheduleId]?.[courseColorKey(term, sectionCode)] ?? VisibilityState.Visible;
     },
 
     cycleVisibility: (scheduleId, term, sectionCode) => {
         const visibilityMap = get().visibilityMap;
-        const key = sectionVisibilityKey(term, sectionCode);
-        const currentVisibility: VisibilityState = get().getVisibility(scheduleId, term, sectionCode);
+        const key = courseColorKey(term, sectionCode);
+        const currentVisibility = get().getVisibility(scheduleId, term, sectionCode);
         const nextVisibility = NEXT_VISIBILITY[currentVisibility];
 
         const scheduleMap = { ...visibilityMap[scheduleId] };
-        delete scheduleMap[sectionCode];
         if (nextVisibility === VisibilityState.Visible) {
             delete scheduleMap[key];
         } else {
@@ -60,14 +50,13 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
 
     clearCourseVisibility: (scheduleId, term, sectionCode) => {
         const visibilityMap = get().visibilityMap;
-        const key = sectionVisibilityKey(term, sectionCode);
-        if (!visibilityMap[scheduleId]?.[key] && !visibilityMap[scheduleId]?.[sectionCode]) {
+        const key = courseColorKey(term, sectionCode);
+        if (!visibilityMap[scheduleId]?.[key]) {
             return;
         }
 
         const scheduleMap = { ...visibilityMap[scheduleId] };
         delete scheduleMap[key];
-        delete scheduleMap[sectionCode];
 
         const newVisibilityMap = { ...visibilityMap };
         if (Object.keys(scheduleMap).length === 0) {
@@ -95,7 +84,7 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
                 const visibility = course.visibility ?? VisibilityState.Visible;
                 if (visibility !== VisibilityState.Visible) {
                     newMap[schedule.id] ??= {};
-                    newMap[schedule.id][sectionVisibilityKey(course.term, course.sectionCode)] = visibility;
+                    newMap[schedule.id][courseColorKey(course.term, course.sectionCode)] = visibility;
                 }
             }
         }
