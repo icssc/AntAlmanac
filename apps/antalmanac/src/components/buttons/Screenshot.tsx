@@ -3,7 +3,6 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { Panorama } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { saveAs } from 'file-saver';
-import html2canvas from 'html2canvas';
 import { usePostHog } from 'posthog-js/react';
 
 interface ScreenshotButtonProps {
@@ -23,13 +22,20 @@ const ScreenshotButton = ({ onScreenshot }: ScreenshotButtonProps) => {
         onScreenshot?.();
 
         setTimeout(() => {
-            void html2canvas(document.getElementById('screenshot') as HTMLElement, {
-                scale: 2.5,
-                backgroundColor: isDark ? '#303030' : '#fafafa',
-            }).then((canvas) => {
+            void (async () => {
+                const element = document.getElementById('screenshot');
+                if (!element) {
+                    return;
+                }
+
+                const { default: html2canvas } = await import('html2canvas');
+                const canvas = await html2canvas(element, {
+                    scale: 2.5,
+                    backgroundColor: isDark ? '#303030' : '#fafafa',
+                });
                 const imgRaw = canvas.toDataURL('image/png');
                 saveAs(imgRaw, 'Schedule.png');
-            });
+            })();
         }, 1);
     };
 
