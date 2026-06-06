@@ -11,6 +11,7 @@ import {
     setLocalStorageAddedCoursesSkeletonBlueprint,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { Box, SxProps, Typography } from '@mui/material';
 import { AACourse, AATerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -67,7 +68,9 @@ function getCourses() {
     const formattedCourses: CourseWithTerm[] = [];
 
     for (const course of currentCourses) {
-        let formattedCourse = formattedCourses.find((formattedCourse) => formattedCourse.courseId === course.courseId);
+        let formattedCourse = formattedCourses.find(
+            (formattedCourse) => scheduleOfferingKey(formattedCourse) === scheduleOfferingKey(course)
+        );
 
         const sectionUpdatedAt = course.section?.updatedAt ?? null;
 
@@ -121,8 +124,8 @@ export function AddedCourses() {
 
             AppStore.reorderAddedCourses(
                 AppStore.getCurrentScheduleIndex(),
-                movedCourse.courseId,
-                nextConsecutiveCourse !== null ? nextConsecutiveCourse.courseId : null
+                scheduleOfferingKey(movedCourse),
+                nextConsecutiveCourse !== null ? scheduleOfferingKey(nextConsecutiveCourse) : null
             );
         },
         []

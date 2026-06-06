@@ -17,6 +17,10 @@ import {
 } from '@mui/material/colors';
 import { ScheduleCourse } from '@packages/antalmanac-types';
 
+export function scheduleOfferingKey(course: Pick<ScheduleCourse, 'term' | 'courseId' | 'courseTitle'>): string {
+    return `${course.term.shortName}::${course.courseId}::${course.courseTitle}`;
+}
+
 const colorVariants: Record<string, string[]> = {
     blue: [blue[300], blue[200], blue[100], blue[400], blue[500]],
     pink: [pink[300], pink[200], pink[100], pink[400], pink[500]],
@@ -84,22 +88,22 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
         (defaultColors as string[]).includes(materialColor)
     ) as unknown as (typeof defaultColors)[number];
 
-    const sameCourseSections = sectionsInSchedule
-        .filter((course) => course.courseId === newSection.courseId)
+    const offeringKey = scheduleOfferingKey(newSection);
+    const sameOfferingSections = sectionsInSchedule
+        .filter((course) => scheduleOfferingKey(course) === offeringKey)
         .sort(
             (a, b) =>
                 Math.abs(parseInt(a.section.sectionCode) - parseInt(newSection.section.sectionCode)) -
                 Math.abs(parseInt(b.section.sectionCode) - parseInt(newSection.section.sectionCode))
         );
 
-    const sameSectionCode = sameCourseSections.find(
-        (course) => course.section.sectionCode === newSection.section.sectionCode
+    const sameSectionType = sameOfferingSections.filter(
+        (course) => course.section.sectionType === newSection.section.sectionType
     );
-    if (sameSectionCode) return sameSectionCode.section.color;
+    if (sameSectionType.length > 0) return sameSectionType[0].section.color;
 
-    // Same course, different section — distinct color (variant of nearest sibling)
-    if (sameCourseSections.length > 0) {
-        return generateColorVariant(sameCourseSections[0].section.color, new Set(usedColors));
+    if (sameOfferingSections.length > 0) {
+        return generateColorVariant(sameOfferingSections[0].section.color, new Set(usedColors));
     }
 
     return (
@@ -118,19 +122,19 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
  * Date written: March 2026
  */
 export function groupCourseSections(courses: ScheduleCourse[]): ScheduleCourse[] {
-    const courseIndexes: { [courseId: string]: number } = {};
+    const offeringIndexes: Record<string, number> = {};
     const groupedCourses: ScheduleCourse[][] = [];
     let index = 0;
     for (const course of courses) {
-        if (!Object.hasOwn(courseIndexes, course.courseId)) {
-            courseIndexes[course.courseId] = index;
+        const key = scheduleOfferingKey(course);
+        if (!Object.hasOwn(offeringIndexes, key)) {
+            offeringIndexes[key] = index;
             groupedCourses.push([]);
             index++;
         }
     }
     for (const course of courses) {
-        const courseIndex = courseIndexes[course.courseId];
-        groupedCourses[courseIndex].push(course);
+        groupedCourses[offeringIndexes[scheduleOfferingKey(course)]].push(course);
     }
     return groupedCourses.flat();
 }

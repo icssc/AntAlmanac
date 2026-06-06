@@ -336,14 +336,14 @@ class AppStore extends EventEmitter {
         this.emit('reorderSchedule');
     }
 
-    reorderAddedCourses(scheduleIndex: number, movedCourseId: string, nextCourseId: string | null) {
-        this.schedule.reorderAddedCourses(scheduleIndex, movedCourseId, nextCourseId);
+    reorderAddedCourses(scheduleIndex: number, movedOfferingKey: string, nextOfferingKey: string | null) {
+        this.schedule.reorderAddedCourses(scheduleIndex, movedOfferingKey, nextOfferingKey);
         this.unsavedChanges = true;
         const action: ReorderAddedCoursesAction = {
             type: 'reorderAddedCourses',
             scheduleIndex: scheduleIndex,
-            movedCourseId: movedCourseId,
-            nextCourseId: nextCourseId,
+            movedOfferingKey,
+            nextOfferingKey,
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');

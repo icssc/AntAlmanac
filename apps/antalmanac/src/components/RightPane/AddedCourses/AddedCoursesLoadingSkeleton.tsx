@@ -4,6 +4,7 @@ import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { Box, Typography } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { Component, type ReactNode, useEffect, useState } from 'react';
@@ -108,7 +109,7 @@ export function AddedCoursesLoadingSkeleton() {
             <Box display="flex" flexDirection="column" gap={1}>
                 {blueprint.courses.map((course) => (
                     <SectionTable
-                        key={course.courseId}
+                        key={scheduleOfferingKey(course)}
                         skeleton
                         sortable
                         courseDetails={course}

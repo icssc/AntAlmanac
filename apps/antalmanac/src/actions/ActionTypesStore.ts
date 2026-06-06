@@ -84,8 +84,8 @@ export interface ReorderScheduleAction {
 export interface ReorderAddedCoursesAction {
     type: 'reorderAddedCourses';
     scheduleIndex: number;
-    movedCourseId: string;
-    nextCourseId: string | null;
+    movedOfferingKey: string;
+    nextOfferingKey: string | null;
 }
 
 export interface ChangeCourseColorAction {

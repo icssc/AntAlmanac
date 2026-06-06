@@ -1,7 +1,7 @@
 import { trpc } from '$lib/api/trpc';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { moveArrayElements } from '$lib/utils';
-import { getColorForNewSection, groupCourseSections } from '$stores/scheduleHelpers';
+import { getColorForNewSection, groupCourseSections, scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     AATerm,
@@ -202,30 +202,33 @@ export class Schedules {
      * Moves a course's sections from one position to another.
      *
      * @param scheduleIndex Index of the schedule to reorder courses for.
-     * @param movedCourseId ID of the course whose sections should be moved.
-     * @param nextCourseId ID of the course directly after the moved course after reordering.
+     * @param movedOfferingKey Offering key (`term::courseId::title`) whose sections should be moved.
+     * @param nextOfferingKey Offering key directly after the moved course after reordering.
      * Pass `null` if the course is being moved to the end.
      */
-    reorderAddedCourses(scheduleIndex: number, movedCourseId: string, nextCourseId: string | null) {
+    reorderAddedCourses(scheduleIndex: number, movedOfferingKey: string, nextOfferingKey: string | null) {
         this.addUndoState();
         const courses = this.schedules[scheduleIndex].courses;
 
-        const fromIndex = courses.findIndex((course) => course.courseId === movedCourseId);
+        const fromIndex = courses.findIndex((course) => scheduleOfferingKey(course) === movedOfferingKey);
         if (fromIndex === -1) {
-            console.error(`Course id ${movedCourseId} was not found in schedule courses`);
+            console.error(`Offering ${movedOfferingKey} was not found in schedule courses`);
             openSnackbar('error', 'Could not reorder added courses');
             return;
         }
 
         const toIndex =
-            nextCourseId !== null ? courses.findIndex((course) => course.courseId === nextCourseId) : courses.length;
+            nextOfferingKey !== null
+                ? courses.findIndex((course) => scheduleOfferingKey(course) === nextOfferingKey)
+                : courses.length;
         if (toIndex === -1) {
-            console.error(`Course id ${toIndex} was not found in schedule courses`);
+            console.error(`Offering ${nextOfferingKey} was not found in schedule courses`);
             openSnackbar('error', 'Could not reorder added courses');
             return;
         }
 
-        const sectionCount = courses.findLastIndex((course) => course.courseId === movedCourseId) - fromIndex + 1;
+        const sectionCount =
+            courses.findLastIndex((course) => scheduleOfferingKey(course) === movedOfferingKey) - fromIndex + 1;
 
         moveArrayElements(courses, fromIndex, toIndex, { elementMoveCount: sectionCount });
     }
@@ -319,7 +322,8 @@ export class Schedules {
         };
 
         const courses = this.schedules[scheduleIndex].courses;
-        const courseLastSectionIndex = courses.findLastIndex((course) => course.courseId === sectionToAdd.courseId);
+        const offeringKey = scheduleOfferingKey(sectionToAdd);
+        const courseLastSectionIndex = courses.findLastIndex((course) => scheduleOfferingKey(course) === offeringKey);
         if (courseLastSectionIndex !== -1) {
             courses.splice(courseLastSectionIndex + 1, 0, sectionToAdd);
         } else {
