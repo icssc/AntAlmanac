@@ -1,4 +1,4 @@
-import { CalendarEventKind, type CourseEvent } from '$components/Calendar/types';
+import type { CourseEvent } from '$components/Calendar/types';
 import { getDefaultTerm, termData } from '$lib/term';
 import { describe, test, expect } from 'vitest';
 
@@ -22,7 +22,7 @@ describe('termData', () => {
             },
             courseTitle: '',
             instructors: [],
-            eventKind: CalendarEventKind.Course,
+            eventKind: 'course',
             sectionCode: '',
             sectionType: '',
             term,

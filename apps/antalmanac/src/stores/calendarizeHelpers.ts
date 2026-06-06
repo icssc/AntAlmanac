@@ -1,10 +1,4 @@
-import {
-    CalendarEventKind,
-    type CourseEvent,
-    type CustomEvent,
-    type FinalExam,
-    type Location,
-} from '$components/Calendar/types';
+import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/types';
 import { getReferencesOccurring } from '$lib/utils';
 import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { WEBSOC_DAYS } from '@packages/antalmanac-types';
@@ -97,7 +91,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
                     start: new Date(2018, 0, dayIndex, startHour, startMin),
                     end: new Date(2018, 0, dayIndex, endHour, endMin),
                     finalExam: finalExamField,
-                    eventKind: CalendarEventKind.Course,
+                    eventKind: 'course',
                 });
             }
         }
@@ -176,7 +170,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                     ...finalExam,
                     locations: finalExamLocations,
                 },
-                eventKind: CalendarEventKind.Course,
+                eventKind: 'course',
             };
         });
     });
@@ -200,7 +194,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
                 customEventID: customEvent.customEventID,
                 color: customEvent.color ?? '#000000',
                 start: new Date(2018, 0, dayIndex, startHour, startMin),
-                eventKind: CalendarEventKind.Custom,
+                eventKind: 'custom',
                 end: new Date(2018, 0, dayIndex, endHour, endMin),
                 title: customEvent.title,
                 building: customEvent.building ?? '',

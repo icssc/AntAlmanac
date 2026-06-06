@@ -2,7 +2,7 @@ import {
     skeletonBlueprintVariations,
     type SkeletonBlueprint,
 } from '$components/Calendar/Skeleton/skeletonBlueprintVariations';
-import { CalendarEventKind, type SkeletonEvent } from '$components/Calendar/types';
+import type { SkeletonEvent } from '$components/Calendar/types';
 import { getLocalStorageSkeletonBlueprint } from '$lib/localStorage';
 
 export const CALENDAR_BASE_DATE = new Date(2018, 0, 1);
@@ -20,7 +20,7 @@ function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint, color: string): 
         start,
         end,
         title: '',
-        eventKind: CalendarEventKind.Skeleton,
+        eventKind: 'skeleton',
     };
 }
 

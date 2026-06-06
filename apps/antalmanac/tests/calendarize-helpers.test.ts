@@ -1,4 +1,4 @@
-import { CalendarEventKind, type CourseEvent, type CustomEvent } from '$components/Calendar/types';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 import type { AATerm, Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { describe, test, expect } from 'vitest';
@@ -109,7 +109,7 @@ describe('calendarize-helpers', () => {
                 locations: [],
             },
             showLocationInfo: false,
-            eventKind: CalendarEventKind.Course,
+            eventKind: 'course',
             deptValue: 'placeholderDeptCode',
             courseNumber: 'placeholderCourseNumber',
         },
@@ -140,7 +140,7 @@ describe('calendarize-helpers', () => {
                 locations: [],
             },
             showLocationInfo: false,
-            eventKind: CalendarEventKind.Course,
+            eventKind: 'course',
             deptValue: 'placeholderDeptCode',
             courseNumber: 'placeholderCourseNumber',
         },
@@ -171,7 +171,7 @@ describe('calendarize-helpers', () => {
                 locations: [],
             },
             showLocationInfo: false,
-            eventKind: CalendarEventKind.Course,
+            eventKind: 'course',
             deptValue: 'placeholderDeptCode',
             courseNumber: 'placeholderCourseNumber',
         },
@@ -207,7 +207,7 @@ describe('calendarize-helpers', () => {
                 locations: [],
             },
             showLocationInfo: true,
-            eventKind: CalendarEventKind.Course,
+            eventKind: 'course',
         },
     ];
 
@@ -224,7 +224,7 @@ describe('calendarize-helpers', () => {
 
     const calendarizedCustomEvents: CustomEvent[] = [
         {
-            eventKind: CalendarEventKind.Custom,
+            eventKind: 'custom',
             customEventID: '0',
             color: '#000000',
             start: new Date(2018, 0, 0, 1, 2),
@@ -234,7 +234,7 @@ describe('calendarize-helpers', () => {
             days: ['Su', 'Tu', 'Th', 'Sa'],
         },
         {
-            eventKind: CalendarEventKind.Custom,
+            eventKind: 'custom',
             customEventID: '0',
             color: '#000000',
             start: new Date(2018, 0, 2, 1, 2),
@@ -244,7 +244,7 @@ describe('calendarize-helpers', () => {
             days: ['Su', 'Tu', 'Th', 'Sa'],
         },
         {
-            eventKind: CalendarEventKind.Custom,
+            eventKind: 'custom',
             customEventID: '0',
             color: '#000000',
             start: new Date(2018, 0, 4, 1, 2),
@@ -254,7 +254,7 @@ describe('calendarize-helpers', () => {
             days: ['Su', 'Tu', 'Th', 'Sa'],
         },
         {
-            eventKind: CalendarEventKind.Custom,
+            eventKind: 'custom',
             customEventID: '0',
             color: '#000000',
             start: new Date(2018, 0, 6, 1, 2),

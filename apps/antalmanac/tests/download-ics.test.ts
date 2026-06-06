@@ -1,4 +1,4 @@
-import { CalendarEventKind, type CalendarEvent } from '$components/Calendar/types';
+import type { CalendarEvent } from '$components/Calendar/types';
 import { getEventsFromCourses } from '$lib/download';
 import type { AATerm } from '@packages/antalmanac-types';
 import { describe, test, expect } from 'vitest';
@@ -44,7 +44,7 @@ describe('download-ics', () => {
                 },
                 courseTitle: 'placeholderCourseTitle',
                 instructors: ['placeholderInstructor1', 'placeholderInstructor2'],
-                eventKind: CalendarEventKind.Course,
+                eventKind: 'course',
                 sectionCode: 'placeholderSectionCode',
                 deptValue: 'placeholderDeptCode',
                 courseNumber: 'placeholderCourseNumber',
@@ -76,7 +76,7 @@ describe('download-ics', () => {
                 },
                 courseTitle: 'placeholderCourseTitle',
                 instructors: ['placeholderInstructor1', 'placeholderInstructor2'],
-                eventKind: CalendarEventKind.Course,
+                eventKind: 'course',
                 sectionCode: 'placeholderSectionCode',
                 deptValue: 'placeholderDeptCode',
                 courseNumber: 'placeholderCourseNumber',
@@ -90,7 +90,7 @@ describe('download-ics', () => {
                 end: new Date(2023, 9, 29, 3, 4),
                 title: 'placeholderCustomEventTitle',
                 customEventID: '123',
-                eventKind: CalendarEventKind.Custom,
+                eventKind: 'custom',
                 days: ['M', 'W', 'F'],
                 building: 'placeholderCustomEventBuilding',
             },
