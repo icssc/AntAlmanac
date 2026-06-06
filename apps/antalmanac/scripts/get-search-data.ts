@@ -15,9 +15,6 @@ const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 
 const MAX_COURSES = 10_000;
 
-// Delay between GraphQL requests to avoid triggering AAPI rate limits / OOM.
-const DELAY_MS = 500;
-
 const ALIASES: Record<string, string | undefined> = {
     COMPSCI: 'CS',
     EARTHSS: 'ESS',
@@ -126,12 +123,7 @@ async function main() {
             string,
             Pick<WebsocDepartment, 'deptCode' | 'deptName'> & Pick<WebsocCourse, 'courseNumber' | 'courseTitle'>
         >();
-        for (let i = 0; i < activeTerms.length; i++) {
-            if (i > 0) {
-                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
-            }
-            const { year, quarter } = activeTerms[i];
-
+        for (const { year, quarter } of activeTerms) {
             const websocData = await aapiClient.websoc.query({ year, quarter });
             const chunk = getWebsocCoursesFromResponse(websocData);
             for (const [key, course] of chunk) {
@@ -186,12 +178,7 @@ async function main() {
     const refreshShortNames = new Set(activeTerms.map((t) => t.shortName));
     let count = 0;
 
-    /*
-     * Fetch section-code data one term at a time with a fixed delay between requests.
-     * Sequential execution (rather than staggered Promise.all) ensures we never have
-     * concurrent in-flight GraphQL calls, which matters while AAPI has OOM constraints.
-     */
-    let requestsMade = 0;
+    // Fetch section-code data one term at a time to avoid concurrent GraphQL OOMs on AAPI.
     for (const term of termData) {
         try {
             const { year, quarter } = term;
@@ -211,12 +198,6 @@ async function main() {
             } catch {
                 console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
             }
-
-            // Stagger requests to respect AAPI rate limits / avoid OOM
-            if (requestsMade > 0) {
-                await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
-            }
-            requestsMade++;
 
             const query = buildSectionCodesQuery(term);
             const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(query);
