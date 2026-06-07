@@ -209,10 +209,6 @@ async function main() {
                 const fileName = join(GENERATED_TERMS_DIR, `${quarter}_${year}.json`);
 
                 const res = await aapiClient.graphql<SectionCodesGraphQLResponse>(buildSectionCodesQuery(term));
-                if (!res) {
-                    throw new Error(`Error fetching section codes for ${term.shortName}.`);
-                }
-
                 const parsedSectionData = parseSectionCodes(res);
                 const numKeys = Object.keys(parsedSectionData).length;
 
