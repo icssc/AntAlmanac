@@ -113,13 +113,7 @@ export function intersectWebsocResponses(responses: WebsocAPIResponse[]): Websoc
         if (intersectionCourseKeys === null) {
             intersectionCourseKeys = keys;
         } else {
-            const nextKeys = new Set<string>();
-            for (const key of intersectionCourseKeys) {
-                if (keys.has(key)) {
-                    nextKeys.add(key);
-                }
-            }
-            intersectionCourseKeys = nextKeys;
+            intersectionCourseKeys = intersectionCourseKeys.intersection(keys);
             if (intersectionCourseKeys.size === 0) {
                 return { schools: [] };
             }

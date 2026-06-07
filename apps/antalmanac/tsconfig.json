@@ -1,7 +1,7 @@
 {
     "extends": ["@total-typescript/tsconfig/bundler/dom/app", "../../tsconfig.base.json"],
     "compilerOptions": {
-        "lib": ["es2024", "dom", "dom.iterable"],
+        "lib": ["es2024", "esnext.collection", "dom", "dom.iterable"],
         "jsx": "react-jsx",
         "plugins": [
             {

@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es2024",
-        "lib": ["es2024"],
+        "lib": ["es2024", "esnext.collection"],
         // Deferred — enable in a follow-up PR (issue #1379)
         // "noUncheckedIndexedAccess": true
         "noUncheckedIndexedAccess": false
