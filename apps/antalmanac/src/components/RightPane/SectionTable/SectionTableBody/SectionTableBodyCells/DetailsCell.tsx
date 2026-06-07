@@ -29,7 +29,7 @@ export const DetailsCell = ({ section, sx }: DetailCellProps) => {
         <TableBodyCellContainer sx={sx}>
             <Box sx={SECTION_COLORS[sectionType]}>{sectionType}</Box>
             <Box>Sec: {sectionNum}</Box>
-            <Box>Units: {units}</Box>
+            <Box>Units: {parseFloat(units)}</Box>
         </TableBodyCellContainer>
     );
 };

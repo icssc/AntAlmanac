@@ -200,11 +200,11 @@ function SectionTable({
                 )}
             </Box>
 
-            {cancellationWarning && <WarningAlert>{cancellationWarning}</WarningAlert>}
+            {cancellationWarning ? <WarningAlert>{cancellationWarning}</WarningAlert> : null}
 
-            {missingSections.length && (
+            {missingSections.length ? (
                 <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
-            )}
+            ) : null}
 
             <Collapse in={openContent} onExited={handleCollapseExit}>
                 {wrapSkeleton(
