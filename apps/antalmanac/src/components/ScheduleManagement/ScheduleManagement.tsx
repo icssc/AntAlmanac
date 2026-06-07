@@ -8,6 +8,7 @@ import { authClient } from '$lib/auth/authClient';
 import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
+import { useAppInitStore } from '$stores/AppInitStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
@@ -36,7 +37,8 @@ export function ScheduleManagement() {
             popSavedSearch: store.popSavedSearch,
         }))
     );
-    const { data: session, isPending } = authClient.useSession();
+    const { data: session } = authClient.useSession();
+    const hasCheckedAuth = useAppInitStore((state) => state.hasCheckedAuth);
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
@@ -78,25 +80,24 @@ export function ScheduleManagement() {
         }
     }, [tab, setActiveTab]);
 
-    // Sets a smart default on mount (once session has settled)
+    // Sets a smart default once auth bootstrap completes (hasCheckedAuth flips once per load).
     useEffect(() => {
-        if (tab || isPending) {
+        if (tab || !hasCheckedAuth) {
             return;
         }
 
         const formData = readCourseSearchParams();
         const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
         const isManualSearchMode = readSearchMode() === COURSE_SEARCH_MODE.MANUAL;
+        const hasSession = !!session || getWasLoggedIn();
 
         if (shouldSearchPlannerFromParams()) {
             setActiveTab('search');
         } else if (hasParams || isManualSearchMode) {
             setActiveTab('search');
         } else if (!isMobile) {
-            const hasSession = !!session || getWasLoggedIn();
             setActiveTab(hasSession ? 'added' : 'search');
         } else {
-            const hasSession = !!session || getWasLoggedIn();
             const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
             if (hasSession || hasLocalScheduleData) {
@@ -106,10 +107,10 @@ export function ScheduleManagement() {
             }
         }
 
-        // NB: `tab` is intentionally omitted — we only want this to run on mount (plus when
-        // session/mobile deps settle), not when the route tab param changes.
+        // NB: `tab` and `session` are intentionally omitted — this runs when bootstrap
+        // completes, not on route changes or later sign-in/out.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile, isPending, session, setActiveTab]);
+    }, [hasCheckedAuth, isMobile, setActiveTab]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
