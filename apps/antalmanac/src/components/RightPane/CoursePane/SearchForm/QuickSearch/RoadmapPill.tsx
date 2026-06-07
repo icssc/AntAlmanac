@@ -114,7 +114,13 @@ export function RoadmapPill() {
                     ref={anchorRef}
                     variant="outlined"
                     size="small"
-                    sx={{ textTransform: 'none', maxWidth: '100%' }}
+                    sx={{
+                        maxWidth: '100%',
+                        borderRadius: 9999,
+                        '& .MuiButtonGroup-grouped': {
+                            borderRadius: 'inherit',
+                        },
+                    }}
                 >
                     <Tooltip title={`Search courses from "${activeRoadmap?.name}" for ${term.shortName}`}>
                         <Button
@@ -125,6 +131,9 @@ export function RoadmapPill() {
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
                                 maxWidth: 200,
+                                borderTopLeftRadius: 'inherit',
+                                borderBottomLeftRadius: 'inherit',
+                                px: 2,
                             }}
                         >
                             {activeRoadmap?.name ?? 'Roadmap'}
@@ -134,7 +143,12 @@ export function RoadmapPill() {
                         size="small"
                         onClick={() => setMenuOpen((prev) => !prev)}
                         aria-label="Select a different roadmap"
-                        sx={{ px: 0.5, minWidth: 'unset' }}
+                        sx={{
+                            px: 0.5,
+                            minWidth: 'unset',
+                            borderTopRightRadius: 'inherit',
+                            borderBottomRightRadius: 'inherit',
+                        }}
                     >
                         <ArrowDropDown fontSize="small" />
                     </Button>
@@ -144,7 +158,19 @@ export function RoadmapPill() {
                     anchorEl={anchorRef.current}
                     open={menuOpen}
                     onClose={() => setMenuOpen(false)}
-                    slotProps={{ paper: { sx: { maxWidth: 280, maxHeight: 300 } } }}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                mt: 0.5,
+                                maxWidth: 280,
+                                maxHeight: 300,
+                                borderRadius: 2,
+                                boxShadow: 3,
+                            },
+                        },
+                    }}
                 >
                     {plannerRoadmaps.map((roadmap) => {
                         const relation = getRoadmapTermRelation(roadmap, term);
@@ -155,6 +181,7 @@ export function RoadmapPill() {
                                 selected={roadmap.id.toString() === activeRoadmap?.id.toString()}
                                 disabled={!hasCourses}
                                 onClick={() => handleSelect(roadmap)}
+                                sx={{ borderRadius: 1, mx: 0.5 }}
                             >
                                 <ListItemText
                                     primary={roadmap.name}
@@ -171,7 +198,7 @@ export function RoadmapPill() {
                         component="a"
                         href={PLANNER_LINK}
                         target="_blank"
-                        sx={{ borderTop: 1, borderColor: 'divider', mt: 0.5 }}
+                        sx={{ borderTop: 1, borderColor: 'divider', mt: 0.5, borderRadius: 1, mx: 0.5 }}
                     >
                         <Typography variant="body2" color="primary">
                             Open Planner
