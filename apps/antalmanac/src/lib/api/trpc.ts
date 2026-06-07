@@ -1,4 +1,4 @@
-import type { AppRouter } from '$src/backend/app-router';
+import type { AppRouter } from '$src/backend/routers';
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 import superjson from 'superjson';
