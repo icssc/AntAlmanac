@@ -14,6 +14,34 @@ import type { AATerm, Roadmap } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+// TODO: Remove mock data before merging. Hardcoded roadmaps for testing the pill UI.
+const MOCK_ROADMAPS: Roadmap[] = [
+    {
+        id: 'mock-1',
+        name: 'CS Major Roadmap',
+        content: [2024, 2025, 2026].flatMap((startYear) => ({
+            name: `${startYear}-${startYear + 1}`,
+            startYear,
+            quarters: ['Fall', 'Winter', 'Spring'].map((q) => ({
+                name: q,
+                courses: [{ courseId: 'COMPSCI161' }, { courseId: 'COMPSCI162' }, { courseId: 'COMPSCI171' }],
+            })),
+        })),
+    },
+    {
+        id: 'mock-2',
+        name: 'GE Roadmap',
+        content: [2024, 2025, 2026].flatMap((startYear) => ({
+            name: `${startYear}-${startYear + 1}`,
+            startYear,
+            quarters: ['Fall', 'Winter', 'Spring'].map((q) => ({
+                name: q,
+                courses: [{ courseId: 'WRITING39B' }, { courseId: 'HUMANIT1AS' }],
+            })),
+        })),
+    },
+];
+
 function getRoadmapCourseIds(roadmap: Roadmap, term: AATerm): string[] | null {
     const quarterPlan = getQuarterPlan(roadmap, term);
     if (!quarterPlan) return null;
@@ -25,10 +53,14 @@ export function RoadmapPill() {
     const { setField } = useCourseSearchForm();
     const { showResults } = useCourseSearchView();
 
-    const sessionIsValid = useSessionStore((s) => s.sessionIsValid);
-    const { plannerRoadmaps, isPlannerLoading } = usePlannerStore(
+    // TODO: Restore sessionIsValid gate before merging.
+    const _sessionIsValid = useSessionStore((s) => s.sessionIsValid);
+    const { plannerRoadmaps: _realRoadmaps, isPlannerLoading } = usePlannerStore(
         useShallow((s) => ({ plannerRoadmaps: s.plannerRoadmaps, isPlannerLoading: s.isPlannerLoading }))
     );
+
+    // TODO: Remove mock override before merging.
+    const plannerRoadmaps = MOCK_ROADMAPS.length > 0 ? MOCK_ROADMAPS : _realRoadmaps;
 
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -72,7 +104,8 @@ export function RoadmapPill() {
         [setField, showResults, term]
     );
 
-    const visible = sessionIsValid && !isPlannerLoading && roadmapsForTerm.length > 0;
+    // TODO: Restore `_sessionIsValid &&` gate before merging.
+    const visible = !isPlannerLoading && roadmapsForTerm.length > 0;
 
     return (
         <Grow in={visible} mountOnEnter unmountOnExit>
