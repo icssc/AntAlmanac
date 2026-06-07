@@ -36,7 +36,3 @@ export function getTermByYearAndQuarter(year: Year, rawQuarter: unknown): AATerm
     }
     return termData.find((term) => term.year === year && term.quarter === quarter);
 }
-
-export function isTermAvailable(termShortName: string) {
-    return termData.some((term) => term.shortName === termShortName);
-}
