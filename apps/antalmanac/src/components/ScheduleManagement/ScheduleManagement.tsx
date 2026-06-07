@@ -36,7 +36,7 @@ export function ScheduleManagement() {
             popSavedSearch: store.popSavedSearch,
         }))
     );
-    const { data: session, isPending: isSessionPending } = authClient.useSession();
+    const { data: session, isPending } = authClient.useSession();
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
@@ -80,7 +80,7 @@ export function ScheduleManagement() {
 
     // Sets a smart default on mount (once session has settled)
     useEffect(() => {
-        if (tab || isSessionPending) {
+        if (tab || isPending) {
             return;
         }
 
@@ -109,7 +109,7 @@ export function ScheduleManagement() {
         // NB: `tab` is intentionally omitted — we only want this to run on mount (plus when
         // session/mobile deps settle), not when the route tab param changes.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile, isSessionPending, session, setActiveTab]);
+    }, [isMobile, isPending, session, setActiveTab]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
