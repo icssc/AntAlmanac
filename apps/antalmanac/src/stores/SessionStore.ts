@@ -52,5 +52,7 @@ export const useSessionStore = create<SessionState>((set) => {
         setHasCheckedAuth: (hasCheckedAuth) => set({ hasCheckedAuth }),
         setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
         setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),
+        setImportedUsername: (username) => set({ importedUsername: username }),
+        clearImportedUsername: () => set({ importedUsername: null }),
     };
 });

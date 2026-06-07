@@ -5,26 +5,26 @@ import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { getLocalStorageImportedUser, removeLocalStorageImportedUser } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 import { AppBar, Box, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export function Header() {
-    const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
-    const importedUser = getLocalStorageImportedUser() ?? '';
-    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
+    const { sessionIsValid, importedUsername, clearImportedUsername } = useSessionStore(
+        useShallow((store) => ({
+            sessionIsValid: store.sessionIsValid,
+            importedUsername: store.importedUsername,
+            clearImportedUsername: store.clearImportedUsername,
+        }))
+    );
     const isMobile = useIsMobile();
-
-    const clearStorage = () => {
-        removeLocalStorageImportedUser();
-    };
+    const openSuccessfulSaved = importedUsername !== null && sessionIsValid;
 
     const handleCloseSuccessfulSaved = () => {
-        setOpenSuccessfulSaved(false);
-        clearStorage();
+        clearImportedUsername();
     };
 
     const handleLogoutComplete = () => {
@@ -35,12 +35,6 @@ export function Header() {
         setOpenSignoutDialog(false);
         window.location.reload();
     };
-
-    useEffect(() => {
-        if (importedUser !== '' && sessionIsValid) {
-            setOpenSuccessfulSaved(true);
-        }
-    }, [importedUser, sessionIsValid]);
 
     return (
         <Box
@@ -83,7 +77,7 @@ export function Header() {
 
                     <AlertDialog
                         open={openSuccessfulSaved}
-                        title={`Schedule from "${importedUser}" has been saved to your account!`}
+                        title={`Schedule from "${importedUsername}" has been saved to your account!`}
                         severity="success"
                         onClose={handleCloseSuccessfulSaved}
                     >

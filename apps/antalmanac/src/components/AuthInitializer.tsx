@@ -8,9 +8,7 @@ import {
     getLocalStorageUserId,
     getWasLoggedIn,
     removeLocalStorageDataCache,
-    removeLocalStorageImportedUser,
     removeLocalStorageUserId,
-    setLocalStorageImportedUser,
     setWasLoggedIn,
 } from '$lib/localStorage';
 import { setSsoCookie } from '$lib/ssoCookie';

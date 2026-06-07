@@ -35,18 +35,6 @@ enum LocalStorageKeys {
 
 const LSK = LocalStorageKeys;
 
-export function setLocalStorageImportedUser(value: string) {
-    window.localStorage.setItem(LSK.importedUser, value);
-}
-
-export function getLocalStorageImportedUser() {
-    return window.localStorage.getItem(LSK.importedUser);
-}
-
-export function removeLocalStorageImportedUser() {
-    window.localStorage.removeItem(LSK.importedUser);
-}
-
 export function setLocalStorageDataCache(value: string) {
     window.localStorage.setItem(LSK.dataCache, value);
 }
