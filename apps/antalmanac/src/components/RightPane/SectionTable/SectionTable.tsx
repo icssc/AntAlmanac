@@ -9,9 +9,8 @@ import { WarningAlert } from '$components/WarningAlert';
 import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
-import { getCourseCancellationWarning } from '$lib/courseAvailability';
+import { getCourseCancellationWarning } from '$lib/courseAlerts';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import {
@@ -27,7 +26,7 @@ import {
     TableHead,
     TableRow,
 } from '@mui/material';
-import { AACourse, AATerm } from '@packages/antalmanac-types';
+import { AACourseWithTerm } from '@packages/antalmanac-types';
 import { useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
 
@@ -62,13 +61,10 @@ const wrapSkeleton = (children: React.ReactNode, skeleton: boolean) =>
     );
 
 export interface SectionTableProps {
-    courseDetails: AACourse;
-    term: AATerm;
+    course: AACourseWithTerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: AnalyticsCategory;
-    updatedAt?: string;
-    missingSections?: string[];
     sortable?: boolean;
     /**
      * Wraps each interactive element (each button, the table) in MUI's
@@ -76,24 +72,22 @@ export interface SectionTableProps {
      * correct dimensions while displaying as a set of loading placeholders.
      */
     skeleton?: boolean;
+    missingSections?: string[];
 }
 
 function SectionTable({
-    courseDetails,
-    term,
+    course,
     allowHighlight,
     scheduleNames,
     analyticsCategory,
-    missingSections = [],
     sortable = false,
     skeleton = false,
+    missingSections = [],
 }: SectionTableProps) {
     const isMobile = useIsMobile();
     const draggingState = useDraggingItemState(() => ({ isCollapsed: !openContent }));
 
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
-
-    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const activeTab = useTabStore((store) => store.activeTab);
@@ -109,33 +103,6 @@ function SectionTable({
     const colorStripWidth = isMobile ? 5 : 8;
     const actionColumnWidth = 77;
 
-    const courseId = courseDetails.courseId;
-
-    const cancellationWarning = useMemo(
-        () => getCourseCancellationWarning(courseDetails.sections),
-        [courseDetails.sections]
-    );
-
-    const formattedTime = useMemo(() => {
-        if (!courseDetails.updatedAt) {
-            return null;
-        }
-
-        const date = new Date(courseDetails.updatedAt);
-
-        if (Number.isNaN(date.getTime())) {
-            return null;
-        }
-
-        const timeString = date.toLocaleTimeString(undefined, {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: !isMilitaryTime,
-        });
-
-        return timeString.replace(/^0(\d)/, '$1');
-    }, [courseDetails.updatedAt, isMilitaryTime]);
-
     /**
      * Limit table width to force side scrolling.
      */
@@ -144,6 +111,8 @@ function SectionTable({
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [activeColumns]);
+
+    const cancellationWarning = useMemo(() => getCourseCancellationWarning(course.sections), [course.sections]);
 
     return (
         <Box sx={{ overflow: 'hidden' }}>
@@ -176,10 +145,10 @@ function SectionTable({
 
                 {wrapSkeleton(
                     <CourseInfoBar
-                        deptCode={courseDetails.deptCode}
-                        courseTitle={courseDetails.courseTitle}
-                        courseNumber={courseDetails.courseNumber}
-                        prerequisiteLink={courseDetails.prerequisiteLink}
+                        deptCode={course.deptCode}
+                        courseTitle={course.courseTitle}
+                        courseNumber={course.courseNumber}
+                        prerequisiteLink={course.prerequisiteLink}
                         analyticsCategory={analyticsCategory}
                     />,
                     skeleton
@@ -187,7 +156,7 @@ function SectionTable({
 
                 {activeTab !== TAB_INDEX.added
                     ? null
-                    : wrapSkeleton(<CourseInfoSearchButton courseDetails={courseDetails} term={term} />, skeleton)}
+                    : wrapSkeleton(<CourseInfoSearchButton course={course} />, skeleton)}
 
                 {wrapSkeleton(
                     <CourseInfoButton
@@ -195,7 +164,7 @@ function SectionTable({
                         analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
                         text="Planner"
                         icon={<Route />}
-                        redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
+                        redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(course.courseId)}`}
                     />,
                     skeleton
                 )}
@@ -207,10 +176,7 @@ function SectionTable({
                         text="Past Syllabi"
                         icon={<HistoryEdu />}
                         popupContent={
-                            <PastSyllabiPopover
-                                deptCode={courseDetails.deptCode}
-                                courseNumber={courseDetails.courseNumber}
-                            />
+                            <PastSyllabiPopover deptCode={course.deptCode} courseNumber={course.courseNumber} />
                         }
                     />,
                     skeleton
@@ -234,11 +200,11 @@ function SectionTable({
                 )}
             </Box>
 
-            {cancellationWarning && <WarningAlert>{cancellationWarning}</WarningAlert>}
+            {cancellationWarning ? <WarningAlert>{cancellationWarning}</WarningAlert> : null}
 
-            {missingSections?.length > 0 && (
+            {missingSections.length ? (
                 <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
-            )}
+            ) : null}
 
             <Collapse in={openContent} onExited={handleCollapseExit}>
                 {wrapSkeleton(
@@ -285,12 +251,10 @@ function SectionTable({
                             </TableHead>
 
                             <SectionTableBody
-                                courseDetails={courseDetails}
-                                term={term}
+                                course={course}
                                 allowHighlight={allowHighlight}
                                 scheduleNames={scheduleNames}
                                 analyticsCategory={analyticsCategory}
-                                formattedTime={formattedTime}
                             />
                         </Table>
                     </TableContainer>,

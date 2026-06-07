@@ -7,8 +7,7 @@ import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useSessionStore } from '$stores/SessionStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
-import type { AASection, AATerm } from '@packages/antalmanac-types';
-import type { Course } from '@packages/anteater-api/types';
+import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -22,176 +21,172 @@ const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
 
 interface NotificationsMenuProps {
     section: AASection;
-    term: AATerm;
-    courseTitle: Course['title'];
-    deptCode?: string;
-    courseNumber?: string;
+    course: AACourseWithTerm;
 }
 
-export const NotificationsMenu = memo(
-    ({ section, term, courseTitle, deptCode, courseNumber }: NotificationsMenuProps) => {
-        const notificationKey = scheduleSectionKey(term, section.sectionCode);
-        const [notification, setNotifications] = useNotificationStore(
-            useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
-        );
+export const NotificationsMenu = memo(({ section, course }: NotificationsMenuProps) => {
+    const { term } = course;
+    const notificationKey = scheduleSectionKey(term, section.sectionCode);
+    const [notification, setNotifications] = useNotificationStore(
+        useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
+    );
 
-        const postHog = usePostHog();
+    const postHog = usePostHog();
 
-        const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-        const [signInOpen, setSignInOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [signInOpen, setSignInOpen] = useState(false);
 
-        const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
 
-        const isTermCurrent = canTermEnrollmentChange(term);
-        const notifyOn = notification?.notifyOn;
-        const hasNotifications = notifyOn && Object.values(notifyOn).some((n) => n);
+    const isTermCurrent = canTermEnrollmentChange(term);
+    const notifyOn = notification?.notifyOn;
+    const hasNotifications = notifyOn && Object.values(notifyOn).some((n) => n);
 
-        const handleClick = useCallback(
-            (status: keyof NotifyOn) => {
-                const { sectionType, sectionCode, restrictions, units, sectionNum, instructors } = section;
-                const currStatus = section.status;
-                logAnalytics(postHog, {
-                    category: analyticsEnum.aants,
-                    action: AANTS_ANALYTICS_ACTIONS[status],
-                    customProps: { sectionCode, term: term.shortName, source: 'menu' },
-                });
-                setNotifications({
-                    courseTitle,
-                    sectionCode,
-                    sectionType,
-                    units: Number(units),
-                    sectionNum,
-                    term,
-                    status,
-                    lastUpdatedStatus: currStatus,
-                    lastCodes: restrictions,
-                    deptCode,
-                    courseNumber,
-                    instructors,
-                });
-            },
-            [courseTitle, section, setNotifications, term, deptCode, courseNumber, postHog]
-        );
+    const handleClick = useCallback(
+        (status: keyof NotifyOn) => {
+            const { sectionType, sectionCode, restrictions, units, sectionNum, instructors } = section;
+            const currStatus = section.status;
+            logAnalytics(postHog, {
+                category: analyticsEnum.aants,
+                action: AANTS_ANALYTICS_ACTIONS[status],
+                customProps: { sectionCode, term: term.shortName, source: 'menu' },
+            });
+            setNotifications({
+                courseTitle: course.courseTitle,
+                sectionCode,
+                sectionType,
+                units: Number(units),
+                sectionNum,
+                term,
+                status,
+                lastUpdatedStatus: currStatus,
+                lastCodes: restrictions,
+                deptCode: course.deptCode,
+                courseNumber: course.courseNumber,
+                instructors,
+            });
+        },
+        [course.courseNumber, course.courseTitle, course.deptCode, section, setNotifications, term, postHog]
+    );
 
-        const handleClose = useCallback(() => {
-            setAnchorEl(null);
-        }, []);
+    const handleClose = useCallback(() => {
+        setAnchorEl(null);
+    }, []);
 
-        const handleNotificationClick = useCallback(
-            (event: React.MouseEvent<HTMLButtonElement>) => {
-                if (!sessionIsValid) {
-                    setSignInOpen(true);
-                    return;
-                }
-                logAnalytics(postHog, {
-                    category: analyticsEnum.aants,
-                    action: analyticsEnum.aants.actions.OPEN_SECTION_NOTIFICATIONS,
-                    customProps: { sectionCode: section.sectionCode, term: term.shortName },
-                });
-                setAnchorEl(event.currentTarget);
-            },
-            [sessionIsValid, postHog, section.sectionCode, term]
-        );
+    const handleNotificationClick = useCallback(
+        (event: React.MouseEvent<HTMLButtonElement>) => {
+            if (!sessionIsValid) {
+                setSignInOpen(true);
+                return;
+            }
+            logAnalytics(postHog, {
+                category: analyticsEnum.aants,
+                action: analyticsEnum.aants.actions.OPEN_SECTION_NOTIFICATIONS,
+                customProps: { sectionCode: section.sectionCode, term: term.shortName },
+            });
+            setAnchorEl(event.currentTarget);
+        },
+        [sessionIsValid, postHog, section.sectionCode, term]
+    );
 
-        const handleSignInClose = useCallback(() => {
-            setSignInOpen(false);
-        }, []);
+    const handleSignInClose = useCallback(() => {
+        setSignInOpen(false);
+    }, []);
 
-        const tooltipText = !isTermCurrent
-            ? "Notifications are only available for the current enrollment period's courses"
-            : !sessionIsValid
-              ? 'Sign in to access notifications'
-              : null;
+    const tooltipText = !isTermCurrent
+        ? "Notifications are only available for the current enrollment period's courses"
+        : !sessionIsValid
+          ? 'Sign in to access notifications'
+          : null;
 
-        return (
-            <>
-                <Tooltip title={tooltipText}>
-                    <span>
-                        <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent} sx={{ p: 0.5 }}>
-                            {sessionIsValid ? (
-                                hasNotifications ? (
-                                    <EditNotifications fontSize="small" />
-                                ) : (
-                                    <NotificationAddOutlined fontSize="small" />
-                                )
+    return (
+        <>
+            <Tooltip title={tooltipText}>
+                <span>
+                    <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent} sx={{ p: 0.5 }}>
+                        {sessionIsValid ? (
+                            hasNotifications ? (
+                                <EditNotifications fontSize="small" />
                             ) : (
-                                <NotificationAddOutlined fontSize="small" sx={{ opacity: 0.5 }} />
-                            )}
-                        </IconButton>
-                    </span>
-                </Tooltip>
+                                <NotificationAddOutlined fontSize="small" />
+                            )
+                        ) : (
+                            <NotificationAddOutlined fontSize="small" sx={{ opacity: 0.5 }} />
+                        )}
+                    </IconButton>
+                </span>
+            </Tooltip>
 
-                <Menu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+            >
+                <MenuItem
+                    sx={{
+                        cursor: 'default',
+                        '&:hover': { backgroundColor: 'transparent' },
+                        pointerEvents: 'none',
                     }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                     }}
                 >
-                    <MenuItem
+                    <Box
                         sx={{
-                            cursor: 'default',
-                            '&:hover': { backgroundColor: 'transparent' },
-                            pointerEvents: 'none',
-                        }}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            width: '100%',
                         }}
                     >
+                        <Typography sx={{ fontWeight: 600 }}>Notify When</Typography>
                         <Box
                             sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                                width: '100%',
+                                pointerEvents: 'auto',
+                                display: 'inline-flex',
+                                marginLeft: 'auto',
+                            }}
+                            onClick={(e) => {
+                                e.preventDefault();
+                            }}
+                            onMouseDown={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                             }}
                         >
-                            <Typography sx={{ fontWeight: 600 }}>Notify When</Typography>
-                            <Box
-                                sx={{
-                                    pointerEvents: 'auto',
-                                    display: 'inline-flex',
-                                    marginLeft: 'auto',
-                                }}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                }}
-                                onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }}
-                            >
-                                <NotificationEmailTooltip />
-                            </Box>
+                            <NotificationEmailTooltip />
                         </Box>
-                    </MenuItem>
-                    {MENU_ITEMS.map((item) => {
-                        const selected = notifyOn?.[item.status];
-                        return (
-                            <MenuItem
-                                key={item.status}
-                                selected={selected}
-                                onClick={() => handleClick(item.status)}
-                                sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-                            >
-                                <Check sx={{ visibility: selected ? 'visible' : 'hidden' }} aria-hidden="true" />
-                                <Typography>{item.label}</Typography>
-                            </MenuItem>
-                        );
-                    })}
-                </Menu>
+                    </Box>
+                </MenuItem>
+                {MENU_ITEMS.map((item) => {
+                    const selected = notifyOn?.[item.status];
+                    return (
+                        <MenuItem
+                            key={item.status}
+                            selected={selected}
+                            onClick={() => handleClick(item.status)}
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                        >
+                            <Check sx={{ visibility: selected ? 'visible' : 'hidden' }} aria-hidden="true" />
+                            <Typography>{item.label}</Typography>
+                        </MenuItem>
+                    );
+                })}
+            </Menu>
 
-                <SignInDialog open={signInOpen} onClose={handleSignInClose} feature="Notification" />
-            </>
-        );
-    }
-);
+            <SignInDialog open={signInOpen} onClose={handleSignInClose} feature="Notification" />
+        </>
+    );
+});
 
 NotificationsMenu.displayName = 'NotificationsMenu';

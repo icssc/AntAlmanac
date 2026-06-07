@@ -58,3 +58,7 @@ export function moveArrayElements(
     }
     array.splice(toIndex, 0, ...elementsToMove);
 }
+
+export function unreachableCase(value: never): never {
+    throw new Error(`Unreachable code reached: ${value}`);
+}

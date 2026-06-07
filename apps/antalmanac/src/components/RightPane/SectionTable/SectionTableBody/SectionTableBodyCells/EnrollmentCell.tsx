@@ -1,51 +1,44 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTablePopover/EnrollmentHistoryPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
-import type { AATerm } from '@packages/antalmanac-types';
-import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/anteater-api/types';
+import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
 
 interface EnrollmentCellProps {
-    sectionType: WebsocSectionType;
-    deptCode: string;
-    courseNumber: string;
-    term: AATerm;
-    sectionCode: string;
-    numCurrentlyEnrolled: WebsocSectionEnrollment;
-    maxCapacity: number;
-
-    /**
-     * This is a string because sometimes it's "n/a"
-     */
-    numOnWaitlist: string;
-
-    numWaitlistCap: string;
-
-    /**
-     * This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens.
-     */
-    numNewOnlyReserved: string;
-    formattedTime: string | null;
+    section: AASection;
+    course: AACourseWithTerm;
 }
 
-export const EnrollmentCell = ({
-    sectionType,
-    deptCode,
-    courseNumber,
-    term,
-    sectionCode,
-    numCurrentlyEnrolled,
-    maxCapacity,
-    numOnWaitlist,
-    numWaitlistCap,
-    numNewOnlyReserved,
-    formattedTime,
-}: EnrollmentCellProps) => {
+export const EnrollmentCell = ({ section, course }: EnrollmentCellProps) => {
     const isMobile = useIsMobile();
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
     const theme = useTheme();
     const secondaryColor = theme.palette.secondary.main;
+
+    const formattedTime = useMemo(() => {
+        if (!section.updatedAt) {
+            return null;
+        }
+
+        const date = new Date(section.updatedAt);
+
+        if (Number.isNaN(date.getTime())) {
+            return null;
+        }
+
+        const timeString = date.toLocaleTimeString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: !isMilitaryTime,
+        });
+
+        return isMilitaryTime ? timeString : timeString.replace(/^0(\d)/, '$1');
+    }, [section.updatedAt, isMilitaryTime]);
+
     const showTooltip = !isMobile && formattedTime;
+    const maxCapacity = parseInt(section.maxCapacity, 10);
 
     const [anchorEl, setAnchorEl] = useState<Element>();
 
@@ -68,10 +61,10 @@ export const EnrollmentCell = ({
                 }}
                 onClick={handleClick}
             >
-                {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
+                {section.numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
             </ButtonBase>
         ),
-        [handleClick, numCurrentlyEnrolled.totalEnrolled, maxCapacity, secondaryColor]
+        [handleClick, section.numCurrentlyEnrolled.totalEnrolled, maxCapacity, secondaryColor]
     );
 
     return (
@@ -87,12 +80,12 @@ export const EnrollmentCell = ({
                     )}
                 </Box>
 
-                {numOnWaitlist !== '' && (
+                {section.numOnWaitlist !== '' && (
                     <Box>
-                        WL: {numOnWaitlist} / {numWaitlistCap}
+                        WL: {section.numOnWaitlist} / {section.numWaitlistCap}
                     </Box>
                 )}
-                {numNewOnlyReserved !== '' && <Box>NOR: {numNewOnlyReserved}</Box>}
+                {section.numNewOnlyReserved !== '' && <Box>NOR: {section.numNewOnlyReserved}</Box>}
             </Box>
 
             <Popover
@@ -102,11 +95,11 @@ export const EnrollmentCell = ({
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
                 <EnrollmentHistoryPopover
-                    sectionType={sectionType}
-                    department={deptCode}
-                    courseNumber={courseNumber}
-                    term={term}
-                    sectionCode={sectionCode}
+                    sectionType={section.sectionType}
+                    department={course.deptCode}
+                    courseNumber={course.courseNumber}
+                    term={course.term}
+                    sectionCode={section.sectionCode}
                 />
             </Popover>
         </TableBodyCellContainer>

@@ -3,26 +3,17 @@ import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
 import { TableBody } from '@mui/material';
-import { AACourse, AASection, AATerm } from '@packages/antalmanac-types';
+import { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
 interface SectionTableBodyProps {
-    courseDetails: AACourse;
-    term: AATerm;
+    course: AACourseWithTerm;
     scheduleNames: string[];
     allowHighlight: boolean;
     analyticsCategory: AnalyticsCategory;
-    formattedTime: string | null;
 }
 
-export function SectionTableBody({
-    courseDetails,
-    term,
-    scheduleNames,
-    allowHighlight,
-    analyticsCategory,
-    formattedTime,
-}: SectionTableBodyProps) {
+export function SectionTableBody({ course, scheduleNames, allowHighlight, analyticsCategory }: SectionTableBodyProps) {
     const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
 
     /**
@@ -83,20 +74,18 @@ export function SectionTableBody({
 
     return (
         <TableBody>
-            {courseDetails.sections.map((section) => {
+            {course.sections.map((section) => {
                 const conflict = scheduleConflict(section);
 
                 return (
                     <SectionTableBodyRow
                         key={section.sectionCode}
+                        course={course}
                         section={section}
-                        courseDetails={courseDetails}
-                        term={term}
                         allowHighlight={allowHighlight}
                         scheduleNames={scheduleNames}
                         scheduleConflict={conflict}
                         analyticsCategory={analyticsCategory}
-                        formattedTime={formattedTime}
                     />
                 );
             })}

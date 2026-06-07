@@ -3,26 +3,26 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { Delete } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import { AASection, type AATerm } from '@packages/antalmanac-types';
+import { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';
 
 interface DeleteButtonProps {
-    sectionCode: AASection['sectionCode'];
-    term: AATerm;
+    section: AASection;
+    course: AACourseWithTerm;
 }
 
-export const DeleteButton = memo(function DeleteButton({ sectionCode, term }: DeleteButtonProps) {
+export const DeleteButton = memo(function DeleteButton({ section, course }: DeleteButtonProps) {
     const postHog = usePostHog();
 
     const handleClick = useCallback(() => {
-        deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
+        deleteCourse(section.sectionCode, course.term, AppStore.getCurrentScheduleIndex());
 
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
-    }, [postHog, term, sectionCode]);
+    }, [postHog, course.term, section.sectionCode]);
 
     return (
         <IconButton onClick={handleClick} size="small" sx={{ p: 0.5 }}>

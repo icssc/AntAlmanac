@@ -1,23 +1,23 @@
 import { SortableList } from '$components/drag-and-drop/SortableList';
 import { EmptyState } from '$components/EmptyState';
-import type { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCourses';
 import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/AddedCoursesLoadingSkeleton';
-import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
+import { getMissingSections } from '$lib/courseAlerts';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
+import { AACourseWithTerm } from '@packages/antalmanac-types';
 import { memo } from 'react';
 
-const getOfferingId = (course: CourseWithTerm) => scheduleOfferingKey(course);
+const getOfferingId = (course: AACourseWithTerm) => scheduleOfferingKey(course);
 
 interface AddedCoursesListProps {
-    courses: CourseWithTerm[];
+    courses: AACourseWithTerm[];
     scheduleNames: string[];
-    onCourseOrderChange: (updatedCourses: CourseWithTerm[], activeIndex: number, overIndex: number) => void;
+    onCourseOrderChange: (updatedCourses: AACourseWithTerm[], activeIndex: number, overIndex: number) => void;
 }
 
 export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderChange }: AddedCoursesListProps) => {
@@ -55,19 +55,16 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
             onChange={onCourseOrderChange}
             sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
             sortingStrategy={verticalListSortingStrategy}
-            renderItem={(course: CourseWithTerm) => {
-                const missingSections = getMissingSections(course);
-
+            renderItem={(course) => {
                 return (
                     <SortableList.Item id={getOfferingId(course)}>
                         <SectionTable
                             sortable
-                            courseDetails={course}
-                            term={course.term}
+                            course={course}
                             allowHighlight={false}
                             analyticsCategory={analyticsEnum.addedClasses}
                             scheduleNames={scheduleNames}
-                            missingSections={missingSections}
+                            missingSections={getMissingSections(course)}
                         />
                     </SortableList.Item>
                 );

@@ -2,15 +2,15 @@ import { MapLink } from '$components/buttons/MapLink';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import locationIds from '$lib/locations/locations';
 import { Box } from '@mui/material';
-import { WebsocSectionMeeting } from '@packages/anteater-api/types';
+import type { AASection } from '@packages/antalmanac-types';
 import { Fragment } from 'react';
 
 interface LocationsCellProps {
-    meetings: WebsocSectionMeeting[];
-    courseName: string;
+    section: AASection;
 }
 
-export const LocationsCell = ({ meetings }: LocationsCellProps) => {
+export const LocationsCell = ({ section }: LocationsCellProps) => {
+    const { meetings } = section;
     return (
         <TableBodyCellContainer>
             {meetings.map((meeting, meetingIndex) => {

@@ -1,14 +1,15 @@
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Box, Typography, SxProps } from '@mui/material';
+import type { AASection } from '@packages/antalmanac-types';
 import { Link } from 'react-router-dom';
 
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-
 interface InstructorsCellProps {
-    instructors: string[];
+    section: Pick<AASection, 'instructors'>;
     sx?: SxProps;
 }
 
-export const InstructorsCell = ({ instructors, sx }: InstructorsCellProps) => {
+export const InstructorsCell = ({ section, sx }: InstructorsCellProps) => {
+    const { instructors } = section;
     const links = instructors.map((profName, index) => {
         if (profName === 'STAFF') {
             return <Box key={profName + index}>{profName}</Box>; // The key should be fine as we're not changing ['STAFF, 'STAFF']

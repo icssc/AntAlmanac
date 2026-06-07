@@ -3,15 +3,17 @@ import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Chip, Tooltip } from '@mui/material';
+import type { AASection } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 
 interface SectionCodeCellProps {
-    sectionCode: string;
+    section: AASection;
     analyticsCategory: AnalyticsCategory;
 }
 
-export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeCellProps) => {
+export const SectionCodeCell = ({ section, analyticsCategory }: SectionCodeCellProps) => {
+    const { sectionCode } = section;
     const isDark = useThemeStore((store) => store.isDark);
     const [isHovered, setIsHovered] = useState(false);
 

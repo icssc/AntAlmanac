@@ -3,15 +3,17 @@ import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePo
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { ButtonBase, Popover, useTheme } from '@mui/material';
+import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
 
 interface GpaCellProps {
-    deptCode: string;
-    courseNumber: string;
-    instructors: string[];
+    section: AASection;
+    course: AACourseWithTerm;
 }
 
-export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
+export const GpaCell = ({ section, course }: GpaCellProps) => {
+    const { deptCode, courseNumber } = course;
+    const { instructors } = section;
     const isMobile = useIsMobile();
     const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<Element>();

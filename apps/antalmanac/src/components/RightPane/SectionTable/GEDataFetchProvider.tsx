@@ -3,7 +3,7 @@ import { advancedSearchParsers } from '$components/RightPane/CoursePane/SearchPa
 import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
-import type { AACourse } from '@packages/antalmanac-types';
+import type { AACourseWithTerm } from '@packages/antalmanac-types';
 import { flattenCourses } from '@packages/anteater-api/utils';
 import { useQueryStates } from 'nuqs';
 import { useMemo } from 'react';
@@ -21,10 +21,10 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
         return {
             year: term.year,
             quarter: term.quarter,
-            department: props.courseDetails.deptCode,
+            department: props.course.deptCode,
             ge: 'ANY',
-            courseNumber: props.courseDetails.courseNumber,
-            courseTitle: props.courseDetails.courseTitle,
+            courseNumber: props.course.courseNumber,
+            courseTitle: props.course.courseTitle,
             instructorName: advanced.instructor,
             units: advanced.units,
             endTime: advanced.endTime,
@@ -36,25 +36,19 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             excludeRestrictionCodes: advanced.excludeRestrictionCodes,
             days: advanced.days,
         };
-    }, [
-        advanced,
-        props.courseDetails.courseNumber,
-        props.courseDetails.courseTitle,
-        props.courseDetails.deptCode,
-        term,
-    ]);
+    }, [advanced, props.course.courseNumber, props.course.courseTitle, props.course.deptCode, term]);
 
     const { data } = trpcReact.websoc.getOne.useQuery(params);
 
-    const courseDetails = useMemo(() => {
+    const course = useMemo(() => {
         if (!data) {
-            return props.courseDetails;
+            return props.course;
         }
 
-        const course = flattenCourses(data).find((c) => c.courseNumber === props.courseDetails.courseNumber);
+        const websocCourse = flattenCourses(data).find((c) => c.courseNumber === props.course.courseNumber);
 
-        if (!course) {
-            return props.courseDetails;
+        if (!websocCourse) {
+            return props.course;
         }
 
         const courseColors = AppStore.schedule
@@ -65,13 +59,14 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             }, {});
 
         return {
-            ...course,
-            sections: course.sections.map((s) => ({ ...s, color: courseColors[s.sectionCode] ?? '' })),
-            sectionTypes: [...new Set(course.sections.map((s) => s.sectionType))],
-        } satisfies AACourse;
-    }, [data, props.courseDetails]);
+            ...websocCourse,
+            term,
+            sections: websocCourse.sections.map((s) => ({ ...s, color: courseColors[s.sectionCode] ?? '' })),
+            sectionTypes: [...new Set(websocCourse.sections.map((s) => s.sectionType))],
+        } satisfies AACourseWithTerm;
+    }, [data, props.course, term]);
 
-    return <SectionTable {...props} courseDetails={courseDetails} />;
+    return <SectionTable {...props} course={course} />;
 };
 
 export default GeDataFetchProvider;

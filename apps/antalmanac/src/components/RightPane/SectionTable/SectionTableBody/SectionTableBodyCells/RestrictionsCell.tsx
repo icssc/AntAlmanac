@@ -2,17 +2,19 @@ import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CourseP
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { Box, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import type { AASection } from '@packages/antalmanac-types';
 import { Fragment, useCallback, useMemo, useState } from 'react';
 
 interface RestrictionsCellProps {
-    restrictions: string;
+    section: AASection;
 }
 
 const RESTRICTION_CODE_LABELS = Object.fromEntries(
     EXCLUDE_RESTRICTION_CODES_OPTIONS.map(({ value, label }) => [value, label])
 );
 
-export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
+export const RestrictionsCell = ({ section }: RestrictionsCellProps) => {
+    const { restrictions } = section;
     const isMobile = useIsMobile();
     const theme = useTheme();
     const secondaryColor = theme.palette.secondary.main;

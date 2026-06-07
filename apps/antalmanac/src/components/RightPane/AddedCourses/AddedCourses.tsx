@@ -13,12 +13,8 @@ import {
 import AppStore from '$stores/AppStore';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { Box, SxProps, Typography } from '@mui/material';
-import { AACourse, AATerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { AACourseWithTerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-export interface CourseWithTerm extends AACourse {
-    term: AATerm;
-}
 
 const buttonSx: SxProps = {
     backgroundColor: 'rgba(236, 236, 236, 1)',
@@ -38,11 +34,11 @@ const buttonSx: SxProps = {
  * `<SectionTable skeleton>` and `<CustomEventDetailView skeleton>`.
  *
  * For courses, `courseComment` and `prerequisiteLink` are dropped (kept as
- * empty strings so the parsed shape still satisfies CourseWithTerm). They're
+ * empty strings so the parsed shape still satisfies AACourseWithTerm). They're
  * the heaviest fields and neither is read by the visible parts of the
  * skeleton — the prereq popover never opens during loading.
  */
-function persistSkeletonBlueprint(courses: CourseWithTerm[], customEvents: RepeatingCustomEvent[]) {
+function persistSkeletonBlueprint(courses: AACourseWithTerm[], customEvents: RepeatingCustomEvent[]) {
     if (courses.length === 0 && customEvents.length === 0) {
         removeLocalStorageAddedCoursesSkeletonBlueprint();
         return;
@@ -65,20 +61,17 @@ function persistFromAppStore() {
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
 
-    const formattedCourses: CourseWithTerm[] = [];
+    const formattedCourses: AACourseWithTerm[] = [];
 
     for (const course of currentCourses) {
         let formattedCourse = formattedCourses.find(
             (formattedCourse) => scheduleOfferingKey(formattedCourse) === scheduleOfferingKey(course)
         );
 
-        const sectionUpdatedAt = course.section?.updatedAt ?? null;
-
         if (formattedCourse) {
             formattedCourse.sections.push({
                 ...course.section,
             });
-            formattedCourse.updatedAt = sectionUpdatedAt;
         } else {
             formattedCourse = {
                 term: course.term,
@@ -94,7 +87,7 @@ function getCourses() {
                         ...course.section,
                     },
                 ],
-                updatedAt: sectionUpdatedAt ?? null,
+                updatedAt: course.section.updatedAt ?? null,
             };
             formattedCourses.push(formattedCourse);
         }
@@ -115,7 +108,7 @@ export function AddedCourses() {
     const [scheduleIndex, setScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
 
     const handleCourseOrderChange = useCallback(
-        (updatedCourses: CourseWithTerm[], _activeIndex: number, overIndex: number) => {
+        (updatedCourses: AACourseWithTerm[], _activeIndex: number, overIndex: number) => {
             setCourses(updatedCourses);
 
             const movedCourse = updatedCourses[overIndex];

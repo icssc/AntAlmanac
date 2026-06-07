@@ -1,64 +1,26 @@
-import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
-import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
-import { EnrollmentCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell';
-import { GpaCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/GpaCell';
-import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell';
-import { LocationsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/LocationsCell';
-import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell';
-import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell';
-import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
-import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
+import { SectionTableBodyRowCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowCells';
 import { SectionTableBodyRowColorStrip } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowColorStrip';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
+import { useColumnStore } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 import { TableRow, useTheme } from '@mui/material';
-import { AASection, AATerm, AACourse } from '@packages/antalmanac-types';
+import { AASection, AACourseWithTerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-
-import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 interface SectionTableBodyRowProps {
     section: AASection;
-    courseDetails: AACourse;
-    term: AATerm;
+    course: AACourseWithTerm;
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
     analyticsCategory: AnalyticsCategory;
-    formattedTime: string | null;
 }
 
-// These components have too varied of types, any is fine here
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
-    action: ActionCell,
-    sectionCode: SectionCodeCell,
-    sectionDetails: DetailsCell,
-    instructors: InstructorsCell,
-    gpa: GpaCell,
-    dayAndTime: DayAndTimeCell,
-    location: LocationsCell,
-    sectionEnrollment: EnrollmentCell,
-    status: StatusCell,
-    restrictions: RestrictionsCell,
-    syllabus: SyllabusCell,
-};
-
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
-    const {
-        section,
-        courseDetails,
-        term,
-        allowHighlight,
-        scheduleNames,
-        scheduleConflict,
-        analyticsCategory,
-        formattedTime,
-    } = props;
+    const { section, course, allowHighlight, scheduleNames, scheduleConflict, analyticsCategory } = props;
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
@@ -67,23 +29,23 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(() =>
-        AppStore.getAddedSectionCodes().has(scheduleSectionKey(term, section.sectionCode))
+        AppStore.getAddedSectionCodes().has(scheduleSectionKey(course.term, section.sectionCode))
     );
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
             setHoveredEvent(undefined);
         } else {
-            setHoveredEvent(section, courseDetails, term);
+            setHoveredEvent(section, course);
         }
-    }, [previewMode, addedCourse, setHoveredEvent, section, courseDetails, term]);
+    }, [previewMode, addedCourse, setHoveredEvent, section, course]);
 
     const handleMouseLeave = useCallback(() => {
         setHoveredEvent(undefined);
     }, [setHoveredEvent]);
 
     useEffect(() => {
-        const sectionKey = scheduleSectionKey(term, section.sectionCode);
+        const sectionKey = scheduleSectionKey(course.term, section.sectionCode);
 
         const syncAddedCourse = () => {
             setAddedCourse(AppStore.getAddedSectionCodes().has(sectionKey));
@@ -98,7 +60,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             AppStore.removeListener('addedCoursesChange', syncAddedCourse);
             AppStore.removeListener('currentScheduleIndexChange', syncAddedCourse);
         };
-    }, [section.sectionCode, term]);
+    }, [section.sectionCode, course.term]);
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {
@@ -137,31 +99,20 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <SectionTableBodyRowColorStrip section={section} term={term} visible={addedCourse} />
+            <SectionTableBodyRowColorStrip section={section} term={course.term} visible={addedCourse} />
 
-            {Object.entries(tableBodyCells)
-                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
-                .map(([column, Component]) => {
-                    return (
-                        <Component
-                            addedCourse={addedCourse}
-                            key={column}
-                            section={section}
-                            courseDetails={courseDetails}
-                            term={term}
-                            scheduleConflict={scheduleConflict}
-                            scheduleNames={scheduleNames}
-                            {...section}
-                            sectionType={section.sectionType}
-                            maxCapacity={parseInt(section.maxCapacity, 10)}
-                            units={parseFloat(section.units)}
-                            courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
-                            {...courseDetails}
-                            analyticsCategory={analyticsCategory}
-                            formattedTime={formattedTime}
-                        />
-                    );
-                })}
+            {activeColumns.map((column) => (
+                <SectionTableBodyRowCell
+                    key={column}
+                    column={column}
+                    section={section}
+                    course={course}
+                    addedCourse={addedCourse}
+                    scheduleConflict={scheduleConflict}
+                    scheduleNames={scheduleNames}
+                    analyticsCategory={analyticsCategory}
+                />
+            ))}
         </TableRow>
     );
 });

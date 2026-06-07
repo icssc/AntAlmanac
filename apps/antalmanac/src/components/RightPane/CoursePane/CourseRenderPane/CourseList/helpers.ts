@@ -1,9 +1,9 @@
 import AppStore from '$stores/AppStore';
 import { usePlannerStore } from '$stores/PlannerStore';
-import type { AACourse } from '@packages/antalmanac-types';
+import type { AACourseWithTerm, AATerm } from '@packages/antalmanac-types';
 import type { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
 
-export type CourseListEntry = WebsocSchool | WebsocDepartment | AACourse;
+export type CourseListEntry = WebsocSchool | WebsocDepartment | AACourseWithTerm;
 
 export function isSchoolEntry(item: CourseListEntry): item is WebsocSchool {
     return 'departments' in item;
@@ -13,8 +13,8 @@ export function isDepartmentEntry(item: CourseListEntry): item is WebsocDepartme
     return 'courses' in item;
 }
 
-export function isCourseEntry(item: CourseListEntry): item is AACourse {
-    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
+export function isCourseEntry(item: CourseListEntry): item is AACourseWithTerm {
+    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item && 'term' in item;
 }
 
 export function getCourseColors() {
@@ -27,6 +27,7 @@ export function getCourseColors() {
 
 export function flattenSOCObject(
     SOCObject: WebsocAPIResponse,
+    term: AATerm,
     courseColors: Record<string, string>
 ): CourseListEntry[] {
     return SOCObject.schools.reduce((accumulator: CourseListEntry[], school) => {
@@ -38,6 +39,7 @@ export function flattenSOCObject(
             dept.courses.forEach((course) => {
                 accumulator.push({
                     ...course,
+                    term,
                     sections: course.sections.map((section) => ({
                         ...section,
                         color: courseColors[section.sectionCode],
