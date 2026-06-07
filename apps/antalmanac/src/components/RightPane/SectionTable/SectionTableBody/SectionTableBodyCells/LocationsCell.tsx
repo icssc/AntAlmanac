@@ -7,7 +7,6 @@ import { Fragment } from 'react';
 
 interface LocationsCellProps {
     meetings: WebsocSectionMeeting[];
-    courseName: string;
 }
 
 export const LocationsCell = ({ meetings }: LocationsCellProps) => {
