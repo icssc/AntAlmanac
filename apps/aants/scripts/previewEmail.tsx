@@ -6,9 +6,9 @@ import { createServer } from 'http';
 
 import { render } from '@react-email/render';
 
-import { CourseNotificationEmail } from '../src/emails/CourseNotificationEmail';
+import { CourseNotificationEmail, type CourseNotificationEmailProps } from '../src/emails/CourseNotificationEmail';
 
-const SAMPLE_PROPS = {
+const SAMPLE_PROPS: CourseNotificationEmailProps = {
     messageId: crypto.randomUUID(),
     userName: 'Test User',
     time:

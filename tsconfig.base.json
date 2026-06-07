@@ -1,0 +1,7 @@
+{
+    "compilerOptions": {
+        // Deferred — enable in a follow-up PR (issue #1379)
+        // "noUncheckedIndexedAccess": true
+        "noUncheckedIndexedAccess": false
+    }
+}

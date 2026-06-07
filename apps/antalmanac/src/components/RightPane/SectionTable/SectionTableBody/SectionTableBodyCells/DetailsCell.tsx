@@ -1,5 +1,5 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { Box, SxProps } from '@mui/material';
+import { Box, type SxProps } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 
 const SECTION_COLORS = {

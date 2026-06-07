@@ -1,7 +1,7 @@
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 
 import { env } from '$scripts/env';
-import { AATerm } from '@packages/antalmanac-types';
+import { type AATerm } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { CalendarTerm, Quarter, Year } from '@packages/anteater-api/types';
 

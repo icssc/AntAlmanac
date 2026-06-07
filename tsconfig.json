@@ -1,3 +1,10 @@
 {
-    // Empty tsconfig for VSCode users
+    "files": [],
+    "references": [
+        { "path": "apps/antalmanac" },
+        { "path": "apps/aants" },
+        { "path": "packages/types" },
+        { "path": "packages/db" },
+        { "path": "packages/anteater-api" }
+    ]
 }

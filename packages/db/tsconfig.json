@@ -1,16 +1,10 @@
 {
+    "extends": ["@total-typescript/tsconfig/bundler/no-dom/library", "../../tsconfig.base.json"],
     "compilerOptions": {
-        "target": "es2022",
-        "module": "Preserve",
-        "moduleResolution": "bundler",
-        "esModuleInterop": true,
         "experimentalDecorators": true,
-        "strict": true,
-        "skipLibCheck": true,
         "baseUrl": ".",
-        "outDir": "dist",
-        "resolveJsonModule": true
+        "outDir": "dist"
     },
-    "include": ["drizzle.config.ts"],
+    "include": ["drizzle.config.ts", "src/**/*"],
     "exclude": ["node_modules", "dist"]
 }

@@ -1,19 +1,7 @@
 {
+    "extends": ["@total-typescript/tsconfig/bundler/dom/app", "../../tsconfig.base.json"],
     "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "bundler",
-        "lib": ["dom", "dom.iterable", "esnext"],
-        "allowJs": true,
-        "skipLibCheck": true,
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "strict": true,
-        "incremental": true,
-        "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
+        "lib": ["es2022", "es2023", "dom", "dom.iterable"],
         "jsx": "react-jsx",
         "plugins": [
             {

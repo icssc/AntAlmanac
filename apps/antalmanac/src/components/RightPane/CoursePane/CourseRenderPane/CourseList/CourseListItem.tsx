@@ -1,6 +1,6 @@
 import { CourseListSchoolDeptCard } from '$components/RightPane/CoursePane/CourseRenderPane/CourseList/CourseListSchoolDeptCard';
 import {
-    CourseListEntry,
+    type CourseListEntry,
     isDepartmentEntry,
     isSchoolEntry,
 } from '$components/RightPane/CoursePane/CourseRenderPane/CourseList/helpers';

@@ -5,7 +5,7 @@ import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { Box, Chip, Paper, Tooltip, Typography } from '@mui/material';
-import { ShortCourse } from '@packages/antalmanac-types';
+import { type ShortCourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo, useState } from 'react';
 

@@ -1,5 +1,5 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { Box, Typography, SxProps } from '@mui/material';
+import { Box, Typography, type SxProps } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 import { Link } from 'react-router-dom';
 

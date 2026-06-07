@@ -1,5 +1,5 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Box, Button, Paper, Popover, useTheme } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';

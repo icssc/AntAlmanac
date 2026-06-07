@@ -3,7 +3,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { Delete } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
+import { type AACourseWithTerm, type AASection } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';
 

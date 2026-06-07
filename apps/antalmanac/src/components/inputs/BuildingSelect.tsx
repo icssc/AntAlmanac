@@ -1,4 +1,4 @@
-import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
+import buildingCatalogue, { type Building } from '$lib/locations/buildingCatalogue';
 import { Autocomplete, TextField, type TextFieldProps } from '@mui/material';
 import { useCallback, useMemo } from 'react';
 

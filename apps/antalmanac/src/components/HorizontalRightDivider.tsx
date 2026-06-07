@@ -1,6 +1,6 @@
 import { mergeSx } from '$lib/helpers';
-import { Divider, SxProps, Theme } from '@mui/material';
-import { ReactNode } from 'react';
+import { Divider, type SxProps, type Theme } from '@mui/material';
+import { type ReactNode } from 'react';
 
 interface HorizontalRightDividerProps {
     children: ReactNode;

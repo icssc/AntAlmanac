@@ -1,9 +1,9 @@
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
-import { AnalyticsCategory } from '$lib/analytics/analytics';
+import { type AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
 import { TableBody } from '@mui/material';
-import { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
+import { type AACourseWithTerm, type AASection } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
 interface SectionTableBodyProps {

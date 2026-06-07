@@ -4,7 +4,7 @@ import { render, toPlainText } from '@react-email/render';
 import { CourseNotificationEmail } from '../emails/CourseNotificationEmail';
 import { env } from '../env';
 import { queueEmail } from './emailQueue';
-import { User } from './subscriptionData';
+import type { User } from './subscriptionData';
 
 export interface CourseDetails {
     sectionCode: string;

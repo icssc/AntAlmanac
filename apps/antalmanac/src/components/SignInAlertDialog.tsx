@@ -1,7 +1,7 @@
 import { AlertDialog } from '$components/AlertDialog';
 import { SignInButtons } from '$components/buttons/SignInButtons/SignInButtons';
 import { DialogContentText, Stack } from '@mui/material';
-import { ComponentProps } from 'react';
+import { type ComponentProps } from 'react';
 
 interface Props {
     open: boolean;

@@ -9,10 +9,10 @@ import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTabl
 import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
-import { AnalyticsCategory } from '$lib/analytics/analytics';
+import { type AnalyticsCategory } from '$lib/analytics/analytics';
 import { unreachableCase } from '$lib/utils';
 import type { SectionTableColumn } from '$stores/ColumnStore';
-import { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
+import { type AACourseWithTerm, type AASection } from '@packages/antalmanac-types';
 
 interface SectionTableBodyRowCellProps {
     column: SectionTableColumn;

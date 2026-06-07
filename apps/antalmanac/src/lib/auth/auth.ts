@@ -1,6 +1,6 @@
 import 'server-only';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
-import { AuthAdditionalData } from '$lib/auth/authTypes';
+import { type AuthAdditionalData } from '$lib/auth/authTypes';
 import { getSafeAuthRedirectPath } from '$lib/auth/authUtils';
 import { env } from '$src/env';
 import { db } from '@packages/db';

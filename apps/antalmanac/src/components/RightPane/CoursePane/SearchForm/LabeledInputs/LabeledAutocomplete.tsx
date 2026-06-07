@@ -1,6 +1,6 @@
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { Autocomplete, type AutocompleteProps, Popper, type PopperProps, type TextFieldProps } from '@mui/material';
-import { ComponentProps, useEffect, useId, useState } from 'react';
+import { type ComponentProps, useEffect, useId, useState } from 'react';
 
 interface LabeledAutocompleteProps<
     T,

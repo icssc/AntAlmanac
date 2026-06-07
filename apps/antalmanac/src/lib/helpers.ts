@@ -1,8 +1,8 @@
 import { openSnackbar } from '$stores/SnackbarStore';
-import { Theme } from '@mui/material/styles';
-import { SxProps, SystemStyleObject } from '@mui/system';
+import { type Theme } from '@mui/material/styles';
+import { type SxProps, type SystemStyleObject } from '@mui/system';
 import type { AATerm } from '@packages/antalmanac-types';
-import { MouseEvent } from 'react';
+import { type MouseEvent } from 'react';
 
 export const warnMultipleTerms = (terms: Set<AATerm>) => {
     const names = [...terms].map((t) => t.shortName).sort();

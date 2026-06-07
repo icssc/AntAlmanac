@@ -9,7 +9,7 @@ import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { useTabStore } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
-import { AACourseWithTerm } from '@packages/antalmanac-types';
+import { type AACourseWithTerm } from '@packages/antalmanac-types';
 import { memo } from 'react';
 
 const getOfferingId = (course: AACourseWithTerm) => scheduleOfferingKey(course);

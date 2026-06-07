@@ -1,13 +1,13 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
-import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { courseColorKey, customEventColorKey, getPalette, resolveAssignment } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ColorLens } from '@mui/icons-material';
-import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
-import { CustomEventId, type AATerm } from '@packages/antalmanac-types';
+import { IconButton, Popover, type PopoverProps, Tooltip } from '@mui/material';
+import { type CustomEventId, type AATerm } from '@packages/antalmanac-types';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
