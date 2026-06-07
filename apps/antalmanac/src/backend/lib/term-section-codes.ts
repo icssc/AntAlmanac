@@ -1,4 +1,5 @@
 import { type SectionSearchResult } from '@packages/antalmanac-types';
+import { type GraphQLEnvelope } from '@packages/anteater-api/client';
 import {
     type WebsocCourse,
     type WebsocDepartment,
@@ -14,7 +15,20 @@ export interface SectionCodesGraphQLResponse {
     };
 }
 
-export function parseSectionCodes(response: SectionCodesGraphQLResponse): Record<string, SectionSearchResult> {
+function isSectionCodesGraphQLResponse(response: GraphQLEnvelope): response is SectionCodesGraphQLResponse {
+    if (typeof response.data !== 'object' || response.data === null || !('websoc' in response.data)) {
+        return false;
+    }
+
+    const { websoc } = response.data;
+    return typeof websoc === 'object' && websoc !== null && 'schools' in websoc && Array.isArray(websoc.schools);
+}
+
+export function parseSectionCodes(response: GraphQLEnvelope): Record<string, SectionSearchResult> {
+    if (!isSectionCodesGraphQLResponse(response)) {
+        throw new Error('Invalid section codes GraphQL response');
+    }
+
     const results: Record<string, SectionSearchResult> = {};
     response.data.websoc.schools.forEach((school: WebsocSchool) => {
         school.departments.forEach((department: WebsocDepartment) => {
