@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
+import { getAuthState } from '$lib/auth/useAuth';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
 import { postHog } from '$providers/AppPostHogProvider';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
 import type { AATerm, CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
 export interface UndoRedoAction {
@@ -114,10 +114,10 @@ type ActionType =
 
 class ActionTypesStore extends EventEmitter {
     async autoSaveSchedule(_action: ActionType) {
-        const sessionStore = useSessionStore.getState();
+        const { isLoggedIn, userId } = getAuthState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
 
-        if (!sessionStore.sessionIsValid || !sessionStore.userId) {
+        if (!isLoggedIn || !userId) {
             if (autoSave) {
                 useScheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }

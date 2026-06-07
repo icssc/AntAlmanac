@@ -1,10 +1,10 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
+import { useAuth } from '$lib/auth/useAuth';
 import { canTermEnrollmentChange } from '$lib/termHelpers';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
-import { useSessionStore } from '$stores/SessionStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
@@ -36,7 +36,7 @@ export const NotificationsMenu = memo(({ section, course }: NotificationsMenuPro
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [signInOpen, setSignInOpen] = useState(false);
 
-    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const { isLoggedIn } = useAuth();
 
     const isTermCurrent = canTermEnrollmentChange(term);
     const notifyOn = notification?.notifyOn;
@@ -75,7 +75,7 @@ export const NotificationsMenu = memo(({ section, course }: NotificationsMenuPro
 
     const handleNotificationClick = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
-            if (!sessionIsValid) {
+            if (!isLoggedIn) {
                 setSignInOpen(true);
                 return;
             }
@@ -86,7 +86,7 @@ export const NotificationsMenu = memo(({ section, course }: NotificationsMenuPro
             });
             setAnchorEl(event.currentTarget);
         },
-        [sessionIsValid, postHog, section.sectionCode, term]
+        [isLoggedIn, postHog, section.sectionCode, term]
     );
 
     const handleSignInClose = useCallback(() => {
@@ -95,7 +95,7 @@ export const NotificationsMenu = memo(({ section, course }: NotificationsMenuPro
 
     const tooltipText = !isTermCurrent
         ? "Notifications are only available for the current enrollment period's courses"
-        : !sessionIsValid
+        : !isLoggedIn
           ? 'Sign in to access notifications'
           : null;
 
@@ -104,7 +104,7 @@ export const NotificationsMenu = memo(({ section, course }: NotificationsMenuPro
             <Tooltip title={tooltipText}>
                 <span>
                     <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent} sx={{ p: 0.5 }}>
-                        {sessionIsValid ? (
+                        {isLoggedIn ? (
                             hasNotifications ? (
                                 <EditNotifications fontSize="small" />
                             ) : (

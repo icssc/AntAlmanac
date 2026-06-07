@@ -2,7 +2,7 @@ import { loginUser } from '$actions/AppStoreActions';
 import { authClient } from '$lib/auth/authClient';
 import { Provider } from '$lib/auth/authTypes';
 import { hasSsoCookie } from '$lib/ssoCookie';
-import { useSessionStore } from '$stores/SessionStore';
+import { useAppInitStore } from '$stores/AppInitStore';
 import { useEffect, useRef } from 'react';
 
 /**
@@ -17,7 +17,7 @@ import { useEffect, useRef } from 'react';
 export function AutoSignIn() {
     const hasChecked = useRef(false);
     const { data, isPending } = authClient.useSession();
-    const hasCheckedAuth = useSessionStore((state) => state.hasCheckedAuth);
+    const hasCheckedAuth = useAppInitStore((state) => state.hasCheckedAuth);
 
     useEffect(() => {
         if (hasChecked.current || isPending || !hasCheckedAuth) {

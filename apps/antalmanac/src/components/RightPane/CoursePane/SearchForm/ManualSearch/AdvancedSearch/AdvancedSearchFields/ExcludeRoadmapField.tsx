@@ -2,8 +2,8 @@ import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
+import { useAuth } from '$lib/auth/useAuth';
 import { usePlannerStore } from '$stores/PlannerStore';
-import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box, MenuItem, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
@@ -50,7 +50,7 @@ export const ExcludeRoadmapField = memo(() => {
             updateTakenCourses: s.updateTakenCourses,
         }))
     );
-    const sessionIsValid = useSessionStore((s) => s.sessionIsValid);
+    const { isLoggedIn } = useAuth();
     const [signInOpen, setSignInOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -59,7 +59,7 @@ export const ExcludeRoadmapField = memo(() => {
     }, []);
 
     const handleMenuOpen = useCallback(() => {
-        if (!sessionIsValid) {
+        if (!isLoggedIn) {
             setSignInOpen(true);
             return;
         }
@@ -68,7 +68,7 @@ export const ExcludeRoadmapField = memo(() => {
         if (plannerRoadmaps.length === 0) {
             void loadPlannerRoadmaps();
         }
-    }, [loadPlannerRoadmaps, plannerRoadmaps.length, sessionIsValid]);
+    }, [loadPlannerRoadmaps, plannerRoadmaps.length, isLoggedIn]);
 
     const handleMenuClose = useCallback(() => {
         setMenuOpen(false);
@@ -108,7 +108,7 @@ export const ExcludeRoadmapField = memo(() => {
                     onClose: handleMenuClose,
                 }}
             >
-                {getRoadmapMenuItems({ isLoggedIn: sessionIsValid, roadmaps: plannerRoadmaps })}
+                {getRoadmapMenuItems({ isLoggedIn, roadmaps: plannerRoadmaps })}
             </LabeledSelect>
             <SignInDialog open={signInOpen} onClose={handleSignInClose} feature="Planner" />
         </>

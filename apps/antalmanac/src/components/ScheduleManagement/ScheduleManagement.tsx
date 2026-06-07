@@ -4,11 +4,11 @@ import { readCourseSearchParams, readSearchMode } from '$components/RightPane/Co
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { getAuthState } from '$lib/auth/useAuth';
 import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { useSessionStore } from '$stores/SessionStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -92,10 +92,10 @@ export function ScheduleManagement() {
         } else if (hasParams || isManualSearchMode) {
             setActiveTab('search');
         } else if (!isMobile) {
-            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
+            const hasSession = getAuthState().isLoggedIn || getWasLoggedIn();
             setActiveTab(hasSession ? 'added' : 'search');
         } else {
-            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
+            const hasSession = getAuthState().isLoggedIn || getWasLoggedIn();
             const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
             if (hasSession || hasLocalScheduleData) {

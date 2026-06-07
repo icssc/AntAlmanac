@@ -1,10 +1,11 @@
-import { useSessionStore } from '$stores/SessionStore';
+import { useAuth } from '$lib/auth/useAuth';
 import { HelpOutline } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { memo } from 'react';
 
 export const NotificationEmailTooltip = memo(() => {
-    const email = useSessionStore((state) => state.email);
+    const { user } = useAuth();
+    const email = user?.email;
 
     if (!email) {
         return null;

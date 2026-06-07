@@ -14,11 +14,11 @@ import {
     setWasLoggedIn,
 } from '$lib/localStorage';
 import { setSsoCookie } from '$lib/ssoCookie';
+import { useAppInitStore } from '$stores/AppInitStore';
 import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
@@ -31,9 +31,8 @@ export const AuthInitializer = () => {
     const hasInitializedRef = useRef(false);
 
     const setOpenLoadingSchedule = useScheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
-    const { updateSession, setAreSchedulesLoaded, setHasCheckedAuth } = useSessionStore(
+    const { setAreSchedulesLoaded, setHasCheckedAuth } = useAppInitStore(
         useShallow((state) => ({
-            updateSession: state.updateSession,
             setAreSchedulesLoaded: state.setAreSchedulesLoaded,
             setHasCheckedAuth: state.setHasCheckedAuth,
         }))
@@ -55,7 +54,7 @@ export const AuthInitializer = () => {
     const handleInitialized = () => {
         setOpenLoadingSchedule(false);
         loadNotifications();
-        if (useSessionStore.getState().areSchedulesLoaded) {
+        if (useAppInitStore.getState().areSchedulesLoaded) {
             void loadPlannerRoadmaps();
         }
     };
@@ -126,8 +125,6 @@ export const AuthInitializer = () => {
                 }
                 isInitializingRef.current = true;
                 try {
-                    await updateSession(sessionData);
-
                     setSsoCookie();
 
                     analyticsIdentifyUser(postHog, sessionData.user.id);
@@ -156,15 +153,7 @@ export const AuthInitializer = () => {
             handleAuthChecked();
             handleInitialized();
         }
-    }, [
-        sessionData,
-        isSessionPending,
-        updateSession,
-        setAreSchedulesLoaded,
-        postHog,
-        setHasCheckedAuth,
-        loadPlannerRoadmaps,
-    ]);
+    }, [sessionData, isSessionPending, setAreSchedulesLoaded, postHog, setHasCheckedAuth, loadPlannerRoadmaps]);
 
     return (
         <SignInAlertDialog

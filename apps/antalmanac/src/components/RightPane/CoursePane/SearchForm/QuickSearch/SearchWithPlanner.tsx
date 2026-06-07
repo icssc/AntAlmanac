@@ -6,10 +6,11 @@ import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/Sear
 import { useCourseSearchParam, useCourseSearchView } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
+import { useAuth } from '$lib/auth/useAuth';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
+import { useAppInitStore } from '$stores/AppInitStore';
 import { usePlannerStore } from '$stores/PlannerStore';
-import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
@@ -43,13 +44,8 @@ export const SearchWithPlanner = () => {
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const hasSearchedWithUrlParamsRef = useRef(false);
 
-    const { sessionIsValid, hasCheckedAuth } = useSessionStore(
-        useShallow((state) => ({
-            sessionIsValid: state.sessionIsValid,
-
-            hasCheckedAuth: state.hasCheckedAuth,
-        }))
-    );
+    const { isLoggedIn } = useAuth();
+    const hasCheckedAuth = useAppInitStore((state) => state.hasCheckedAuth);
 
     const { isPlannerLoading, plannerRoadmaps } = usePlannerStore(
         useShallow((state) => ({ isPlannerLoading: state.isPlannerLoading, plannerRoadmaps: state.plannerRoadmaps }))
@@ -203,15 +199,15 @@ export const SearchWithPlanner = () => {
     }, [plannerSearchParam, plannerRoadmaps, search, setPlannerSearchParam]);
 
     useEffect(() => {
-        if (hasCheckedAuth && !sessionIsValid && plannerSearchParam !== null) {
+        if (hasCheckedAuth && !isLoggedIn && plannerSearchParam !== null) {
             setOpenSignInDialog(true);
         }
-    }, [plannerSearchParam, sessionIsValid, hasCheckedAuth]);
+    }, [plannerSearchParam, isLoggedIn, hasCheckedAuth]);
 
     const searchComponent = (
         <LabeledAutocomplete
             label="Roadmap"
-            disabled={!sessionIsValid || isLoadingSearch}
+            disabled={!isLoggedIn || isLoadingSearch}
             autocompleteProps={{
                 options: sortedRoadmaps,
                 getOptionLabel: (roadmap) => roadmap.name.toString(),
@@ -235,7 +231,7 @@ export const SearchWithPlanner = () => {
         />
     );
 
-    if (!sessionIsValid) {
+    if (!isLoggedIn) {
         return (
             <>
                 <Tooltip title="Sign in to search with Planner">

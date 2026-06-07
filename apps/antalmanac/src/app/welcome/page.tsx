@@ -1,12 +1,12 @@
 'use client';
 
-import { useSessionStore } from '$stores/SessionStore';
+import { useAppInitStore } from '$stores/AppInitStore';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function Page() {
     const router = useRouter();
-    const setIsNewUser = useSessionStore((state) => state.setIsNewUser);
+    const setIsNewUser = useAppInitStore((state) => state.setIsNewUser);
 
     useEffect(() => {
         setIsNewUser(true);

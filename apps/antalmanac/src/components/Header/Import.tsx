@@ -10,15 +10,16 @@ import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSe
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
+import { useAuth } from '$lib/auth/useAuth';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
 import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
+import { useAppInitStore } from '$stores/AppInitStore';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
 import { useDevModeStore, useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { CloudUpload, ContentPasteGo } from '@mui/icons-material';
@@ -73,9 +74,9 @@ export function Import() {
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
-    const { sessionIsValid, isNewUser, setIsNewUser, areSchedulesLoaded } = useSessionStore(
+    const { isLoggedIn } = useAuth();
+    const { isNewUser, setIsNewUser, areSchedulesLoaded } = useAppInitStore(
         useShallow((state) => ({
-            sessionIsValid: state.sessionIsValid,
             isNewUser: state.isNewUser,
             setIsNewUser: state.setIsNewUser,
             areSchedulesLoaded: state.areSchedulesLoaded,
@@ -663,10 +664,10 @@ export function Import() {
     }, [handleOpen, isNewUser, setIsNewUser, areSchedulesLoaded]);
 
     useEffect(() => {
-        if (sessionIsValid && getLocalStorageDataCache() === null) {
+        if (isLoggedIn && getLocalStorageDataCache() === null) {
             handleFirstTimeSignin();
         }
-    }, [handleFirstTimeSignin, sessionIsValid]);
+    }, [handleFirstTimeSignin, isLoggedIn]);
 
     return (
         <>
@@ -830,7 +831,7 @@ export function Import() {
                                             value={ImportSource.AA_USERNAME_IMPORT}
                                             control={<Radio color="secondary" />}
                                             label="From AntAlmanac unique user ID"
-                                            disabled={!sessionIsValid}
+                                            disabled={!isLoggedIn}
                                         />
                                     </Tooltip>
                                     {devMode && (

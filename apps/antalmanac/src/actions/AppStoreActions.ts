@@ -2,6 +2,7 @@ import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analyti
 import { trpc } from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
+import { getAuthState } from '$lib/auth/useAuth';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp } from '$lib/platform';
@@ -10,7 +11,6 @@ import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import {
     type AACourseWithTerm,
@@ -216,8 +216,7 @@ export const mergeShortCourseSchedules = (
 };
 
 const handleScheduleImport = async (username: string, skipImportedCheck = false, postHog?: PostHog) => {
-    const sessionStore = useSessionStore.getState();
-    if (!sessionStore.sessionIsValid) {
+    if (!getAuthState().isLoggedIn) {
         throw new Error("Invalid session: User isn't logged in.");
     }
 
