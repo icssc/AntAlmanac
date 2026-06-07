@@ -13,7 +13,7 @@ import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
