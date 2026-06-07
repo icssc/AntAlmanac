@@ -7,7 +7,6 @@ export const QuickSearch = () => {
         <Stack gap={1}>
             <FuzzySearch />
 
-            {/* Shortcut pills row — roadmap pill + future pills (department, recent search, etc.) */}
             <Stack direction="row" flexWrap="wrap" gap={1} alignItems="center">
                 <RoadmapPill />
             </Stack>
