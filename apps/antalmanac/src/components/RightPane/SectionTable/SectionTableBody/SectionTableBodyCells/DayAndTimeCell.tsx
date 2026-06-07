@@ -2,13 +2,14 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Box } from '@mui/material';
-import { WebsocSectionMeeting } from '@packages/anteater-api/types';
+import type { AASection } from '@packages/antalmanac-types';
 
 interface DayAndTimeCellProps {
-    meetings: WebsocSectionMeeting[];
+    section: AASection;
 }
 
-export const DayAndTimeCell = ({ meetings }: DayAndTimeCellProps) => {
+export const DayAndTimeCell = ({ section }: DayAndTimeCellProps) => {
+    const { meetings } = section;
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     return (

@@ -45,51 +45,25 @@ export function SectionTableBodyRowCell({
                 />
             );
         case 'sectionCode':
-            return <SectionCodeCell sectionCode={section.sectionCode} analyticsCategory={analyticsCategory} />;
+            return <SectionCodeCell section={section} analyticsCategory={analyticsCategory} />;
         case 'sectionDetails':
-            return (
-                <DetailsCell
-                    sectionType={section.sectionType}
-                    sectionNum={section.sectionNum}
-                    units={parseFloat(section.units)}
-                />
-            );
+            return <DetailsCell section={section} />;
         case 'instructors':
-            return <InstructorsCell instructors={section.instructors} />;
+            return <InstructorsCell section={section} />;
         case 'gpa':
-            return (
-                <GpaCell
-                    deptCode={course.deptCode}
-                    courseNumber={course.courseNumber}
-                    instructors={section.instructors}
-                />
-            );
+            return <GpaCell section={section} course={course} />;
         case 'dayAndTime':
-            return <DayAndTimeCell meetings={section.meetings} />;
+            return <DayAndTimeCell section={section} />;
         case 'location':
-            return <LocationsCell meetings={section.meetings} />;
+            return <LocationsCell section={section} />;
         case 'sectionEnrollment':
-            return (
-                <EnrollmentCell
-                    sectionType={section.sectionType}
-                    deptCode={course.deptCode}
-                    courseNumber={course.courseNumber}
-                    term={course.term}
-                    sectionCode={section.sectionCode}
-                    numCurrentlyEnrolled={section.numCurrentlyEnrolled}
-                    maxCapacity={parseInt(section.maxCapacity, 10)}
-                    numOnWaitlist={section.numOnWaitlist}
-                    numWaitlistCap={section.numWaitlistCap}
-                    numNewOnlyReserved={section.numNewOnlyReserved}
-                    updatedAt={section.updatedAt}
-                />
-            );
+            return <EnrollmentCell section={section} course={course} />;
         case 'status':
-            return <StatusCell status={section.status} />;
+            return <StatusCell section={section} />;
         case 'restrictions':
-            return <RestrictionsCell restrictions={section.restrictions} />;
+            return <RestrictionsCell section={section} />;
         case 'syllabus':
-            return <SyllabusCell webURL={section.webURL} />;
+            return <SyllabusCell section={section} />;
         default:
             unreachableCase(column);
     }

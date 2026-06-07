@@ -1,6 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Box, SxProps } from '@mui/material';
-import { WebsocSectionType } from '@packages/anteater-api/types';
+import type { AASection } from '@packages/antalmanac-types';
 
 const SECTION_COLORS = {
     Act: { color: '#c87137' },
@@ -18,13 +18,13 @@ const SECTION_COLORS = {
 };
 
 interface DetailCellProps {
-    sectionType: WebsocSectionType;
-    sectionNum: string | undefined;
-    units: number | undefined;
+    section: Pick<AASection, 'sectionType' | 'sectionNum' | 'units'>;
     sx?: SxProps;
 }
 
-export const DetailsCell = ({ sectionType, sectionNum, units, sx }: DetailCellProps) => {
+export const DetailsCell = ({ section, sx }: DetailCellProps) => {
+    const { sectionType, sectionNum, units } = section;
+
     return (
         <TableBodyCellContainer sx={sx}>
             <Box sx={SECTION_COLORS[sectionType]}>{sectionType}</Box>

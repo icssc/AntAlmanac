@@ -43,13 +43,11 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
                 sx={{ width: 'unset', padding: '6px 16px' }}
             />
             <DetailsCell
-                sectionType={sectionType}
-                sectionNum={sectionNum}
-                units={units}
+                section={{ sectionType, sectionNum, units: String(units) }}
                 sx={{ width: 'unset', padding: '6px 16px' }}
             />
             {instructors && instructors.length > 0 ? (
-                <InstructorsCell instructors={instructors} sx={{ width: 'unset', padding: '6px 16px' }} />
+                <InstructorsCell section={{ instructors }} sx={{ width: 'unset', padding: '6px 16px' }} />
             ) : (
                 <TableCell sx={{ width: 'unset', padding: '6px 16px' }}>-</TableCell>
             )}

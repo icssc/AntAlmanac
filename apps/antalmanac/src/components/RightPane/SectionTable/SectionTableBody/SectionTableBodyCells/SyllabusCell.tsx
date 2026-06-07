@@ -1,12 +1,13 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import type { WebsocSection } from '@packages/anteater-api/types';
+import type { AASection } from '@packages/antalmanac-types';
 import { Link } from 'react-router-dom';
 
 interface SyllabusCellProps {
-    webURL: WebsocSection['webURL'];
+    section: AASection;
 }
 
-export const SyllabusCell = ({ webURL }: SyllabusCellProps) => {
+export const SyllabusCell = ({ section }: SyllabusCellProps) => {
+    const { webURL } = section;
     if (!webURL) {
         return <TableBodyCellContainer>{null}</TableBodyCellContainer>;
     }
