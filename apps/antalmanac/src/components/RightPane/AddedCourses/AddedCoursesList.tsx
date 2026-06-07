@@ -3,7 +3,7 @@ import { EmptyState } from '$components/EmptyState';
 import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/AddedCoursesLoadingSkeleton';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
-import { getMissingSections } from '$lib/courseAvailability';
+import { getMissingSections } from '$lib/courseAlerts';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { useTabStore } from '$stores/TabStore';

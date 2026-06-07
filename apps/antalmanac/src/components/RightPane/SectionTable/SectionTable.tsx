@@ -9,7 +9,7 @@ import { WarningAlert } from '$components/WarningAlert';
 import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
-import { getCourseCancellationWarning } from '$lib/courseAvailability';
+import { getCourseCancellationWarning } from '$lib/courseAlerts';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
