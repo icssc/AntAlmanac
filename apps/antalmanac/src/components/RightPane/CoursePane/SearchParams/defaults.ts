@@ -28,7 +28,7 @@ export const DEFAULT_ADVANCED_SEARCH_VALUES = {
     excludeRoadmapCourses: '',
     excludeRestrictionCodes: [] satisfies (typeof WebsocRestrictionCodeOptionSchema.options)[number][],
     days: [] satisfies (typeof WebsocDayOptionSchema.options)[number][],
-    courseIds: [] as string[],
+    courseIds: [] satisfies string[],
 };
 
 export const DEFAULT_FORM_DATA = {
