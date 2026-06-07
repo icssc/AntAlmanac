@@ -3,6 +3,7 @@ import { EmptyState } from '$components/EmptyState';
 import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/AddedCoursesLoadingSkeleton';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
+import { getMissingSections } from '$lib/courseAvailability';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { useTabStore } from '$stores/TabStore';
@@ -63,6 +64,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
                             allowHighlight={false}
                             analyticsCategory={analyticsEnum.addedClasses}
                             scheduleNames={scheduleNames}
+                            missingSections={getMissingSections(course)}
                         />
                     </SortableList.Item>
                 );

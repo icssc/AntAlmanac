@@ -1,5 +1,4 @@
 import { SortableList } from '$components/drag-and-drop/SortableList';
-import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
@@ -75,6 +74,7 @@ export interface SectionTableProps {
      * correct dimensions while displaying as a set of loading placeholders.
      */
     skeleton?: boolean;
+    missingSections?: string[];
 }
 
 function SectionTable({
@@ -84,6 +84,7 @@ function SectionTable({
     analyticsCategory,
     sortable = false,
     skeleton = false,
+    missingSections = [],
 }: SectionTableProps) {
     const isMobile = useIsMobile();
     const draggingState = useDraggingItemState(() => ({ isCollapsed: !openContent }));
@@ -136,7 +137,6 @@ function SectionTable({
     }, [activeColumns]);
 
     const cancellationWarning = useMemo(() => getCourseCancellationWarning(course.sections), [course.sections]);
-    const missingSections = useMemo(() => getMissingSections(course), [course]);
 
     return (
         <Box sx={{ overflow: 'hidden' }}>
@@ -226,7 +226,7 @@ function SectionTable({
 
             {cancellationWarning && <WarningAlert>{cancellationWarning}</WarningAlert>}
 
-            {missingSections?.length > 0 && (
+            {missingSections.length && (
                 <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
             )}
 
