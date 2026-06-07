@@ -1,8 +1,7 @@
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { signOut } from '$lib/auth/authClient';
-import { useAuth } from '$lib/auth/useAuth';
+import { authClient, signOut } from '$lib/auth/authClient';
 import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
@@ -16,20 +15,20 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const { isLoggedIn, user: authUser } = useAuth();
+    const { data: session } = authClient.useSession();
     const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
 
     const user = useMemo<UserProfile | null>(
         () =>
-            isLoggedIn && authUser
+            session
                 ? {
-                      name: authUser.name ?? null,
-                      avatar: authUser.avatar ?? null,
-                      email: authUser.email ?? null,
+                      name: session.user.name ?? null,
+                      avatar: session.user.avatar ?? null,
+                      email: session.user.email ?? null,
                   }
                 : null,
-        [isLoggedIn, authUser]
+        [session]
     );
 
     const handleClick = (event: MouseEvent<HTMLElement>) => {

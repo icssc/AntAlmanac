@@ -3,7 +3,7 @@
 import { EnrollmentConfirmStep } from '$components/ReviewPrompt/EnrollmentConfirmStep';
 import { ReviewStep } from '$components/ReviewPrompt/ReviewStep';
 import { SuccessStep } from '$components/ReviewPrompt/SuccessStep';
-import { useAuth } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { Paper, Snackbar } from '@mui/material';
 import { useEffect, useRef } from 'react';
@@ -12,7 +12,8 @@ import { useShallow } from 'zustand/react/shallow';
 const PROMPT_DELAY_MS = 15_000;
 
 export function ReviewPrompt() {
-    const { isLoggedIn, userId } = useAuth();
+    const { data: session } = authClient.useSession();
+    const userId = session?.user.id;
 
     const { step, candidate, initPrompt } = useReviewPromptStore(
         useShallow((s) => ({ step: s.step, candidate: s.candidate, initPrompt: s.initPrompt }))
@@ -24,7 +25,7 @@ export function ReviewPrompt() {
     // Trigger candidate selection once the session is confirmed and the user
     // has had a moment to settle into the page.
     useEffect(() => {
-        if (!isLoggedIn || !userId || promptInitialized.current) return;
+        if (!session || !userId || promptInitialized.current) return;
         promptInitialized.current = true;
 
         timerRef.current = setTimeout(() => {
@@ -34,7 +35,7 @@ export function ReviewPrompt() {
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
         };
-    }, [isLoggedIn, userId, initPrompt]);
+    }, [session, userId, initPrompt]);
 
     const open = step !== 'hidden' && !!candidate;
 

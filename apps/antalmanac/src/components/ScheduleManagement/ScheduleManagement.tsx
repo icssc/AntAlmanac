@@ -4,7 +4,7 @@ import { readCourseSearchParams, readSearchMode } from '$components/RightPane/Co
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { getAuthState } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
@@ -83,27 +83,33 @@ export function ScheduleManagement() {
             return;
         }
 
-        const formData = readCourseSearchParams();
-        const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
-        const isManualSearchMode = readSearchMode() === COURSE_SEARCH_MODE.MANUAL;
+        void (async () => {
+            const formData = readCourseSearchParams();
+            const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
+            const isManualSearchMode = readSearchMode() === COURSE_SEARCH_MODE.MANUAL;
 
-        if (shouldSearchPlannerFromParams()) {
-            setActiveTab('search');
-        } else if (hasParams || isManualSearchMode) {
-            setActiveTab('search');
-        } else if (!isMobile) {
-            const hasSession = getAuthState().isLoggedIn || getWasLoggedIn();
-            setActiveTab(hasSession ? 'added' : 'search');
-        } else {
-            const hasSession = getAuthState().isLoggedIn || getWasLoggedIn();
-            const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
-
-            if (hasSession || hasLocalScheduleData) {
-                setActiveTab('calendar');
-            } else {
+            if (shouldSearchPlannerFromParams()) {
                 setActiveTab('search');
+            } else if (hasParams || isManualSearchMode) {
+                setActiveTab('search');
+            } else {
+                const { data: session } = await authClient.getSession();
+                const hasSession = !!session || getWasLoggedIn();
+
+                if (!isMobile) {
+                    setActiveTab(hasSession ? 'added' : 'search');
+                } else {
+                    const hasLocalScheduleData =
+                        AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
+
+                    if (hasSession || hasLocalScheduleData) {
+                        setActiveTab('calendar');
+                    } else {
+                        setActiveTab('search');
+                    }
+                }
             }
-        }
+        })();
 
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps

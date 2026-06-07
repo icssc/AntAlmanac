@@ -6,7 +6,7 @@ import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/Sear
 import { useCourseSearchParam, useCourseSearchView } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { trpc } from '$lib/api/trpc';
-import { useAuth } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
 import { useAppInitStore } from '$stores/AppInitStore';
@@ -44,7 +44,7 @@ export const SearchWithPlanner = () => {
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const hasSearchedWithUrlParamsRef = useRef(false);
 
-    const { isLoggedIn } = useAuth();
+    const { data: session } = authClient.useSession();
     const hasCheckedAuth = useAppInitStore((state) => state.hasCheckedAuth);
 
     const { isPlannerLoading, plannerRoadmaps } = usePlannerStore(
@@ -199,15 +199,15 @@ export const SearchWithPlanner = () => {
     }, [plannerSearchParam, plannerRoadmaps, search, setPlannerSearchParam]);
 
     useEffect(() => {
-        if (hasCheckedAuth && !isLoggedIn && plannerSearchParam !== null) {
+        if (hasCheckedAuth && !session && plannerSearchParam !== null) {
             setOpenSignInDialog(true);
         }
-    }, [plannerSearchParam, isLoggedIn, hasCheckedAuth]);
+    }, [plannerSearchParam, session, hasCheckedAuth]);
 
     const searchComponent = (
         <LabeledAutocomplete
             label="Roadmap"
-            disabled={!isLoggedIn || isLoadingSearch}
+            disabled={!session || isLoadingSearch}
             autocompleteProps={{
                 options: sortedRoadmaps,
                 getOptionLabel: (roadmap) => roadmap.name.toString(),
@@ -231,7 +231,7 @@ export const SearchWithPlanner = () => {
         />
     );
 
-    if (!isLoggedIn) {
+    if (!session) {
         return (
             <>
                 <Tooltip title="Sign in to search with Planner">

@@ -2,7 +2,7 @@ import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useAuth } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { LIGHT_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Notifications } from '@mui/icons-material';
@@ -31,10 +31,10 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
     const postHog = usePostHog();
 
-    const { isLoggedIn } = useAuth();
+    const { data: session } = authClient.useSession();
 
     const handleOpen = useCallback(() => {
-        if (isLoggedIn) {
+        if (session) {
             logAnalytics(postHog, {
                 category: analyticsEnum.aants,
                 action: analyticsEnum.aants.actions.OPEN_MANAGE_NOTIFICATIONS,
@@ -43,7 +43,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
         } else {
             setSignInOpen(true);
         }
-    }, [isLoggedIn, postHog]);
+    }, [session, postHog]);
 
     const handleClose = useCallback(() => {
         logAnalytics(postHog, {
@@ -59,11 +59,11 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
 
     return (
         <>
-            <Tooltip title={isLoggedIn ? 'Notifications Menu' : 'Sign in to access notifications'}>
+            <Tooltip title={session ? 'Notifications Menu' : 'Sign in to access notifications'}>
                 <IconButton
                     sx={{
                         ...buttonSx,
-                        opacity: isLoggedIn ? 1 : 0.5,
+                        opacity: session ? 1 : 0.5,
                     }}
                     onClick={handleOpen}
                     size="small"

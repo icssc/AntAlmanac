@@ -1,11 +1,11 @@
-import { useAuth } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { HelpOutline } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { memo } from 'react';
 
 export const NotificationEmailTooltip = memo(() => {
-    const { user } = useAuth();
-    const email = user?.email;
+    const { data: session } = authClient.useSession();
+    const email = session?.user.email;
 
     if (!email) {
         return null;

@@ -2,7 +2,7 @@ import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
-import { useAuth } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box, MenuItem, Tooltip, Typography } from '@mui/material';
@@ -50,7 +50,7 @@ export const ExcludeRoadmapField = memo(() => {
             updateTakenCourses: s.updateTakenCourses,
         }))
     );
-    const { isLoggedIn } = useAuth();
+    const { data: session } = authClient.useSession();
     const [signInOpen, setSignInOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -59,7 +59,7 @@ export const ExcludeRoadmapField = memo(() => {
     }, []);
 
     const handleMenuOpen = useCallback(() => {
-        if (!isLoggedIn) {
+        if (!session) {
             setSignInOpen(true);
             return;
         }
@@ -68,7 +68,7 @@ export const ExcludeRoadmapField = memo(() => {
         if (plannerRoadmaps.length === 0) {
             void loadPlannerRoadmaps();
         }
-    }, [loadPlannerRoadmaps, plannerRoadmaps.length, isLoggedIn]);
+    }, [loadPlannerRoadmaps, plannerRoadmaps.length, session]);
 
     const handleMenuClose = useCallback(() => {
         setMenuOpen(false);
@@ -108,7 +108,7 @@ export const ExcludeRoadmapField = memo(() => {
                     onClose: handleMenuClose,
                 }}
             >
-                {getRoadmapMenuItems({ isLoggedIn, roadmaps: plannerRoadmaps })}
+                {getRoadmapMenuItems({ isLoggedIn: !!session, roadmaps: plannerRoadmaps })}
             </LabeledSelect>
             <SignInDialog open={signInOpen} onClose={handleSignInClose} feature="Planner" />
         </>

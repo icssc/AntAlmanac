@@ -1,8 +1,8 @@
 import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
+import { authClient } from '$lib/auth/authClient';
 import { Provider } from '$lib/auth/authTypes';
-import { getAuthState } from '$lib/auth/useAuth';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp } from '$lib/platform';
@@ -216,7 +216,8 @@ export const mergeShortCourseSchedules = (
 };
 
 const handleScheduleImport = async (username: string, skipImportedCheck = false, postHog?: PostHog) => {
-    if (!getAuthState().isLoggedIn) {
+    const { data: session } = await authClient.getSession();
+    if (!session) {
         throw new Error("Invalid session: User isn't logged in.");
     }
 

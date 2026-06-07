@@ -1,5 +1,5 @@
 import { trpc } from '$lib/api/trpc';
-import { getAuthState } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { Notifications } from '$lib/notifications';
 import { getTermByYearAndQuarter } from '$lib/term';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
@@ -148,7 +148,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             });
         },
         loadNotifications: async () => {
-            if (!getAuthState().isLoggedIn) {
+            const { data: session } = await authClient.getSession();
+            if (!session) {
                 set({ notifications: {}, initialized: true });
                 return;
             }

@@ -1,6 +1,6 @@
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
-import { getAuthState } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { usePreviewStore, useAutoSaveStore, useDevModeStore } from '$stores/SettingsStore';
 import { Help } from '@mui/icons-material';
@@ -13,6 +13,7 @@ export function ExperimentalMenu() {
         useShallow((store) => [store.previewMode, store.setPreviewMode])
     );
     const [autoSave, setAutoSave] = useAutoSaveStore(useShallow((store) => [store.autoSave, store.setAutoSave]));
+    const { data: session } = authClient.useSession();
     const { setOpenAutoSaveWarning } = useScheduleComponentsToggleStore();
     const [devMode, setDevMode] = useDevModeStore(useShallow((store) => [store.devMode, store.setDevMode]));
     const postHog = usePostHog();
@@ -28,7 +29,7 @@ export function ExperimentalMenu() {
             return;
         }
 
-        if (!getAuthState().isLoggedIn) {
+        if (!session) {
             setOpenAutoSaveWarning(true);
             return;
         }

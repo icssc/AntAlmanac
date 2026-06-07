@@ -5,7 +5,7 @@ import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useAuth } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { getLocalStorageImportedUser, removeLocalStorageImportedUser } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { AppBar, Box, Stack } from '@mui/material';
@@ -15,7 +15,7 @@ export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
-    const { isLoggedIn } = useAuth();
+    const { data: session } = authClient.useSession();
     const isMobile = useIsMobile();
 
     const clearStorage = () => {
@@ -37,10 +37,10 @@ export function Header() {
     };
 
     useEffect(() => {
-        if (importedUser !== '' && isLoggedIn) {
+        if (importedUser !== '' && session) {
             setOpenSuccessfulSaved(true);
         }
-    }, [importedUser, isLoggedIn]);
+    }, [importedUser, session]);
 
     return (
         <Box
@@ -78,7 +78,7 @@ export function Header() {
                     <Stack direction="row" alignItems="center">
                         <Import key="studylist" />
                         <Save />
-                        {isLoggedIn ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
+                        {session ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
                     </Stack>
 
                     <AlertDialog

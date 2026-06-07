@@ -10,7 +10,7 @@ import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSe
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
-import { useAuth } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
@@ -74,7 +74,7 @@ export function Import() {
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
 
-    const { isLoggedIn } = useAuth();
+    const { data: session } = authClient.useSession();
     const { isNewUser, setIsNewUser, areSchedulesLoaded } = useAppInitStore(
         useShallow((state) => ({
             isNewUser: state.isNewUser,
@@ -664,10 +664,10 @@ export function Import() {
     }, [handleOpen, isNewUser, setIsNewUser, areSchedulesLoaded]);
 
     useEffect(() => {
-        if (isLoggedIn && getLocalStorageDataCache() === null) {
+        if (session && getLocalStorageDataCache() === null) {
             handleFirstTimeSignin();
         }
-    }, [handleFirstTimeSignin, isLoggedIn]);
+    }, [handleFirstTimeSignin, session]);
 
     return (
         <>
@@ -831,7 +831,7 @@ export function Import() {
                                             value={ImportSource.AA_USERNAME_IMPORT}
                                             control={<Radio color="secondary" />}
                                             label="From AntAlmanac unique user ID"
-                                            disabled={!isLoggedIn}
+                                            disabled={!session}
                                         />
                                     </Tooltip>
                                     {devMode && (

@@ -1,5 +1,5 @@
 import { trpc } from '$lib/api/trpc';
-import { getAuthState } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import type { Notification } from '$stores/NotificationStore';
 
 function serializeNotification(notification: Notification) {
@@ -28,7 +28,8 @@ class NotificationsClient {
     }
 
     async deleteNotification(notification: Notification) {
-        const userId = getAuthState().userId;
+        const { data: session } = await authClient.getSession();
+        const userId = session?.user.id;
         if (userId) {
             return await trpc.notifications.deleteNotification.mutate({
                 userId,

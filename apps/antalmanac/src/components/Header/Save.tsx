@@ -3,7 +3,7 @@ import { isEmptySchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
-import { useAuth } from '$lib/auth/useAuth';
+import { authClient } from '$lib/auth/authClient';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -18,7 +18,7 @@ import { useState, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
-    const { isLoggedIn } = useAuth();
+    const { data: session } = authClient.useSession();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [autoSaving, setAutoSaving] = useState(false);
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -118,7 +118,7 @@ export const Save = () => {
                 color="inherit"
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
-                onClick={isLoggedIn ? saveScheduleData : handleClickSignIn}
+                onClick={session ? saveScheduleData : handleClickSignIn}
                 sx={{ fontSize: 'inherit' }}
                 disabled={fallbackMode || saving}
                 loading={saving}
