@@ -72,6 +72,7 @@ export const advancedSearchParsers: Pick<typeof courseSearchParamParsers, Advanc
     excludeRoadmapCourses: courseSearchParamParsers.excludeRoadmapCourses,
     excludeRestrictionCodes: courseSearchParamParsers.excludeRestrictionCodes,
     days: courseSearchParamParsers.days,
+    courseIds: courseSearchParamParsers.courseIds,
 };
 
 export const searchModeParser = parseAsStringLiteral(COURSE_SEARCH_MODES).withDefault(COURSE_SEARCH_MODE.QUICK);
