@@ -35,6 +35,23 @@ enum LocalStorageKeys {
 
 const LSK = LocalStorageKeys;
 
+/** Keys from removed features; purged once per session on auth init. */
+const STALE_LOCAL_STORAGE_KEYS = [
+    LSK.recentlySearched,
+    LSK.unsavedActions,
+    LSK.pwaDismissalTime,
+    LSK.sessionId,
+    LSK.newUser,
+    LSK.fromLoading,
+    LSK.importedUser,
+] as const;
+
+export function removeStaleLocalStorageKeys() {
+    for (const key of STALE_LOCAL_STORAGE_KEYS) {
+        window.localStorage.removeItem(key);
+    }
+}
+
 export function setLocalStorageImportedUser(value: string) {
     window.localStorage.setItem(LSK.importedUser, value);
 }
