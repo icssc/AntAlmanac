@@ -9,11 +9,11 @@ import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/Se
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { useTabStore } from '$stores/TabStore';
 import type { AATerm } from '@packages/antalmanac-types';
+import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export function useQuickSearch() {
-    const navigate = useNavigate();
+    const router = useRouter();
     const setActiveTab = useTabStore((s) => s.setActiveTab);
 
     return useCallback(
@@ -29,9 +29,9 @@ export function useQuickSearch() {
             searchParams.set(COURSE_SEARCH_MODE_KEY, COURSE_SEARCH_MODE.QUICK);
             searchParams.set(COURSE_SEARCH_VIEW_KEY, COURSE_SEARCH_VIEW.RESULTS);
 
-            navigate({ pathname: '/', search: searchParams.toString() });
+            router.push(`/?${searchParams.toString()}`);
             setActiveTab('search');
         },
-        [navigate, setActiveTab]
+        [router, setActiveTab]
     );
 }

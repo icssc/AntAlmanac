@@ -11,8 +11,8 @@ import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
+import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 /**
@@ -20,7 +20,8 @@ import { useShallow } from 'zustand/react/shallow';
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
-    const { tab } = useParams();
+    const params = useParams<{ slug?: string[] }>();
+    const tab = params.slug?.[0];
     const isMobile = useIsMobile();
 
     const { activeTab, setActiveTab, setActiveTabValue } = useTabStore(

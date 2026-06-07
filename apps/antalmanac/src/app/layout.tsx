@@ -91,7 +91,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         'color: #305db7; font-size: 15px'
                     );`}
                 </Script>
-                <noscript>You need to enable JavaScript to run this app.</noscript>
+                <noscript>You need to enable JavaScript to use the interactive schedule planner.</noscript>
                 <Providers>{children}</Providers>
             </body>
         </html>

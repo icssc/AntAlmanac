@@ -9,7 +9,7 @@ import type {
     CourseSearchMode,
     CourseSearchParams,
 } from '$components/RightPane/CoursePane/SearchParams/types';
-import { createLoader } from 'nuqs';
+import { createLoader } from 'nuqs/server';
 
 const loadAdvancedSearchParams = createLoader(advancedSearchParsers);
 const loadCourseSearchParams = createLoader(courseSearchParamParsers);

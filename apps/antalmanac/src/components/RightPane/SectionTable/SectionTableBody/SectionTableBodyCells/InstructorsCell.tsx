@@ -1,7 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Box, Typography, SxProps } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
-import { Link } from 'react-router-dom';
 
 interface InstructorsCellProps {
     section: Pick<AASection, 'instructors'>;
@@ -26,13 +25,13 @@ export const InstructorsCell = ({ section, sx }: InstructorsCellProps) => {
                         textOverflow: 'ellipsis',
                     }}
                 >
-                    <Link
-                        to={`https://www.ratemyprofessors.com/search/professors/1074?q=${lastName}`}
+                    <a
+                        href={`https://www.ratemyprofessors.com/search/professors/1074?q=${lastName}`}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         {profName}
-                    </Link>
+                    </a>
                 </Typography>
             </Box>
         );

@@ -1,3 +1,5 @@
+'use client';
+
 import { AuthInitializer } from '$components/AuthInitializer';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
@@ -9,6 +11,7 @@ import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManag
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
+import type { PrefetchedSchedule } from '$lib/courseSearchQuery.server';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
@@ -16,6 +19,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
+
+interface HomeProps {
+    prefetchedSchedule: PrefetchedSchedule;
+    isAuthenticated: boolean;
+}
 
 function MobileHome() {
     return <ScheduleManagement />;
@@ -76,14 +84,14 @@ function DesktopHome() {
     );
 }
 
-export default function Home() {
+export default function Home({ prefetchedSchedule, isAuthenticated }: HomeProps) {
     const isMobile = useIsMobile();
     const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <TutorialInitializer />
-            <AuthInitializer />
+            <AuthInitializer prefetchedSchedule={prefetchedSchedule} isAuthenticated={isAuthenticated} />
             <PatchNotes />
 
             <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">

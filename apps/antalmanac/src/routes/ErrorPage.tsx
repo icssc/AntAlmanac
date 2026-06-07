@@ -1,10 +1,17 @@
+'use client';
+
 import { ExpandMore } from '@mui/icons-material';
 import { Box, Accordion, AccordionDetails, AccordionSummary, Typography, Button, Stack } from '@mui/material';
-import { Link, useLocation, useRouteError } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-export const ErrorPage = () => {
-    const error = useRouteError();
-    const location = useLocation();
+interface ErrorPageProps {
+    error: Error & { digest?: string };
+    reset: () => void;
+}
+
+export function ErrorPage({ error, reset }: ErrorPageProps) {
+    const pathname = usePathname();
 
     return (
         <Box sx={{ height: '100dvh', overflowY: 'auto' }}>
@@ -29,14 +36,19 @@ export const ErrorPage = () => {
                     </Typography>
                     <Typography variant="h5" component="p">
                         Try refreshing the page. If the error persists, please submit a{' '}
-                        <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link> with the provided error.
+                        <a href="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</a> with the provided error.
                     </Typography>
                 </Stack>
-                <Link to="/">
-                    <Button variant="contained" size="large">
-                        Back to Home
+                <Stack direction="row" spacing={2} justifyContent="center">
+                    <Button variant="outlined" size="large" onClick={reset}>
+                        Try Again
                     </Button>
-                </Link>
+                    <Link href="/">
+                        <Button variant="contained" size="large">
+                            Back to Home
+                        </Button>
+                    </Link>
+                </Stack>
                 <Accordion defaultExpanded disableGutters sx={{ maxWidth: '100%' }}>
                     <AccordionSummary expandIcon={<ExpandMore />}>
                         <Typography component="p">View Error Message</Typography>
@@ -49,13 +61,11 @@ export const ErrorPage = () => {
                             flexWrap: 'wrap',
                         }}
                     >
-                        <Typography sx={{ fontWeight: '600' }}>Route: {location.pathname}</Typography>
-                        <Typography sx={{ wordBreak: 'break-word' }}>
-                            {error instanceof Error ? error.stack : 'No error stack provided.'}
-                        </Typography>
+                        <Typography sx={{ fontWeight: '600' }}>Route: {pathname}</Typography>
+                        <Typography sx={{ wordBreak: 'break-word' }}>{error.stack ?? error.message}</Typography>
                     </AccordionDetails>
                 </Accordion>
             </Stack>
         </Box>
     );
-};
+}

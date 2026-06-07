@@ -3,6 +3,7 @@ import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { authClient, signOut } from '$lib/auth/authClient';
+import type { PrefetchedSchedule } from '$lib/courseSearchQuery.server';
 import {
     getLocalStorageDataCache,
     getLocalStorageUserId,
@@ -24,7 +25,12 @@ import { usePostHog } from 'posthog-js/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-export const AuthInitializer = () => {
+export const AuthInitializer = ({
+    prefetchedSchedule,
+}: {
+    prefetchedSchedule: PrefetchedSchedule;
+    isAuthenticated: boolean;
+}) => {
     const [openAlert, setOpenAlert] = useState(false);
 
     const isInitializingRef = useRef(false);
@@ -132,7 +138,7 @@ export const AuthInitializer = () => {
 
                     analyticsIdentifyUser(postHog, sessionData.user.id);
 
-                    const userData = await trpc.schedule.get.query();
+                    const userData = prefetchedSchedule ?? (await trpc.schedule.get.query());
                     await loadSchedule({ prefetched: userData, postHog });
                     await loadUnsavedChanges(userData);
 
