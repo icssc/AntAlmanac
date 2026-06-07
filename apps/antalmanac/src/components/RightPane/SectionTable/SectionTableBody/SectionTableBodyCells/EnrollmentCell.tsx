@@ -34,7 +34,7 @@ export const EnrollmentCell = ({ section, course }: EnrollmentCellProps) => {
             hour12: !isMilitaryTime,
         });
 
-        return timeString.replace(/^0(\d)/, '$1');
+        return isMilitaryTime ? timeString : timeString.replace(/^0(\d)/, '$1');
     }, [section.updatedAt, isMilitaryTime]);
 
     const showTooltip = !isMobile && formattedTime;
