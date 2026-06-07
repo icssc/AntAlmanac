@@ -31,10 +31,8 @@ export const AuthInitializer = () => {
     const hasInitializedRef = useRef(false);
 
     const setOpenLoadingSchedule = useScheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
-    const { areSchedulesLoaded, hasCheckedAuth, setAreSchedulesLoaded, setHasCheckedAuth } = useAppInitStore(
+    const { setAreSchedulesLoaded, setHasCheckedAuth } = useAppInitStore(
         useShallow((state) => ({
-            areSchedulesLoaded: state.areSchedulesLoaded,
-            hasCheckedAuth: state.hasCheckedAuth,
             setAreSchedulesLoaded: state.setAreSchedulesLoaded,
             setHasCheckedAuth: state.setHasCheckedAuth,
         }))
@@ -57,12 +55,6 @@ export const AuthInitializer = () => {
         setOpenLoadingSchedule(false);
         loadNotifications();
     };
-
-    useEffect(() => {
-        if (hasCheckedAuth && areSchedulesLoaded) {
-            void loadPlannerRoadmaps();
-        }
-    }, [hasCheckedAuth, areSchedulesLoaded, loadPlannerRoadmaps]);
 
     const loadUnsavedChanges = useEffectEvent(async (userData: UserData) => {
         if (!sessionData) {
@@ -140,6 +132,7 @@ export const AuthInitializer = () => {
 
                     setAreSchedulesLoaded(true);
                     setWasLoggedIn(true);
+                    void loadPlannerRoadmaps();
 
                     handleAuthChecked();
                 } catch (error) {
@@ -158,7 +151,7 @@ export const AuthInitializer = () => {
             handleAuthChecked();
             handleInitialized();
         }
-    }, [sessionData, isSessionPending, setAreSchedulesLoaded, postHog, setHasCheckedAuth]);
+    }, [sessionData, isSessionPending, setAreSchedulesLoaded, postHog, setHasCheckedAuth, loadPlannerRoadmaps]);
 
     return (
         <SignInAlertDialog
