@@ -193,13 +193,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 throw new AAPIError(`GraphQL request failed: ${text}`, res.status);
             }
 
-            const json: unknown = await res.json();
-
-            if (typeof json === 'object' && json !== null && 'data' in json && Reflect.get(json, 'data') === null) {
-                throw new AAPIError('GraphQL returned null data', res.status);
-            }
-
-            return json as T;
+            return (await res.json()) as T;
         },
     };
 }
