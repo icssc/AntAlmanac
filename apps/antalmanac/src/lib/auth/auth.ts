@@ -115,5 +115,3 @@ export const auth = betterAuth({
 
 export type AuthorizationUrlParams =
     (typeof auth)['options']['plugins'][0]['options']['config'][0]['authorizationUrlParams'];
-
-export type Accounts = NonNullable<Awaited<ReturnType<(typeof auth)['api']['listUserAccounts']>>>;

@@ -24,7 +24,6 @@ import { useCallback, useState } from 'react';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
-    onDialogClose?: () => void;
     scheduleNames: string[];
 }
 
