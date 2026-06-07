@@ -14,7 +14,7 @@ export function isDepartmentEntry(item: CourseListEntry): item is WebsocDepartme
 }
 
 export function isCourseEntry(item: CourseListEntry): item is AACourseWithTerm {
-    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item;
+    return 'sections' in item && 'deptCode' in item && 'courseNumber' in item && 'term' in item;
 }
 
 export function getCourseColors() {
