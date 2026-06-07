@@ -11,11 +11,7 @@ import { LoadingMessage } from '$components/RightPane/CoursePane/CourseRenderPan
 import { NoResults } from '$components/RightPane/CoursePane/CourseRenderPane/NoResults';
 import { RecruitmentBanner } from '$components/RightPane/CoursePane/CourseRenderPane/RecruitmentBanner';
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
-import {
-    useCourseIds,
-    useCourseSearchForm,
-    useCourseSearchMode,
-} from '$components/RightPane/CoursePane/SearchParams/hooks';
+import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -44,7 +40,6 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
 
     const { formData } = useCourseSearchForm();
     const { manualSearchEnabled } = useCourseSearchMode();
-    const { courseIds } = useCourseIds();
 
     const [courseColors, setCourseColors] = useState(() => getCourseColors());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
@@ -81,16 +76,16 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
         refetch,
     } = useQuery({
         staleTime: 5 * 60 * 1000,
-        queryKey: queryKeys.courseSearch.result(formData, courseIds),
+        queryKey: queryKeys.courseSearch.result(formData),
         queryFn: async (): Promise<WebsocAPIResponse | null> => {
             try {
                 const websocQueryParams = getQueryParams(formData);
                 let response: WebsocAPIResponse;
 
-                if (courseIds.length > 0) {
+                if (formData.courseIds.length > 0) {
                     response = unionWebsocResponses(
                         await trpc.websoc.getManyOfField.query({
-                            params: { ...websocQueryParams, courseId: courseIds.join(',') },
+                            params: { ...websocQueryParams, courseId: formData.courseIds.join(',') },
                             fieldName: 'courseId',
                         })
                     );

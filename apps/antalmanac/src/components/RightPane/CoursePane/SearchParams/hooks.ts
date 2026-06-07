@@ -1,5 +1,4 @@
 import {
-    COURSE_IDS_KEY,
     COURSE_SEARCH_MODE,
     COURSE_SEARCH_MODE_KEY,
     COURSE_SEARCH_PLANNER_KEY,
@@ -10,7 +9,6 @@ import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams
 import { deriveCourseSearchView, isValidSearch } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import {
-    courseIdsParser,
     courseSearchParamParsers,
     plannerSearchParser,
     searchModeParser,
@@ -35,23 +33,6 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(
     );
 
     return [value as CourseSearchParams[K], setValue];
-}
-
-export function useCourseIds() {
-    const [courseIds, setCourseIdsRaw] = useQueryState(COURSE_IDS_KEY, courseIdsParser);
-
-    const setCourseIds = useCallback(
-        (next: string[]) => {
-            void setCourseIdsRaw(next.length > 0 ? next : null);
-        },
-        [setCourseIdsRaw]
-    );
-
-    const clearCourseIds = useCallback(() => {
-        void setCourseIdsRaw(null);
-    }, [setCourseIdsRaw]);
-
-    return { courseIds, setCourseIds, clearCourseIds };
 }
 
 export function useCourseSearchMode() {

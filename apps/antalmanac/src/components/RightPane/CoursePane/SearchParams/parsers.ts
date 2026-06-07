@@ -57,6 +57,7 @@ export const courseSearchParamParsers = {
     days: parseAsArrayOf(parseAsStringLiteral(WebsocDayOptionSchema.options)).withDefault(
         DEFAULT_ADVANCED_SEARCH_VALUES.days
     ),
+    courseIds: parseAsArrayOf(parseAsString).withDefault([]),
 };
 
 export const advancedSearchParsers: Pick<typeof courseSearchParamParsers, AdvancedSearchParam> = {
@@ -78,7 +79,5 @@ export const searchModeParser = parseAsStringLiteral(COURSE_SEARCH_MODES).withDe
 export const searchViewParser = parseAsStringLiteral(COURSE_SEARCH_VIEWS);
 
 export const plannerSearchParser = parseAsString;
-
-export const courseIdsParser = parseAsArrayOf(parseAsString).withDefault([]);
 
 export const serializeCourseSearchParams = createSerializer(courseSearchParamParsers);

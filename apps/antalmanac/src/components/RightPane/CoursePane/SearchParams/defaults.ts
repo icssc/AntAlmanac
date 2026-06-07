@@ -34,4 +34,5 @@ export const DEFAULT_FORM_DATA = {
     term: DEFAULT_TERM,
     ...DEFAULT_MANUAL_SEARCH_VALUES,
     ...DEFAULT_ADVANCED_SEARCH_VALUES,
+    courseIds: [] as string[],
 } as const;

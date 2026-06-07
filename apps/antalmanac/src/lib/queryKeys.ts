@@ -13,11 +13,7 @@ export const queryKeys = {
     courseSearch: {
         all: ['courseSearch'] as const,
         results: () => [...queryKeys.courseSearch.all, 'results'] as const,
-        result: (formData: CourseSearchParams, courseIds: string[]) =>
-            [
-                ...queryKeys.courseSearch.results(),
-                serializeCourseSearchParams(formData) ?? '',
-                courseIds.toSorted().join(','),
-            ] as const,
+        result: (formData: CourseSearchParams) =>
+            [...queryKeys.courseSearch.results(), serializeCourseSearchParams(formData) ?? ''] as const,
     },
 } as const;

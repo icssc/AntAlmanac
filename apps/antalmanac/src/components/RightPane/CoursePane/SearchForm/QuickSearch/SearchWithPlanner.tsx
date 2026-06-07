@@ -4,7 +4,7 @@ import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchFo
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchParams/constants';
 import {
-    useCourseIds,
+    useCourseSearchForm,
     useCourseSearchParam,
     useCourseSearchView,
 } from '$components/RightPane/CoursePane/SearchParams/hooks';
@@ -36,7 +36,7 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
 export const SearchWithPlanner = () => {
     const [term] = useCourseSearchParam('term');
     const { showResults } = useCourseSearchView();
-    const { setCourseIds } = useCourseIds();
+    const { setField } = useCourseSearchForm();
     const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
         COURSE_SEARCH_PLANNER_KEY,
         parseAsString.withOptions({ history: 'replace' })
@@ -93,11 +93,11 @@ export const SearchWithPlanner = () => {
                 .filter((coursePlan) => !coursePlan.courseId.startsWith('CUSTOM#'))
                 .map((coursePlan) => coursePlan.courseId);
 
-            setCourseIds(ids);
+            setField('courseIds', ids);
             showResults();
             return true;
         },
-        [plannerRoadmaps, setCourseIds, showResults, term]
+        [plannerRoadmaps, setField, showResults, term]
     );
 
     const groupBy = (option: Roadmap) => {
