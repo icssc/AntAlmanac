@@ -1,4 +1,5 @@
 import {
+    COURSE_IDS_KEY,
     COURSE_SEARCH_MODE,
     COURSE_SEARCH_MODE_KEY,
     COURSE_SEARCH_PLANNER_KEY,
@@ -9,13 +10,13 @@ import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams
 import { deriveCourseSearchView, isValidSearch } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import {
+    courseIdsParser,
     courseSearchParamParsers,
     plannerSearchParser,
     searchModeParser,
     searchViewParser,
 } from '$components/RightPane/CoursePane/SearchParams/parsers';
 import type { CourseSearchMode, CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { useQueryState, useQueryStates } from 'nuqs';
 import { useCallback } from 'react';
@@ -23,19 +24,34 @@ import { useCallback } from 'react';
 export function useCourseSearchParam<K extends keyof CourseSearchParams>(
     field: K
 ): readonly [CourseSearchParams[K], (next: CourseSearchParams[K]) => void] {
-    // NB: generic K widens `parsers[field]` to a union; cast keeps single-field `useQueryState` perf.
     const parser = courseSearchParamParsers[field] as (typeof courseSearchParamParsers)[K];
     const [value, setValueRaw] = useQueryState(field, parser);
 
     const setValue = useCallback(
         (next: CourseSearchParams[K]) => {
-            RightPaneStore.clearMultiSearchData();
             void (setValueRaw as (next: CourseSearchParams[K]) => ReturnType<typeof setValueRaw>)(next);
         },
         [setValueRaw]
     );
 
     return [value as CourseSearchParams[K], setValue];
+}
+
+export function useCourseIds() {
+    const [courseIds, setCourseIdsRaw] = useQueryState(COURSE_IDS_KEY, courseIdsParser);
+
+    const setCourseIds = useCallback(
+        (next: string[]) => {
+            void setCourseIdsRaw(next.length > 0 ? next : null);
+        },
+        [setCourseIdsRaw]
+    );
+
+    const clearCourseIds = useCallback(() => {
+        void setCourseIdsRaw(null);
+    }, [setCourseIdsRaw]);
+
+    return { courseIds, setCourseIds, clearCourseIds };
 }
 
 export function useCourseSearchMode() {
@@ -62,7 +78,6 @@ export function useCourseSearchForm() {
 
     const setField = useCallback(
         <Field extends keyof CourseSearchParams>(field: Field, value: CourseSearchParams[Field]) => {
-            RightPaneStore.clearMultiSearchData();
             void setFormData({ [field]: value });
         },
         [setFormData]
@@ -70,7 +85,6 @@ export function useCourseSearchForm() {
 
     const setFields = useCallback(
         (values: Partial<CourseSearchParams> | null) => {
-            RightPaneStore.clearMultiSearchData();
             void setFormData(values);
         },
         [setFormData]
@@ -78,7 +92,6 @@ export function useCourseSearchForm() {
 
     const resetForm = useCallback(
         ({ preserveTerm = false }: { preserveTerm?: boolean } = {}) => {
-            RightPaneStore.clearMultiSearchData();
             void setFormData(preserveTerm ? { ...DEFAULT_FORM_DATA, term: formData.term } : DEFAULT_FORM_DATA);
         },
         [formData.term, setFormData]
@@ -104,7 +117,6 @@ export function useCourseSearchView() {
     }, [setViewParam]);
 
     const showSearchForm = useCallback(() => {
-        RightPaneStore.clearMultiSearchData();
         void setViewParam(COURSE_SEARCH_VIEW.SEARCH_FORM);
     }, [setViewParam]);
 
@@ -132,7 +144,6 @@ export function useCourseSearchSubmit() {
         (data?: CourseSearchParams) => {
             const payload = data ?? readCourseSearchParams();
             if (isValidSearch(payload)) {
-                RightPaneStore.clearMultiSearchData();
                 showResults();
                 return true;
             }

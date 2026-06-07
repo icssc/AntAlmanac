@@ -79,4 +79,6 @@ export const searchViewParser = parseAsStringLiteral(COURSE_SEARCH_VIEWS);
 
 export const plannerSearchParser = parseAsString;
 
+export const courseIdsParser = parseAsArrayOf(parseAsString).withDefault([]);
+
 export const serializeCourseSearchParams = createSerializer(courseSearchParamParsers);

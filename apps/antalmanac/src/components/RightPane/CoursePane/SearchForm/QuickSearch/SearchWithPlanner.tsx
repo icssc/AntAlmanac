@@ -3,9 +3,11 @@ import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchParams/constants';
-import { useCourseSearchParam, useCourseSearchView } from '$components/RightPane/CoursePane/SearchParams/hooks';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { trpc } from '$lib/api/trpc';
+import {
+    useCourseIds,
+    useCourseSearchParam,
+    useCourseSearchView,
+} from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
 import { usePlannerStore } from '$stores/PlannerStore';
@@ -34,12 +36,12 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
 export const SearchWithPlanner = () => {
     const [term] = useCourseSearchParam('term');
     const { showResults } = useCourseSearchView();
+    const { setCourseIds } = useCourseIds();
     const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
         COURSE_SEARCH_PLANNER_KEY,
         parseAsString.withOptions({ history: 'replace' })
     );
     const [termRoadmapGrouping, setTermRoadmapGrouping] = useState<TermRoadmapGrouping>(getDefaultTermRoadmapGrouping);
-    const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const hasSearchedWithUrlParamsRef = useRef(false);
 
@@ -74,7 +76,7 @@ export const SearchWithPlanner = () => {
     }, [plannerRoadmaps, doesRoadmapIncludeTerm]);
 
     const search = useCallback(
-        async (roadmapId: Roadmap['id']): Promise<boolean> => {
+        (roadmapId: Roadmap['id']): boolean => {
             const roadmap = plannerRoadmaps.find((roadmap) => roadmap.id.toString() === roadmapId.toString());
             if (!roadmap) {
                 openSnackbar('error', "Couldn't find selected roadmap!");
@@ -86,29 +88,16 @@ export const SearchWithPlanner = () => {
                 openSnackbar('error', `The provided roadmap does not contain ${term.shortName}`);
                 return false;
             }
-            try {
-                setIsLoadingSearch(true);
-                const courseIds = quarterPlan.courses
-                    .filter((coursePlan) => !coursePlan.courseId.startsWith('CUSTOM#'))
-                    .map((coursePlan) => coursePlan.courseId);
-                const courses = await trpc.course.getMultiple.query({ courseIds });
-                const searchData = courses.map(({ department, courseNumber }) => ({
-                    deptValue: department,
-                    courseNumber,
-                }));
 
-                RightPaneStore.setMultiSearchData(searchData, term);
-                showResults();
-            } catch (error) {
-                console.error('Something went wrong while searching with Planner:', error);
-                openSnackbar('error', 'Something went wrong while searching with Planner.');
-                return false;
-            } finally {
-                setIsLoadingSearch(false);
-            }
+            const ids = quarterPlan.courses
+                .filter((coursePlan) => !coursePlan.courseId.startsWith('CUSTOM#'))
+                .map((coursePlan) => coursePlan.courseId);
+
+            setCourseIds(ids);
+            showResults();
             return true;
         },
-        [plannerRoadmaps, showResults, term]
+        [plannerRoadmaps, setCourseIds, showResults, term]
     );
 
     const groupBy = (option: Roadmap) => {
@@ -192,13 +181,11 @@ export const SearchWithPlanner = () => {
         }
 
         if (plannerSearchParam) {
-            (async () => {
-                const success = await search(plannerSearchParam);
-                if (success) {
-                    hasSearchedWithUrlParamsRef.current = true;
-                    await setPlannerSearchParam(null);
-                }
-            })();
+            const success = search(plannerSearchParam);
+            if (success) {
+                hasSearchedWithUrlParamsRef.current = true;
+                void setPlannerSearchParam(null);
+            }
         }
     }, [plannerSearchParam, plannerRoadmaps, search, setPlannerSearchParam]);
 
@@ -211,7 +198,7 @@ export const SearchWithPlanner = () => {
     const searchComponent = (
         <LabeledAutocomplete
             label="Roadmap"
-            disabled={!sessionIsValid || isLoadingSearch}
+            disabled={!sessionIsValid}
             autocompleteProps={{
                 options: sortedRoadmaps,
                 getOptionLabel: (roadmap) => roadmap.name.toString(),
@@ -227,10 +214,9 @@ export const SearchWithPlanner = () => {
                 }),
             }}
             textFieldProps={{
-                placeholder: isLoadingSearch ? 'Loading...' : 'Select roadmap from Planner',
+                placeholder: 'Select roadmap from Planner',
                 fullWidth: true,
             }}
-            loading={isLoadingSearch}
             isAligned
         />
     );
