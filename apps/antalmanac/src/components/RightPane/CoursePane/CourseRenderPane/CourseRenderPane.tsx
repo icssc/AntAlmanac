@@ -19,12 +19,11 @@ import { trpc, trpcReact } from '$lib/api/trpc';
 import { queryKeys } from '$lib/queryKeys';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { usePlannerStore } from '$stores/PlannerStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
 import type { WebsocSearchInput } from '@packages/antalmanac-types';
 import type { WebsocAPIResponse } from '@packages/anteater-api/types';
-import { intersectWebsocResponses, unionWebsocResponses } from '@packages/anteater-api/utils';
+import { flattenCourses, intersectWebsocResponses, unionWebsocResponses } from '@packages/anteater-api/utils';
 import { useQuery } from '@tanstack/react-query';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -43,9 +42,9 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
 
     const [courseColors, setCourseColors] = useState(() => getCourseColors());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+    const [unofferedCourseIds, setUnofferedCourseIds] = useState<string[]>([]);
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
-    const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
     const getQueryParams = useCallback(
         (searchData: CourseSearchParams): WebsocSearchInput => ({
@@ -89,7 +88,11 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
                             fieldName: 'courseId',
                         })
                     );
+
+                    const returnedIds = new Set(flattenCourses(response).map((c) => c.courseId));
+                    setUnofferedCourseIds(formData.courseIds.filter((id) => !returnedIds.has(id)));
                 } else {
+                    setUnofferedCourseIds([]);
                     const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
                     response =
                         selectedGEs.length > 1
@@ -160,9 +163,11 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             <CoursePaneButtonRow onDismissSearchResults={onDismissSearchResults} onRefreshSearch={refreshSearch} />
             <Box sx={{ height: '56px' }} />
 
-            {filterTakenCourses && !hasRenderableCourseResults && (
-                <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
-            )}
+            {unofferedCourseIds.map((id) => (
+                <WarningAlert closable key={id}>
+                    {id} is not offered in {formData.term.longName}.
+                </WarningAlert>
+            ))}
             {isFetching ? (
                 <LoadingMessage />
             ) : isError || !hasRenderableCourseResults ? (
