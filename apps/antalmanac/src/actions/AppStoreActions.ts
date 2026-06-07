@@ -3,7 +3,7 @@ import { trpc } from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
@@ -292,7 +292,7 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
         username = username.replace(/\s+/g, '');
         if (username?.length) {
             if (rememberMe) {
-                setLocalStorageUserId(username);
+                useSessionStore.getState().setRememberedGuestUsername(username);
             }
 
             try {

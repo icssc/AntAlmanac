@@ -4,7 +4,6 @@ import { readCourseSearchParams, readSearchMode } from '$components/RightPane/Co
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
@@ -92,10 +91,12 @@ export function ScheduleManagement() {
         } else if (hasParams || isManualSearchMode) {
             setActiveTab('search');
         } else if (!isMobile) {
-            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
+            const hasSession =
+                useSessionStore.getState().sessionIsValid || useSessionStore.getState().wasPreviouslyLoggedIn;
             setActiveTab(hasSession ? 'added' : 'search');
         } else {
-            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
+            const hasSession =
+                useSessionStore.getState().sessionIsValid || useSessionStore.getState().wasPreviouslyLoggedIn;
             const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
             if (hasSession || hasLocalScheduleData) {

@@ -12,7 +12,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
-import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
+import { getLocalStorageDataCache } from '$lib/localStorage';
 import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -653,11 +653,11 @@ export function Import() {
 
     const handleFirstTimeSignin = useCallback(async () => {
         if (areSchedulesLoaded && isNewUser) {
-            const savedUserId = getLocalStorageUserId();
+            const savedUserId = useSessionStore.getState().rememberedGuestUsername;
             if (savedUserId) setAAUsername(savedUserId);
             handleOpen();
             setIsNewUser(false);
-            removeLocalStorageUserId();
+            useSessionStore.getState().clearRememberedGuestUsername();
             setImportSource(ImportSource.AA_USERNAME_IMPORT);
         }
     }, [handleOpen, isNewUser, setIsNewUser, areSchedulesLoaded]);

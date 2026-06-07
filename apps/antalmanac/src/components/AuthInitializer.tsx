@@ -5,13 +5,9 @@ import { trpc } from '$lib/api/trpc';
 import { authClient, signOut } from '$lib/auth/authClient';
 import {
     getLocalStorageDataCache,
-    getLocalStorageUserId,
-    getWasLoggedIn,
     removeLocalStorageDataCache,
     removeLocalStorageImportedUser,
-    removeLocalStorageUserId,
     setLocalStorageImportedUser,
-    setWasLoggedIn,
 } from '$lib/localStorage';
 import { setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
@@ -31,11 +27,12 @@ export const AuthInitializer = () => {
     const hasInitializedRef = useRef(false);
 
     const setOpenLoadingSchedule = useScheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
-    const { updateSession, setAreSchedulesLoaded, setHasCheckedAuth } = useSessionStore(
+    const { updateSession, setAreSchedulesLoaded, setHasCheckedAuth, setWasPreviouslyLoggedIn } = useSessionStore(
         useShallow((state) => ({
             updateSession: state.updateSession,
             setAreSchedulesLoaded: state.setAreSchedulesLoaded,
             setHasCheckedAuth: state.setHasCheckedAuth,
+            setWasPreviouslyLoggedIn: state.setWasPreviouslyLoggedIn,
         }))
     );
 
@@ -65,10 +62,11 @@ export const AuthInitializer = () => {
             return;
         }
 
-        const savedUserId = getLocalStorageUserId();
+        const { rememberedGuestUsername, clearRememberedGuestUsername } = useSessionStore.getState();
+        const savedUserId = rememberedGuestUsername;
         const savedData = getLocalStorageDataCache();
 
-        removeLocalStorageUserId();
+        clearRememberedGuestUsername();
 
         // no changes to save
         if (savedUserId === null && savedData === null) {
@@ -137,7 +135,7 @@ export const AuthInitializer = () => {
                     await loadUnsavedChanges(userData);
 
                     setAreSchedulesLoaded(true);
-                    setWasLoggedIn(true);
+                    setWasPreviouslyLoggedIn(true);
 
                     handleAuthChecked();
                 } catch (error) {
@@ -150,7 +148,7 @@ export const AuthInitializer = () => {
                 handleInitialized();
             })();
         } else {
-            if (getWasLoggedIn()) {
+            if (useSessionStore.getState().wasPreviouslyLoggedIn) {
                 setOpenAlert(true);
             }
             handleAuthChecked();
@@ -164,6 +162,7 @@ export const AuthInitializer = () => {
         postHog,
         setHasCheckedAuth,
         loadPlannerRoadmaps,
+        setWasPreviouslyLoggedIn,
     ]);
 
     return (

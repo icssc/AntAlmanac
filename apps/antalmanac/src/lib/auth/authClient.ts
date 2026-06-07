@@ -1,9 +1,9 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { getSignOutUrl } from '$lib/auth/authActions';
-import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { getErrorMessage } from '$lib/utils';
 import type { auth } from '$src/lib/auth/auth';
+import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { genericOAuthClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
@@ -35,7 +35,7 @@ export async function signOut({ onLogoutComplete, postHog }: SignOutOptions = {}
     }
 
     clearSsoCookie();
-    setWasLoggedIn(false);
+    useSessionStore.getState().setWasPreviouslyLoggedIn(false);
     onLogoutComplete?.();
 
     const { error } = await authClient.signOut();

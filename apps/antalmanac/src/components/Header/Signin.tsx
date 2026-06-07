@@ -5,8 +5,8 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { trpc } from '$lib/api/trpc';
-import { getLocalStorageUserId } from '$lib/localStorage';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { AccountCircle, ExpandMore } from '@mui/icons-material';
 import {
@@ -53,11 +53,9 @@ export const Signin = () => {
     const handleOpen = useCallback(() => {
         setIsOpen(true);
         setSettingsAnchorEl(null);
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = getLocalStorageUserId();
-            if (savedUserID !== null) {
-                setUserID(savedUserID);
-            }
+        const savedUserID = useSessionStore.getState().rememberedGuestUsername;
+        if (savedUserID !== null) {
+            setUserID(savedUserID);
         }
     }, []);
 

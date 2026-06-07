@@ -1,6 +1,5 @@
 enum LocalStorageKeys {
     /* The case-difference is due to the original implementation */
-    userId = 'userID',
     patchNotesKey = 'latestPatchSeen',
     recruitmentDismissalTime = 'recruitmentDismissalTime',
     tourHasRun = 'tourHasRun',
@@ -12,7 +11,6 @@ enum LocalStorageKeys {
     autoSave = 'autoSave',
     devMode = 'devMode',
     columnToggles = 'columnToggles',
-    wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
     importedUser = 'importedUser',
     tempSaveData = 'tempSaveData',
@@ -57,30 +55,6 @@ export function getLocalStorageDataCache() {
 
 export function removeLocalStorageDataCache() {
     window.localStorage.removeItem(LSK.dataCache);
-}
-
-export function setLocalStorageUserId(value: string) {
-    window.localStorage.setItem(LSK.userId, value);
-}
-
-export function getLocalStorageUserId() {
-    return window.localStorage.getItem(LSK.userId);
-}
-
-export function removeLocalStorageUserId() {
-    window.localStorage.removeItem(LSK.userId);
-}
-
-export function getWasLoggedIn(): boolean {
-    return window.localStorage.getItem(LSK.wasLoggedIn) === 'true';
-}
-
-export function setWasLoggedIn(value: boolean) {
-    if (value) {
-        window.localStorage.setItem(LSK.wasLoggedIn, 'true');
-    } else {
-        window.localStorage.removeItem(LSK.wasLoggedIn);
-    }
 }
 
 // Helper functions for patchNotesKey
