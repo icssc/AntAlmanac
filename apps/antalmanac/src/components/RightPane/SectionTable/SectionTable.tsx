@@ -11,7 +11,6 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAvailability';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import {
@@ -66,7 +65,6 @@ export interface SectionTableProps {
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: AnalyticsCategory;
-    updatedAt?: string;
     sortable?: boolean;
     /**
      * Wraps each interactive element (each button, the table) in MUI's
@@ -91,8 +89,6 @@ function SectionTable({
 
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
 
-    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
-
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const activeTab = useTabStore((store) => store.activeTab);
 
@@ -106,26 +102,6 @@ function SectionTable({
 
     const colorStripWidth = isMobile ? 5 : 8;
     const actionColumnWidth = 77;
-
-    const formattedTime = useMemo(() => {
-        if (!course.updatedAt) {
-            return null;
-        }
-
-        const date = new Date(course.updatedAt);
-
-        if (Number.isNaN(date.getTime())) {
-            return null;
-        }
-
-        const timeString = date.toLocaleTimeString(undefined, {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: !isMilitaryTime,
-        });
-
-        return timeString.replace(/^0(\d)/, '$1');
-    }, [course.updatedAt, isMilitaryTime]);
 
     /**
      * Limit table width to force side scrolling.
@@ -279,7 +255,6 @@ function SectionTable({
                                 allowHighlight={allowHighlight}
                                 scheduleNames={scheduleNames}
                                 analyticsCategory={analyticsCategory}
-                                formattedTime={formattedTime}
                             />
                         </Table>
                     </TableContainer>,

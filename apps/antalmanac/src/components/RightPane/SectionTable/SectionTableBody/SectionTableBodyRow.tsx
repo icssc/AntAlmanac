@@ -28,7 +28,6 @@ interface SectionTableBodyRowProps {
     scheduleNames: string[];
     scheduleConflict: boolean;
     analyticsCategory: AnalyticsCategory;
-    formattedTime: string | null;
 }
 
 // These components have too varied of types, any is fine here
@@ -48,8 +47,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
-    const { section, course, allowHighlight, scheduleNames, scheduleConflict, analyticsCategory, formattedTime } =
-        props;
+    const { section, course, allowHighlight, scheduleNames, scheduleConflict, analyticsCategory } = props;
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
@@ -148,7 +146,6 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             courseName={`${course.deptCode} ${course.courseNumber}`}
                             {...course}
                             analyticsCategory={analyticsCategory}
-                            formattedTime={formattedTime}
                         />
                     );
                 })}

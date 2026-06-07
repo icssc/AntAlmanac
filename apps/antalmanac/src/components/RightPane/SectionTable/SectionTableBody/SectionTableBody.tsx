@@ -11,16 +11,9 @@ interface SectionTableBodyProps {
     scheduleNames: string[];
     allowHighlight: boolean;
     analyticsCategory: AnalyticsCategory;
-    formattedTime: string | null;
 }
 
-export function SectionTableBody({
-    course,
-    scheduleNames,
-    allowHighlight,
-    analyticsCategory,
-    formattedTime,
-}: SectionTableBodyProps) {
+export function SectionTableBody({ course, scheduleNames, allowHighlight, analyticsCategory }: SectionTableBodyProps) {
     const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
 
     /**
@@ -93,7 +86,6 @@ export function SectionTableBody({
                         scheduleNames={scheduleNames}
                         scheduleConflict={conflict}
                         analyticsCategory={analyticsCategory}
-                        formattedTime={formattedTime}
                     />
                 );
             })}

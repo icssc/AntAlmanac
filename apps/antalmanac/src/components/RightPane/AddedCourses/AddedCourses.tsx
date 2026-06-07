@@ -68,13 +68,10 @@ function getCourses() {
             (formattedCourse) => scheduleOfferingKey(formattedCourse) === scheduleOfferingKey(course)
         );
 
-        const sectionUpdatedAt = course.section?.updatedAt ?? null;
-
         if (formattedCourse) {
             formattedCourse.sections.push({
                 ...course.section,
             });
-            formattedCourse.updatedAt = sectionUpdatedAt;
         } else {
             formattedCourse = {
                 term: course.term,
@@ -90,7 +87,7 @@ function getCourses() {
                         ...course.section,
                     },
                 ],
-                updatedAt: sectionUpdatedAt ?? null,
+                updatedAt: course.section.updatedAt ?? null,
             };
             formattedCourses.push(formattedCourse);
         }

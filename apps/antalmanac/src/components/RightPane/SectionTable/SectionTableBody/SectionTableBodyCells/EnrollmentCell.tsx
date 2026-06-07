@@ -1,6 +1,7 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTablePopover/EnrollmentHistoryPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import type { AATerm } from '@packages/antalmanac-types';
 import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/anteater-api/types';
@@ -26,7 +27,7 @@ interface EnrollmentCellProps {
      * This is a string because numOnWaitlist is a string. I haven't seen this be "n/a" but it seems possible and I don't want it to break if that happens.
      */
     numNewOnlyReserved: string;
-    formattedTime: string | null;
+    updatedAt?: string | null;
 }
 
 export const EnrollmentCell = ({
@@ -40,11 +41,33 @@ export const EnrollmentCell = ({
     numOnWaitlist,
     numWaitlistCap,
     numNewOnlyReserved,
-    formattedTime,
+    updatedAt,
 }: EnrollmentCellProps) => {
     const isMobile = useIsMobile();
+    const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
     const theme = useTheme();
     const secondaryColor = theme.palette.secondary.main;
+
+    const formattedTime = useMemo(() => {
+        if (!updatedAt) {
+            return null;
+        }
+
+        const date = new Date(updatedAt);
+
+        if (Number.isNaN(date.getTime())) {
+            return null;
+        }
+
+        const timeString = date.toLocaleTimeString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: !isMilitaryTime,
+        });
+
+        return timeString.replace(/^0(\d)/, '$1');
+    }, [updatedAt, isMilitaryTime]);
+
     const showTooltip = !isMobile && formattedTime;
 
     const [anchorEl, setAnchorEl] = useState<Element>();
