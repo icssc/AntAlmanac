@@ -31,15 +31,6 @@ export interface AAPIClientOptions {
     apiKey?: string;
 }
 
-/** Standard GraphQL HTTP response envelope (`{ data, errors? }`). */
-export type GraphQLEnvelope = {
-    data: unknown;
-};
-
-function isGraphQLEnvelope(value: unknown): value is GraphQLEnvelope {
-    return typeof value === 'object' && value !== null && 'data' in value;
-}
-
 export function createClient({ apiKey }: AAPIClientOptions = {}) {
     const http = createFetchClient<paths>({ baseUrl: BASE_URL });
 
@@ -185,7 +176,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
         },
 
         // GraphQL is not in the OpenAPI spec; implemented with raw fetch
-        async graphql(query: string): Promise<GraphQLEnvelope> {
+        async graphql<T>(query: string): Promise<T> {
             const res = await fetch(`${BASE_URL}/v2/graphql`, {
                 method: 'POST',
                 headers: {
@@ -202,17 +193,13 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 throw new AAPIError(`GraphQL request failed: ${text}`, res.status);
             }
 
-            const json: unknown = await res.json();
-
-            if (!isGraphQLEnvelope(json)) {
-                throw new AAPIError('Invalid GraphQL response', res.status);
-            }
+            const json = (await res.json()) as { data: T | null };
 
             if (json.data === null) {
                 throw new AAPIError('GraphQL returned null data', res.status);
             }
 
-            return json;
+            return json.data;
         },
     };
 }
