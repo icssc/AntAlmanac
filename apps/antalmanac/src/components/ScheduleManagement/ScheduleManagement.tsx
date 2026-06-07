@@ -78,7 +78,7 @@ export function ScheduleManagement() {
         }
     }, [tab, setActiveTab]);
 
-    // Sets a smart default once the session check has settled
+    // Sets a smart default on mount (once session has settled)
     useEffect(() => {
         if (tab || isSessionPending) {
             return;
@@ -105,7 +105,11 @@ export function ScheduleManagement() {
                 setActiveTab('search');
             }
         }
-    }, [tab, isMobile, isSessionPending, session, setActiveTab]);
+
+        // NB: `tab` is intentionally omitted — we only want this to run on mount (plus when
+        // session/mobile deps settle), not when the route tab param changes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isMobile, isSessionPending, session, setActiveTab]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
