@@ -40,14 +40,14 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
 
     const { data } = trpcReact.websoc.getOne.useQuery(params);
 
-    const courseDetails = useMemo(() => {
+    const course = useMemo(() => {
         if (!data) {
             return props.course;
         }
 
-        const course = flattenCourses(data).find((c) => c.courseNumber === props.course.courseNumber);
+        const websocCourse = flattenCourses(data).find((c) => c.courseNumber === props.course.courseNumber);
 
-        if (!course) {
+        if (!websocCourse) {
             return props.course;
         }
 
@@ -59,14 +59,14 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             }, {});
 
         return {
-            ...course,
+            ...websocCourse,
             term,
-            sections: course.sections.map((s) => ({ ...s, color: courseColors[s.sectionCode] ?? '' })),
-            sectionTypes: [...new Set(course.sections.map((s) => s.sectionType))],
+            sections: websocCourse.sections.map((s) => ({ ...s, color: courseColors[s.sectionCode] ?? '' })),
+            sectionTypes: [...new Set(websocCourse.sections.map((s) => s.sectionType))],
         } satisfies AACourseWithTerm;
-    }, [data, props.course]);
+    }, [data, props.course, term]);
 
-    return <SectionTable {...props} course={courseDetails} />;
+    return <SectionTable {...props} course={course} />;
 };
 
 export default GeDataFetchProvider;
