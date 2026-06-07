@@ -199,7 +199,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                 throw new AAPIError('GraphQL returned null data', res.status);
             }
 
-            return json.data;
+            return json as T;
         },
     };
 }
