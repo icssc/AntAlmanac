@@ -261,9 +261,6 @@ importers:
       superjson:
         specifier: ^1.12.3
         version: 1.13.3
-      ua-parser-js:
-        specifier: ^1.0.37
-        version: 1.0.39
       zod:
         specifier: 3.24.3
         version: 3.24.3
@@ -307,9 +304,6 @@ importers:
       '@types/react-lazyload':
         specifier: ^3.2.0
         version: 3.2.3
-      '@types/ua-parser-js':
-        specifier: ^0.7.39
-        version: 0.7.39
       '@vitejs/plugin-react':
         specifier: ^4.0.4
         version: 4.3.3(vite@4.5.5(@types/node@22.19.17)(stylus@0.51.1)(terser@5.46.2))
@@ -3256,9 +3250,6 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
-  '@types/ua-parser-js@0.7.39':
-    resolution: {integrity: sha512-P/oDfpofrdtF5xw433SPALpdSchtJmY7nsJItf8h3KXqOslkbySh8zq4dSWXH2oTjRvJ5PczVEoCZPow6GicLg==}
-
   '@types/warning@3.0.0':
     resolution: {integrity: sha512-t/Tvs5qR47OLOr+4E9ckN8AmP2Tf16gWq+/qA4iUGS/OOyHVO8wv2vjJuX8SNOUTJyWb+2t7wJm6cXILFnOROA==}
 
@@ -6188,10 +6179,6 @@ packages:
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
-    hasBin: true
-
-  ua-parser-js@1.0.39:
-    resolution: {integrity: sha512-k24RCVWlEcjkdOxYmVJgeD/0a1TiSpqLg+ZalVGV9lsnr4yqu0w7tX/x2xX6G4zpkgQnRf89lxuZ1wsbjXM8lw==}
     hasBin: true
 
   ufo@1.5.4:
@@ -9579,8 +9566,6 @@ snapshots:
 
   '@types/trusted-types@2.0.7': {}
 
-  '@types/ua-parser-js@0.7.39': {}
-
   '@types/warning@3.0.0': {}
 
   '@vitejs/plugin-react@4.3.3(vite@4.5.5(@types/node@22.19.17)(stylus@0.51.1)(terser@5.46.2))':
@@ -12710,8 +12695,6 @@ snapshots:
       possible-typed-array-names: 1.0.0
 
   typescript@5.9.3: {}
-
-  ua-parser-js@1.0.39: {}
 
   ufo@1.5.4: {}
 
