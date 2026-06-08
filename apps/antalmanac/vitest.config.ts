@@ -1,11 +1,10 @@
 import { resolve } from 'node:path';
 
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
-import svgr from 'vite-plugin-svgr';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-    plugins: [react(), svgr()],
+    plugins: [react()],
     resolve: {
         alias: {
             $actions: resolve(__dirname, './src/actions'),
@@ -16,18 +15,10 @@ export default defineConfig({
             $lib: resolve(__dirname, './src/lib'),
             $providers: resolve(__dirname, './src/providers'),
             $scripts: resolve(__dirname, './scripts'),
-            $routes: resolve(__dirname, './src/routes'),
             $src: resolve(__dirname, './src'),
             $stores: resolve(__dirname, './src/stores'),
         },
     },
-    build: {
-        outDir: 'build',
-    },
-    server: {
-        host: 'localhost',
-    },
-    // @ts-expect-error
     test: {
         environment: 'jsdom',
         setupFiles: [resolve(__dirname, 'tests/setup/setup.ts')],

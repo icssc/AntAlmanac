@@ -85,8 +85,6 @@
         "@types/react-dom": "19.2.3",
         "@types/react-lazyload": "^3.2.0",
         "@vitejs/plugin-react": "^4.0.4",
-        "typescript": "^5.9.3",
-        "vite": "^4.4.9",
-        "vite-plugin-svgr": "^2.4.0"
+        "typescript": "^5.9.3"
     }
 }
