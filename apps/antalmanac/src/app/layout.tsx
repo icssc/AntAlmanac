@@ -9,7 +9,6 @@ import './globals.css';
 export const metadata: Metadata = {
     title: ANTALMANAC_TITLE,
     description: ANTALMANAC_DESCRIPTION,
-    manifest: '/manifest.json',
     metadataBase: new URL('https://antalmanac.com'),
     alternates: {
         canonical: 'https://antalmanac.com',

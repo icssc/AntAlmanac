@@ -122,7 +122,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
 
     return {
         welcome: {
-            selector: '#root',
+            selector: 'main',
             position: 'center',
             content: (
                 <>
@@ -244,8 +244,8 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
 
                 reselectStepWhenReady(TourStepName.mapPane, '#map-pane');
             },
-            mutationObservables: ['#root', '#map-pane'],
-            resizeObservables: ['#root', '#map-pane'],
+            mutationObservables: ['main', '#map-pane'],
+            resizeObservables: ['main', '#map-pane'],
         },
         saveAndLoad: {
             selector: '#load-save-container',

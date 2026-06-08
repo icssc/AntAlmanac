@@ -31,8 +31,6 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Suspense, useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
-import '$src/App.css';
-
 function MobileHome() {
     return <ScheduleManagement />;
 }
