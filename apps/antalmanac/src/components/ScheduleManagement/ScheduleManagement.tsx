@@ -12,7 +12,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 /**
@@ -21,6 +21,7 @@ import { useShallow } from 'zustand/react/shallow';
  */
 export function ScheduleManagement() {
     const { tab } = useParams();
+    const navigate = useNavigate();
     const isMobile = useIsMobile();
 
     const { activeTab, setActiveTab, setActiveTabValue } = useTabStore(
@@ -69,13 +70,23 @@ export function ScheduleManagement() {
         [activeTab, popSavedSearch, saveSearch, setActiveTabValue]
     );
 
-    // Sync tab store when the route changes (back/forward, /added, /map).
-    // Calendar and search both live at `/`, so leave tab state alone for that route.
+    // Sync tab store when the route changes (back/forward).
     useEffect(() => {
-        if (tab === 'added' || tab === 'map') {
+        if (tab === 'calendar') {
+            setActiveTab('calendar');
+        } else if (tab === 'added' || tab === 'map') {
             setActiveTab(tab);
+        } else {
+            setActiveTab('search');
         }
     }, [tab, setActiveTab]);
+
+    // Calendar is mobile-only; on desktop it lives in the left split pane, not a routed view.
+    useEffect(() => {
+        if (!isMobile && tab === 'calendar') {
+            navigate('/', { replace: true });
+        }
+    }, [isMobile, navigate, tab]);
 
     // Sets a smart default on mount
     useEffect(() => {
@@ -99,7 +110,7 @@ export function ScheduleManagement() {
             const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
             if (hasSession || hasLocalScheduleData) {
-                setActiveTab('calendar');
+                navigate('/calendar', { replace: true });
             } else {
                 setActiveTab('search');
             }

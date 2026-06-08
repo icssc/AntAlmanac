@@ -7,7 +7,7 @@ export const TABS = [
         label: 'Calendar',
         icon: Event,
         mobileOnly: true,
-        href: '',
+        href: '/calendar',
     },
     {
         name: 'search',

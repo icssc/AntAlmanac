@@ -54,6 +54,9 @@ export function SeoContent() {
                         <Link href="/">UCI Course Search</Link>
                     </li>
                     <li>
+                        <Link href="/calendar">My Calendar</Link>
+                    </li>
+                    <li>
                         <Link href="/added">My Schedule</Link>
                     </li>
                     <li>
