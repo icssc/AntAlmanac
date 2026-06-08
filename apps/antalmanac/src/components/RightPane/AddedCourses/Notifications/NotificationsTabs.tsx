@@ -20,9 +20,6 @@ function groupNotificationsByTerm(notifications: Partial<Record<string, Notifica
     }, {});
 }
 
-const getTabId = (term: string) => `notifications-tab-${term}`;
-const getTabPanelId = (term: string) => `notifications-tabpanel-${term}`;
-
 export function NotificationsTabs() {
     const theme = useTheme();
     const { initialized, notifications } = useNotificationStore(
@@ -102,26 +99,14 @@ export function NotificationsTabs() {
                     }}
                 >
                     {sortedTerms.map((term) => (
-                        <Tab
-                            label={term}
-                            key={term}
-                            value={term}
-                            id={getTabId(term)}
-                            aria-controls={getTabPanelId(term)}
-                        />
+                        <Tab label={term} key={term} value={term} />
                     ))}
                 </Tabs>
             </Paper>
 
             {sortedTerms.map((term) =>
                 displayTab === term ? (
-                    <Box
-                        key={term}
-                        role="tabpanel"
-                        id={getTabPanelId(term)}
-                        aria-labelledby={getTabId(term)}
-                        sx={{ paddingX: 0 }}
-                    >
+                    <Box key={term} role="tabpanel" sx={{ paddingX: 0 }}>
                         <NotificationsTable keys={groups[term]} />
                     </Box>
                 ) : null
