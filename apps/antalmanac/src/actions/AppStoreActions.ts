@@ -40,6 +40,8 @@ interface LoadScheduleOptions {
     postHog?: PostHog;
 }
 
+export type LoadScheduleResult = 'success' | 'fallback' | 'failed';
+
 interface LoginUserOptions {
     silent?: boolean;
     postHog?: PostHog;
@@ -283,7 +285,11 @@ export const importScheduleWithUsername = async (username: string, postHog?: Pos
     }
 };
 
-export const loadGuestSchedule = async (username: string, rememberMe: boolean, postHog?: PostHog) => {
+export const loadGuestSchedule = async (
+    username: string,
+    rememberMe: boolean,
+    postHog?: PostHog
+): Promise<LoadScheduleResult | void> => {
     if (
         username != null &&
         (!AppStore.hasUnsavedChanges() ||
@@ -305,20 +311,22 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
                         action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY,
                         customProps: { providerId: username, rememberMe },
                     });
-                } else {
-                    AppStore.loadFallbackSchedule(scheduleSaveState);
-                    logAnalytics(postHog, {
-                        category: analyticsEnum.auth,
-                        action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
-                        error: 'Load schedule error',
-                        customProps: { providerId: username, rememberMe },
-                    });
-                    openSnackbar(
-                        'error',
-                        `Network error loading course information for "${username}".
-                        If this continues to happen, please submit a feedback form.`
-                    );
+                    return 'success';
                 }
+
+                AppStore.loadFallbackSchedule(scheduleSaveState);
+                logAnalytics(postHog, {
+                    category: analyticsEnum.auth,
+                    action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
+                    error: 'Load schedule error',
+                    customProps: { providerId: username, rememberMe },
+                });
+                openSnackbar(
+                    'error',
+                    `Network error loading course information for "${username}".
+                        If this continues to happen, please submit a feedback form.`
+                );
+                return 'fallback';
             } catch (e) {
                 logAnalytics(postHog, {
                     category: analyticsEnum.auth,
@@ -341,7 +349,7 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
     }
 };
 
-export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions) => {
+export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions): Promise<LoadScheduleResult> => {
     try {
         const userDataResponse = prefetched ?? (await trpc.schedule.get.query());
         const scheduleSaveState = userDataResponse?.userData;
@@ -354,35 +362,43 @@ export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions)
                 category: analyticsEnum.auth,
                 action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
             });
-            return true;
+            return 'success';
         }
 
         if (scheduleSaveState === undefined) {
             analyticsErrorMessage = 'Schedule data not found';
             openSnackbar('error', `Couldn't find schedules for this account`);
-        } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL,
+                error: analyticsErrorMessage,
+            });
+            return 'failed';
+        }
+
+        if (await AppStore.loadSchedule(scheduleSaveState)) {
             useHiddenCoursesStore.getState().hydrateFromSchedules(scheduleSaveState.schedules);
             analyticsIdentifyUser(postHog, userId);
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
                 action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
             });
-            return true;
-        } else {
-            analyticsErrorMessage = 'Network error';
-            AppStore.loadFallbackSchedule(scheduleSaveState);
-            openSnackbar(
-                'error',
-                `Network error loading course information". 	              
-                        If this continues to happen, please submit a feedback form.`
-            );
+            return 'success';
         }
+
+        analyticsErrorMessage = 'Network error';
+        AppStore.loadFallbackSchedule(scheduleSaveState);
+        openSnackbar(
+            'error',
+            `Network error loading course information". 	              
+                        If this continues to happen, please submit a feedback form.`
+        );
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL,
             error: analyticsErrorMessage,
         });
-        return false;
+        return 'fallback';
     } catch (e) {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
@@ -391,7 +407,7 @@ export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions)
         });
         console.error('Error in loadSchedule:', e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
-        return false;
+        return 'failed';
     }
 };
 

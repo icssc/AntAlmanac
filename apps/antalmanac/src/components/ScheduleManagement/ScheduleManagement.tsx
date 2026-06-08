@@ -1,18 +1,11 @@
-import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
-import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
-import { readCourseSearchParams, readSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { getWasLoggedIn } from '$lib/localStorage';
-import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
-import AppStore from '$stores/AppStore';
+import { TAB_INDEX, tabFromPathname } from '$src/tabs';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 /**
@@ -20,17 +13,10 @@ import { useShallow } from 'zustand/react/shallow';
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
-    const { tab } = useParams();
-    const navigate = useNavigate();
+    const pathname = usePathname();
+    const activeTab = TAB_INDEX[tabFromPathname(pathname)];
     const isMobile = useIsMobile();
 
-    const { activeTab, setActiveTab, setActiveTabValue } = useTabStore(
-        useShallow((store) => ({
-            activeTab: store.activeTab,
-            setActiveTab: store.setActiveTab,
-            setActiveTabValue: store.setActiveTabValue,
-        }))
-    );
     const { saveSearch, popSavedSearch } = useSavedSearchStore(
         useShallow((store) => ({
             saveSearch: store.saveSearch,
@@ -38,15 +24,9 @@ export function ScheduleManagement() {
         }))
     );
 
-    // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
-
-    /**
-     * Ref to the scrollable container with all of the tabs-content within it.
-     */
     const ref = useRef<HTMLDivElement>(null);
 
-    // Save the current scroll position to the store.
     const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
         const positionToSave = e.currentTarget.scrollTop;
         setPositions((current) => {
@@ -64,63 +44,10 @@ export function ScheduleManagement() {
             if (nextTab === TAB_INDEX.search) {
                 popSavedSearch();
             }
-
-            setActiveTabValue(nextTab);
         },
-        [activeTab, popSavedSearch, saveSearch, setActiveTabValue]
+        [activeTab, popSavedSearch, saveSearch]
     );
 
-    // Sync tab store when the route changes (back/forward).
-    useEffect(() => {
-        if (tab === 'calendar') {
-            setActiveTab('calendar');
-        } else if (tab === 'added' || tab === 'map') {
-            setActiveTab(tab);
-        } else {
-            setActiveTab('search');
-        }
-    }, [tab, setActiveTab]);
-
-    // Calendar is mobile-only; on desktop it lives in the left split pane, not a routed view.
-    useEffect(() => {
-        if (!isMobile && tab === 'calendar') {
-            navigate('/', { replace: true });
-        }
-    }, [isMobile, navigate, tab]);
-
-    // Sets a smart default on mount
-    useEffect(() => {
-        if (tab) {
-            return;
-        }
-
-        const formData = readCourseSearchParams();
-        const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
-        const isManualSearchMode = readSearchMode() === COURSE_SEARCH_MODE.MANUAL;
-
-        if (shouldSearchPlannerFromParams()) {
-            setActiveTab('search');
-        } else if (hasParams || isManualSearchMode) {
-            setActiveTab('search');
-        } else if (!isMobile) {
-            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-            setActiveTab(hasSession ? 'added' : 'search');
-        } else {
-            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-            const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
-
-            if (hasSession || hasLocalScheduleData) {
-                navigate('/calendar', { replace: true });
-            } else {
-                setActiveTab('search');
-            }
-        }
-
-        // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile, setActiveTab]);
-
-    // Restore scroll position if it has been previously saved.
     useEffect(() => {
         const savedPosition = positions[activeTab];
 
@@ -141,7 +68,7 @@ export function ScheduleManagement() {
         <Stack direction="column" flexGrow={1} height="0">
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            {!isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
+            {!isMobile && <ScheduleManagementTabs activeTab={activeTab} onTabChange={handleTabChange} />}
 
             <Stack width="100%" height="0" flexGrow={1} padding={1}>
                 <Stack
@@ -153,11 +80,11 @@ export function ScheduleManagement() {
                     ref={ref}
                     onScroll={onScroll}
                 >
-                    <ScheduleManagementContent />
+                    <ScheduleManagementContent activeTab={activeTab} />
                 </Stack>
             </Stack>
 
-            {isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
+            {isMobile && <ScheduleManagementTabs activeTab={activeTab} onTabChange={handleTabChange} />}
         </Stack>
     );
 }

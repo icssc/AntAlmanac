@@ -1,15 +1,17 @@
 import { postHog } from '$providers/AppPostHogProvider';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 
 export function PosthogPageviewTracker() {
-    const location = useLocation();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
+        const search = searchParams.toString();
         postHog.capture('$pageview', {
-            path: location.pathname + location.search,
+            path: search ? `${pathname}?${search}` : pathname,
         });
-    }, [location]);
+    }, [pathname, searchParams]);
 
     return null;
 }

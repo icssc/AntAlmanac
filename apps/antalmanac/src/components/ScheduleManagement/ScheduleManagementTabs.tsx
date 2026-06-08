@@ -1,14 +1,13 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { TABS, useTabStore } from '$stores/TabStore';
+import { TABS } from '$src/tabs';
 import { Paper, Tabs as MuiTabs } from '@mui/material';
 
 interface ScheduleManagementTabsProps {
+    activeTab: number;
     onTabChange: (tabIndex: number) => void;
 }
 
-export function ScheduleManagementTabs({ onTabChange }: ScheduleManagementTabsProps) {
-    const activeTab = useTabStore((store) => store.activeTab);
-
+export function ScheduleManagementTabs({ activeTab, onTabChange }: ScheduleManagementTabsProps) {
     return (
         <Paper
             elevation={0}

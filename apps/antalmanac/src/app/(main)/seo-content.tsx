@@ -3,10 +3,6 @@ import Link from 'next/link';
 
 /**
  * Server-rendered content for search engine indexing and screen readers.
- *
- * This component is visually hidden (sr-only) but present in the initial HTML,
- * giving crawlers real text content to index and screen readers a page summary.
- * Without this, the body is empty because the app renders entirely client-side.
  */
 export function SeoContent() {
     return (

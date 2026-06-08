@@ -243,9 +243,6 @@ importers:
       react-leaflet:
         specifier: 5.0.0
         version: 5.0.0(leaflet@1.9.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-router-dom:
-        specifier: ^6.8.1
-        version: 6.28.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react-split:
         specifier: ^2.0.14
         version: 2.0.14(react@19.2.6)
@@ -8890,7 +8887,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@remix-run/router@1.21.0': {}
+  '@remix-run/router@1.21.0':
+    optional: true
 
   '@restart/hooks@0.4.9(react@19.2.6)':
     dependencies:
@@ -11968,11 +11966,13 @@ snapshots:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
       react-router: 6.28.0(react@19.2.6)
+    optional: true
 
   react-router@6.28.0(react@19.2.6):
     dependencies:
       '@remix-run/router': 1.21.0
       react: 19.2.6
+    optional: true
 
   react-smooth@4.0.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
