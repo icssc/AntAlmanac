@@ -1,8 +1,7 @@
 import { NotificationsTable } from '$components/RightPane/AddedCourses/Notifications/NotificationsTable';
 import { type Notification, useNotificationStore } from '$stores/NotificationStore';
 import { NotificationAddOutlined } from '@mui/icons-material';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Tab, Paper, CircularProgress, Typography, useTheme } from '@mui/material';
+import { Box, CircularProgress, Paper, Tab, Tabs, Typography, useTheme } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -80,37 +79,38 @@ export function NotificationsTabs() {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <TabContext value={displayTab}>
-                <Paper
-                    elevation={0}
-                    variant="outlined"
-                    square
-                    sx={{ bgcolor: theme.palette.background.elevated, borderColor: 'divider' }}
+            <Paper
+                elevation={0}
+                variant="outlined"
+                square
+                sx={{ bgcolor: theme.palette.background.elevated, borderColor: 'divider' }}
+            >
+                <Tabs
+                    value={displayTab}
+                    onChange={handleTabChange}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    centered
+                    sx={{
+                        '& .MuiTab-root': {
+                            minHeight: { xs: 40, md: 48 },
+                            fontSize: { xs: '0.8125rem', md: '0.9375rem' },
+                        },
+                    }}
                 >
-                    <TabList
-                        onChange={handleTabChange}
-                        indicatorColor="primary"
-                        variant="fullWidth"
-                        centered
-                        sx={{
-                            '& .MuiTab-root': {
-                                minHeight: { xs: 40, md: 48 },
-                                fontSize: { xs: '0.8125rem', md: '0.9375rem' },
-                            },
-                        }}
-                    >
-                        {sortedTerms.map((term) => (
-                            <Tab label={term} key={term} value={term} />
-                        ))}
-                    </TabList>
-                </Paper>
+                    {sortedTerms.map((term) => (
+                        <Tab label={term} key={term} value={term} />
+                    ))}
+                </Tabs>
+            </Paper>
 
-                {sortedTerms.map((term) => (
-                    <TabPanel key={term} value={term} sx={{ paddingX: 0 }}>
+            {sortedTerms.map((term) =>
+                displayTab === term ? (
+                    <Box key={term} role="tabpanel" sx={{ paddingX: 0 }}>
                         <NotificationsTable keys={groups[term]} />
-                    </TabPanel>
-                ))}
-            </TabContext>
+                    </Box>
+                ) : null
+            )}
         </Box>
     );
 }
