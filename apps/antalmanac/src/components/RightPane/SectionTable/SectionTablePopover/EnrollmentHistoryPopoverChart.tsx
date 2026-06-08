@@ -15,7 +15,7 @@ interface EnrollmentHistoryPopoverChartProps {
     days: EnrollmentHistoryDay[];
 }
 
-export default function EnrollmentHistoryPopoverChart({ days }: EnrollmentHistoryPopoverChartProps) {
+export function EnrollmentHistoryPopoverChart({ days }: EnrollmentHistoryPopoverChartProps) {
     const theme = useTheme();
     const chartColors = theme.palette.enrollmentStatus;
 

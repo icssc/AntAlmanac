@@ -10,9 +10,9 @@ import { Fragment, useEffect, useRef, useCallback, useState, useMemo } from 'rea
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
-import LocationMarker from './Marker';
+import { LocationMarker } from './Marker';
 
-const Routes = dynamic(() => import('./Routes'), { ssr: false });
+const Routes = dynamic(() => import('./Routes').then((m) => ({ default: m.Routes })), { ssr: false });
 
 import {
     isCourseEvent,
@@ -163,7 +163,7 @@ export function getCustomEventPerBuilding(customEvents: CustomEvent[] = AppStore
 /**
  * Map of all course locations on UCI campus.
  */
-export default function CourseMap() {
+export function CourseMap() {
     const navigate = useNavigate();
     const map = useRef<Map | null>(null);
     const markerRef = useRef<Marker | null>(null);

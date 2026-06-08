@@ -76,7 +76,7 @@ function DesktopHome() {
     );
 }
 
-export default function Home() {
+export function Home() {
     const isMobile = useIsMobile();
     const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 

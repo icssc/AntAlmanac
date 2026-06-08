@@ -1,9 +1,9 @@
 import './App.css';
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
-import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
+import { PosthogPageviewTracker } from '$lib/analytics/PostHogPageviewTracker';
 import { ErrorPage } from '$routes/ErrorPage';
-import Home from '$routes/Home';
+import { Home } from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
 import { NuqsAdapter } from 'nuqs/adapters/react-router/v6';
 import { useEffect } from 'react';
@@ -86,7 +86,7 @@ const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 /**
  * Renders the single page application.
  */
-export default function App() {
+export function App() {
     useEffect(() => {
         document.addEventListener('keydown', undoDelete, false);
         document.addEventListener('keydown', redoDelete, false);
