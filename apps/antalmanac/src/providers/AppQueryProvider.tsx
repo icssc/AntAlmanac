@@ -2,7 +2,7 @@ import { trpcConfig, trpcReact } from '$lib/api/trpc';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 
-export default function AppQueryProvider({ children }: { children?: React.ReactNode }) {
+export function AppQueryProvider({ children }: { children?: React.ReactNode }) {
     const [queryClient] = useState(
         () =>
             new QueryClient({

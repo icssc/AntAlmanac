@@ -118,7 +118,7 @@ declare module '@mui/material/styles' {
 /**
  * sets and provides the MUI theme for the app
  */
-export default function AppThemeProvider(props: Props) {
+export function AppThemeProvider(props: Props) {
     const [isDark, syncSystemTheme] = useThemeStore(useShallow((store) => [store.isDark, store.syncSystemTheme]));
 
     useEffect(() => {

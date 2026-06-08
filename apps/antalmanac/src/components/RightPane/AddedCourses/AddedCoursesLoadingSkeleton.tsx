@@ -1,5 +1,5 @@
 import { CustomEventDetailView } from '$components/RightPane/AddedCourses/CustomEventDetailView';
-import SectionTable from '$components/RightPane/SectionTable/SectionTable';
+import { SectionTable } from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';

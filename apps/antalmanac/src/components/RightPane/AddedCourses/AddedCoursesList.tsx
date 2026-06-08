@@ -1,7 +1,7 @@
 import { SortableList } from '$components/drag-and-drop/SortableList';
 import { EmptyState } from '$components/EmptyState';
 import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/AddedCoursesLoadingSkeleton';
-import SectionTable from '$components/RightPane/SectionTable/SectionTable';
+import { SectionTable } from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { getMissingSections } from '$lib/courseAlerts';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
