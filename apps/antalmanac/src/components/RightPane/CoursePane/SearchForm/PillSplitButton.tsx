@@ -1,12 +1,23 @@
 import { mergeSx } from '$lib/helpers';
 import { ExpandMore } from '@mui/icons-material';
-import { Box, Chip, Menu } from '@mui/material';
-import { type MouseEvent, type ReactElement, type ReactNode, useEffect, useRef, useState } from 'react';
+import { Box, Chip, Menu, type ChipProps } from '@mui/material';
+import { type MouseEvent, type ReactElement, type ReactNode, Children, useRef, useState } from 'react';
 
-/** Matches inner fuzzy-search input: 22px tall, 12px type, label horizontal inset. */
+type PillSplitButtonProps = Omit<
+    ChipProps,
+    'label' | 'icon' | 'onDelete' | 'deleteIcon' | 'onClick' | 'variant' | 'children' | 'clickable'
+> & {
+    label: ReactNode;
+    onPrimaryClick: () => void;
+    icon?: ReactElement;
+    open?: boolean;
+    onToggleMenu?: () => void;
+    onCloseMenu?: () => void;
+    children?: ReactNode;
+};
+
 const pillSplitButtonSx = {
-    height: 22,
-    minHeight: 22,
+    height: 25,
     alignItems: 'stretch',
     borderRadius: 9999,
     fontSize: '12px',
@@ -17,10 +28,10 @@ const pillSplitButtonSx = {
     },
     '& .MuiChip-label': {
         display: 'flex',
-        alignItems: 'stretch',
+        flex: 1,
+        minWidth: 0,
         px: 0,
     },
-    // Chip onDelete styles this like a remove button; reset defaults only.
     '&& .MuiChip-deleteIcon': {
         margin: 0,
         color: 'inherit',
@@ -34,10 +45,17 @@ const primaryTargetSx = {
     display: 'inline-flex',
     alignItems: 'center',
     alignSelf: 'stretch',
-    pr: 0.75,
+    flex: 1,
+    minWidth: 0,
+    pl: 1.5,
+    pr: 1.5,
     cursor: 'pointer',
-    borderTopLeftRadius: 9999,
-    borderBottomLeftRadius: 9999,
+    borderRadius: '9999px 0 0 9999px',
+    overflow: 'hidden',
+    '& > .MuiSvgIcon-root': {
+        mr: 0.5,
+        flexShrink: 0,
+    },
     '&:hover': {
         bgcolor: 'action.hover',
     },
@@ -47,30 +65,29 @@ const menuToggleSx = {
     display: 'flex',
     alignItems: 'center',
     alignSelf: 'stretch',
-    boxSizing: 'border-box',
     px: 0.75,
     minWidth: 24,
     borderLeft: 1,
     borderColor: 'divider',
     color: 'inherit',
     cursor: 'pointer',
-    borderTopRightRadius: 9999,
-    borderBottomRightRadius: 9999,
+    borderRadius: '0 9999px 9999px 0',
     '&:hover': {
         bgcolor: 'action.hover',
+        color: 'inherit',
     },
 } as const;
 
-interface PillSplitButtonProps {
-    label: ReactNode;
-    onPrimaryClick: () => void;
-    icon?: ReactElement;
-    disabled?: boolean;
-    open?: boolean;
-    onToggleMenu?: () => void;
-    onCloseMenu?: () => void;
-    toggleAriaLabel?: string;
-    children?: ReactNode;
+function getMenuPaperSx(menuWidth?: number) {
+    return {
+        mt: 0.5,
+        ...(menuWidth && {
+            width: menuWidth,
+            minWidth: menuWidth,
+            maxWidth: menuWidth,
+            boxSizing: 'border-box' as const,
+        }),
+    };
 }
 
 export function PillSplitButton({
@@ -81,97 +98,87 @@ export function PillSplitButton({
     open = false,
     onToggleMenu,
     onCloseMenu,
-    toggleAriaLabel = 'Show more options',
     children,
+    sx,
+    ...chipProps
 }: PillSplitButtonProps) {
     const anchorRef = useRef<HTMLDivElement>(null);
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-    const menuEnabled = Boolean(children) && onToggleMenu !== undefined && onCloseMenu !== undefined && !disabled;
 
-    useEffect(() => {
-        if (!open) {
-            setAnchorEl(null);
+    const [menuWidth, setMenuWidth] = useState<number>();
+
+    const hasMenuOptions =
+        !disabled && onToggleMenu !== undefined && onCloseMenu !== undefined && Children.toArray(children).length > 0;
+
+    const handleAnchorRef = (node: HTMLDivElement | null) => {
+        anchorRef.current = node;
+        if (node) {
+            setMenuWidth(node.offsetWidth);
         }
-    }, [open]);
+    };
 
     const handleToggleMenu = (event: MouseEvent<HTMLElement>) => {
         event.stopPropagation();
+        const width = anchorRef.current?.offsetWidth;
+        if (width) {
+            setMenuWidth(width);
+        }
         if (open) {
             onCloseMenu?.();
             return;
         }
-
-        setAnchorEl(anchorRef.current);
         onToggleMenu?.();
     };
 
-    const primaryLabel = (
-        <Box
-            component="span"
-            onClick={disabled ? undefined : onPrimaryClick}
-            sx={mergeSx(
-                primaryTargetSx,
-                !icon ? { pl: 1.5 } : undefined,
-                disabled ? { cursor: 'default', '&:hover': { bgcolor: 'transparent' } } : undefined
-            )}
-        >
-            {icon ? (
-                <Box component="span" sx={{ display: 'flex', ml: 1.5, mr: 0.5, fontSize: 14, width: 14, height: 14 }}>
-                    {icon}
-                </Box>
-            ) : null}
-            {label}
-        </Box>
-    );
+    const handlePrimaryClick = (event: MouseEvent<HTMLElement>) => {
+        event.stopPropagation();
+        if (!disabled) {
+            onPrimaryClick();
+        }
+    };
 
     return (
         <>
-            <Box ref={anchorRef} sx={{ display: 'inline-flex', maxWidth: '100%' }}>
-                <Chip
-                    label={primaryLabel}
-                    variant="outlined"
-                    disabled={disabled}
-                    onDelete={menuEnabled ? handleToggleMenu : undefined}
-                    deleteIcon={
-                        menuEnabled ? (
-                            <Box component="span" aria-label={toggleAriaLabel} sx={menuToggleSx}>
-                                <ExpandMore
-                                    sx={{
-                                        fontSize: 16,
-                                        display: 'block',
-                                        transition: 'transform 0.15s',
-                                        transform: open ? 'rotate(180deg)' : undefined,
-                                    }}
-                                />
-                            </Box>
-                        ) : undefined
-                    }
-                    aria-haspopup={menuEnabled ? 'menu' : undefined}
-                    aria-expanded={menuEnabled && open ? 'true' : undefined}
-                    sx={pillSplitButtonSx}
-                />
-            </Box>
-            {menuEnabled ? (
+            <Chip
+                {...chipProps}
+                ref={handleAnchorRef}
+                label={
+                    <Box
+                        component="span"
+                        onClick={disabled ? undefined : handlePrimaryClick}
+                        sx={mergeSx(
+                            primaryTargetSx,
+                            !hasMenuOptions ? { borderRadius: 9999 } : undefined,
+                            disabled ? { cursor: 'default', '&:hover': { bgcolor: 'transparent' } } : undefined
+                        )}
+                    >
+                        {icon}
+                        {label}
+                    </Box>
+                }
+                variant="outlined"
+                disabled={disabled}
+                onDelete={hasMenuOptions ? handleToggleMenu : undefined}
+                deleteIcon={
+                    hasMenuOptions ? (
+                        <Box component="span" aria-label="Show more options" sx={menuToggleSx}>
+                            <ExpandMore sx={{ transform: open ? 'rotate(180deg)' : undefined }} />
+                        </Box>
+                    ) : undefined
+                }
+                aria-haspopup={hasMenuOptions ? 'menu' : undefined}
+                aria-expanded={hasMenuOptions && open ? 'true' : undefined}
+                sx={mergeSx(pillSplitButtonSx, sx)}
+            />
+
+            {hasMenuOptions ? (
                 <Menu
-                    anchorEl={anchorEl}
-                    open={open && Boolean(anchorEl)}
+                    anchorEl={anchorRef.current}
+                    open={open}
                     onClose={onCloseMenu}
                     marginThreshold={4}
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                     transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                    slotProps={{
-                        paper: {
-                            sx: {
-                                mt: 0.5,
-                                maxHeight: 300,
-                                maxWidth: 280,
-                                ...(anchorEl && {
-                                    width: anchorEl.offsetWidth,
-                                    minWidth: anchorEl.offsetWidth,
-                                }),
-                            },
-                        },
-                    }}
+                    slotProps={{ paper: { sx: getMenuPaperSx(menuWidth) } }}
                 >
                     {children}
                 </Menu>
