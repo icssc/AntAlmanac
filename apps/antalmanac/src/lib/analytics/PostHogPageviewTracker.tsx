@@ -2,7 +2,7 @@ import { postHog } from '$providers/AppPostHogProvider';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-export default function PosthogPageviewTracker() {
+export function PosthogPageviewTracker() {
     const location = useLocation();
 
     useEffect(() => {

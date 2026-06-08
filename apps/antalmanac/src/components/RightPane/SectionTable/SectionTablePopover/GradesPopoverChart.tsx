@@ -8,7 +8,7 @@ interface GradesPopoverChartProps {
     }[];
 }
 
-export default function GradesPopoverChart({ grades }: GradesPopoverChartProps) {
+export function GradesPopoverChart({ grades }: GradesPopoverChartProps) {
     const theme = useTheme();
     const secondaryColor = theme.palette.secondary.main;
 

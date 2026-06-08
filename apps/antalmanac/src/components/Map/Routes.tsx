@@ -1,11 +1,10 @@
+import { MAPBOX_PROXY_DIRECTIONS_ENDPOINT } from '$lib/api/endpoints';
 // eslint-disable-next-line import/default
 import L from 'leaflet';
-import type { LatLngTuple } from 'leaflet';
 import 'leaflet-routing-machine';
+import type { LatLngTuple } from 'leaflet';
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
-
-import { MAPBOX_PROXY_DIRECTIONS_ENDPOINT } from '$lib/api/endpoints';
 
 interface ClassRoutesProps {
     /**
@@ -30,7 +29,7 @@ const dontCreateMarker = () => false;
 /**
  * Given waypoints of a route and a color for the route, draw a route to the map.
  */
-function Routes(props: ClassRoutesProps) {
+export function Routes(props: ClassRoutesProps) {
     const map = useMap();
 
     useEffect(() => {
@@ -138,5 +137,3 @@ function Routes(props: ClassRoutesProps) {
 
     return null;
 }
-
-export default Routes;

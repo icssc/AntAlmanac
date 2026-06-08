@@ -11,10 +11,13 @@ import type { WebsocSectionType } from '@packages/anteater-api/types';
 import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
 
-const EnrollmentHistoryPopoverChart = dynamic(() => import('./EnrollmentHistoryPopoverChart'), {
-    ssr: false,
-    loading: () => <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />,
-});
+const EnrollmentHistoryPopoverChart = dynamic(
+    () => import('./EnrollmentHistoryPopoverChart').then((m) => ({ default: m.EnrollmentHistoryPopoverChart })),
+    {
+        ssr: false,
+        loading: () => <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />,
+    }
+);
 
 interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
