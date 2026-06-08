@@ -327,8 +327,12 @@ class AppStore extends EventEmitter {
         this.emit('reorderSchedule');
     }
 
-    reorderAddedCourses(scheduleIndex: number, movedOfferingKey: string, nextOfferingKey: string | null) {
-        this.schedule.reorderAddedCourses(scheduleIndex, movedOfferingKey, nextOfferingKey);
+    reorderAddedCourses(scheduleIndex: number, movedOfferingKey: string, nextOfferingKey: string | null): boolean {
+        const success = this.schedule.reorderAddedCourses(scheduleIndex, movedOfferingKey, nextOfferingKey);
+        if (!success) {
+            return false;
+        }
+
         this.unsavedChanges = true;
         const action: ReorderAddedCoursesAction = {
             type: 'reorderAddedCourses',
@@ -338,6 +342,7 @@ class AppStore extends EventEmitter {
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
+        return true;
     }
 
     private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {

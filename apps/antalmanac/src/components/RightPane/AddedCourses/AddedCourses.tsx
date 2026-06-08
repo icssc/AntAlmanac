@@ -109,8 +109,6 @@ export function AddedCourses() {
 
     const handleCourseOrderChange = useCallback(
         (updatedCourses: AACourseWithTerm[], _activeIndex: number, overIndex: number) => {
-            setCourses(updatedCourses);
-
             const movedCourse = updatedCourses[overIndex];
             const nextConsecutiveCourse =
                 overIndex + 1 !== updatedCourses.length ? updatedCourses[overIndex + 1] : null;
@@ -120,6 +118,9 @@ export function AddedCourses() {
                 scheduleOfferingKey(movedCourse),
                 nextConsecutiveCourse !== null ? scheduleOfferingKey(nextConsecutiveCourse) : null
             );
+
+            // Always sync from the store so a failed reorder reverts the drag.
+            setCourses(getCourses());
         },
         []
     );

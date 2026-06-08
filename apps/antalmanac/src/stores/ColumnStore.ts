@@ -1,6 +1,5 @@
-import { create } from 'zustand';
-
 import { getLocalStorageColumnToggles, setLocalStorageColumnToggles } from '$lib/localStorage';
+import { create } from 'zustand';
 
 /**
  * Search results are displayed in a tabular format.
@@ -16,8 +15,8 @@ export const SECTION_TABLE_COLUMNS = [
     'dayAndTime',
     'location',
     'sectionEnrollment',
-    'restrictions',
     'status',
+    'restrictions',
     'syllabus',
 ] as const;
 
