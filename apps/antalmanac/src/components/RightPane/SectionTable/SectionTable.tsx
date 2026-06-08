@@ -75,7 +75,7 @@ export interface SectionTableProps {
     missingSections?: string[];
 }
 
-function SectionTable({
+export function SectionTable({
     course,
     allowHighlight,
     scheduleNames,
@@ -264,5 +264,3 @@ function SectionTable({
         </Box>
     );
 }
-
-export default SectionTable;

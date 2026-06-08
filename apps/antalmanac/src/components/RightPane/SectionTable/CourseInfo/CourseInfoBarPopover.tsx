@@ -1,4 +1,4 @@
-import PrereqTree from '$components/RightPane/SectionTable/CourseInfo/PrereqTree';
+import { PrereqTree } from '$components/RightPane/SectionTable/CourseInfo/PrereqTree';
 import analyticsEnum, { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { Box, Card, CardContent, CardHeader, Divider, Skeleton, Typography } from '@mui/material';

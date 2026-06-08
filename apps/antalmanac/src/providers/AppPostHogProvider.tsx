@@ -20,7 +20,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-export default function AppPostHogProvider(props: Props) {
+export function AppPostHogProvider(props: Props) {
     if (env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY) {
         return <PostHogProvider client={postHog}>{props.children}</PostHogProvider>;
     }
