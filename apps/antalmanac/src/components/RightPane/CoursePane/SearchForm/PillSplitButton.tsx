@@ -1,20 +1,21 @@
 import { mergeSx } from '$lib/helpers';
 import { ExpandMore } from '@mui/icons-material';
 import { Box, Chip, Menu, type ChipProps } from '@mui/material';
-import { type MouseEvent, type ReactElement, type ReactNode, Children, useRef, useState } from 'react';
+import { type MouseEvent, type ReactElement, type ReactNode, Children, useRef } from 'react';
 
-type PillSplitButtonProps = Omit<
+interface PillSplitButtonProps extends Omit<
     ChipProps,
     'label' | 'icon' | 'onDelete' | 'deleteIcon' | 'onClick' | 'variant' | 'children' | 'clickable'
-> & {
+> {
     label: ReactNode;
     onPrimaryClick: () => void;
     icon?: ReactElement;
     open?: boolean;
     onToggleMenu?: () => void;
     onCloseMenu?: () => void;
+    menuWidth?: number;
     children?: ReactNode;
-};
+}
 
 const pillSplitButtonSx = {
     height: 25,
@@ -98,30 +99,18 @@ export function PillSplitButton({
     open = false,
     onToggleMenu,
     onCloseMenu,
+    menuWidth,
     children,
     sx,
     ...chipProps
 }: PillSplitButtonProps) {
     const anchorRef = useRef<HTMLDivElement>(null);
 
-    const [menuWidth, setMenuWidth] = useState<number>();
-
     const hasMenuOptions =
         !disabled && onToggleMenu !== undefined && onCloseMenu !== undefined && Children.toArray(children).length > 0;
 
-    const handleAnchorRef = (node: HTMLDivElement | null) => {
-        anchorRef.current = node;
-        if (node) {
-            setMenuWidth(node.offsetWidth);
-        }
-    };
-
     const handleToggleMenu = (event: MouseEvent<HTMLElement>) => {
         event.stopPropagation();
-        const width = anchorRef.current?.offsetWidth;
-        if (width) {
-            setMenuWidth(width);
-        }
         if (open) {
             onCloseMenu?.();
             return;
@@ -140,7 +129,7 @@ export function PillSplitButton({
         <>
             <Chip
                 {...chipProps}
-                ref={handleAnchorRef}
+                ref={anchorRef}
                 label={
                     <Box
                         component="span"
@@ -175,7 +164,6 @@ export function PillSplitButton({
                     anchorEl={anchorRef.current}
                     open={open}
                     onClose={onCloseMenu}
-                    marginThreshold={4}
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                     transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                     slotProps={{ paper: { sx: getMenuPaperSx(menuWidth) } }}

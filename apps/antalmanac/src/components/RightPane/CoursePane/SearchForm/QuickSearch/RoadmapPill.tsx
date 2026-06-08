@@ -19,14 +19,14 @@ import { useShallow } from 'zustand/react/shallow';
 
 // TODO: Remove mock data before merging. Hardcoded roadmaps for testing the pill UI.
 
-function mockYearPlan(
-    startYear: number,
-    quarters: Partial<Record<'Fall' | 'Winter' | 'Spring', string[]>>
-): Roadmap['content'][number] {
+type MockQuarter = 'Fall' | 'Winter' | 'Spring' | 'Summer1' | 'Summer2' | 'Summer10wk';
+
+function mockYearPlan(startYear: number, quarters: Partial<Record<MockQuarter, string[]>>): Roadmap['content'][number] {
+    const quarterOrder: MockQuarter[] = ['Fall', 'Winter', 'Spring', 'Summer1', 'Summer10wk', 'Summer2'];
     return {
         name: `${startYear}-${startYear + 1}`,
         startYear,
-        quarters: (['Fall', 'Winter', 'Spring'] as const)
+        quarters: quarterOrder
             .filter((name) => name in quarters)
             .map((name) => ({
                 name,
@@ -115,6 +115,76 @@ const MOCK_ROADMAPS_SINGLE: Roadmap[] = [
     },
 ];
 
+const MOCK_ROADMAPS_SUMMER2: Roadmap[] = [
+    {
+        id: 'mock-summer2-a',
+        name: '2026 Summer Session 2',
+        content: [
+            mockYearPlan(2025, {
+                Summer2: ['MATH2D', 'CHEM1C'],
+            }),
+        ],
+    },
+    {
+        id: 'mock-summer2-b',
+        name: 'Summer GE Progress',
+        content: [
+            mockYearPlan(2025, {
+                Summer2: ['WRITING39C', 'HUMANIT1ES'],
+            }),
+        ],
+    },
+    {
+        id: 'mock-summer2-c',
+        name: 'CS Summer Catch-up',
+        content: [
+            mockYearPlan(2025, {
+                Summer2: ['COMPSCI161', 'COMPSCI162'],
+            }),
+        ],
+    },
+    {
+        id: 'mock-summer2-exclude-a',
+        name: 'No Summer Quarters',
+        content: [
+            mockYearPlan(2025, {
+                Fall: ['ECON20A'],
+                Winter: ['ECON20B'],
+                Spring: ['MATH2A'],
+            }),
+        ],
+    },
+    {
+        id: 'mock-summer2-exclude-b',
+        name: 'Summer Session 1 Only',
+        content: [
+            mockYearPlan(2025, {
+                Summer1: ['PHYSICS7C'],
+            }),
+        ],
+    },
+    {
+        id: 'mock-summer2-exclude-c',
+        name: '2024 Archive',
+        content: [
+            mockYearPlan(2024, {
+                Fall: ['WRITING39B'],
+                Winter: ['HUMANIT1AS'],
+                Spring: ['MATH2A'],
+            }),
+        ],
+    },
+    {
+        id: 'mock-summer2-empty',
+        name: 'Summer2 TBD',
+        content: [
+            mockYearPlan(2025, {
+                Summer2: [],
+            }),
+        ],
+    },
+];
+
 const MOCK_ENABLED = MOCK_ROADMAPS_ALL.length > 0;
 
 const ROADMAP_PILL_MAX_WIDTH = 200;
@@ -150,9 +220,9 @@ function RoadmapMenuItems({ roadmaps, term, activeRoadmapId, onSelect }: Roadmap
     }
 
     const sections: { relation: RoadmapTermRelation; label: string }[] = [
-        { relation: RoadmapTermRelation.IncludesTerm, label: `Includes ${term.shortName}` },
-        { relation: RoadmapTermRelation.ExcludesTerm, label: `Doesn't Include ${term.shortName}` },
-        { relation: RoadmapTermRelation.NoCourses, label: `No courses for ${term.shortName}` },
+        { relation: RoadmapTermRelation.IncludesTerm, label: 'Includes term' },
+        { relation: RoadmapTermRelation.ExcludesTerm, label: "Doesn't include term" },
+        { relation: RoadmapTermRelation.NoCourses, label: 'No courses for term' },
     ];
 
     return (
@@ -309,7 +379,7 @@ const RoadmapPillInstance = memo(
         );
 
         // TODO: Restore sessionIsValid-only gate before merging (drop usingMockRoadmaps bypass).
-        const showPill = isSignedIn && (usingMockRoadmaps || (!isPlannerLoading && roadmapsForTerm.length > 0));
+        const showPill = isSignedIn && !isPlannerLoading && roadmapsForTerm.length > 0;
         const showMenu = roadmapsForTerm.length > 1;
 
         useEffect(() => {
@@ -318,23 +388,23 @@ const RoadmapPillInstance = memo(
             }
         }, [showMenu]);
 
-        if (!showPill) {
+        if (!showPill || !activeRoadmap) {
             return null;
         }
 
         return (
             <PillSplitButton
                 sx={{ maxWidth: ROADMAP_PILL_MAX_WIDTH }}
+                menuWidth={ROADMAP_PILL_MAX_WIDTH}
                 label={
                     <Box
                         component="span"
                         sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}
                     >
-                        Planner:&nbsp;{activeRoadmap?.name ?? 'Roadmap'}
+                        Planner:&nbsp;{activeRoadmap.name}
                     </Box>
                 }
                 icon={<Search />}
-                disabled={!activeRoadmap}
                 onPrimaryClick={handlePrimaryClick}
                 {...(showMenu
                     ? {
@@ -345,7 +415,7 @@ const RoadmapPillInstance = memo(
                               <RoadmapMenuItems
                                   roadmaps={sortedRoadmaps}
                                   term={term}
-                                  activeRoadmapId={activeRoadmap?.id.toString() ?? null}
+                                  activeRoadmapId={activeRoadmap.id.toString()}
                                   onSelect={handleSelect}
                               />
                           ),
@@ -405,6 +475,7 @@ export const RoadmapPill = memo(() => {
             >
                 <RoadmapPillInstance {...instanceProps} plannerRoadmaps={MOCK_ROADMAPS_SINGLE} />
                 <RoadmapPillInstance {...instanceProps} plannerRoadmaps={MOCK_ROADMAPS_ALL} />
+                <RoadmapPillInstance {...instanceProps} plannerRoadmaps={MOCK_ROADMAPS_SUMMER2} />
             </Box>
         );
     }
