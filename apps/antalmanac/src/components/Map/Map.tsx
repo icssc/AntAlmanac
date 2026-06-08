@@ -167,7 +167,7 @@ export function CourseMap() {
     const router = useRouter();
     const map = useRef<Map | null>(null);
     const markerRef = useRef<Marker | null>(null);
-    const [searchParams] = useSearchParams();
+    const searchParams = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
 
     const [rawCalendarEvents, setRawCalendarEvents] = useState(() => AppStore.getEventsInCalendar());
