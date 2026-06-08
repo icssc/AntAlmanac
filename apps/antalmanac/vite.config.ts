@@ -9,7 +9,6 @@ export default defineConfig({
     resolve: {
         alias: {
             $actions: resolve(__dirname, './src/actions'),
-            $api: resolve(__dirname, './src/api'),
             $backend: resolve(__dirname, './src/backend'),
             $components: resolve(__dirname, './src/components'),
             $generated: resolve(__dirname, './src/generated'),
