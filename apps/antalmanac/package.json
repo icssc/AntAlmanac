@@ -70,7 +70,6 @@
         "recharts": "^2.4.2",
         "schema-dts": "^2.0.0",
         "superjson": "^1.12.3",
-        "ua-parser-js": "^1.0.37",
         "zod": "3.24.3",
         "zustand": "^4.3.2"
     },
@@ -87,7 +86,6 @@
         "@types/react-color": "^3.0.6",
         "@types/react-dom": "19.2.3",
         "@types/react-lazyload": "^3.2.0",
-        "@types/ua-parser-js": "^0.7.39",
         "@vitejs/plugin-react": "^4.0.4",
         "typescript": "^5.9.3",
         "vite": "^4.4.9",

@@ -15,7 +15,6 @@ import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams,
 import type { AATerm, SearchResult } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import UAParser from 'ua-parser-js';
 
 const SEARCH_TIMEOUT_MS = 150;
 
@@ -43,14 +42,7 @@ const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
 const MIN_QUERY_LENGTH = 2;
 
-const isMobile = () => {
-    const parser = new UAParser();
-    return parser.getDevice().type === 'mobile' || parser.getDevice().type === 'tablet' || isIpad();
-};
-
-const isIpad = () => {
-    return navigator.userAgent.includes('Mac') && 'ontouchend' in document;
-};
+const shouldAutoFocusSearch = () => globalThis.matchMedia?.('(hover: hover) and (pointer: fine)')?.matches ?? false;
 
 interface SearchOption {
     key: string;
@@ -345,7 +337,7 @@ export function FuzzySearch() {
                 clearOnBlur: false,
             }}
             textFieldProps={{
-                autoFocus: !isMobile(),
+                autoFocus: shouldAutoFocusSearch(),
                 placeholder: 'Search for courses, departments, GEs...',
                 fullWidth: true,
                 onFocus: onFocus,
