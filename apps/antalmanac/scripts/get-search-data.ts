@@ -1,10 +1,10 @@
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { parseSectionCodes, type SectionCodesGraphQLResponse } from '$backend/lib/term-section-codes';
 import { termData } from '$lib/term';
 import { canTermEnrollmentChange } from '$lib/termHelpers';
 import { env } from '$scripts/env';
-import { parseSectionCodes, type SectionCodesGraphQLResponse } from '$src/backend/lib/term-section-codes';
 import type { AATerm, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';

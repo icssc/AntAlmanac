@@ -12,6 +12,7 @@
         "paths": {
             "$actions/*": ["src/actions/*"],
             "$api/*": ["src/api/*"],
+            "$backend/*": ["src/backend/*"],
             "$components/*": ["src/components/*"],
             "$generated/*": ["src/generated/*"],
             "$lib/*": ["src/lib/*"],

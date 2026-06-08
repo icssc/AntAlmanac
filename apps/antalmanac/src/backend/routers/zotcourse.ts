@@ -1,6 +1,5 @@
+import { procedure, router } from '$backend/trpc';
 import { z } from 'zod';
-
-import { procedure, router } from '../trpc';
 
 const zotcourseUrl = 'https://zotcourse.appspot.com/schedule/load';
 

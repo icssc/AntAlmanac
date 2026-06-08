@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises';
 import { join } from 'node:path';
 
+import { procedure, router } from '$backend/trpc';
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
 import {
@@ -11,8 +12,6 @@ import {
 } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
-
-import { procedure, router } from '../trpc';
 
 const departmentSchema = z.object({
     id: z.string(),

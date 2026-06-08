@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
-import { defineConfig } from 'vite';
+
 import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
@@ -10,6 +11,7 @@ export default defineConfig({
             $assets: resolve(__dirname, './src/assets'),
             $actions: resolve(__dirname, './src/actions'),
             $api: resolve(__dirname, './src/api'),
+            $backend: resolve(__dirname, './src/backend'),
             $components: resolve(__dirname, './src/components'),
             $generated: resolve(__dirname, './src/generated'),
             $lib: resolve(__dirname, './src/lib'),
