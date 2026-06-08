@@ -7,7 +7,7 @@ import { useState } from 'react';
 /**
  * Dialog with a text field to add a schedule.
  */
-function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
+export function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     const [name, setName] = useState(() =>
         AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName())
     );
@@ -64,5 +64,3 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
         </Dialog>
     );
 }
-
-export default AddScheduleDialog;

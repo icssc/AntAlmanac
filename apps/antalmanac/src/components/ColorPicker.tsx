@@ -25,7 +25,7 @@ interface ColorPickerProps {
     sectionCode?: string;
 }
 
-const ColorPicker = memo(function ColorPicker({
+export const ColorPicker = memo(function ColorPicker({
     color,
     analyticsCategory,
     isCustomEvent,
@@ -157,5 +157,3 @@ const ColorPicker = memo(function ColorPicker({
         </>
     );
 });
-
-export default ColorPicker;

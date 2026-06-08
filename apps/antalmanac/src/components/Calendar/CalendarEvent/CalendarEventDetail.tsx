@@ -2,7 +2,7 @@ import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { isCourseEvent, type CourseEvent, type CustomEvent } from '$components/Calendar/types';
-import ColorPicker from '$components/ColorPicker';
+import { ColorPicker } from '$components/ColorPicker';
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';

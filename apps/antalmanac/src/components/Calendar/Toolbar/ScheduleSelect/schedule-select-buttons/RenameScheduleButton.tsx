@@ -1,4 +1,4 @@
-import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
+import { RenameScheduleDialog } from '$components/dialogs/RenameSchedule';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';

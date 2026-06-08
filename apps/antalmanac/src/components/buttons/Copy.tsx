@@ -1,4 +1,4 @@
-import CopyScheduleDialog from '$components/dialogs/CopySchedule';
+import { CopyScheduleDialog } from '$components/dialogs/CopySchedule';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { ContentCopy } from '@mui/icons-material';
 import { IconButton, type SxProps, Tooltip } from '@mui/material';

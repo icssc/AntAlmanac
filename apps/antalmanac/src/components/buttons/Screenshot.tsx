@@ -9,7 +9,7 @@ interface ScreenshotButtonProps {
     onScreenshot?: () => void;
 }
 
-const ScreenshotButton = ({ onScreenshot }: ScreenshotButtonProps) => {
+export function ScreenshotButton({ onScreenshot }: ScreenshotButtonProps) {
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
 
@@ -46,6 +46,4 @@ const ScreenshotButton = ({ onScreenshot }: ScreenshotButtonProps) => {
             </IconButton>
         </Tooltip>
     );
-};
-
-export default ScreenshotButton;
+}

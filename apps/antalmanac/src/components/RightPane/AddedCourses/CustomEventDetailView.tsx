@@ -1,7 +1,7 @@
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import ColorPicker from '$components/ColorPicker';
+import { ColorPicker } from '$components/ColorPicker';
 import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';

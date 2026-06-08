@@ -1,4 +1,4 @@
-import PatchNotes, { closeButtonTestId, dialogTestId, backdropTestId } from '$components/PatchNotes';
+import { PatchNotes, closeButtonTestId, dialogTestId, backdropTestId } from '$components/PatchNotes';
 import {
     getLocalStoragePatchNotesKey,
     setLocalStoragePatchNotesKey,
