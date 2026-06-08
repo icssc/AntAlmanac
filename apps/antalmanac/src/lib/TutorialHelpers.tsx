@@ -1,8 +1,7 @@
+import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from '$lib/localStorage';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 import { useTabStore } from '$stores/TabStore';
 import { type StepType } from '@reactour/tour';
-
-import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from './localStorage';
 
 enum TourStepName {
     welcome = 'welcome',
