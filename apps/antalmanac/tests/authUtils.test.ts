@@ -1,6 +1,5 @@
+import { getSafeAuthRedirectPath } from '$lib/auth/authUtils';
 import { describe, expect, test } from 'vitest';
-
-import { getSafeAuthRedirectPath } from '../src/lib/auth/authUtils';
 
 const VALID_URL = '/importRoadmap=1234&term=2026+Spring';
 const ALLOWED_ORIGIN = 'https://www.antalmanac.com';

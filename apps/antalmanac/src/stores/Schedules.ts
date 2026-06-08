@@ -1,6 +1,8 @@
 import { trpc } from '$lib/api/trpc';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { moveArrayElements } from '$lib/utils';
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import {
     getColorForNewSection,
     groupCourseSections,
@@ -20,9 +22,6 @@ import type {
     ShortCourseSchedule,
 } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
-
-import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
-import { useHiddenCoursesStore } from './HiddenCoursesStore';
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.

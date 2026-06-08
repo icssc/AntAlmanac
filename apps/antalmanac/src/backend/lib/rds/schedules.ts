@@ -1,3 +1,5 @@
+import { loadSchedules } from '$backend/lib/rds/helpers';
+import type { DatabaseOrTransaction, Transaction } from '$backend/lib/rds/types';
 import {
     VisibilityState,
     type ShortCourse,
@@ -13,9 +15,6 @@ import {
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
 import { and, eq, not, notInArray, or } from 'drizzle-orm';
-
-import { loadSchedules } from './helpers';
-import type { DatabaseOrTransaction, Transaction } from './types';
 
 /**
  * Upserts the given user's schedules and selected schedule index.

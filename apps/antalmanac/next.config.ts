@@ -22,11 +22,6 @@ const nextConfig: NextConfig = {
                 destination: '/api/auth/oauth2/callback/icssc',
                 permanent: false,
             },
-            {
-                source: '/assets/:path*',
-                destination: '/logos/:path*',
-                permanent: true,
-            },
         ];
     },
     async rewrites() {

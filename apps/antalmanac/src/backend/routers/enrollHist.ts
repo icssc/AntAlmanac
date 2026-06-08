@@ -1,10 +1,9 @@
+import { aapiClient, aapiProcedure } from '$backend/lib/aapi';
+import { router } from '$backend/trpc';
 import { getRenamedCoursesIdentifiers } from '$lib/renames/utils';
-import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import { WebsocSectionTypeSchema } from '@packages/antalmanac-types';
 import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
 import { z } from 'zod';
-
-import { router } from '../trpc';
 
 const enrollHistRouter = router({
     get: aapiProcedure

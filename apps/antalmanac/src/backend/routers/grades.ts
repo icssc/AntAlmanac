@@ -1,11 +1,10 @@
+import { aapiClient, aapiProcedure } from '$backend/lib/aapi';
+import { router } from '$backend/trpc';
 import { getRenamedCoursesIdentifiers, mergeAggregateGrades } from '$lib/renames/utils';
-import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
-import { isNotEmpty } from '$src/lib/utils';
+import { isNotEmpty } from '$lib/utils';
 import { GradesGeSchema } from '@packages/antalmanac-types';
 import type { AggregateGrades, AggregateGradesByOffering } from '@packages/anteater-api/types';
 import { z } from 'zod';
-
-import { router } from '../trpc';
 
 const gradesRouter = router({
     aggregateGrades: aapiProcedure

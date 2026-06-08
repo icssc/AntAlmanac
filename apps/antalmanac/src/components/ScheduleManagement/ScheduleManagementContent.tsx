@@ -6,7 +6,7 @@ import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
-const UCIMap = lazy(() => import('../Map/Map'));
+const UCIMap = lazy(() => import('$components/Map/Map'));
 
 export function ScheduleManagementContent() {
     const activeTab = useTabStore((store) => store.activeTab);

@@ -1,7 +1,6 @@
+import type { DatabaseOrTransaction } from '$backend/lib/rds/types';
 import { instructorReviews, type NewInstructorReview, reviewDismissals } from '@packages/db/src/schema';
 import { eq, max } from 'drizzle-orm';
-
-import type { DatabaseOrTransaction } from './types';
 
 export async function insertInstructorReview(
     db: DatabaseOrTransaction,

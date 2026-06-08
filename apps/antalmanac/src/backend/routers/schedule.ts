@@ -1,12 +1,12 @@
-import { areFriends } from '$src/backend/lib/rds/friendships';
-import { getScheduleById, upsertUserData } from '$src/backend/lib/rds/schedules';
+import { areFriends } from '$backend/lib/rds/friendships';
+import { getScheduleById, upsertUserData } from '$backend/lib/rds/schedules';
 import {
     fetchUserDataByUserId,
     flagImportedUser,
     getGuestScheduleByUsername,
     getUserFriendDataByUid,
-} from '$src/backend/lib/rds/users';
-import { procedure, protectedProcedure, router } from '$src/backend/trpc';
+} from '$backend/lib/rds/users';
+import { procedure, protectedProcedure, router } from '$backend/trpc';
 import { type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';

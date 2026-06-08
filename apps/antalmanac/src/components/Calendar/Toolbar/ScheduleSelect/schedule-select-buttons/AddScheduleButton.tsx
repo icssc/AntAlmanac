@@ -1,4 +1,4 @@
-import AddScheduleDialog from '$components/dialogs/AddSchedule';
+import { AddScheduleDialog } from '$components/dialogs/AddSchedule';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Box, Button, Typography } from '@mui/material';

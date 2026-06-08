@@ -1,7 +1,6 @@
+import type { DatabaseOrTransaction } from '$backend/lib/rds/types';
 import { friendships, users } from '@packages/db/src/schema';
 import { and, eq, ne, or } from 'drizzle-orm';
-
-import type { DatabaseOrTransaction } from './types';
 
 /**
  * Returns all friendship rows between two users regardless of direction.
