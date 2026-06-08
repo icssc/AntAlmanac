@@ -10,6 +10,7 @@ interface PlannerStore {
     userTakenCourses: Set<string>;
     plannerRoadmaps: Roadmap[];
     isPlannerLoading: boolean;
+    hasLoadedPlannerRoadmaps: boolean;
 
     loadPlannerRoadmaps: () => Promise<void>;
     updateTakenCourses: (selectedRoadmapId: string) => void;
@@ -49,6 +50,7 @@ export const usePlannerStore = create<PlannerStore>((set, get) => {
         userTakenCourses: new Set(),
         plannerRoadmaps: [],
         isPlannerLoading: false,
+        hasLoadedPlannerRoadmaps: false,
 
         loadPlannerRoadmaps: async () => {
             set({ isPlannerLoading: true });
@@ -59,8 +61,9 @@ export const usePlannerStore = create<PlannerStore>((set, get) => {
                 console.error('Failed to fetch Planner roadmaps:', e);
                 openSnackbar('error', 'Failed to fetch Planner roadmaps');
                 set({ plannerRoadmaps: [] });
+            } finally {
+                set({ isPlannerLoading: false, hasLoadedPlannerRoadmaps: true });
             }
-            set({ isPlannerLoading: false });
         },
 
         updateTakenCourses: (selectedRoadmapId) => {

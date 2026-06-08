@@ -296,8 +296,8 @@ function RoadmapMenuItems({ roadmaps, term, activeRoadmapId, onSelect }: Roadmap
 type RoadmapPillInstanceProps = {
     plannerRoadmaps: Roadmap[];
     isSignedIn: boolean;
+    isPlannerReady: boolean;
     usingMockRoadmaps: boolean;
-    isPlannerLoading: boolean;
     realRoadmaps: Roadmap[];
     loadPlannerRoadmaps: () => Promise<void>;
 };
@@ -306,8 +306,8 @@ const RoadmapPillInstance = memo(
     ({
         plannerRoadmaps,
         isSignedIn,
+        isPlannerReady,
         usingMockRoadmaps,
-        isPlannerLoading,
         realRoadmaps,
         loadPlannerRoadmaps,
     }: RoadmapPillInstanceProps) => {
@@ -379,7 +379,7 @@ const RoadmapPillInstance = memo(
         );
 
         // TODO: Restore sessionIsValid-only gate before merging (drop usingMockRoadmaps bypass).
-        const showPill = isSignedIn && !isPlannerLoading && roadmapsForTerm.length > 0;
+        const showPill = isSignedIn && isPlannerReady && roadmapsForTerm.length > 0;
         const showMenu = roadmapsForTerm.length > 1;
 
         useEffect(() => {
@@ -430,14 +430,17 @@ RoadmapPillInstance.displayName = 'RoadmapPillInstance';
 
 export const RoadmapPill = memo(() => {
     const sessionIsValid = useSessionStore((s) => s.sessionIsValid);
+    const hasCheckedAuth = useSessionStore((s) => s.hasCheckedAuth);
     const {
         plannerRoadmaps: realRoadmaps,
         isPlannerLoading,
+        hasLoadedPlannerRoadmaps,
         loadPlannerRoadmaps,
     } = usePlannerStore(
         useShallow((s) => ({
             plannerRoadmaps: s.plannerRoadmaps,
             isPlannerLoading: s.isPlannerLoading,
+            hasLoadedPlannerRoadmaps: s.hasLoadedPlannerRoadmaps,
             loadPlannerRoadmaps: s.loadPlannerRoadmaps,
         }))
     );
@@ -445,6 +448,9 @@ export const RoadmapPill = memo(() => {
     // TODO: Remove mock override before merging.
     const usingMockRoadmaps = MOCK_ENABLED;
     const isSignedIn = usingMockRoadmaps || sessionIsValid;
+    const isPlannerReady = usingMockRoadmaps
+        ? hasCheckedAuth && (!sessionIsValid || hasLoadedPlannerRoadmaps)
+        : hasLoadedPlannerRoadmaps;
 
     useEffect(() => {
         if (usingMockRoadmaps) return;
@@ -455,8 +461,8 @@ export const RoadmapPill = memo(() => {
 
     const instanceProps = {
         isSignedIn,
+        isPlannerReady,
         usingMockRoadmaps,
-        isPlannerLoading,
         realRoadmaps,
         loadPlannerRoadmaps,
     };
