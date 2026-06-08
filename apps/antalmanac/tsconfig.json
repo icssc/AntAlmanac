@@ -11,7 +11,6 @@
         "baseUrl": ".",
         "paths": {
             "$actions/*": ["src/actions/*"],
-            "$api/*": ["src/api/*"],
             "$backend/*": ["src/backend/*"],
             "$components/*": ["src/components/*"],
             "$generated/*": ["src/generated/*"],
@@ -24,6 +23,6 @@
             "$scripts/*": ["scripts/*"]
         }
     },
-    "include": ["./dist/types/**/*.ts", "./next-env.d.ts", "./src", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "./scripts"],
+    "include": ["./dist/types/**/*.ts", "./next-env.d.ts", "./src", "./tests", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "./scripts"],
     "exclude": ["./node_modules"]
 }
