@@ -1,6 +1,6 @@
 import { CourseInfoBarPopover } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBarPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import analyticsEnum, { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
 import { InfoOutlined } from '@mui/icons-material';
 import { Button, Popover } from '@mui/material';

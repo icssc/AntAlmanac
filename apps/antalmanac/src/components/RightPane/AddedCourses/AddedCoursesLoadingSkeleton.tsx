@@ -15,13 +15,13 @@ import { Component, type ReactNode, useEffect, useState } from 'react';
  * shouldn't break the page.
  */
 class SkeletonErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
-    state = { hasError: false };
+    override state = { hasError: false };
 
     static getDerivedStateFromError() {
         return { hasError: true };
     }
 
-    render() {
+    override render() {
         return this.state.hasError ? null : this.props.children;
     }
 }

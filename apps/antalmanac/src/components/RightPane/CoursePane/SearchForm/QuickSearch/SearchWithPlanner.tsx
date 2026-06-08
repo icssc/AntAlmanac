@@ -13,9 +13,18 @@ import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
-import { Roadmap } from '@packages/antalmanac-types';
+import { type Roadmap } from '@packages/antalmanac-types';
 import { parseAsString, useQueryState } from 'nuqs';
-import { ComponentProps, HTMLAttributes, Key, useCallback, useRef, useEffect, useMemo, useState } from 'react';
+import {
+    type ComponentProps,
+    type HTMLAttributes,
+    type Key,
+    useCallback,
+    useRef,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 type AutocompleteProps = ComponentProps<typeof LabeledAutocomplete>['autocompleteProps'];

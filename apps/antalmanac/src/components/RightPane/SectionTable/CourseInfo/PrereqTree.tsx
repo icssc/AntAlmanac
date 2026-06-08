@@ -1,6 +1,6 @@
 import { Button, Popover, useTheme } from '@mui/material';
 import type { Course, Prerequisite, PrerequisiteTree } from '@packages/anteater-api/types';
-import { FC, useState } from 'react';
+import { type FC, useState } from 'react';
 
 import './PrereqTree.css';
 

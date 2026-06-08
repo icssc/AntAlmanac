@@ -1,7 +1,7 @@
 import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 import type { SQSEvent, SQSBatchResponse, SQSBatchItemFailure, SQSRecord } from 'aws-lambda';
 
-import { EmailRequest } from './helpers/emailQueue';
+import type { EmailRequest } from './helpers/emailQueue';
 
 const sesClient = new SESv2Client({ region: 'us-east-2' });
 

@@ -8,7 +8,7 @@ import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTa
 import { WarningAlert } from '$components/WarningAlert';
 import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
+import analyticsEnum, { type AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAlerts';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { TAB_INDEX, useTabStore } from '$stores/TabStore';
@@ -26,7 +26,7 @@ import {
     TableHead,
     TableRow,
 } from '@mui/material';
-import { AACourseWithTerm } from '@packages/antalmanac-types';
+import { type AACourseWithTerm } from '@packages/antalmanac-types';
 import { useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
 

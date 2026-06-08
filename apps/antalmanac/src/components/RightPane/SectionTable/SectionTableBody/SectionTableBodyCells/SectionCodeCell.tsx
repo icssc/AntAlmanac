@@ -1,5 +1,5 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Chip, Tooltip } from '@mui/material';

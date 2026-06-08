@@ -1,5 +1,5 @@
 import { useThemeStore } from '$stores/SettingsStore';
-import { Box, BoxProps, useTheme } from '@mui/material';
+import { Box, type BoxProps, useTheme } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
 interface CustomInputBoxProps {

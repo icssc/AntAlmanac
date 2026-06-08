@@ -1,7 +1,7 @@
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
 import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';

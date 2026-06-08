@@ -1,5 +1,5 @@
-import { Alert, Snackbar, SxProps } from '@mui/material';
-import { ComponentProps } from 'react';
+import { Alert, Snackbar, type SxProps } from '@mui/material';
+import { type ComponentProps } from 'react';
 import { create } from 'zustand';
 import { combine } from 'zustand/middleware';
 

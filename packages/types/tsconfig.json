@@ -1,13 +1,9 @@
 {
+    "extends": ["@total-typescript/tsconfig/bundler/no-dom", "../../tsconfig.base.json"],
     "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "bundler",
-        "esModuleInterop": true,
         "experimentalDecorators": true,
-        "strict": true,
-        "skipLibCheck": true,
         "rootDir": "src",
         "outDir": "dist"
-    }
+    },
+    "include": ["src/**/*"]
 }

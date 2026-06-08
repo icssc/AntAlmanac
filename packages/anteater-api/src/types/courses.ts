@@ -1,4 +1,4 @@
-import { components, paths } from './generated/anteater-api-types';
+import type { components, paths } from './generated/anteater-api-types';
 
 export type CoursesBatchAPIResult =
     paths['/v2/rest/courses/batch']['get']['responses'][200]['content']['application/json'];

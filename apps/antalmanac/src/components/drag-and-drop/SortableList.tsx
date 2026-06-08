@@ -6,8 +6,8 @@ import { openSnackbar } from '$stores/SnackbarStore';
 import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Active, UniqueIdentifier } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { SortableContext, SortingStrategy, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { List, SxProps } from '@mui/material';
+import { SortableContext, type SortingStrategy, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { List, type SxProps } from '@mui/material';
 import type { ContextType, ReactNode } from 'react';
 import { createContext, Fragment, useMemo, useState } from 'react';
 

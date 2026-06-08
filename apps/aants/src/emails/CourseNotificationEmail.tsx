@@ -15,7 +15,7 @@ import {
 } from '@react-email/components';
 
 import { CourseDetailsBox } from '../components/CourseDetailsBox';
-import { StatusChange, WhatChangedBox } from '../components/WhatChangedBox';
+import { type StatusChange, WhatChangedBox } from '../components/WhatChangedBox';
 import { BLUE } from '../theme';
 
 export interface CourseNotificationEmailProps {

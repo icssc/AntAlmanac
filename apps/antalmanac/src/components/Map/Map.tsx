@@ -2,7 +2,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import { CustomEventId } from '@packages/antalmanac-types';
+import { type CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
 import dynamic from 'next/dynamic';
 import { usePostHog } from 'posthog-js/react';
@@ -21,12 +21,12 @@ import {
     type CourseEvent,
     type CustomEvent,
 } from '$components/Calendar/types';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { UserLocator } from '$components/Map/UserLocator';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
-import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
+import buildingCatalogue, { type Building } from '$lib/locations/buildingCatalogue';
 import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { notNull } from '$lib/utils';

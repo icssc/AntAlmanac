@@ -23,7 +23,7 @@ import { useDevModeStore, useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { CloudUpload, ContentPasteGo } from '@mui/icons-material';
 import {
-    AlertColor,
+    type AlertColor,
     Box,
     Button,
     Checkbox,
@@ -45,9 +45,9 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { AATerm, AACourse, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { type AATerm, type AACourse, type ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 

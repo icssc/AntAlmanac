@@ -2,7 +2,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
-import { Chip, SxProps, TableCellProps, Tooltip } from '@mui/material';
+import { Chip, type SxProps, type TableCellProps, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 

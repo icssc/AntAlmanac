@@ -1,7 +1,7 @@
 import CopyScheduleDialog from '$components/dialogs/CopySchedule';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { ContentCopy } from '@mui/icons-material';
-import { IconButton, SxProps, Tooltip } from '@mui/material';
+import { IconButton, type SxProps, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 interface CopyScheduleButtonProps {
