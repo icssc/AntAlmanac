@@ -8,7 +8,6 @@ export default defineConfig({
     plugins: [react(), svgr()],
     resolve: {
         alias: {
-            $assets: resolve(__dirname, './src/assets'),
             $actions: resolve(__dirname, './src/actions'),
             $api: resolve(__dirname, './src/api'),
             $backend: resolve(__dirname, './src/backend'),
