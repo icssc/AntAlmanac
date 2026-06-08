@@ -1,4 +1,5 @@
 {
+    // IDE solution layout only — not used with `tsc -b` (child projects lack composite).
     "files": [],
     "references": [
         { "path": "apps/antalmanac" },

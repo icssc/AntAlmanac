@@ -1,5 +1,5 @@
 {
-    "extends": ["@total-typescript/tsconfig/bundler/no-dom/app", "../../tsconfig.base.json"],
+    "extends": ["@total-typescript/tsconfig/bundler/no-dom", "../../tsconfig.base.json"],
     "compilerOptions": {
         "jsx": "react-jsx",
         "baseUrl": ".",
