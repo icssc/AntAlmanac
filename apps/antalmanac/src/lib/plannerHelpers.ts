@@ -25,3 +25,9 @@ export function getRoadmapTermRelation(roadmap: Roadmap, term: AATerm): RoadmapT
     }
     return RoadmapTermRelation.NoCourses;
 }
+
+export function getSearchableRoadmapCourseIds(roadmap: Roadmap, term: AATerm): string[] {
+    const quarterPlan = getQuarterPlan(roadmap, term);
+    if (!quarterPlan) return [];
+    return quarterPlan.courses.filter((c) => !c.courseId.startsWith('CUSTOM#')).map((c) => c.courseId);
+}
