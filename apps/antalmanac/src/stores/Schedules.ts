@@ -210,14 +210,15 @@ export class Schedules {
      * @param nextOfferingKey Offering key directly after the moved course after reordering.
      * Pass `null` if the course is being moved to the end.
      */
-    reorderAddedCourses(scheduleIndex: number, movedOfferingKey: string, nextOfferingKey: string | null): boolean {
+    reorderAddedCourses(scheduleIndex: number, movedOfferingKey: string, nextOfferingKey: string | null) {
+        this.addUndoState();
         const courses = this.schedules[scheduleIndex].courses;
 
         const fromIndex = courses.findIndex((course) => scheduleOfferingKey(course) === movedOfferingKey);
         if (fromIndex === -1) {
             console.error(`Offering ${movedOfferingKey} was not found in schedule courses`);
             openSnackbar('error', 'Could not reorder added courses');
-            return false;
+            return;
         }
 
         const toIndex =
@@ -227,16 +228,13 @@ export class Schedules {
         if (toIndex === -1) {
             console.error(`Offering ${nextOfferingKey} was not found in schedule courses`);
             openSnackbar('error', 'Could not reorder added courses');
-            return false;
+            return;
         }
-
-        this.addUndoState();
 
         const sectionCount =
             courses.findLastIndex((course) => scheduleOfferingKey(course) === movedOfferingKey) - fromIndex + 1;
 
         moveArrayElements(courses, fromIndex, toIndex, { elementMoveCount: sectionCount });
-        return true;
     }
 
     getCurrentCourses() {
