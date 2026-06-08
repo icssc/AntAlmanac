@@ -1,7 +1,7 @@
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
-import { ScheduleCourse } from '@packages/antalmanac-types';
-import { HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/anteater-api/types';
+import { type ScheduleCourse } from '@packages/antalmanac-types';
+import { type HourMinute, type WebsocSectionFinalExam, type WebsocSectionMeeting } from '@packages/anteater-api/types';
 import { buildCourseId } from '@packages/anteater-api/utils';
 
 const CURRENT_TERM = getDefaultTerm();

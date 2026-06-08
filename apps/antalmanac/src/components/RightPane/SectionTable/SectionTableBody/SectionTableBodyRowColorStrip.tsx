@@ -11,8 +11,8 @@ import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { Box, Popover, PopoverProps, SxProps, TableCell, Tooltip } from '@mui/material';
-import { AASection, AATerm } from '@packages/antalmanac-types';
+import { Box, Popover, type PopoverProps, type SxProps, TableCell, Tooltip } from '@mui/material';
+import { type AASection, type AATerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { SketchPicker } from 'react-color';
 

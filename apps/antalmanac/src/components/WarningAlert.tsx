@@ -1,5 +1,5 @@
 import { Alert } from '@mui/material';
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 interface WarningAlertProps {
     children: ReactNode;

@@ -1,4 +1,4 @@
-import { SxProps, TableCell, TableCellProps, Theme } from '@mui/material';
+import { type SxProps, TableCell, type TableCellProps, type Theme } from '@mui/material';
 
 interface TableBodyCellContainerProps extends TableCellProps {
     sx?: SxProps<Theme>;

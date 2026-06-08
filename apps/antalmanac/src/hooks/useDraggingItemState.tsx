@@ -1,5 +1,9 @@
 import { SortableItemContext } from '$components/drag-and-drop/SortableItem';
-import { SortableListContext, DraggingItemContext, DraggingItemState } from '$components/drag-and-drop/SortableList';
+import {
+    SortableListContext,
+    DraggingItemContext,
+    type DraggingItemState,
+} from '$components/drag-and-drop/SortableList';
 import { useContext, useEffect } from 'react';
 
 /**

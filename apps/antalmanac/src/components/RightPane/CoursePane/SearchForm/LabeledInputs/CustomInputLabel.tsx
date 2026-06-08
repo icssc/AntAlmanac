@@ -1,6 +1,6 @@
 import { mergeSx } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
-import { InputLabel, SxProps, Theme } from '@mui/material';
+import { InputLabel, type SxProps, type Theme } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
 interface CustomInputLabelProps {

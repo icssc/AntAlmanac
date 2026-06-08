@@ -1,5 +1,5 @@
-import { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
-import { WebsocSectionType } from '@packages/anteater-api/types';
+import { type AACourseWithTerm, type AASection } from '@packages/antalmanac-types';
+import { type WebsocSectionType } from '@packages/anteater-api/types';
 
 export function getMissingSections(course: AACourseWithTerm): string[] {
     const requiredTypes = new Set<WebsocSectionType>(course.sectionTypes ?? []);

@@ -1,9 +1,9 @@
 import { loginUser } from '$actions/AppStoreActions';
 import { Provider } from '$lib/auth/authTypes';
 import { getProviderDisplayName } from '$lib/auth/authUtils';
-import { Button, SxProps } from '@mui/material';
+import { Button, type SxProps } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { ComponentProps, ReactNode, useState } from 'react';
+import { type ComponentProps, type ReactNode, useState } from 'react';
 
 interface Props {
     icon: ReactNode;

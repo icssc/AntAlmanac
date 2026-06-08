@@ -1,8 +1,8 @@
 import { clearSchedules } from '$actions/AppStoreActions';
-import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import analyticsEnum, { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { DeleteOutline } from '@mui/icons-material';
-import { IconButton, SxProps, Tooltip } from '@mui/material';
+import { IconButton, type SxProps, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback } from 'react';
 

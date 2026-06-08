@@ -1,5 +1,5 @@
 import AppStore from '$stores/AppStore';
-import { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { type RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 
 export interface ZotcourseResponse {

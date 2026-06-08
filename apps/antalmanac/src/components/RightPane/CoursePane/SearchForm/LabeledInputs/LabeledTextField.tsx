@@ -1,6 +1,6 @@
 import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';
-import { Box, CircularProgress, TextField, TextFieldProps } from '@mui/material';
-import { ComponentProps, useId } from 'react';
+import { Box, CircularProgress, TextField, type TextFieldProps } from '@mui/material';
+import { type ComponentProps, useId } from 'react';
 interface LabeledTextFieldProps {
     id?: string;
     label: string;

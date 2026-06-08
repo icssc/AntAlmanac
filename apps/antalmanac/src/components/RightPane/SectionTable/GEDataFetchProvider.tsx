@@ -1,6 +1,6 @@
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { advancedSearchParsers } from '$components/RightPane/CoursePane/SearchParams/parsers';
-import SectionTable, { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
+import SectionTable, { type SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import type { AACourseWithTerm } from '@packages/antalmanac-types';

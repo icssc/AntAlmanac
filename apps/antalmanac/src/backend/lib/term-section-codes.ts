@@ -1,5 +1,10 @@
-import { SectionSearchResult } from '@packages/antalmanac-types';
-import { WebsocCourse, WebsocDepartment, WebsocSchool, WebsocSection } from '@packages/anteater-api/types';
+import { type SectionSearchResult } from '@packages/antalmanac-types';
+import {
+    type WebsocCourse,
+    type WebsocDepartment,
+    type WebsocSchool,
+    type WebsocSection,
+} from '@packages/anteater-api/types';
 
 export interface SectionCodesGraphQLResponse {
     data: {

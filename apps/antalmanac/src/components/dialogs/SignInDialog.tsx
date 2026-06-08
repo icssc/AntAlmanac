@@ -4,7 +4,7 @@ import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material'
 
 interface SignInDialogProps {
     open: boolean;
-    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'PlannerSearch';
+    feature: 'Save' | 'Notification' | 'Planner' | 'PlannerSearch';
     onClose: () => void;
 }
 

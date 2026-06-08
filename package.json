@@ -19,6 +19,7 @@
         "lint": "oxlint --deny-warnings"
     },
     "devDependencies": {
+        "@total-typescript/tsconfig": "^1.0.4",
         "@types/node": "22.19.17",
         "dotenv": "^16.0.3",
         "husky": "^8.0.3",

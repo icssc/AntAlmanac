@@ -3,7 +3,7 @@
 import { useIsMobile } from '$hooks/useIsMobile';
 import { mergeSx } from '$lib/helpers';
 import { useSnackbarStore } from '$stores/SnackbarStore';
-import { Alert, Snackbar, SnackbarCloseReason } from '@mui/material';
+import { Alert, Snackbar, type SnackbarCloseReason } from '@mui/material';
 import { useShallow } from 'zustand/react/shallow';
 
 export const NotificationSnackbar = () => {

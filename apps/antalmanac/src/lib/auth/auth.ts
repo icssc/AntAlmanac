@@ -1,6 +1,6 @@
 import 'server-only';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
-import { AuthAdditionalData } from '$lib/auth/authTypes';
+import { type AuthAdditionalData } from '$lib/auth/authTypes';
 import { getSafeAuthRedirectPath } from '$lib/auth/authUtils';
 import { env } from '$src/env';
 import { db } from '@packages/db';
@@ -115,5 +115,3 @@ export const auth = betterAuth({
 
 export type AuthorizationUrlParams =
     (typeof auth)['options']['plugins'][0]['options']['config'][0]['authorizationUrlParams'];
-
-export type Accounts = NonNullable<Awaited<ReturnType<(typeof auth)['api']['listUserAccounts']>>>;

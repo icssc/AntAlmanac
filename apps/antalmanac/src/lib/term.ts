@@ -2,7 +2,7 @@ import { isCourseEvent, type CourseEvent, type CustomEvent } from '$components/C
 import termJson from '$generated/termData.json';
 import { parseQuarter, termSchema } from '$lib/termHelpers';
 import type { AATerm } from '@packages/antalmanac-types';
-import { Year } from '@packages/anteater-api/types';
+import { type Year } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
 const allTerms: AATerm[] = z.array(termSchema).parse(termJson);
@@ -35,8 +35,4 @@ export function getTermByYearAndQuarter(year: Year, rawQuarter: unknown): AATerm
         return undefined;
     }
     return termData.find((term) => term.year === year && term.quarter === quarter);
-}
-
-export function isTermAvailable(termShortName: string) {
-    return termData.some((term) => term.shortName === termShortName);
 }

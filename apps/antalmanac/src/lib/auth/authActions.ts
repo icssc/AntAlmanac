@@ -1,7 +1,7 @@
 'use server';
-import { auth, AuthorizationUrlParams } from '$lib/auth/auth';
+import { auth, type AuthorizationUrlParams } from '$lib/auth/auth';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
-import { AuthAdditionalData, Provider } from '$lib/auth/authTypes';
+import { type AuthAdditionalData, Provider } from '$lib/auth/authTypes';
 import { getProviderIcsscName } from '$lib/auth/authUtils';
 import { getNativeIosRedirectUri } from '$lib/platform';
 import { env } from '$src/env';

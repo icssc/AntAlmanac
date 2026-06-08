@@ -1,15 +1,9 @@
 {
+    "extends": ["@total-typescript/tsconfig/bundler/no-dom", "../../tsconfig.base.json"],
     "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "bundler",
-        "esModuleInterop": true,
-        "strict": true,
-        "skipLibCheck": true,
+        "jsx": "react-jsx",
         "baseUrl": ".",
-        "outDir": "dist",
-        "resolveJsonModule": true,
-        "jsx": "react-jsx"
+        "outDir": "dist"
     },
     "include": ["src/**/*", "drizzle.config.ts", "scripts"],
     "exclude": ["node_modules", "dist"]

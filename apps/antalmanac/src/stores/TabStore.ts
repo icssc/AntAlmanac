@@ -31,7 +31,7 @@ export const TABS = [
     },
 ] as const;
 
-export type TabName = (typeof TABS)[number]['name'];
+type TabName = (typeof TABS)[number]['name'];
 
 export type TabInfo = {
     name: TabName;

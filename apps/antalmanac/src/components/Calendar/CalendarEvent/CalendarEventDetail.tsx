@@ -171,7 +171,6 @@ export function CalendarEventDetail({ selectedEvent, scheduleNames, closePopover
                     analyticsCategory={analyticsEnum.calendar}
                 />
                 <CustomEventDialog
-                    onDialogClose={closePopover}
                     customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
                     scheduleNames={scheduleNames}
                 />

@@ -12,8 +12,8 @@ import {
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
-import { Box, SxProps, Typography } from '@mui/material';
-import { AACourseWithTerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { Box, type SxProps, Typography } from '@mui/material';
+import { type AACourseWithTerm, type RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const buttonSx: SxProps = {

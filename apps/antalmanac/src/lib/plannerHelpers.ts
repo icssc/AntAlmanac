@@ -1,4 +1,4 @@
-import { type AATerm, Roadmap } from '@packages/antalmanac-types';
+import { type AATerm, type Roadmap } from '@packages/antalmanac-types';
 
 export enum RoadmapTermRelation {
     IncludesTerm = 'includes',

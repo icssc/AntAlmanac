@@ -3,7 +3,7 @@ import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Add } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import { AASection, AACourseWithTerm } from '@packages/antalmanac-types';
+import { type AASection, type AACourseWithTerm } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 
 interface AddButtonProps {

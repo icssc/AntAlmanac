@@ -1,7 +1,7 @@
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import { Search } from '@mui/icons-material';
 import { Button } from '@mui/material';
-import { AACourseWithTerm } from '@packages/antalmanac-types';
+import { type AACourseWithTerm } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 
 interface CourseInfoSearchButtonProps {

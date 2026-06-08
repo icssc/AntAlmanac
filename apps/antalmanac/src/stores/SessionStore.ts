@@ -1,4 +1,4 @@
-import { SessionData } from '$lib/auth/authClient';
+import { type SessionData } from '$lib/auth/authClient';
 import { create } from 'zustand';
 
 interface SessionState {
