@@ -83,5 +83,7 @@ export function canTermEnrollmentChange(term: AATerm) {
         weeksUntilDropDeadline++;
     }
 
-    return new Date() <= setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
+    const dropDeadline = setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
+    dropDeadline.setHours(17, 0, 0, 0);
+    return new Date() <= dropDeadline;
 }
