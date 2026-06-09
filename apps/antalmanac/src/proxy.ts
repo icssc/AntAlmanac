@@ -3,6 +3,8 @@ import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie'
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+const OUTAGE = process.env.NEXT_PUBLIC_OUTAGE === 'true';
+
 const ALLOWED_ORIGINS = [
     'https://antalmanac.com',
     'https://www.antalmanac.com',
@@ -10,7 +12,6 @@ const ALLOWED_ORIGINS = [
     'https://www.sst.antalmanac.com',
     'https://icssc-projects.github.io',
     'https://auth.icssc.club',
-    'http://localhost:5173',
     'http://localhost:3000',
 ];
 
@@ -32,9 +33,18 @@ function isOriginAllowed(origin: string | null): boolean {
 }
 
 export function proxy(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    if (OUTAGE && pathname !== '/outage' && !pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
+        return NextResponse.redirect(new URL('/outage', request.url));
+    }
+
+    if (!pathname.startsWith('/api')) {
+        return NextResponse.next();
+    }
+
     const origin = request.headers.get('origin');
 
-    // Handle preflight OPTIONS request
     if (request.method === 'OPTIONS') {
         if (!isOriginAllowed(origin)) {
             return new NextResponse(null, { status: 403 });
@@ -54,7 +64,7 @@ export function proxy(request: NextRequest) {
 
     let response = NextResponse.next();
 
-    if (request.nextUrl.pathname === `/api/auth/oauth2/callback/${AUTH_PROVIDER_ID}`) {
+    if (pathname === `/api/auth/oauth2/callback/${AUTH_PROVIDER_ID}`) {
         if (request.nextUrl.searchParams.get('error') === 'login_required') {
             response = NextResponse.redirect(new URL('/', request.url));
             response.cookies.set(SSO_COOKIE_NAME, '', {
@@ -75,5 +85,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-    matcher: '/api/:path*',
+    matcher: ['/api/:path*', '/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 };

@@ -1,6 +1,5 @@
 import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from '$lib/localStorage';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
-import { useTabStore } from '$stores/TabStore';
 import { type StepType } from '@reactour/tour';
 
 enum TourStepName {
@@ -92,9 +91,11 @@ function KbdCard(props: { children?: React.ReactNode }) {
     );
 }
 
-function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepName, StepType> {
-    const setActiveTab = useTabStore.getState().setActiveTab;
+function clickTab(tabId: string) {
+    document.getElementById(tabId)?.click();
+}
 
+function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepName, StepType> {
     const goToNamedStep = (stepName: TourStepName) => {
         const stepIndex = tourStepNames.findIndex((step) => step == stepName);
 
@@ -121,7 +122,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
 
     return {
         welcome: {
-            selector: '#root',
+            selector: 'main',
             position: 'center',
             content: (
                 <>
@@ -143,7 +144,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
             content: 'You can search for your classes here!',
             action: () => {
                 markTourHasRun();
-                setActiveTab('search');
+                clickTab('search-tab');
                 reselectStepWhenReady(TourStepName.searchBar, '#fuzzy-search');
             },
             mutationObservables: ['#fuzzy-search'],
@@ -218,7 +219,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
                     <b>Select</b> the added courses tab for a list of your courses and details
                 </>
             ),
-            action: () => setActiveTab('added'),
+            action: () => clickTab('added-courses-tab'),
             mutationObservables: ['#course-pane-box'],
         },
         map: {
@@ -237,20 +238,14 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
             selector: '#map-pane',
             content: 'Click on a day to see your route!',
             action: () => {
-                setActiveTab('map');
-
                 if (!window.location.pathname.includes('/map')) {
-                    // Clicking the tab will also navigate via the Link component
-                    setTimeout(() => {
-                        document.getElementById('map-tab')?.click();
-                    }, 0);
+                    clickTab('map-tab');
                 }
 
-                // Ensure this step anchors only after #map-pane is measurable.
                 reselectStepWhenReady(TourStepName.mapPane, '#map-pane');
             },
-            mutationObservables: ['#root', '#map-pane'],
-            resizeObservables: ['#root', '#map-pane'],
+            mutationObservables: ['main', '#map-pane'],
+            resizeObservables: ['main', '#map-pane'],
         },
         saveAndLoad: {
             selector: '#load-save-container',

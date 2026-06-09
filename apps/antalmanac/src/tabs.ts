@@ -1,5 +1,4 @@
 import { Event, FormatListBulleted, MyLocation, Search, type SvgIconComponent } from '@mui/icons-material';
-import { create } from 'zustand';
 
 export const TABS = [
     {
@@ -7,13 +6,14 @@ export const TABS = [
         label: 'Calendar',
         icon: Event,
         mobileOnly: true,
-        href: '',
+        href: '/calendar',
     },
     {
         name: 'search',
         label: 'Search',
         href: '/',
         icon: Search,
+        id: 'search-tab',
     },
     {
         name: 'added',
@@ -31,7 +31,7 @@ export const TABS = [
     },
 ] as const;
 
-type TabName = (typeof TABS)[number]['name'];
+export type TabName = (typeof TABS)[number]['name'];
 
 export type TabInfo = {
     name: TabName;
@@ -44,22 +44,15 @@ export type TabInfo = {
 
 export const TAB_INDEX = Object.fromEntries(TABS.map((tab, index) => [tab.name, index])) as Record<TabName, number>;
 
-interface TabStore {
-    activeTab: number;
-    setActiveTab: (name: TabName) => void;
-    setActiveTabValue: (value: number) => void;
+export function tabFromPathname(pathname: string): TabName {
+    if (pathname === '/calendar') {
+        return 'calendar';
+    }
+    if (pathname === '/added') {
+        return 'added';
+    }
+    if (pathname === '/map') {
+        return 'map';
+    }
+    return 'search';
 }
-
-export const useTabStore = create<TabStore>((set) => {
-    return {
-        activeTab: TAB_INDEX.search,
-        setActiveTab: (name: TabName) => {
-            set(() => ({
-                activeTab: TAB_INDEX[name],
-            }));
-        },
-        setActiveTabValue: (value: number) => {
-            set(() => ({ activeTab: value }));
-        },
-    };
-});

@@ -20,6 +20,7 @@ import { usePlannerStore } from '$stores/PlannerStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { useRouter } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -46,6 +47,7 @@ export const AuthInitializer = () => {
     const { data: sessionData, isPending: isSessionPending } = authClient.useSession();
 
     const postHog = usePostHog();
+    const router = useRouter();
 
     const handleAuthChecked = () => {
         hasInitializedRef.current = true;
@@ -133,7 +135,10 @@ export const AuthInitializer = () => {
                     analyticsIdentifyUser(postHog, sessionData.user.id);
 
                     const userData = await trpc.schedule.get.query();
-                    await loadSchedule({ prefetched: userData, postHog });
+                    const loadResult = await loadSchedule({ prefetched: userData, postHog });
+                    if (loadResult === 'fallback') {
+                        router.push('/added');
+                    }
                     await loadUnsavedChanges(userData);
 
                     setAreSchedulesLoaded(true);
@@ -162,6 +167,7 @@ export const AuthInitializer = () => {
         updateSession,
         setAreSchedulesLoaded,
         postHog,
+        router,
         setHasCheckedAuth,
         loadPlannerRoadmaps,
     ]);

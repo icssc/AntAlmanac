@@ -27,6 +27,7 @@ import {
     Stack,
     TextField,
 } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState, type KeyboardEvent } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -49,6 +50,7 @@ export const Signin = () => {
     const [openAlert, setOpenalert] = useState(false);
 
     const postHog = usePostHog();
+    const router = useRouter();
 
     const handleOpen = useCallback(() => {
         setIsOpen(true);
@@ -81,11 +83,14 @@ export const Signin = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            await loadGuestSchedule(userID, rememberMe, postHog);
+            const loadResult = await loadGuestSchedule(userID, rememberMe, postHog);
+            if (loadResult === 'fallback') {
+                router.push('/added');
+            }
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, validateImportedUser, postHog]
+        [router, setOpenLoadingSchedule, validateImportedUser, postHog]
     );
 
     const handleClose = useCallback(

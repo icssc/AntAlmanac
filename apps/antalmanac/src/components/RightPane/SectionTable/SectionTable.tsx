@@ -10,8 +10,8 @@ import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { type AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAlerts';
+import { TAB_INDEX, tabFromPathname } from '$src/tabs';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
-import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import {
     Box,
@@ -27,6 +27,7 @@ import {
     TableRow,
 } from '@mui/material';
 import { type AACourseWithTerm } from '@packages/antalmanac-types';
+import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
 
@@ -90,7 +91,7 @@ export function SectionTable({
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
 
     const activeColumns = useColumnStore((store) => store.activeColumns);
-    const activeTab = useTabStore((store) => store.activeTab);
+    const activeTab = TAB_INDEX[tabFromPathname(usePathname())];
 
     const handleToggleExpand = () => {
         setOpenContent(!openContent);

@@ -1,6 +1,4 @@
-import { useTabStore } from '$stores/TabStore';
-import { useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 interface MapLinkProps {
     buildingId: number;
@@ -8,16 +6,9 @@ interface MapLinkProps {
 }
 
 export const MapLink = ({ buildingId, room }: MapLinkProps) => {
-    const setActiveTab = useTabStore((store) => store.setActiveTab);
-
-    const focusMap = useCallback(() => {
-        setActiveTab('map');
-    }, [setActiveTab]);
-
     return (
         <Link
-            to={`/map?location=${buildingId}`}
-            onClick={focusMap}
+            href={`/map?location=${buildingId}`}
             style={{
                 textDecoration: 'none',
             }}

@@ -1,8 +1,8 @@
 import { useIsMobile } from '$hooks/useIsMobile';
+import { TAB_INDEX, type TabInfo } from '$src/tabs';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { TAB_INDEX, type TabInfo } from '$stores/TabStore';
 import { Tab } from '@mui/material';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 interface ScheduleManagementTabProps {
     tab: TabInfo;
@@ -14,9 +14,11 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
     const isMobile = useIsMobile();
     const savedSearch = useSavedSearchStore((store) => store.savedSearch);
 
-    const to =
+    const resolvedHref =
         value === TAB_INDEX.search && savedSearch
-            ? { pathname: tab.href || '/', search: savedSearch }
+            ? savedSearch.startsWith('?')
+                ? `/${savedSearch}`
+                : `/?${savedSearch}`
             : tab.href || '/';
 
     const handleClick = () => {
@@ -27,7 +29,7 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
         <Tab
             id={tab.id}
             component={Link}
-            to={to}
+            href={resolvedHref}
             icon={<tab.icon />}
             iconPosition={isMobile ? 'top' : 'start'}
             sx={{
