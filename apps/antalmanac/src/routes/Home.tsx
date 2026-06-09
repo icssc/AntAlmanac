@@ -14,8 +14,10 @@ import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Split from 'react-split';
+
+const DEFAULT_SPLIT_SIZES: [number, number] = [42.5, 57.5];
 
 function MobileHome() {
     return <ScheduleManagement />;
@@ -24,7 +26,15 @@ function MobileHome() {
 function DesktopHome() {
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
+    const [sizes, setSizes] = useState<number[]>(DEFAULT_SPLIT_SIZES);
     const scheduleManagementRef = useRef<HTMLDivElement>(null);
+
+    const gutter = useCallback((_index: number, direction: string) => {
+        const el = document.createElement('div');
+        el.className = `gutter gutter-${direction}`;
+        el.addEventListener('dblclick', () => setSizes(DEFAULT_SPLIT_SIZES));
+        return el;
+    }, []);
 
     const handleDrag = useCallback(() => {
         const scheduleManagementElement = scheduleManagementRef.current;
@@ -48,7 +58,7 @@ function DesktopHome() {
 
     return (
         <Split
-            sizes={[42.5, 57.5]}
+            sizes={sizes}
             minSize={400}
             expandToMin={false}
             gutterSize={10}
@@ -58,6 +68,7 @@ function DesktopHome() {
             direction="horizontal"
             cursor="col-resize"
             style={{ display: 'flex', flexGrow: 1, marginTop: 4 }}
+            gutter={gutter}
             gutterStyle={() => ({
                 backgroundColor: BLUE,
                 width: '10px',
@@ -65,6 +76,7 @@ function DesktopHome() {
                 paddingRight: '1px',
             })}
             onDrag={handleDrag}
+            onDragEnd={setSizes}
         >
             <Stack direction="column">
                 <ScheduleCalendar />
