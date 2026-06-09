@@ -16,7 +16,9 @@
         "fetch-departments": "tsx scripts/fetch-departments.ts",
         "get-data": "tsx scripts/fetch-term-data.ts && tsx scripts/fetch-departments.ts && tsx scripts/get-search-data.ts",
         "update-terms": "tsx scripts/update-terms.ts",
-        "build": "next build"
+        "build": "next build",
+        "analyze": "next experimental-analyze",
+        "analyze:baseline": "next experimental-analyze --output && tsx scripts/print-bundle-baseline.ts --write"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
