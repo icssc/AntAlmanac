@@ -1,5 +1,5 @@
 import { mergeSx } from '$lib/helpers';
-import { ExpandMore } from '@mui/icons-material';
+import { ArrowDropDown } from '@mui/icons-material';
 import { Box, Chip, Menu, type ChipProps } from '@mui/material';
 import { type MouseEvent, type ReactElement, type ReactNode, Children, useRef } from 'react';
 
@@ -18,7 +18,7 @@ interface PillSplitButtonProps extends Omit<
 }
 
 const pillSplitButtonSx = {
-    height: 25,
+    height: 28,
     alignItems: 'stretch',
     borderRadius: 9999,
     fontSize: '12px',
@@ -150,7 +150,7 @@ export function PillSplitButton({
                 deleteIcon={
                     hasMenuOptions ? (
                         <Box component="span" aria-label="Show more options" sx={menuToggleSx}>
-                            <ExpandMore sx={{ transform: open ? 'rotate(180deg)' : undefined }} />
+                            <ArrowDropDown sx={{ transform: open ? 'rotate(180deg)' : undefined }} />
                         </Box>
                     ) : undefined
                 }

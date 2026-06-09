@@ -9,43 +9,22 @@ import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManag
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
+import { CONTAINER_NAMES } from '$lib/containerQueries';
 import { BLUE } from '$src/globals';
-import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
 function MobileHome() {
-    return <ScheduleManagement />;
+    return (
+        <Stack sx={{ containerType: 'inline-size', containerName: CONTAINER_NAMES.scheduleManagement, flexGrow: 1 }}>
+            <ScheduleManagement />
+        </Stack>
+    );
 }
 
 function DesktopHome() {
-    const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
-
-    const scheduleManagementRef = useRef<HTMLDivElement>(null);
-
-    const handleDrag = useCallback(() => {
-        const scheduleManagementElement = scheduleManagementRef.current;
-        if (!scheduleManagementElement) {
-            return;
-        }
-
-        const elementWidth = scheduleManagementElement.getBoundingClientRect().width;
-        setScheduleManagementWidth(elementWidth);
-    }, [setScheduleManagementWidth]);
-
-    useEffect(() => {
-        handleDrag();
-
-        window.addEventListener('resize', handleDrag);
-
-        return () => {
-            window.removeEventListener('resize', handleDrag);
-        };
-    }, [handleDrag]);
-
     return (
         <Split
             sizes={[42.5, 57.5]}
@@ -64,12 +43,14 @@ function DesktopHome() {
                 // gutter contents are slightly offset to the right, this centers the content
                 paddingRight: '1px',
             })}
-            onDrag={handleDrag}
         >
             <Stack direction="column">
                 <ScheduleCalendar />
             </Stack>
-            <Stack direction="column" ref={scheduleManagementRef}>
+            <Stack
+                direction="column"
+                sx={{ containerType: 'inline-size', containerName: CONTAINER_NAMES.scheduleManagement }}
+            >
                 <ScheduleManagement />
             </Stack>
         </Split>

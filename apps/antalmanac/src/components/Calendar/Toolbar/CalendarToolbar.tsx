@@ -6,6 +6,7 @@ import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialo
 import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { CONTAINER_NAMES } from '$lib/containerQueries';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -134,7 +135,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 padding: 1,
                 borderRadius: '4px 4px 0 0',
                 containerType: 'inline-size',
-                containerName: 'toolbar',
+                containerName: CONTAINER_NAMES.toolbar,
                 borderWidth: '1px 0px 1px 0px',
             }}
         >
@@ -184,7 +185,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             <Box
                 sx={{
                     display: isMobile ? 'flex' : 'none',
-                    '@container toolbar (max-width: 500px)': {
+                    [`@container ${CONTAINER_NAMES.toolbar} (max-width: 500px)`]: {
                         display: 'flex',
                     },
                 }}
@@ -264,7 +265,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     flexWrap: 'nowrap',
                     alignItems: 'center',
                     gap: 0.5,
-                    '@container toolbar (max-width: 500px)': {
+                    [`@container ${CONTAINER_NAMES.toolbar} (max-width: 500px)`]: {
                         display: 'none',
                     },
                 }}

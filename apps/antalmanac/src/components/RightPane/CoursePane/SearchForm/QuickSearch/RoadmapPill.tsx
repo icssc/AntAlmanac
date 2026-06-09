@@ -38,7 +38,7 @@ function mockYearPlan(startYear: number, quarters: Partial<Record<MockQuarter, s
 const MOCK_ROADMAPS_ALL: Roadmap[] = [
     {
         id: 'mock-1',
-        name: 'CS',
+        name: "Peter's Roadmap",
         content: [2024, 2025, 2026].map((startYear) =>
             mockYearPlan(startYear, {
                 Fall: ['COMPSCI161'],
@@ -187,7 +187,7 @@ const MOCK_ROADMAPS_SUMMER2: Roadmap[] = [
 
 const MOCK_ENABLED = MOCK_ROADMAPS_ALL.length > 0;
 
-const ROADMAP_PILL_MAX_WIDTH = 200;
+const ROADMAP_PILL_MAX_WIDTH = 220;
 
 function getRoadmapCourseIds(roadmap: Roadmap, term: AATerm): string[] {
     return getSearchableRoadmapCourseIds(roadmap, term);
@@ -220,9 +220,9 @@ function RoadmapMenuItems({ roadmaps, term, activeRoadmapId, onSelect }: Roadmap
     }
 
     const sections: { relation: RoadmapTermRelation; label: string }[] = [
-        { relation: RoadmapTermRelation.IncludesTerm, label: 'Includes term' },
-        { relation: RoadmapTermRelation.ExcludesTerm, label: "Doesn't include term" },
-        { relation: RoadmapTermRelation.NoCourses, label: 'No courses for term' },
+        { relation: RoadmapTermRelation.IncludesTerm, label: `Includes ${term.shortName}` },
+        { relation: RoadmapTermRelation.ExcludesTerm, label: `Doesn't include ${term.shortName}` },
+        { relation: RoadmapTermRelation.NoCourses, label: `No courses for ${term.shortName}` },
     ];
 
     return (
@@ -401,7 +401,7 @@ const RoadmapPillInstance = memo(
                         component="span"
                         sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}
                     >
-                        Planner:&nbsp;{activeRoadmap.name}
+                        Search:&nbsp;{activeRoadmap.name}
                     </Box>
                 }
                 icon={<Search />}
@@ -475,8 +475,8 @@ export const RoadmapPill = memo(() => {
                     gap: 1,
                     flexWrap: 'wrap',
                     alignItems: 'center',
-                    minWidth: 0,
-                    maxWidth: '100%',
+                    justifyContent: 'center',
+                    width: '100%',
                 }}
             >
                 <RoadmapPillInstance {...instanceProps} plannerRoadmaps={MOCK_ROADMAPS_SINGLE} />
