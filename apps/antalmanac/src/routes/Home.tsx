@@ -1,6 +1,5 @@
 import { AuthInitializer } from '$components/AuthInitializer';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
-import { Header } from '$components/Header/Header';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import { PatchNotes } from '$components/PatchNotes';
@@ -98,8 +97,7 @@ export function Home() {
             <AuthInitializer />
             <PatchNotes />
 
-            <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
-                <Header />
+            <Stack component="main" sx={{ flex: 1, minHeight: 0 }}>
                 {isMobile ? <MobileHome /> : <DesktopHome />}
             </Stack>
 

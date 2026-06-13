@@ -38,7 +38,8 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
     const [plannerLoading, setPlannerLoading] = useState(false);
     const isDark = useThemeStore((store) => store.isDark);
 
-    const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
+    const platform =
+        typeof window !== 'undefined' && window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
     const handlePlannerClick: MouseEventHandler<HTMLElement> = (event) => {
         if (plannerLoading) return;
