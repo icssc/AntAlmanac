@@ -16,7 +16,9 @@
         "test": "vitest",
         "deploy": "sst deploy --stage production",
         "format": "oxfmt",
-        "lint": "oxlint --deny-warnings"
+        "lint": "oxlint --deny-warnings",
+        "analyze": "pnpm --filter antalmanac analyze",
+        "analyze:baseline": "pnpm --filter antalmanac analyze:baseline"
     },
     "devDependencies": {
         "@total-typescript/tsconfig": "^1.0.4",

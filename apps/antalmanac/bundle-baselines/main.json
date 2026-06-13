@@ -1,0 +1,52 @@
+{
+  "capturedAt": "2026-06-09",
+  "analyzer": "next-experimental-analyze",
+  "nextVersion": "16.2.6",
+  "chunks": [
+    {
+      "name": "64e504f815854219.js",
+      "bytes": 618058,
+      "kilobytes": 603.6
+    },
+    {
+      "name": "29df097d1082f81a.js",
+      "bytes": 410979,
+      "kilobytes": 401.3
+    },
+    {
+      "name": "0dcb8fbb7c502475.js",
+      "bytes": 143238,
+      "kilobytes": 139.9
+    },
+    {
+      "name": "a6dad97d9634a72d.js",
+      "bytes": 112594,
+      "kilobytes": 110
+    },
+    {
+      "name": "b607dc4daafe934d.js",
+      "bytes": 47447,
+      "kilobytes": 46.3
+    },
+    {
+      "name": "14ceeeaa07f3cde1.js",
+      "bytes": 26850,
+      "kilobytes": 26.2
+    },
+    {
+      "name": "turbopack-03041747c8de0c84.js",
+      "bytes": 18251,
+      "kilobytes": 17.8
+    }
+  ],
+  "summary": {
+    "chunkCount": 7,
+    "totalBytes": 1377417,
+    "totalKilobytes": 1345.1,
+    "largestChunk": {
+      "name": "64e504f815854219.js",
+      "bytes": 618058,
+      "kilobytes": 603.6
+    }
+  }
+}
