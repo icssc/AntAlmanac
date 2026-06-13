@@ -7,12 +7,13 @@ import {
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
+import { DEFAULT_TERM } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
+import { getTermByShortName } from '$lib/term';
 import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -47,8 +48,7 @@ import {
 } from '@mui/material';
 import { type AATerm, type AACourse, type ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 enum ImportSource {
@@ -59,7 +59,12 @@ enum ImportSource {
 }
 
 export function Import() {
-    const [term] = useCourseSearchParam('term');
+    const term = useMemo(() => {
+        if (typeof window === 'undefined') return DEFAULT_TERM;
+        const params = new URLSearchParams(window.location.search);
+        const termParam = params.get('term');
+        return (termParam ? getTermByShortName(termParam) : null) ?? DEFAULT_TERM;
+    }, []);
     const [alertDialogTitle, setAlertDialogTitle] = useState('');
     const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>('error');
     const [alertDialog, setAlertDialog] = useState(false);
@@ -1190,7 +1195,9 @@ export function Import() {
                 {alertDialogSeverity === 'error' ? (
                     <Box>
                         If you think this is a mistake please submit a{' '}
-                        <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
+                        <a href="https://forms.gle/k81f2aNdpdQYeKK8A" target="_blank" rel="noopener noreferrer">
+                            bug report
+                        </a>
                     </Box>
                 ) : (
                     <Stack direction="row" justifyContent="center">
