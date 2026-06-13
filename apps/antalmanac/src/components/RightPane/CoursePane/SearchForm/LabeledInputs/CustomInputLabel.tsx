@@ -3,6 +3,9 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { InputLabel, type SxProps, type Theme } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
+export const INPUT_LABEL_MIN_WIDTH = '7rem';
+export const ALIGNED_INPUT_LABEL_MIN_WIDTH = '10.5rem';
+
 interface CustomInputLabelProps {
     label: React.ReactNode;
     id: string;
@@ -23,7 +26,7 @@ export const CustomInputLabel = ({ label, id, isAligned, sx }: CustomInputLabelP
                     alignItems: 'center',
                     height: '100%',
                     px: 1.5,
-                    minWidth: isAligned ? '10.5rem' : '7rem',
+                    minWidth: isAligned ? ALIGNED_INPUT_LABEL_MIN_WIDTH : INPUT_LABEL_MIN_WIDTH,
                     bgcolor: isDark ? grey[800] : grey[200],
                     whiteSpace: 'nowrap',
                     border: '1px solid',

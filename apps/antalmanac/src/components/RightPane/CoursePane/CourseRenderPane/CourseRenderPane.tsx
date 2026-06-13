@@ -13,19 +13,17 @@ import { RecruitmentBanner } from '$components/RightPane/CoursePane/CourseRender
 import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { WarningAlert } from '$components/WarningAlert';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
 import { queryKeys } from '$lib/queryKeys';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { usePlannerStore } from '$stores/PlannerStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
 import type { WebsocSearchInput } from '@packages/antalmanac-types';
 import type { WebsocAPIResponse } from '@packages/anteater-api/types';
-import { intersectWebsocResponses } from '@packages/anteater-api/utils';
+import { flattenCourses, intersectWebsocResponses, unionWebsocResponses } from '@packages/anteater-api/utils';
 import { useQuery } from '@tanstack/react-query';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -44,12 +42,9 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
 
     const [courseColors, setCourseColors] = useState(() => getCourseColors());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
-    const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
-    const [searchedTerm, setSearchedTerm] = useState(() => formData.term.longName);
-    const multiSearchData = RightPaneStore.getMultiSearchData();
+    const [unofferedCourseIds, setUnofferedCourseIds] = useState<string[]>([]);
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
-    const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
     const getQueryParams = useCallback(
         (searchData: CourseSearchParams): WebsocSearchInput => ({
@@ -80,33 +75,24 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
         refetch,
     } = useQuery({
         staleTime: 5 * 60 * 1000,
-        queryKey: queryKeys.courseSearch.result(formData, multiSearchData),
+        queryKey: queryKeys.courseSearch.result(formData),
         queryFn: async (): Promise<WebsocAPIResponse | null> => {
-            setUnofferedCourses([]);
-
             try {
-                const multiSearchData = RightPaneStore.getMultiSearchData();
+                const websocQueryParams = getQueryParams(formData);
                 let response: WebsocAPIResponse;
 
-                if (multiSearchData.length > 0) {
-                    const { year, quarter } = formData.term;
-                    const offeredCourses: WebsocSearchInput[] = [];
-                    const nextUnoffered: CourseSearchParams[] = [];
-                    const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
-                        term: { year, quarter },
-                        courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
-                    });
-                    for (const course of multiSearchData) {
-                        if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
-                            offeredCourses.push(getQueryParams(course));
-                        } else {
-                            nextUnoffered.push(course);
-                        }
-                    }
-                    setUnofferedCourses(nextUnoffered);
-                    response = await trpc.websoc.getMultiple.query({ params: offeredCourses });
+                if (formData.courseIds.length > 0) {
+                    response = unionWebsocResponses(
+                        await trpc.websoc.getManyOfField.query({
+                            params: { ...websocQueryParams, courseId: formData.courseIds.join(',') },
+                            fieldName: 'courseId',
+                        })
+                    );
+
+                    const returnedIds = new Set(flattenCourses(response).map((c) => c.courseId));
+                    setUnofferedCourseIds(formData.courseIds.filter((id) => !returnedIds.has(id)));
                 } else {
-                    const websocQueryParams = getQueryParams(formData);
+                    setUnofferedCourseIds([]);
                     const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
                     response =
                         selectedGEs.length > 1
@@ -119,7 +105,6 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
                             : await trpc.websoc.getOne.query(websocQueryParams);
                 }
 
-                setSearchedTerm(formData.term.longName);
                 return response;
             } catch (error) {
                 console.error(error);
@@ -178,16 +163,11 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             <CoursePaneButtonRow onDismissSearchResults={onDismissSearchResults} onRefreshSearch={refreshSearch} />
             <Box sx={{ height: '56px' }} />
 
-            {filterTakenCourses && !hasRenderableCourseResults && (
-                <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
-            )}
-            {unofferedCourses.map((course) => {
-                return (
-                    <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
-                        {course.deptValue} {course.courseNumber} is not offered in {searchedTerm}.
-                    </WarningAlert>
-                );
-            })}
+            {unofferedCourseIds.map((id) => (
+                <WarningAlert closable key={id}>
+                    {id} is not offered in {formData.term.longName}.
+                </WarningAlert>
+            ))}
             {isFetching ? (
                 <LoadingMessage />
             ) : isError || !hasRenderableCourseResults ? (

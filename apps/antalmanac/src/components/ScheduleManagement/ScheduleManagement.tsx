@@ -5,7 +5,6 @@ import { ScheduleManagementContent } from '$components/ScheduleManagement/Schedu
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { getWasLoggedIn } from '$lib/localStorage';
-import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import AppStore from '$stores/AppStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -87,9 +86,7 @@ export function ScheduleManagement() {
         const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
         const isManualSearchMode = readSearchMode() === COURSE_SEARCH_MODE.MANUAL;
 
-        if (shouldSearchPlannerFromParams()) {
-            setActiveTab('search');
-        } else if (hasParams || isManualSearchMode) {
+        if (hasParams || isManualSearchMode) {
             setActiveTab('search');
         } else if (!isMobile) {
             const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();

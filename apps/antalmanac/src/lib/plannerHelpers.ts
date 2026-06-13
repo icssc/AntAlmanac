@@ -1,4 +1,3 @@
-import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchParams/constants';
 import { type AATerm, type Roadmap } from '@packages/antalmanac-types';
 
 export enum RoadmapTermRelation {
@@ -27,7 +26,8 @@ export function getRoadmapTermRelation(roadmap: Roadmap, term: AATerm): RoadmapT
     return RoadmapTermRelation.NoCourses;
 }
 
-export function shouldSearchPlannerFromParams() {
-    const searchParams = new URLSearchParams(window.location.search);
-    return searchParams.get(COURSE_SEARCH_PLANNER_KEY) !== null;
+export function getSearchableRoadmapCourseIds(roadmap: Roadmap, term: AATerm): string[] {
+    const quarterPlan = getQuarterPlan(roadmap, term);
+    if (!quarterPlan) return [];
+    return quarterPlan.courses.filter((c) => !c.courseId.startsWith('CUSTOM#')).map((c) => c.courseId);
 }

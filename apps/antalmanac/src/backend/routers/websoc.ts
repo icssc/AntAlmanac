@@ -57,7 +57,7 @@ const websocRouter = router({
         .input(
             z.object({
                 params: WebsocSearchInputSchema,
-                fieldName: z.enum([WebsocSearchInputKeysSchema.enum.ge]),
+                fieldName: z.enum([WebsocSearchInputKeysSchema.enum.ge, WebsocSearchInputKeysSchema.enum.courseId]),
             })
         )
         .query(async ({ input }): Promise<WebsocAPIResponse[]> => {

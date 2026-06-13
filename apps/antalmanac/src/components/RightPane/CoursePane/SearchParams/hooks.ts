@@ -1,7 +1,6 @@
 import {
     COURSE_SEARCH_MODE,
     COURSE_SEARCH_MODE_KEY,
-    COURSE_SEARCH_PLANNER_KEY,
     COURSE_SEARCH_VIEW,
     COURSE_SEARCH_VIEW_KEY,
 } from '$components/RightPane/CoursePane/SearchParams/constants';
@@ -10,12 +9,10 @@ import { deriveCourseSearchView, isValidSearch } from '$components/RightPane/Cou
 import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import {
     courseSearchParamParsers,
-    plannerSearchParser,
     searchModeParser,
     searchViewParser,
 } from '$components/RightPane/CoursePane/SearchParams/parsers';
 import type { CourseSearchMode, CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { useQueryState, useQueryStates } from 'nuqs';
 import { useCallback } from 'react';
@@ -23,13 +20,11 @@ import { useCallback } from 'react';
 export function useCourseSearchParam<K extends keyof CourseSearchParams>(
     field: K
 ): readonly [CourseSearchParams[K], (next: CourseSearchParams[K]) => void] {
-    // NB: generic K widens `parsers[field]` to a union; cast keeps single-field `useQueryState` perf.
     const parser = courseSearchParamParsers[field] as (typeof courseSearchParamParsers)[K];
     const [value, setValueRaw] = useQueryState(field, parser);
 
     const setValue = useCallback(
         (next: CourseSearchParams[K]) => {
-            RightPaneStore.clearMultiSearchData();
             void (setValueRaw as (next: CourseSearchParams[K]) => ReturnType<typeof setValueRaw>)(next);
         },
         [setValueRaw]
@@ -40,9 +35,8 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(
 
 export function useCourseSearchMode() {
     const [searchMode, setSearchModeParam] = useQueryState(COURSE_SEARCH_MODE_KEY, searchModeParser);
-    const [plannerSearchParam] = useQueryState(COURSE_SEARCH_PLANNER_KEY, plannerSearchParser);
 
-    const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL && plannerSearchParam === null;
+    const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL;
 
     const setSearchMode = useCallback(
         (mode: CourseSearchMode) => {
@@ -62,7 +56,6 @@ export function useCourseSearchForm() {
 
     const setField = useCallback(
         <Field extends keyof CourseSearchParams>(field: Field, value: CourseSearchParams[Field]) => {
-            RightPaneStore.clearMultiSearchData();
             void setFormData({ [field]: value });
         },
         [setFormData]
@@ -70,7 +63,6 @@ export function useCourseSearchForm() {
 
     const setFields = useCallback(
         (values: Partial<CourseSearchParams> | null) => {
-            RightPaneStore.clearMultiSearchData();
             void setFormData(values);
         },
         [setFormData]
@@ -78,7 +70,6 @@ export function useCourseSearchForm() {
 
     const resetForm = useCallback(
         ({ preserveTerm = false }: { preserveTerm?: boolean } = {}) => {
-            RightPaneStore.clearMultiSearchData();
             void setFormData(preserveTerm ? { ...DEFAULT_FORM_DATA, term: formData.term } : DEFAULT_FORM_DATA);
         },
         [formData.term, setFormData]
@@ -104,7 +95,6 @@ export function useCourseSearchView() {
     }, [setViewParam]);
 
     const showSearchForm = useCallback(() => {
-        RightPaneStore.clearMultiSearchData();
         void setViewParam(COURSE_SEARCH_VIEW.SEARCH_FORM);
     }, [setViewParam]);
 
@@ -132,7 +122,6 @@ export function useCourseSearchSubmit() {
         (data?: CourseSearchParams) => {
             const payload = data ?? readCourseSearchParams();
             if (isValidSearch(payload)) {
-                RightPaneStore.clearMultiSearchData();
                 showResults();
                 return true;
             }
