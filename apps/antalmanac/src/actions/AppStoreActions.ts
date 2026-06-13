@@ -4,7 +4,6 @@ import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import { isNativeIosApp } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -410,7 +409,6 @@ export const loginUser = async (provider: Provider, { silent = false, postHog }:
         const authUrl = await getSignInUrl(provider, {
             authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
             returnUrl: `${window.location.pathname}${window.location.search}${window.location.hash}`,
-            isNativeIosApp: isNativeIosApp(),
         });
 
         logAnalytics(postHog, {
