@@ -92,6 +92,50 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 # Development Environment
 
+## Quickest Start: GitHub Codespaces
+
+GitHub Codespaces gives you a fully-configured AntAlmanac dev environment
+in the browser, with no setup required on your own machine.
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=icssc/AntAlmanac)
+
+1. Click the badge above (or **Code → Codespaces → Create codespace** on
+   the [repository page](https://github.com/icssc/AntAlmanac)).
+2. Wait for the container to build. On first launch the post-create script
+   will install dependencies, start the local PostgreSQL database, run
+   migrations, and fetch the static course data.
+3. Once setup finishes, run:
+
+    ```bash
+    pnpm dev
+    ```
+
+4. Open the forwarded port `3000` (Codespaces will offer a preview link).
+
+### Using the dev container locally (VS Code or Cursor)
+
+The same `.devcontainer/` configuration also works locally if you'd
+rather not develop in the cloud. You'll need
+[Docker](https://www.docker.com/products/docker-desktop) installed, plus
+the Dev Containers extension for your editor:
+
+-   VS Code: [`ms-vscode-remote.remote-containers`](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+-   Cursor: search for "Dev Containers" (`anysphere.remote-containers`)
+    in the Extensions panel.
+
+We recommend starting from a **fresh clone** of the repository for this.
+A working tree that's already had `pnpm install` or `docker compose up`
+run on your host can leave behind `node_modules/` or volumes from a
+different platform (especially on macOS/Windows), which will conflict
+with the Linux container.
+
+Then open the repository and run **Dev Containers: Reopen in Container**
+from the command palette. The same post-create script runs, leaving you
+ready to `pnpm dev`.
+
+Everything below is for setting up a development environment on your own
+machine without containers.
+
 ## Pre-requisites
 
 1. Install `Node.js` (version 22 or higher). This allows you to run JavaScript on your computer (outside of a browser).
