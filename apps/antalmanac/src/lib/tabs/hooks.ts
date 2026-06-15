@@ -1,4 +1,4 @@
-import { TAB_INDEX, isTabRouteSegment } from '$stores/TabStore';
+import { TAB_INDEX, isTabRouteSegment } from '$lib/tabs/tabs';
 import { useParams } from 'react-router-dom';
 
 /** Active tab index derived from the URL (`/`, `/calendar`, `/added`, `/map`). */

@@ -7,7 +7,7 @@ import {
 import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/parsers';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { getTabHref } from '$stores/TabStore';
+import { getTabHref } from '$lib/tabs/tabs';
 import type { AATerm } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';

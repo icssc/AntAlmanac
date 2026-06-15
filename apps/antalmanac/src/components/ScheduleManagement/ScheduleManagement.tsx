@@ -3,14 +3,14 @@ import { hasAdvancedParams, hasManualParams } from '$components/RightPane/Course
 import { readCourseSearchParams, readSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { useActiveTabIndex } from '$hooks/useActiveTabIndex';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
+import { useActiveTabIndex } from '$lib/tabs/hooks';
+import { TAB_INDEX, getTabHref } from '$lib/tabs/tabs';
 import AppStore from '$stores/AppStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { TAB_INDEX, getTabHref } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';

@@ -1,9 +1,9 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursesRoot } from '$components/RightPane/AddedCourses/AddedCoursesRoot';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
-import { useActiveTabIndex } from '$hooks/useActiveTabIndex';
+import { useActiveTabIndex } from '$lib/tabs/hooks';
+import { TAB_INDEX } from '$lib/tabs/tabs';
 import { useThemeStore } from '$stores/SettingsStore';
-import { TAB_INDEX } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 

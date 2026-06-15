@@ -18,12 +18,12 @@ import actionTypesStore, {
     type ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
 import { courseColorKey } from '$lib/sectionThemes';
+import { getTabHref } from '$lib/tabs/tabs';
 import { router } from '$src/router';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
-import { getTabHref } from '$stores/TabStore';
 import type {
     ScheduleCourse,
     ScheduleSaveState,

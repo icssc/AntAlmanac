@@ -1,6 +1,6 @@
 import { useIsMobile } from '$hooks/useIsMobile';
+import { TAB_INDEX, type TabInfo } from '$lib/tabs/tabs';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { TAB_INDEX, type TabInfo } from '$stores/TabStore';
 import { Tab } from '@mui/material';
 import { Link } from 'react-router-dom';
 

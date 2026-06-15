@@ -1,7 +1,7 @@
 import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from '$lib/localStorage';
+import { getTabHref } from '$lib/tabs/tabs';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 import { router } from '$src/router';
-import { getTabHref } from '$stores/TabStore';
 import { type StepType } from '@reactour/tour';
 
 enum TourStepName {

@@ -6,13 +6,13 @@ import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/Enrol
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { WarningAlert } from '$components/WarningAlert';
-import { useActiveTabIndex } from '$hooks/useActiveTabIndex';
 import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { type AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAlerts';
+import { useActiveTabIndex } from '$lib/tabs/hooks';
+import { TAB_INDEX } from '$lib/tabs/tabs';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
-import { TAB_INDEX } from '$stores/TabStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import {
     Box,

@@ -4,9 +4,9 @@ import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/
 import { SectionTable } from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { getMissingSections } from '$lib/courseAlerts';
+import { getTabHref } from '$lib/tabs/tabs';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
-import { getTabHref } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { type AACourseWithTerm } from '@packages/antalmanac-types';

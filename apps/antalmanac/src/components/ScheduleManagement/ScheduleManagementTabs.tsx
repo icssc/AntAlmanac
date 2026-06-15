@@ -1,6 +1,6 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { useActiveTabIndex } from '$hooks/useActiveTabIndex';
-import { TABS } from '$stores/TabStore';
+import { useActiveTabIndex } from '$lib/tabs/hooks';
+import { TABS } from '$lib/tabs/tabs';
 import { Paper, Tabs as MuiTabs } from '@mui/material';
 
 interface ScheduleManagementTabsProps {
