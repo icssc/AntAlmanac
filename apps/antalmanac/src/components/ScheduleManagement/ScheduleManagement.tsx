@@ -9,6 +9,7 @@ import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import { useActiveTabIndex } from '$lib/tabs/hooks';
 import { TAB_INDEX, getTabHref } from '$lib/tabs/tabs';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { GlobalStyles, Stack } from '@mui/material';
@@ -69,6 +70,15 @@ export function ScheduleManagement() {
             navigate('/', { replace: true });
         }
     }, [tab, isMobile, navigate]);
+
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
+
+    // Fallback schedule data lives on the Added tab — switch there when API is unreachable.
+    useEffect(() => {
+        if (fallbackMode) {
+            navigate(getTabHref('added'), { replace: true });
+        }
+    }, [fallbackMode, navigate]);
 
     // Pick a default tab on first visit to `/`.
     useEffect(() => {

@@ -1,7 +1,6 @@
 import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from '$lib/localStorage';
-import { getTabHref } from '$lib/tabs/tabs';
+import { type TabName } from '$lib/tabs/tabs';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
-import { router } from '$src/router';
 import { type StepType } from '@reactour/tour';
 
 enum TourStepName {
@@ -93,7 +92,10 @@ function KbdCard(props: { children?: React.ReactNode }) {
     );
 }
 
-function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepName, StepType> {
+function namedStepsFactory(
+    goToStep: (step: number) => void,
+    goToTab: (name: TabName) => void
+): Record<TourStepName, StepType> {
     const goToNamedStep = (stepName: TourStepName) => {
         const stepIndex = tourStepNames.findIndex((step) => step == stepName);
 
@@ -142,7 +144,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
             content: 'You can search for your classes here!',
             action: () => {
                 markTourHasRun();
-                router.navigate(getTabHref('search'));
+                goToTab('search');
                 reselectStepWhenReady(TourStepName.searchBar, '#fuzzy-search');
             },
             mutationObservables: ['#fuzzy-search'],
@@ -217,7 +219,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
                     <b>Select</b> the added courses tab for a list of your courses and details
                 </>
             ),
-            action: () => router.navigate(getTabHref('added')),
+            action: () => goToTab('added'),
             mutationObservables: ['#course-pane-box'],
         },
         map: {
@@ -236,14 +238,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
             selector: '#map-pane',
             content: 'Click on a day to see your route!',
             action: () => {
-                router.navigate(getTabHref('map'));
-
-                if (!window.location.pathname.includes('/map')) {
-                    // Clicking the tab will also navigate via the Link component
-                    setTimeout(() => {
-                        document.getElementById('map-tab')?.click();
-                    }, 0);
-                }
+                goToTab('map');
 
                 // Ensure this step anchors only after #map-pane is measurable.
                 reselectStepWhenReady(TourStepName.mapPane, '#map-pane');
@@ -267,8 +262,8 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
     };
 }
 
-export function stepsFactory(goToStep: (step: number) => void): Array<StepType> {
-    const namedSteps = namedStepsFactory(goToStep);
+export function stepsFactory(goToStep: (step: number) => void, goToTab: (name: TabName) => void): Array<StepType> {
+    const namedSteps = namedStepsFactory(goToStep, goToTab);
     // Preserve the order of the steps.
     return tourStepNames.map((key: TourStepName) => namedSteps[key]);
 }
