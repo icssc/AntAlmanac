@@ -6,12 +6,13 @@ import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/Enrol
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { WarningAlert } from '$components/WarningAlert';
+import { useActiveTabIndex } from '$hooks/useActiveTabIndex';
 import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { type AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAlerts';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
-import { TAB_INDEX, useTabStore } from '$stores/TabStore';
+import { TAB_INDEX } from '$stores/TabStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import {
     Box,
@@ -90,7 +91,7 @@ export function SectionTable({
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
 
     const activeColumns = useColumnStore((store) => store.activeColumns);
-    const activeTab = useTabStore((store) => store.activeTab);
+    const activeTab = useActiveTabIndex();
 
     const handleToggleExpand = () => {
         setOpenContent(!openContent);

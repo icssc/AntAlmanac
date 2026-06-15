@@ -1,5 +1,4 @@
 import { Event, FormatListBulleted, MyLocation, Search, type SvgIconComponent } from '@mui/icons-material';
-import { create } from 'zustand';
 
 export const TABS = [
     {
@@ -53,23 +52,3 @@ export function getTabHref(name: TabName): string {
 export function isTabRouteSegment(segment: string | undefined): segment is TabName {
     return segment === 'calendar' || segment === 'added' || segment === 'map';
 }
-
-interface TabStore {
-    activeTab: number;
-    setActiveTab: (name: TabName) => void;
-    setActiveTabValue: (value: number) => void;
-}
-
-export const useTabStore = create<TabStore>((set) => {
-    return {
-        activeTab: TAB_INDEX.search,
-        setActiveTab: (name: TabName) => {
-            set(() => ({
-                activeTab: TAB_INDEX[name],
-            }));
-        },
-        setActiveTabValue: (value: number) => {
-            set(() => ({ activeTab: value }));
-        },
-    };
-});

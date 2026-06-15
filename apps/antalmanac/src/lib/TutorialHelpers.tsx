@@ -1,6 +1,7 @@
 import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from '$lib/localStorage';
-import { navigateToTab } from '$lib/tabNavigation';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
+import { router } from '$src/router';
+import { getTabHref } from '$stores/TabStore';
 import { type StepType } from '@reactour/tour';
 
 enum TourStepName {
@@ -141,7 +142,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
             content: 'You can search for your classes here!',
             action: () => {
                 markTourHasRun();
-                navigateToTab('search');
+                router.navigate(getTabHref('search'));
                 reselectStepWhenReady(TourStepName.searchBar, '#fuzzy-search');
             },
             mutationObservables: ['#fuzzy-search'],
@@ -216,7 +217,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
                     <b>Select</b> the added courses tab for a list of your courses and details
                 </>
             ),
-            action: () => navigateToTab('added'),
+            action: () => router.navigate(getTabHref('added')),
             mutationObservables: ['#course-pane-box'],
         },
         map: {
@@ -235,7 +236,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
             selector: '#map-pane',
             content: 'Click on a day to see your route!',
             action: () => {
-                navigateToTab('map');
+                router.navigate(getTabHref('map'));
 
                 if (!window.location.pathname.includes('/map')) {
                     // Clicking the tab will also navigate via the Link component

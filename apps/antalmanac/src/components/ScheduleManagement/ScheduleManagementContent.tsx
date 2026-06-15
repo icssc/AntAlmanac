@@ -1,15 +1,16 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursesRoot } from '$components/RightPane/AddedCourses/AddedCoursesRoot';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
+import { useActiveTabIndex } from '$hooks/useActiveTabIndex';
 import { useThemeStore } from '$stores/SettingsStore';
-import { TAB_INDEX, useTabStore } from '$stores/TabStore';
+import { TAB_INDEX } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
 const UCIMap = lazy(() => import('$components/Map/Map').then((m) => ({ default: m.CourseMap })));
 
 export function ScheduleManagementContent() {
-    const activeTab = useTabStore((store) => store.activeTab);
+    const activeTab = useActiveTabIndex();
     const isDark = useThemeStore((store) => store.isDark);
 
     switch (activeTab) {

@@ -4,13 +4,14 @@ import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/
 import { SectionTable } from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { getMissingSections } from '$lib/courseAlerts';
-import { navigateToTab } from '$lib/tabNavigation';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
+import { getTabHref } from '$stores/TabStore';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { type AACourseWithTerm } from '@packages/antalmanac-types';
 import { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const getOfferingId = (course: AACourseWithTerm) => scheduleOfferingKey(course);
 
@@ -21,6 +22,7 @@ interface AddedCoursesListProps {
 }
 
 export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderChange }: AddedCoursesListProps) => {
+    const navigate = useNavigate();
     const openLoadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
     const setOpenImportDialog = useScheduleComponentsToggleStore((state) => state.setOpenImportDialog);
 
@@ -36,7 +38,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
                 description="Search for courses and add sections to build your schedule. You can also import from your study list."
                 primaryAction={{
                     label: 'Search Courses',
-                    onClick: () => navigateToTab('search'),
+                    onClick: () => navigate(getTabHref('search')),
                 }}
                 secondaryAction={{
                     label: 'Import Schedule',
