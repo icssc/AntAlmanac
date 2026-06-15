@@ -18,11 +18,11 @@ import actionTypesStore, {
     type ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
 import { courseColorKey } from '$lib/sectionThemes';
+import { navigateToTab } from '$lib/tabNavigation';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
-import { useTabStore } from '$stores/TabStore';
 import type {
     ScheduleCourse,
     ScheduleSaveState,
@@ -385,7 +385,7 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
 
         // Switch to added courses tab since Anteater API can't be reached anyway
-        useTabStore.getState().setActiveTab('added');
+        navigateToTab('added');
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {

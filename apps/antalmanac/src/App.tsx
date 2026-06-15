@@ -2,17 +2,24 @@ import './App.css';
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
 import { PosthogPageviewTracker } from '$lib/analytics/PostHogPageviewTracker';
+import { registerTabNavigate } from '$lib/tabNavigation';
 import { ErrorPage } from '$routes/ErrorPage';
 import { Home } from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
 import { NuqsAdapter } from 'nuqs/adapters/react-router/v6';
 import { useEffect } from 'react';
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet, RouterProvider, useNavigate } from 'react-router-dom';
 
 /**
  * Do not edit this unless you know what you're doing.
  */
 function RouteLayout() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        registerTabNavigate(navigate);
+    }, [navigate]);
+
     return (
         <NuqsAdapter>
             <PosthogPageviewTracker />

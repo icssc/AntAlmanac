@@ -1,6 +1,6 @@
 import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from '$lib/localStorage';
+import { navigateToTab } from '$lib/tabNavigation';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
-import { useTabStore } from '$stores/TabStore';
 import { type StepType } from '@reactour/tour';
 
 enum TourStepName {
@@ -93,8 +93,6 @@ function KbdCard(props: { children?: React.ReactNode }) {
 }
 
 function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepName, StepType> {
-    const setActiveTab = useTabStore.getState().setActiveTab;
-
     const goToNamedStep = (stepName: TourStepName) => {
         const stepIndex = tourStepNames.findIndex((step) => step == stepName);
 
@@ -143,7 +141,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
             content: 'You can search for your classes here!',
             action: () => {
                 markTourHasRun();
-                setActiveTab('search');
+                navigateToTab('search');
                 reselectStepWhenReady(TourStepName.searchBar, '#fuzzy-search');
             },
             mutationObservables: ['#fuzzy-search'],
@@ -218,7 +216,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
                     <b>Select</b> the added courses tab for a list of your courses and details
                 </>
             ),
-            action: () => setActiveTab('added'),
+            action: () => navigateToTab('added'),
             mutationObservables: ['#course-pane-box'],
         },
         map: {
@@ -237,7 +235,7 @@ function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepNam
             selector: '#map-pane',
             content: 'Click on a day to see your route!',
             action: () => {
-                setActiveTab('map');
+                navigateToTab('map');
 
                 if (!window.location.pathname.includes('/map')) {
                     // Clicking the tab will also navigate via the Link component

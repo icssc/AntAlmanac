@@ -14,7 +14,7 @@ import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
 import { processZotcourseResponse } from '$lib/zotcourse';
-import { BLUE, LIGHT_BLUE } from '$src/globals';
+import { BLUE, LIGHT_BLUE, FEEDBACK_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -48,7 +48,6 @@ import {
 import { type AATerm, type AACourse, type ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 enum ImportSource {
@@ -1190,7 +1189,9 @@ export function Import() {
                 {alertDialogSeverity === 'error' ? (
                     <Box>
                         If you think this is a mistake please submit a{' '}
-                        <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
+                        <a href={FEEDBACK_LINK} target="_blank" rel="noopener noreferrer">
+                            bug report
+                        </a>
                     </Box>
                 ) : (
                     <Stack direction="row" justifyContent="center">

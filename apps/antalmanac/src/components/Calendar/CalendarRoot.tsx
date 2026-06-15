@@ -14,6 +14,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
+import { navigateToTab } from '$lib/tabNavigation';
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -21,7 +22,6 @@ import { useHoveredStore } from '$stores/HoveredStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
 import { Box, Backdrop, useTheme } from '@mui/material';
 import { VisibilityState } from '@packages/antalmanac-types';
@@ -375,7 +375,7 @@ export const ScheduleCalendar = memo(() => {
                         description="Search for courses to start building your schedule."
                         primaryAction={{
                             label: 'Search for Courses',
-                            onClick: () => useTabStore.getState().setActiveTab('search'),
+                            onClick: () => navigateToTab('search'),
                         }}
                     />
                 </Backdrop>

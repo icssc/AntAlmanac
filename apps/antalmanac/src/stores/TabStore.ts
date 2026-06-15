@@ -7,7 +7,7 @@ export const TABS = [
         label: 'Calendar',
         icon: Event,
         mobileOnly: true,
-        href: '',
+        href: '/calendar',
     },
     {
         name: 'search',
@@ -31,7 +31,7 @@ export const TABS = [
     },
 ] as const;
 
-type TabName = (typeof TABS)[number]['name'];
+export type TabName = (typeof TABS)[number]['name'];
 
 export type TabInfo = {
     name: TabName;
@@ -43,6 +43,16 @@ export type TabInfo = {
 };
 
 export const TAB_INDEX = Object.fromEntries(TABS.map((tab, index) => [tab.name, index])) as Record<TabName, number>;
+
+const TAB_BY_NAME = Object.fromEntries(TABS.map((tab) => [tab.name, tab])) as Record<TabName, TabInfo>;
+
+export function getTabHref(name: TabName): string {
+    return TAB_BY_NAME[name].href;
+}
+
+export function isTabRouteSegment(segment: string | undefined): segment is TabName {
+    return segment === 'calendar' || segment === 'added' || segment === 'map';
+}
 
 interface TabStore {
     activeTab: number;

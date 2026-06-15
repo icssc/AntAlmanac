@@ -6,10 +6,11 @@ import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleM
 import { useIsMobile } from '$hooks/useIsMobile';
 import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
+import { navigateToTab } from '$lib/tabNavigation';
 import AppStore from '$stores/AppStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { TAB_INDEX, useTabStore } from '$stores/TabStore';
+import { TAB_INDEX, isTabRouteSegment, useTabStore } from '$stores/TabStore';
 import { GlobalStyles, Stack } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -69,13 +70,20 @@ export function ScheduleManagement() {
         [activeTab, popSavedSearch, saveSearch, setActiveTabValue]
     );
 
-    // Sync tab store when the route changes (back/forward, /added, /map).
-    // Calendar and search both live at `/`, so leave tab state alone for that route.
+    // Sync tab store when the route changes (back/forward, /calendar, /added, /map).
+    // `/` is the search tab. Calendar is mobile-only — desktop always shows it in the split pane.
     useEffect(() => {
-        if (tab === 'added' || tab === 'map') {
-            setActiveTab(tab);
+        if (!isMobile && tab === 'calendar') {
+            navigateToTab('search', { replace: true });
+            return;
         }
-    }, [tab, setActiveTab]);
+
+        if (isTabRouteSegment(tab)) {
+            setActiveTab(tab);
+        } else if (tab === undefined) {
+            setActiveTab('search');
+        }
+    }, [tab, isMobile, setActiveTab]);
 
     // Sets a smart default on mount
     useEffect(() => {
@@ -99,7 +107,7 @@ export function ScheduleManagement() {
             const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
             if (hasSession || hasLocalScheduleData) {
-                setActiveTab('calendar');
+                navigateToTab('calendar', { replace: true });
             } else {
                 setActiveTab('search');
             }

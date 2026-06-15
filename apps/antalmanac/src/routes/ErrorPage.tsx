@@ -1,3 +1,4 @@
+import { FEEDBACK_LINK } from '$src/globals';
 import { ExpandMore } from '@mui/icons-material';
 import { Box, Accordion, AccordionDetails, AccordionSummary, Typography, Button, Stack } from '@mui/material';
 import { Link, useLocation, useRouteError } from 'react-router-dom';
@@ -29,7 +30,10 @@ export const ErrorPage = () => {
                     </Typography>
                     <Typography variant="h5" component="p">
                         Try refreshing the page. If the error persists, please submit a{' '}
-                        <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link> with the provided error.
+                        <a href={FEEDBACK_LINK} target="_blank" rel="noopener noreferrer">
+                            bug report
+                        </a>{' '}
+                        with the provided error.
                     </Typography>
                 </Stack>
                 <Link to="/">
