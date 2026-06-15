@@ -4,6 +4,7 @@ import {
     useCourseSearchMode,
     useCourseSearchView,
 } from '$components/RightPane/CoursePane/SearchParams/hooks';
+import { useGoToTab } from '$lib/tabs/hooks';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
@@ -14,18 +15,20 @@ interface TutorialButtonProps {
 }
 
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
+    const goToTab = useGoToTab();
     const { setCurrentStep, setIsOpen } = useTour();
     const { setSearchMode } = useCourseSearchMode();
     const { resetForm } = useCourseSearchForm();
     const { clearView } = useCourseSearchView();
 
     const startTutorial = useCallback(() => {
+        goToTab('search');
         setSearchMode(COURSE_SEARCH_MODE.QUICK);
         resetForm();
         clearView();
         setCurrentStep(0);
         setIsOpen(true);
-    }, [clearView, resetForm, setCurrentStep, setIsOpen, setSearchMode]);
+    }, [clearView, goToTab, resetForm, setCurrentStep, setIsOpen, setSearchMode]);
 
     const handleClick = useCallback(() => {
         onMenuClose?.();

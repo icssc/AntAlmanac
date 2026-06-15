@@ -1,19 +1,11 @@
-import { getTabHref, type TabName } from '$lib/tabs/tabs';
+import { useGoToTab } from '$lib/tabs/hooks';
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { useTour } from '@reactour/tour';
-import { useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export function TutorialInitializer() {
-    const navigate = useNavigate();
+    const goToTab = useGoToTab();
     const { setSteps, setCurrentStep, setIsOpen } = useTour();
-
-    const goToTab = useCallback(
-        (name: TabName) => {
-            navigate(getTabHref(name));
-        },
-        [navigate]
-    );
 
     useEffect(() => {
         if (setSteps == null || setCurrentStep == null) {
