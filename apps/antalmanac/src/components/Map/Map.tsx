@@ -25,13 +25,14 @@ import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/Buildi
 import { UserLocator } from '$components/Map/UserLocator';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { TILES_URL } from '$lib/api/endpoints';
+import { getMapTileLayerUrl } from '$lib/api/endpoints';
 import buildingCatalogue, { type Building } from '$lib/locations/buildingCatalogue';
 import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
+import { useThemeStore } from '$stores/SettingsStore';
 
 function getBuildingNameAcronym(name: string): string {
     const open = name.indexOf('(');
@@ -187,6 +188,8 @@ export function CourseMap() {
         [themedEvents]
     );
     const postHog = usePostHog();
+    const isDark = useThemeStore((store) => store.isDark);
+    const tileLayerUrl = useMemo(() => getMapTileLayerUrl(isDark), [isDark]);
 
     useEffect(() => {
         logAnalytics(postHog, {
@@ -362,8 +365,9 @@ export function CourseMap() {
                 </Paper>
 
                 <TileLayer
+                    key={isDark ? 'dark' : 'light'}
                     attribution={ATTRIBUTION_MARKUP}
-                    url={`https://${TILES_URL}/{z}/{x}/{y}.png`}
+                    url={tileLayerUrl}
                     tileSize={512}
                     maxZoom={21}
                     minZoom={15}

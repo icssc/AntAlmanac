@@ -1,4 +1,5 @@
 import { MAPBOX_PROXY_DIRECTIONS_ENDPOINT } from '$lib/api/endpoints';
+import { useThemeStore } from '$stores/SettingsStore';
 // eslint-disable-next-line import/default
 import L from 'leaflet';
 import 'leaflet-routing-machine';
@@ -31,6 +32,7 @@ const dontCreateMarker = () => false;
  */
 export function Routes(props: ClassRoutesProps) {
     const map = useMap();
+    const isDark = useThemeStore((store) => store.isDark);
 
     useEffect(() => {
         const latLngTuples = props.latLngTuples || [];
@@ -85,7 +87,7 @@ export function Routes(props: ClassRoutesProps) {
                       top: -200%;
                       left:2px;
                       pointer-events: none;
-                      background-color: white;
+                      background-color: ${isDark ? '#303030' : 'white'};
                       border-left-color: ${props.color};
                       border-left-style: solid;
                       width: fit-content;
@@ -133,7 +135,7 @@ export function Routes(props: ClassRoutesProps) {
         return () => {
             routerControl.remove();
         };
-    }, [map, props.latLngTuples, props.color]);
+    }, [map, props.latLngTuples, props.color, isDark]);
 
     return null;
 }

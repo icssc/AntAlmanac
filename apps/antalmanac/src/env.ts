@@ -15,6 +15,7 @@ export const env = createEnv({
     },
     client: {
         NEXT_PUBLIC_TILES_ENDPOINT: z.string().min(1).optional(),
+        NEXT_PUBLIC_TILES_DARK_ON_CDN: z.enum(['true']).optional(),
         NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: z.string().min(1).optional(),
         NEXT_PUBLIC_PUBLIC_POSTHOG_HOST: z.string().min(1).optional(),
         NEXT_PUBLIC_ENDPOINT: z.string().min(1).optional(),
@@ -32,6 +33,7 @@ export const env = createEnv({
         PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
         STAGE: process.env.STAGE,
         NEXT_PUBLIC_TILES_ENDPOINT: process.env.NEXT_PUBLIC_TILES_ENDPOINT,
+        NEXT_PUBLIC_TILES_DARK_ON_CDN: process.env.NEXT_PUBLIC_TILES_DARK_ON_CDN,
         NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
         NEXT_PUBLIC_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_HOST,
         NEXT_PUBLIC_ENDPOINT: process.env.NEXT_PUBLIC_ENDPOINT,
