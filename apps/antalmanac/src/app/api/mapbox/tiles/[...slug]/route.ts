@@ -4,13 +4,6 @@ import { NextResponse } from 'next/server';
 
 const MAPBOX_API_URL = 'https://api.mapbox.com';
 
-const MAPBOX_TILE_STYLES = ['streets-v11', 'dark-v11'] as const;
-type MapboxTileStyle = (typeof MAPBOX_TILE_STYLES)[number];
-
-function isMapboxTileStyle(value: string): value is MapboxTileStyle {
-    return (MAPBOX_TILE_STYLES as readonly string[]).includes(value);
-}
-
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
@@ -21,15 +14,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
     }
 
     const slugParts = Array.isArray(slug) ? slug : [slug];
-    let style: MapboxTileStyle = 'streets-v11';
-    let tilePath: string;
-
-    if (slugParts[0] != null && isMapboxTileStyle(slugParts[0])) {
-        style = slugParts[0];
-        tilePath = slugParts.slice(1).join('/');
-    } else {
-        tilePath = slugParts.join('/');
-    }
+    const style = slugParts[0] === 'dark-v11' ? 'dark-v11' : 'streets-v11';
+    const tilePath =
+        slugParts[0] === 'dark-v11' || slugParts[0] === 'streets-v11'
+            ? slugParts.slice(1).join('/')
+            : slugParts.join('/');
 
     const searchParams = new URLSearchParams(req.nextUrl.searchParams);
     searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);

@@ -25,7 +25,7 @@ import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/Buildi
 import { UserLocator } from '$components/Map/UserLocator';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { getMapTileLayerUrl } from '$lib/api/endpoints';
+import { MAPBOX_PROXY_TILES_ENDPOINT, TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { type Building } from '$lib/locations/buildingCatalogue';
 import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
@@ -189,7 +189,6 @@ export function CourseMap() {
     );
     const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
-    const tileLayerUrl = useMemo(() => getMapTileLayerUrl(isDark), [isDark]);
 
     useEffect(() => {
         logAnalytics(postHog, {
@@ -367,7 +366,11 @@ export function CourseMap() {
                 <TileLayer
                     key={isDark ? 'dark' : 'light'}
                     attribution={ATTRIBUTION_MARKUP}
-                    url={tileLayerUrl}
+                    url={
+                        isDark
+                            ? `${MAPBOX_PROXY_TILES_ENDPOINT}/dark-v11/512/{z}/{x}/{y}@2x`
+                            : `https://${TILES_URL}/{z}/{x}/{y}.png`
+                    }
                     tileSize={512}
                     maxZoom={21}
                     minZoom={15}
