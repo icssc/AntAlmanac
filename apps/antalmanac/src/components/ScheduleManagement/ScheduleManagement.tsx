@@ -27,6 +27,7 @@ export function ScheduleManagement() {
     const isMobile = useIsMobile();
     const activeTab = useActiveTabIndex();
 
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const { saveSearch, popSavedSearch } = useSavedSearchStore(
         useShallow((store) => ({
             saveSearch: store.saveSearch,
@@ -64,20 +65,11 @@ export function ScheduleManagement() {
         [activeTab, popSavedSearch, saveSearch]
     );
 
-    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
-
     useEffect(() => {
-        if (fallbackMode) {
-            if (tab !== 'added') {
-                navigate(TAB_HREF.added, { replace: true });
-            }
-            return;
+        if (fallbackMode && tab !== 'added') {
+            navigate(TAB_HREF.added, { replace: true });
         }
-
-        if (!isMobile && tab === 'calendar') {
-            navigate(TAB_HREF.search, { replace: true });
-        }
-    }, [tab, isMobile, fallbackMode, navigate]);
+    }, [tab, fallbackMode, navigate]);
 
     useEffect(() => {
         if (fallbackMode || tab) {
