@@ -4,31 +4,32 @@ import {
     useCourseSearchMode,
     useCourseSearchView,
 } from '$components/RightPane/CoursePane/SearchParams/hooks';
-import { useGoToTab } from '$lib/tabs/hooks';
+import { TAB_HREF } from '$lib/tabs/tabs';
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
 import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface TutorialButtonProps {
     onMenuClose?: () => void;
 }
 
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
-    const goToTab = useGoToTab();
+    const navigate = useNavigate();
     const { setCurrentStep, setIsOpen } = useTour();
     const { setSearchMode } = useCourseSearchMode();
     const { resetForm } = useCourseSearchForm();
     const { clearView } = useCourseSearchView();
 
     const startTutorial = useCallback(() => {
-        goToTab('search');
+        navigate(TAB_HREF.search);
         setSearchMode(COURSE_SEARCH_MODE.QUICK);
         resetForm();
         clearView();
         setCurrentStep(0);
         setIsOpen(true);
-    }, [clearView, goToTab, resetForm, setCurrentStep, setIsOpen, setSearchMode]);
+    }, [clearView, navigate, resetForm, setCurrentStep, setIsOpen, setSearchMode]);
 
     const handleClick = useCallback(() => {
         onMenuClose?.();

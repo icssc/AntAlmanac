@@ -1,7 +1,6 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import { TAB_HREF, TAB_INDEX, type TabName } from '$lib/tabs/tabs';
-import { useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { TAB_INDEX } from '$lib/tabs/tabs';
+import { useParams } from 'react-router-dom';
 
 export function useActiveTabIndex(): number {
     const { tab } = useParams();
@@ -16,10 +15,4 @@ export function useActiveTabIndex(): number {
     }
 
     return TAB_INDEX.search;
-}
-
-export function useGoToTab() {
-    const navigate = useNavigate();
-
-    return useCallback((name: TabName) => navigate(TAB_HREF[name]), [navigate]);
 }

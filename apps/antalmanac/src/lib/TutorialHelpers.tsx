@@ -1,5 +1,5 @@
 import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from '$lib/localStorage';
-import { type TabName } from '$lib/tabs/tabs';
+import { TAB_HREF } from '$lib/tabs/tabs';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 import { type StepType } from '@reactour/tour';
 
@@ -94,7 +94,7 @@ function KbdCard(props: { children?: React.ReactNode }) {
 
 function namedStepsFactory(
     goToStep: (step: number) => void,
-    goToTab: (name: TabName) => void
+    navigate: (to: string) => void
 ): Record<TourStepName, StepType> {
     const goToNamedStep = (stepName: TourStepName) => {
         const stepIndex = tourStepNames.findIndex((step) => step == stepName);
@@ -144,7 +144,7 @@ function namedStepsFactory(
             content: 'You can search for your classes here!',
             action: () => {
                 markTourHasRun();
-                goToTab('search');
+                navigate(TAB_HREF.search);
                 reselectStepWhenReady(TourStepName.searchBar, '#fuzzy-search');
             },
             mutationObservables: ['#fuzzy-search'],
@@ -219,7 +219,7 @@ function namedStepsFactory(
                     <b>Select</b> the added courses tab for a list of your courses and details
                 </>
             ),
-            action: () => goToTab('added'),
+            action: () => navigate(TAB_HREF.added),
             mutationObservables: ['#course-pane-box'],
         },
         map: {
@@ -238,7 +238,7 @@ function namedStepsFactory(
             selector: '#map-pane',
             content: 'Click on a day to see your route!',
             action: () => {
-                goToTab('map');
+                navigate(TAB_HREF.map);
 
                 // Ensure this step anchors only after #map-pane is measurable.
                 reselectStepWhenReady(TourStepName.mapPane, '#map-pane');
@@ -262,8 +262,8 @@ function namedStepsFactory(
     };
 }
 
-export function stepsFactory(goToStep: (step: number) => void, goToTab: (name: TabName) => void): Array<StepType> {
-    const namedSteps = namedStepsFactory(goToStep, goToTab);
+export function stepsFactory(goToStep: (step: number) => void, navigate: (to: string) => void): Array<StepType> {
+    const namedSteps = namedStepsFactory(goToStep, navigate);
     // Preserve the order of the steps.
     return tourStepNames.map((key: TourStepName) => namedSteps[key]);
 }

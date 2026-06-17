@@ -1,10 +1,10 @@
-import { useGoToTab } from '$lib/tabs/hooks';
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { useTour } from '@reactour/tour';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function TutorialInitializer() {
-    const goToTab = useGoToTab();
+    const navigate = useNavigate();
     const { setSteps, setCurrentStep, setIsOpen } = useTour();
 
     useEffect(() => {
@@ -12,12 +12,12 @@ export function TutorialInitializer() {
             return;
         }
 
-        setSteps(stepsFactory(setCurrentStep, goToTab));
+        setSteps(stepsFactory(setCurrentStep, navigate));
 
         if (tourShouldRun()) {
             setIsOpen(true);
         }
-    }, [goToTab, setCurrentStep, setSteps, setIsOpen]);
+    }, [navigate, setCurrentStep, setSteps, setIsOpen]);
 
     return null;
 }

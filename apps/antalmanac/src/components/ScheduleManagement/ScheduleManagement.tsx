@@ -75,7 +75,7 @@ export function ScheduleManagement() {
             navigate(TAB_HREF.search, { replace: true });
             return;
         }
-    }, [tab, fallbackMode, navigate]);
+    }, [tab, isMobile, fallbackMode, navigate]);
 
     useEffect(() => {
         if (fallbackMode || tab) {
