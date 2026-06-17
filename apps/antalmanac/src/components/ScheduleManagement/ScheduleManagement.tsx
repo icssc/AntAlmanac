@@ -107,9 +107,10 @@ export function ScheduleManagement() {
             navigate(TAB_HREF.calendar, { replace: true });
         }
 
-        // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
+        // NB: `tab` and `navigate` are intentionally omitted from deps. `tab` so back-navigation
+        // to `/` does not re-run defaults; `navigate` because useNavigate's identity changes per route.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile, fallbackMode, navigate]);
+    }, [isMobile, fallbackMode]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
