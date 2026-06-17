@@ -7,7 +7,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import { useActiveTabIndex } from '$lib/tabs/hooks';
-import { TAB_INDEX, getTabHref } from '$lib/tabs/tabs';
+import { TAB_HREF, TAB_INDEX } from '$lib/tabs/tabs';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
@@ -76,7 +76,7 @@ export function ScheduleManagement() {
     // Fallback schedule data lives on the Added tab — switch there when API is unreachable.
     useEffect(() => {
         if (fallbackMode) {
-            navigate(getTabHref('added'), { replace: true });
+            navigate(TAB_HREF.added, { replace: true });
         }
     }, [fallbackMode, navigate]);
 
@@ -97,7 +97,7 @@ export function ScheduleManagement() {
         if (!isMobile) {
             const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
             if (hasSession) {
-                navigate(getTabHref('added'), { replace: true });
+                navigate(TAB_HREF.added, { replace: true });
             }
             return;
         }
@@ -106,7 +106,7 @@ export function ScheduleManagement() {
         const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
         if (hasSession || hasLocalScheduleData) {
-            navigate(getTabHref('calendar'), { replace: true });
+            navigate(TAB_HREF.calendar, { replace: true });
         }
 
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount

@@ -1,4 +1,4 @@
-import { TAB_INDEX, getTabHref, isTabRouteSegment, type TabName } from '$lib/tabs/tabs';
+import { TAB_HREF, TAB_INDEX, isTabRouteSegment, type TabName } from '$lib/tabs/tabs';
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -19,5 +19,5 @@ export type GoToTab = (name: TabName) => void;
 export function useGoToTab(): GoToTab {
     const navigate = useNavigate();
 
-    return useCallback((name: TabName) => navigate(getTabHref(name)), [navigate]);
+    return useCallback((name: TabName) => navigate(TAB_HREF[name]), [navigate]);
 }

@@ -4,7 +4,7 @@ import { AddedCoursesLoadingSkeleton } from '$components/RightPane/AddedCourses/
 import { SectionTable } from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { getMissingSections } from '$lib/courseAlerts';
-import { getTabHref } from '$lib/tabs/tabs';
+import { TAB_HREF } from '$lib/tabs/tabs';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -38,7 +38,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
                 description="Search for courses and add sections to build your schedule. You can also import from your study list."
                 primaryAction={{
                     label: 'Search Courses',
-                    onClick: () => navigate(getTabHref('search')),
+                    onClick: () => navigate(TAB_HREF.search),
                 }}
                 secondaryAction={{
                     label: 'Import Schedule',

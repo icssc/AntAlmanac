@@ -14,7 +14,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
-import { getTabHref } from '$lib/tabs/tabs';
+import { TAB_HREF } from '$lib/tabs/tabs';
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -377,7 +377,7 @@ export const ScheduleCalendar = memo(() => {
                         description="Search for courses to start building your schedule."
                         primaryAction={{
                             label: 'Search for Courses',
-                            onClick: () => navigate(getTabHref('search')),
+                            onClick: () => navigate(TAB_HREF.search),
                         }}
                     />
                 </Backdrop>
