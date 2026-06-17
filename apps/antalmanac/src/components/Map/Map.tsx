@@ -25,12 +25,11 @@ import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/Buildi
 import { UserLocator } from '$components/Map/UserLocator';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { MAPBOX_PROXY_TILES_ENDPOINT, TILES_URL } from '$lib/api/endpoints';
+import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { type Building } from '$lib/locations/buildingCatalogue';
 import locationIds, { buildingCodeFromLocationNumericId } from '$lib/locations/locations';
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { notNull } from '$lib/utils';
-import { env } from '$src/env';
 import AppStore from '$stores/AppStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -367,13 +366,7 @@ export function CourseMap() {
                 <TileLayer
                     key={isDark ? 'dark' : 'light'}
                     attribution={ATTRIBUTION_MARKUP}
-                    url={
-                        env.NEXT_PUBLIC_TILES_ENDPOINT
-                            ? `https://${TILES_URL}/${isDark ? 'dark/' : ''}{z}/{x}/{y}.png`
-                            : isDark
-                              ? `${MAPBOX_PROXY_TILES_ENDPOINT}/dark-v11/512/{z}/{x}/{y}@2x`
-                              : `https://${TILES_URL}/{z}/{x}/{y}.png`
-                    }
+                    url={`https://${TILES_URL}/${isDark ? 'dark/' : ''}{z}/{x}/{y}.png`}
                     tileSize={512}
                     maxZoom={21}
                     minZoom={15}
