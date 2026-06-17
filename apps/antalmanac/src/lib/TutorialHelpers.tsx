@@ -1,5 +1,5 @@
 import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from '$lib/localStorage';
-import { type GoToTab } from '$lib/tabs/hooks';
+import { type TabName } from '$lib/tabs/tabs';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 import { type StepType } from '@reactour/tour';
 
@@ -92,7 +92,10 @@ function KbdCard(props: { children?: React.ReactNode }) {
     );
 }
 
-function namedStepsFactory(goToStep: (step: number) => void, goToTab: GoToTab): Record<TourStepName, StepType> {
+function namedStepsFactory(
+    goToStep: (step: number) => void,
+    goToTab: (name: TabName) => void
+): Record<TourStepName, StepType> {
     const goToNamedStep = (stepName: TourStepName) => {
         const stepIndex = tourStepNames.findIndex((step) => step == stepName);
 
@@ -259,7 +262,7 @@ function namedStepsFactory(goToStep: (step: number) => void, goToTab: GoToTab): 
     };
 }
 
-export function stepsFactory(goToStep: (step: number) => void, goToTab: GoToTab): Array<StepType> {
+export function stepsFactory(goToStep: (step: number) => void, goToTab: (name: TabName) => void): Array<StepType> {
     const namedSteps = namedStepsFactory(goToStep, goToTab);
     // Preserve the order of the steps.
     return tourStepNames.map((key: TourStepName) => namedSteps[key]);

@@ -13,10 +13,7 @@ export function useActiveTabIndex(): number {
     return TAB_INDEX.search;
 }
 
-export type GoToTab = (name: TabName) => void;
-
-/** Navigate to a tab route. Use in components — pass into plain helpers (e.g. tour steps) via callback. */
-export function useGoToTab(): GoToTab {
+export function useGoToTab() {
     const navigate = useNavigate();
 
     return useCallback((name: TabName) => navigate(TAB_HREF[name]), [navigate]);
