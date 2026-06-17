@@ -68,6 +68,12 @@ export function ScheduleManagement() {
     useEffect(() => {
         if (fallbackMode && tab !== 'added') {
             navigate(TAB_HREF.added, { replace: true });
+            return;
+        }
+
+        if (!isMobile && tab === 'calendar') {
+            navigate(TAB_HREF.search, { replace: true });
+            return;
         }
     }, [tab, fallbackMode, navigate]);
 
