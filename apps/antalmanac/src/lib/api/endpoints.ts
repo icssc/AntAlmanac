@@ -15,3 +15,4 @@ function endpointTransform(path: string) {
 
 export const MAPBOX_PROXY_DIRECTIONS_ENDPOINT = endpointTransform('/mapbox/directions');
 export const MAPBOX_PROXY_TILES_ENDPOINT = endpointTransform('/mapbox/tiles');
+export const TILES_URL = env.NEXT_PUBLIC_TILES_ENDPOINT ?? 'tile.openstreetmap.org';
