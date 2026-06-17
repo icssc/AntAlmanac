@@ -368,9 +368,11 @@ export function CourseMap() {
                     key={isDark ? 'dark' : 'light'}
                     attribution={ATTRIBUTION_MARKUP}
                     url={
-                        !env.NEXT_PUBLIC_TILES_ENDPOINT && !isDark
-                            ? `https://${TILES_URL}/{z}/{x}/{y}.png`
-                            : `${MAPBOX_PROXY_TILES_ENDPOINT}/${isDark ? 'dark-v11' : 'streets-v11'}/512/{z}/{x}/{y}@2x`
+                        env.NEXT_PUBLIC_TILES_ENDPOINT
+                            ? `https://${TILES_URL}/${isDark ? 'dark/' : ''}{z}/{x}/{y}.png`
+                            : isDark
+                              ? `${MAPBOX_PROXY_TILES_ENDPOINT}/dark-v11/512/{z}/{x}/{y}@2x`
+                              : `https://${TILES_URL}/{z}/{x}/{y}.png`
                     }
                     tileSize={512}
                     maxZoom={21}
