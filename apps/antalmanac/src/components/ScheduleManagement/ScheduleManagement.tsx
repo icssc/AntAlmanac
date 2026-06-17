@@ -64,27 +64,33 @@ export function ScheduleManagement() {
         [activeTab, popSavedSearch, saveSearch]
     );
 
-    // Calendar is mobile-only — desktop always shows it in the split pane.
-    useEffect(() => {
-        if (!isMobile && tab === 'calendar') {
-            navigate('/', { replace: true });
-        }
-    }, [tab, isMobile, navigate]);
-
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
+    const defaultLandingMobileRef = useRef<boolean | undefined>(undefined);
 
-    // Fallback schedule data lives on the Added tab — switch there when API is unreachable.
+    // Resolve tab redirects in priority order (fallback → invalid route → default landing at `/`).
     useEffect(() => {
         if (fallbackMode) {
-            navigate(TAB_HREF.added, { replace: true });
-        }
-    }, [fallbackMode, navigate]);
-
-    // Pick a default tab on first visit to `/`.
-    useEffect(() => {
-        if (tab) {
+            if (tab !== 'added') {
+                navigate(TAB_HREF.added, { replace: true });
+            }
             return;
         }
+
+        if (!isMobile && tab === 'calendar') {
+            navigate(TAB_HREF.search, { replace: true });
+            return;
+        }
+
+        if (tab) {
+            defaultLandingMobileRef.current = undefined;
+            return;
+        }
+
+        // Default landing at `/` — run once per isMobile value (matches main mount effect deps).
+        if (defaultLandingMobileRef.current === isMobile) {
+            return;
+        }
+        defaultLandingMobileRef.current = isMobile;
 
         const formData = readCourseSearchParams();
         const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
@@ -108,10 +114,7 @@ export function ScheduleManagement() {
         if (hasSession || hasLocalScheduleData) {
             navigate(TAB_HREF.calendar, { replace: true });
         }
-
-        // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile, navigate]);
+    }, [tab, isMobile, fallbackMode, navigate]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
