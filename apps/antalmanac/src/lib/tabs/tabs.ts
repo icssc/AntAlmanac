@@ -44,7 +44,3 @@ export type TabInfo = {
 export const TAB_INDEX = Object.fromEntries(TABS.map((tab, index) => [tab.name, index])) as Record<TabName, number>;
 
 export const TAB_HREF = Object.fromEntries(TABS.map((tab) => [tab.name, tab.href])) as Record<TabName, string>;
-
-export function isTabRouteSegment(segment: string | undefined): segment is TabName {
-    return segment === 'calendar' || segment === 'added' || segment === 'map';
-}

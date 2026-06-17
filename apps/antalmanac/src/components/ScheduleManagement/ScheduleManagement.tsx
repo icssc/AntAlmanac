@@ -65,9 +65,7 @@ export function ScheduleManagement() {
     );
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
-    const defaultLandingMobileRef = useRef<boolean | undefined>(undefined);
 
-    // Resolve tab redirects in priority order (fallback → invalid route → default landing at `/`).
     useEffect(() => {
         if (fallbackMode) {
             if (tab !== 'added') {
@@ -78,19 +76,13 @@ export function ScheduleManagement() {
 
         if (!isMobile && tab === 'calendar') {
             navigate(TAB_HREF.search, { replace: true });
-            return;
         }
+    }, [tab, isMobile, fallbackMode, navigate]);
 
-        if (tab) {
-            defaultLandingMobileRef.current = undefined;
+    useEffect(() => {
+        if (fallbackMode || tab) {
             return;
         }
-
-        // Default landing at `/` — run once per isMobile value (matches main mount effect deps).
-        if (defaultLandingMobileRef.current === isMobile) {
-            return;
-        }
-        defaultLandingMobileRef.current = isMobile;
 
         const formData = readCourseSearchParams();
         const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
@@ -114,7 +106,10 @@ export function ScheduleManagement() {
         if (hasSession || hasLocalScheduleData) {
             navigate(TAB_HREF.calendar, { replace: true });
         }
-    }, [tab, isMobile, fallbackMode, navigate]);
+
+        // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isMobile, fallbackMode, navigate]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
