@@ -366,7 +366,7 @@ export function CourseMap() {
                 <TileLayer
                     key={isDark ? 'dark' : 'light'}
                     attribution={ATTRIBUTION_MARKUP}
-                    url={`${MAPBOX_PROXY_TILES_ENDPOINT}/512/{z}/{x}/{y}@2x${isDark ? '?theme=dark' : ''}`}
+                    url={`${MAPBOX_PROXY_TILES_ENDPOINT}/${isDark ? 'dark-v11' : 'streets-v11'}/512/{z}/{x}/{y}@2x`}
                     tileSize={512}
                     maxZoom={21}
                     minZoom={15}

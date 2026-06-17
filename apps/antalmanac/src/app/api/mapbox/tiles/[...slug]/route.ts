@@ -13,11 +13,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
         return new NextResponse('MAPBOX_ACCESS_TOKEN is not set', { status: 500 });
     }
 
-    const tilePath = (Array.isArray(slug) ? slug : [slug]).join('/');
-    const style = req.nextUrl.searchParams.get('theme') === 'dark' ? 'dark-v11' : 'streets-v11';
+    const slugParts = Array.isArray(slug) ? slug : [slug];
+    const style = slugParts[0] === 'dark-v11' ? 'dark-v11' : 'streets-v11';
+    const tilePath = (
+        slugParts[0] === 'dark-v11' || slugParts[0] === 'streets-v11' ? slugParts.slice(1) : slugParts
+    ).join('/');
 
     const searchParams = new URLSearchParams(req.nextUrl.searchParams);
-    searchParams.delete('theme');
     searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
 
     const url = `${MAPBOX_API_URL}/styles/v1/mapbox/${style}/tiles/${tilePath}?${searchParams.toString()}`;
