@@ -1,28 +1,12 @@
-import { env } from '$src/env';
-import { PostHog } from 'posthog-js';
+import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 
-export const postHog = new PostHog();
-
-if (env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY) {
-    postHog.init(env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY, {
-        api_host: env.NEXT_PUBLIC_PUBLIC_POSTHOG_HOST,
-        capture_pageview: false,
-        autocapture: false,
-        disable_surveys: true,
-        capture_dead_clicks: false,
-    });
-} else {
-    console.warn('PostHog not initialized: Missing API key');
-}
+export const postHog = posthog;
 
 interface Props {
     children?: React.ReactNode;
 }
 
 export function AppPostHogProvider(props: Props) {
-    if (env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY) {
-        return <PostHogProvider client={postHog}>{props.children}</PostHogProvider>;
-    }
-    return <>{props.children}</>;
+    return <PostHogProvider client={posthog}>{props.children}</PostHogProvider>;
 }

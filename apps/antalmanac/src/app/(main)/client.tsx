@@ -13,13 +13,12 @@ import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManag
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
-import { PosthogPageviewTracker } from '$lib/analytics/PostHogPageviewTracker';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Split from 'react-split';
 
 const DEFAULT_SPLIT_SIZES: [number, number] = [42.5, 57.5];
@@ -107,9 +106,6 @@ export default function Client() {
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Suspense fallback={null}>
-                <PosthogPageviewTracker />
-            </Suspense>
             <AutoSignIn />
             <TutorialInitializer />
             <AuthInitializer />
