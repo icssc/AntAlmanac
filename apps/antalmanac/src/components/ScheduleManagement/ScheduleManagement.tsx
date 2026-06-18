@@ -8,7 +8,6 @@ import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
-import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -90,19 +89,10 @@ export function ScheduleManagement() {
             return;
         }
 
-        if (!isMobile) {
-            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-            if (hasSession) {
-                navigate(TAB_HREF.added, { replace: true });
-            }
-            return;
-        }
-
         const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-        const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
-
-        if (hasSession || hasLocalScheduleData) {
-            navigate(TAB_HREF.calendar, { replace: true });
+        if (hasSession) {
+            navigate(isMobile ? TAB_HREF.calendar : TAB_HREF.added, { replace: true });
+            return;
         }
 
         // NB: `tab` and `navigate` are intentionally omitted from deps. `tab` so back-navigation
