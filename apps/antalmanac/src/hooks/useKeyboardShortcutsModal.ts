@@ -1,18 +1,7 @@
+import { shouldIgnoreShortcutTarget } from '$lib/keyboardShortcuts';
 import { useCallback, useEffect, useState } from 'react';
 
-/**
- * Opens the keyboard shortcuts modal on Cmd+/ (Mac) or Ctrl+/ (Windows/Linux).
- * Does not fire when typing in inputs or contenteditable.
- */
-function shouldIgnoreShortcutTarget(target: EventTarget | null): boolean {
-    if (!target || !(target instanceof HTMLElement)) return false;
-    const tag = target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
-    if (target.isContentEditable) return true;
-    return false;
-}
-
-/** ⌘/ or Ctrl+/ — `code` is stable across keyboard layouts */
+/** Opens the keyboard shortcuts modal on Cmd+/ (Mac) or Ctrl+/ (Windows/Linux). */
 function isSlashChord(event: KeyboardEvent): boolean {
     if (!event.metaKey && !event.ctrlKey) {
         return false;
