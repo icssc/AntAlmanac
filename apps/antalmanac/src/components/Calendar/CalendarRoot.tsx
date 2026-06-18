@@ -27,9 +27,9 @@ import { Box, Backdrop, useTheme } from '@mui/material';
 import { VisibilityState } from '@packages/antalmanac-types';
 import { differenceInCalendarDays, format, getDay, startOfWeek, type Locale } from 'date-fns';
 import { enUS } from 'date-fns/locale/en-US';
+import { useRouter } from 'next/navigation';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, type Components, DateLocalizer, dateFnsLocalizer, Views, type ViewsProps } from 'react-big-calendar';
-import { useNavigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 /*
@@ -55,7 +55,7 @@ const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 const noop = () => {};
 
 export const ScheduleCalendar = memo(() => {
-    const navigate = useNavigate();
+    const router = useRouter();
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
     const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
@@ -377,7 +377,7 @@ export const ScheduleCalendar = memo(() => {
                         description="Search for courses to start building your schedule."
                         primaryAction={{
                             label: 'Search for Courses',
-                            onClick: () => navigate(TAB_HREF.search),
+                            onClick: () => router.push(TAB_HREF.search),
                         }}
                     />
                 </Backdrop>

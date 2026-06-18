@@ -5,10 +5,10 @@ import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { type CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
 import dynamic from 'next/dynamic';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
 import { Fragment, useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { LocationMarker } from './Marker';
 
@@ -164,10 +164,11 @@ export function getCustomEventPerBuilding(customEvents: CustomEvent[] = AppStore
  * Map of all course locations on UCI campus.
  */
 export function CourseMap() {
-    const navigate = useNavigate();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
     const map = useRef<Map | null>(null);
     const markerRef = useRef<Marker | null>(null);
-    const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
 
     const [rawCalendarEvents, setRawCalendarEvents] = useState(() => AppStore.getEventsInCalendar());
@@ -240,9 +241,9 @@ export function CourseMap() {
 
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
-            navigate(`/map?location=${building?.id}`);
+            router.replace(`/map?location=${building?.id}`);
         },
-        [navigate]
+        [router]
     );
 
     const days = useMemo(() => {

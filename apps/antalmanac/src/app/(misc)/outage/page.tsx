@@ -1,7 +1,9 @@
-import { Box, Typography, Stack } from '@mui/material';
-import { Link } from 'react-router-dom';
+'use client';
 
-export const OutagePage = () => {
+import { Box, Typography, Stack } from '@mui/material';
+import Link from 'next/link';
+
+export default function Page() {
     return (
         <Box sx={{ height: '100dvh', overflowY: 'auto' }}>
             <Stack
@@ -22,10 +24,14 @@ export const OutagePage = () => {
                 <Stack spacing={2}>
                     <Typography variant="h5" component="p" sx={{ textWrap: 'balance' }}>
                         We apologize for the inconvenience and are working to get AntAlmanac back on online. Check out
-                        the <Link to="https://discord.gg/KqJq8huuBB">ICSSC Projects server</Link> for updates.
+                        the{' '}
+                        <Link href="https://discord.gg/KqJq8huuBB" target="_blank" rel="noopener noreferrer">
+                            ICSSC Projects server
+                        </Link>{' '}
+                        for updates.
                     </Typography>
                 </Stack>
             </Stack>
         </Box>
     );
-};
+}

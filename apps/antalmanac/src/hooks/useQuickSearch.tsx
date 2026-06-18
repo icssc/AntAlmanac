@@ -9,11 +9,11 @@ import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/Se
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { TAB_HREF } from '$lib/tabs/tabs';
 import type { AATerm } from '@packages/antalmanac-types';
+import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export function useQuickSearch() {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     return useCallback(
         (deptValue: string, courseNumber: string, term: AATerm) => {
@@ -28,8 +28,8 @@ export function useQuickSearch() {
             searchParams.set(COURSE_SEARCH_MODE_KEY, COURSE_SEARCH_MODE.QUICK);
             searchParams.set(COURSE_SEARCH_VIEW_KEY, COURSE_SEARCH_VIEW.RESULTS);
 
-            navigate({ pathname: TAB_HREF.search, search: searchParams.toString() });
+            router.push(`${TAB_HREF.search}?${searchParams.toString()}`);
         },
-        [navigate]
+        [router]
     );
 }
