@@ -19,6 +19,7 @@ import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import dynamic from 'next/dynamic';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Split from 'react-split';
 
@@ -92,7 +93,7 @@ function DesktopHome() {
     );
 }
 
-export function Client() {
+function Client() {
     const isMobile = useIsMobile();
     const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 
@@ -126,3 +127,5 @@ export function Client() {
         </LocalizationProvider>
     );
 }
+
+export const DynamicClient = dynamic(() => Promise.resolve({ default: Client }), { ssr: false });
