@@ -14,6 +14,7 @@ enum LocalStorageKeys {
     columnToggles = 'columnToggles',
     wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
+    /** @deprecated Guest import confirmation now uses a snackbar in AuthInitializer. */
     importedUser = 'importedUser',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
@@ -37,18 +38,6 @@ const LSK = LocalStorageKeys;
 
 function getLocalStorage(): Storage | null {
     return globalThis.window?.localStorage ?? null;
-}
-
-export function setLocalStorageImportedUser(value: string) {
-    getLocalStorage()?.setItem(LSK.importedUser, value);
-}
-
-export function getLocalStorageImportedUser() {
-    return getLocalStorage()?.getItem(LSK.importedUser) ?? null;
-}
-
-export function removeLocalStorageImportedUser() {
-    getLocalStorage()?.removeItem(LSK.importedUser);
 }
 
 export function setLocalStorageDataCache(value: string) {

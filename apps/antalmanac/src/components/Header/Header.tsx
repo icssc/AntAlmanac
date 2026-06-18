@@ -6,31 +6,18 @@ import { Import } from '$components/Header/Import';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
-import { getLocalStorageImportedUser, removeLocalStorageImportedUser } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 import { AppBar, Box, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 type HeaderProps = {
     initialIsMobile: boolean;
 };
 
 export function Header({ initialIsMobile }: HeaderProps) {
-    const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
-    const [importedUser, setImportedUser] = useState('');
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
-
-    useEffect(() => {
-        setImportedUser(getLocalStorageImportedUser() ?? '');
-    }, []);
-
-    const handleCloseSuccessfulSaved = () => {
-        setOpenSuccessfulSaved(false);
-        removeLocalStorageImportedUser();
-        setImportedUser('');
-    };
 
     const handleLogoutComplete = () => {
         setOpenSignoutDialog(true);
@@ -40,12 +27,6 @@ export function Header({ initialIsMobile }: HeaderProps) {
         setOpenSignoutDialog(false);
         window.location.reload();
     };
-
-    useEffect(() => {
-        if (importedUser !== '' && sessionIsValid) {
-            setOpenSuccessfulSaved(true);
-        }
-    }, [importedUser, sessionIsValid]);
 
     return (
         <Box
@@ -86,14 +67,6 @@ export function Header({ initialIsMobile }: HeaderProps) {
                         {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
                     </Stack>
 
-                    <AlertDialog
-                        open={openSuccessfulSaved}
-                        title={`Schedule from "${importedUser}" has been saved to your account!`}
-                        severity="success"
-                        onClose={handleCloseSuccessfulSaved}
-                    >
-                        NOTE: All changes made to your schedules will be saved to your account
-                    </AlertDialog>
                     <AlertDialog
                         open={openSignoutDialog}
                         title="Signed out successfully"

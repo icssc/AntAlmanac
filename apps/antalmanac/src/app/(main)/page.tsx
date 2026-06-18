@@ -6,10 +6,10 @@ import {
 import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { loadCourseSearchParams, loadSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { auth } from '$lib/auth/auth';
+import { getIsMobileFromHeaders } from '$lib/getIsMobileFromHeaders';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { userAgent } from 'next/server';
 
 export default async function Page({ searchParams }: PageProps<'/'>) {
     const requestHeaders = await headers();
@@ -23,8 +23,7 @@ export default async function Page({ searchParams }: PageProps<'/'>) {
     const resolvedSearchParams = await searchParams;
     const session = await auth.api.getSession({ headers: requestHeaders });
 
-    const { device } = userAgent({ headers: requestHeaders });
-    const isMobile = device.type === 'mobile' || device.type === 'tablet';
+    const isMobile = getIsMobileFromHeaders(requestHeaders);
 
     if (resolvedSearchParams[COURSE_SEARCH_PLANNER_KEY] != null) {
         return null;
