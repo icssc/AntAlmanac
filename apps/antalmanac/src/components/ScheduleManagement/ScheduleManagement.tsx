@@ -6,8 +6,8 @@ import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleM
 import { useIsMobile } from '$hooks/useIsMobile';
 import { getWasLoggedIn } from '$lib/localStorage';
 import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
-import { useActiveTabIndex } from '$lib/tabs/hooks';
-import { TAB_HREF, TAB_INDEX } from '$lib/tabs/tabs';
+import { useActiveTab } from '$lib/tabs/hooks';
+import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
@@ -25,7 +25,7 @@ export function ScheduleManagement() {
     const { tab } = useParams();
     const navigate = useNavigate();
     const isMobile = useIsMobile();
-    const activeTab = useActiveTabIndex();
+    const activeTab = useActiveTab();
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const { saveSearch, popSavedSearch } = useSavedSearchStore(
@@ -35,8 +35,8 @@ export function ScheduleManagement() {
         }))
     );
 
-    // Tab index mapped to the last known scrollTop.
-    const [positions, setPositions] = useState<Record<number, number>>({});
+    // Tab name mapped to the last known scrollTop.
+    const [positions, setPositions] = useState<Partial<Record<TabName, number>>>({});
 
     /**
      * Ref to the scrollable container with all of the tabs-content within it.
@@ -53,12 +53,12 @@ export function ScheduleManagement() {
     };
 
     const handleTabChange = useCallback(
-        (nextTab: number) => {
-            if (activeTab === TAB_INDEX.search && nextTab !== TAB_INDEX.search) {
+        (nextTab: TabName) => {
+            if (activeTab === 'search' && nextTab !== 'search') {
                 saveSearch();
             }
 
-            if (nextTab === TAB_INDEX.search) {
+            if (nextTab === 'search') {
                 popSavedSearch();
             }
         },

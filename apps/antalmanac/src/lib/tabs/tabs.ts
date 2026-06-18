@@ -41,6 +41,4 @@ export type TabInfo = {
     mobileOnly?: true;
 };
 
-export const TAB_INDEX = Object.fromEntries(TABS.map((tab, index) => [tab.name, index])) as Record<TabName, number>;
-
 export const TAB_HREF = Object.fromEntries(TABS.map((tab) => [tab.name, tab.href])) as Record<TabName, string>;

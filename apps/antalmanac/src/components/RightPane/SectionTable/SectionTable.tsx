@@ -10,8 +10,7 @@ import { useDraggingItemState } from '$hooks/useDraggingItemState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { type AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAlerts';
-import { useActiveTabIndex } from '$lib/tabs/hooks';
-import { TAB_INDEX } from '$lib/tabs/tabs';
+import { useActiveTab } from '$lib/tabs/hooks';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import {
@@ -91,7 +90,7 @@ export function SectionTable({
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
 
     const activeColumns = useColumnStore((store) => store.activeColumns);
-    const activeTab = useActiveTabIndex();
+    const activeTab = useActiveTab();
 
     const handleToggleExpand = () => {
         setOpenContent(!openContent);
@@ -155,9 +154,7 @@ export function SectionTable({
                     skeleton
                 )}
 
-                {activeTab !== TAB_INDEX.added
-                    ? null
-                    : wrapSkeleton(<CourseInfoSearchButton course={course} />, skeleton)}
+                {activeTab !== 'added' ? null : wrapSkeleton(<CourseInfoSearchButton course={course} />, skeleton)}
 
                 {wrapSkeleton(
                     <CourseInfoButton
