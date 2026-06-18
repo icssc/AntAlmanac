@@ -10,8 +10,8 @@ import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { type AACourseWithTerm } from '@packages/antalmanac-types';
+import { useRouter } from 'next/navigation';
 import { memo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const getOfferingId = (course: AACourseWithTerm) => scheduleOfferingKey(course);
 
@@ -22,7 +22,7 @@ interface AddedCoursesListProps {
 }
 
 export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderChange }: AddedCoursesListProps) => {
-    const navigate = useNavigate();
+    const router = useRouter();
     const openLoadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
     const setOpenImportDialog = useScheduleComponentsToggleStore((state) => state.setOpenImportDialog);
 
@@ -38,7 +38,7 @@ export const AddedCoursesList = memo(({ courses, scheduleNames, onCourseOrderCha
                 description="Search for courses and add sections to build your schedule. You can also import from your study list."
                 primaryAction={{
                     label: 'Search Courses',
-                    onClick: () => navigate(TAB_HREF.search),
+                    onClick: () => router.push(TAB_HREF.search),
                 }}
                 secondaryAction={{
                     label: 'Import Schedule',

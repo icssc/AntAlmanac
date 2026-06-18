@@ -5,10 +5,10 @@ import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { type CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
 import dynamic from 'next/dynamic';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
 import { Fragment, useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { LocationMarker } from './Marker';
 
@@ -56,7 +56,7 @@ const CAMPUS_BOUNDS: [LatLngTuple, LatLngTuple] = [
 ];
 
 interface MarkerContent {
-    key: string;
+    markerKey: string;
     image: string;
     acronym: string;
     markerColor: string;
@@ -85,10 +85,10 @@ export function getCoursesPerBuilding(courseEvents: CourseEvent[] = AppStore.get
             .filter((event) => event.locations.map((location) => location.building).includes(buildingCode))
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[buildingCode]];
-                const key = `${event.title} ${event.sectionType} @ ${event.locations[0]}`;
+                const markerKey = `${event.title} ${event.sectionType} @ ${event.locations[0]}`;
                 const acronym = getBuildingNameAcronym(locationData.name);
                 const markerData = {
-                    key,
+                    markerKey,
                     image: locationData.imageURLs[0],
                     acronym,
                     markerColor: event.color,
@@ -143,10 +143,10 @@ export function getCustomEventPerBuilding(customEvents: CustomEvent[] = AppStore
             })
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[validBuildingCodes[i]]];
-                const key = `${event.title} @ ${event.building}`;
+                const markerKey = `${event.title} @ ${event.building}`;
                 const acronym = getBuildingNameAcronym(locationData.name);
                 const markerCustomEventData = {
-                    key,
+                    markerKey,
                     image: locationData.imageURLs[0],
                     acronym,
                     markerColor: event.color ? event.color : '',
@@ -164,10 +164,11 @@ export function getCustomEventPerBuilding(customEvents: CustomEvent[] = AppStore
  * Map of all course locations on UCI campus.
  */
 export function CourseMap() {
-    const navigate = useNavigate();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
     const map = useRef<Map | null>(null);
     const markerRef = useRef<Marker | null>(null);
-    const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
 
     const [rawCalendarEvents, setRawCalendarEvents] = useState(() => AppStore.getEventsInCalendar());
@@ -240,9 +241,9 @@ export function CourseMap() {
 
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
-            navigate(`/map?location=${building?.id}`);
+            router.push(building ? `/map?location=${building.id}` : '/map');
         },
-        [navigate]
+        [router]
     );
 
     const days = useMemo(() => {
@@ -298,7 +299,7 @@ export function CourseMap() {
     const customEventMarkersToDisplay = useMemo(() => {
         const markerValues = Object.keys(customEventMarkers)
             .flatMap((markerKey) => customEventMarkers[markerKey])
-            .filter((marker, i, arr) => arr.findIndex((other) => other.key === marker.key) === i);
+            .filter((marker, i, arr) => arr.findIndex((other) => other.markerKey === marker.markerKey) === i);
 
         const markersToday =
             today === 'All'
@@ -358,7 +359,11 @@ export function CourseMap() {
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}
                     </Tabs>
-                    <BuildingSelect onChange={onBuildingChange} variant="filled" />
+                    <BuildingSelect
+                        value={searchParams.get('location') ?? undefined}
+                        onChange={onBuildingChange}
+                        variant="filled"
+                    />
                 </Paper>
 
                 <TileLayer
@@ -424,7 +429,7 @@ export function CourseMap() {
                     const customEventSameBuildingPrior = customEventMarkersToDisplay.slice(0, index);
 
                     return (
-                        <Fragment key={customEventMarkers.key}>
+                        <Fragment key={customEventMarkers.markerKey}>
                             <LocationMarker
                                 {...customEventMarkers}
                                 label={'E'}

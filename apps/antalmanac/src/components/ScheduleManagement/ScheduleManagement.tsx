@@ -1,19 +1,13 @@
-import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
-import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
-import { readCourseSearchParams, readSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { getWasLoggedIn } from '$lib/localStorage';
-import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { useSessionStore } from '$stores/SessionStore';
 import { GlobalStyles, Stack } from '@mui/material';
+import { useRouter, useSearchParams, useSelectedLayoutSegment } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 /**
@@ -21,8 +15,9 @@ import { useShallow } from 'zustand/react/shallow';
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
-    const { tab } = useParams();
-    const navigate = useNavigate();
+    const segment = useSelectedLayoutSegment();
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const isMobile = useIsMobile();
     const activeTab = useActiveTab();
 
@@ -54,51 +49,27 @@ export function ScheduleManagement() {
     const handleTabChange = useCallback(
         (nextTab: TabName) => {
             if (activeTab === 'search' && nextTab !== 'search') {
-                saveSearch();
+                const query = searchParams.toString();
+                saveSearch(query ? `?${query}` : '');
             }
 
             if (nextTab === 'search') {
                 popSavedSearch();
             }
         },
-        [activeTab, popSavedSearch, saveSearch]
+        [activeTab, popSavedSearch, saveSearch, searchParams]
     );
 
     useEffect(() => {
-        if (fallbackMode && tab !== 'added') {
-            navigate(TAB_HREF.added, { replace: true });
+        if (fallbackMode && segment !== 'added') {
+            router.replace(TAB_HREF.added);
             return;
         }
 
-        if (!isMobile && tab === 'calendar') {
-            navigate(TAB_HREF.search, { replace: true });
-            return;
+        if (!isMobile && segment === 'calendar') {
+            router.replace(TAB_HREF.search);
         }
-    }, [tab, isMobile, fallbackMode, navigate]);
-
-    useEffect(() => {
-        if (fallbackMode || tab) {
-            return;
-        }
-
-        const formData = readCourseSearchParams();
-        const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
-        const isManualSearchMode = readSearchMode() === COURSE_SEARCH_MODE.MANUAL;
-
-        if (shouldSearchPlannerFromParams() || hasParams || isManualSearchMode) {
-            return;
-        }
-
-        const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-        if (hasSession) {
-            navigate(isMobile ? TAB_HREF.calendar : TAB_HREF.added, { replace: true });
-            return;
-        }
-
-        // NB: `tab` and `navigate` are intentionally omitted from deps. `tab` so back-navigation
-        // to `/` does not re-run defaults; `navigate` because useNavigate's identity changes per route.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile, fallbackMode]);
+    }, [segment, isMobile, fallbackMode, router]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {

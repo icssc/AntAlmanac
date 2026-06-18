@@ -18,7 +18,7 @@ import {
     WebsocRestrictionCodeOptionSchema,
     type AATerm,
 } from '@packages/antalmanac-types';
-import { createParser, createSerializer, parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs';
+import { createParser, createSerializer, parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 const parseAsCourseSearchTerm = createParser<AATerm>({
     parse: (value: string) => getTermByShortName(value) ?? null,

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 interface MapLinkProps {
     buildingId: number;
@@ -8,7 +8,7 @@ interface MapLinkProps {
 export const MapLink = ({ buildingId, room }: MapLinkProps) => {
     return (
         <Link
-            to={`/map?location=${buildingId}`}
+            href={`/map?location=${buildingId}`}
             style={{
                 textDecoration: 'none',
             }}

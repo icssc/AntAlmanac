@@ -1,4 +1,8 @@
+'use client';
+
+import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AuthInitializer } from '$components/AuthInitializer';
+import { AutoSignIn } from '$components/AutoSignIn';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
@@ -9,12 +13,13 @@ import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManag
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
+import { PosthogPageviewTracker } from '$lib/analytics/PostHogPageviewTracker';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Split from 'react-split';
 
 const DEFAULT_SPLIT_SIZES: [number, number] = [42.5, 57.5];
@@ -72,7 +77,6 @@ function DesktopHome() {
             gutterStyle={() => ({
                 backgroundColor: BLUE,
                 width: '10px',
-                // gutter contents are slightly offset to the right, this centers the content
                 paddingRight: '1px',
             })}
             onDrag={handleDrag}
@@ -88,12 +92,25 @@ function DesktopHome() {
     );
 }
 
-export function Home() {
+export default function Client() {
     const isMobile = useIsMobile();
     const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 
+    useEffect(() => {
+        document.addEventListener('keydown', undoDelete, false);
+        document.addEventListener('keydown', redoDelete, false);
+        return () => {
+            document.removeEventListener('keydown', undoDelete, false);
+            document.removeEventListener('keydown', redoDelete, false);
+        };
+    }, []);
+
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Suspense fallback={null}>
+                <PosthogPageviewTracker />
+            </Suspense>
+            <AutoSignIn />
             <TutorialInitializer />
             <AuthInitializer />
             <PatchNotes />

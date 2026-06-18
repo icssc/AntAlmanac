@@ -108,3 +108,17 @@ export function formatShortcutKeys(keys: ShortcutKey[], mac: boolean): string[] 
     }
     return out;
 }
+
+/** Skip global shortcuts while the user is typing in a form control. */
+export function shouldIgnoreShortcutTarget(target: EventTarget | null): boolean {
+    if (!target || !(target instanceof HTMLElement)) {
+        return false;
+    }
+
+    const tag = target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+        return true;
+    }
+
+    return target.isContentEditable;
+}

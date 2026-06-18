@@ -1,11 +1,12 @@
+'use client';
+
 import { ExpandMore } from '@mui/icons-material';
 import { Box, Accordion, AccordionDetails, AccordionSummary, Typography, Button, Stack } from '@mui/material';
 import Link from 'next/link';
-import { useLocation, useRouteError } from 'react-router-dom';
+import { usePathname } from 'next/navigation';
 
-export const ErrorPage = () => {
-    const error = useRouteError();
-    const location = useLocation();
+export default function Error({ error }: { error: Error & { digest?: string } }) {
+    const pathname = usePathname();
 
     return (
         <Box sx={{ height: '100dvh', overflowY: 'auto' }}>
@@ -50,13 +51,13 @@ export const ErrorPage = () => {
                             flexWrap: 'wrap',
                         }}
                     >
-                        <Typography sx={{ fontWeight: '600' }}>Route: {location.pathname}</Typography>
+                        <Typography sx={{ fontWeight: '600' }}>Route: {pathname}</Typography>
                         <Typography sx={{ wordBreak: 'break-word' }}>
-                            {error instanceof Error ? error.stack : 'No error stack provided.'}
+                            {error.stack ?? 'No error stack provided.'}
                         </Typography>
                     </AccordionDetails>
                 </Accordion>
             </Stack>
         </Box>
     );
-};
+}
