@@ -14,17 +14,18 @@ import { useEffect, useState } from 'react';
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
-    const importedUser = getLocalStorageImportedUser() ?? '';
+    const [importedUser, setImportedUser] = useState('');
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
-    const isMobile = useIsMobile();
 
-    const clearStorage = () => {
-        removeLocalStorageImportedUser();
-    };
+    useEffect(() => {
+        setImportedUser(getLocalStorageImportedUser() ?? '');
+    }, []);
+    const isMobile = useIsMobile();
 
     const handleCloseSuccessfulSaved = () => {
         setOpenSuccessfulSaved(false);
-        clearStorage();
+        removeLocalStorageImportedUser();
+        setImportedUser('');
     };
 
     const handleLogoutComplete = () => {

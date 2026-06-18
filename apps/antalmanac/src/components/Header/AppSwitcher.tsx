@@ -19,6 +19,7 @@ import {
     Popover,
     Typography,
 } from '@mui/material';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { MouseEventHandler } from 'react';
 
@@ -38,7 +39,8 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
     const [plannerLoading, setPlannerLoading] = useState(false);
     const isDark = useThemeStore((store) => store.isDark);
 
-    const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
+    const pathname = usePathname();
+    const platform = pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
     const handlePlannerClick: MouseEventHandler<HTMLElement> = (event) => {
         if (plannerLoading) return;
