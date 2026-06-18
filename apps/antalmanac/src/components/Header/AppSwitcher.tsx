@@ -20,13 +20,28 @@ import {
     Popover,
     Typography,
 } from '@mui/material';
+import type { Theme } from '@mui/material/styles';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { MouseEventHandler } from 'react';
 
-/** Matches theme breakpoint `sm` (800px) used by useIsMobile elsewhere. */
-const mobileLayoutSx = { display: { xs: 'flex', sm: 'none' }, alignItems: 'center' } as const;
-const desktopLayoutSx = { display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1 } as const;
+/** Matches theme.breakpoints.down('sm') — sm is 800px in our theme. */
+function layoutSx(theme: Theme, variant: 'mobile' | 'desktop') {
+    if (variant === 'mobile') {
+        return {
+            display: 'flex',
+            alignItems: 'center',
+            [theme.breakpoints.up('sm')]: { display: 'none' },
+        };
+    }
+
+    return {
+        display: 'none',
+        alignItems: 'center',
+        gap: 1,
+        [theme.breakpoints.up('sm')]: { display: 'flex' },
+    };
+}
 
 /** Selected/hover use lighter shades than SETTINGS_POPOVER_BG so feedback is visible */
 const darkMenuSx = {
@@ -81,7 +96,7 @@ export function AppSwitcher() {
 
     return (
         <>
-            <Box sx={mobileLayoutSx}>
+            <Box sx={(theme) => layoutSx(theme, 'mobile')}>
                 <Button
                     onClick={(event) => setAnchorEl(event.currentTarget)}
                     endIcon={<UnfoldMore />}
@@ -168,7 +183,7 @@ export function AppSwitcher() {
                 </Popover>
             </Box>
 
-            <Box sx={desktopLayoutSx}>
+            <Box sx={(theme) => layoutSx(theme, 'desktop')}>
                 <Logo />
                 <ButtonGroup variant="outlined" color="inherit">
                     <Button

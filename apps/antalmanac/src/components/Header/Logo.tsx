@@ -75,12 +75,13 @@ export function Logo() {
 
     return (
         <Box
-            sx={{
+            sx={(theme) => ({
                 position: 'relative',
                 height: 32,
-                width: { xs: 48, sm: 78 },
+                width: 48,
                 flexShrink: 0,
-            }}
+                [theme.breakpoints.up('sm')]: { width: 78 },
+            })}
         >
             <Image
                 src={currentLogo.logo}
