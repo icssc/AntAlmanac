@@ -1,4 +1,4 @@
-import { useIsMobile } from '$hooks/useIsMobile';
+import { Box } from '@mui/material';
 import Image from 'next/image';
 
 type Logo = {
@@ -73,15 +73,24 @@ function logoIsForCurrentSeason(logo: Logo) {
 export function Logo() {
     const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
 
-    const isMobile = useIsMobile();
     return (
-        <Image
-            src={currentLogo?.logo}
-            height={32}
-            width={isMobile ? 48 : 78}
-            title={currentLogo?.attribution}
-            loading="eager"
-            alt="logo"
-        />
+        <Box
+            sx={{
+                position: 'relative',
+                height: 32,
+                width: { xs: 48, sm: 78 },
+                flexShrink: 0,
+            }}
+        >
+            <Image
+                src={currentLogo.logo}
+                fill
+                sizes="(max-width: 799px) 48px, 78px"
+                title={currentLogo.attribution}
+                loading="eager"
+                alt="logo"
+                style={{ objectFit: 'contain' }}
+            />
+        </Box>
     );
 }

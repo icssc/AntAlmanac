@@ -136,9 +136,7 @@ interface DevModeStore {
 }
 
 export const useDevModeStore = create<DevModeStore>((set) => {
-    const stored = typeof window !== 'undefined' ? getLocalStorageDevMode() : null;
-    const isLocalDev = process.env.NODE_ENV === 'development';
-    const devMode = stored === null ? isLocalDev : stored === 'true';
+    const devMode = process.env.NODE_ENV === 'development';
 
     return {
         devMode,
@@ -150,3 +148,11 @@ export const useDevModeStore = create<DevModeStore>((set) => {
         },
     };
 });
+
+/** Restore persisted devMode after mount so SSR uses the env default. */
+export function hydrateDevModeStore() {
+    const stored = getLocalStorageDevMode();
+    if (stored === null) return;
+
+    useDevModeStore.setState({ devMode: stored === 'true' });
+}

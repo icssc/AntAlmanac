@@ -9,6 +9,7 @@ import appStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
 import {
+    Box,
     Button,
     ButtonGroup,
     CircularProgress,
@@ -23,9 +24,9 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { MouseEventHandler } from 'react';
 
-type AppSwitcherProps = {
-    isMobile: boolean;
-};
+/** Matches theme breakpoint `sm` (800px) used by useIsMobile elsewhere. */
+const mobileLayoutSx = { display: { xs: 'flex', sm: 'none' }, alignItems: 'center' } as const;
+const desktopLayoutSx = { display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1 } as const;
 
 /** Selected/hover use lighter shades than SETTINGS_POPOVER_BG so feedback is visible */
 const darkMenuSx = {
@@ -34,7 +35,7 @@ const darkMenuSx = {
     '&:hover': { bgcolor: SETTINGS_POPOVER_MENU_HOVER_BG },
 } as const;
 
-export function AppSwitcher({ isMobile }: AppSwitcherProps) {
+export function AppSwitcher() {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [plannerLoading, setPlannerLoading] = useState(false);
     const isDark = useThemeStore((store) => store.isDark);
@@ -78,9 +79,9 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
 
     const plannerIcon = plannerLoading ? <CircularProgress size={20} color="inherit" /> : <Route />;
 
-    if (isMobile) {
-        return (
-            <>
+    return (
+        <>
+            <Box sx={mobileLayoutSx}>
                 <Button
                     onClick={(event) => setAnchorEl(event.currentTarget)}
                     endIcon={<UnfoldMore />}
@@ -165,47 +166,45 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
                         </MenuItem>
                     </MenuList>
                 </Popover>
-            </>
-        );
-    }
+            </Box>
 
-    return (
-        <>
-            <Logo />
-            <ButtonGroup variant="outlined" color="inherit">
-                <Button
-                    variant="contained"
-                    startIcon={<EventNote />}
-                    sx={{
-                        boxShadow: 'none',
-                        bgcolor: 'white',
-                        color: BLUE,
-                        fontWeight: 500,
-                        fontSize: 14,
-                        py: 0.4,
-                        '&:hover': { bgcolor: 'grey.100' },
-                    }}
-                >
-                    Scheduler
-                </Button>
-                <Button
-                    component="a"
-                    href={PLANNER_LINK}
-                    startIcon={plannerIcon}
-                    onClick={handlePlannerClick}
-                    disabled={plannerLoading}
-                    sx={{
-                        boxShadow: 'none',
-                        color: 'white',
-                        fontWeight: 500,
-                        fontSize: 14,
-                        py: 0.4,
-                        textDecoration: 'none',
-                    }}
-                >
-                    Planner
-                </Button>
-            </ButtonGroup>
+            <Box sx={desktopLayoutSx}>
+                <Logo />
+                <ButtonGroup variant="outlined" color="inherit">
+                    <Button
+                        variant="contained"
+                        startIcon={<EventNote />}
+                        sx={{
+                            boxShadow: 'none',
+                            bgcolor: 'white',
+                            color: BLUE,
+                            fontWeight: 500,
+                            fontSize: 14,
+                            py: 0.4,
+                            '&:hover': { bgcolor: 'grey.100' },
+                        }}
+                    >
+                        Scheduler
+                    </Button>
+                    <Button
+                        component="a"
+                        href={PLANNER_LINK}
+                        startIcon={plannerIcon}
+                        onClick={handlePlannerClick}
+                        disabled={plannerLoading}
+                        sx={{
+                            boxShadow: 'none',
+                            color: 'white',
+                            fontWeight: 500,
+                            fontSize: 14,
+                            py: 0.4,
+                            textDecoration: 'none',
+                        }}
+                    >
+                        Planner
+                    </Button>
+                </ButtonGroup>
+            </Box>
         </>
     );
 }

@@ -6,7 +6,6 @@ import { Import } from '$components/Header/Import';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { getLocalStorageImportedUser, removeLocalStorageImportedUser } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
@@ -22,7 +21,6 @@ export function Header() {
     useEffect(() => {
         setImportedUser(getLocalStorageImportedUser() ?? '');
     }, []);
-    const isMobile = useIsMobile();
 
     const handleCloseSuccessfulSaved = () => {
         setOpenSuccessfulSaved(false);
@@ -75,7 +73,7 @@ export function Header() {
                     }}
                 >
                     <Stack direction="row" alignItems="center" gap={1}>
-                        <AppSwitcher isMobile={isMobile} />
+                        <AppSwitcher />
                     </Stack>
 
                     <Stack direction="row" alignItems="center">

@@ -88,6 +88,13 @@ export function Import() {
         }))
     );
     const devMode = useDevModeStore((store) => store.devMode);
+    const [hasMounted, setHasMounted] = useState(false);
+
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
+
+    const showDevImport = hasMounted && devMode;
 
     const effectiveImportSource =
         !devMode && importSource === ImportSource.JSON_IMPORT ? ImportSource.STUDY_LIST_IMPORT : importSource;
@@ -670,7 +677,9 @@ export function Import() {
 
     return (
         <>
-            <Tooltip title={devMode ? 'Import or export schedule data' : 'Import a schedule from your Study List'}>
+            <Tooltip
+                title={showDevImport ? 'Import or export schedule data' : 'Import a schedule from your Study List'}
+            >
                 <Button
                     onClick={handleOpen}
                     color="inherit"
@@ -679,7 +688,7 @@ export function Import() {
                     disabled={fallbackMode}
                     id="import-button"
                 >
-                    {devMode ? 'Import/Export' : 'Import'}
+                    {showDevImport ? 'Import/Export' : 'Import'}
                 </Button>
             </Tooltip>
             <Dialog open={openImportDialog} onClose={handleClose}>
