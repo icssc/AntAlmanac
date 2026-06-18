@@ -1,43 +1,13 @@
-import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import { TermAutocomplete, type TermAutocompleteProps } from '$components/RightPane/CoursePane/SearchForm/TermAutocomplete';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
-import { getDefaultTerm, termData } from '$lib/term';
-import type { AATerm } from '@packages/antalmanac-types';
-import { memo, type ComponentProps } from 'react';
+import { memo } from 'react';
 
-type TermSelectorProps = Omit<
-    ComponentProps<typeof LabeledAutocomplete>,
-    'label' | 'autocompleteProps' | 'textFieldProps' | 'isAligned'
->;
+type TermSelectorProps = Omit<TermAutocompleteProps, 'value' | 'onChange'>;
 
 export const TermSelector = memo((props: TermSelectorProps) => {
     const [term, setTerm] = useCourseSearchParam('term');
 
-    const handleChange = (_: unknown, option: AATerm | null) => {
-        const value = option ?? getDefaultTerm();
-
-        setTerm(value);
-    };
-
-    return (
-        <LabeledAutocomplete
-            {...props}
-            label="Term"
-            autocompleteProps={{
-                value: term,
-                options: termData,
-                getOptionLabel: (term: AATerm) => term.longName,
-                isOptionEqualToValue: (option: AATerm, value: AATerm) => option.shortName === value.shortName,
-                autoHighlight: true,
-                openOnFocus: true,
-                onChange: handleChange,
-                noOptionsText: 'No terms match the search',
-            }}
-            textFieldProps={{
-                fullWidth: true,
-            }}
-            isAligned
-        />
-    );
+    return <TermAutocomplete value={term} onChange={setTerm} {...props} />;
 });
 
 TermSelector.displayName = 'TermSelector';

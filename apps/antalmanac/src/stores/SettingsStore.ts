@@ -40,7 +40,7 @@ function themeShouldBeDark(themeSetting: ThemeSetting) {
 }
 
 export const useThemeStore = create<ThemeStore>((set, get) => {
-    const storedThemeSetting: ThemeSetting = ((typeof Storage !== 'undefined' ? getLocalStorageTheme() : null) ??
+    const storedThemeSetting: ThemeSetting = ((typeof window !== 'undefined' ? getLocalStorageTheme() : null) ??
         'system') as ThemeSetting;
     const isDark = themeShouldBeDark(storedThemeSetting);
 
@@ -79,12 +79,12 @@ interface TimeFormatStore {
 }
 
 export const useTimeFormatStore = create<TimeFormatStore>((set) => {
-    const isMilitaryTime = typeof Storage !== 'undefined' && getLocalStorageShow24HourTime() == 'true';
+    const isMilitaryTime = typeof window !== 'undefined' && getLocalStorageShow24HourTime() == 'true';
 
     return {
         isMilitaryTime,
         setTimeFormat: (isMilitaryTime) => {
-            if (typeof Storage !== 'undefined') {
+            if (typeof window !== 'undefined') {
                 setLocalStorageShow24HourTime(isMilitaryTime.toString());
             }
             set({ isMilitaryTime });
@@ -97,12 +97,12 @@ interface PreviewStore {
 }
 
 export const usePreviewStore = create<PreviewStore>((set) => {
-    const previewMode = typeof Storage !== 'undefined' && getLocalStoragePreviewMode() == 'true';
+    const previewMode = typeof window !== 'undefined' && getLocalStoragePreviewMode() == 'true';
 
     return {
         previewMode: previewMode,
         setPreviewMode: (previewMode) => {
-            if (typeof Storage !== 'undefined') {
+            if (typeof window !== 'undefined') {
                 setLocalStoragePreviewMode(previewMode.toString());
             }
 
@@ -117,12 +117,12 @@ interface AutoSaveStore {
 }
 
 export const useAutoSaveStore = create<AutoSaveStore>((set) => {
-    const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
+    const autoSave = typeof window !== 'undefined' && getLocalStorageAutoSave() == 'true';
 
     return {
         autoSave,
         setAutoSave: (autoSave) => {
-            if (typeof Storage !== 'undefined') {
+            if (typeof window !== 'undefined') {
                 setLocalStorageAutoSave(autoSave.toString());
             }
             set({ autoSave });
@@ -136,14 +136,14 @@ interface DevModeStore {
 }
 
 export const useDevModeStore = create<DevModeStore>((set) => {
-    const stored = typeof Storage !== 'undefined' ? getLocalStorageDevMode() : null;
+    const stored = typeof window !== 'undefined' ? getLocalStorageDevMode() : null;
     const isLocalDev = process.env.NODE_ENV === 'development';
     const devMode = stored === null ? isLocalDev : stored === 'true';
 
     return {
         devMode,
         setDevMode: (devMode: boolean) => {
-            if (typeof Storage !== 'undefined') {
+            if (typeof window !== 'undefined') {
                 setLocalStorageDevMode(devMode.toString());
             }
             set({ devMode });

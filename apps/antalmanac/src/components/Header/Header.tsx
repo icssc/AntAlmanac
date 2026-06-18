@@ -1,3 +1,5 @@
+'use client';
+
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
 import { Import } from '$components/Header/Import';

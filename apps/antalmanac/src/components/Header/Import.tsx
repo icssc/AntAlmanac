@@ -6,13 +6,13 @@ import {
     mergeShortCourseSchedules,
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
-import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
+import { TermAutocomplete } from '$components/RightPane/CoursePane/SearchForm/TermAutocomplete';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc, trpcReact } from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
+import { getDefaultTerm } from '$lib/term';
 import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -59,7 +59,7 @@ enum ImportSource {
 }
 
 export function Import() {
-    const [term] = useCourseSearchParam('term');
+    const [term, setTerm] = useState(() => getDefaultTerm());
     const [alertDialogTitle, setAlertDialogTitle] = useState('');
     const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>('error');
     const [alertDialog, setAlertDialog] = useState(false);
@@ -919,7 +919,7 @@ export function Import() {
                                         <DialogContentText>
                                             Make sure you also have the right term selected.
                                         </DialogContentText>
-                                        <TermSelector />
+                                        <TermAutocomplete value={term} onChange={setTerm} />
                                     </Stack>
                                 )}
                             {effectiveImportSource === ImportSource.JSON_IMPORT && (
