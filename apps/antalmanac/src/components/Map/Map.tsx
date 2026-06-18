@@ -241,7 +241,7 @@ export function CourseMap() {
 
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
-            router.push(`/map?location=${building?.id}`);
+            router.push(building ? `/map?location=${building.id}` : '/map');
         },
         [router]
     );
