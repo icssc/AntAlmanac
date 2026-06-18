@@ -46,9 +46,9 @@ import {
     Typography,
 } from '@mui/material';
 import { type AATerm, type AACourse, type ShortCourseSchedule } from '@packages/antalmanac-types';
+import Link from 'next/link';
 import { usePostHog } from 'posthog-js/react';
 import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 
 enum ImportSource {
@@ -1189,8 +1189,7 @@ export function Import() {
             >
                 {alertDialogSeverity === 'error' ? (
                     <Box>
-                        If you think this is a mistake please submit a{' '}
-                        <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
+                        If you think this is a mistake please submit a <Link href="/feedback">bug report</Link>
                     </Box>
                 ) : (
                     <Stack direction="row" justifyContent="center">

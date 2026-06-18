@@ -1,13 +1,13 @@
 import { useIsMobile } from '$hooks/useIsMobile';
+import { TAB_INDEX, type TabInfo, type TabName } from '$lib/tabs/tabs';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { TAB_INDEX, type TabInfo } from '$stores/TabStore';
 import { Tab } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 interface ScheduleManagementTabProps {
     tab: TabInfo;
     value: number;
-    onTabChange: (tabIndex: number) => void;
+    onTabChange: (tabName: TabName) => void;
 }
 
 export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManagementTabProps) => {
@@ -20,7 +20,7 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
             : tab.href || '/';
 
     const handleClick = () => {
-        onTabChange(value);
+        onTabChange(tab.name);
     };
 
     return (

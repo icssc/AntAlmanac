@@ -9,23 +9,6 @@ import { NuqsAdapter } from 'nuqs/adapters/react-router/v6';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
-/**
- * Do not edit this unless you know what you're doing.
- */
-function RouteLayout() {
-    return (
-        <NuqsAdapter>
-            <PosthogPageviewTracker />
-            <AutoSignIn />
-            <Outlet />
-        </NuqsAdapter>
-    );
-}
-
-const OUTAGE = false;
-
-const HOME_PAGE = <Home />;
-
 const ROUTER_OPTIONS = {
     future: {
         v7_fetcherPersist: true,
@@ -36,7 +19,19 @@ const ROUTER_OPTIONS = {
     },
 } as const;
 
-const BROWSER_ROUTER = createBrowserRouter(
+function RouteLayout() {
+    return (
+        <NuqsAdapter>
+            <PosthogPageviewTracker />
+            <AutoSignIn />
+            <Outlet />
+        </NuqsAdapter>
+    );
+}
+
+const HOME_PAGE = <Home />;
+
+const appRouter = createBrowserRouter(
     [
         {
             element: <RouteLayout />,
@@ -61,7 +56,7 @@ const BROWSER_ROUTER = createBrowserRouter(
     ROUTER_OPTIONS
 );
 
-const OUTAGE_ROUTER = createBrowserRouter(
+const outageRouter = createBrowserRouter(
     [
         {
             element: <RouteLayout />,
@@ -81,7 +76,9 @@ const OUTAGE_ROUTER = createBrowserRouter(
     ROUTER_OPTIONS
 );
 
-const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
+const OUTAGE = false;
+
+const router = OUTAGE ? outageRouter : appRouter;
 
 /**
  * Renders the single page application.
@@ -96,5 +93,5 @@ export function App() {
         };
     }, []);
 
-    return <RouterProvider router={ROUTER} future={{ v7_startTransition: true }} />;
+    return <RouterProvider router={router} future={{ v7_startTransition: true }} />;
 }

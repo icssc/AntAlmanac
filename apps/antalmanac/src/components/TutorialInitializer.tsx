@@ -1,8 +1,10 @@
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { useTour } from '@reactour/tour';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function TutorialInitializer() {
+    const navigate = useNavigate();
     const { setSteps, setCurrentStep, setIsOpen } = useTour();
 
     useEffect(() => {
@@ -10,12 +12,12 @@ export function TutorialInitializer() {
             return;
         }
 
-        setSteps(stepsFactory(setCurrentStep));
+        setSteps(stepsFactory(setCurrentStep, navigate));
 
         if (tourShouldRun()) {
             setIsOpen(true);
         }
-    }, [setCurrentStep, setSteps, setIsOpen]);
+    }, [navigate, setCurrentStep, setSteps, setIsOpen]);
 
     return null;
 }
