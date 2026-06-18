@@ -1,0 +1,43 @@
+import {
+    COURSE_SEARCH_MODE,
+    COURSE_SEARCH_MODE_KEY,
+    COURSE_SEARCH_PLANNER_KEY,
+} from '$components/RightPane/CoursePane/SearchParams/constants';
+import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
+import { loadCourseSearchParams, loadSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
+import { auth } from '$lib/auth/auth';
+import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { userAgent } from 'next/server';
+
+export default async function Page({ searchParams }: PageProps<'/'>) {
+    const resolvedSearchParams = await searchParams;
+    const requestHeaders = await headers();
+    const session = await auth.api.getSession({ headers: requestHeaders });
+
+    const { device } = userAgent({ headers: requestHeaders });
+    const isMobile = device.type === 'mobile' || device.type === 'tablet';
+
+    if (resolvedSearchParams[COURSE_SEARCH_PLANNER_KEY] != null) {
+        return null;
+    }
+
+    if (session == null) {
+        return null;
+    }
+
+    const formData = loadCourseSearchParams(resolvedSearchParams);
+    const searchMode = loadSearchMode(resolvedSearchParams)[COURSE_SEARCH_MODE_KEY];
+
+    if (searchMode === COURSE_SEARCH_MODE.MANUAL) {
+        return null;
+    }
+
+    if (hasManualParams(formData) || hasAdvancedParams(formData)) {
+        return null;
+    }
+
+    const defaultTab: TabName = isMobile ? 'calendar' : 'added';
+    redirect(TAB_HREF[defaultTab]);
+}

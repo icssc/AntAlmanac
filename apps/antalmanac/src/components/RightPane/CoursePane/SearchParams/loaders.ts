@@ -9,11 +9,11 @@ import type {
     CourseSearchMode,
     CourseSearchParams,
 } from '$components/RightPane/CoursePane/SearchParams/types';
-import { createLoader } from 'nuqs';
+import { createLoader } from 'nuqs/server';
 
-const loadAdvancedSearchParams = createLoader(advancedSearchParsers);
-const loadCourseSearchParams = createLoader(courseSearchParamParsers);
-const loadSearchMode = createLoader({
+export const loadCourseSearchParams = createLoader(courseSearchParamParsers);
+export const loadAdvancedSearchParams = createLoader(advancedSearchParsers);
+export const loadSearchMode = createLoader({
     [COURSE_SEARCH_MODE_KEY]: searchModeParser,
 });
 
