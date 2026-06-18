@@ -1,6 +1,6 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
 import { useActiveTab } from '$lib/tabs/hooks';
-import { TABS, type TabName } from '$lib/tabs/tabs';
+import { TAB_INDEX, TABS, type TabName } from '$lib/tabs/tabs';
 import { Paper, Tabs as MuiTabs } from '@mui/material';
 
 interface ScheduleManagementTabsProps {
@@ -9,6 +9,7 @@ interface ScheduleManagementTabsProps {
 
 export function ScheduleManagementTabs({ onTabChange }: ScheduleManagementTabsProps) {
     const activeTab = useActiveTab();
+    const activeTabIndex = TAB_INDEX[activeTab];
 
     return (
         <Paper
@@ -21,9 +22,15 @@ export function ScheduleManagementTabs({ onTabChange }: ScheduleManagementTabsPr
                 borderWidth: '1px 0px 1px 0px',
             }}
         >
-            <MuiTabs value={activeTab} indicatorColor="secondary" textColor="secondary" variant="fullWidth" centered>
-                {TABS.map((tab) => (
-                    <ScheduleManagementTab key={tab.name} tab={tab} onTabChange={onTabChange} />
+            <MuiTabs
+                value={activeTabIndex}
+                indicatorColor="secondary"
+                textColor="secondary"
+                variant="fullWidth"
+                centered
+            >
+                {TABS.map((tab, index) => (
+                    <ScheduleManagementTab key={tab.name} tab={tab} value={index} onTabChange={onTabChange} />
                 ))}
             </MuiTabs>
         </Paper>
