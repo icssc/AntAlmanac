@@ -56,7 +56,7 @@ const CAMPUS_BOUNDS: [LatLngTuple, LatLngTuple] = [
 ];
 
 interface MarkerContent {
-    key: string;
+    markerKey: string;
     image: string;
     acronym: string;
     markerColor: string;
@@ -85,10 +85,10 @@ export function getCoursesPerBuilding(courseEvents: CourseEvent[] = AppStore.get
             .filter((event) => event.locations.map((location) => location.building).includes(buildingCode))
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[buildingCode]];
-                const key = `${event.title} ${event.sectionType} @ ${event.locations[0]}`;
+                const markerKey = `${event.title} ${event.sectionType} @ ${event.locations[0]}`;
                 const acronym = getBuildingNameAcronym(locationData.name);
                 const markerData = {
-                    key,
+                    markerKey,
                     image: locationData.imageURLs[0],
                     acronym,
                     markerColor: event.color,
@@ -143,10 +143,10 @@ export function getCustomEventPerBuilding(customEvents: CustomEvent[] = AppStore
             })
             .map((event) => {
                 const locationData = buildingCatalogue[locationIds[validBuildingCodes[i]]];
-                const key = `${event.title} @ ${event.building}`;
+                const markerKey = `${event.title} @ ${event.building}`;
                 const acronym = getBuildingNameAcronym(locationData.name);
                 const markerCustomEventData = {
-                    key,
+                    markerKey,
                     image: locationData.imageURLs[0],
                     acronym,
                     markerColor: event.color ? event.color : '',
@@ -299,7 +299,7 @@ export function CourseMap() {
     const customEventMarkersToDisplay = useMemo(() => {
         const markerValues = Object.keys(customEventMarkers)
             .flatMap((markerKey) => customEventMarkers[markerKey])
-            .filter((marker, i, arr) => arr.findIndex((other) => other.key === marker.key) === i);
+            .filter((marker, i, arr) => arr.findIndex((other) => other.markerKey === marker.markerKey) === i);
 
         const markersToday =
             today === 'All'
@@ -429,7 +429,7 @@ export function CourseMap() {
                     const customEventSameBuildingPrior = customEventMarkersToDisplay.slice(0, index);
 
                     return (
-                        <Fragment key={customEventMarkers.key}>
+                        <Fragment key={customEventMarkers.markerKey}>
                             <LocationMarker
                                 {...customEventMarkers}
                                 label={'E'}
