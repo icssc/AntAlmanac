@@ -19,11 +19,17 @@ export default async function Page({ searchParams }: PageProps<'/'>) {
     const { device } = userAgent({ headers: requestHeaders });
     const isMobile = device.type === 'mobile' || device.type === 'tablet';
 
+    // Skip on in-app tab clicks (RSC fetches); redirect only on full document loads.
+    const fetchMode = requestHeaders.get('sec-fetch-mode');
+    if (fetchMode != null && fetchMode !== 'navigate') {
+        return null;
+    }
+
     if (resolvedSearchParams[COURSE_SEARCH_PLANNER_KEY] != null) {
         return null;
     }
 
-    if (session == null) {
+    if (!session?.user) {
         return null;
     }
 
