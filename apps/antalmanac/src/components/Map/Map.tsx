@@ -359,7 +359,11 @@ export function CourseMap() {
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}
                     </Tabs>
-                    <BuildingSelect onChange={onBuildingChange} variant="filled" />
+                    <BuildingSelect
+                        value={searchParams.get('location') ?? undefined}
+                        onChange={onBuildingChange}
+                        variant="filled"
+                    />
                 </Paper>
 
                 <TileLayer
