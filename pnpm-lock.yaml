@@ -180,9 +180,6 @@ importers:
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.15.6)(gel@2.2.0)(knex@0.8.6)(kysely@0.28.17)(pg@8.16.3)(postgres@3.4.5)
@@ -262,9 +259,6 @@ importers:
         specifier: ^4.3.2
         version: 4.5.5(@types/react@19.2.14)(react@19.2.6)
     devDependencies:
-      '@babel/core':
-        specifier: ^7.28.6
-        version: 7.29.0
       '@testing-library/react':
         specifier: ^14.0.0
         version: 14.3.1(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -298,12 +292,12 @@ importers:
       '@types/react-lazyload':
         specifier: ^3.2.0
         version: 3.2.3
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
-      vite:
-        specifier: ^4.4.9
-        version: 4.5.5(@types/node@22.19.17)(stylus@0.51.1)(terser@5.46.2)
 
   packages/anteater-api:
     dependencies:
