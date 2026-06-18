@@ -4,12 +4,12 @@ import {
     SETTINGS_POPOVER_MENU_SELECTED_BG,
 } from '$components/Header/headerStyles';
 import { Logo } from '$components/Header/Logo';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE, PLANNER_LINK } from '$src/globals';
 import appStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
 import {
-    Box,
     Button,
     ButtonGroup,
     CircularProgress,
@@ -20,28 +20,13 @@ import {
     Popover,
     Typography,
 } from '@mui/material';
-import type { Theme } from '@mui/material/styles';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { MouseEventHandler } from 'react';
 
-/** Matches theme.breakpoints.down('sm') — sm is 800px in our theme. */
-function layoutSx(theme: Theme, variant: 'mobile' | 'desktop') {
-    if (variant === 'mobile') {
-        return {
-            display: 'flex',
-            alignItems: 'center',
-            [theme.breakpoints.up('sm')]: { display: 'none' },
-        };
-    }
-
-    return {
-        display: 'none',
-        alignItems: 'center',
-        gap: 1,
-        [theme.breakpoints.up('sm')]: { display: 'flex' },
-    };
-}
+type AppSwitcherProps = {
+    initialIsMobile: boolean;
+};
 
 /** Selected/hover use lighter shades than SETTINGS_POPOVER_BG so feedback is visible */
 const darkMenuSx = {
@@ -50,10 +35,11 @@ const darkMenuSx = {
     '&:hover': { bgcolor: SETTINGS_POPOVER_MENU_HOVER_BG },
 } as const;
 
-export function AppSwitcher() {
+export function AppSwitcher({ initialIsMobile }: AppSwitcherProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [plannerLoading, setPlannerLoading] = useState(false);
     const isDark = useThemeStore((store) => store.isDark);
+    const isMobile = useIsMobile(initialIsMobile);
 
     const pathname = usePathname();
     const platform = pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
@@ -94,9 +80,9 @@ export function AppSwitcher() {
 
     const plannerIcon = plannerLoading ? <CircularProgress size={20} color="inherit" /> : <Route />;
 
-    return (
-        <>
-            <Box sx={(theme) => layoutSx(theme, 'mobile')}>
+    if (isMobile) {
+        return (
+            <>
                 <Button
                     onClick={(event) => setAnchorEl(event.currentTarget)}
                     endIcon={<UnfoldMore />}
@@ -110,7 +96,7 @@ export function AppSwitcher() {
                         },
                     }}
                 >
-                    <Logo />
+                    <Logo initialIsMobile={initialIsMobile} />
                 </Button>
 
                 <Popover
@@ -181,45 +167,47 @@ export function AppSwitcher() {
                         </MenuItem>
                     </MenuList>
                 </Popover>
-            </Box>
+            </>
+        );
+    }
 
-            <Box sx={(theme) => layoutSx(theme, 'desktop')}>
-                <Logo />
-                <ButtonGroup variant="outlined" color="inherit">
-                    <Button
-                        variant="contained"
-                        startIcon={<EventNote />}
-                        sx={{
-                            boxShadow: 'none',
-                            bgcolor: 'white',
-                            color: BLUE,
-                            fontWeight: 500,
-                            fontSize: 14,
-                            py: 0.4,
-                            '&:hover': { bgcolor: 'grey.100' },
-                        }}
-                    >
-                        Scheduler
-                    </Button>
-                    <Button
-                        component="a"
-                        href={PLANNER_LINK}
-                        startIcon={plannerIcon}
-                        onClick={handlePlannerClick}
-                        disabled={plannerLoading}
-                        sx={{
-                            boxShadow: 'none',
-                            color: 'white',
-                            fontWeight: 500,
-                            fontSize: 14,
-                            py: 0.4,
-                            textDecoration: 'none',
-                        }}
-                    >
-                        Planner
-                    </Button>
-                </ButtonGroup>
-            </Box>
+    return (
+        <>
+            <Logo initialIsMobile={initialIsMobile} />
+            <ButtonGroup variant="outlined" color="inherit">
+                <Button
+                    variant="contained"
+                    startIcon={<EventNote />}
+                    sx={{
+                        boxShadow: 'none',
+                        bgcolor: 'white',
+                        color: BLUE,
+                        fontWeight: 500,
+                        fontSize: 14,
+                        py: 0.4,
+                        '&:hover': { bgcolor: 'grey.100' },
+                    }}
+                >
+                    Scheduler
+                </Button>
+                <Button
+                    component="a"
+                    href={PLANNER_LINK}
+                    startIcon={plannerIcon}
+                    onClick={handlePlannerClick}
+                    disabled={plannerLoading}
+                    sx={{
+                        boxShadow: 'none',
+                        color: 'white',
+                        fontWeight: 500,
+                        fontSize: 14,
+                        py: 0.4,
+                        textDecoration: 'none',
+                    }}
+                >
+                    Planner
+                </Button>
+            </ButtonGroup>
         </>
     );
 }

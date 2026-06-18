@@ -12,7 +12,11 @@ import { useSessionStore } from '$stores/SessionStore';
 import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-export function Header() {
+type HeaderProps = {
+    initialIsMobile: boolean;
+};
+
+export function Header({ initialIsMobile }: HeaderProps) {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const [importedUser, setImportedUser] = useState('');
@@ -73,7 +77,7 @@ export function Header() {
                     }}
                 >
                     <Stack direction="row" alignItems="center" gap={1}>
-                        <AppSwitcher />
+                        <AppSwitcher initialIsMobile={initialIsMobile} />
                     </Stack>
 
                     <Stack direction="row" alignItems="center">

@@ -1,14 +1,11 @@
 import { useMediaQuery, useTheme } from '@mui/material';
 
 /**
- * Standard hook for mobile detection across the application.
- * Uses the theme's 'sm' breakpoint (768px) to determine if the screen is mobile.
+ * Mobile detection using the theme's `sm` breakpoint (800px).
  *
- * @returns {boolean} true if the screen width is below 768px (mobile), false otherwise
+ * Pass `defaultMatches` from a server UA hint so SSR and the first client render agree.
  */
-export function useIsMobile() {
+export function useIsMobile(defaultMatches = false) {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-    return isMobile;
+    return useMediaQuery(theme.breakpoints.down('sm'), { defaultMatches });
 }

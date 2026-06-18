@@ -1,3 +1,4 @@
+import { useIsMobile } from '$hooks/useIsMobile';
 import { Box } from '@mui/material';
 import Image from 'next/image';
 
@@ -11,6 +12,10 @@ type Logo = {
     endDay: number; // inclusive
     endMonthIndex: number;
     attribution?: string;
+};
+
+type LogoProps = {
+    initialIsMobile: boolean;
 };
 
 const defaultLogo: Logo = {
@@ -70,18 +75,19 @@ function logoIsForCurrentSeason(logo: Logo) {
     return currentDate >= startDate && currentDate <= endDate;
 }
 
-export function Logo() {
+export function Logo({ initialIsMobile }: LogoProps) {
     const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
+    const isMobile = useIsMobile(initialIsMobile);
+    const width = isMobile ? 48 : 78;
 
     return (
         <Box
-            sx={(theme) => ({
+            sx={{
                 position: 'relative',
                 height: 32,
-                width: 48,
+                width,
                 flexShrink: 0,
-                [theme.breakpoints.up('sm')]: { width: 78 },
-            })}
+            }}
         >
             <Image
                 src={currentLogo.logo}
