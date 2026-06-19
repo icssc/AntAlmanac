@@ -1,79 +1,84 @@
+import {
+    COURSE_SEARCH_MODE,
+    COURSE_SEARCH_MODE_KEY,
+    COURSE_SEARCH_PLANNER_KEY,
+} from '$components/RightPane/CoursePane/SearchParams/constants';
+import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
+import { loadCourseSearchParams, loadSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie';
-import { NextResponse } from 'next/server';
+import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
+import { getSessionCookie } from 'better-auth/cookies';
+import { NextResponse, userAgent } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const ALLOWED_ORIGINS = [
-    'https://antalmanac.com',
-    'https://www.antalmanac.com',
-    'https://sst.antalmanac.com',
-    'https://www.sst.antalmanac.com',
-    'https://icssc-projects.github.io',
-    'https://auth.icssc.club',
-    'http://localhost:5173',
-    'http://localhost:3000',
-];
-
-const STAGING_PATTERN = /^https:\/\/staging-\d+\.antalmanac\.com$/;
-
-function isOriginAllowed(origin: string | null): boolean {
-    if (!origin) {
-        return true;
+/** Logged-in users landing on bare `/` go to their default tab (document navigations only). */
+function maybeRedirectDefaultTab(request: NextRequest): NextResponse | null {
+    if (request.method !== 'GET' || request.nextUrl.pathname !== '/') {
+        return null;
     }
 
-    if (ALLOWED_ORIGINS.includes(origin)) {
-        return true;
-    }
-    if (STAGING_PATTERN.test(origin)) {
-        return true;
+    // Skip RSC/tab fetches — only redirect full page loads.
+    const fetchMode = request.headers.get('sec-fetch-mode');
+    if (fetchMode != null && fetchMode !== 'navigate') {
+        return null;
     }
 
-    return false;
+    const { searchParams } = request.nextUrl;
+
+    if (searchParams.has(COURSE_SEARCH_PLANNER_KEY)) {
+        return null;
+    }
+
+    if (!getSessionCookie(request)) {
+        return null;
+    }
+
+    const formData = loadCourseSearchParams(searchParams);
+    const searchMode = loadSearchMode(searchParams)[COURSE_SEARCH_MODE_KEY];
+
+    if (searchMode === COURSE_SEARCH_MODE.MANUAL) {
+        return null;
+    }
+
+    if (hasManualParams(formData) || hasAdvancedParams(formData)) {
+        return null;
+    }
+
+    const { device } = userAgent({ headers: request.headers });
+    const isMobile = device.type === 'mobile' || device.type === 'tablet';
+    const defaultTab: TabName = isMobile ? 'calendar' : 'added';
+
+    return NextResponse.redirect(new URL(TAB_HREF[defaultTab], request.url));
 }
 
-export function proxy(request: NextRequest) {
-    const origin = request.headers.get('origin');
-
-    // Handle preflight OPTIONS request
-    if (request.method === 'OPTIONS') {
-        if (!isOriginAllowed(origin)) {
-            return new NextResponse(null, { status: 403 });
-        }
-
-        return new NextResponse(null, {
-            status: 204,
-            headers: {
-                'Access-Control-Allow-Origin': origin || '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-                'Access-Control-Allow-Credentials': 'true',
-                'Access-Control-Max-Age': '86400',
-            },
-        });
-    }
-
+function handleAuthCallback(request: NextRequest): NextResponse {
     let response = NextResponse.next();
 
-    if (request.nextUrl.pathname === `/api/auth/oauth2/callback/${AUTH_PROVIDER_ID}`) {
-        if (request.nextUrl.searchParams.get('error') === 'login_required') {
-            response = NextResponse.redirect(new URL('/', request.url));
-            response.cookies.set(SSO_COOKIE_NAME, '', {
-                ...getSsoResponseCookieAttributes(request.nextUrl),
-                maxAge: 0,
-            });
-        }
-    }
-
-    if (isOriginAllowed(origin)) {
-        response.headers.set('Access-Control-Allow-Origin', origin || '*');
-        response.headers.set('Access-Control-Allow-Credentials', 'true');
-        response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (request.nextUrl.searchParams.get('error') === 'login_required') {
+        response = NextResponse.redirect(new URL('/', request.url));
+        response.cookies.set(SSO_COOKIE_NAME, '', {
+            ...getSsoResponseCookieAttributes(request.nextUrl),
+            maxAge: 0,
+        });
     }
 
     return response;
 }
 
+export function proxy(request: NextRequest) {
+    const defaultTabRedirect = maybeRedirectDefaultTab(request);
+    if (defaultTabRedirect) {
+        return defaultTabRedirect;
+    }
+
+    if (request.nextUrl.pathname === `/api/auth/oauth2/callback/${AUTH_PROVIDER_ID}`) {
+        return handleAuthCallback(request);
+    }
+
+    return NextResponse.next();
+}
+
 export const config = {
-    matcher: '/api/:path*',
+    matcher: ['/', '/api/auth/oauth2/callback/icssc'],
 };
