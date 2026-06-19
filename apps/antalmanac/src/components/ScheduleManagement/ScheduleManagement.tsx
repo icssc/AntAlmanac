@@ -6,7 +6,7 @@ import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { GlobalStyles, Stack } from '@mui/material';
-import { useRouter, useSearchParams, useSelectedLayoutSegment } from 'next/navigation';
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -17,7 +17,6 @@ import { useShallow } from 'zustand/react/shallow';
 export function ScheduleManagement() {
     const segment = useSelectedLayoutSegment();
     const router = useRouter();
-    const searchParams = useSearchParams();
     const isMobile = useIsMobile();
     const activeTab = useActiveTab();
 
@@ -49,15 +48,14 @@ export function ScheduleManagement() {
     const handleTabChange = useCallback(
         (nextTab: TabName) => {
             if (activeTab === 'search' && nextTab !== 'search') {
-                const query = searchParams.toString();
-                saveSearch(query ? `?${query}` : '');
+                saveSearch(globalThis.location.search);
             }
 
             if (nextTab === 'search') {
                 popSavedSearch();
             }
         },
-        [activeTab, popSavedSearch, saveSearch, searchParams]
+        [activeTab, popSavedSearch, saveSearch]
     );
 
     useEffect(() => {
