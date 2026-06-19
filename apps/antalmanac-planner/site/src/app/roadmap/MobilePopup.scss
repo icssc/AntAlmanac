@@ -1,0 +1,24 @@
+@use '../../globals.scss';
+
+.mobile-popup {
+  background-color: var(--mui-palette-overlay-overlay1);
+  width: globals.$roadmap-sidebar-width;
+  height: 100%;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: auto;
+  border-radius: 8px 8px 0 0;
+
+  // prevents child element z index escaping (i.e. any child of this element
+  // may not appear above any element outside of the .program-requirements element)
+  z-index: 0;
+
+  @include globals.bottom-overlay(400);
+
+  button.fixed {
+    @include globals.bottom-button();
+    z-index: 1;
+  }
+}

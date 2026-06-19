@@ -1,0 +1,7 @@
+.popover-root {
+  pointer-events: none;
+
+  .hoverable-popover {
+    pointer-events: auto;
+  }
+}

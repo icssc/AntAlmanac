@@ -1,0 +1,28 @@
+@use '../../globals';
+
+.changelog-modal {
+  // "paper" refers to the component used internally to render the Dialog's content
+  .MuiDialog-paper {
+    max-width: 500px;
+  }
+
+  .modal-img {
+    margin: 16px;
+    width: calc(100% - 32px);
+    height: auto;
+    max-width: 70vw;
+    max-height: 50vh;
+    object-fit: contain;
+  }
+
+  @media only screen and (max-width: globals.$mobile-cutoff) {
+    .modal-img {
+      max-width: 90vw;
+      max-height: 50vh;
+    }
+  }
+
+  a {
+    color: var(--mui-palette-secondary-main);
+  }
+}

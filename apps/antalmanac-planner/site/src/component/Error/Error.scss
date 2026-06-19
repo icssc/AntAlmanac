@@ -1,0 +1,25 @@
+.error {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  h1 {
+    font-size: 3em;
+    text-align: center;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .error {
+    h1 {
+      font-size: 2em;
+    }
+    img {
+      width: 80%;
+      height: auto;
+    }
+  }
+}

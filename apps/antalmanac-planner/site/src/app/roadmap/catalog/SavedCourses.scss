@@ -1,0 +1,8 @@
+.saved-courses {
+  .requirement-label {
+    display: none;
+  }
+  .requirement-label:first-child + * {
+    padding-top: 12px;
+  }
+}

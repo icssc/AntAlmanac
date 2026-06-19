@@ -1,0 +1,25 @@
+@use '../../globals.scss';
+
+.search-module {
+  z-index: 100;
+
+  button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .search-bar {
+    & .MuiInputBase-input {
+      padding: 8px 10px;
+    }
+
+    background-color: var(--mui-palette-background-paper);
+    font-size: 16px;
+    margin-bottom: 4px;
+    border-radius: var(--mui-shape-borderRadius);
+  }
+
+  .input-wrapper {
+    padding-right: 6px;
+  }
+}

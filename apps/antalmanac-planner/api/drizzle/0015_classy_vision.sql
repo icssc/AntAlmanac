@@ -1,0 +1,3 @@
+ALTER TABLE "planner_course" DROP CONSTRAINT "planner_course_unique_index";--> statement-breakpoint
+ALTER TABLE "planner_course" DROP CONSTRAINT "planner_course_planner_id_start_year_quarter_name_course_id_pk";--> statement-breakpoint
+ALTER TABLE "planner_course" ADD CONSTRAINT "planner_course_planner_id_start_year_quarter_name_index_pk" PRIMARY KEY("planner_id","start_year","quarter_name","index");

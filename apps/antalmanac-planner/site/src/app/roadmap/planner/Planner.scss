@@ -1,0 +1,35 @@
+@use '../../../globals.scss';
+
+.planner {
+  $planner-gap: 24px;
+
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: auto;
+  height: 100%;
+
+  section.years {
+    padding-inline: 36px;
+    padding-block: $planner-gap;
+
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    overflow: auto;
+    gap: $planner-gap;
+    flex-shrink: 0;
+
+    @media (max-width: globals.$mobile-cutoff) {
+      padding-inline: 16px;
+    }
+  }
+
+  .loading-spinner {
+    margin-top: $planner-gap;
+  }
+
+  .app-footer {
+    margin-block: auto $planner-gap;
+  }
+}

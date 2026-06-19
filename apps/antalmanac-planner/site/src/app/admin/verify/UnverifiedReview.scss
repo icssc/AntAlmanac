@@ -1,0 +1,21 @@
+.verification-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin: 0px 8px;
+
+  .MuiButton-root {
+    // @todo: define this as a variant in the theme
+    display: inline-flex;
+    height: 29px;
+    font-size: 13px;
+    white-space: nowrap;
+
+    padding: 0px 12px;
+  }
+
+  @media (max-width: 500px) {
+    flex-wrap: wrap;
+    margin: 0;
+  }
+}

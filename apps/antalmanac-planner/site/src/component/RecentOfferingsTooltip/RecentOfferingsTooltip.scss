@@ -1,0 +1,11 @@
+.offerings-tooltip .MuiTooltip-tooltip {
+  padding: 4px;
+  overflow: hidden;
+  border-radius: 8px;
+  color: var(--mui-palette-text-primary);
+
+  .recent-offerings-table {
+    border-radius: 4px;
+    overflow: hidden;
+  }
+}

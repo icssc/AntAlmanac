@@ -1,0 +1,72 @@
+@use '../../globals';
+
+.export-form {
+  display: grid;
+  gap: 16px;
+  padding-top: 8px;
+
+  &__year-quarter-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+
+    @media (max-width: globals.$mobile-cutoff) {
+      flex-direction: column;
+    }
+  }
+
+  &__schedule-warning {
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: var(--mui-palette-action-hover);
+    border-radius: var(--mui-shape-borderRadius);
+    align-items: center;
+
+    &-icon {
+      color: var(--mui-palette-warning-main);
+      flex-shrink: 0;
+    }
+
+    &-text {
+      color: var(--mui-palette-text-primary);
+      margin: 0;
+    }
+  }
+
+  &__no-courses {
+    padding: 0;
+    margin: 0;
+  }
+
+  &__courses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &-label {
+      font-weight: 700;
+    }
+  }
+}
+
+.year-display {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &__name {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__range {
+    color: var(--mui-palette-text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

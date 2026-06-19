@@ -1,0 +1,98 @@
+.roadmap-header button.dropdown-button {
+  text-transform: none;
+  font-size: 14px;
+  padding: 3px 12px;
+
+  .MuiSvgIcon-root {
+    margin-inline: -4px;
+  }
+}
+
+.multi-plan-selector {
+  .select-item {
+    display: flex;
+    gap: 4px;
+    padding: 4px 8px;
+    align-items: center;
+  }
+  .planner-name-btn {
+    font-weight: 500;
+    color: inherit;
+    justify-content: start;
+    text-transform: none;
+    font-size: inherit;
+    width: 100%;
+    min-width: 120px;
+    height: 32px;
+  }
+  .select-item button.MuiIconButton-root {
+    width: 32px;
+    height: 32px;
+    &:not(.delete-btn) .MuiSvgIcon-root {
+      font-size: 20px;
+    }
+  }
+  .add-item {
+    padding-inline: 16px;
+    container: multiplan-add / inline-size;
+  }
+  .add-item button.MuiButton-root {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-direction: column;
+    height: fit-content;
+    padding: 6px 12px;
+    width: 80px;
+    flex-grow: 1;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #88888818;
+    color: inherit;
+    text-transform: none;
+
+    > span:not(.MuiTouchRipple-root) {
+      white-space: normal;
+      text-align: center;
+      line-height: 1.25;
+      max-width: 80px;
+      @container multiplan-add (min-width: 440px) {
+        max-width: none;
+      }
+    }
+  }
+  .dropdown-item {
+    display: contents;
+    color: inherit;
+  }
+  .dropdown-item .btn {
+    padding: 8px 20px 8px 12px;
+    text-align: left;
+  }
+  .dropdown-item > * {
+    width: 100%;
+  }
+
+  .separator-label {
+    text-transform: uppercase;
+    font-weight: 900;
+    font-size: 12px;
+    margin-block: 4px;
+    margin-inline: 16px;
+    color: var(--mui-palette-text-secondary);
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .separator-label hr {
+    margin: 0;
+    border: 0.5px solid var(--mui-palette-text-secondary);
+    width: 100%;
+    opacity: 0.8;
+  }
+
+  > .MuiPaper-root {
+    padding-block: 8px;
+  }
+}

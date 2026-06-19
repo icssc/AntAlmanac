@@ -1,0 +1,30 @@
+.unread-pill,
+.unread-circle {
+  position: absolute;
+  background-color: var(--mui-palette-error-main);
+  border-radius: 20px;
+  font-size: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.unread-pill {
+  right: -5px;
+  top: -5px;
+  width: 32px;
+  height: 14px;
+}
+
+.unread-circle {
+  right: 3px;
+  top: 3px;
+  width: 10px;
+  height: 10px;
+}
+
+.spacing {
+  width: 6px;
+}

@@ -1,0 +1,65 @@
+name: Unlock - Staging
+
+on:
+  repository_dispatch:
+    types:
+      - unlock-command
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  unlock-staging:
+    runs-on: ubuntu-latest
+    env:
+      SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
+          sha: ${{ github.event.client_payload.pull_request.head.sha }}
+          context: Unlock Staging
+          description: Unlocking staging environment for PR #${{ github.event.client_payload.pull_request.number }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-and-pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Unlock SST staging stage
+        run: |
+          echo "Unlocking stage: $SST_STAGE"
+          npx sst unlock --stage "$SST_STAGE"
+
+      - name: Set final commit status
+        if: always()
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          sha: ${{ github.event.client_payload.pull_request.head.sha }}
+          context: Unlock Staging
+          description: ${{ job.status == 'success' && 'Staging environment unlocked' || 'Failed to unlock staging environment' }}
+
+      - name: Add reaction to comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          reactions: rocket

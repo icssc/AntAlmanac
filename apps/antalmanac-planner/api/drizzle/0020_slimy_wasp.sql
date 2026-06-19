@@ -1,0 +1,1 @@
+ALTER TABLE "planner" ADD COLUMN "chc" text;

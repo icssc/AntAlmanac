@@ -1,0 +1,73 @@
+.report-group {
+  padding: 16px 20px;
+
+  &.MuiCard-root {
+    border-radius: var(--mui-shape-borderRadiusLg);
+    background-color: var(--mui-palette-overlay-overlay1);
+  }
+
+  .report-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+
+    .report-group-identifier {
+      font-weight: bold;
+      font-size: 20px;
+      margin: 0;
+      word-break: break-word;
+    }
+
+    .edit-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      align-items: center;
+      height: 24px;
+      .MuiButton-root {
+        display: inline-flex;
+        height: 29px;
+        font-size: 13px;
+        white-space: nowrap;
+        padding: 0px 12px;
+      }
+    }
+  }
+
+  .report-group-label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .report-group-content {
+    font-size: 17px;
+    margin-top: 16px;
+    margin-bottom: 10px;
+  }
+
+  .report-group-user-display {
+    color: var(--mui-palette-text-secondary);
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .report-group-subreports-container {
+    border-radius: var(--mui-shape-borderRadiusLg);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .subreport {
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    &.MuiCard-root {
+      background-color: var(--overlay4);
+      border-radius: var(--mui-shape-borderRadiusLg);
+    }
+  }
+}

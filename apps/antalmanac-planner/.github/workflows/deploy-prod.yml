@@ -1,0 +1,56 @@
+name: Deploy production
+
+on:
+  push:
+    branches:
+      - main
+
+# do not cancel in progress, SST will be stuck in a "locked" state if cancelled mid-deployment
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build_and_deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://peterportal.org
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+        env:
+          HUSKY: 0
+
+      # TODO (@cadenlee2): Remove this stage once SST fixes compat with Pulumi
+      # https://github.com/anomalyco/sst/issues/6314
+      - name: Setup Pulumi
+        uses: pulumi/actions@v5
+        with:
+          pulumi-version: 3.138.0 # Any version < 3.214.0 works
+
+      - name: Build and deploy
+        run: pnpm sst deploy --stage prod
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          NODE_ENV: production
+
+          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+          OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+          PRODUCTION_DOMAIN: ${{ secrets.PRODUCTION_DOMAIN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+          EXTERNAL_USER_READ_SECRET: ${{ secrets.EXTERNAL_USER_READ_SECRET }}
+          NEXT_PUBLIC_POSTHOG_HOST: ${{ vars.NEXT_PUBLIC_POSTHOG_HOST}}
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ vars.NEXT_PUBLIC_POSTHOG_KEY}}
+          OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}

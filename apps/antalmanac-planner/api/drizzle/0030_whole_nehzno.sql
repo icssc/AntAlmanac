@@ -1,0 +1,1 @@
+ALTER TABLE "planner_year" ADD COLUMN "collapsed" boolean DEFAULT false NOT NULL;

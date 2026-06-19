@@ -1,0 +1,32 @@
+export const restrictionsMapping: Record<string, string> = {
+  A: 'A: Prerequisite required',
+  M: 'M: Non-major only',
+  E: 'E: Freshmen only',
+  G: 'G: Lower-division only',
+  I: 'I: Seniors only',
+  N: 'N: School major only',
+  F: 'F: Sophomores only',
+  O: 'O: Non-school major only',
+  H: 'H: Juniors only',
+  J: 'J: Upper-division only',
+  C: 'C: Fee required',
+  D: 'D: Pass/Not Pass option only',
+  X: 'X: Separate authorization codes required to add, drop, or change enrollment',
+  R: 'R: Biomedical Pass/Fail course (School of Medicine only)',
+  K: 'K: Graduate only',
+  S: 'S: Satisfactory/Unsatisfactory only',
+  B: 'B: Authorization code required',
+  L: 'L: Major only',
+};
+
+export function parseRestrictions(restrictions: string) {
+  return restrictions
+    .split(/\s+/)
+    .filter((code) => code !== 'and' && code !== 'or')
+    .map((code, index) => (
+      <div key={index}>
+        {restrictionsMapping[code as keyof typeof restrictionsMapping]}
+        <br />
+      </div>
+    ));
+}
