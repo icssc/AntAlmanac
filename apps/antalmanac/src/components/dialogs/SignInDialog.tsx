@@ -1,5 +1,5 @@
 import { SignInButtons } from '$components/buttons/SignInButtons/SignInButtons';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 
 interface SignInDialogProps {
@@ -10,7 +10,7 @@ interface SignInDialogProps {
 
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, open } = props;
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     const handleClose = () => {
         onClose();

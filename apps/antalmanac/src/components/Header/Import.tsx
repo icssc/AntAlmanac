@@ -14,12 +14,12 @@ import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
 import { processZotcourseResponse } from '$lib/zotcourse';
-import { BLUE, LIGHT_BLUE } from '$src/globals';
+import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useDevModeStore, useThemeStore } from '$stores/SettingsStore';
+import { useDevModeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { CloudUpload, ContentPasteGo } from '@mui/icons-material';
 import {
@@ -35,6 +35,7 @@ import {
     FormControl,
     FormControlLabel,
     InputLabel,
+    Link as MuiLink,
     Paper,
     Radio,
     RadioGroup,
@@ -46,7 +47,7 @@ import {
     Typography,
 } from '@mui/material';
 import { type AATerm, type AACourse, type ShortCourseSchedule } from '@packages/antalmanac-types';
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { usePostHog } from 'posthog-js/react';
 import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -91,8 +92,6 @@ export function Import() {
 
     const effectiveImportSource =
         !devMode && importSource === ImportSource.JSON_IMPORT ? ImportSource.STUDY_LIST_IMPORT : importSource;
-
-    const isDark = useThemeStore((store) => store.isDark);
 
     const postHog = usePostHog();
     const { mutateAsync: fetchZotcourse } = trpcReact.zotcourse.getUserData.useMutation();
@@ -696,14 +695,14 @@ export function Import() {
                         }}
                         textColor="secondary"
                         indicatorColor="secondary"
-                        sx={{ borderBottom: 1, borderColor: 'divider' }}
+                        sx={(theme) => ({ borderBottom: 1, borderColor: theme.vars.palette.divider })}
                     >
                         <Tab label="Import" value="import" />
                         <Tab label="Export" value="export" />
                     </Tabs>
                 )}
                 <DialogTitle>{dialogTab === 'export' ? 'Export Schedules' : 'Import Schedule'}</DialogTitle>
-                <DialogContent sx={isDark ? { '& a': { color: LIGHT_BLUE } } : undefined}>
+                <DialogContent>
                     {dialogTab === 'export' ? (
                         <>
                             <DialogContentText sx={{ mb: 2 }}>
@@ -744,30 +743,30 @@ export function Import() {
                                         sx={{ marginBottom: 1 }}
                                     />
                                     <Box
-                                        sx={{
+                                        sx={(theme) => ({
                                             maxHeight: 300,
                                             overflow: 'auto',
                                             border: '1px solid',
-                                            borderColor: 'divider',
+                                            borderColor: theme.vars.palette.divider,
                                             borderRadius: 1,
                                             p: 1,
-                                        }}
+                                        })}
                                     >
                                         <Stack spacing={1}>
                                             {exportSchedules.map((schedule, index) => (
                                                 <Paper
                                                     key={index}
-                                                    sx={{
+                                                    sx={(theme) => ({
                                                         p: 1.5,
                                                         border: '2px solid',
                                                         borderColor: exportSelectedIndices.has(index)
-                                                            ? 'secondary.main'
+                                                            ? theme.vars.palette.secondary.main
                                                             : 'transparent',
                                                         backgroundColor: exportSelectedIndices.has(index)
-                                                            ? 'action.selected'
-                                                            : 'background.paper',
+                                                            ? theme.vars.palette.action.selected
+                                                            : theme.vars.palette.background.paper,
                                                         transition: 'all 0.2s ease-in-out',
-                                                    }}
+                                                    })}
                                                 >
                                                     <FormControlLabel
                                                         control={
@@ -792,7 +791,13 @@ export function Import() {
                                                                 <Typography variant="body2" fontWeight="medium">
                                                                     {schedule.scheduleName}
                                                                 </Typography>
-                                                                <Typography variant="caption" color="text.secondary">
+                                                                <Typography
+                                                                    variant="caption"
+                                                                    sx={{
+                                                                        color: (theme) =>
+                                                                            theme.vars.palette.text.secondary,
+                                                                    }}
+                                                                >
                                                                     {schedule.courses.length} course(s),{' '}
                                                                     {schedule.customEvents.length} custom event(s)
                                                                 </Typography>
@@ -850,9 +855,24 @@ export function Import() {
                                         Paste the contents of your Study List below to import it into AntAlmanac.
                                         <br />
                                         To find your Study List, go to{' '}
-                                        <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
-                                        <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>,
-                                        and click on Study List once you&apos;ve logged in. Copy everything below the
+                                        <MuiLink
+                                            href="https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            underline="hover"
+                                        >
+                                            WebReg
+                                        </MuiLink>{' '}
+                                        or{' '}
+                                        <MuiLink
+                                            href="https://www.reg.uci.edu/access/student/welcome/"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            underline="hover"
+                                        >
+                                            StudentAccess
+                                        </MuiLink>
+                                        , and click on Study List once you&apos;ve logged in. Copy everything below the
                                         column names (Code, Dept, etc.) under the Enrolled Classes section.
                                     </DialogContentText>
                                     <InputLabel style={{ fontSize: '9px' }}>Study List</InputLabel>
@@ -957,49 +977,62 @@ export function Import() {
                                         aria-label="Upload JSON schedule file"
                                     >
                                         <Paper
-                                            sx={{
+                                            sx={(theme) => ({
                                                 border: '2px dashed',
                                                 borderColor:
-                                                    isDragging || selectedFileName ? 'secondary.main' : 'divider',
-                                                backgroundColor: isDragging ? 'action.hover' : 'background.paper',
+                                                    isDragging || selectedFileName
+                                                        ? theme.vars.palette.secondary.main
+                                                        : theme.vars.palette.divider,
+                                                backgroundColor: isDragging
+                                                    ? theme.vars.palette.action.hover
+                                                    : theme.vars.palette.background.paper,
                                                 padding: 3,
                                                 textAlign: 'center',
                                                 transition: 'all 0.2s ease-in-out',
                                                 '&:hover': {
-                                                    borderColor: 'secondary.main',
-                                                    backgroundColor: 'action.hover',
+                                                    borderColor: theme.vars.palette.secondary.main,
+                                                    backgroundColor: theme.vars.palette.action.hover,
                                                 },
-                                            }}
+                                            })}
                                         >
                                             <Stack spacing={2} alignItems="center">
                                                 <CloudUpload
-                                                    sx={{
+                                                    sx={(theme) => ({
                                                         fontSize: 48,
                                                         color:
                                                             isDragging || selectedFileName
-                                                                ? 'secondary.main'
-                                                                : 'text.secondary',
-                                                    }}
+                                                                ? theme.vars.palette.secondary.main
+                                                                : theme.vars.palette.text.secondary,
+                                                    })}
                                                 />
                                                 {selectedFileName ? (
                                                     <>
                                                         <Typography
                                                             variant="body1"
-                                                            sx={{ color: 'secondary.main' }}
+                                                            sx={{ color: (theme) => theme.vars.palette.secondary.main }}
                                                             fontWeight="medium"
                                                         >
                                                             {selectedFileName}
                                                         </Typography>
-                                                        <Typography variant="body2" color="text.secondary">
+                                                        <Typography
+                                                            variant="body2"
+                                                            sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                                                        >
                                                             Click to select a different file
                                                         </Typography>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Typography variant="body1" color="text.primary">
+                                                        <Typography
+                                                            variant="body1"
+                                                            sx={{ color: (theme) => theme.vars.palette.text.primary }}
+                                                        >
                                                             Drag and drop your JSON file here
                                                         </Typography>
-                                                        <Typography variant="body2" color="text.secondary">
+                                                        <Typography
+                                                            variant="body2"
+                                                            sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                                                        >
                                                             or click to browse
                                                         </Typography>
                                                     </>
@@ -1048,30 +1081,30 @@ export function Import() {
                                                 sx={{ marginBottom: 1 }}
                                             />
                                             <Box
-                                                sx={{
+                                                sx={(theme) => ({
                                                     maxHeight: 300,
                                                     overflow: 'auto',
                                                     border: '1px solid',
-                                                    borderColor: 'divider',
+                                                    borderColor: theme.vars.palette.divider,
                                                     borderRadius: 1,
                                                     p: 1,
-                                                }}
+                                                })}
                                             >
                                                 <Stack spacing={1}>
                                                     {importedSchedules.map((schedule, index) => (
                                                         <Paper
                                                             key={index}
-                                                            sx={{
+                                                            sx={(theme) => ({
                                                                 p: 1.5,
                                                                 border: '2px solid',
                                                                 borderColor: selectedScheduleIndices.has(index)
-                                                                    ? 'secondary.main'
+                                                                    ? theme.vars.palette.secondary.main
                                                                     : 'transparent',
                                                                 backgroundColor: selectedScheduleIndices.has(index)
-                                                                    ? 'action.selected'
-                                                                    : 'background.paper',
+                                                                    ? theme.vars.palette.action.selected
+                                                                    : theme.vars.palette.background.paper,
                                                                 transition: 'all 0.2s ease-in-out',
-                                                            }}
+                                                            })}
                                                         >
                                                             <FormControlLabel
                                                                 control={
@@ -1098,7 +1131,10 @@ export function Import() {
                                                                         </Typography>
                                                                         <Typography
                                                                             variant="caption"
-                                                                            color="text.secondary"
+                                                                            sx={{
+                                                                                color: (theme) =>
+                                                                                    theme.vars.palette.text.secondary,
+                                                                            }}
                                                                         >
                                                                             {schedule.courses.length} course(s),{' '}
                                                                             {schedule.customEvents.length} custom
@@ -1189,7 +1225,10 @@ export function Import() {
             >
                 {alertDialogSeverity === 'error' ? (
                     <Box>
-                        If you think this is a mistake please submit a <Link href="/feedback">bug report</Link>
+                        If you think this is a mistake please submit a{' '}
+                        <MuiLink component={NextLink} href="/feedback" underline="hover">
+                            bug report
+                        </MuiLink>
                     </Box>
                 ) : (
                     <Stack direction="row" justifyContent="center">

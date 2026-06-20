@@ -13,7 +13,7 @@ export const SETTINGS_POPOVER_MENU_HOVER_BG = '#4a4a4a';
  * Single source of truth so popover styles stay in sync.
  */
 export function getSettingsPopoverPaperSx(isDark: boolean): SxProps<Theme> {
-    return {
+    return (theme) => ({
         width: {
             xs: 300,
             sm: 300,
@@ -22,8 +22,8 @@ export function getSettingsPopoverPaperSx(isDark: boolean): SxProps<Theme> {
         p: '16px 20px',
         borderRadius: 2,
         border: '1px solid',
-        borderColor: 'background.default',
-        bgcolor: isDark ? SETTINGS_POPOVER_BG : 'background.paper',
-        color: isDark ? 'white' : 'text.primary',
-    };
+        borderColor: theme.vars.palette.background.default,
+        bgcolor: isDark ? SETTINGS_POPOVER_BG : theme.vars.palette.background.paper,
+        color: isDark ? 'white' : theme.vars.palette.text.primary,
+    });
 }

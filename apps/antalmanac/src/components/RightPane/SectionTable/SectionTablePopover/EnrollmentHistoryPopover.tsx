@@ -147,7 +147,7 @@ export function EnrollmentHistoryPopover({
                             px: 1,
                         }}
                     >
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography variant="body1" sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
                             No past enrollment data found for this course
                         </Typography>
                     </Box>

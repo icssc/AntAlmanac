@@ -1,77 +1,14 @@
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
     getLocalStorageDevMode,
     getLocalStoragePreviewMode,
     getLocalStorageShow24HourTime,
-    getLocalStorageTheme,
     setLocalStorageAutoSave,
     setLocalStorageDevMode,
     setLocalStoragePreviewMode,
     setLocalStorageShow24HourTime,
-    setLocalStorageTheme,
 } from '$lib/localStorage';
-import { PostHog } from 'posthog-js/react';
 import { create } from 'zustand';
-
-type ThemeSetting = 'light' | 'dark' | 'system';
-
-interface ThemeStore {
-    /**
-     * The 'raw' theme, based on the user's selected setting
-     */
-    themeSetting: ThemeSetting;
-    /**
-     * The 'derived' theme, based on user settings and device preferences
-     */
-    isDark: boolean;
-
-    setAppTheme: (themeSetting: ThemeSetting, postHog?: PostHog) => void;
-    syncSystemTheme: (isDark: boolean) => void;
-}
-
-function themeShouldBeDark(themeSetting: ThemeSetting) {
-    if (typeof window === 'undefined') {
-        return themeSetting === 'dark';
-    }
-
-    if (themeSetting == 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return themeSetting == 'dark';
-}
-
-export const useThemeStore = create<ThemeStore>((set, get) => {
-    const storedThemeSetting: ThemeSetting = ((typeof Storage !== 'undefined' ? getLocalStorageTheme() : null) ??
-        'system') as ThemeSetting;
-    const isDark = themeShouldBeDark(storedThemeSetting);
-
-    return {
-        themeSetting: storedThemeSetting,
-        isDark: isDark,
-
-        setAppTheme: (themeSetting, postHog) => {
-            setLocalStorageTheme(themeSetting);
-
-            const isDark = themeShouldBeDark(themeSetting);
-
-            set({ themeSetting, isDark });
-
-            logAnalytics(postHog, {
-                category: analyticsEnum.nav,
-                action: analyticsEnum.nav.actions.CHANGE_THEME,
-                customProps: {
-                    themeSetting,
-                },
-            });
-        },
-
-        syncSystemTheme: (isDark) => {
-            if (get().themeSetting !== 'system') {
-                return;
-            }
-            set({ isDark });
-        },
-    };
-});
 
 interface TimeFormatStore {
     isMilitaryTime: boolean;
@@ -79,14 +16,12 @@ interface TimeFormatStore {
 }
 
 export const useTimeFormatStore = create<TimeFormatStore>((set) => {
-    const isMilitaryTime = typeof Storage !== 'undefined' && getLocalStorageShow24HourTime() == 'true';
+    const isMilitaryTime = getLocalStorageShow24HourTime() == 'true';
 
     return {
         isMilitaryTime,
         setTimeFormat: (isMilitaryTime) => {
-            if (typeof Storage !== 'undefined') {
-                setLocalStorageShow24HourTime(isMilitaryTime.toString());
-            }
+            setLocalStorageShow24HourTime(isMilitaryTime.toString());
             set({ isMilitaryTime });
         },
     };
@@ -97,15 +32,12 @@ interface PreviewStore {
 }
 
 export const usePreviewStore = create<PreviewStore>((set) => {
-    const previewMode = typeof Storage !== 'undefined' && getLocalStoragePreviewMode() == 'true';
+    const previewMode = getLocalStoragePreviewMode() == 'true';
 
     return {
         previewMode: previewMode,
         setPreviewMode: (previewMode) => {
-            if (typeof Storage !== 'undefined') {
-                setLocalStoragePreviewMode(previewMode.toString());
-            }
-
+            setLocalStoragePreviewMode(previewMode.toString());
             set({ previewMode: previewMode });
         },
     };
@@ -117,14 +49,12 @@ interface AutoSaveStore {
 }
 
 export const useAutoSaveStore = create<AutoSaveStore>((set) => {
-    const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
+    const autoSave = getLocalStorageAutoSave() == 'true';
 
     return {
         autoSave,
         setAutoSave: (autoSave) => {
-            if (typeof Storage !== 'undefined') {
-                setLocalStorageAutoSave(autoSave.toString());
-            }
+            setLocalStorageAutoSave(autoSave.toString());
             set({ autoSave });
         },
     };
@@ -136,16 +66,13 @@ interface DevModeStore {
 }
 
 export const useDevModeStore = create<DevModeStore>((set) => {
-    const stored = typeof Storage !== 'undefined' ? getLocalStorageDevMode() : null;
-    const isLocalDev = process.env.NODE_ENV === 'development';
-    const devMode = stored === null ? isLocalDev : stored === 'true';
+    const stored = getLocalStorageDevMode();
+    const devMode = stored === 'true';
 
     return {
         devMode,
         setDevMode: (devMode: boolean) => {
-            if (typeof Storage !== 'undefined') {
-                setLocalStorageDevMode(devMode.toString());
-            }
+            setLocalStorageDevMode(devMode.toString());
             set({ devMode });
         },
     };

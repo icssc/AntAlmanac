@@ -1,5 +1,5 @@
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Panorama } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { saveAs } from 'file-saver';
@@ -10,7 +10,7 @@ interface ScreenshotButtonProps {
 }
 
 export function ScreenshotButton({ onScreenshot }: ScreenshotButtonProps) {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
     const postHog = usePostHog();
 
     const handleClick = () => {

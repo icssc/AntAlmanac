@@ -1,9 +1,9 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursesRoot } from '$components/RightPane/AddedCourses/AddedCoursesRoot';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { unreachableCase } from '$lib/utils';
-import { useThemeStore } from '$stores/SettingsStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
@@ -11,7 +11,7 @@ const UCIMap = lazy(() => import('$components/Map/Map').then((m) => ({ default: 
 
 export function ScheduleManagementContent() {
     const activeTab = useActiveTab();
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     switch (activeTab) {
         case 'calendar':

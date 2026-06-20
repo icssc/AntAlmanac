@@ -1,7 +1,7 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Chip, type SxProps, type TableCellProps, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
@@ -12,7 +12,7 @@ interface CourseCodeCellProps extends TableCellProps {
 }
 
 export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
     const [isHovered, setIsHovered] = useState(false);
 
     const postHog = usePostHog();

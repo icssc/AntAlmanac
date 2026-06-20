@@ -115,7 +115,7 @@ type ActionType =
 class ActionTypesStore extends EventEmitter {
     async autoSaveSchedule(_action: ActionType) {
         const sessionStore = useSessionStore.getState();
-        const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
+        const autoSave = getLocalStorageAutoSave() === 'true';
 
         if (!sessionStore.sessionIsValid || !sessionStore.userId) {
             if (autoSave) {

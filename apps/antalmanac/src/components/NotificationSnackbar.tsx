@@ -53,7 +53,7 @@ export const NotificationSnackbar = () => {
                 onClose={handleClose}
                 sx={(theme) => ({
                     width: '100%',
-                    color: theme.palette.common.white,
+                    color: theme.vars.palette.common.white,
                     display: 'flex',
                     alignItems: 'center',
                 })}

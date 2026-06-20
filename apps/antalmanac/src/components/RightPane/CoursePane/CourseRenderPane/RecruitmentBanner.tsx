@@ -41,7 +41,7 @@ export function RecruitmentBanner({ deptValue }: RecruitmentBannerProps) {
                     severity="info"
                     style={{
                         color: 'unset',
-                        backgroundColor: theme.palette.background.paper,
+                        backgroundColor: theme.vars.palette.background.paper,
                         boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
                     }}
                     action={

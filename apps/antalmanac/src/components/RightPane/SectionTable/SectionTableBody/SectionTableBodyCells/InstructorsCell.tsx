@@ -1,7 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { Box, Typography, type SxProps } from '@mui/material';
+import { Box, Link, Typography, type SxProps } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
-import Link from 'next/link';
 
 interface InstructorsCellProps {
     section: Pick<AASection, 'instructors'>;
@@ -12,7 +11,7 @@ export const InstructorsCell = ({ section, sx }: InstructorsCellProps) => {
     const { instructors } = section;
     const links = instructors.map((profName, index) => {
         if (profName === 'STAFF') {
-            return <Box key={profName + index}>{profName}</Box>; // The key should be fine as we're not changing ['STAFF, 'STAFF']
+            return <Box key={profName + index}>{profName}</Box>;
         }
 
         const lastName = profName.substring(0, profName.indexOf(','));

@@ -1,7 +1,7 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Chip, Tooltip } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -14,7 +14,7 @@ interface SectionCodeCellProps {
 
 export const SectionCodeCell = ({ section, analyticsCategory }: SectionCodeCellProps) => {
     const { sectionCode } = section;
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
     const [isHovered, setIsHovered] = useState(false);
 
     const postHog = usePostHog();

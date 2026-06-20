@@ -13,14 +13,14 @@ import { StartTimeField } from '$components/RightPane/CoursePane/SearchForm/Manu
 import { UnitsField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/UnitsField';
 import { hasAdvancedParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { readAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Box, Button, Collapse, Typography } from '@mui/material';
 import { useState } from 'react';
 
 export function AdvancedSearch() {
     const [expanded, setExpanded] = useState(() => hasAdvancedParams(readAdvancedSearchParams()));
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     const handleExpand = () => setExpanded((value) => !value);
 

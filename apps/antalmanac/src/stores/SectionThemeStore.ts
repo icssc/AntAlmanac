@@ -1,3 +1,4 @@
+import { getIsDarkMode } from '$hooks/useIsDarkMode';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageSectionColor,
@@ -14,7 +15,6 @@ import {
     type ThemeAssignmentMap,
 } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import type { PostHog } from 'posthog-js/react';
 import { create } from 'zustand';
 
@@ -51,7 +51,6 @@ interface SectionThemeStore {
 
 function readStoredSectionColor(): SectionColorSetting {
     const raw = getLocalStorageSectionColor();
-    // Default users to 'custom' so their hand-picked colors are preserved.
     return isSectionColorSetting(raw) ? raw : 'custom';
 }
 
@@ -139,7 +138,7 @@ export const useSectionThemeStore = create<SectionThemeStore>((set, get) => {
 
             const courses = AppStore.schedule.getCurrentCourses();
             const customEventIds = AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID);
-            const palette = getPalette(sectionColor, useThemeStore.getState().isDark);
+            const palette = getPalette(sectionColor, getIsDarkMode());
 
             const existing = assignments[sectionColor] ?? {};
             const { map } = computeAssignments(existing, courses, customEventIds, palette);

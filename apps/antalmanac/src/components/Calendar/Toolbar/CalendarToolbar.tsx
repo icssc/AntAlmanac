@@ -4,11 +4,11 @@ import { DownloadButton } from '$components/buttons/Download';
 import { ScreenshotButton } from '$components/buttons/Screenshot';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import {
     Undo as UndoIcon,
     Redo as RedoIcon,
@@ -48,7 +48,7 @@ interface CalendarPaneToolbarProps {
  */
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
@@ -150,15 +150,15 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             size="small"
                             sx={{
                                 border: '1px solid',
-                                borderColor: showFinalsSchedule ? theme.palette.primary.main : 'inherit',
+                                borderColor: showFinalsSchedule ? theme.vars.palette.primary.main : 'inherit',
                                 borderRadius: '4px',
                                 padding: '3px',
                                 ...(showFinalsSchedule &&
                                     isDark && {
-                                        backgroundColor: theme.palette.primary.main,
+                                        backgroundColor: theme.vars.palette.primary.main,
                                         color: '#fff',
                                         '&:hover': {
-                                            backgroundColor: theme.palette.primary.dark,
+                                            backgroundColor: theme.vars.palette.primary.dark,
                                         },
                                     }),
                             }}

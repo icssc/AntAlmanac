@@ -3,7 +3,7 @@ import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
 import { SectionColorSelector } from '$components/Header/Settings/SectionColorSelector';
 import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
 import { TimeSelector } from '$components/Header/Settings/TimeSelector';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { AccountCircle } from '@mui/icons-material';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import type { UserProfile } from '@packages/db/src/schema/auth/user';
@@ -14,7 +14,7 @@ interface UserProfileSectionProps {
 }
 
 function UserProfileSection({ user }: UserProfileSectionProps) {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     if (!user) {
         return null;

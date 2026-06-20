@@ -4,10 +4,10 @@ import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { trpc } from '$lib/api/trpc';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { AccountCircle, ExpandMore } from '@mui/icons-material';
 import {
     Alert,
@@ -32,7 +32,7 @@ import { useCallback, useState, type KeyboardEvent } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Signin = () => {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     const { openLoadingSchedule, setOpenLoadingSchedule } = useScheduleComponentsToggleStore(
         useShallow((state) => ({
@@ -53,11 +53,9 @@ export const Signin = () => {
     const handleOpen = useCallback(() => {
         setIsOpen(true);
         setSettingsAnchorEl(null);
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = getLocalStorageUserId();
-            if (savedUserID !== null) {
-                setUserID(savedUserID);
-            }
+        const savedUserID = getLocalStorageUserId();
+        if (savedUserID !== null) {
+            setUserID(savedUserID);
         }
     }, []);
 

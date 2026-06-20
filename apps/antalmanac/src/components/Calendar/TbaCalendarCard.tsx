@@ -1,8 +1,8 @@
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Close, InfoOutlined } from '@mui/icons-material';
 import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '@mui/material';
 import type { AATerm } from '@packages/antalmanac-types';
@@ -49,18 +49,18 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
 
 function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[]; onToggle: () => void }) {
     const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
     const isMobile = useIsMobile();
     return (
         <Alert
-            icon={<InfoOutlined fontSize="small" sx={{ color: isDark ? theme.palette.common.white : BLUE }} />}
+            icon={<InfoOutlined fontSize="small" sx={{ color: isDark ? theme.vars.palette.common.white : BLUE }} />}
             severity="info"
             variant="outlined"
             sx={{
                 width: '100%',
-                bgcolor: theme.palette.background.paper,
+                bgcolor: theme.vars.palette.background.paper,
                 borderColor: BLUE,
-                color: isDark ? theme.palette.common.white : 'inherit',
+                color: isDark ? theme.vars.palette.common.white : 'inherit',
                 borderWidth: 2,
                 alignItems: 'center',
                 py: 0.5,

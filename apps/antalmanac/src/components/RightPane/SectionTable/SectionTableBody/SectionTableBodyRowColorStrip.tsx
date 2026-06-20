@@ -1,4 +1,5 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
     courseColorKey,
@@ -10,7 +11,6 @@ import {
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Box, Popover, type PopoverProps, type SxProps, TableCell, Tooltip } from '@mui/material';
 import { type AASection, type AATerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
@@ -64,7 +64,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     // Read the single resolved source of truth so the strip always matches the calendar
     // (which reads the same map via useSectionThemeAssignments).
     const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
-    const isDark = useThemeStore((s) => s.isDark);
+    const isDark = useIsDarkMode();
 
     const palette = useMemo(() => getPalette(activeSectionColor, isDark), [activeSectionColor, isDark]);
     const assignments = activeSectionColor === 'custom' ? EMPTY_ASSIGNMENTS : activeAssignments;

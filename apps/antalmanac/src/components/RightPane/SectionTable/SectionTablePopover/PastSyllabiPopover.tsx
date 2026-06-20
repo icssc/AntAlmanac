@@ -68,14 +68,14 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                 {loading ? (
                     <Skeleton variant="rectangular" animation="wave" height="150px" width="100%" />
                 ) : syllabi.length === 0 ? (
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography variant="body1" sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
                         No syllabi found for this course.
                     </Typography>
                 ) : (
                     <List disablePadding sx={{ maxHeight: height, overflow: 'auto' }}>
                         {Object.entries(syllabiByTerm).map(([term, entries]) => (
                             <ListSubheader key={term} disableGutters disableSticky>
-                                <Typography variant="body1" color="text.primary">
+                                <Typography variant="body1" sx={{ color: (theme) => theme.vars.palette.text.primary }}>
                                     {term}
                                 </Typography>
                                 {entries.map((entry) => (

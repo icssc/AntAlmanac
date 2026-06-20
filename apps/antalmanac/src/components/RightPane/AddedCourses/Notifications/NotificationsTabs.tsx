@@ -1,7 +1,7 @@
 import { NotificationsTable } from '$components/RightPane/AddedCourses/Notifications/NotificationsTable';
 import { type Notification, useNotificationStore } from '$stores/NotificationStore';
 import { NotificationAddOutlined } from '@mui/icons-material';
-import { Box, CircularProgress, Paper, Tab, Tabs, Typography, useTheme } from '@mui/material';
+import { Box, CircularProgress, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -21,7 +21,6 @@ function groupNotificationsByTerm(notifications: Partial<Record<string, Notifica
 }
 
 export function NotificationsTabs() {
-    const theme = useTheme();
     const { initialized, notifications } = useNotificationStore(
         useShallow((store) => ({ initialized: store.initialized, notifications: store.notifications }))
     );
@@ -48,7 +47,10 @@ export function NotificationsTabs() {
             <Box
                 sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}
             >
-                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center' }}>
+                <Typography
+                    variant="body1"
+                    sx={{ textAlign: 'center', color: (theme) => theme.vars.palette.text.secondary }}
+                >
                     You don&apos;t have any notifications enabled.
                 </Typography>
                 <Box
@@ -61,11 +63,20 @@ export function NotificationsTabs() {
                         flexWrap: 'wrap',
                     }}
                 >
-                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    <Typography
+                        variant="body2"
+                        sx={{ textAlign: 'center', color: (theme) => theme.vars.palette.text.secondary }}
+                    >
                         Enable notifications for courses using the
                     </Typography>
-                    <NotificationAddOutlined fontSize="small" sx={{ color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    <NotificationAddOutlined
+                        fontSize="small"
+                        sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                    />
+                    <Typography
+                        variant="body2"
+                        sx={{ textAlign: 'center', color: (theme) => theme.vars.palette.text.secondary }}
+                    >
                         icon to get notified about status changes.
                     </Typography>
                 </Box>
@@ -83,7 +94,10 @@ export function NotificationsTabs() {
                 elevation={0}
                 variant="outlined"
                 square
-                sx={{ bgcolor: theme.palette.background.elevated, borderColor: 'divider' }}
+                sx={(theme) => ({
+                    bgcolor: theme.vars.palette.background.elevated,
+                    borderColor: theme.vars.palette.divider,
+                })}
             >
                 <Tabs
                     value={displayTab}

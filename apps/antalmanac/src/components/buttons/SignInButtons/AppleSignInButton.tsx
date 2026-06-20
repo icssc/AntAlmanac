@@ -1,6 +1,6 @@
 import { SignInButton } from '$components/buttons/SignInButtons/SignInButton';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { Provider } from '$lib/auth/authTypes';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Apple as AppleIcon } from '@mui/icons-material';
 
 interface AppleSignInButtonProps {
@@ -20,7 +20,7 @@ interface AppleSignInButtonProps {
  * Light mode → black style: #000000 bg, #FFFFFF text, #1A1A1A on hover.
  */
 export const AppleSignInButton = ({ fullWidth }: AppleSignInButtonProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     return (
         <SignInButton
