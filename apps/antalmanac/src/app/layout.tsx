@@ -1,3 +1,4 @@
+import { getPosthogPreconnectOrigins } from '$lib/posthog-preconnect';
 import { Providers } from '$src/app/providers';
 import { ANTALMANAC_DESCRIPTION, ANTALMANAC_TITLE } from '$src/app/seo-constants';
 import type { Metadata, Viewport } from 'next';
@@ -5,6 +6,8 @@ import Script from 'next/script';
 import type { WebApplication, WebSite, WithContext } from 'schema-dts';
 
 import './globals.css';
+
+const posthogPreconnectOrigins = getPosthogPreconnectOrigins(process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_HOST);
 
 export const metadata: Metadata = {
     title: ANTALMANAC_TITLE,
@@ -80,6 +83,11 @@ const siteSchema: WithContext<WebSite> = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
+            <head>
+                {posthogPreconnectOrigins.map((origin) => (
+                    <link key={origin} rel="preconnect" href={origin} crossOrigin="anonymous" />
+                ))}
+            </head>
             <body>
                 <script
                     type="application/ld+json"

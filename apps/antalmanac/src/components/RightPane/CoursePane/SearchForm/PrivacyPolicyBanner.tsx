@@ -1,6 +1,30 @@
-import { Paper, Typography } from '@mui/material';
+'use client';
 
+import { Paper, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+
+/**
+ * Deferred so the banner does not become the LCP element while the client shell hydrates.
+ */
 export function PrivacyPolicyBanner() {
+    const [visible, setVisible] = useState(false);
+
+    useEffect(() => {
+        const showBanner = () => setVisible(true);
+
+        if (typeof window.requestIdleCallback === 'function') {
+            const idleId = window.requestIdleCallback(showBanner, { timeout: 2_000 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        const timeoutId = window.setTimeout(showBanner, 1);
+        return () => window.clearTimeout(timeoutId);
+    }, []);
+
+    if (!visible) {
+        return null;
+    }
+
     return (
         <Paper
             variant="outlined"
