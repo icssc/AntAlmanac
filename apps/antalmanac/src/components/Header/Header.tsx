@@ -56,7 +56,6 @@ export function Header() {
             <AppBar
                 position="static"
                 color="primary"
-                enableColorOnDark
                 sx={{
                     height: 52,
                     px: 1,

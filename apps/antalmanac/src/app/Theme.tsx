@@ -129,6 +129,9 @@ const appTheme = createTheme({
     },
     components: {
         MuiAppBar: {
+            defaultProps: {
+                enableColorOnDark: true,
+            },
             styleOverrides: {
                 root: {
                     backgroundImage: 'none',
