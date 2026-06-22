@@ -4,8 +4,6 @@ enum LocalStorageKeys {
     patchNotesKey = 'latestPatchSeen',
     recruitmentDismissalTime = 'recruitmentDismissalTime',
     tourHasRun = 'tourHasRun',
-    /** @deprecated Theme preference is now managed by MUI via modeStorageKey="theme". */
-    theme = 'theme',
     sectionColor = 'sectionColor',
     sectionColorAssignments = 'sectionColorAssignments',
     show24HourTime = 'show24HourTime',
@@ -20,6 +18,8 @@ enum LocalStorageKeys {
     skeletonBlueprint = 'skeletonBlueprint',
     addedCoursesSkeletonBlueprint = 'addedCoursesSkeletonBlueprint',
 
+    /** @deprecated Theme preference is now managed by MUI via modeStorageKey="theme". */
+    theme = 'theme',
     /** @deprecated No longer used. Low impact feature. */
     recentlySearched = 'recentlySearched',
     /** @deprecated Removed for being a net negative on UX and confusing schedule persistence behavior */
