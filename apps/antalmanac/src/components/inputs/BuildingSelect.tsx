@@ -8,14 +8,19 @@ export interface ExtendedBuilding extends Building {
 
 /**
  * Get unique building names for the MUI Autocomplete.
- * A building with a duplicate name will have a higher index then a `findIndex` for another building with the same name.
+ * When multiple catalogue entries share a name, keep the first one encountered.
  */
-const buildings: ExtendedBuilding[] = Object.entries(buildingCatalogue)
-    .filter(
-        ([_, building], index, array) =>
-            array.findIndex(([_, otherBuilding]) => otherBuilding.name === building.name) === index
-    )
-    .map(([id, building]) => ({ id, ...building }));
+const buildings: ExtendedBuilding[] = (() => {
+    const byName = new Map<string, ExtendedBuilding>();
+
+    for (const [id, building] of Object.entries(buildingCatalogue)) {
+        if (!byName.has(building.name)) {
+            byName.set(building.name, { id, ...building });
+        }
+    }
+
+    return [...byName.values()];
+})();
 
 type BuildingSelectProps = {
     value?: string;

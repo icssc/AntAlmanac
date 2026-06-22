@@ -1,4 +1,8 @@
+'use client';
+
+import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AuthInitializer } from '$components/AuthInitializer';
+import { AutoSignIn } from '$components/AutoSignIn';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
@@ -72,7 +76,6 @@ function DesktopHome() {
             gutterStyle={() => ({
                 backgroundColor: BLUE,
                 width: '10px',
-                // gutter contents are slightly offset to the right, this centers the content
                 paddingRight: '1px',
             })}
             onDrag={handleDrag}
@@ -88,12 +91,22 @@ function DesktopHome() {
     );
 }
 
-export function Home() {
+export default function Client() {
     const isMobile = useIsMobile();
     const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 
+    useEffect(() => {
+        document.addEventListener('keydown', undoDelete, false);
+        document.addEventListener('keydown', redoDelete, false);
+        return () => {
+            document.removeEventListener('keydown', undoDelete, false);
+            document.removeEventListener('keydown', redoDelete, false);
+        };
+    }, []);
+
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <AutoSignIn />
             <TutorialInitializer />
             <AuthInitializer />
             <PatchNotes />

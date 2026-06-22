@@ -1,7 +1,7 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Box, Typography, type SxProps } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 interface InstructorsCellProps {
     section: Pick<AASection, 'instructors'>;
@@ -27,7 +27,7 @@ export const InstructorsCell = ({ section, sx }: InstructorsCellProps) => {
                     }}
                 >
                     <Link
-                        to={`https://www.ratemyprofessors.com/search/professors/1074?q=${lastName}`}
+                        href={`https://www.ratemyprofessors.com/search/professors/1074?q=${lastName}`}
                         target="_blank"
                         rel="noopener noreferrer"
                     >

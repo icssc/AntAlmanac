@@ -7,14 +7,13 @@ import {
 import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/parsers';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useTabStore } from '$stores/TabStore';
+import { TAB_HREF } from '$lib/tabs/tabs';
 import type { AATerm } from '@packages/antalmanac-types';
+import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export function useQuickSearch() {
-    const navigate = useNavigate();
-    const setActiveTab = useTabStore((s) => s.setActiveTab);
+    const router = useRouter();
 
     return useCallback(
         (deptValue: string, courseNumber: string, term: AATerm) => {
@@ -29,9 +28,8 @@ export function useQuickSearch() {
             searchParams.set(COURSE_SEARCH_MODE_KEY, COURSE_SEARCH_MODE.QUICK);
             searchParams.set(COURSE_SEARCH_VIEW_KEY, COURSE_SEARCH_VIEW.RESULTS);
 
-            navigate({ pathname: '/', search: searchParams.toString() });
-            setActiveTab('search');
+            router.push(`${TAB_HREF.search}?${searchParams.toString()}`);
         },
-        [navigate, setActiveTab]
+        [router]
     );
 }

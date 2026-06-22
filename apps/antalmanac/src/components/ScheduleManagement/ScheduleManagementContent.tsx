@@ -1,25 +1,26 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursesRoot } from '$components/RightPane/AddedCourses/AddedCoursesRoot';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
+import { useActiveTab } from '$lib/tabs/hooks';
+import { unreachableCase } from '$lib/utils';
 import { useThemeStore } from '$stores/SettingsStore';
-import { TAB_INDEX, useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
 const UCIMap = lazy(() => import('$components/Map/Map').then((m) => ({ default: m.CourseMap })));
 
 export function ScheduleManagementContent() {
-    const activeTab = useTabStore((store) => store.activeTab);
+    const activeTab = useActiveTab();
     const isDark = useThemeStore((store) => store.isDark);
 
     switch (activeTab) {
-        case TAB_INDEX.calendar:
+        case 'calendar':
             return <ScheduleCalendar />;
-        case TAB_INDEX.search:
+        case 'search':
             return <CoursePaneRoot />;
-        case TAB_INDEX.added:
+        case 'added':
             return <AddedCoursesRoot />;
-        case TAB_INDEX.map:
+        case 'map':
             return (
                 <Suspense
                     fallback={
@@ -45,8 +46,8 @@ export function ScheduleManagementContent() {
                     <UCIMap />
                 </Suspense>
             );
-
-        default:
-            return null;
+        default: {
+            unreachableCase(activeTab);
+        }
     }
 }

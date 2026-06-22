@@ -14,6 +14,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
+import { TAB_HREF } from '$lib/tabs/tabs';
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -21,12 +22,12 @@ import { useHoveredStore } from '$stores/HoveredStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
 import { Box, Backdrop, useTheme } from '@mui/material';
 import { VisibilityState } from '@packages/antalmanac-types';
 import { differenceInCalendarDays, format, getDay, startOfWeek, type Locale } from 'date-fns';
 import { enUS } from 'date-fns/locale/en-US';
+import { useRouter } from 'next/navigation';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, type Components, DateLocalizer, dateFnsLocalizer, Views, type ViewsProps } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
@@ -54,6 +55,7 @@ const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 const noop = () => {};
 
 export const ScheduleCalendar = memo(() => {
+    const router = useRouter();
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
     const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
@@ -375,7 +377,7 @@ export const ScheduleCalendar = memo(() => {
                         description="Search for courses to start building your schedule."
                         primaryAction={{
                             label: 'Search for Courses',
-                            onClick: () => useTabStore.getState().setActiveTab('search'),
+                            onClick: () => router.push(TAB_HREF.search),
                         }}
                     />
                 </Backdrop>

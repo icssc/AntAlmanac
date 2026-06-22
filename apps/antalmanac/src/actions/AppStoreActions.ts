@@ -3,8 +3,8 @@ import { trpc } from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
 import { warnMultipleTerms } from '$lib/helpers';
+import { shouldIgnoreShortcutTarget } from '$lib/keyboardShortcuts';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import { isNativeIosApp } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -410,7 +410,6 @@ export const loginUser = async (provider: Provider, { silent = false, postHog }:
         const authUrl = await getSignInUrl(provider, {
             authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
             returnUrl: `${window.location.pathname}${window.location.search}${window.location.hash}`,
-            isNativeIosApp: isNativeIosApp(),
         });
 
         logAnalytics(postHog, {
@@ -453,12 +452,20 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndice
 };
 
 export const undoDelete = (event: KeyboardEvent | null) => {
+    if (event != null && shouldIgnoreShortcutTarget(event.target)) {
+        return;
+    }
+
     if (event == null || (event.key === 'z' && (event.ctrlKey || event.metaKey) && !event.shiftKey)) {
         AppStore.undoAction();
     }
 };
 
 export const redoDelete = (event: KeyboardEvent | null) => {
+    if (event != null && shouldIgnoreShortcutTarget(event.target)) {
+        return;
+    }
+
     if (event == null || (event.key.toLowerCase() === 'z' && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
         AppStore.redoAction();
     }
