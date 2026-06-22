@@ -4,6 +4,8 @@ enum LocalStorageKeys {
     patchNotesKey = 'latestPatchSeen',
     recruitmentDismissalTime = 'recruitmentDismissalTime',
     tourHasRun = 'tourHasRun',
+    /** @deprecated Theme preference is now managed by MUI via modeStorageKey="theme". */
+    theme = 'theme',
     sectionColor = 'sectionColor',
     sectionColorAssignments = 'sectionColorAssignments',
     show24HourTime = 'show24HourTime',
@@ -13,14 +15,11 @@ enum LocalStorageKeys {
     columnToggles = 'columnToggles',
     wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
+    importedUser = 'importedUser',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
     addedCoursesSkeletonBlueprint = 'addedCoursesSkeletonBlueprint',
 
-    /** @deprecated theme is now managed by MUI and should not be written to directly */
-    theme = 'theme',
-    /** @deprecated Guest import confirmation now uses a snackbar in AuthInitializer. */
-    importedUser = 'importedUser',
     /** @deprecated No longer used. Low impact feature. */
     recentlySearched = 'recentlySearched',
     /** @deprecated Removed for being a net negative on UX and confusing schedule persistence behavior */
@@ -37,183 +36,176 @@ enum LocalStorageKeys {
 
 const LSK = LocalStorageKeys;
 
-function getLocalStorage(): Storage | null {
-    return globalThis.window?.localStorage ?? null;
-}
-
 export function setLocalStorageImportedUser(value: string) {
-    getLocalStorage()?.setItem(LSK.importedUser, value);
+    window.localStorage.setItem(LSK.importedUser, value);
 }
 
 export function getLocalStorageImportedUser() {
-    return getLocalStorage()?.getItem(LSK.importedUser) ?? null;
+    return window.localStorage.getItem(LSK.importedUser);
 }
 
 export function removeLocalStorageImportedUser() {
-    getLocalStorage()?.removeItem(LSK.importedUser);
+    window.localStorage.removeItem(LSK.importedUser);
 }
 
 export function setLocalStorageDataCache(value: string) {
-    getLocalStorage()?.setItem(LSK.dataCache, value);
+    window.localStorage.setItem(LSK.dataCache, value);
 }
 
 export function getLocalStorageDataCache() {
-    return getLocalStorage()?.getItem(LSK.dataCache) ?? null;
+    return window.localStorage.getItem(LSK.dataCache);
 }
 
 export function removeLocalStorageDataCache() {
-    getLocalStorage()?.removeItem(LSK.dataCache);
+    window.localStorage.removeItem(LSK.dataCache);
 }
 
 export function setLocalStorageUserId(value: string) {
-    getLocalStorage()?.setItem(LSK.userId, value);
+    window.localStorage.setItem(LSK.userId, value);
 }
 
 export function getLocalStorageUserId() {
-    return getLocalStorage()?.getItem(LSK.userId) ?? null;
+    return window.localStorage.getItem(LSK.userId);
 }
 
 export function removeLocalStorageUserId() {
-    getLocalStorage()?.removeItem(LSK.userId);
+    window.localStorage.removeItem(LSK.userId);
 }
 
 export function getWasLoggedIn(): boolean {
-    return getLocalStorage()?.getItem(LSK.wasLoggedIn) === 'true';
+    return window.localStorage.getItem(LSK.wasLoggedIn) === 'true';
 }
 
 export function setWasLoggedIn(value: boolean) {
-    const storage = getLocalStorage();
-    if (!storage) return;
-
     if (value) {
-        storage.setItem(LSK.wasLoggedIn, 'true');
+        window.localStorage.setItem(LSK.wasLoggedIn, 'true');
     } else {
-        storage.removeItem(LSK.wasLoggedIn);
+        window.localStorage.removeItem(LSK.wasLoggedIn);
     }
 }
 
 // Helper functions for patchNotesKey
 export function setLocalStoragePatchNotesKey(value: string) {
-    getLocalStorage()?.setItem(LSK.patchNotesKey, value);
+    window.localStorage.setItem(LSK.patchNotesKey, value);
 }
 
 export function getLocalStoragePatchNotesKey() {
-    return getLocalStorage()?.getItem(LSK.patchNotesKey) ?? null;
+    return window.localStorage.getItem(LSK.patchNotesKey);
 }
 
 // Helper functions for recruitmentDismissalTime
 export function setLocalStorageRecruitmentDismissalTime(value: string) {
-    getLocalStorage()?.setItem(LSK.recruitmentDismissalTime, value);
+    window.localStorage.setItem(LSK.recruitmentDismissalTime, value);
 }
 
 export function getLocalStorageRecruitmentDismissalTime() {
-    return getLocalStorage()?.getItem(LSK.recruitmentDismissalTime) ?? null;
+    return window.localStorage.getItem(LSK.recruitmentDismissalTime);
 }
 
 // Helper functions for tourHasRun
 export function setLocalStorageTourHasRun(value: string) {
-    getLocalStorage()?.setItem(LSK.tourHasRun, value);
+    window.localStorage.setItem(LSK.tourHasRun, value);
 }
 
 export function getLocalStorageTourHasRun() {
-    return getLocalStorage()?.getItem(LSK.tourHasRun) ?? null;
+    return window.localStorage.getItem(LSK.tourHasRun);
 }
 
 // Helper functions for sectionColor
 export function setLocalStorageSectionColor(value: string) {
-    getLocalStorage()?.setItem(LSK.sectionColor, value);
+    window.localStorage.setItem(LSK.sectionColor, value);
 }
 
 export function getLocalStorageSectionColor() {
-    return getLocalStorage()?.getItem(LSK.sectionColor) ?? null;
+    return window.localStorage.getItem(LSK.sectionColor);
 }
 
 // Helper functions for sectionColorAssignments
 export function setLocalStorageSectionColorAssignments(value: string) {
-    getLocalStorage()?.setItem(LSK.sectionColorAssignments, value);
+    window.localStorage.setItem(LSK.sectionColorAssignments, value);
 }
 
 export function getLocalStorageSectionColorAssignments() {
-    return getLocalStorage()?.getItem(LSK.sectionColorAssignments) ?? null;
+    return window.localStorage.getItem(LSK.sectionColorAssignments);
 }
 
 // Helper functions for show24HourTime
 export function setLocalStorageShow24HourTime(value: string) {
-    getLocalStorage()?.setItem(LSK.show24HourTime, value);
+    window.localStorage.setItem(LSK.show24HourTime, value);
 }
 
 export function getLocalStorageShow24HourTime() {
-    return getLocalStorage()?.getItem(LSK.show24HourTime) ?? null;
+    return window.localStorage.getItem(LSK.show24HourTime);
 }
 
 // Helper functions for previewMode
 export function setLocalStoragePreviewMode(value: string) {
-    getLocalStorage()?.setItem(LSK.previewMode, value);
+    window.localStorage.setItem(LSK.previewMode, value);
 }
 
 export function getLocalStoragePreviewMode() {
-    return getLocalStorage()?.getItem(LSK.previewMode) ?? null;
+    return window.localStorage.getItem(LSK.previewMode);
 }
 
 // Helper functions for autoSave
 export function setLocalStorageAutoSave(value: string) {
-    getLocalStorage()?.setItem(LSK.autoSave, value);
+    window.localStorage.setItem(LSK.autoSave, value);
 }
 
 export function getLocalStorageAutoSave() {
-    return getLocalStorage()?.getItem(LSK.autoSave) ?? null;
+    return window.localStorage.getItem(LSK.autoSave);
 }
 
 // Helper functions for devMode
 export function setLocalStorageDevMode(value: string) {
-    getLocalStorage()?.setItem(LSK.devMode, value);
+    localStorage.setItem(LocalStorageKeys.devMode, value);
 }
 
 export function getLocalStorageDevMode() {
-    return getLocalStorage()?.getItem(LSK.devMode) ?? null;
+    return localStorage.getItem(LocalStorageKeys.devMode);
 }
 
 // Helper functions for columnToggles
 export function setLocalStorageColumnToggles(value: string) {
-    getLocalStorage()?.setItem(LSK.columnToggles, value);
+    window.localStorage.setItem(LSK.columnToggles, value);
 }
 
 export function getLocalStorageColumnToggles() {
-    return getLocalStorage()?.getItem(LSK.columnToggles) ?? null;
+    return window.localStorage.getItem(LSK.columnToggles);
 }
 
 export function setLocalStorageTempSaveData(value: string) {
-    getLocalStorage()?.setItem(LSK.tempSaveData, value);
+    window.localStorage.setItem(LSK.tempSaveData, value);
 }
 
 export function getLocalStorageTempSaveData() {
-    return getLocalStorage()?.getItem(LSK.tempSaveData) ?? null;
+    return window.localStorage.getItem(LSK.tempSaveData);
 }
 
 export function removeLocalStorageTempSaveData() {
-    getLocalStorage()?.removeItem(LSK.tempSaveData);
+    window.localStorage.removeItem(LSK.tempSaveData);
 }
 
 export function setLocalStorageSkeletonBlueprint(value: string) {
-    getLocalStorage()?.setItem(LSK.skeletonBlueprint, value);
+    window.localStorage.setItem(LSK.skeletonBlueprint, value);
 }
 
 export function getLocalStorageSkeletonBlueprint() {
-    return getLocalStorage()?.getItem(LSK.skeletonBlueprint) ?? null;
+    return window.localStorage.getItem(LSK.skeletonBlueprint);
 }
 
 export function removeLocalStorageSkeletonBlueprint() {
-    getLocalStorage()?.removeItem(LSK.skeletonBlueprint);
+    window.localStorage.removeItem(LSK.skeletonBlueprint);
 }
 
 export function setLocalStorageAddedCoursesSkeletonBlueprint(value: string) {
-    getLocalStorage()?.setItem(LSK.addedCoursesSkeletonBlueprint, value);
+    window.localStorage.setItem(LSK.addedCoursesSkeletonBlueprint, value);
 }
 
 export function getLocalStorageAddedCoursesSkeletonBlueprint() {
-    return getLocalStorage()?.getItem(LSK.addedCoursesSkeletonBlueprint) ?? null;
+    return window.localStorage.getItem(LSK.addedCoursesSkeletonBlueprint);
 }
 
 export function removeLocalStorageAddedCoursesSkeletonBlueprint() {
-    getLocalStorage()?.removeItem(LSK.addedCoursesSkeletonBlueprint);
+    window.localStorage.removeItem(LSK.addedCoursesSkeletonBlueprint);
 }
