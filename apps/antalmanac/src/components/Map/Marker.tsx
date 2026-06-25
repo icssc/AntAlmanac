@@ -137,7 +137,9 @@ export const LocationMarker = forwardRef(
                             <Button
                                 variant="contained"
                                 color="primary"
-                                startIcon={<DirectionsWalkIcon sx={{ color: 'common.white' }} />}
+                                startIcon={
+                                    <DirectionsWalkIcon sx={{ color: (theme) => theme.vars.palette.common.white }} />
+                                }
                                 href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
                                 target="_blank"
                                 sx={{
@@ -151,7 +153,7 @@ export const LocationMarker = forwardRef(
                                         fontSize: '1.25rem',
                                         letterSpacing: 1.25,
                                         fontWeight: 500,
-                                        color: 'common.white',
+                                        color: (theme) => theme.vars.palette.common.white,
                                     }}
                                 >
                                     Directions

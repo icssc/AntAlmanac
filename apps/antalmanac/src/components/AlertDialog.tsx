@@ -1,5 +1,4 @@
-import { LIGHT_BLUE } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { Alert, Box, Dialog, DialogContent, type AlertColor, DialogActions, Button } from '@mui/material';
 
 interface AlertDialogProps {
@@ -11,15 +10,10 @@ interface AlertDialogProps {
     onClose?: () => void;
 }
 export const AlertDialog = ({ open, title, children, severity = 'info', onClose }: AlertDialogProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogContent
-                sx={{
-                    fontSize: 'small',
-                    ...(isDark && { '& a, & a:hover, & a:visited': { color: LIGHT_BLUE } }),
-                }}
-            >
+            <DialogContent sx={{ fontSize: 'small' }}>
                 <Alert
                     severity={severity}
                     variant={isDark ? 'outlined' : 'standard'}

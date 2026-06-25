@@ -4,9 +4,9 @@ import {
     SETTINGS_POPOVER_MENU_SELECTED_BG,
 } from '$components/Header/headerStyles';
 import { Logo } from '$components/Header/Logo';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { BLUE, PLANNER_LINK } from '$src/globals';
 import appStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
 import {
     Button,
@@ -36,7 +36,7 @@ const darkMenuSx = {
 export function AppSwitcher({ isMobile }: AppSwitcherProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [plannerLoading, setPlannerLoading] = useState(false);
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 

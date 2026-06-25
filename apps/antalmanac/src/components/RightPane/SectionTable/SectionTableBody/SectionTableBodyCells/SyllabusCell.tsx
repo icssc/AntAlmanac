@@ -1,4 +1,5 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { Link } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 
 interface SyllabusCellProps {
@@ -13,9 +14,9 @@ export const SyllabusCell = ({ section }: SyllabusCellProps) => {
 
     return (
         <TableBodyCellContainer>
-            <a href={webURL} target="_blank" rel="noopener noreferrer">
+            <Link href={webURL} target="_blank" rel="noopener noreferrer">
                 Link
-            </a>
+            </Link>
         </TableBodyCellContainer>
     );
 };

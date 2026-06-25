@@ -1,12 +1,13 @@
 import { SectionTableBodyRowCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowCells';
 import { SectionTableBodyRowColorStrip } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowColorStrip';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { type AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
-import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
-import { TableRow, useTheme } from '@mui/material';
+import { usePreviewStore } from '$stores/SettingsStore';
+import { TableRow } from '@mui/material';
 import { type AASection, type AACourseWithTerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -22,8 +23,7 @@ interface SectionTableBodyRowProps {
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const { section, course, allowHighlight, scheduleNames, scheduleConflict, analyticsCategory } = props;
 
-    const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
@@ -92,7 +92,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
              */
             sx={{
                 '&:nth-of-type(odd)': {
-                    backgroundColor: theme.palette.action.hover,
+                    backgroundColor: (theme) => theme.vars.palette.action.hover,
                 },
             }}
             style={computedRowStyle}

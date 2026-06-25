@@ -1,9 +1,9 @@
-import { useThemeStore } from '$stores/SettingsStore';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { Box } from '@mui/material';
 import Image from 'next/image';
 
 export function LoadingMessage() {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

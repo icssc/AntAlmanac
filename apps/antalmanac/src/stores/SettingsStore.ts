@@ -1,77 +1,14 @@
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
     getLocalStorageDevMode,
     getLocalStoragePreviewMode,
     getLocalStorageShow24HourTime,
-    getLocalStorageTheme,
     setLocalStorageAutoSave,
     setLocalStorageDevMode,
     setLocalStoragePreviewMode,
     setLocalStorageShow24HourTime,
-    setLocalStorageTheme,
 } from '$lib/localStorage';
-import { PostHog } from 'posthog-js/react';
 import { create } from 'zustand';
-
-type ThemeSetting = 'light' | 'dark' | 'system';
-
-interface ThemeStore {
-    /**
-     * The 'raw' theme, based on the user's selected setting
-     */
-    themeSetting: ThemeSetting;
-    /**
-     * The 'derived' theme, based on user settings and device preferences
-     */
-    isDark: boolean;
-
-    setAppTheme: (themeSetting: ThemeSetting, postHog?: PostHog) => void;
-    syncSystemTheme: (isDark: boolean) => void;
-}
-
-function themeShouldBeDark(themeSetting: ThemeSetting) {
-    if (typeof window === 'undefined') {
-        return themeSetting === 'dark';
-    }
-
-    if (themeSetting == 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return themeSetting == 'dark';
-}
-
-export const useThemeStore = create<ThemeStore>((set, get) => {
-    const storedThemeSetting: ThemeSetting = ((typeof Storage !== 'undefined' ? getLocalStorageTheme() : null) ??
-        'system') as ThemeSetting;
-    const isDark = themeShouldBeDark(storedThemeSetting);
-
-    return {
-        themeSetting: storedThemeSetting,
-        isDark: isDark,
-
-        setAppTheme: (themeSetting, postHog) => {
-            setLocalStorageTheme(themeSetting);
-
-            const isDark = themeShouldBeDark(themeSetting);
-
-            set({ themeSetting, isDark });
-
-            logAnalytics(postHog, {
-                category: analyticsEnum.nav,
-                action: analyticsEnum.nav.actions.CHANGE_THEME,
-                customProps: {
-                    themeSetting,
-                },
-            });
-        },
-
-        syncSystemTheme: (isDark) => {
-            if (get().themeSetting !== 'system') {
-                return;
-            }
-            set({ isDark });
-        },
-    };
-});
 
 interface TimeFormatStore {
     isMilitaryTime: boolean;

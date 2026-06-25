@@ -1,10 +1,10 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Notifications } from '@mui/icons-material';
 import {
     Box,
@@ -26,7 +26,7 @@ interface NotificationsDialogProps {
 }
 
 export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogProps) {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
     const postHog = usePostHog();
@@ -83,18 +83,17 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 <DialogContent
                     sx={
                         isDark
-                            ? {
-                                  '& a, & a:hover, & a:visited': { color: LIGHT_BLUE },
-                                  '& .MuiTab-root': { color: 'text.secondary' },
+                            ? (theme) => ({
+                                  '& .MuiTab-root': { color: theme.vars.palette.text.secondary },
                                   '& .MuiTab-root.Mui-selected': { color: LIGHT_BLUE },
                                   '& .MuiTabs-indicator': { backgroundColor: LIGHT_BLUE },
                                   '& .MuiCheckbox-root.Mui-checked': { color: LIGHT_BLUE },
-                                  '& .MuiChip-label': { color: 'text.primary' },
+                                  '& .MuiChip-label': { color: theme.vars.palette.text.primary },
                                   '& .MuiTablePagination-actions .MuiIconButton-root': {
-                                      color: 'text.primary',
+                                      color: theme.vars.palette.text.primary,
                                   },
-                                  '& .MuiTablePagination-selectIcon': { color: 'text.primary' },
-                              }
+                                  '& .MuiTablePagination-selectIcon': { color: theme.vars.palette.text.primary },
+                              })
                             : undefined
                     }
                 >

@@ -10,6 +10,7 @@ import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { isCourseEvent, isSkeletonEvent, type CalendarEvent, type SkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
@@ -21,7 +22,7 @@ import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
-import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { CalendarMonth } from '@mui/icons-material';
 import { Box, Backdrop, useTheme } from '@mui/material';
 import { VisibilityState } from '@packages/antalmanac-types';
@@ -72,7 +73,7 @@ export const ScheduleCalendar = memo(() => {
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     const { setting, palette, assignments } = useSectionThemeAssignments();
 
@@ -146,7 +147,7 @@ export const ScheduleCalendar = memo(() => {
         }
     }, [eventsInCalendar, openLoadingSchedule]);
 
-    const skeletonColor = theme.palette.action.disabledBackground;
+    const skeletonColor = theme.vars.palette.action.disabledBackground;
 
     const events = useMemo(
         () => (openLoadingSchedule ? createSkeletonEvents(skeletonColor) : getEventsForCalendar()),
@@ -175,7 +176,7 @@ export const ScheduleCalendar = memo(() => {
             const style =
                 visibility === VisibilityState.Outlined
                     ? {
-                          backgroundColor: theme.palette.background.default,
+                          backgroundColor: theme.vars.palette.background.default,
                           border: `2px solid ${event.color}`,
                           borderRadius: '4px',
                           color: event.color,
@@ -209,7 +210,7 @@ export const ScheduleCalendar = memo(() => {
             }
 
             const style = {
-                backgroundColor: isDark ? theme.palette.background.paper : '',
+                backgroundColor: isDark ? theme.vars.palette.background.paper : '',
             };
 
             return { style };

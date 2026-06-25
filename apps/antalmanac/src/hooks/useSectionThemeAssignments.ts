@@ -1,6 +1,6 @@
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { getPalette, type SectionColorSetting, type ThemeAssignmentMap } from '$lib/sectionThemes';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { useMemo } from 'react';
 
 export interface SectionThemeContext {
@@ -21,7 +21,7 @@ export interface SectionThemeContext {
 export function useSectionThemeAssignments(): SectionThemeContext {
     const setting = useSectionThemeStore(selectActiveSectionColor);
     const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
-    const isDark = useThemeStore((s) => s.isDark);
+    const isDark = useIsDarkMode();
 
     return useMemo(() => {
         const palette = getPalette(setting, isDark);

@@ -1,5 +1,5 @@
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { mergeSx } from '$lib/helpers';
-import { useThemeStore } from '$stores/SettingsStore';
 import { InputLabel, type SxProps, type Theme } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
@@ -11,14 +11,14 @@ interface CustomInputLabelProps {
 }
 
 export const CustomInputLabel = ({ label, id, isAligned, sx }: CustomInputLabelProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     return (
         <InputLabel
             htmlFor={id}
             shrink={false}
             sx={mergeSx(
-                {
+                (theme) => ({
                     display: 'flex',
                     alignItems: 'center',
                     height: '100%',
@@ -28,7 +28,7 @@ export const CustomInputLabel = ({ label, id, isAligned, sx }: CustomInputLabelP
                     whiteSpace: 'nowrap',
                     border: '1px solid',
                     // Adjusted borderColor to better match the background of CustomInputBox.
-                    // The default theme.palette.divider values are:
+                    // The default theme.vars.palette.divider values are:
                     // - Light mode: rgba(0, 0, 0, 0.12)
                     // - Dark mode: rgba(255, 255, 255, 0.12)
                     //
@@ -43,8 +43,8 @@ export const CustomInputLabel = ({ label, id, isAligned, sx }: CustomInputLabelP
                     userSelect: 'none',
                     borderTopLeftRadius: '4px',
                     borderBottomLeftRadius: '4px',
-                    color: isDark ? 'white' : 'text.secondary',
-                },
+                    color: isDark ? 'white' : theme.vars.palette.text.secondary,
+                }),
                 sx
             )}
         >

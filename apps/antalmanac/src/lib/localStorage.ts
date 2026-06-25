@@ -4,7 +4,6 @@ enum LocalStorageKeys {
     patchNotesKey = 'latestPatchSeen',
     recruitmentDismissalTime = 'recruitmentDismissalTime',
     tourHasRun = 'tourHasRun',
-    theme = 'theme',
     sectionColor = 'sectionColor',
     sectionColorAssignments = 'sectionColorAssignments',
     show24HourTime = 'show24HourTime',
@@ -19,6 +18,8 @@ enum LocalStorageKeys {
     skeletonBlueprint = 'skeletonBlueprint',
     addedCoursesSkeletonBlueprint = 'addedCoursesSkeletonBlueprint',
 
+    /** @deprecated Theme preference is now managed by MUI via modeStorageKey="theme". */
+    theme = 'theme',
     /** @deprecated No longer used. Low impact feature. */
     recentlySearched = 'recentlySearched',
     /** @deprecated Removed for being a net negative on UX and confusing schedule persistence behavior */
@@ -108,15 +109,6 @@ export function setLocalStorageTourHasRun(value: string) {
 
 export function getLocalStorageTourHasRun() {
     return window.localStorage.getItem(LSK.tourHasRun);
-}
-
-// Helper functions for theme
-export function setLocalStorageTheme(value: string) {
-    window.localStorage.setItem(LSK.theme, value);
-}
-
-export function getLocalStorageTheme() {
-    return window.localStorage.getItem(LSK.theme);
 }
 
 // Helper functions for sectionColor
