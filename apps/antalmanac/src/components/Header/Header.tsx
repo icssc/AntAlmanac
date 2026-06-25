@@ -6,7 +6,6 @@ import { Import } from '$components/Header/Import/Import';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 import { AppBar, Box, Stack } from '@mui/material';
@@ -15,8 +14,6 @@ import { useState } from 'react';
 export function Header() {
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
-    const isMobile = useIsMobile();
-
     const handleLogoutComplete = () => {
         setOpenSignoutDialog(true);
     };
@@ -56,7 +53,7 @@ export function Header() {
                     }}
                 >
                     <Stack direction="row" alignItems="center" gap={1}>
-                        <AppSwitcher isMobile={isMobile} />
+                        <AppSwitcher />
                     </Stack>
 
                     <Stack direction="row" alignItems="center">

@@ -1,4 +1,3 @@
-import { useIsMobile } from '$hooks/useIsMobile';
 import Image from 'next/image';
 
 type Logo = {
@@ -73,15 +72,15 @@ function logoIsForCurrentSeason(logo: Logo) {
 export function Logo() {
     const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
 
-    const isMobile = useIsMobile();
     return (
         <Image
             src={currentLogo?.logo}
             height={32}
-            width={isMobile ? 48 : 78}
+            width={78}
             title={currentLogo?.attribution}
             loading="eager"
             alt="logo"
+            style={{ width: 'auto', maxWidth: 78 }}
         />
     );
 }

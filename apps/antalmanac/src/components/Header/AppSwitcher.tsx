@@ -8,6 +8,7 @@ import { BLUE, PLANNER_LINK } from '$src/globals';
 import appStore from '$stores/AppStore';
 import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
 import {
+    Box,
     Button,
     ButtonGroup,
     CircularProgress,
@@ -22,10 +23,6 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { MouseEventHandler } from 'react';
 
-type AppSwitcherProps = {
-    isMobile: boolean;
-};
-
 /** Selected/hover use lighter shades than SETTINGS_POPOVER_BG so feedback is visible */
 const darkMenuSx = {
     '&.Mui-selected': { bgcolor: SETTINGS_POPOVER_MENU_SELECTED_BG },
@@ -33,7 +30,7 @@ const darkMenuSx = {
     '&:hover': { bgcolor: SETTINGS_POPOVER_MENU_HOVER_BG },
 } as const;
 
-export function AppSwitcher({ isMobile }: AppSwitcherProps) {
+export function AppSwitcher() {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [plannerLoading, setPlannerLoading] = useState(false);
 
@@ -76,9 +73,10 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
 
     const plannerIcon = plannerLoading ? <CircularProgress size={20} color="inherit" /> : <Route />;
 
-    if (isMobile) {
-        return (
-            <>
+    return (
+        <>
+            {/* Mobile layout: logo button → popover menu */}
+            <Box sx={{ display: { xs: 'flex', sm: 'none' }, alignItems: 'center' }}>
                 <Button
                     onClick={(event) => setAnchorEl(event.currentTarget)}
                     endIcon={<UnfoldMore />}
@@ -163,47 +161,46 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
                         </MenuItem>
                     </MenuList>
                 </Popover>
-            </>
-        );
-    }
+            </Box>
 
-    return (
-        <>
-            <Logo />
-            <ButtonGroup variant="outlined" color="inherit">
-                <Button
-                    variant="contained"
-                    startIcon={<EventNote />}
-                    sx={{
-                        boxShadow: 'none',
-                        bgcolor: 'white',
-                        color: BLUE,
-                        fontWeight: 500,
-                        fontSize: 14,
-                        py: 0.4,
-                        '&:hover': { bgcolor: 'grey.100' },
-                    }}
-                >
-                    Scheduler
-                </Button>
-                <Button
-                    component="a"
-                    href={PLANNER_LINK}
-                    startIcon={plannerIcon}
-                    onClick={handlePlannerClick}
-                    disabled={plannerLoading}
-                    sx={{
-                        boxShadow: 'none',
-                        color: 'white',
-                        fontWeight: 500,
-                        fontSize: 14,
-                        py: 0.4,
-                        textDecoration: 'none',
-                    }}
-                >
-                    Planner
-                </Button>
-            </ButtonGroup>
+            {/* Desktop layout: logo + button group */}
+            <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1 }}>
+                <Logo />
+                <ButtonGroup variant="outlined" color="inherit">
+                    <Button
+                        variant="contained"
+                        startIcon={<EventNote />}
+                        sx={{
+                            boxShadow: 'none',
+                            bgcolor: 'white',
+                            color: BLUE,
+                            fontWeight: 500,
+                            fontSize: 14,
+                            py: 0.4,
+                            '&:hover': { bgcolor: 'grey.100' },
+                        }}
+                    >
+                        Scheduler
+                    </Button>
+                    <Button
+                        component="a"
+                        href={PLANNER_LINK}
+                        startIcon={plannerIcon}
+                        onClick={handlePlannerClick}
+                        disabled={plannerLoading}
+                        sx={{
+                            boxShadow: 'none',
+                            color: 'white',
+                            fontWeight: 500,
+                            fontSize: 14,
+                            py: 0.4,
+                            textDecoration: 'none',
+                        }}
+                    >
+                        Planner
+                    </Button>
+                </ButtonGroup>
+            </Box>
         </>
     );
 }
