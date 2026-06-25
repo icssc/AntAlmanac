@@ -75,16 +75,17 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             }),
                         },
                     }),
-                ...(scheduleConflict && {
-                    '&&': {
-                        backgroundColor: '#a0a0a0',
-                        opacity: 1,
-                        ...theme.applyStyles('dark', {
-                            backgroundColor: '#121212',
-                            opacity: 0.6,
-                        }),
-                    },
-                }),
+                ...(!addedCourse &&
+                    scheduleConflict && {
+                        '&&': {
+                            backgroundColor: '#a0a0a0',
+                            opacity: 1,
+                            ...theme.applyStyles('dark', {
+                                backgroundColor: '#121212',
+                                opacity: 0.6,
+                            }),
+                        },
+                    }),
             })}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
