@@ -66,12 +66,7 @@ function handleAuthCallback(request: NextRequest): NextResponse {
     return response;
 }
 
-// NOTE: Named `middleware` (not `proxy`) intentionally. Next.js 16 renamed this
-// convention to `proxy.ts`, but OpenNext (used for production deploys via SST)
-// does not yet detect/bundle `proxy.ts`, so the proxy never runs in prod.
-// Next 16 still honors the legacy `middleware` name (with a deprecation warning),
-// which OpenNext does pick up. Revert to `proxy.ts` once OpenNext adds support.
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const defaultTabRedirect = maybeRedirectDefaultTab(request);
     if (defaultTabRedirect) {
         return defaultTabRedirect;
