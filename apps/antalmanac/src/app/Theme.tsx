@@ -214,6 +214,18 @@ const appTheme = createTheme({
                 variant: 'standard',
             },
         },
+        MuiAlert: {
+            styleOverrides: {
+                standardWarning: ({ theme }) => ({
+                    backgroundColor: '#FFEA99',
+                    color: '#302800ff',
+                    ...theme.applyStyles('dark', {
+                        backgroundColor: 'transparent',
+                        color: theme.vars.palette.warning.light,
+                    }),
+                }),
+            },
+        },
     },
     breakpoints: {
         /**
