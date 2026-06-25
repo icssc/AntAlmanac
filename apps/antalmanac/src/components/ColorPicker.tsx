@@ -8,9 +8,9 @@ import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionT
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, type PopoverProps, Tooltip } from '@mui/material';
 import { type CustomEventId, type AATerm } from '@packages/antalmanac-types';
+import Sketch from '@uiw/react-color-sketch';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { HexColorPicker, HexColorInput } from 'react-colorful';
 
 interface ColorPickerProps {
     color: string;
@@ -100,8 +100,8 @@ export const ColorPicker = memo(function ColorPicker({
         setAnchorEl(null);
     };
 
-    const handleColorChange = (hex: string) => {
-        setCurrColor(hex);
+    const handleColorChange = (newColor: { hex: string }) => {
+        setCurrColor(newColor.hex);
 
         // On a preset theme, store the change as a per-section override layered on the
         // theme (keeps the theme selected and leaves the user's custom palette untouched).
@@ -112,13 +112,13 @@ export const ColorPicker = memo(function ColorPicker({
                     : sectionCode != null && term != null
                       ? courseColorKey(term, sectionCode)
                       : null;
-            if (key != null) setManualColor(sectionColor, key, hex);
+            if (key != null) setManualColor(sectionColor, key, newColor.hex);
             return;
         }
 
         // On custom, edit the course/event's stored color directly.
-        if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, hex);
-        else if (sectionCode && term) changeCourseColor(sectionCode, term, hex);
+        if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, newColor.hex);
+        else if (sectionCode && term) changeCourseColor(sectionCode, term, newColor.hex);
     };
 
     return (
@@ -148,50 +148,12 @@ export const ColorPicker = memo(function ColorPicker({
                     horizontal: 'left',
                 }}
             >
-                <div style={{ padding: 12 }}>
-                    <HexColorPicker color={displayColor} onChange={handleColorChange} />
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: 4,
-                            marginTop: 8,
-                            justifyContent: 'center',
-                        }}
-                    >
-                        {colorPickerPresetColors.map((preset) => (
-                            <button
-                                key={preset}
-                                type="button"
-                                aria-label={preset}
-                                onClick={() => handleColorChange(preset)}
-                                style={{
-                                    width: 20,
-                                    height: 20,
-                                    backgroundColor: preset,
-                                    border: preset === displayColor ? '2px solid #333' : '1px solid #ccc',
-                                    borderRadius: 3,
-                                    cursor: 'pointer',
-                                    padding: 0,
-                                }}
-                            />
-                        ))}
-                    </div>
-                    <HexColorInput
-                        color={displayColor}
-                        onChange={handleColorChange}
-                        prefixed
-                        style={{
-                            width: '100%',
-                            marginTop: 8,
-                            padding: '4px 8px',
-                            border: '1px solid #ccc',
-                            borderRadius: 4,
-                            fontSize: 13,
-                            boxSizing: 'border-box',
-                        }}
-                    />
-                </div>
+                <Sketch
+                    color={displayColor}
+                    onChange={handleColorChange}
+                    presetColors={colorPickerPresetColors}
+                    disableAlpha
+                />
             </Popover>
         </>
     );
