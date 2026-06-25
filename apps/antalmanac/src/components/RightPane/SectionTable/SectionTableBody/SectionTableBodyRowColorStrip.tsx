@@ -14,7 +14,7 @@ import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionT
 import { Box, Popover, type PopoverProps, type SxProps, TableCell, Tooltip } from '@mui/material';
 import { type AASection, type AATerm } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { SketchPicker } from 'react-color';
+import { HexColorPicker, HexColorInput } from 'react-colorful';
 
 const STRIP_SHRINK_PX = 5;
 const STRIP_EXPAND_PX = 8;
@@ -90,14 +90,14 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     }, []);
 
     const handleColorChange = useCallback(
-        (newColor: { hex: string }) => {
-            setCurrColor(newColor.hex);
+        (hex: string) => {
+            setCurrColor(hex);
             // On a preset theme, store an override layered on the theme; on custom, edit
             // the section's stored color directly.
             if (sectionColor !== 'custom') {
-                setManualColor(sectionColor, courseColorKey(term, section.sectionCode), newColor.hex);
+                setManualColor(sectionColor, courseColorKey(term, section.sectionCode), hex);
             } else {
-                changeCourseColor(section.sectionCode, term, newColor.hex);
+                changeCourseColor(section.sectionCode, term, hex);
             }
         },
         [section.sectionCode, term, sectionColor, setManualColor]
@@ -195,11 +195,50 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
                         horizontal: 'left',
                     }}
                 >
-                    <SketchPicker
-                        color={currColor}
-                        onChange={handleColorChange}
-                        presetColors={colorPickerPresetColors}
-                    />
+                    <div style={{ padding: 12 }}>
+                        <HexColorPicker color={currColor} onChange={handleColorChange} />
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: 4,
+                                marginTop: 8,
+                                justifyContent: 'center',
+                            }}
+                        >
+                            {colorPickerPresetColors.map((preset) => (
+                                <button
+                                    key={preset}
+                                    type="button"
+                                    aria-label={preset}
+                                    onClick={() => handleColorChange(preset)}
+                                    style={{
+                                        width: 20,
+                                        height: 20,
+                                        backgroundColor: preset,
+                                        border: preset === currColor ? '2px solid #333' : '1px solid #ccc',
+                                        borderRadius: 3,
+                                        cursor: 'pointer',
+                                        padding: 0,
+                                    }}
+                                />
+                            ))}
+                        </div>
+                        <HexColorInput
+                            color={currColor}
+                            onChange={handleColorChange}
+                            prefixed
+                            style={{
+                                width: '100%',
+                                marginTop: 8,
+                                padding: '4px 8px',
+                                border: '1px solid #ccc',
+                                borderRadius: 4,
+                                fontSize: 13,
+                                boxSizing: 'border-box',
+                            }}
+                        />
+                    </div>
                 </Popover>
             )}
         </>
