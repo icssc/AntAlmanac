@@ -13,12 +13,12 @@ enum LocalStorageKeys {
     columnToggles = 'columnToggles',
     wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
-    /** @deprecated Guest import confirmation now uses a snackbar in AuthInitializer. */
-    importedUser = 'importedUser',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
     addedCoursesSkeletonBlueprint = 'addedCoursesSkeletonBlueprint',
 
+    /** @deprecated Guest import confirmation now uses a snackbar in AuthInitializer. */
+    importedUser = 'importedUser',
     /** @deprecated Theme preference is now managed by MUI via modeStorageKey="theme". */
     theme = 'theme',
     /** @deprecated No longer used. Low impact feature. */
