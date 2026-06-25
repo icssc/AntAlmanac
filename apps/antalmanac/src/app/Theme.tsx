@@ -221,8 +221,8 @@ const appTheme = createTheme({
                     color: '#302800',
                 },
                 standardInfo: {
-                    backgroundColor: '#99CCFF',
-                    color: '#002D5C',
+                    backgroundColor: '#99CBFF',
+                    color: '#001630',
                 },
             },
         },
