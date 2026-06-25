@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
         unoptimized: true,
     },
     turbopack: {},
+    experimental: {
+        optimizePackageImports: ['@mui/material', '@mui/icons-material', '@mui/system', '@mui/x-date-pickers'],
+    },
     async redirects() {
         return [
             {

@@ -4,7 +4,6 @@ import { DownloadButton } from '$components/buttons/Download';
 import { ScreenshotButton } from '$components/buttons/Screenshot';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
@@ -48,7 +47,6 @@ interface CalendarPaneToolbarProps {
  */
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const theme = useTheme();
-    const isDark = useIsDarkMode();
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
@@ -154,13 +152,13 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 borderRadius: '4px',
                                 padding: '3px',
                                 ...(showFinalsSchedule &&
-                                    isDark && {
+                                    theme.applyStyles('dark', {
                                         backgroundColor: theme.vars.palette.primary.main,
                                         color: '#fff',
                                         '&:hover': {
                                             backgroundColor: theme.vars.palette.primary.dark,
                                         },
-                                    }),
+                                    })),
                             }}
                         >
                             {showFinalsSchedule ? <DescriptionIcon /> : <DescriptionOutlinedIcon />}

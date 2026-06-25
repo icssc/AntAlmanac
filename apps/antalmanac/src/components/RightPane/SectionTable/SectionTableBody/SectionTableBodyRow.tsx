@@ -1,6 +1,5 @@
 import { SectionTableBodyRowCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowCells';
 import { SectionTableBodyRowColorStrip } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowColorStrip';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { type AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore } from '$stores/ColumnStore';
@@ -9,7 +8,7 @@ import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { usePreviewStore } from '$stores/SettingsStore';
 import { TableRow } from '@mui/material';
 import { type AASection, type AACourseWithTerm } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 interface SectionTableBodyRowProps {
     section: AASection;
@@ -23,7 +22,6 @@ interface SectionTableBodyRowProps {
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const { section, course, allowHighlight, scheduleNames, scheduleConflict, analyticsCategory } = props;
 
-    const isDark = useIsDarkMode();
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
@@ -62,40 +60,33 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         };
     }, [section.sectionCode, course.term]);
 
-    const computedRowStyle = useMemo(() => {
-        if (addedCourse) {
-            /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursesRoot */
-            const computedAddedCourseStyle = allowHighlight
-                ? isDark
-                    ? { backgroundColor: '#b0b04fa0' }
-                    : { backgroundColor: '#fcfc97' }
-                : {};
-
-            return computedAddedCourseStyle;
-        }
-
-        if (scheduleConflict) {
-            const computedScheduleConflictStyle = isDark
-                ? { backgroundColor: '#121212', opacity: '0.6' }
-                : { backgroundColor: '#a0a0a0', opacity: '1' };
-
-            return computedScheduleConflictStyle;
-        }
-
-        return {};
-    }, [addedCourse, allowHighlight, isDark, scheduleConflict]);
-
     return (
         <TableRow
-            /**
-             * CSS errors occur when combining the `nth-of-type` selector with the computed styling, so it's split into two separate props
-             */
-            sx={{
+            sx={(theme) => ({
                 '&:nth-of-type(odd)': {
-                    backgroundColor: (theme) => theme.vars.palette.action.hover,
+                    backgroundColor: theme.vars.palette.action.hover,
                 },
-            }}
-            style={computedRowStyle}
+                ...(addedCourse &&
+                    allowHighlight && {
+                        '&&': {
+                            backgroundColor: '#fcfc97',
+                            ...theme.applyStyles('dark', {
+                                backgroundColor: '#b0b04fa0',
+                            }),
+                        },
+                    }),
+                ...(!addedCourse &&
+                    scheduleConflict && {
+                        '&&': {
+                            backgroundColor: '#a0a0a0',
+                            opacity: 1,
+                            ...theme.applyStyles('dark', {
+                                backgroundColor: '#121212',
+                                opacity: 0.6,
+                            }),
+                        },
+                    }),
+            })}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >

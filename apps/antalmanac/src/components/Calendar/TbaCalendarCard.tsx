@@ -1,10 +1,9 @@
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { Close, InfoOutlined } from '@mui/icons-material';
-import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '@mui/material';
+import { IconButton, Alert, AlertTitle, Box, Typography, Fade } from '@mui/material';
 import type { AATerm } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
 
@@ -48,24 +47,31 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
 }
 
 function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[]; onToggle: () => void }) {
-    const theme = useTheme();
-    const isDark = useIsDarkMode();
     const isMobile = useIsMobile();
     return (
         <Alert
-            icon={<InfoOutlined fontSize="small" sx={{ color: isDark ? theme.vars.palette.common.white : BLUE }} />}
+            icon={
+                <InfoOutlined
+                    fontSize="small"
+                    sx={(theme) => ({
+                        color: BLUE,
+                        ...theme.applyStyles('dark', { color: theme.vars.palette.common.white }),
+                    })}
+                />
+            }
             severity="info"
             variant="outlined"
-            sx={{
+            sx={(theme) => ({
                 width: '100%',
                 bgcolor: theme.vars.palette.background.paper,
                 borderColor: BLUE,
-                color: isDark ? theme.vars.palette.common.white : 'inherit',
+                color: 'inherit',
+                ...theme.applyStyles('dark', { color: theme.vars.palette.common.white }),
                 borderWidth: 2,
                 alignItems: 'center',
                 py: 0.5,
                 px: 0.5,
-            }}
+            })}
             slotProps={{
                 icon: {
                     sx: {
