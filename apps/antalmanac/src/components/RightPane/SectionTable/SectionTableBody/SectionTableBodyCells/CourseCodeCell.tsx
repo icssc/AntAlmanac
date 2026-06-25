@@ -1,29 +1,17 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { Chip, type SxProps, type TableCellProps, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
 
 interface CourseCodeCellProps extends TableCellProps {
     sectionCode: string;
+    analyticsCategory: AnalyticsCategory;
     sx?: SxProps;
 }
 
-export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps) => {
-    const isDark = useIsDarkMode();
-    const [isHovered, setIsHovered] = useState(false);
-
+export const CourseCodeCell = ({ sectionCode, analyticsCategory, sx, ...rest }: CourseCodeCellProps) => {
     const postHog = usePostHog();
-
-    const handleMouseEnter = () => {
-        setIsHovered(true);
-    };
-
-    const handleMouseLeave = () => {
-        setIsHovered(false);
-    };
 
     return (
         <TableBodyCellContainer sx={{ width: '8%', ...sx }} {...rest}>
@@ -32,31 +20,20 @@ export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         logAnalytics(postHog, {
-                            category: analyticsEnum.classSearch,
-                            action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+                            category: analyticsCategory,
+                            action: analyticsCategory.actions.COPY_COURSE_CODE,
                         });
                     }}
-                    // className={classes.sectionCode}
                     label={sectionCode}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    style={{
-                        color: isHovered ? (isDark ? 'gold' : 'blueviolet') : '',
-                    }}
+                    sx={(theme) => ({
+                        '&:hover': {
+                            color: 'blueviolet',
+                            ...theme.applyStyles('dark', { color: 'gold' }),
+                        },
+                    })}
                     size="small"
                 />
             </Tooltip>
         </TableBodyCellContainer>
     );
 };
-
-/**
- * {
-        display: 'inline-flex',
-        cursor: 'pointer',
-        '&:hover': {
-            cursor: 'pointer',
-        },
-        alignSelf: 'center',
-    },
- */
