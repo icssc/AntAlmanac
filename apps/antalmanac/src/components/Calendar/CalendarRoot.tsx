@@ -197,17 +197,6 @@ export const ScheduleCalendar = memo(() => {
         [currentScheduleId, theme, visibilityMap]
     );
 
-    /**
-     * This prop getter overrides `react-big-calendar`'s built-in `.rbc-today` style which applies a light blue coloring on both light and dark mode.
-     */
-    const dayStyleGetter = useCallback((date: Date) => {
-        if (date.toLocaleDateString() !== new Date().toLocaleDateString()) {
-            return {};
-        }
-
-        return {};
-    }, []);
-
     const colorContrastSufficient = (bg: string) => {
         // This equation is taken from w3c, does not use the colour difference part
         const minBrightnessDiff = 125;
@@ -353,6 +342,7 @@ export const ScheduleCalendar = memo(() => {
                 flexGrow={1}
                 position="relative"
                 sx={(theme) => ({
+                    // Override react-big-calendar's .rbc-today light-blue bg in dark mode
                     '& .rbc-today': {
                         ...theme.applyStyles('dark', {
                             backgroundColor: theme.vars.palette.background.paper,
@@ -403,7 +393,6 @@ export const ScheduleCalendar = memo(() => {
                     scrollToTime={startTime}
                     events={events}
                     eventPropGetter={eventStyleGetter}
-                    dayPropGetter={dayStyleGetter}
                     showMultiDayTimes={false}
                     components={CALENDAR_COMPONENTS}
                 />
