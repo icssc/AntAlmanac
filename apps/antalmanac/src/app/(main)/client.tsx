@@ -110,7 +110,7 @@ export default function Client() {
             <AuthInitializer />
             <PatchNotes />
 
-            <Stack component="main" height="calc(100svh - 52px)">
+            <Stack component="main" height="calc(100svh - 52px - env(safe-area-inset-top))">
                 {isMobile ? <MobileHome /> : <DesktopHome />}
             </Stack>
 
