@@ -49,11 +49,13 @@ interface SectionThemeStore {
 }
 
 function readStoredSectionColor(): SectionColorSetting {
+    if (typeof window === 'undefined') return 'custom';
     const raw = getLocalStorageSectionColor();
     return isSectionColorSetting(raw) ? raw : 'custom';
 }
 
 function readStoredAssignments(): AssignmentsByTheme {
+    if (typeof window === 'undefined') return {};
     const raw = getLocalStorageSectionColorAssignments();
     if (!raw) return {};
     try {

@@ -1,3 +1,5 @@
+'use client';
+
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
 import { Import } from '$components/Header/Import/Import';
@@ -14,8 +16,12 @@ import { useEffect, useState } from 'react';
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
-    const importedUser = getLocalStorageImportedUser() ?? '';
+    const [importedUser, setImportedUser] = useState('');
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
+
+    useEffect(() => {
+        setImportedUser(getLocalStorageImportedUser() ?? '');
+    }, []);
     const isMobile = useIsMobile();
 
     const clearStorage = () => {
