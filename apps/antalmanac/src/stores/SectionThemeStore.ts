@@ -1,4 +1,3 @@
-import { getIsDarkMode } from '$hooks/useIsDarkMode';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageSectionColor,
@@ -138,7 +137,7 @@ export const useSectionThemeStore = create<SectionThemeStore>((set, get) => {
 
             const courses = AppStore.schedule.getCurrentCourses();
             const customEventIds = AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID);
-            const palette = getPalette(sectionColor, getIsDarkMode());
+            const palette = getPalette(sectionColor, false);
 
             const existing = assignments[sectionColor] ?? {};
             const { map } = computeAssignments(existing, courses, customEventIds, palette);

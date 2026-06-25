@@ -1,5 +1,4 @@
 import { SignInButtons } from '$components/buttons/SignInButtons/SignInButtons';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 
 interface SignInDialogProps {
@@ -10,7 +9,6 @@ interface SignInDialogProps {
 
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, open } = props;
-    const isDark = useIsDarkMode();
 
     const handleClose = () => {
         onClose();
@@ -49,7 +47,7 @@ export function SignInDialog(props: SignInDialogProps) {
             <DialogContent>
                 <Stack spacing={1}>
                     {props.feature === 'Save' && (
-                        <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
+                        <Alert severity="info" variant="standard" sx={{ fontSize: 'small' }}>
                             All changes made will be saved to your account
                         </Alert>
                     )}

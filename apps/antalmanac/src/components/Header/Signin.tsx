@@ -4,7 +4,6 @@ import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { trpc } from '$lib/api/trpc';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -32,8 +31,6 @@ import { useCallback, useState, type KeyboardEvent } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Signin = () => {
-    const isDark = useIsDarkMode();
-
     const { openLoadingSchedule, setOpenLoadingSchedule } = useScheduleComponentsToggleStore(
         useShallow((state) => ({
             openLoadingSchedule: state.openLoadingSchedule,
@@ -150,7 +147,7 @@ export const Signin = () => {
                                     Enter your unique user ID here to sign in your schedule.
                                 </DialogContentText>
 
-                                <Alert severity="info" variant={isDark ? 'outlined' : 'standard'}>
+                                <Alert severity="info" variant="standard">
                                     <AlertTitle>
                                         Note: Existing schedules saved to a unique user ID can no longer be updated.
                                     </AlertTitle>
