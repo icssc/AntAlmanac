@@ -8,9 +8,9 @@ import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionT
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, type PopoverProps, Tooltip } from '@mui/material';
 import { type CustomEventId, type AATerm } from '@packages/antalmanac-types';
+import Sketch from '@uiw/react-color-sketch';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { SketchPicker } from 'react-color';
 
 interface ColorPickerProps {
     color: string;
@@ -148,11 +148,7 @@ export const ColorPicker = memo(function ColorPicker({
                     horizontal: 'left',
                 }}
             >
-                <SketchPicker
-                    color={displayColor}
-                    onChange={handleColorChange}
-                    presetColors={colorPickerPresetColors}
-                />
+                <Sketch color={displayColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
             </Popover>
         </>
     );

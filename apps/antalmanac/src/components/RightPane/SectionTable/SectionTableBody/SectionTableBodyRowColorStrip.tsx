@@ -13,8 +13,8 @@ import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { Box, Popover, type PopoverProps, type SxProps, TableCell, Tooltip } from '@mui/material';
 import { type AASection, type AATerm } from '@packages/antalmanac-types';
+import Sketch from '@uiw/react-color-sketch';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { SketchPicker } from 'react-color';
 
 const STRIP_SHRINK_PX = 5;
 const STRIP_EXPAND_PX = 8;
@@ -195,11 +195,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
                         horizontal: 'left',
                     }}
                 >
-                    <SketchPicker
-                        color={currColor}
-                        onChange={handleColorChange}
-                        presetColors={colorPickerPresetColors}
-                    />
+                    <Sketch color={currColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
                 </Popover>
             )}
         </>
