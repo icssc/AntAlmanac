@@ -195,12 +195,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
                         horizontal: 'left',
                     }}
                 >
-                    <Sketch
-                        color={currColor}
-                        onChange={handleColorChange}
-                        presetColors={colorPickerPresetColors}
-                        disableAlpha
-                    />
+                    <Sketch color={currColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
                 </Popover>
             )}
         </>

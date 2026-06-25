@@ -148,12 +148,7 @@ export const ColorPicker = memo(function ColorPicker({
                     horizontal: 'left',
                 }}
             >
-                <Sketch
-                    color={displayColor}
-                    onChange={handleColorChange}
-                    presetColors={colorPickerPresetColors}
-                    disableAlpha
-                />
+                <Sketch color={displayColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
             </Popover>
         </>
     );
