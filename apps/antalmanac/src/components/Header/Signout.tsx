@@ -1,7 +1,6 @@
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { signOut } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -26,7 +25,6 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         }))
     );
     const postHog = usePostHog();
-    const isDark = useIsDarkMode();
 
     const user = useMemo<UserProfile | null>(
         () =>
@@ -67,7 +65,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 }}
                 slotProps={{
                     paper: {
-                        sx: getSettingsPopoverPaperSx(isDark),
+                        sx: getSettingsPopoverPaperSx(),
                     },
                 }}
             >

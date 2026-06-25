@@ -197,7 +197,7 @@ export const Signin = () => {
                 }}
                 slotProps={{
                     paper: {
-                        sx: getSettingsPopoverPaperSx(isDark),
+                        sx: getSettingsPopoverPaperSx(),
                     },
                 }}
             >

@@ -12,7 +12,7 @@ export const SETTINGS_POPOVER_MENU_HOVER_BG = '#4a4a4a';
  * Shared paper sx for the settings/profile popover used in Signin and Signout.
  * Single source of truth so popover styles stay in sync.
  */
-export function getSettingsPopoverPaperSx(isDark: boolean): SxProps<Theme> {
+export function getSettingsPopoverPaperSx(): SxProps<Theme> {
     return (theme) => ({
         width: {
             xs: 300,
@@ -23,7 +23,11 @@ export function getSettingsPopoverPaperSx(isDark: boolean): SxProps<Theme> {
         borderRadius: 2,
         border: '1px solid',
         borderColor: theme.vars.palette.background.default,
-        bgcolor: isDark ? SETTINGS_POPOVER_BG : theme.vars.palette.background.paper,
-        color: isDark ? 'white' : theme.vars.palette.text.primary,
+        bgcolor: theme.vars.palette.background.paper,
+        color: theme.vars.palette.text.primary,
+        ...theme.applyStyles('dark', {
+            bgcolor: SETTINGS_POPOVER_BG,
+            color: 'white',
+        }),
     });
 }

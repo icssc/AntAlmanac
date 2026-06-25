@@ -1,11 +1,9 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { Chip, Tooltip } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
 
 interface SectionCodeCellProps {
     section: AASection;
@@ -14,18 +12,8 @@ interface SectionCodeCellProps {
 
 export const SectionCodeCell = ({ section, analyticsCategory }: SectionCodeCellProps) => {
     const { sectionCode } = section;
-    const isDark = useIsDarkMode();
-    const [isHovered, setIsHovered] = useState(false);
 
     const postHog = usePostHog();
-
-    const handleMouseEnter = () => {
-        setIsHovered(true);
-    };
-
-    const handleMouseLeave = () => {
-        setIsHovered(false);
-    };
 
     return (
         <TableBodyCellContainer sx={{ width: '8%' }}>
@@ -39,11 +27,12 @@ export const SectionCodeCell = ({ section, analyticsCategory }: SectionCodeCellP
                         });
                     }}
                     label={sectionCode}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    style={{
-                        color: isHovered ? (isDark ? 'gold' : 'blueviolet') : '',
-                    }}
+                    sx={(theme) => ({
+                        '&:hover': {
+                            color: 'blueviolet',
+                            ...theme.applyStyles('dark', { color: 'gold' }),
+                        },
+                    })}
                     size="small"
                 />
             </Tooltip>

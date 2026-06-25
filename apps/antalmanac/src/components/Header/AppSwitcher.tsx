@@ -4,7 +4,6 @@ import {
     SETTINGS_POPOVER_MENU_SELECTED_BG,
 } from '$components/Header/headerStyles';
 import { Logo } from '$components/Header/Logo';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { BLUE, PLANNER_LINK } from '$src/globals';
 import appStore from '$stores/AppStore';
 import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
@@ -36,7 +35,6 @@ const darkMenuSx = {
 export function AppSwitcher({ isMobile }: AppSwitcherProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [plannerLoading, setPlannerLoading] = useState(false);
-    const isDark = useIsDarkMode();
 
     const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
@@ -106,30 +104,30 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
                         subheader={
                             <ListSubheader
                                 component="div"
-                                sx={{
+                                sx={(theme) => ({
                                     lineHeight: '30px',
-                                    ...(isDark && { bgcolor: SETTINGS_POPOVER_BG }),
-                                }}
+                                    ...theme.applyStyles('dark', { bgcolor: SETTINGS_POPOVER_BG }),
+                                })}
                             >
                                 Switch Apps
                             </ListSubheader>
                         }
-                        sx={{
+                        sx={(theme) => ({
                             width: 200,
-                            ...(isDark && { bgcolor: SETTINGS_POPOVER_BG }),
-                        }}
+                            ...theme.applyStyles('dark', { bgcolor: SETTINGS_POPOVER_BG }),
+                        })}
                     >
                         <MenuItem
                             component="a"
                             href="/"
                             selected={platform === 'Scheduler'}
                             onClick={() => setAnchorEl(null)}
-                            sx={{
+                            sx={(theme) => ({
                                 minHeight: 'fit-content',
                                 textDecoration: 'none',
                                 color: 'inherit',
-                                ...(isDark && darkMenuSx),
-                            }}
+                                ...theme.applyStyles('dark', darkMenuSx),
+                            })}
                         >
                             <ListItemIcon>
                                 <EventNote />
@@ -149,12 +147,12 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
                                 }
                             }}
                             disabled={plannerLoading}
-                            sx={{
+                            sx={(theme) => ({
                                 minHeight: 'fit-content',
                                 textDecoration: 'none',
                                 color: 'inherit',
-                                ...(isDark && darkMenuSx),
-                            }}
+                                ...theme.applyStyles('dark', darkMenuSx),
+                            })}
                         >
                             <ListItemIcon>{plannerIcon}</ListItemIcon>
                             <Typography fontSize="15px" fontWeight={500}>

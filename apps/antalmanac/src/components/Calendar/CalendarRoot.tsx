@@ -10,7 +10,6 @@ import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { isCourseEvent, isSkeletonEvent, type CalendarEvent, type SkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
 import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
@@ -73,8 +72,6 @@ export const ScheduleCalendar = memo(() => {
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
-    const isDark = useIsDarkMode();
-
     const { setting, palette, assignments } = useSectionThemeAssignments();
 
     const eventsInCalendar = useMemo(
@@ -203,20 +200,13 @@ export const ScheduleCalendar = memo(() => {
     /**
      * This prop getter overrides `react-big-calendar`'s built-in `.rbc-today` style which applies a light blue coloring on both light and dark mode.
      */
-    const dayStyleGetter = useCallback(
-        (date: Date) => {
-            if (date.toLocaleDateString() !== new Date().toLocaleDateString()) {
-                return {};
-            }
+    const dayStyleGetter = useCallback((date: Date) => {
+        if (date.toLocaleDateString() !== new Date().toLocaleDateString()) {
+            return {};
+        }
 
-            const style = {
-                backgroundColor: isDark ? theme.vars.palette.background.paper : '',
-            };
-
-            return { style };
-        },
-        [isDark, theme]
-    );
+        return {};
+    }, []);
 
     const colorContrastSufficient = (bg: string) => {
         // This equation is taken from w3c, does not use the colour difference part
@@ -357,7 +347,19 @@ export const ScheduleCalendar = memo(() => {
                 scheduleNames={scheduleNames}
             />
 
-            <Box id="screenshot" height="0" flexGrow={1} position="relative">
+            <Box
+                id="screenshot"
+                height="0"
+                flexGrow={1}
+                position="relative"
+                sx={(theme) => ({
+                    '& .rbc-today': {
+                        ...theme.applyStyles('dark', {
+                            backgroundColor: theme.vars.palette.background.paper,
+                        }),
+                    },
+                })}
+            >
                 <TbaCalendarCard />
                 <CalendarEventPopover scheduleNames={scheduleNames} />
 

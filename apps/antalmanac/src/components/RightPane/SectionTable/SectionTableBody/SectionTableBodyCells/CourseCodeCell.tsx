@@ -1,10 +1,8 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { Chip, type SxProps, type TableCellProps, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
 
 interface CourseCodeCellProps extends TableCellProps {
     sectionCode: string;
@@ -12,18 +10,7 @@ interface CourseCodeCellProps extends TableCellProps {
 }
 
 export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps) => {
-    const isDark = useIsDarkMode();
-    const [isHovered, setIsHovered] = useState(false);
-
     const postHog = usePostHog();
-
-    const handleMouseEnter = () => {
-        setIsHovered(true);
-    };
-
-    const handleMouseLeave = () => {
-        setIsHovered(false);
-    };
 
     return (
         <TableBodyCellContainer sx={{ width: '8%', ...sx }} {...rest}>
@@ -36,13 +23,13 @@ export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps
                             action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
                         });
                     }}
-                    // className={classes.sectionCode}
                     label={sectionCode}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    style={{
-                        color: isHovered ? (isDark ? 'gold' : 'blueviolet') : '',
-                    }}
+                    sx={(theme) => ({
+                        '&:hover': {
+                            color: 'blueviolet',
+                            ...theme.applyStyles('dark', { color: 'gold' }),
+                        },
+                    })}
                     size="small"
                 />
             </Tooltip>
