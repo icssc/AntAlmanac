@@ -114,7 +114,7 @@ export function ImportDialog({ open, onClose, onAlertDialog, autoImportUsername 
     const uploadSectionCodes = async (
         sectionCodes: string[],
         currentSchedule: number,
-        source: ImportSource.STUDY_LIST_IMPORT | ImportSource.ZOT_COURSE_IMPORT
+        source: typeof ImportSource.STUDY_LIST_IMPORT | typeof ImportSource.ZOT_COURSE_IMPORT
     ) => {
         try {
             const courseInfo = await trpc.websoc.getCourseInfo.query({
