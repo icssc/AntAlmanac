@@ -189,31 +189,20 @@ export function JsonImportForm({
                             return;
                         }
 
-                        if (importedScheduleData.schedules && Array.isArray(importedScheduleData.schedules)) {
-                            if (importedScheduleData.schedules.length === 0) {
-                                openSnackbar('error', 'No schedules found in the imported file.');
-                                setSelectedFileName(null);
-                                onSchedulesChange([]);
-                                onIndicesChange(new Set());
-                                if (fileInputRef.current) {
-                                    fileInputRef.current.value = '';
-                                }
-                                return;
-                            }
-
-                            onSchedulesChange(importedScheduleData.schedules);
-                            onIndicesChange(
-                                new Set(importedScheduleData.schedules.map((_: unknown, index: number) => index))
-                            );
-                        } else {
-                            openSnackbar('error', 'Invalid schedule data format.');
+                        const schedules = importedScheduleData.schedules as unknown[];
+                        if (schedules.length === 0) {
+                            openSnackbar('error', 'No schedules found in the imported file.');
                             setSelectedFileName(null);
                             onSchedulesChange([]);
                             onIndicesChange(new Set());
                             if (fileInputRef.current) {
                                 fileInputRef.current.value = '';
                             }
+                            return;
                         }
+
+                        onSchedulesChange(importedScheduleData.schedules);
+                        onIndicesChange(new Set(schedules.map((_: unknown, index: number) => index)));
                     } catch (error) {
                         console.error('JSON parse error:', error);
                         const errorMessage = error instanceof Error ? error.message : 'Failed to parse JSON file.';
@@ -292,28 +281,26 @@ export function JsonImportForm({
                             setSelectedFileName(null);
                             onSchedulesChange([]);
                             onIndicesChange(new Set());
+                            if (fileInputRef.current) {
+                                fileInputRef.current.value = '';
+                            }
                             return;
                         }
 
-                        if (importedScheduleData.schedules && Array.isArray(importedScheduleData.schedules)) {
-                            if (importedScheduleData.schedules.length === 0) {
-                                openSnackbar('error', 'No schedules found in the imported file.');
-                                setSelectedFileName(null);
-                                onSchedulesChange([]);
-                                onIndicesChange(new Set());
-                                return;
-                            }
-
-                            onSchedulesChange(importedScheduleData.schedules);
-                            onIndicesChange(
-                                new Set(importedScheduleData.schedules.map((_: unknown, index: number) => index))
-                            );
-                        } else {
-                            openSnackbar('error', 'Invalid schedule data format.');
+                        const schedules = importedScheduleData.schedules as unknown[];
+                        if (schedules.length === 0) {
+                            openSnackbar('error', 'No schedules found in the imported file.');
                             setSelectedFileName(null);
                             onSchedulesChange([]);
                             onIndicesChange(new Set());
+                            if (fileInputRef.current) {
+                                fileInputRef.current.value = '';
+                            }
+                            return;
                         }
+
+                        onSchedulesChange(importedScheduleData.schedules);
+                        onIndicesChange(new Set(schedules.map((_: unknown, index: number) => index)));
                     } catch (error) {
                         console.error('JSON parse error:', error);
                         const errorMessage = error instanceof Error ? error.message : 'Failed to parse JSON file.';
@@ -321,12 +308,18 @@ export function JsonImportForm({
                         setSelectedFileName(null);
                         onSchedulesChange([]);
                         onIndicesChange(new Set());
+                        if (fileInputRef.current) {
+                            fileInputRef.current.value = '';
+                        }
                     }
                 } else {
                     openSnackbar('error', 'Please drop a valid JSON file.');
                     setSelectedFileName(null);
                     onSchedulesChange([]);
                     onIndicesChange(new Set());
+                    if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                    }
                 }
             }
         },

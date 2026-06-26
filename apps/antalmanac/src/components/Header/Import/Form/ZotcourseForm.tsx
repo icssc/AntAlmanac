@@ -1,4 +1,4 @@
-import { Box, DialogContentText, InputLabel, TextField } from '@mui/material';
+import { Box, DialogContentText, TextField } from '@mui/material';
 
 interface ZotcourseFormProps {
     value: string;
@@ -11,12 +11,12 @@ export function ZotcourseForm({ value, onChange }: ZotcourseFormProps) {
             <DialogContentText>
                 Paste your Zotcourse schedule name below to import it into AntAlmanac.
             </DialogContentText>
-            <InputLabel style={{ fontSize: '9px' }}>Zotcourse Schedule</InputLabel>
             <TextField
                 fullWidth
                 multiline
                 margin="dense"
                 type="text"
+                label="Zotcourse Schedule"
                 placeholder="Paste here"
                 color="secondary"
                 value={value}

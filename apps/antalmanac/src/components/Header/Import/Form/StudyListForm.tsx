@@ -1,4 +1,4 @@
-import { Box, DialogContentText, InputLabel, Link as MuiLink, TextField } from '@mui/material';
+import { Box, DialogContentText, Link as MuiLink, TextField } from '@mui/material';
 
 interface StudyListFormProps {
     value: string;
@@ -32,12 +32,12 @@ export function StudyListForm({ value, onChange }: StudyListFormProps) {
                 , and click on Study List once you&apos;ve logged in. Copy everything below the column names (Code,
                 Dept, etc.) under the Enrolled Classes section.
             </DialogContentText>
-            <InputLabel style={{ fontSize: '9px' }}>Study List</InputLabel>
             <TextField
                 fullWidth
                 multiline
                 margin="dense"
                 type="text"
+                label="Study List"
                 placeholder="Paste here"
                 color="secondary"
                 value={value}

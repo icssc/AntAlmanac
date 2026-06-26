@@ -1,4 +1,4 @@
-import { Box, DialogContentText, InputLabel, TextField } from '@mui/material';
+import { Box, DialogContentText, TextField } from '@mui/material';
 
 interface UsernameFormProps {
     value: string;
@@ -16,11 +16,11 @@ export function UsernameForm({ value, onChange, onSubmit }: UsernameFormProps) {
             }}
         >
             <DialogContentText>Paste your unique user ID here to import your schedule(s).</DialogContentText>
-            <InputLabel style={{ fontSize: '9px' }}>AntAlmanac Schedule Name</InputLabel>
             <TextField
                 fullWidth
                 margin="dense"
                 type="text"
+                label="User ID"
                 placeholder="Paste here"
                 color="secondary"
                 value={value}
