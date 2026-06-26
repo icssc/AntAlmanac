@@ -3,7 +3,6 @@ import {
     type SkeletonBlueprint,
 } from '$components/Calendar/Skeleton/skeletonBlueprintVariations';
 import type { SkeletonEvent } from '$components/Calendar/types';
-import { getLocalStorageSkeletonBlueprint } from '$lib/localStorage';
 
 export const CALENDAR_BASE_DATE = new Date(2018, 0, 1);
 
@@ -24,24 +23,12 @@ function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint, color: string): 
     };
 }
 
-export function createSkeletonEvents(color: string): SkeletonEvent[] {
-    const savedDataString = getLocalStorageSkeletonBlueprint();
-
-    let skeletonBlueprints: SkeletonBlueprint[] | null = null;
-
-    if (savedDataString) {
-        const parsedData = JSON.parse(savedDataString);
-        if (Array.isArray(parsedData) && parsedData.length > 0) {
-            skeletonBlueprints = parsedData;
-        }
-    }
-
-    if (skeletonBlueprints) {
-        return skeletonBlueprints.map((blueprint) => blueprintToSkeletonEvent(blueprint, color));
-    }
-
-    const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
-    const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
-
-    return fallbackBlueprints.map((blueprint) => blueprintToSkeletonEvent(blueprint, color));
+/**
+ * Build deterministic skeleton events from a blueprint array or the default
+ * variation. The result must be identical on server and client so SSR
+ * hydration never encounters a text-node mismatch (React #418).
+ */
+export function createSkeletonEvents(color: string, blueprints?: SkeletonBlueprint[] | null): SkeletonEvent[] {
+    const chosen = blueprints ?? skeletonBlueprintVariations[0];
+    return chosen.map((blueprint) => blueprintToSkeletonEvent(blueprint, color));
 }
