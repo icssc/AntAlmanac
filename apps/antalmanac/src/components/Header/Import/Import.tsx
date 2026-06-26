@@ -97,12 +97,14 @@ export function Import() {
                 </Button>
             </Tooltip>
 
-            <ImportDialog
-                open={openImportDialog}
-                onClose={handleClose}
-                onAlertDialog={handleAlertDialog}
-                autoImportUsername={autoImportUsername}
-            />
+            {openImportDialog && (
+                <ImportDialog
+                    open={openImportDialog}
+                    onClose={handleClose}
+                    onAlertDialog={handleAlertDialog}
+                    autoImportUsername={autoImportUsername}
+                />
+            )}
 
             <AlertDialog
                 title={alertDialogTitle}
