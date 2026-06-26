@@ -37,12 +37,12 @@ import { type AATerm, type AACourse, type ShortCourseSchedule } from '@packages/
 import { usePostHog } from 'posthog-js/react';
 import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 
-import { ExportForm } from './ExportForm';
-import { JsonImportForm } from './JsonImportForm';
-import { StudyListForm } from './StudyListForm';
+import { ExportForm } from './Form/ExportForm';
+import { JsonImportForm } from './Form/JsonImportForm';
+import { StudyListForm } from './Form/StudyListForm';
+import { UsernameForm } from './Form/UsernameForm';
+import { ZotcourseForm } from './Form/ZotcourseForm';
 import { ImportSource } from './types';
-import { UsernameForm } from './UsernameForm';
-import { ZotcourseForm } from './ZotcourseForm';
 
 interface ImportDialogProps {
     open: boolean;
