@@ -14,8 +14,6 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { BLUE } from '$src/globals';
 import { Stack } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useCallback, useEffect, useState } from 'react';
 import Split from 'react-split';
 
@@ -79,7 +77,7 @@ export default function Client() {
     }, []);
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <>
             <AutoSignIn />
             <TutorialInitializer />
             <AuthInitializer />
@@ -92,6 +90,6 @@ export default function Client() {
             <NotificationSnackbar />
             <ReviewPrompt />
             <KeyboardShortcutsModal open={shortcutsOpen} onClose={closeShortcutsModal} />
-        </LocalizationProvider>
+        </>
     );
 }

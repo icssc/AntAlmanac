@@ -2,6 +2,8 @@ import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/Labe
 import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputLabel';
 import { Box, TextField, type TextFieldProps } from '@mui/material';
 import { DesktopTimePicker, type TimePickerProps } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { forwardRef, useId, useState } from 'react';
 
 interface LabeledTimePickerProps {
@@ -21,28 +23,30 @@ export const LabeledTimePicker = ({ label, timePickerProps, textFieldProps, isAl
     TimePickerTextField.displayName = 'TimePickerTextField';
 
     return (
-        <Box sx={{ display: 'flex', width: '100%', flex: 1 }}>
-            <CustomInputLabel label={label} id={id} isAligned={isAligned} />
-            <CustomInputBox
-                boxProps={{
-                    ref: (node: HTMLElement | null) => {
-                        setAnchorEl(node);
-                    },
-                }}
-            >
-                <DesktopTimePicker
-                    enableAccessibleFieldDOMStructure={false}
-                    {...timePickerProps}
-                    slotProps={{
-                        popper: {
-                            anchorEl,
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Box sx={{ display: 'flex', width: '100%', flex: 1 }}>
+                <CustomInputLabel label={label} id={id} isAligned={isAligned} />
+                <CustomInputBox
+                    boxProps={{
+                        ref: (node: HTMLElement | null) => {
+                            setAnchorEl(node);
                         },
                     }}
-                    slots={{
-                        textField: TimePickerTextField,
-                    }}
-                />
-            </CustomInputBox>
-        </Box>
+                >
+                    <DesktopTimePicker
+                        enableAccessibleFieldDOMStructure={false}
+                        {...timePickerProps}
+                        slotProps={{
+                            popper: {
+                                anchorEl,
+                            },
+                        }}
+                        slots={{
+                            textField: TimePickerTextField,
+                        }}
+                    />
+                </CustomInputBox>
+            </Box>
+        </LocalizationProvider>
     );
 };
