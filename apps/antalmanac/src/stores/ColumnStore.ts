@@ -38,7 +38,7 @@ interface ColumnStore {
     setSelectedColumns: (columns: SectionTableColumn[]) => void;
 }
 
-const storedColumns = typeof window !== 'undefined' ? getLocalStorageColumnToggles() : null;
+const storedColumns = getLocalStorageColumnToggles();
 const selectedColumnsInitial = storedColumns ? JSON.parse(storedColumns) : SECTION_TABLE_COLUMNS.map(() => true);
 const activeColumnsInitial = SECTION_TABLE_COLUMNS.filter((_, index) => selectedColumnsInitial[index]);
 

@@ -37,164 +37,170 @@ enum LocalStorageKeys {
 
 const LSK = LocalStorageKeys;
 
+function getStorage(): Storage | undefined {
+    if (typeof window !== 'undefined') {
+        return window.localStorage;
+    }
+}
+
 export function setLocalStorageDataCache(value: string) {
-    window.localStorage.setItem(LSK.dataCache, value);
+    getStorage()?.setItem(LSK.dataCache, value);
 }
 
 export function getLocalStorageDataCache() {
-    return window.localStorage.getItem(LSK.dataCache);
+    return getStorage()?.getItem(LSK.dataCache) ?? null;
 }
 
 export function removeLocalStorageDataCache() {
-    window.localStorage.removeItem(LSK.dataCache);
+    getStorage()?.removeItem(LSK.dataCache);
 }
 
 export function setLocalStorageUserId(value: string) {
-    window.localStorage.setItem(LSK.userId, value);
+    getStorage()?.setItem(LSK.userId, value);
 }
 
 export function getLocalStorageUserId() {
-    return window.localStorage.getItem(LSK.userId);
+    return getStorage()?.getItem(LSK.userId) ?? null;
 }
 
 export function removeLocalStorageUserId() {
-    window.localStorage.removeItem(LSK.userId);
+    getStorage()?.removeItem(LSK.userId);
 }
 
 export function getWasLoggedIn(): boolean {
-    return window.localStorage.getItem(LSK.wasLoggedIn) === 'true';
+    return getStorage()?.getItem(LSK.wasLoggedIn) === 'true';
 }
 
 export function setWasLoggedIn(value: boolean) {
     if (value) {
-        window.localStorage.setItem(LSK.wasLoggedIn, 'true');
+        getStorage()?.setItem(LSK.wasLoggedIn, 'true');
     } else {
-        window.localStorage.removeItem(LSK.wasLoggedIn);
+        getStorage()?.removeItem(LSK.wasLoggedIn);
     }
 }
 
 // Helper functions for patchNotesKey
 export function setLocalStoragePatchNotesKey(value: string) {
-    window.localStorage.setItem(LSK.patchNotesKey, value);
+    getStorage()?.setItem(LSK.patchNotesKey, value);
 }
 
 export function getLocalStoragePatchNotesKey() {
-    return window.localStorage.getItem(LSK.patchNotesKey);
+    return getStorage()?.getItem(LSK.patchNotesKey) ?? null;
 }
 
 // Helper functions for recruitmentDismissalTime
 export function setLocalStorageRecruitmentDismissalTime(value: string) {
-    window.localStorage.setItem(LSK.recruitmentDismissalTime, value);
+    getStorage()?.setItem(LSK.recruitmentDismissalTime, value);
 }
 
 export function getLocalStorageRecruitmentDismissalTime() {
-    return window.localStorage.getItem(LSK.recruitmentDismissalTime);
+    return getStorage()?.getItem(LSK.recruitmentDismissalTime) ?? null;
 }
 
 // Helper functions for tourHasRun
 export function setLocalStorageTourHasRun(value: string) {
-    window.localStorage.setItem(LSK.tourHasRun, value);
+    getStorage()?.setItem(LSK.tourHasRun, value);
 }
 
 export function getLocalStorageTourHasRun() {
-    return window.localStorage.getItem(LSK.tourHasRun);
+    return getStorage()?.getItem(LSK.tourHasRun) ?? null;
 }
 
 // Helper functions for sectionColor
 export function setLocalStorageSectionColor(value: string) {
-    window.localStorage.setItem(LSK.sectionColor, value);
+    getStorage()?.setItem(LSK.sectionColor, value);
 }
 
 export function getLocalStorageSectionColor() {
-    return window.localStorage.getItem(LSK.sectionColor);
+    return getStorage()?.getItem(LSK.sectionColor) ?? null;
 }
 
 // Helper functions for sectionColorAssignments
 export function setLocalStorageSectionColorAssignments(value: string) {
-    window.localStorage.setItem(LSK.sectionColorAssignments, value);
+    getStorage()?.setItem(LSK.sectionColorAssignments, value);
 }
 
 export function getLocalStorageSectionColorAssignments() {
-    return window.localStorage.getItem(LSK.sectionColorAssignments);
+    return getStorage()?.getItem(LSK.sectionColorAssignments) ?? null;
 }
 
 // Helper functions for show24HourTime
 export function setLocalStorageShow24HourTime(value: string) {
-    window.localStorage.setItem(LSK.show24HourTime, value);
+    getStorage()?.setItem(LSK.show24HourTime, value);
 }
 
 export function getLocalStorageShow24HourTime() {
-    return window.localStorage.getItem(LSK.show24HourTime);
+    return getStorage()?.getItem(LSK.show24HourTime) ?? null;
 }
 
 // Helper functions for previewMode
 export function setLocalStoragePreviewMode(value: string) {
-    window.localStorage.setItem(LSK.previewMode, value);
+    getStorage()?.setItem(LSK.previewMode, value);
 }
 
 export function getLocalStoragePreviewMode() {
-    return window.localStorage.getItem(LSK.previewMode);
+    return getStorage()?.getItem(LSK.previewMode) ?? null;
 }
 
 // Helper functions for autoSave
 export function setLocalStorageAutoSave(value: string) {
-    window.localStorage.setItem(LSK.autoSave, value);
+    getStorage()?.setItem(LSK.autoSave, value);
 }
 
 export function getLocalStorageAutoSave() {
-    return window.localStorage.getItem(LSK.autoSave);
+    return getStorage()?.getItem(LSK.autoSave) ?? null;
 }
 
 // Helper functions for devMode
 export function setLocalStorageDevMode(value: string) {
-    localStorage.setItem(LocalStorageKeys.devMode, value);
+    getStorage()?.setItem(LSK.devMode, value);
 }
 
 export function getLocalStorageDevMode() {
-    return localStorage.getItem(LocalStorageKeys.devMode);
+    return getStorage()?.getItem(LSK.devMode) ?? null;
 }
 
 // Helper functions for columnToggles
 export function setLocalStorageColumnToggles(value: string) {
-    window.localStorage.setItem(LSK.columnToggles, value);
+    getStorage()?.setItem(LSK.columnToggles, value);
 }
 
 export function getLocalStorageColumnToggles() {
-    return window.localStorage.getItem(LSK.columnToggles);
+    return getStorage()?.getItem(LSK.columnToggles) ?? null;
 }
 
 export function setLocalStorageTempSaveData(value: string) {
-    window.localStorage.setItem(LSK.tempSaveData, value);
+    getStorage()?.setItem(LSK.tempSaveData, value);
 }
 
 export function getLocalStorageTempSaveData() {
-    return window.localStorage.getItem(LSK.tempSaveData);
+    return getStorage()?.getItem(LSK.tempSaveData) ?? null;
 }
 
 export function removeLocalStorageTempSaveData() {
-    window.localStorage.removeItem(LSK.tempSaveData);
+    getStorage()?.removeItem(LSK.tempSaveData);
 }
 
 export function setLocalStorageSkeletonBlueprint(value: string) {
-    window.localStorage.setItem(LSK.skeletonBlueprint, value);
+    getStorage()?.setItem(LSK.skeletonBlueprint, value);
 }
 
 export function getLocalStorageSkeletonBlueprint() {
-    return window.localStorage.getItem(LSK.skeletonBlueprint);
+    return getStorage()?.getItem(LSK.skeletonBlueprint) ?? null;
 }
 
 export function removeLocalStorageSkeletonBlueprint() {
-    window.localStorage.removeItem(LSK.skeletonBlueprint);
+    getStorage()?.removeItem(LSK.skeletonBlueprint);
 }
 
 export function setLocalStorageAddedCoursesSkeletonBlueprint(value: string) {
-    window.localStorage.setItem(LSK.addedCoursesSkeletonBlueprint, value);
+    getStorage()?.setItem(LSK.addedCoursesSkeletonBlueprint, value);
 }
 
 export function getLocalStorageAddedCoursesSkeletonBlueprint() {
-    return window.localStorage.getItem(LSK.addedCoursesSkeletonBlueprint);
+    return getStorage()?.getItem(LSK.addedCoursesSkeletonBlueprint) ?? null;
 }
 
 export function removeLocalStorageAddedCoursesSkeletonBlueprint() {
-    window.localStorage.removeItem(LSK.addedCoursesSkeletonBlueprint);
+    getStorage()?.removeItem(LSK.addedCoursesSkeletonBlueprint);
 }
