@@ -75,7 +75,7 @@ export function AppSwitcher() {
 
     return (
         <>
-            <Box sx={{ display: { xs: 'flex', sm: 'none' }, alignItems: 'center' }}>
+            <Box sx={{ display: { default: 'flex', sm: 'none' }, alignItems: 'center' }}>
                 <Button
                     onClick={(event) => setAnchorEl(event.currentTarget)}
                     endIcon={<UnfoldMore />}
@@ -162,7 +162,7 @@ export function AppSwitcher() {
                 </Popover>
             </Box>
 
-            <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: { default: 'none', sm: 'flex' }, alignItems: 'center', gap: 1 }}>
                 <Logo />
                 <ButtonGroup variant="outlined" color="inherit">
                     <Button
