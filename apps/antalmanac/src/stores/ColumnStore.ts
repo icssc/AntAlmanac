@@ -38,8 +38,7 @@ interface ColumnStore {
     setSelectedColumns: (columns: SectionTableColumn[]) => void;
 }
 
-// Currently, the mapping/filtering does nothing, but this could be used to enable/disable columns.
-const storedColumns = getLocalStorageColumnToggles();
+const storedColumns = typeof window !== 'undefined' ? getLocalStorageColumnToggles() : null;
 const selectedColumnsInitial = storedColumns ? JSON.parse(storedColumns) : SECTION_TABLE_COLUMNS.map(() => true);
 const activeColumnsInitial = SECTION_TABLE_COLUMNS.filter((_, index) => selectedColumnsInitial[index]);
 
