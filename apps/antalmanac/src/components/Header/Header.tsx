@@ -1,6 +1,6 @@
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
-import { Import } from '$components/Header/Import';
+import { Import } from '$components/Header/Import/Import';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
