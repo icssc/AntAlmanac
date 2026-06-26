@@ -216,14 +216,18 @@ const appTheme = createTheme({
         },
         MuiAlert: {
             styleOverrides: {
-                standardWarning: {
-                    backgroundColor: '#FFEA99',
-                    color: '#302800',
-                },
-                standardInfo: {
-                    backgroundColor: '#99CBFF',
-                    color: '#001630',
-                },
+                standardWarning: ({ theme }) => ({
+                    ...theme.applyStyles('dark', {
+                        backgroundColor: '#fff5e6',
+                        color: '#663d00',
+                    }),
+                }),
+                standardInfo: ({ theme }) => ({
+                    ...theme.applyStyles('dark', {
+                        backgroundColor: '#e6f6fe',
+                        color: '#014462',
+                    }),
+                }),
             },
         },
     },
