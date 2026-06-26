@@ -128,6 +128,14 @@ const appTheme = createTheme({
         fontFamily: roboto.style.fontFamily,
     },
     components: {
+        MuiAlert: {
+            styleOverrides: {
+                standardWarning: {
+                    backgroundColor: '#FFEA99',
+                    color: '#302800ff',
+                },
+            },
+        },
         MuiAppBar: {
             defaultProps: {
                 enableColorOnDark: true,
