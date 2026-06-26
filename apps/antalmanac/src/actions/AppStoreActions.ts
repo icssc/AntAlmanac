@@ -18,7 +18,6 @@ import {
     type AATerm,
     type CustomEventId,
     type RepeatingCustomEvent,
-    type ScheduleCourse,
     type ShortCourseSchedule,
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
@@ -64,19 +63,7 @@ export const addCourse = (
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
-    const newCourse: ScheduleCourse = {
-        term: course.term,
-        deptCode: course.deptCode,
-        courseNumber: course.courseNumber,
-        courseId: course.courseId,
-        courseTitle: course.courseTitle,
-        courseComment: course.courseComment,
-        prerequisiteLink: course.prerequisiteLink,
-        section: { ...section, color: '' },
-        sectionTypes: course.sectionTypes,
-    };
-
-    return AppStore.addCourse(newCourse, scheduleIndex);
+    AppStore.addCourse(section, course, scheduleIndex);
 };
 
 export function isEmptySchedule(schedules: ShortCourseSchedule[]) {

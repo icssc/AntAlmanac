@@ -16,6 +16,10 @@ import { Box, type SxProps, Typography } from '@mui/material';
 import { type AACourseWithTerm, type RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+function getCurrentCourses(): AACourseWithTerm[] {
+    return AppStore.schedule.getCurrentCourses();
+}
+
 const buttonSx: SxProps = {
     backgroundColor: 'rgba(236, 236, 236, 1)',
     marginRight: 1,
@@ -55,55 +59,11 @@ function persistSkeletonBlueprint(courses: AACourseWithTerm[], customEvents: Rep
 }
 
 function persistFromAppStore() {
-    persistSkeletonBlueprint(getCourses(), AppStore.schedule.getCurrentCustomEvents());
-}
-
-function getCourses() {
-    const currentCourses = AppStore.schedule.getCurrentCourses();
-
-    const formattedCourses: AACourseWithTerm[] = [];
-
-    for (const course of currentCourses) {
-        let formattedCourse = formattedCourses.find(
-            (formattedCourse) => scheduleOfferingKey(formattedCourse) === scheduleOfferingKey(course)
-        );
-
-        if (formattedCourse) {
-            formattedCourse.sections.push({
-                ...course.section,
-            });
-        } else {
-            formattedCourse = {
-                term: course.term,
-                deptCode: course.deptCode,
-                courseComment: course.courseComment,
-                prerequisiteLink: course.prerequisiteLink,
-                courseNumber: course.courseNumber,
-                courseTitle: course.courseTitle,
-                courseId: course.courseId,
-                sectionTypes: course.sectionTypes,
-                sections: [
-                    {
-                        ...course.section,
-                    },
-                ],
-                updatedAt: course.section.updatedAt ?? null,
-            };
-            formattedCourses.push(formattedCourse);
-        }
-    }
-
-    formattedCourses.forEach(function (course) {
-        course.sections.sort(function (a, b) {
-            return parseInt(a.sectionCode, 10) - parseInt(b.sectionCode, 10);
-        });
-    });
-
-    return formattedCourses;
+    persistSkeletonBlueprint(getCurrentCourses(), AppStore.schedule.getCurrentCustomEvents());
 }
 
 export function AddedCourses() {
-    const [courses, setCourses] = useState(getCourses);
+    const [courses, setCourses] = useState(getCurrentCourses);
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
 
@@ -135,7 +95,7 @@ export function AddedCourses() {
         }
 
         const handleCoursesChange = () => {
-            const nextCourses = getCourses();
+            const nextCourses = getCurrentCourses();
             setCourses(nextCourses);
             persistFromAppStore();
         };

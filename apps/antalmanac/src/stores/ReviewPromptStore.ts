@@ -102,7 +102,13 @@ export const useReviewPromptStore = create(
                 if (pastTermNames.size === 0) return;
 
                 const allCourses = AppStore.schedule.getAllCourses();
-                const courseGroups = new Map<string, (typeof allCourses)[number][]>();
+
+                interface SectionEntry {
+                    course: (typeof allCourses)[number];
+                    section: (typeof allCourses)[number]['sections'][number];
+                }
+
+                const courseGroups = new Map<string, SectionEntry[]>();
 
                 for (const course of allCourses) {
                     const term = course.term;
@@ -110,44 +116,47 @@ export const useReviewPromptStore = create(
                         continue;
                     }
 
-                    const sectionType = course.section.sectionType;
-                    if (
-                        sectionType === 'Act' ||
-                        sectionType === 'Col' ||
-                        sectionType === 'Dis' ||
-                        sectionType === 'Qiz' ||
-                        sectionType === 'Tap'
-                    ) {
-                        continue;
-                    }
+                    for (const section of course.sections) {
+                        const sectionType = section.sectionType;
+                        if (
+                            sectionType === 'Act' ||
+                            sectionType === 'Col' ||
+                            sectionType === 'Dis' ||
+                            sectionType === 'Qiz' ||
+                            sectionType === 'Tap'
+                        ) {
+                            continue;
+                        }
 
-                    const instructor = course.section.instructors.at(0)?.trim();
-                    if (!instructor || instructor === 'STAFF') {
-                        continue;
-                    }
+                        const instructor = section.instructors.at(0)?.trim();
+                        if (!instructor || instructor === 'STAFF') {
+                            continue;
+                        }
 
-                    const dedupKey = `${course.courseId}::${instructor}::${term.shortName}`;
-                    const group = courseGroups.get(dedupKey);
-                    if (group) {
-                        group.push(course);
-                    } else {
-                        courseGroups.set(dedupKey, [course]);
+                        const dedupKey = `${course.courseId}::${instructor}::${term.shortName}`;
+                        const entry: SectionEntry = { course, section };
+                        const group = courseGroups.get(dedupKey);
+                        if (group) {
+                            group.push(entry);
+                        } else {
+                            courseGroups.set(dedupKey, [entry]);
+                        }
                     }
                 }
 
                 const candidates: ReviewCandidate[] = [];
-                for (const courses of courseGroups.values()) {
-                    const picked = courses.find((c) => c.section.sectionType === 'Lec') ?? courses.at(0);
+                for (const entries of courseGroups.values()) {
+                    const picked = entries.find((e) => e.section.sectionType === 'Lec') ?? entries.at(0);
                     const instructor = picked?.section.instructors.at(0)?.trim();
                     if (!instructor || !picked) {
                         continue;
                     }
 
                     candidates.push({
-                        courseId: picked.courseId,
-                        courseTitle: picked.courseTitle,
+                        courseId: picked.course.courseId,
+                        courseTitle: picked.course.courseTitle,
                         professorId: instructor,
-                        term: picked.term,
+                        term: picked.course.term,
                     });
                 }
 
