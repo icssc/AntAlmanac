@@ -214,22 +214,6 @@ const appTheme = createTheme({
                 variant: 'standard',
             },
         },
-        MuiAlert: {
-            styleOverrides: {
-                standardWarning: ({ theme }) => ({
-                    ...theme.applyStyles('dark', {
-                        backgroundColor: '#fff5e6',
-                        color: '#663d00',
-                    }),
-                }),
-                standardInfo: ({ theme }) => ({
-                    ...theme.applyStyles('dark', {
-                        backgroundColor: '#e6f6fe',
-                        color: '#014462',
-                    }),
-                }),
-            },
-        },
     },
     breakpoints: {
         /**

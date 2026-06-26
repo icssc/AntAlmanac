@@ -47,7 +47,7 @@ export function SignInDialog(props: SignInDialogProps) {
             <DialogContent>
                 <Stack spacing={1}>
                     {props.feature === 'Save' && (
-                        <Alert severity="info" variant="standard" sx={{ fontSize: 'small' }}>
+                        <Alert severity="info" variant="filled" sx={{ fontSize: 'small' }}>
                             All changes made will be saved to your account
                         </Alert>
                     )}

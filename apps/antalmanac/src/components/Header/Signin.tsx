@@ -147,7 +147,7 @@ export const Signin = () => {
                                     Enter your unique user ID here to sign in your schedule.
                                 </DialogContentText>
 
-                                <Alert severity="info" variant="standard">
+                                <Alert severity="info" variant="filled">
                                     <AlertTitle>
                                         Note: Existing schedules saved to a unique user ID can no longer be updated.
                                     </AlertTitle>
