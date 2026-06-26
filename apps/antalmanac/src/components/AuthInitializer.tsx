@@ -8,9 +8,7 @@ import {
     getLocalStorageUserId,
     getWasLoggedIn,
     removeLocalStorageDataCache,
-    removeLocalStorageImportedUser,
     removeLocalStorageUserId,
-    setLocalStorageImportedUser,
     setWasLoggedIn,
 } from '$lib/localStorage';
 import { setSsoCookie } from '$lib/ssoCookie';
@@ -73,7 +71,6 @@ export const AuthInitializer = () => {
         // no changes to save
         if (savedUserId === null && savedData === null) {
             removeLocalStorageDataCache();
-            removeLocalStorageImportedUser();
             return;
         }
 
@@ -82,7 +79,6 @@ export const AuthInitializer = () => {
 
             if (savedUserId) {
                 await trpc.schedule.flagImported.mutate({ username: savedUserId });
-                setLocalStorageImportedUser(savedUserId);
             }
 
             const data = JSON.parse(savedData);
@@ -104,7 +100,14 @@ export const AuthInitializer = () => {
 
             removeLocalStorageDataCache();
 
-            openSnackbar('success', `Unsaved changes have been saved to your account!`);
+            if (savedUserId) {
+                openSnackbar(
+                    'success',
+                    `Schedule from "${savedUserId}" has been saved to your account! All changes made to your schedules will be saved to your account.`
+                );
+            } else {
+                openSnackbar('success', 'Unsaved changes have been saved to your account!');
+            }
         }
     });
 

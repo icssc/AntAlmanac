@@ -4,7 +4,6 @@ import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AuthInitializer } from '$components/AuthInitializer';
 import { AutoSignIn } from '$components/AutoSignIn';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
-import { Header } from '$components/Header/Header';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import { PatchNotes } from '$components/PatchNotes';
@@ -111,8 +110,7 @@ export default function Client() {
             <AuthInitializer />
             <PatchNotes />
 
-            <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
-                <Header />
+            <Stack component="main" height="calc(100svh - 52px - env(safe-area-inset-top))">
                 {isMobile ? <MobileHome /> : <DesktopHome />}
             </Stack>
 

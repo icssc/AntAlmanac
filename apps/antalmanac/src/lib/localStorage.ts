@@ -13,11 +13,12 @@ enum LocalStorageKeys {
     columnToggles = 'columnToggles',
     wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
-    importedUser = 'importedUser',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
     addedCoursesSkeletonBlueprint = 'addedCoursesSkeletonBlueprint',
 
+    /** @deprecated Guest import confirmation now uses a snackbar in AuthInitializer. */
+    importedUser = 'importedUser',
     /** @deprecated Theme preference is now managed by MUI via modeStorageKey="theme". */
     theme = 'theme',
     /** @deprecated No longer used. Low impact feature. */
@@ -35,18 +36,6 @@ enum LocalStorageKeys {
 }
 
 const LSK = LocalStorageKeys;
-
-export function setLocalStorageImportedUser(value: string) {
-    window.localStorage.setItem(LSK.importedUser, value);
-}
-
-export function getLocalStorageImportedUser() {
-    return window.localStorage.getItem(LSK.importedUser);
-}
-
-export function removeLocalStorageImportedUser() {
-    window.localStorage.removeItem(LSK.importedUser);
-}
 
 export function setLocalStorageDataCache(value: string) {
     window.localStorage.setItem(LSK.dataCache, value);
