@@ -217,11 +217,6 @@ interface NormalizedWebSOCTime {
     endTime: string;
 }
 
-/**
- * @param section
- * @returns The start and end time of a course in a 24 hour time with a leading zero (##:##).
- * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
- */
 interface NormalizeTimeOptions {
     timeIsTBA?: boolean;
     startTime?: HourMinute | null;
@@ -229,9 +224,8 @@ interface NormalizeTimeOptions {
 }
 
 /**
- * @param section
- * @returns The start and end time of a course in a 24 hour time with a leading zero (##:##).
- * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
+ * @returns Start and end time as 24-hour strings with leading zeros (##:##),
+ * or undefined when time is TBA or missing.
  */
 export function normalizeTime(options: NormalizeTimeOptions): NormalizedWebSOCTime | undefined {
     if (options.timeIsTBA || !options.startTime || !options.endTime) {

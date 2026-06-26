@@ -406,7 +406,7 @@ export class Schedules {
     }
 
     /**
-     * Get a reference ito the custom event that matches the ID.
+     * Get a reference to the custom event that matches the ID.
      */
     getExistingCustomEvent(customEventId: CustomEventId) {
         for (const customEvent of this.getAllCustomEvents()) {
