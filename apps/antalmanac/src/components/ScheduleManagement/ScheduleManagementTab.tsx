@@ -1,4 +1,3 @@
-import { useIsMobile } from '$hooks/useIsMobile';
 import { TAB_INDEX, type TabInfo, type TabName } from '$lib/tabs/tabs';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { Tab } from '@mui/material';
@@ -11,7 +10,6 @@ interface ScheduleManagementTabProps {
 }
 
 export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManagementTabProps) => {
-    const isMobile = useIsMobile();
     const savedSearch = useSavedSearchStore((store) => store.savedSearch);
 
     const href = value === TAB_INDEX.search && savedSearch ? `${tab.href}${savedSearch}` : tab.href || '/';
@@ -26,21 +24,18 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
             component={Link}
             href={href}
             icon={<tab.icon />}
-            iconPosition={isMobile ? 'top' : 'start'}
+            iconPosition="top"
             sx={{
-                ...(isMobile
-                    ? {
-                          minHeight: 'unset',
-                          minWidth: '25%',
-                          height: 56,
-                      }
-                    : {
-                          minHeight: 'auto',
-                          height: '44px',
-                          padding: 3,
-                          minWidth: '33%',
-                      }),
-                display: isMobile || !tab.mobileOnly ? 'flex' : 'none',
+                flexDirection: { default: 'column', sm: 'row' },
+                minHeight: { default: 'unset', sm: 'auto' },
+                minWidth: { default: '25%', sm: '33%' },
+                height: { default: 56, sm: 44 },
+                padding: { sm: 3 },
+                '& .MuiTab-iconWrapper': {
+                    marginBottom: { sm: 0 },
+                    marginRight: { default: 0, sm: 1 },
+                },
+                display: tab.mobileOnly ? { default: 'flex', sm: 'none' } : 'flex',
             }}
             label={tab.label}
             onClick={handleClick}

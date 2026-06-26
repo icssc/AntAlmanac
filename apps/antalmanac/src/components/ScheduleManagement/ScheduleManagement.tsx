@@ -5,7 +5,7 @@ import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { GlobalStyles, Stack } from '@mui/material';
+import { Box, GlobalStyles, Stack } from '@mui/material';
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -28,15 +28,10 @@ export function ScheduleManagement() {
         }))
     );
 
-    // Tab name mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Partial<Record<TabName, number>>>({});
 
-    /**
-     * Ref to the scrollable container with all of the tabs-content within it.
-     */
     const ref = useRef<HTMLDivElement>(null);
 
-    // Save the current scroll position to the store.
     const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
         const positionToSave = e.currentTarget.scrollTop;
         setPositions((current) => {
@@ -69,7 +64,6 @@ export function ScheduleManagement() {
         }
     }, [segment, isMobile, fallbackMode, router]);
 
-    // Restore scroll position if it has been previously saved.
     useEffect(() => {
         const savedPosition = positions[activeTab];
 
@@ -90,7 +84,9 @@ export function ScheduleManagement() {
         <Stack direction="column" flexGrow={1} height="0">
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            {!isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
+            <Box sx={{ order: { default: 1, sm: 0 } }}>
+                <ScheduleManagementTabs onTabChange={handleTabChange} />
+            </Box>
 
             <Stack width="100%" height="0" flexGrow={1} padding={1}>
                 <Stack
@@ -105,8 +101,6 @@ export function ScheduleManagement() {
                     <ScheduleManagementContent />
                 </Stack>
             </Stack>
-
-            {isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
         </Stack>
     );
 }

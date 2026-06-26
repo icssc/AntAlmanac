@@ -10,21 +10,16 @@ import { PatchNotes } from '$components/PatchNotes';
 import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { TutorialInitializer } from '$components/TutorialInitializer';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
-import { Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Split from 'react-split';
 
 const DEFAULT_SPLIT_SIZES: [number, number] = [42.5, 57.5];
-
-function MobileHome() {
-    return <ScheduleManagement />;
-}
 
 function DesktopHome() {
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
@@ -91,7 +86,6 @@ function DesktopHome() {
 }
 
 export default function Client() {
-    const isMobile = useIsMobile();
     const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 
     useEffect(() => {
@@ -111,7 +105,12 @@ export default function Client() {
             <PatchNotes />
 
             <Stack component="main" height="calc(100svh - 52px - env(safe-area-inset-top))">
-                {isMobile ? <MobileHome /> : <DesktopHome />}
+                <Box sx={{ display: { default: 'none', sm: 'flex' }, flexGrow: 1 }}>
+                    <DesktopHome />
+                </Box>
+                <Box sx={{ display: { default: 'flex', sm: 'none' }, flexDirection: 'column', flexGrow: 1 }}>
+                    <ScheduleManagement />
+                </Box>
             </Stack>
 
             <NotificationSnackbar />
