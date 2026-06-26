@@ -168,7 +168,7 @@ class AppStore extends EventEmitter {
             type: 'deleteCourse',
             sectionCode: sectionCode,
             term: term,
-            scheduleIndex: this.schedule.getCurrentScheduleIndex(),
+            scheduleIndex: scheduleIndex,
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');

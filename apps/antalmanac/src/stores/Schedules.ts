@@ -168,6 +168,7 @@ export class Schedules {
      * Copy the schedule at the provided index to a newly created schedule with the specified name.
      */
     copySchedule(scheduleIndex: number, newScheduleName: string) {
+        const previousIndex = this.currentScheduleIndex;
         this.addNewSchedule(newScheduleName);
         this.currentScheduleIndex = scheduleIndex; // temporarily set current schedule to the one being copied
         const to = this.getNumberOfSchedules() - 1;
@@ -181,7 +182,7 @@ export class Schedules {
         for (const customEvent of this.getCurrentCustomEvents()) {
             this.addCustomEvent(customEvent, [to], false);
         }
-        this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previously selected schedule index
+        this.currentScheduleIndex = previousIndex;
     }
 
     /**
@@ -372,7 +373,6 @@ export class Schedules {
      */
     deleteCourse(sectionCode: string, term: AATerm, scheduleIndex: number) {
         this.addUndoState();
-        this.setCurrentScheduleIndex(scheduleIndex);
         const courses = this.schedules[scheduleIndex].courses;
         for (let i = 0; i < courses.length; i++) {
             const course = courses[i];
@@ -729,12 +729,12 @@ export class Schedules {
                         const aaSection: AASection = { ...section, color: shortCourse.color };
 
                         // Group into existing course or create new one
-                        const existing = groupedCourses.find(
-                            (c) =>
-                                c.term.shortName === term.shortName &&
-                                c.courseId === course.courseId &&
-                                c.courseTitle === course.courseTitle
-                        );
+                        const offeringKey = scheduleOfferingKey({
+                            term,
+                            courseId: course.courseId,
+                            courseTitle: course.courseTitle,
+                        });
+                        const existing = groupedCourses.find((c) => scheduleOfferingKey(c) === offeringKey);
                         if (existing) {
                             existing.sections.push(aaSection);
                         } else {
