@@ -303,8 +303,8 @@ export class Schedules {
             return;
         }
 
-        // Reuse existing section reference from current schedule for cross-schedule color sharing
-        const existingSection = this.findSectionInCurrentSchedule(section.sectionCode, course.term);
+        // Reuse existing section reference from any schedule for cross-schedule color sharing
+        const existingSection = this.findSectionAcrossSchedules(section.sectionCode, course.term);
 
         const sectionToAdd = existingSection ?? {
             ...section,
@@ -349,15 +349,20 @@ export class Schedules {
 
     /**
      * Change courses that match the code and term in all schedules to new color.
-     * Uses shared AASection references, so mutating here propagates across schedules.
+     * Iterates every schedule explicitly so color updates survive undo/redo
+     * (structuredClone severs shared references).
      */
     changeCourseColor(sectionCode: string, term: AATerm, newColor: string) {
         this.addUndoState();
 
-        const section = this.findSectionInCurrentSchedule(sectionCode, term);
-
-        if (section) {
-            section.color = newColor;
+        for (const schedule of this.schedules) {
+            for (const course of schedule.courses) {
+                if (course.term.shortName !== term.shortName) continue;
+                const section = course.sections.find((s) => s.sectionCode === sectionCode);
+                if (section) {
+                    section.color = newColor;
+                }
+            }
         }
     }
 

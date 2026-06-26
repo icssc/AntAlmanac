@@ -17,7 +17,7 @@ import { type AACourseWithTerm, type RepeatingCustomEvent } from '@packages/anta
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 function getCurrentCourses(): AACourseWithTerm[] {
-    return AppStore.schedule.getCurrentCourses();
+    return [...AppStore.schedule.getCurrentCourses()];
 }
 
 const buttonSx: SxProps = {
