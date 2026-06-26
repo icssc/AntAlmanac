@@ -75,7 +75,6 @@ export function AppSwitcher() {
 
     return (
         <>
-            {/* Mobile layout: logo button → popover menu */}
             <Box sx={{ display: { xs: 'flex', sm: 'none' }, alignItems: 'center' }}>
                 <Button
                     onClick={(event) => setAnchorEl(event.currentTarget)}
@@ -163,7 +162,6 @@ export function AppSwitcher() {
                 </Popover>
             </Box>
 
-            {/* Desktop layout: logo + button group */}
             <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1 }}>
                 <Logo />
                 <ButtonGroup variant="outlined" color="inherit">
