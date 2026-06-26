@@ -41,7 +41,7 @@ export default $config({
                 },
                 cdn(args) {
                     if ($app.stage !== 'production') {
-                        args.waitForDeployment = false;
+                        args.wait = false;
                     }
                 },
             },
