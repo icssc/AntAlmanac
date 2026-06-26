@@ -1,10 +1,9 @@
+import { ScheduleList } from '$components/Header/Import/Form/ScheduleList';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { CloudUpload } from '@mui/icons-material';
 import { Box, DialogContentText, InputLabel, Paper, Stack, Typography } from '@mui/material';
 import { type ShortCourseSchedule } from '@packages/antalmanac-types';
 import { type RefObject, useCallback, useRef, useState } from 'react';
-
-import { ScheduleList } from './ScheduleList';
 
 interface JsonImportFormProps {
     importedSchedules: ShortCourseSchedule[];

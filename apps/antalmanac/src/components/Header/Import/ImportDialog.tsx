@@ -4,6 +4,12 @@ import {
     importScheduleWithUsername,
     mergeShortCourseSchedules,
 } from '$actions/AppStoreActions';
+import { ExportForm } from '$components/Header/Import/Form/ExportForm';
+import { JsonImportForm } from '$components/Header/Import/Form/JsonImportForm';
+import { StudyListForm } from '$components/Header/Import/Form/StudyListForm';
+import { UsernameForm } from '$components/Header/Import/Form/UsernameForm';
+import { ZotcourseForm } from '$components/Header/Import/Form/ZotcourseForm';
+import { ImportSource } from '$components/Header/Import/types';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -36,13 +42,6 @@ import {
 import { type AATerm, type AACourse, type ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-
-import { ExportForm } from './Form/ExportForm';
-import { JsonImportForm } from './Form/JsonImportForm';
-import { StudyListForm } from './Form/StudyListForm';
-import { UsernameForm } from './Form/UsernameForm';
-import { ZotcourseForm } from './Form/ZotcourseForm';
-import { ImportSource } from './types';
 
 interface ImportDialogProps {
     open: boolean;

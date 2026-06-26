@@ -1,7 +1,6 @@
+import { ScheduleList } from '$components/Header/Import/Form/ScheduleList';
 import { DialogContentText } from '@mui/material';
 import { type ShortCourseSchedule } from '@packages/antalmanac-types';
-
-import { ScheduleList } from './ScheduleList';
 
 interface ExportFormProps {
     schedules: ShortCourseSchedule[];

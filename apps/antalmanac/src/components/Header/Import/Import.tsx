@@ -1,5 +1,6 @@
 import { importValidatedSchedule } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { ImportDialog } from '$components/Header/Import/ImportDialog';
 import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -12,8 +13,6 @@ import NextLink from 'next/link';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-
-import { ImportDialog } from './ImportDialog';
 
 export function Import() {
     const [alertDialogTitle, setAlertDialogTitle] = useState('');
