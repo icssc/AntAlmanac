@@ -1,4 +1,3 @@
-import { useIsMobile } from '$hooks/useIsMobile';
 import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Box, Button, Paper, Popover, useTheme } from '@mui/material';
@@ -24,12 +23,10 @@ export const CourseInfoButton = ({
 }: CourseInfoButtonProps) => {
     const postHog = usePostHog();
     const theme = useTheme();
-    const isMobile = useIsMobile();
-
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
-    const compact = isMobile || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
+    const narrowPanel = scheduleManagementWidth != null && scheduleManagementWidth < theme.breakpoints.values.xs;
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
@@ -59,16 +56,18 @@ export const CourseInfoButton = ({
             <Button variant="contained" size="small" color="primary" onClick={handleClick}>
                 <span style={{ display: 'flex', gap: 4 }}>
                     {icon}
-                    {compact ? null : (
-                        <span
-                            style={{
+                    {!narrowPanel && (
+                        <Box
+                            component="span"
+                            sx={{
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
+                                display: { default: 'none', sm: 'inline' },
                             }}
                         >
                             {text}
-                        </span>
+                        </Box>
                     )}
                 </span>
             </Button>

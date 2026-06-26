@@ -1,6 +1,5 @@
 import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/constants';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { Box, Link, Popover, Tooltip, Typography } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 import { Fragment, useCallback, useMemo, useState } from 'react';
@@ -15,7 +14,6 @@ const RESTRICTION_CODE_LABELS = Object.fromEntries(
 
 export const RestrictionsCell = ({ section }: RestrictionsCellProps) => {
     const { restrictions } = section;
-    const isMobile = useIsMobile();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const parsedRestrictions = useMemo(
@@ -65,35 +63,37 @@ export const RestrictionsCell = ({ section }: RestrictionsCellProps) => {
     return (
         <TableBodyCellContainer>
             <Box>
-                {isMobile ? (
-                    <>
-                        <Typography
-                            component="button"
-                            type="button"
-                            variant="inherit"
-                            onClick={(e) => {
-                                setAnchorEl((cur) => (cur ? null : e.currentTarget));
-                            }}
-                            sx={{
-                                background: 'none',
-                                border: 0,
-                                textDecoration: 'underline',
-                                color: (theme) => theme.vars.palette.secondary.main,
-                            }}
-                        >
-                            {restrictions}
-                        </Typography>
+                {/* Mobile: click to open popover */}
+                <Box sx={{ display: { default: 'block', sm: 'none' } }}>
+                    <Typography
+                        component="button"
+                        type="button"
+                        variant="inherit"
+                        onClick={(e) => {
+                            setAnchorEl((cur) => (cur ? null : e.currentTarget));
+                        }}
+                        sx={{
+                            background: 'none',
+                            border: 0,
+                            textDecoration: 'underline',
+                            color: (theme) => theme.vars.palette.secondary.main,
+                        }}
+                    >
+                        {restrictions}
+                    </Typography>
 
-                        <Popover
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                            anchorEl={anchorEl}
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                        >
-                            {restrictionContent}
-                        </Popover>
-                    </>
-                ) : (
+                    <Popover
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                        anchorEl={anchorEl}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                    >
+                        {restrictionContent}
+                    </Popover>
+                </Box>
+
+                {/* Desktop: hover tooltip + link */}
+                <Box sx={{ display: { default: 'none', sm: 'block' } }}>
                     <Tooltip title={restrictionDescriptions}>
                         <Link
                             href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
@@ -104,7 +104,7 @@ export const RestrictionsCell = ({ section }: RestrictionsCellProps) => {
                             {restrictions}
                         </Link>
                     </Tooltip>
-                )}
+                </Box>
             </Box>
         </TableBodyCellContainer>
     );

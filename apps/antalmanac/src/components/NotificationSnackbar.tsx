@@ -1,6 +1,5 @@
 'use client';
 
-import { useIsMobile } from '$hooks/useIsMobile';
 import { mergeSx } from '$lib/helpers';
 import { useSnackbarStore } from '$stores/SnackbarStore';
 import { Alert, Snackbar, type SnackbarCloseReason } from '@mui/material';
@@ -18,8 +17,6 @@ export const NotificationSnackbar = () => {
             style: store.style,
         }))
     );
-
-    const isMobile = useIsMobile();
 
     const snackbarKey = open ? Date.now() : null;
 
@@ -41,7 +38,7 @@ export const NotificationSnackbar = () => {
             sx={mergeSx(
                 (theme) => ({
                     /* Ensure snackbars sit above the mobile navigation tabs */
-                    marginBottom: isMobile ? 'calc(env(safe-area-inset-bottom, 0px) + 64px)' : undefined,
+                    marginBottom: { default: 'calc(env(safe-area-inset-bottom, 0px) + 64px)', sm: 0 },
                     [theme.breakpoints.up('sm')]: { minWidth: '288px' },
                 }),
                 style

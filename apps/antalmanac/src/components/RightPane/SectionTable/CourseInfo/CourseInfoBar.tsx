@@ -1,5 +1,4 @@
 import { CourseInfoBarPopover } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBarPopover';
-import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
 import { InfoOutlined } from '@mui/icons-material';
@@ -23,8 +22,6 @@ export const CourseInfoBar = ({
     analyticsCategory,
 }: CourseInfoBarProps) => {
     const postHog = usePostHog();
-    const isMobile = useIsMobile();
-
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const popoverOpen = Boolean(anchorEl);
 
@@ -47,7 +44,8 @@ export const CourseInfoBar = ({
             <Button
                 variant="contained"
                 color="secondary"
-                startIcon={!isMobile && <InfoOutlined />}
+                startIcon={<InfoOutlined sx={{ display: { default: 'none', sm: 'inline-flex' } }} />}
+                sx={{ '& .MuiButton-startIcon': { display: { default: 'none', sm: 'flex' } } }}
                 size="small"
                 onClick={handleClick}
             >

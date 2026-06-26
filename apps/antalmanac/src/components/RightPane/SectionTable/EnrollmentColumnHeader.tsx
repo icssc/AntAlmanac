@@ -1,19 +1,15 @@
 import { Help } from '@mui/icons-material';
 import { Box, Tooltip, Typography } from '@mui/material';
 
-import { useIsMobile } from '$hooks/useIsMobile';
-
 interface EnrollmentColumnHeaderProps {
     label: string;
 }
 
 export function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
-    const isMobile = useIsMobile();
-
     return (
         <Box display="flex">
             {props.label}
-            {!isMobile && (
+            <Box component="span" sx={{ display: { default: 'none', sm: 'inline-flex' } }}>
                 <Tooltip
                     title={
                         <Typography>
@@ -27,7 +23,7 @@ export function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
                 >
                     <Help fontSize="small" />
                 </Tooltip>
-            )}
+            </Box>
         </Box>
     );
 }

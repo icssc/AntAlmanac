@@ -1,6 +1,5 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
-import { useIsMobile } from '$hooks/useIsMobile';
 import {
     courseColorKey,
     getPalette,
@@ -55,9 +54,6 @@ interface SectionTableBodyRowColorStripProps {
 }
 
 export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: SectionTableBodyRowColorStripProps) => {
-    const isMobile = useIsMobile();
-    const clickable = !isMobile && visible;
-
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
     const activeSectionColor = useSectionThemeStore(selectActiveSectionColor);
     const setManualColor = useSectionThemeStore((s) => s.setManualColor);
@@ -75,7 +71,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     );
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
 
-    const stripWidth = visible && clickable && hovered ? STRIP_EXPAND_PX : STRIP_SHRINK_PX;
+    const stripWidth = visible && hovered ? STRIP_EXPAND_PX : STRIP_SHRINK_PX;
 
     const updateColorFromPicker = useCallback((newColor: string) => {
         setCurrColor(newColor);
@@ -139,65 +135,50 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     return (
         <>
             <TableCell sx={cellSx}>
-                {clickable ? (
-                    <Tooltip title="Change Color" placement="bottom" open={hovered}>
-                        <Box
-                            component="button"
-                            type="button"
-                            aria-label="Change section color"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleOpenPicker(e.currentTarget);
-                            }}
-                            onMouseEnter={() => setHovered(true)}
-                            onMouseLeave={() => setHovered(false)}
-                            sx={{
-                                position: 'absolute',
-                                left: 0,
-                                top: 0,
-                                bottom: 0,
-                                width: stripWidth,
-                                transition: 'width 120ms ease-out',
-                                bgcolor: currColor,
-                                border: 'none',
-                                p: 0,
-                                cursor: 'pointer',
-                                display: 'block',
-                            }}
-                        />
-                    </Tooltip>
-                ) : (
+                <Tooltip title="Change Color" placement="bottom" open={hovered}>
                     <Box
-                        aria-hidden
+                        component="button"
+                        type="button"
+                        aria-label="Change section color"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenPicker(e.currentTarget);
+                        }}
+                        onMouseEnter={() => setHovered(true)}
+                        onMouseLeave={() => setHovered(false)}
                         sx={{
                             position: 'absolute',
                             left: 0,
                             top: 0,
                             bottom: 0,
-                            width: STRIP_SHRINK_PX,
+                            width: stripWidth,
+                            transition: 'width 120ms ease-out',
                             bgcolor: currColor,
+                            border: 'none',
+                            p: 0,
+                            cursor: { default: 'default', sm: 'pointer' },
+                            pointerEvents: { default: 'none', sm: 'auto' },
+                            display: 'block',
                         }}
                     />
-                )}
+                </Tooltip>
             </TableCell>
-            {clickable && (
-                <Popover
-                    open={Boolean(anchorEl)}
-                    anchorEl={anchorEl}
-                    onClose={handlePopoverClose}
-                    onClick={(e) => e.stopPropagation()}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                    }}
-                >
-                    <Sketch color={currColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
-                </Popover>
-            )}
+            <Popover
+                open={Boolean(anchorEl)}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                onClick={(e) => e.stopPropagation()}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+            >
+                <Sketch color={currColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
+            </Popover>
         </>
     );
 });

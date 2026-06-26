@@ -1,5 +1,4 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
@@ -46,10 +45,8 @@ export function EnrollmentHistoryPopover({
     );
     const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
 
-    const isMobile = useIsMobile();
-
-    const width = isMobile ? 280 : 400;
-    const height = isMobile ? 180 : 240;
+    const width = { default: 280, sm: 400 };
+    const height = { default: 180, sm: 240 };
 
     const activeGraphIndex = useMemo(() => {
         if (!enrollmentHistory?.length) {

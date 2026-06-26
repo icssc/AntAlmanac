@@ -4,7 +4,6 @@ import { DownloadButton } from '$components/buttons/Download';
 import { ScreenshotButton } from '$components/buttons/Screenshot';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
-import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -20,7 +19,6 @@ import {
 } from '@mui/icons-material';
 import {
     useTheme,
-    useMediaQuery,
     Box,
     Button,
     IconButton,
@@ -49,8 +47,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const theme = useTheme();
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
-    const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(menuAnchorEl);
 
@@ -139,7 +135,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             <Box gap={1} display="flex" alignItems="center">
                 <SelectSchedulePopover />
                 <Tooltip title="Toggle showing finals schedule">
-                    {isSmallScreen ? (
+                    <Box sx={{ display: 'inline-flex' }}>
                         <IconButton
                             color={showFinalsSchedule ? 'primary' : 'inherit'}
                             onClick={handleToggleFinals}
@@ -147,6 +143,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             disabled={fallbackMode}
                             size="small"
                             sx={{
+                                display: { default: 'inline-flex', xxs: 'none' },
                                 border: '1px solid',
                                 borderColor: showFinalsSchedule ? theme.vars.palette.primary.main : 'inherit',
                                 borderRadius: '4px',
@@ -163,7 +160,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         >
                             {showFinalsSchedule ? <DescriptionIcon /> : <DescriptionOutlinedIcon />}
                         </IconButton>
-                    ) : (
                         <Button
                             color={showFinalsSchedule ? 'primary' : 'inherit'}
                             variant={showFinalsSchedule ? 'contained' : 'outlined'}
@@ -171,17 +167,18 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             size="small"
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
                             disabled={fallbackMode}
+                            sx={{ display: { default: 'none', xxs: 'inline-flex' } }}
                         >
                             Finals
                         </Button>
-                    )}
+                    </Box>
                 </Tooltip>
             </Box>
             <Box flexGrow={1} />
 
             <Box
                 sx={{
-                    display: isMobile ? 'flex' : 'none',
+                    display: { default: 'flex', sm: 'none' },
                     '@container toolbar (max-width: 500px)': {
                         display: 'flex',
                     },
@@ -258,7 +255,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
 
             <Box
                 sx={{
-                    display: isMobile ? 'none' : 'flex',
+                    display: { default: 'none', sm: 'flex' },
                     flexWrap: 'nowrap',
                     alignItems: 'center',
                     gap: 0.5,

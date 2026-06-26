@@ -1,6 +1,5 @@
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -17,7 +16,6 @@ import { useShallow } from 'zustand/react/shallow';
 export function ScheduleManagement() {
     const segment = useSelectedLayoutSegment();
     const router = useRouter();
-    const isMobile = useIsMobile();
     const activeTab = useActiveTab();
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -59,10 +57,11 @@ export function ScheduleManagement() {
             return;
         }
 
-        if (!isMobile && segment === 'calendar') {
+        const isDesktop = typeof window !== 'undefined' && window.matchMedia('(min-width: 800px)').matches;
+        if (isDesktop && segment === 'calendar') {
             router.replace(TAB_HREF.search);
         }
-    }, [segment, isMobile, fallbackMode, router]);
+    }, [segment, fallbackMode, router]);
 
     useEffect(() => {
         const savedPosition = positions[activeTab];
