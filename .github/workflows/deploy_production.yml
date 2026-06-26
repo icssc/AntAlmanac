@@ -55,6 +55,15 @@ jobs:
               with:
                   api-key: ${{ secrets.ANTEATER_API_KEY }}
 
+            - name: Cache Next.js build
+              uses: actions/cache@v4
+              with:
+                  path: apps/antalmanac/.next/cache
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/antalmanac/src/**') }}
+                  restore-keys: |
+                      ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+                      ${{ runner.os }}-nextjs-
+
             - name: Deploy SST (production)
               env:
                   SST_STAGE: production
