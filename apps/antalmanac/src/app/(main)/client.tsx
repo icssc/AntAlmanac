@@ -80,19 +80,27 @@ function DesktopHome() {
                 </Stack>
             </Panel>
 
-            <Separator style={{ width: 10, paddingRight: '1px' }}>
+            <Separator
+                style={{
+                    width: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    alignSelf: 'stretch',
+                }}
+            >
                 <Box
                     sx={{
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        flex: 1,
+                        alignSelf: 'stretch',
+                        display: 'grid',
+                        placeItems: 'center',
                         bgcolor: (theme) => theme.vars.palette.primary.main,
                         color: (theme) => theme.vars.palette.primary.contrastText,
                         fontSize: 30,
                         lineHeight: 1,
                         userSelect: 'none',
+                        overflow: 'hidden',
                     }}
                 >
                     ⋮
