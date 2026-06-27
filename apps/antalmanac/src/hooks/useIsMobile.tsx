@@ -9,7 +9,8 @@ import { useMediaQuery, useTheme } from '@mui/material';
  */
 export function useIsMobile() {
     const theme = useTheme();
-    const isMobile = useUserAgent();
+    const { device } = useUserAgent();
+    const defaultMatches = device.type === 'mobile' || device.type === 'tablet';
 
-    return useMediaQuery(theme.breakpoints.down('sm'), { defaultMatches: isMobile });
+    return useMediaQuery(theme.breakpoints.down('sm'), { defaultMatches });
 }
