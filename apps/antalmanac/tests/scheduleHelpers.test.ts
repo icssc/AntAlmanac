@@ -45,8 +45,21 @@ function makeSection({
         units: '4',
         instructors: [],
         meetings: [],
+        finalExam: { examStatus: 'NO_FINAL' },
+        maxCapacity: '0',
+        numCurrentlyEnrolled: { totalEnrolled: '0', sectionEnrolled: '0' },
+        numOnWaitlist: '0',
+        numWaitlistCap: '0',
+        numRequested: '0',
+        numNewOnlyReserved: '0',
+        restrictions: '',
+        status: 'OPEN',
+        sectionComment: '',
+        isCancelled: false,
+        updatedAt: null,
+        webURL: '',
         color,
-    } as unknown as AASection;
+    };
 }
 
 function makeCourse({
