@@ -317,6 +317,7 @@ export class Schedules {
 
         if (existingCourse) {
             existingCourse.sections.push(sectionToAdd);
+            existingCourse.sections.sort((a, b) => parseInt(a.sectionCode, 10) - parseInt(b.sectionCode, 10));
         } else {
             courses.push({
                 term: course.term,
@@ -732,6 +733,9 @@ export class Schedules {
                         const existingCourse = groupedCourses.find((c) => scheduleOfferingKey(c) === offeringKey);
                         if (existingCourse) {
                             existingCourse.sections.push(aaSection);
+                            existingCourse.sections.sort(
+                                (a, b) => parseInt(a.sectionCode, 10) - parseInt(b.sectionCode, 10)
+                            );
                         } else {
                             groupedCourses.push({
                                 term,
