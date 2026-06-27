@@ -1,5 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTablePopover/EnrollmentHistoryPopover';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Box, ButtonBase, Popover, Tooltip, Typography } from '@mui/material';
 import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
@@ -11,6 +12,7 @@ interface EnrollmentCellProps {
 }
 
 export const EnrollmentCell = ({ section, course }: EnrollmentCellProps) => {
+    const isMobile = useIsMobile();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
 
     const formattedTime = useMemo(() => {
@@ -33,6 +35,7 @@ export const EnrollmentCell = ({ section, course }: EnrollmentCellProps) => {
         return isMilitaryTime ? timeString : timeString.replace(/^0(\d)/, '$1');
     }, [section.updatedAt, isMilitaryTime]);
 
+    const showTooltip = !isMobile && formattedTime;
     const maxCapacity = parseInt(section.maxCapacity, 10);
 
     const [anchorEl, setAnchorEl] = useState<Element>();
@@ -66,8 +69,8 @@ export const EnrollmentCell = ({ section, course }: EnrollmentCellProps) => {
         <TableBodyCellContainer>
             <Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    {formattedTime ? (
-                        <Tooltip title={<Typography>Last updated at {formattedTime}</Typography>} disableTouchListener>
+                    {showTooltip ? (
+                        <Tooltip title={<Typography>Last updated at {formattedTime}</Typography>}>
                             {enrollmentText}
                         </Tooltip>
                     ) : (

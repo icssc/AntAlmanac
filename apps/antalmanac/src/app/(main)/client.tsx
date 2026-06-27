@@ -3,7 +3,6 @@
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AuthInitializer } from '$components/AuthInitializer';
 import { AutoSignIn } from '$components/AutoSignIn';
-import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import { PatchNotes } from '$components/PatchNotes';
@@ -16,8 +15,14 @@ import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Box, Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Split from 'react-split';
+
+const ScheduleCalendar = dynamic(
+    () => import('$components/Calendar/CalendarRoot').then((m) => ({ default: m.ScheduleCalendar })),
+    { ssr: false }
+);
 
 const DEFAULT_SPLIT_SIZES: [number, number] = [42.5, 57.5];
 

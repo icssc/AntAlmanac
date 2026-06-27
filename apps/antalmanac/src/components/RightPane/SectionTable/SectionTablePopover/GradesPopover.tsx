@@ -59,10 +59,11 @@ interface GradesPopoverProps {
     deptCode: string;
     courseNumber: string;
     instructor?: string;
+    isMobile: boolean;
 }
 
 export function GradesPopover(props: GradesPopoverProps) {
-    const { deptCode, courseNumber, instructor = '' } = props;
+    const { deptCode, courseNumber, instructor = '', isMobile } = props;
     const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
     const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGrades.useQuery(
@@ -78,8 +79,8 @@ export function GradesPopover(props: GradesPopoverProps) {
 
     const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
 
-    const width = { default: 280, sm: 400 };
-    const height = { default: 180, sm: 240 };
+    const width = isMobile ? 280 : 400;
+    const height = isMobile ? 180 : 240;
 
     const overallData = useMemo(() => toGradeData(overallGrades), [overallGrades]);
     const instructorData = useMemo(() => toGradeData(instructorGrades), [instructorGrades]);
@@ -131,7 +132,7 @@ export function GradesPopover(props: GradesPopoverProps) {
                 }}
             />
 
-            <CardContent sx={{ display: 'flex', minWidth: width, paddingTop: 0, flexDirection: 'column' }}>
+            <CardContent sx={{ display: 'flex', minWidth: width, paddingTop: 0 }}>
                 {loading ? (
                     <Box sx={{ width, height }}>
                         <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />

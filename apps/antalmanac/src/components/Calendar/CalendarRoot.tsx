@@ -5,18 +5,14 @@ import './calendar.css';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEvent/CalendarEventPopover';
 import { CalendarEventTile } from '$components/Calendar/CalendarEvent/CalendarEventTile';
 import { CalendarEventWrapper } from '$components/Calendar/CalendarEvent/CalendarEventWrapper';
-import type { SkeletonBlueprint } from '$components/Calendar/Skeleton/skeletonBlueprintVariations';
 import { CALENDAR_BASE_DATE, createSkeletonEvents } from '$components/Calendar/Skeleton/skeletonHelpers';
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { isCourseEvent, isSkeletonEvent, type CalendarEvent, type SkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
-import {
-    getLocalStorageSkeletonBlueprint,
-    removeLocalStorageSkeletonBlueprint,
-    setLocalStorageSkeletonBlueprint,
-} from '$lib/localStorage';
+import { removeLocalStorageSkeletonBlueprint, setLocalStorageSkeletonBlueprint } from '$lib/localStorage';
 import { applyThemeToCalendarEvents } from '$lib/sectionThemes';
 import { TAB_HREF } from '$lib/tabs/tabs';
 import { getDefaultTerm } from '$lib/term';
@@ -91,18 +87,7 @@ export const ScheduleCalendar = memo(() => {
     const openLoadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
     const hasHadEventsRef = useRef(false);
 
-    const [storedBlueprint, setStoredBlueprint] = useState<SkeletonBlueprint[] | null>(null);
-    useEffect(() => {
-        const saved = getLocalStorageSkeletonBlueprint();
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    setStoredBlueprint(parsed);
-                }
-            } catch {}
-        }
-    }, []);
+    const isMobile = useIsMobile();
 
     const onlyCourseEvents = useMemo(() => eventsInCalendar.filter(isCourseEvent), [eventsInCalendar]);
 
@@ -162,8 +147,8 @@ export const ScheduleCalendar = memo(() => {
     const skeletonColor = theme.vars.palette.action.disabledBackground;
 
     const events = useMemo(
-        () => (openLoadingSchedule ? createSkeletonEvents(skeletonColor, storedBlueprint) : getEventsForCalendar()),
-        [openLoadingSchedule, getEventsForCalendar, skeletonColor, storedBlueprint]
+        () => (openLoadingSchedule ? createSkeletonEvents(skeletonColor) : getEventsForCalendar()),
+        [openLoadingSchedule, getEventsForCalendar, skeletonColor]
     );
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
@@ -274,7 +259,7 @@ export const ScheduleCalendar = memo(() => {
     const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
     const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
-    const finalsDateFormat = 'eee M/dd';
+    const finalsDateFormat = isMobile ? 'M/dd' : 'eee M/dd';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(

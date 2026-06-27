@@ -7,6 +7,7 @@ import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTabl
 import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { WarningAlert } from '$components/WarningAlert';
 import { useDraggingItemState } from '$hooks/useDraggingItemState';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { type AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAlerts';
 import { useActiveTab } from '$lib/tabs/hooks';
@@ -83,6 +84,7 @@ export function SectionTable({
     skeleton = false,
     missingSections = [],
 }: SectionTableProps) {
+    const isMobile = useIsMobile();
     const draggingState = useDraggingItemState(() => ({ isCollapsed: !openContent }));
 
     const [openContent, setOpenContent] = useState(!draggingState?.isCollapsed);
@@ -98,6 +100,7 @@ export function SectionTable({
         forceCheck();
     };
 
+    const colorStripWidth = isMobile ? 5 : 8;
     const actionColumnWidth = 77;
 
     /**
@@ -219,7 +222,7 @@ export function SectionTable({
                         >
                             <TableHead>
                                 <TableRow>
-                                    <TableCell sx={{ padding: 0, width: { default: '5px', sm: '8px' } }} />
+                                    <TableCell sx={{ padding: 0, width: `${colorStripWidth}px` }} />
                                     <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
                                     {(() => {
                                         const visible = tableHeaderColumnEntries.filter(([column]) =>

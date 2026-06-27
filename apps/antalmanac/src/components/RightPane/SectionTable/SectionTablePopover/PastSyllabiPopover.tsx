@@ -1,4 +1,5 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { OpenInNew } from '@mui/icons-material';
@@ -22,6 +23,7 @@ interface PastSyllabiPopoverProps {
 }
 
 export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
+    const isMobile = useIsMobile();
     const { deptCode, courseNumber } = props;
     const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
@@ -30,8 +32,8 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
         courseNumber,
     });
 
-    const width = { default: 250, sm: 400 };
-    const height = { default: 150, sm: 200 };
+    const width = isMobile ? 250 : 400;
+    const height = isMobile ? 150 : 200;
 
     const syllabiByTerm = useMemo(() => {
         return syllabi.reduce(
