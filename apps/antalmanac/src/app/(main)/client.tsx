@@ -12,11 +12,11 @@ import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
-import { Box, Stack } from '@mui/material';
+import { Stack, useTheme } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Group, Panel, Separator, type PanelSize } from 'react-resizable-panels';
 
 const ScheduleCalendar = dynamic(
@@ -37,18 +37,8 @@ function MobileHome() {
 }
 
 function DesktopHome() {
+    const theme = useTheme();
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
-
-    const schedulePanelRef = useRef<HTMLDivElement>(null);
-
-    const syncSchedulePanelWidth = useCallback(() => {
-        const schedulePanel = schedulePanelRef.current;
-        if (!schedulePanel) {
-            return;
-        }
-
-        setScheduleManagementWidth(schedulePanel.getBoundingClientRect().width);
-    }, [setScheduleManagementWidth]);
 
     const handleSchedulePanelResize = useCallback(
         (panelSize: PanelSize) => {
@@ -57,16 +47,6 @@ function DesktopHome() {
         [setScheduleManagementWidth]
     );
 
-    useEffect(() => {
-        syncSchedulePanelWidth();
-
-        window.addEventListener('resize', syncSchedulePanelWidth);
-
-        return () => {
-            window.removeEventListener('resize', syncSchedulePanelWidth);
-        };
-    }, [syncSchedulePanelWidth]);
-
     return (
         <Group
             id="desktop-split"
@@ -74,7 +54,12 @@ function DesktopHome() {
             defaultLayout={DEFAULT_LAYOUT}
             style={{ flexGrow: 1, marginTop: 4 }}
         >
-            <Panel id={CALENDAR_PANEL_ID} defaultSize={42.5} minSize={400} style={{ overflow: 'hidden' }}>
+            <Panel
+                id={CALENDAR_PANEL_ID}
+                defaultSize={`${DEFAULT_LAYOUT[CALENDAR_PANEL_ID]}%`}
+                minSize="400px"
+                style={{ overflow: 'hidden' }}
+            >
                 <Stack direction="column" height="100%">
                     <ScheduleCalendar />
                 </Stack>
@@ -83,34 +68,23 @@ function DesktopHome() {
             <Separator
                 style={{
                     width: 10,
+                    alignSelf: 'stretch',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    alignSelf: 'stretch',
+                    backgroundColor: theme.vars.palette.primary.main,
+                    color: theme.vars.palette.primary.contrastText,
+                    fontSize: 30,
+                    lineHeight: 1,
+                    userSelect: 'none',
                 }}
             >
-                <Box
-                    sx={{
-                        flex: 1,
-                        alignSelf: 'stretch',
-                        display: 'grid',
-                        placeItems: 'center',
-                        bgcolor: (theme) => theme.vars.palette.primary.main,
-                        color: (theme) => theme.vars.palette.primary.contrastText,
-                        fontSize: 30,
-                        lineHeight: 1,
-                        userSelect: 'none',
-                        overflow: 'hidden',
-                    }}
-                >
-                    ⋮
-                </Box>
+                ⋮
             </Separator>
 
             <Panel
                 id={SCHEDULE_PANEL_ID}
-                defaultSize={57.5}
-                elementRef={schedulePanelRef}
+                defaultSize={`${DEFAULT_LAYOUT[SCHEDULE_PANEL_ID]}%`}
                 onResize={handleSchedulePanelResize}
             >
                 <Stack direction="column" height="100%">

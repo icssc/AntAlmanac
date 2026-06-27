@@ -2,7 +2,7 @@ import { useUserAgent } from '$providers/UserAgentProvider';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 /**
- * Mobile detection using the theme's `sm` breakpoint.
+ * Mobile detection using the theme's `sm` breakpoint (800px).
  *
  * Uses the request user-agent (via UserAgentProvider) as the SSR default so
  * server, hydration, and viewport width agree on first paint.
