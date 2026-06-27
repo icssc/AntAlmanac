@@ -2,12 +2,12 @@
 
 import { createContext, useContext } from 'react';
 
-const IsMobileSsrContext = createContext(false);
+const UserAgentContext = createContext(false);
 
 export function UserAgentProvider({ isMobile, children }: { isMobile: boolean; children: React.ReactNode }) {
-    return <IsMobileSsrContext.Provider value={isMobile}>{children}</IsMobileSsrContext.Provider>;
+    return <UserAgentContext.Provider value={isMobile}>{children}</UserAgentContext.Provider>;
 }
 
-export function useSsrIsMobile() {
-    return useContext(IsMobileSsrContext);
+export function useUserAgent() {
+    return useContext(UserAgentContext);
 }
