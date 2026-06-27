@@ -1,18 +1,15 @@
-'use client';
-
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { AddedCoursesRoot } from '$components/RightPane/AddedCourses/AddedCoursesRoot';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { unreachableCase } from '$lib/utils';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
 const UCIMap = lazy(() => import('$components/Map/Map').then((m) => ({ default: m.CourseMap })));
 
-function ScheduleManagementContentPanel() {
+export function ScheduleManagementContent() {
     const activeTab = useActiveTab();
     const isDark = useIsDarkMode();
 
@@ -54,8 +51,3 @@ function ScheduleManagementContentPanel() {
         }
     }
 }
-
-export const ScheduleManagementContent = dynamic(
-    () => Promise.resolve({ default: ScheduleManagementContentPanel }),
-    { ssr: false }
-);
