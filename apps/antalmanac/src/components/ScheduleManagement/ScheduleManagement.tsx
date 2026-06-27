@@ -1,6 +1,7 @@
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { containerSx, containers } from '$lib/containerQueries';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -87,7 +88,7 @@ export function ScheduleManagement() {
     }, [activeTab, positions]);
 
     return (
-        <Stack direction="column" flexGrow={1} height="0">
+        <Stack direction="column" flexGrow={1} height="0" sx={containerSx(containers.scheduleManagement)}>
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
             {!isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}

@@ -5,6 +5,7 @@ import { GeField } from '$components/RightPane/CoursePane/SearchForm/ManualSearc
 import { SectionCodeField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchFields/SectionCodeField';
 import { ManualSearchResetButton } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearchResetButton';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { containerQuery, containerSx, containers } from '$lib/containerQueries';
 import { Box, Button, useTheme } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback } from 'react';
@@ -12,7 +13,7 @@ import { useCallback } from 'react';
 export function ManualSearch() {
     const theme = useTheme();
     const postHog = usePostHog();
-    const manualSearchSingleColumn = `@container manual-search (max-width: ${theme.breakpoints.values.sm}px)`;
+    const manualSearchSingleColumn = containerQuery(containers.manualSearch, theme.breakpoints.values.sm);
 
     const handleSubmit = useCallback(() => {
         logAnalytics(postHog, {
@@ -24,8 +25,7 @@ export function ManualSearch() {
     return (
         <Box
             sx={{
-                containerType: 'inline-size',
-                containerName: 'manual-search',
+                ...containerSx(containers.manualSearch),
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 0.5,

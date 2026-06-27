@@ -13,11 +13,10 @@ import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { BLUE } from '$src/globals';
-import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Split from 'react-split';
 
 const DEFAULT_SPLIT_SIZES: [number, number] = [42.5, 57.5];
@@ -27,10 +26,7 @@ function MobileHome() {
 }
 
 function DesktopHome() {
-    const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
-
     const [sizes, setSizes] = useState<number[]>(DEFAULT_SPLIT_SIZES);
-    const scheduleManagementRef = useRef<HTMLDivElement>(null);
 
     const gutter = useCallback((_index: number, direction: string) => {
         const el = document.createElement('div');
@@ -38,26 +34,6 @@ function DesktopHome() {
         el.addEventListener('dblclick', () => setSizes(DEFAULT_SPLIT_SIZES));
         return el;
     }, []);
-
-    const handleDrag = useCallback(() => {
-        const scheduleManagementElement = scheduleManagementRef.current;
-        if (!scheduleManagementElement) {
-            return;
-        }
-
-        const elementWidth = scheduleManagementElement.getBoundingClientRect().width;
-        setScheduleManagementWidth(elementWidth);
-    }, [setScheduleManagementWidth]);
-
-    useEffect(() => {
-        handleDrag();
-
-        window.addEventListener('resize', handleDrag);
-
-        return () => {
-            window.removeEventListener('resize', handleDrag);
-        };
-    }, [handleDrag]);
 
     return (
         <Split
@@ -77,13 +53,12 @@ function DesktopHome() {
                 width: '10px',
                 paddingRight: '1px',
             })}
-            onDrag={handleDrag}
             onDragEnd={setSizes}
         >
             <Stack direction="column">
                 <ScheduleCalendar />
             </Stack>
-            <Stack direction="column" ref={scheduleManagementRef}>
+            <Stack direction="column">
                 <ScheduleManagement />
             </Stack>
         </Split>
