@@ -17,7 +17,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect } from 'react';
-import { Group, Panel, Separator, type PanelSize } from 'react-resizable-panels';
+import { Group, Panel, Separator, useGroupRef, type PanelSize } from 'react-resizable-panels';
 
 const ScheduleCalendar = dynamic(
     () => import('$components/Calendar/CalendarRoot').then((m) => ({ default: m.ScheduleCalendar })),
@@ -38,6 +38,7 @@ function MobileHome() {
 
 function DesktopHome() {
     const theme = useTheme();
+    const groupRef = useGroupRef();
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
     const handleSchedulePanelResize = useCallback(
@@ -47,9 +48,14 @@ function DesktopHome() {
         [setScheduleManagementWidth]
     );
 
+    const handleSeparatorDoubleClick = useCallback(() => {
+        groupRef.current?.setLayout({ ...DEFAULT_LAYOUT });
+    }, [groupRef]);
+
     return (
         <Group
             id="desktop-split"
+            groupRef={groupRef}
             orientation="horizontal"
             defaultLayout={DEFAULT_LAYOUT}
             style={{ flexGrow: 1, marginTop: 4 }}
@@ -66,8 +72,12 @@ function DesktopHome() {
             </Panel>
 
             <Separator
+                disableDoubleClick
+                onDoubleClick={handleSeparatorDoubleClick}
                 style={{
                     width: 10,
+                    paddingRight: 1,
+                    boxSizing: 'border-box',
                     alignSelf: 'stretch',
                     display: 'flex',
                     alignItems: 'center',
@@ -77,6 +87,7 @@ function DesktopHome() {
                     fontSize: 30,
                     lineHeight: 1,
                     userSelect: 'none',
+                    cursor: 'col-resize',
                 }}
             >
                 ⋮
