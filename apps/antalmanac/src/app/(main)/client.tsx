@@ -13,7 +13,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
-import { Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import dynamic from 'next/dynamic';
@@ -81,14 +81,11 @@ function DesktopHome() {
                 </Stack>
             </Panel>
 
-            <Separator
-                className="gutter gutter-horizontal"
-                style={{
-                    width: 10,
-                    backgroundColor: BLUE,
-                    paddingRight: '1px',
-                }}
-            />
+            <Separator style={{ width: 10, backgroundColor: BLUE, paddingRight: '1px' }}>
+                <Box component="span" sx={{ color: 'common.white', fontSize: 30, lineHeight: 1, userSelect: 'none' }}>
+                    ⋮
+                </Box>
+            </Separator>
 
             <Panel
                 id={SCHEDULE_PANEL_ID}
