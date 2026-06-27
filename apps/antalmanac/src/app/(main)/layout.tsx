@@ -1,5 +1,5 @@
 import { Header } from '$components/Header/Header';
-import { ClientShell } from '$src/app/(main)/client-shell';
+import Client from '$src/app/(main)/client';
 import { SeoContent } from '$src/app/(main)/seo-content';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <>
             <SeoContent />
             <Header />
-            <ClientShell />
+            <Client />
             {children}
         </>
     );
