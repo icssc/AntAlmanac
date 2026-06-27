@@ -6,10 +6,11 @@ import {
 import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { loadCourseSearchParams, loadSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
+import { isMobileUserAgent } from '$lib/isMobileUserAgent';
 import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { getSessionCookie } from 'better-auth/cookies';
-import { NextResponse, userAgent } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /** Logged-in users landing on bare `/` go to their default tab (document navigations only). */
@@ -45,9 +46,7 @@ function maybeRedirectDefaultTab(request: NextRequest): NextResponse | null {
         return null;
     }
 
-    const { device } = userAgent({ headers: request.headers });
-    const isMobile = device.type === 'mobile' || device.type === 'tablet';
-    const defaultTab: TabName = isMobile ? 'calendar' : 'added';
+    const defaultTab: TabName = isMobileUserAgent(request.headers) ? 'calendar' : 'added';
 
     return NextResponse.redirect(new URL(TAB_HREF[defaultTab], request.url));
 }
