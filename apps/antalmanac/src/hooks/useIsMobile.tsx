@@ -1,14 +1,31 @@
+'use client';
+
 import { useMediaQuery, useTheme } from '@mui/material';
+import { createContext, useContext } from 'react';
+
+const MobileSsrContext = createContext<boolean | undefined>(undefined);
+
+/** Seeds useIsMobile from the request user-agent so SSR and hydration agree on first paint. */
+export function MobileSsrProvider({
+    isMobile,
+    children,
+}: {
+    isMobile: boolean;
+    children: React.ReactNode;
+}) {
+    return <MobileSsrContext.Provider value={isMobile}>{children}</MobileSsrContext.Provider>;
+}
 
 /**
- * Standard hook for mobile detection across the application.
- * Uses the theme's 'sm' breakpoint (768px) to determine if the screen is mobile.
+ * Mobile detection using the theme's `sm` breakpoint.
  *
- * @returns {boolean} true if the screen width is below 768px (mobile), false otherwise
+ * Wrap the tree in MobileSsrProvider (fed from layout UA) so SSR and the first
+ * client render match; viewport media queries take over after hydration.
  */
-export function useIsMobile() {
+export function useIsMobile(overrideDefault?: boolean) {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const ssrDefault = useContext(MobileSsrContext);
+    const defaultMatches = overrideDefault ?? ssrDefault ?? false;
 
-    return isMobile;
+    return useMediaQuery(theme.breakpoints.down('sm'), { defaultMatches });
 }

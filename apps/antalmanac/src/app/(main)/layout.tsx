@@ -1,5 +1,5 @@
 import { Header } from '$components/Header/Header';
-import { MobileUserAgentProvider } from '$components/MobileUserAgentProvider';
+import { MobileSsrProvider } from '$hooks/useIsMobile';
 import { isMobileUserAgent } from '$lib/isMobileUserAgent';
 import Client from '$src/app/(main)/client';
 import { SeoContent } from '$src/app/(main)/seo-content';
@@ -11,10 +11,10 @@ export default async function Layout({ children }: { children: React.ReactNode }
     return (
         <>
             <SeoContent />
-            <Header />
-            <MobileUserAgentProvider isMobile={isMobile}>
+            <MobileSsrProvider isMobile={isMobile}>
+                <Header />
                 <Client />
-            </MobileUserAgentProvider>
+            </MobileSsrProvider>
             {children}
         </>
     );

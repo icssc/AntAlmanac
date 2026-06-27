@@ -1,10 +1,10 @@
-import { useIsMobileUserAgent } from '$components/MobileUserAgentProvider';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { type TabName } from '$lib/tabs/tabs';
 import { useSelectedLayoutSegment } from 'next/navigation';
 
 export function useActiveTab(): TabName {
     const segment = useSelectedLayoutSegment();
-    const isMobile = useIsMobileUserAgent();
+    const isMobile = useIsMobile();
 
     if (segment === 'calendar') {
         return isMobile ? 'calendar' : 'search';
