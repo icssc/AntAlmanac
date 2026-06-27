@@ -95,24 +95,34 @@ export function ScheduleManagement() {
     }, [activeTab, positions]);
 
     return (
-        <Stack direction="column" flexGrow={1} height="0">
+        <>
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            <ScheduleManagementTabs onTabChange={handleTabChange} sx={{ order: 2, sm: { order: 1 } }} />
+            <Stack
+                direction="column"
+                flexGrow={1}
+                height="0"
+                sx={(theme) => ({
+                    flexDirection: 'column-reverse',
+                    [theme.breakpoints.up('sm')]: { flexDirection: 'column' },
+                })}
+            >
+                <ScheduleManagementTabs onTabChange={handleTabChange} />
 
-            <Stack width="100%" height="0" flexGrow={1} padding={1} sx={{ order: 1, sm: { order: 2 } }}>
-                <Stack
-                    id="course-pane-box"
-                    direction="column"
-                    overflow="auto"
-                    height="0px"
-                    flexGrow={1}
-                    ref={ref}
-                    onScroll={onScroll}
-                >
-                    <ScheduleManagementContent />
+                <Stack width="100%" height="0" flexGrow={1} padding={1}>
+                    <Stack
+                        id="course-pane-box"
+                        direction="column"
+                        overflow="auto"
+                        height="0px"
+                        flexGrow={1}
+                        ref={ref}
+                        onScroll={onScroll}
+                    >
+                        <ScheduleManagementContent />
+                    </Stack>
                 </Stack>
             </Stack>
-        </Stack>
+        </>
     );
 }
