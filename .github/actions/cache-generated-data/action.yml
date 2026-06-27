@@ -10,6 +10,7 @@ runs:
   using: "composite"
   steps:
     - name: Restore termData cache
+      id: cache-restore
       uses: actions/cache/restore@v5
       with:
         path: apps/antalmanac/src/generated
@@ -19,12 +20,14 @@ runs:
           termData-cache-main-
 
     - name: Generate termData
+      if: steps.cache-restore.outputs.cache-hit != 'true'
       run: pnpm --filter antalmanac get-data
       shell: bash
       env:
         ANTEATER_API_KEY: ${{ inputs.api-key }}
 
     - name: Save termData cache
+      if: steps.cache-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v5
       with:
         path: apps/antalmanac/src/generated
