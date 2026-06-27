@@ -4,7 +4,7 @@ import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { Box, GlobalStyles, Stack } from '@mui/material';
+import { GlobalStyles, Stack } from '@mui/material';
 import dynamic from 'next/dynamic';
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -98,9 +98,7 @@ export function ScheduleManagement() {
         <Stack direction="column" flexGrow={1} height="0">
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            <Box sx={{ order: { default: 1, sm: 0 } }}>
-                <ScheduleManagementTabs onTabChange={handleTabChange} />
-            </Box>
+            {!isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
 
             <Stack width="100%" height="0" flexGrow={1} padding={1}>
                 <Stack
@@ -115,6 +113,8 @@ export function ScheduleManagement() {
                     <ScheduleManagementContent />
                 </Stack>
             </Stack>
+
+            {isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
         </Stack>
     );
 }
