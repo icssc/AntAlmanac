@@ -103,16 +103,10 @@ export const useReviewPromptStore = create(
 
                 const allCourses = AppStore.schedule.getAllCourses();
 
-                interface SectionEntry {
-                    course: (typeof allCourses)[number];
-                    section: (typeof allCourses)[number]['sections'][number];
-                }
-
-                const courseGroups = new Map<string, SectionEntry[]>();
+                const candidateMap = new Map<string, { candidate: ReviewCandidate; hasLec: boolean }>();
 
                 for (const course of allCourses) {
-                    const term = course.term;
-                    if (!pastTermNames.has(term.shortName)) {
+                    if (!pastTermNames.has(course.term.shortName)) {
                         continue;
                     }
 
@@ -133,32 +127,25 @@ export const useReviewPromptStore = create(
                             continue;
                         }
 
-                        const dedupKey = `${course.courseId}::${instructor}::${term.shortName}`;
-                        const entry: SectionEntry = { course, section };
-                        const group = courseGroups.get(dedupKey);
-                        if (group) {
-                            group.push(entry);
-                        } else {
-                            courseGroups.set(dedupKey, [entry]);
+                        const dedupKey = `${course.courseId}::${instructor}::${course.term.shortName}`;
+                        const isLec = sectionType === 'Lec';
+                        const existing = candidateMap.get(dedupKey);
+
+                        if (!existing || (isLec && !existing.hasLec)) {
+                            candidateMap.set(dedupKey, {
+                                candidate: {
+                                    courseId: course.courseId,
+                                    courseTitle: course.courseTitle,
+                                    professorId: instructor,
+                                    term: course.term,
+                                },
+                                hasLec: isLec,
+                            });
                         }
                     }
                 }
 
-                const candidates: ReviewCandidate[] = [];
-                for (const entries of courseGroups.values()) {
-                    const picked = entries.find((e) => e.section.sectionType === 'Lec') ?? entries.at(0);
-                    const instructor = picked?.section.instructors.at(0)?.trim();
-                    if (!instructor || !picked) {
-                        continue;
-                    }
-
-                    candidates.push({
-                        courseId: picked.course.courseId,
-                        courseTitle: picked.course.courseTitle,
-                        professorId: instructor,
-                        term: picked.course.term,
-                    });
-                }
+                const candidates = [...candidateMap.values()].map((v) => v.candidate);
 
                 if (candidates.length === 0) return;
 

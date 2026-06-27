@@ -84,36 +84,34 @@ export function customEventColorKey(customEventID: unknown): string {
 }
 
 /**
- * Choose a palette slot for a course, mirroring custom-color offering logic in
+ * Choose a palette slot for a section, mirroring custom-color offering logic in
  * slot (index) space:
  *   1. Same offering + sectionType already assigned -> reuse that slot.
  *   2. Same offering, different sectionType -> same family, next unused variant.
  *   3. New offering -> next unused family (variant 0), wrapping when exhausted.
  */
-interface SectionEntry {
-    section: AASection;
-    course: AACourseWithTerm;
+interface AssignedSection {
+    offeringKey: string;
+    sectionType: string;
+    sectionCode: string;
+    slot: PaletteSlot;
 }
 
 function pickCourseSlot(
-    entry: SectionEntry,
-    assigned: { entry: SectionEntry; slot: PaletteSlot }[],
+    offeringKey: string,
+    section: AASection,
+    assigned: AssignedSection[],
     palette: readonly (readonly string[])[]
 ): PaletteSlot {
-    const offeringKey = scheduleOfferingKey(entry.course);
-    const sameType = assigned.find(
-        (a) =>
-            scheduleOfferingKey(a.entry.course) === offeringKey &&
-            a.entry.section.sectionType === entry.section.sectionType
-    );
+    const sameType = assigned.find((a) => a.offeringKey === offeringKey && a.sectionType === section.sectionType);
     if (sameType) return sameType.slot;
 
     const sameCourse = assigned
-        .filter((a) => scheduleOfferingKey(a.entry.course) === offeringKey)
+        .filter((a) => a.offeringKey === offeringKey)
         .sort(
             (a, b) =>
-                Math.abs(parseInt(a.entry.section.sectionCode) - parseInt(entry.section.sectionCode)) -
-                Math.abs(parseInt(b.entry.section.sectionCode) - parseInt(entry.section.sectionCode))
+                Math.abs(parseInt(a.sectionCode) - parseInt(section.sectionCode)) -
+                Math.abs(parseInt(b.sectionCode) - parseInt(section.sectionCode))
         )[0];
 
     if (sameCourse) {
@@ -146,34 +144,48 @@ export function computeAssignments(
 ): { map: ThemeAssignmentMap; changed: boolean } {
     const next: ThemeAssignmentMap = {};
 
-    // Flatten courses into individual section entries for assignment
-    const entries: SectionEntry[] = courses.flatMap((course) =>
-        course.sections.map((section) => ({ section, course }))
-    );
-
-    const courseKeys = entries.map((e) => courseColorKey(e.course.term, e.section.sectionCode));
+    // Collect all section keys and carry over existing assignments.
+    const courseKeys: string[] = [];
+    for (const course of courses) {
+        for (const section of course.sections) {
+            courseKeys.push(courseColorKey(course.term, section.sectionCode));
+        }
+    }
     const customKeys = customEventIds.map(customEventColorKey);
 
-    // Carry over existing assignments for keys that are still present.
-    [...courseKeys, ...customKeys].forEach((key) => {
+    for (const key of [...courseKeys, ...customKeys]) {
         if (previous[key] != null) next[key] = previous[key];
-    });
+    }
 
     // Seed grouping/distinctness from carried-over palette assignments.
-    const assignedCourses: { entry: SectionEntry; slot: PaletteSlot }[] = [];
-    entries.forEach((entry) => {
-        const value = next[courseColorKey(entry.course.term, entry.section.sectionCode)];
-        const slot = value != null ? parseSlot(value) : null;
-        if (slot) assignedCourses.push({ entry, slot });
-    });
+    const assigned: AssignedSection[] = [];
+    for (const course of courses) {
+        const offeringKey = scheduleOfferingKey(course);
+        for (const section of course.sections) {
+            const value = next[courseColorKey(course.term, section.sectionCode)];
+            const slot = value != null ? parseSlot(value) : null;
+            if (slot) {
+                assigned.push({
+                    offeringKey,
+                    sectionType: section.sectionType,
+                    sectionCode: section.sectionCode,
+                    slot,
+                });
+            }
+        }
+    }
 
-    entries.forEach((entry) => {
-        const key = courseColorKey(entry.course.term, entry.section.sectionCode);
-        if (next[key] != null) return;
-        const slot = pickCourseSlot(entry, assignedCourses, palette);
-        next[key] = encodeSlot(slot);
-        assignedCourses.push({ entry, slot });
-    });
+    // Assign new slots for sections without existing assignments.
+    for (const course of courses) {
+        const offeringKey = scheduleOfferingKey(course);
+        for (const section of course.sections) {
+            const key = courseColorKey(course.term, section.sectionCode);
+            if (next[key] != null) continue;
+            const slot = pickCourseSlot(offeringKey, section, assigned, palette);
+            next[key] = encodeSlot(slot);
+            assigned.push({ offeringKey, sectionType: section.sectionType, sectionCode: section.sectionCode, slot });
+        }
+    }
 
     // Custom events: one primary color each, cycling through unused families.
     customEventIds.forEach((id, index) => {

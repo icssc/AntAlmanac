@@ -269,13 +269,8 @@ export class Schedules {
 
     /**
      * Find a section in the **current** schedule.
-     * Returns the AASection reference so cross-schedule color sharing works.
      */
     findSectionInSchedule(sectionCode: string, term: AATerm): AASection | undefined {
-        return this.findSectionInCurrentSchedule(sectionCode, term);
-    }
-
-    private findSectionInCurrentSchedule(sectionCode: string, term: AATerm): AASection | undefined {
         for (const course of this.getCurrentCourses()) {
             if (course.term.shortName !== term.shortName) continue;
             const section = course.sections.find((s) => s.sectionCode === sectionCode);
@@ -734,9 +729,9 @@ export class Schedules {
                             courseId: course.courseId,
                             courseTitle: course.courseTitle,
                         });
-                        const existing = groupedCourses.find((c) => scheduleOfferingKey(c) === offeringKey);
-                        if (existing) {
-                            existing.sections.push(aaSection);
+                        const existingCourse = groupedCourses.find((c) => scheduleOfferingKey(c) === offeringKey);
+                        if (existingCourse) {
+                            existingCourse.sections.push(aaSection);
                         } else {
                             groupedCourses.push({
                                 term,
