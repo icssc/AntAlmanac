@@ -1,15 +1,22 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_INDEX, TABS, type TabName } from '$lib/tabs/tabs';
-import { Paper, Tabs as MuiTabs } from '@mui/material';
+import { Paper, Tabs as MuiTabs, useMediaQuery, useTheme } from '@mui/material';
+import { useSelectedLayoutSegment } from 'next/navigation';
 
 interface ScheduleManagementTabsProps {
     onTabChange: (tabName: TabName) => void;
 }
 
 export function ScheduleManagementTabs({ onTabChange }: ScheduleManagementTabsProps) {
+    const theme = useTheme();
+    const segment = useSelectedLayoutSegment();
     const activeTab = useActiveTab();
-    const activeTabIndex = TAB_INDEX[activeTab];
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'), { defaultMatches: false });
+
+    // /calendar on desktop: highlight search (calendar tab is hidden). Content uses responsive CSS, not redirect.
+    const activeTabIndex =
+        segment === 'calendar' ? (isMobile ? TAB_INDEX.calendar : TAB_INDEX.search) : TAB_INDEX[activeTab];
 
     return (
         <Paper

@@ -1,5 +1,4 @@
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -25,7 +24,6 @@ const ScheduleManagementContent = dynamic(
 export function ScheduleManagement() {
     const segment = useSelectedLayoutSegment();
     const router = useRouter();
-    const isMobile = useIsMobile();
     const activeTab = useActiveTab();
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -69,13 +67,8 @@ export function ScheduleManagement() {
     useEffect(() => {
         if (fallbackMode && segment !== 'added') {
             router.replace(TAB_HREF.added);
-            return;
         }
-
-        if (!isMobile && segment === 'calendar') {
-            router.replace(TAB_HREF.search);
-        }
-    }, [segment, isMobile, fallbackMode, router]);
+    }, [segment, fallbackMode, router]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
