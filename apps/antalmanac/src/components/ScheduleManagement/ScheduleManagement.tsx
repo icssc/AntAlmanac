@@ -1,21 +1,13 @@
+import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { Box, GlobalStyles, Stack } from '@mui/material';
-import dynamic from 'next/dynamic';
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-
-const ScheduleManagementContent = dynamic(
-    () =>
-        import('$components/ScheduleManagement/ScheduleManagementContent').then((m) => ({
-            default: m.ScheduleManagementContent,
-        })),
-    { ssr: false }
-);
 
 /**
  * List of interactive tab buttons with their accompanying content.
