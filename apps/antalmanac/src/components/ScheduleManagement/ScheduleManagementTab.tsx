@@ -1,6 +1,6 @@
 import { TAB_INDEX, type TabInfo, type TabName } from '$lib/tabs/tabs';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { Tab } from '@mui/material';
+import { Box, Tab } from '@mui/material';
 import Link from 'next/link';
 
 interface ScheduleManagementTabProps {
@@ -18,26 +18,34 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
         onTabChange(tab.name);
     };
 
+    const TabIcon = tab.icon;
+
     return (
         <Tab
             id={tab.id}
             component={Link}
             href={href}
-            icon={<tab.icon />}
-            iconPosition="top"
+            label={
+                <Box
+                    component="span"
+                    sx={{
+                        display: 'inline-flex',
+                        flexDirection: { default: 'column', sm: 'row' },
+                        alignItems: 'center',
+                        gap: { default: 0.25, sm: 1 },
+                    }}
+                >
+                    <TabIcon fontSize="inherit" />
+                    {tab.label}
+                </Box>
+            }
             sx={{
-                flexDirection: { default: 'column', sm: 'row' },
                 minHeight: { default: 'unset', sm: 'auto' },
                 minWidth: { default: '25%', sm: '33%' },
                 height: { default: 56, sm: 44 },
                 padding: { sm: 3 },
-                '& .MuiTab-iconWrapper': {
-                    marginBottom: { sm: 0 },
-                    marginRight: { default: 0, sm: 1 },
-                },
                 display: tab.mobileOnly ? { default: 'flex', sm: 'none' } : 'flex',
             }}
-            label={tab.label}
             onClick={handleClick}
             value={value}
         />
