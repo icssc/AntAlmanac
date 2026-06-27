@@ -41,6 +41,7 @@ function DesktopHome() {
         const el = document.createElement('div');
         el.className = `gutter gutter-${direction}`;
         el.addEventListener('dblclick', () => setSizes(DEFAULT_SPLIT_SIZES));
+        scheduleManagementRef.current?.style.setProperty('margin-left', '0');
         return el;
     }, []);
 
@@ -88,7 +89,11 @@ function DesktopHome() {
             <Stack direction="column" sx={{ flex: '0 0 42.5%', minWidth: 400, overflow: 'hidden' }}>
                 <ScheduleCalendar />
             </Stack>
-            <Stack direction="column" sx={{ flex: '1 1 57.5%', minWidth: 0 }} ref={scheduleManagementRef}>
+            <Stack
+                direction="column"
+                sx={{ flex: '0 0 calc(57.5% - 10px)', minWidth: 0, marginLeft: '10px' }}
+                ref={scheduleManagementRef}
+            >
                 <ScheduleManagement />
             </Stack>
         </Split>
