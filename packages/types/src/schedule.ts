@@ -13,7 +13,6 @@ export type Schedule = {
      */
     id?: string;
     scheduleName: string;
-    /** Each course holds only the sections the user added, not the full WebSOC offering. */
     courses: AACourseWithTerm[];
     customEvents: RepeatingCustomEvent[];
     scheduleNoteId: number;
