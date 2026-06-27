@@ -34,15 +34,10 @@ export function ScheduleManagement() {
         }))
     );
 
-    // Tab name mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Partial<Record<TabName, number>>>({});
 
-    /**
-     * Ref to the scrollable container with all of the tabs-content within it.
-     */
     const ref = useRef<HTMLDivElement>(null);
 
-    // Save the current scroll position to the store.
     const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
         const positionToSave = e.currentTarget.scrollTop;
         setPositions((current) => {
@@ -67,10 +62,15 @@ export function ScheduleManagement() {
     useEffect(() => {
         if (fallbackMode && segment !== 'added') {
             router.replace(TAB_HREF.added);
+            return;
+        }
+
+        const isDesktop = typeof window !== 'undefined' && window.matchMedia('(min-width: 800px)').matches;
+        if (isDesktop && segment === 'calendar') {
+            router.replace(TAB_HREF.search);
         }
     }, [segment, fallbackMode, router]);
 
-    // Restore scroll position if it has been previously saved.
     useEffect(() => {
         const savedPosition = positions[activeTab];
 

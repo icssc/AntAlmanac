@@ -12,40 +12,15 @@ import { getSessionCookie } from 'better-auth/cookies';
 import { NextResponse, userAgent } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-function isDocumentNavigation(request: NextRequest): boolean {
-    const fetchMode = request.headers.get('sec-fetch-mode');
-    return fetchMode == null || fetchMode === 'navigate';
-}
-
-function isMobileUserAgent(request: NextRequest): boolean {
-    const { device } = userAgent({ headers: request.headers });
-    return device.type === 'mobile' || device.type === 'tablet';
-}
-
-/** Desktop users should not land on /calendar — that tab is mobile-only. */
-function maybeRedirectDesktopCalendar(request: NextRequest): NextResponse | null {
-    if (request.method !== 'GET' || request.nextUrl.pathname !== '/calendar') {
-        return null;
-    }
-
-    if (!isDocumentNavigation(request)) {
-        return null;
-    }
-
-    if (isMobileUserAgent(request)) {
-        return null;
-    }
-
-    return NextResponse.redirect(new URL(TAB_HREF.search, request.url));
-}
-
 /** Logged-in users landing on bare `/` go to their default tab (document navigations only). */
 function maybeRedirectDefaultTab(request: NextRequest): NextResponse | null {
     if (request.method !== 'GET' || request.nextUrl.pathname !== '/') {
         return null;
     }
 
-    if (!isDocumentNavigation(request)) {
+    // Skip RSC/tab fetches — only redirect full page loads.
+    const fetchMode = request.headers.get('sec-fetch-mode');
+    if (fetchMode != null && fetchMode !== 'navigate') {
         return null;
     }
 
@@ -70,7 +45,9 @@ function maybeRedirectDefaultTab(request: NextRequest): NextResponse | null {
         return null;
     }
 
-    const defaultTab: TabName = isMobileUserAgent(request) ? 'calendar' : 'added';
+    const { device } = userAgent({ headers: request.headers });
+    const isMobile = device.type === 'mobile' || device.type === 'tablet';
+    const defaultTab: TabName = isMobile ? 'calendar' : 'added';
 
     return NextResponse.redirect(new URL(TAB_HREF[defaultTab], request.url));
 }
@@ -90,11 +67,6 @@ function handleAuthCallback(request: NextRequest): NextResponse {
 }
 
 export function proxy(request: NextRequest) {
-    const desktopCalendarRedirect = maybeRedirectDesktopCalendar(request);
-    if (desktopCalendarRedirect) {
-        return desktopCalendarRedirect;
-    }
-
     const defaultTabRedirect = maybeRedirectDefaultTab(request);
     if (defaultTabRedirect) {
         return defaultTabRedirect;
@@ -108,5 +80,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/', '/calendar', '/api/auth/oauth2/callback/icssc'],
+    matcher: ['/', '/api/auth/oauth2/callback/icssc'],
 };
