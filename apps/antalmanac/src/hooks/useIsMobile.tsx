@@ -1,6 +1,9 @@
 import { useUserAgent } from '$providers/UserAgentProvider';
-import { isMobileUserAgent } from '$lib/isMobileUserAgent';
 import { useMediaQuery, useTheme } from '@mui/material';
+
+function isMobileUserAgent(userAgent: string) {
+    return /Android|webOS|iPhone|iPod|iPad|BlackBerry|IEMobile|Opera Mini|Mobi/i.test(userAgent);
+}
 
 /**
  * Mobile detection using the theme's `sm` breakpoint.
