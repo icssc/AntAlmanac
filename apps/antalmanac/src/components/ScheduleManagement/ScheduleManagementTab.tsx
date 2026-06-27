@@ -35,7 +35,7 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
                         gap: { default: 0.25, sm: 1 },
                     }}
                 >
-                    <TabIcon fontSize="inherit" />
+                    <TabIcon />
                     {tab.label}
                 </Box>
             }
