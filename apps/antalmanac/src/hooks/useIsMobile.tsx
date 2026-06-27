@@ -1,10 +1,6 @@
 import { useUserAgent } from '$providers/UserAgentProvider';
 import { useMediaQuery, useTheme } from '@mui/material';
 
-function isMobileUserAgent(userAgent: string) {
-    return /Android|webOS|iPhone|iPod|iPad|BlackBerry|IEMobile|Opera Mini|Mobi/i.test(userAgent);
-}
-
 /**
  * Mobile detection using the theme's `sm` breakpoint.
  *
@@ -13,8 +9,8 @@ function isMobileUserAgent(userAgent: string) {
  */
 export function useIsMobile() {
     const theme = useTheme();
-    const userAgent = useUserAgent();
-    const defaultMatches = isMobileUserAgent(userAgent);
+    const { device } = useUserAgent();
+    const defaultMatches = device.type === 'mobile' || device.type === 'tablet';
 
     return useMediaQuery(theme.breakpoints.down('sm'), { defaultMatches });
 }

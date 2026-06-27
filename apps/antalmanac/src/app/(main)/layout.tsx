@@ -6,12 +6,12 @@ import { headers } from 'next/headers';
 import { userAgent } from 'next/server';
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-    const { ua } = userAgent({ headers: await headers() });
+    const parsedUserAgent = userAgent({ headers: await headers() });
 
     return (
         <>
             <SeoContent />
-            <UserAgentProvider userAgent={ua}>
+            <UserAgentProvider userAgent={parsedUserAgent}>
                 <Header />
                 <Client />
             </UserAgentProvider>
