@@ -4,7 +4,6 @@ import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot'
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { unreachableCase } from '$lib/utils';
-import { Box } from '@mui/material';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
@@ -16,16 +15,7 @@ export function ScheduleManagementContent() {
 
     switch (activeTab) {
         case 'calendar':
-            return (
-                <>
-                    <Box sx={{ display: { xs: 'block', sm: 'none' }, height: '100%' }}>
-                        <ScheduleCalendar />
-                    </Box>
-                    <Box sx={{ display: { xs: 'none', sm: 'block' }, height: '100%' }}>
-                        <CoursePaneRoot />
-                    </Box>
-                </>
-            );
+            return <ScheduleCalendar />;
         case 'search':
             return <CoursePaneRoot />;
         case 'added':

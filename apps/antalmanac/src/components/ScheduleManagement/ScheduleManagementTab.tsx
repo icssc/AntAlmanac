@@ -1,3 +1,4 @@
+import { useIsMobile } from '$hooks/useIsMobile';
 import { TAB_INDEX, type TabInfo, type TabName } from '$lib/tabs/tabs';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { Box, Tab } from '@mui/material';
@@ -10,6 +11,7 @@ interface ScheduleManagementTabProps {
 }
 
 export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManagementTabProps) => {
+    const isMobile = useIsMobile();
     const savedSearch = useSavedSearchStore((store) => store.savedSearch);
 
     const href = value === TAB_INDEX.search && savedSearch ? `${tab.href}${savedSearch}` : tab.href || '/';
@@ -30,9 +32,9 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
                     component="span"
                     sx={{
                         display: 'inline-flex',
-                        flexDirection: { xs: 'column', sm: 'row' },
+                        flexDirection: isMobile ? 'column' : 'row',
                         alignItems: 'center',
-                        gap: { xs: 0.25, sm: 1 },
+                        gap: isMobile ? 0.25 : 1,
                     }}
                 >
                     <TabIcon />
@@ -40,11 +42,19 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
                 </Box>
             }
             sx={{
-                minHeight: { xs: 'unset', sm: 'auto' },
-                height: { xs: 56, sm: '44px' },
-                padding: { xs: undefined, sm: 3 },
-                minWidth: { xs: '25%', sm: '33%' },
-                display: tab.mobileOnly ? { xs: 'flex', sm: 'none' } : 'flex',
+                ...(isMobile
+                    ? {
+                          minHeight: 'unset',
+                          minWidth: '25%',
+                          height: 56,
+                      }
+                    : {
+                          minHeight: 'auto',
+                          height: '44px',
+                          padding: 3,
+                          minWidth: '33%',
+                      }),
+                display: isMobile || !tab.mobileOnly ? 'flex' : 'none',
             }}
             onClick={handleClick}
             value={value}
