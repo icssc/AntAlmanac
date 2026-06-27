@@ -46,7 +46,7 @@ function maybeRedirectDefaultTab(request: NextRequest): NextResponse | null {
         return null;
     }
 
-    const defaultTab: TabName = isMobileUserAgent(request.headers) ? 'calendar' : 'added';
+    const defaultTab: TabName = isMobileUserAgent(request.headers.get('user-agent') ?? '') ? 'calendar' : 'added';
 
     return NextResponse.redirect(new URL(TAB_HREF[defaultTab], request.url));
 }

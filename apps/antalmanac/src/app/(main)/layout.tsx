@@ -1,20 +1,19 @@
 import { Header } from '$components/Header/Header';
-import { MobileSsrProvider } from '$hooks/useIsMobile';
-import { isMobileUserAgent } from '$lib/isMobileUserAgent';
+import { UserAgentProvider } from '$providers/UserAgentProvider';
 import Client from '$src/app/(main)/client';
 import { SeoContent } from '$src/app/(main)/seo-content';
 import { headers } from 'next/headers';
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-    const isMobile = isMobileUserAgent(await headers());
+    const userAgent = (await headers()).get('user-agent') ?? '';
 
     return (
         <>
             <SeoContent />
-            <MobileSsrProvider isMobile={isMobile}>
+            <UserAgentProvider userAgent={userAgent}>
                 <Header />
                 <Client />
-            </MobileSsrProvider>
+            </UserAgentProvider>
             {children}
         </>
     );

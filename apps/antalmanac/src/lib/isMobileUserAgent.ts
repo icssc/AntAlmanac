@@ -1,7 +1,4 @@
-import { userAgent } from 'next/server';
-
-/** True when the request user-agent indicates a phone or tablet device. */
-export function isMobileUserAgent(headers: Headers): boolean {
-    const { device } = userAgent({ headers });
-    return device.type === 'mobile' || device.type === 'tablet';
+/** Coarse mobile UA check. Used server-side (proxy) and as useIsMobile SSR default. */
+export function isMobileUserAgent(userAgent: string): boolean {
+    return /Android|webOS|iPhone|iPod|iPad|BlackBerry|IEMobile|Opera Mini|Mobi/i.test(userAgent);
 }
