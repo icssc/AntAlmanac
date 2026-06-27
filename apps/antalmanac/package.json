@@ -63,7 +63,7 @@
         "react-dom": "19.2.6",
         "react-lazyload": "^3.2.0",
         "react-leaflet": "5.0.0",
-        "react-split": "^2.0.14",
+        "react-resizable-panels": "^4.11.2",
         "recharts": "^2.4.2",
         "schema-dts": "^2.0.0",
         "superjson": "^1.12.3",

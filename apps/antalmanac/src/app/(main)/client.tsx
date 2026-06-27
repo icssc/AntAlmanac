@@ -17,15 +17,21 @@ import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import Split from 'react-split';
+import { useCallback, useEffect, useRef } from 'react';
+import { Group, Panel, Separator, type PanelSize } from 'react-resizable-panels';
 
 const ScheduleCalendar = dynamic(
     () => import('$components/Calendar/CalendarRoot').then((m) => ({ default: m.ScheduleCalendar })),
     { ssr: false }
 );
 
-const DEFAULT_SPLIT_SIZES: [number, number] = [42.5, 57.5];
+const CALENDAR_PANEL_ID = 'calendar';
+const SCHEDULE_PANEL_ID = 'schedule';
+
+const DEFAULT_LAYOUT = {
+    [CALENDAR_PANEL_ID]: 42.5,
+    [SCHEDULE_PANEL_ID]: 57.5,
+} as const;
 
 function MobileHome() {
     return <ScheduleManagement />;
@@ -34,69 +40,67 @@ function MobileHome() {
 function DesktopHome() {
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
-    const [sizes, setSizes] = useState<number[]>(DEFAULT_SPLIT_SIZES);
-    const scheduleManagementRef = useRef<HTMLDivElement>(null);
+    const schedulePanelRef = useRef<HTMLDivElement>(null);
 
-    const gutter = useCallback((_index: number, direction: string) => {
-        const el = document.createElement('div');
-        el.className = `gutter gutter-${direction}`;
-        el.addEventListener('dblclick', () => setSizes(DEFAULT_SPLIT_SIZES));
-        scheduleManagementRef.current?.style.setProperty('margin-left', '0');
-        return el;
-    }, []);
-
-    const handleDrag = useCallback(() => {
-        const scheduleManagementElement = scheduleManagementRef.current;
-        if (!scheduleManagementElement) {
+    const syncSchedulePanelWidth = useCallback(() => {
+        const schedulePanel = schedulePanelRef.current;
+        if (!schedulePanel) {
             return;
         }
 
-        const elementWidth = scheduleManagementElement.getBoundingClientRect().width;
-        setScheduleManagementWidth(elementWidth);
+        setScheduleManagementWidth(schedulePanel.getBoundingClientRect().width);
     }, [setScheduleManagementWidth]);
 
-    useEffect(() => {
-        handleDrag();
+    const handleSchedulePanelResize = useCallback(
+        (panelSize: PanelSize) => {
+            setScheduleManagementWidth(panelSize.inPixels);
+        },
+        [setScheduleManagementWidth]
+    );
 
-        window.addEventListener('resize', handleDrag);
+    useEffect(() => {
+        syncSchedulePanelWidth();
+
+        window.addEventListener('resize', syncSchedulePanelWidth);
 
         return () => {
-            window.removeEventListener('resize', handleDrag);
+            window.removeEventListener('resize', syncSchedulePanelWidth);
         };
-    }, [handleDrag]);
+    }, [syncSchedulePanelWidth]);
 
     return (
-        <Split
-            sizes={sizes}
-            minSize={400}
-            expandToMin={false}
-            gutterSize={10}
-            gutterAlign="center"
-            snapOffset={0}
-            dragInterval={1}
-            direction="horizontal"
-            cursor="col-resize"
-            style={{ display: 'flex', flexGrow: 1, marginTop: 4 }}
-            gutter={gutter}
-            gutterStyle={() => ({
-                backgroundColor: BLUE,
-                width: '10px',
-                paddingRight: '1px',
-            })}
-            onDrag={handleDrag}
-            onDragEnd={setSizes}
+        <Group
+            id="desktop-split"
+            orientation="horizontal"
+            defaultLayout={DEFAULT_LAYOUT}
+            style={{ flexGrow: 1, marginTop: 4 }}
         >
-            <Stack direction="column" sx={{ flex: '0 0 42.5%', minWidth: 400, overflow: 'hidden' }}>
-                <ScheduleCalendar />
-            </Stack>
-            <Stack
-                direction="column"
-                sx={{ flex: '0 0 calc(57.5% - 10px)', minWidth: 0, marginLeft: '10px' }}
-                ref={scheduleManagementRef}
+            <Panel id={CALENDAR_PANEL_ID} defaultSize={42.5} minSize={400} style={{ overflow: 'hidden' }}>
+                <Stack direction="column" height="100%">
+                    <ScheduleCalendar />
+                </Stack>
+            </Panel>
+
+            <Separator
+                className="gutter gutter-horizontal"
+                style={{
+                    width: 10,
+                    backgroundColor: BLUE,
+                    paddingRight: '1px',
+                }}
+            />
+
+            <Panel
+                id={SCHEDULE_PANEL_ID}
+                defaultSize={57.5}
+                elementRef={schedulePanelRef}
+                onResize={handleSchedulePanelResize}
             >
-                <ScheduleManagement />
-            </Stack>
-        </Split>
+                <Stack direction="column" height="100%">
+                    <ScheduleManagement />
+                </Stack>
+            </Panel>
+        </Group>
     );
 }
 
