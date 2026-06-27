@@ -98,9 +98,9 @@ export function ScheduleManagement() {
         <Stack direction="column" flexGrow={1} height="0">
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            {!isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
+            <ScheduleManagementTabs onTabChange={handleTabChange} sx={{ order: 2, sm: { order: 1 } }} />
 
-            <Stack width="100%" height="0" flexGrow={1} padding={1}>
+            <Stack width="100%" height="0" flexGrow={1} padding={1} sx={{ order: 1, sm: { order: 2 } }}>
                 <Stack
                     id="course-pane-box"
                     direction="column"
@@ -113,8 +113,6 @@ export function ScheduleManagement() {
                     <ScheduleManagementContent />
                 </Stack>
             </Stack>
-
-            {isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
         </Stack>
     );
 }
