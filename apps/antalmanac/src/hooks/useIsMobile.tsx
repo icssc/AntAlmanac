@@ -1,4 +1,4 @@
-import { useUserAgent } from '$providers/UserAgentProvider';
+import { useSsrIsMobile } from '$providers/UserAgentProvider';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 /**
@@ -9,8 +9,7 @@ import { useMediaQuery, useTheme } from '@mui/material';
  */
 export function useIsMobile() {
     const theme = useTheme();
-    const { device } = useUserAgent();
-    const defaultMatches = device.type === 'mobile' || device.type === 'tablet';
+    const ssrIsMobile = useSsrIsMobile();
 
-    return useMediaQuery(theme.breakpoints.down('sm'), { defaultMatches });
+    return useMediaQuery(theme.breakpoints.down('sm'), { defaultMatches: ssrIsMobile });
 }

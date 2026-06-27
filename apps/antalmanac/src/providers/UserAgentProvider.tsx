@@ -1,32 +1,13 @@
 'use client';
 
-import type { userAgent as parseUserAgent } from 'next/server';
 import { createContext, useContext } from 'react';
 
-export type ParsedUserAgent = ReturnType<typeof parseUserAgent>;
+const IsMobileSsrContext = createContext(false);
 
-const defaultUserAgent: ParsedUserAgent = {
-    isBot: false,
-    ua: '',
-    browser: {},
-    device: {},
-    engine: {},
-    os: {},
-    cpu: {},
-};
-
-const UserAgentContext = createContext(defaultUserAgent);
-
-export function UserAgentProvider({
-    userAgent,
-    children,
-}: {
-    userAgent: ParsedUserAgent;
-    children: React.ReactNode;
-}) {
-    return <UserAgentContext.Provider value={userAgent}>{children}</UserAgentContext.Provider>;
+export function UserAgentProvider({ isMobile, children }: { isMobile: boolean; children: React.ReactNode }) {
+    return <IsMobileSsrContext.Provider value={isMobile}>{children}</IsMobileSsrContext.Provider>;
 }
 
-export function useUserAgent() {
-    return useContext(UserAgentContext);
+export function useSsrIsMobile() {
+    return useContext(IsMobileSsrContext);
 }
