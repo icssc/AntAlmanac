@@ -138,7 +138,7 @@ export function TbaCalendarCard() {
             for (const course of courses) {
                 for (const section of course.sections) {
                     const meetings = section.meetings ?? [];
-                    if (meetings.some((m: { timeIsTBA: boolean }) => m.timeIsTBA)) {
+                    if (meetings.some((m) => m.timeIsTBA)) {
                         sectionsWithTBA.push({
                             term: course.term,
                             deptCode: course.deptCode,
