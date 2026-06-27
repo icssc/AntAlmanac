@@ -11,7 +11,6 @@ import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManag
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
-import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Box, Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -81,8 +80,21 @@ function DesktopHome() {
                 </Stack>
             </Panel>
 
-            <Separator style={{ width: 10, backgroundColor: BLUE, paddingRight: '1px' }}>
-                <Box component="span" sx={{ color: 'common.white', fontSize: 30, lineHeight: 1, userSelect: 'none' }}>
+            <Separator style={{ width: 10, paddingRight: '1px' }}>
+                <Box
+                    sx={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        bgcolor: (theme) => theme.vars.palette.primary.main,
+                        color: (theme) => theme.vars.palette.primary.contrastText,
+                        fontSize: 30,
+                        lineHeight: 1,
+                        userSelect: 'none',
+                    }}
+                >
                     ⋮
                 </Box>
             </Separator>
