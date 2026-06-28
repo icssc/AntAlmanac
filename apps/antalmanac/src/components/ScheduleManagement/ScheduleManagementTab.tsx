@@ -1,4 +1,3 @@
-import { useIsMobile } from '$hooks/useIsMobile';
 import { TAB_INDEX, type TabInfo, type TabName } from '$lib/tabs/tabs';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { Box, Tab } from '@mui/material';
@@ -11,7 +10,6 @@ interface ScheduleManagementTabProps {
 }
 
 export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManagementTabProps) => {
-    const isMobile = useIsMobile();
     const savedSearch = useSavedSearchStore((store) => store.savedSearch);
 
     const href = value === TAB_INDEX.search && savedSearch ? `${tab.href}${savedSearch}` : tab.href || '/';
@@ -30,32 +28,34 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
             label={
                 <Box
                     component="span"
-                    sx={{
+                    sx={(theme) => ({
                         display: 'inline-flex',
-                        flexDirection: isMobile ? 'column' : 'row',
+                        flexDirection: 'column',
                         alignItems: 'center',
-                        gap: isMobile ? 0.25 : 1,
-                    }}
+                        gap: 0.25,
+                        [theme.breakpoints.up('sm')]: {
+                            flexDirection: 'row',
+                            gap: 1,
+                        },
+                    })}
                 >
                     <TabIcon />
                     {tab.label}
                 </Box>
             }
-            sx={{
-                ...(isMobile
-                    ? {
-                          minHeight: 'unset',
-                          minWidth: '25%',
-                          height: 56,
-                      }
-                    : {
-                          minHeight: 'auto',
-                          height: '44px',
-                          padding: 3,
-                          minWidth: '33%',
-                      }),
-                display: isMobile || !tab.mobileOnly ? 'flex' : 'none',
-            }}
+            sx={(theme) => ({
+                display: 'flex',
+                minHeight: 'unset',
+                minWidth: '25%',
+                height: 56,
+                [theme.breakpoints.up('sm')]: {
+                    minHeight: 'auto',
+                    height: '44px',
+                    padding: 3,
+                    minWidth: '33%',
+                    ...(tab.mobileOnly ? { display: 'none' } : {}),
+                },
+            })}
             onClick={handleClick}
             value={value}
         />

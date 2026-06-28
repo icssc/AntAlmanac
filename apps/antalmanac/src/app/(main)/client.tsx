@@ -9,10 +9,10 @@ import { PatchNotes } from '$components/PatchNotes';
 import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { TutorialInitializer } from '$components/TutorialInitializer';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
-import { Stack, useTheme } from '@mui/material';
+import { Stack, useMediaQuery, useTheme } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import dynamic from 'next/dynamic';
@@ -24,22 +24,32 @@ const ScheduleCalendar = dynamic(
     { ssr: false }
 );
 
-const CALENDAR_PANEL_ID = 'calendar';
-const SCHEDULE_PANEL_ID = 'schedule';
+const CALENDAR_PANEL_ID = 'calendar-pane';
+const SCHEDULE_PANEL_ID = 'schedule-pane';
+const SEPARATOR_ID = 'split-separator';
 
 const DEFAULT_LAYOUT = {
     [CALENDAR_PANEL_ID]: 42.5,
     [SCHEDULE_PANEL_ID]: 57.5,
 } as const;
 
-function MobileHome() {
-    return <ScheduleManagement />;
-}
+const SplitGroup = styled(Group)(({ theme }) => ({
+    [theme.breakpoints.down('sm')]: {
+        [`& #${CALENDAR_PANEL_ID}, & #${SEPARATOR_ID}`]: {
+            display: 'none !important',
+        },
+        [`& #${SCHEDULE_PANEL_ID}`]: {
+            flex: '1 1 0% !important',
+        },
+    },
+}));
 
-function DesktopHome() {
+function Home() {
     const theme = useTheme();
     const groupRef = useGroupRef();
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
+
+    const showCalendarPane = useMediaQuery(theme.breakpoints.up('sm'));
 
     const handleSchedulePanelResize = useCallback(
         (panelSize: PanelSize) => {
@@ -53,8 +63,8 @@ function DesktopHome() {
     }, [groupRef]);
 
     return (
-        <Group
-            id="desktop-split"
+        <SplitGroup
+            id="home-split"
             groupRef={groupRef}
             orientation="horizontal"
             defaultLayout={DEFAULT_LAYOUT}
@@ -67,11 +77,12 @@ function DesktopHome() {
                 style={{ overflow: 'hidden' }}
             >
                 <Stack direction="column" height="100%">
-                    <ScheduleCalendar />
+                    {showCalendarPane && <ScheduleCalendar />}
                 </Stack>
             </Panel>
 
             <Separator
+                id={SEPARATOR_ID}
                 disableDoubleClick
                 onDoubleClick={handleSeparatorDoubleClick}
                 style={{
@@ -96,18 +107,18 @@ function DesktopHome() {
             <Panel
                 id={SCHEDULE_PANEL_ID}
                 defaultSize={`${DEFAULT_LAYOUT[SCHEDULE_PANEL_ID]}%`}
+                minSize="400px"
                 onResize={handleSchedulePanelResize}
             >
                 <Stack direction="column" height="100%">
                     <ScheduleManagement />
                 </Stack>
             </Panel>
-        </Group>
+        </SplitGroup>
     );
 }
 
 export default function Client() {
-    const isMobile = useIsMobile();
     const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 
     useEffect(() => {
@@ -127,7 +138,7 @@ export default function Client() {
             <PatchNotes />
 
             <Stack component="main" height="calc(100svh - 52px - env(safe-area-inset-top))">
-                {isMobile ? <MobileHome /> : <DesktopHome />}
+                <Home />
             </Stack>
 
             <NotificationSnackbar />

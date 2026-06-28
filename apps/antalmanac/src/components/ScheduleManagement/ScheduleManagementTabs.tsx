@@ -1,15 +1,15 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { useActiveTab } from '$lib/tabs/hooks';
-import { TAB_INDEX, TABS, type TabName } from '$lib/tabs/tabs';
+import { isTabName, TAB_INDEX, TABS, type TabName } from '$lib/tabs/tabs';
 import { Paper, Tabs as MuiTabs } from '@mui/material';
+import { useSelectedLayoutSegment } from 'next/navigation';
 
 interface ScheduleManagementTabsProps {
     onTabChange: (tabName: TabName) => void;
 }
 
 export function ScheduleManagementTabs({ onTabChange }: ScheduleManagementTabsProps) {
-    const activeTab = useActiveTab();
-    const activeTabIndex = TAB_INDEX[activeTab];
+    const segment = useSelectedLayoutSegment();
+    const activeTabIndex = segment && isTabName(segment) ? TAB_INDEX[segment] : TAB_INDEX.search;
 
     return (
         <Paper

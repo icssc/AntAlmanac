@@ -44,3 +44,7 @@ export type TabInfo = {
 export const TAB_INDEX = Object.fromEntries(TABS.map((tab, index) => [tab.name, index])) as Record<TabName, number>;
 
 export const TAB_HREF = Object.fromEntries(TABS.map((tab) => [tab.name, tab.href])) as Record<TabName, string>;
+
+export function isTabName(value: string): value is TabName {
+    return value in TAB_INDEX;
+}
