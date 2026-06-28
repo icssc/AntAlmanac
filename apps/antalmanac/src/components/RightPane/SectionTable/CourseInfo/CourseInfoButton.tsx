@@ -1,6 +1,6 @@
 import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { containerQuery, containers } from '$lib/containerQueries';
-import { Box, Button, Paper, Popover, useTheme } from '@mui/material';
+import { Box, Button, Paper, Popover } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
@@ -22,7 +22,6 @@ export const CourseInfoButton = ({
     analyticsCategory,
 }: CourseInfoButtonProps) => {
     const postHog = usePostHog();
-    const theme = useTheme();
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -56,14 +55,14 @@ export const CourseInfoButton = ({
                     {icon}
                     <Box
                         component="span"
-                        sx={{
+                        sx={(theme) => ({
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             [containerQuery(containers.scheduleManagement, theme.breakpoints.values.xs)]: {
                                 display: 'none',
                             },
-                        }}
+                        })}
                     >
                         {text}
                     </Box>
