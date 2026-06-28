@@ -1,4 +1,4 @@
-import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
+import { RenameScheduleDialog } from '$components/dialogs/RenameSchedule';
 import { Schedules } from '$stores/Schedules';
 import { render } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';

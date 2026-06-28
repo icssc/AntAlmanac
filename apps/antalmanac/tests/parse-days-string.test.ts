@@ -1,4 +1,4 @@
-import { parseDaysString } from '$stores/calendarizeHelpers';
+import { COURSE_WEEK_DAYS, parseDaysString } from '$stores/calendarizeHelpers';
 import { describe, expect, test } from 'vitest';
 
 describe('parse days string', () => {
