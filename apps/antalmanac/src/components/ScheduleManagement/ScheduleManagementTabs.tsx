@@ -1,6 +1,6 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { isTabName, TAB_INDEX, TABS, type TabName } from '$lib/tabs/tabs';
-import { Paper, Tabs as MuiTabs } from '@mui/material';
+import { TABS, TAB_INDEX, type TabName, isTabName } from '$lib/tabs/tabs';
+import { Tabs as MuiTabs, Paper } from '@mui/material';
 import { useSelectedLayoutSegment } from 'next/navigation';
 
 interface ScheduleManagementTabsProps {
