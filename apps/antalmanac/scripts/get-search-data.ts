@@ -1,7 +1,7 @@
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { parseSectionCodes, type SectionCodesGraphQLResponse } from '$backend/lib/term-section-codes';
+import { type SectionCodesGraphQLResponse, parseSectionCodes } from '$backend/lib/term-section-codes';
 import { termData } from '$lib/term';
 import { canTermEnrollmentChange } from '$lib/termHelpers';
 import { env } from '$scripts/env';
@@ -9,7 +9,6 @@ import type { AATerm, CourseSearchResult, DepartmentSearchResult } from '@packag
 import { createClient } from '@packages/anteater-api/client';
 import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
-import { SectionCodesGraphQLResponse, parseSectionCodes } from '../src/backend/lib/term-section-codes';
 import { GENERATED_DIR, GENERATED_TERMS_DIR, SEARCH_DATA_FILE } from './lib/paths.js';
 
 const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
