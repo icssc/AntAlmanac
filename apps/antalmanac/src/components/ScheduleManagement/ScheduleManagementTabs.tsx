@@ -9,6 +9,9 @@ interface ScheduleManagementTabsProps {
 
 export function ScheduleManagementTabs({ onTabChange }: ScheduleManagementTabsProps) {
     const segment = useSelectedLayoutSegment();
+
+    // NB: We don't use useActiveTab here because it calls useMediaQuery internally,
+    // which returns a wrong default on the server and corrects on the client
     const activeTabIndex = segment && isTabName(segment) ? TAB_INDEX[segment] : TAB_INDEX.search;
 
     return (
