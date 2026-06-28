@@ -3,6 +3,7 @@ import { trpc } from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
 import { warnMultipleTerms } from '$lib/helpers';
+import { shouldIgnoreShortcutTarget } from '$lib/keyboardShortcuts';
 import { setLocalStorageDataCache, setLocalStorageUserId } from '$lib/localStorage';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';

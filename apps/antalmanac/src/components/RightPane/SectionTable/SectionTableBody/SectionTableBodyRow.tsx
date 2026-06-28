@@ -4,6 +4,7 @@ import { type AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { usePreviewStore } from '$stores/SettingsStore';
 import { TableRow } from '@mui/material';
 import { type AACourseWithTerm, type AASection } from '@packages/antalmanac-types';

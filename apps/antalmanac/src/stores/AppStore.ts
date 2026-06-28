@@ -24,6 +24,7 @@ import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/l
 import { Schedules } from '$stores/Schedules';
 import type {
     AACourseWithTerm,
+    AASection,
     AATerm,
     CustomEventId,
     RepeatingCustomEvent,

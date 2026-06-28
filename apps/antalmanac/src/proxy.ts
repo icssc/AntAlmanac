@@ -7,7 +7,9 @@ import { hasAdvancedParams, hasManualParams } from '$components/RightPane/Course
 import { loadCourseSearchParams, loadSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { SSO_COOKIE_NAME, getSsoResponseCookieAttributes } from '$lib/ssoCookie';
-import { NextResponse } from 'next/server';
+import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
+import { getSessionCookie } from 'better-auth/cookies';
+import { NextResponse, userAgent } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /** Logged-in users landing on bare `/` go to their default tab (document navigations only). */

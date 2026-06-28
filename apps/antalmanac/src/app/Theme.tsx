@@ -2,7 +2,7 @@
 
 import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
 import { CssBaseline, type PaletteOptions } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, type ThemeVars, createTheme } from '@mui/material/styles';
 import { Roboto } from 'next/font/google';
 
 const roboto = Roboto({

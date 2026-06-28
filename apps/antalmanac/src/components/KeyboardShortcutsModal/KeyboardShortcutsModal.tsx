@@ -8,7 +8,7 @@ import {
     isMacPlatform,
 } from '$lib/keyboardShortcuts';
 import { ChatBubbleOutlineOutlined, Close, Keyboard, SearchOutlined, SettingsOutlined } from '@mui/icons-material';
-import { Box, Dialog, IconButton, Stack, Typography, alpha, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Dialog, IconButton, Stack, type Theme, Typography, alpha, useMediaQuery, useTheme } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 
 function SectionHeaderIcon({ icon }: { icon: ShortcutSectionIcon }) {

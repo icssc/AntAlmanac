@@ -8,6 +8,7 @@ import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     AACourse,
     AACourseWithTerm,
+    AASection,
     AATerm,
     CustomEventId,
     RepeatingCustomEvent,

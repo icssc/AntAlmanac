@@ -4,6 +4,7 @@ import AppStore from '$stores/AppStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { Close, InfoOutlined } from '@mui/icons-material';
 import { Alert, AlertTitle, Box, Fade, IconButton, Typography } from '@mui/material';
+import type { AATerm } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
 
 interface TbaSection {

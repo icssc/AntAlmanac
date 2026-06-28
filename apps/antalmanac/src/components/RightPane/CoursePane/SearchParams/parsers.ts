@@ -11,8 +11,14 @@ import {
     DEFAULT_TERM,
 } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { getTermByShortName } from '$lib/term';
-import { type AATerm, WebsocDivisionOptionSchema, WebsocFullCoursesOptionSchema } from '@packages/antalmanac-types';
-import { createParser, createSerializer, parseAsString, parseAsStringLiteral } from 'nuqs';
+import {
+    type AATerm,
+    WebsocDayOptionSchema,
+    WebsocDivisionOptionSchema,
+    WebsocFullCoursesOptionSchema,
+    WebsocRestrictionCodeOptionSchema,
+} from '@packages/antalmanac-types';
+import { createParser, createSerializer, parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 const parseAsCourseSearchTerm = createParser<AATerm>({
     parse: (value: string) => getTermByShortName(value) ?? null,
