@@ -37,15 +37,15 @@ function getDisplayColor(
     assignments: ThemeAssignmentMap,
     palette: readonly (readonly string[])[]
 ): string {
-    const course = AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term);
-    if (!course) {
+    const scheduledSection = AppStore.schedule.findSectionInSchedule(section.sectionCode, term);
+    if (!scheduledSection) {
         return section.color ?? '#5ec8e0';
     }
     if (setting === 'custom') {
-        return course.section.color;
+        return scheduledSection.color;
     }
     const value = assignments[courseColorKey(term, section.sectionCode)];
-    return value != null ? resolveAssignment(value, palette) : course.section.color;
+    return value != null ? resolveAssignment(value, palette) : scheduledSection.color;
 }
 
 interface SectionTableBodyRowColorStripProps {

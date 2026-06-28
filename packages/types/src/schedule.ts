@@ -1,24 +1,10 @@
-import type { WebsocSectionType } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
-import type { AATerm } from './calendar';
-import type { AASection } from './course';
+import type { AACourseWithTerm } from './course';
 import { RepeatingCustomEventSchema, type RepeatingCustomEvent } from './customEvent';
 
 /** Max length for schedule notes (UI and server validation). */
 export const SCHEDULE_NOTE_MAX_LENGTH = 5000;
-
-export type ScheduleCourse = {
-    courseId: string;
-    courseComment: string;
-    courseNumber: string;
-    courseTitle: string;
-    deptCode: string;
-    prerequisiteLink: string;
-    section: AASection;
-    term: AATerm;
-    sectionTypes: WebsocSectionType[];
-};
 
 export type Schedule = {
     /**
@@ -27,7 +13,7 @@ export type Schedule = {
      */
     id?: string;
     scheduleName: string;
-    courses: ScheduleCourse[];
+    courses: AACourseWithTerm[];
     customEvents: RepeatingCustomEvent[];
     scheduleNoteId: number;
     scheduleId: string;

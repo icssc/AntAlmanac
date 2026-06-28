@@ -136,16 +136,16 @@ export function TbaCalendarCard() {
             const sectionsWithTBA: TbaSection[] = [];
 
             for (const course of courses) {
-                const section = course.section;
-                if (!section) continue;
-                const meetings = section.meetings ?? [];
-                if (meetings.some((m) => m.timeIsTBA)) {
-                    sectionsWithTBA.push({
-                        term: course.term,
-                        deptCode: course.deptCode,
-                        courseNumber: course.courseNumber,
-                        sectionCode: section.sectionCode,
-                    });
+                for (const section of course.sections) {
+                    const meetings = section.meetings ?? [];
+                    if (meetings.some((m) => m.timeIsTBA)) {
+                        sectionsWithTBA.push({
+                            term: course.term,
+                            deptCode: course.deptCode,
+                            courseNumber: course.courseNumber,
+                            sectionCode: section.sectionCode,
+                        });
+                    }
                 }
             }
 

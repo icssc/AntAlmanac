@@ -23,7 +23,8 @@ import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import type {
-    ScheduleCourse,
+    AACourseWithTerm,
+    AASection,
     ScheduleSaveState,
     RepeatingCustomEvent,
     CustomEventId,
@@ -85,23 +86,25 @@ class AppStore extends EventEmitter {
         return this.schedule.getAllCustomEvents();
     }
 
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
-        let addedCourse: ScheduleCourse;
+    addCourse(
+        section: AASection,
+        course: AACourseWithTerm,
+        scheduleIndex: number = this.schedule.getCurrentScheduleIndex()
+    ) {
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
-            addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
+            this.schedule.addCourseToAllSchedules(section, course);
         } else {
-            addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
+            this.schedule.addCourse(section, course, scheduleIndex);
         }
         this.unsavedChanges = true;
         const action: AddCourseAction = {
             type: 'addCourse',
-            course: newCourse,
-            scheduleIndex: scheduleIndex,
+            section,
+            course,
+            scheduleIndex,
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
-
-        return addedCourse;
     }
 
     getEventsInCalendar() {
@@ -165,7 +168,7 @@ class AppStore extends EventEmitter {
             type: 'deleteCourse',
             sectionCode: sectionCode,
             term: term,
-            scheduleIndex: this.schedule.getCurrentScheduleIndex(),
+            scheduleIndex: scheduleIndex,
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
