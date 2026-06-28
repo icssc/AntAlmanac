@@ -3,13 +3,13 @@ import { trpcReact } from '$lib/api/trpc';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import {
     Box,
+    Card,
+    CardContent,
+    CardHeader,
+    Skeleton,
     ToggleButton,
     ToggleButtonGroup,
     Typography,
-    Card,
-    CardHeader,
-    CardContent,
-    Skeleton,
 } from '@mui/material';
 import type { AggregateGrades } from '@packages/anteater-api/types';
 import dynamic from 'next/dynamic';

@@ -6,7 +6,7 @@ import {
 import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { loadCourseSearchParams, loadSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
-import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie';
+import { SSO_COOKIE_NAME, getSsoResponseCookieAttributes } from '$lib/ssoCookie';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { getSessionCookie } from 'better-auth/cookies';
 import { NextResponse, userAgent } from 'next/server';

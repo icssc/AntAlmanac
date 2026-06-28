@@ -1,6 +1,6 @@
 'use client';
 
-import { undoDelete, redoDelete } from '$actions/AppStoreActions';
+import { redoDelete, undoDelete } from '$actions/AppStoreActions';
 import { AuthInitializer } from '$components/AuthInitializer';
 import { AutoSignIn } from '$components/AutoSignIn';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
@@ -10,14 +10,13 @@ import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
-import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect } from 'react';
-import { Group, Panel, Separator, useGroupRef, type PanelSize } from 'react-resizable-panels';
+import { Group, Panel, Separator, useGroupRef } from 'react-resizable-panels';
 
 const ScheduleCalendar = dynamic(
     () => import('$components/Calendar/CalendarRoot').then((m) => ({ default: m.ScheduleCalendar })),
@@ -33,6 +32,8 @@ const DEFAULT_LAYOUT = {
     [SCHEDULE_PANEL_ID]: 57.5,
 } as const;
 
+// Below `sm`: hide calendar pane + separator, force schedule pane to fill.
+// `!important` overrides inline styles set by react-resizable-panels.
 const SplitGroup = styled(Group)(({ theme }) => ({
     [theme.breakpoints.down('sm')]: {
         [`& #${CALENDAR_PANEL_ID}, & #${SEPARATOR_ID}`]: {
@@ -47,16 +48,8 @@ const SplitGroup = styled(Group)(({ theme }) => ({
 function Home() {
     const theme = useTheme();
     const groupRef = useGroupRef();
-    const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
     const showCalendarPane = useMediaQuery(theme.breakpoints.up('sm'));
-
-    const handleSchedulePanelResize = useCallback(
-        (panelSize: PanelSize) => {
-            setScheduleManagementWidth(panelSize.inPixels);
-        },
-        [setScheduleManagementWidth]
-    );
 
     const handleSeparatorDoubleClick = useCallback(() => {
         groupRef.current?.setLayout({ ...DEFAULT_LAYOUT });
@@ -104,12 +97,7 @@ function Home() {
                 ⋮
             </Separator>
 
-            <Panel
-                id={SCHEDULE_PANEL_ID}
-                defaultSize={`${DEFAULT_LAYOUT[SCHEDULE_PANEL_ID]}%`}
-                minSize="400px"
-                onResize={handleSchedulePanelResize}
-            >
+            <Panel id={SCHEDULE_PANEL_ID} defaultSize={`${DEFAULT_LAYOUT[SCHEDULE_PANEL_ID]}%`} minSize="400px">
                 <Stack direction="column" height="100%">
                     <ScheduleManagement />
                 </Stack>

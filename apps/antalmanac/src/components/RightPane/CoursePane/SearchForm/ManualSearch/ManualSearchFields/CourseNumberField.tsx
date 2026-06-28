@@ -1,6 +1,6 @@
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
-import { memo, type ChangeEvent } from 'react';
+import { type ChangeEvent, memo } from 'react';
 
 export const CourseNumberField = memo(() => {
     const [courseNumber, setCourseNumber] = useCourseSearchParam('courseNumber');

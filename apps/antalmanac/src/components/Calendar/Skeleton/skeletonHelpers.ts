@@ -1,6 +1,6 @@
 import {
-    skeletonBlueprintVariations,
     type SkeletonBlueprint,
+    skeletonBlueprintVariations,
 } from '$components/Calendar/Skeleton/skeletonBlueprintVariations';
 import type { SkeletonEvent } from '$components/Calendar/types';
 import { getLocalStorageSkeletonBlueprint } from '$lib/localStorage';

@@ -2,11 +2,11 @@ import { aapiClient, aapiProcedure } from '$backend/lib/aapi';
 import { router } from '$backend/trpc';
 import { getRenamedCoursesIdentifiers } from '$lib/renames/utils';
 import {
+    type AACourse,
     QuarterSchema,
+    type WebsocSearchInput,
     WebsocSearchInputKeysSchema,
     WebsocSearchInputSchema,
-    type AACourse,
-    type WebsocSearchInput,
 } from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,

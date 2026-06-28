@@ -1,5 +1,5 @@
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
-import { getPalette, SECTION_THEMES, type SectionColorSetting, type SectionThemeId } from '$lib/sectionThemes';
+import { SECTION_THEMES, type SectionColorSetting, type SectionThemeId, getPalette } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { useSectionThemeStore } from '$stores/SectionThemeStore';
 import {
@@ -36,7 +36,7 @@ interface ThemeOption {
 
 /** Swatches for "Custom" = the distinct colors the user currently has in their schedule. */
 function getCustomSwatches(isDark: boolean): string[] {
-    const distinct = [...new Set(AppStore.schedule.getCurrentCourses().map((c) => c.section.color))];
+    const distinct = [...new Set(AppStore.schedule.getCurrentCourses().flatMap((c) => c.sections.map((s) => s.color)))];
     if (distinct.length > 0) return distinct.slice(0, 4);
     return getPalette('default', isDark)
         .map((family) => family[0])

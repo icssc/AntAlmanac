@@ -189,9 +189,6 @@ importers:
       events:
         specifier: ^3.3.0
         version: 3.3.0
-      file-saver:
-        specifier: ^2.0.5
-        version: 2.0.5
       fuzzysort:
         specifier: 3.1.0
         version: 3.1.0
@@ -259,9 +256,6 @@ importers:
       '@testing-library/react':
         specifier: ^14.0.0
         version: 14.3.1(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@types/file-saver':
-        specifier: ^2.0.5
-        version: 2.0.7
       '@types/leaflet':
         specifier: ^1.9.14
         version: 1.9.14
@@ -2481,9 +2475,6 @@ packages:
   '@types/date-arithmetic@4.1.1':
     resolution: {integrity: sha512-o9ILUTMSRiOC73o7h30mgLpuDwOJWqMHZfnEIwNQlfZsGY6Kw2gK5Gz6nXAjNt9zm3Qpr12pM4FDqssfdtBzGA==}
 
-  '@types/file-saver@2.0.7':
-    resolution: {integrity: sha512-dNKVfHd/jk0SkR/exKGj2ggkB45MAkzvWCaqLUUgkyjITkGNzH8H+yUwr+BLJUBjZOe9w8X3wgmXhZDRg1ED6A==}
-
   '@types/geojson@7946.0.10':
     resolution: {integrity: sha512-Nmh0K3iWQJzniTuPRcJn5hxXkfB1T1pgB89SBig5PlJQU5yocazeu4jATJlaA0GYFKWMqDdvYemoSnF2pXgLVA==}
 
@@ -3379,9 +3370,6 @@ packages:
 
   fflate@0.4.8:
     resolution: {integrity: sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==}
-
-  file-saver@2.0.5:
-    resolution: {integrity: sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -7138,8 +7126,6 @@ snapshots:
 
   '@types/date-arithmetic@4.1.1': {}
 
-  '@types/file-saver@2.0.7': {}
-
   '@types/geojson@7946.0.10': {}
 
   '@types/leaflet-routing-machine@3.2.8':
@@ -8020,8 +8006,6 @@ snapshots:
       strnum: 2.1.2
 
   fflate@0.4.8: {}
-
-  file-saver@2.0.5: {}
 
   fill-range@7.1.1:
     dependencies:

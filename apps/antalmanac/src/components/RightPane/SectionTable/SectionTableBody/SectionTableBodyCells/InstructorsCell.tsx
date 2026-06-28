@@ -1,5 +1,5 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { Box, Link, Typography, type SxProps } from '@mui/material';
+import { Box, Link, type SxProps, Typography } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 
 interface InstructorsCellProps {

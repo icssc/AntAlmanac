@@ -8,7 +8,7 @@ import { CalendarEventWrapper } from '$components/Calendar/CalendarEvent/Calenda
 import { CALENDAR_BASE_DATE, createSkeletonEvents } from '$components/Calendar/Skeleton/skeletonHelpers';
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
-import { isCourseEvent, isSkeletonEvent, type CalendarEvent, type SkeletonEvent } from '$components/Calendar/types';
+import { type CalendarEvent, type SkeletonEvent, isCourseEvent, isSkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
@@ -23,13 +23,13 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { CalendarMonth } from '@mui/icons-material';
-import { Box, Backdrop, useTheme } from '@mui/material';
+import { Backdrop, Box, useTheme } from '@mui/material';
 import { VisibilityState } from '@packages/antalmanac-types';
-import { differenceInCalendarDays, format, getDay, startOfWeek, type Locale } from 'date-fns';
+import { type Locale, differenceInCalendarDays, format, getDay, startOfWeek } from 'date-fns';
 import { enUS } from 'date-fns/locale/en-US';
 import { useRouter } from 'next/navigation';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, type Components, DateLocalizer, dateFnsLocalizer, Views, type ViewsProps } from 'react-big-calendar';
+import { Calendar, type Components, DateLocalizer, Views, type ViewsProps, dateFnsLocalizer } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 
 /*

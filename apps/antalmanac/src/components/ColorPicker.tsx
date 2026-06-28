@@ -7,7 +7,7 @@ import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, type PopoverProps, Tooltip } from '@mui/material';
-import { type CustomEventId, type AATerm } from '@packages/antalmanac-types';
+import { type AATerm, type CustomEventId } from '@packages/antalmanac-types';
 import Sketch from '@uiw/react-color-sketch';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';

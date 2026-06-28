@@ -2,11 +2,11 @@ import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
+    type SectionColorSetting,
+    type ThemeAssignmentMap,
     courseColorKey,
     getPalette,
     resolveAssignment,
-    type SectionColorSetting,
-    type ThemeAssignmentMap,
 } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
@@ -37,15 +37,15 @@ function getDisplayColor(
     assignments: ThemeAssignmentMap,
     palette: readonly (readonly string[])[]
 ): string {
-    const course = AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term);
-    if (!course) {
+    const scheduledSection = AppStore.schedule.findSectionInSchedule(section.sectionCode, term);
+    if (!scheduledSection) {
         return section.color ?? '#5ec8e0';
     }
     if (setting === 'custom') {
-        return course.section.color;
+        return scheduledSection.color;
     }
     const value = assignments[courseColorKey(term, section.sectionCode)];
-    return value != null ? resolveAssignment(value, palette) : course.section.color;
+    return value != null ? resolveAssignment(value, palette) : scheduledSection.color;
 }
 
 interface SectionTableBodyRowColorStripProps {

@@ -1,13 +1,12 @@
-import { isCustomEvent, type FinalExam } from '$components/Calendar/types';
+import { type FinalExam, isCustomEvent } from '$components/Calendar/types';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm } from '$lib/term';
-import { notNull } from '$lib/utils';
+import { notNull, saveAs } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type { AATerm } from '@packages/antalmanac-types';
 import type { HourMinute, Quarter } from '@packages/anteater-api/types';
-import { saveAs } from 'file-saver';
-import { createEvents, type EventAttributes } from 'ics';
+import type { EventAttributes } from 'ics';
 
 const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 
@@ -308,8 +307,10 @@ export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCale
     return calendarEvents;
 }
 
-export function exportCalendar() {
+export async function exportCalendar() {
     const events = getEventsFromCourses();
+
+    const { createEvents } = await import('ics');
 
     // Convert the events into a vcalendar.
     // Callback function triggers a download of the .ics file
