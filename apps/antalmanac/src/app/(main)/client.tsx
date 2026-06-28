@@ -63,7 +63,7 @@ function Home() {
             defaultLayout={DEFAULT_LAYOUT}
             style={{ flexGrow: 1, marginTop: 4 }}
         >
-            <Panel id={CALENDAR_PANEL_ID} minSize="400px" style={{ overflow: 'hidden' }}>
+            <Panel id={CALENDAR_PANEL_ID} minSize="40%" style={{ overflow: 'hidden' }}>
                 <Stack direction="column" height="100%">
                     {showCalendarPane && <ScheduleCalendar />}
                 </Stack>
@@ -92,7 +92,7 @@ function Home() {
                 ⋮
             </Separator>
 
-            <Panel id={SCHEDULE_PANEL_ID} minSize="400px">
+            <Panel id={SCHEDULE_PANEL_ID} minSize="40%">
                 <Stack direction="column" height="100%">
                     <ScheduleManagement />
                 </Stack>
