@@ -12,6 +12,7 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import {
+    type AACourseWithTerm,
     type AASection,
     type AATerm,
     type CustomEventId,

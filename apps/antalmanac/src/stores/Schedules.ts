@@ -7,6 +7,7 @@ import { getColorForNewSection, scheduleOfferingKey, scheduleSectionKey } from '
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     AACourse,
+    AACourseWithTerm,
     AATerm,
     CustomEventId,
     RepeatingCustomEvent,

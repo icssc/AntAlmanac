@@ -6,7 +6,7 @@ import { useColumnStore } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore } from '$stores/SettingsStore';
 import { TableRow } from '@mui/material';
-import { AASection } from '@packages/antalmanac-types';
+import { type AACourseWithTerm, type AASection } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useState } from 'react';
 
 interface SectionTableBodyRowProps {
