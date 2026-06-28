@@ -1,8 +1,8 @@
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { saveAs } from '$lib/utils';
 import { Panorama } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import { saveAs } from 'file-saver';
 import { usePostHog } from 'posthog-js/react';
 
 interface ScreenshotButtonProps {
