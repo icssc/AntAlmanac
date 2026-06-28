@@ -253,15 +253,15 @@ export class Schedules {
     }
 
     /**
-     * Find a section across **all** schedules.
-     * Returns the AASection reference so cross-schedule color sharing works.
+     * Find the color of a section across **all** schedules.
+     * Used to inherit color when adding an already-scheduled section to another schedule.
      */
-    private findSectionAcrossSchedules(sectionCode: string, term: AATerm): AASection | undefined {
+    private findSectionColorAcrossSchedules(sectionCode: string, term: AATerm): string | undefined {
         for (const schedule of this.schedules) {
             for (const course of schedule.courses) {
                 if (course.term.shortName !== term.shortName) continue;
                 const section = course.sections.find((s) => s.sectionCode === sectionCode);
-                if (section) return section;
+                if (section) return section.color;
             }
         }
         return undefined;
@@ -299,16 +299,19 @@ export class Schedules {
             return;
         }
 
-        // Reuse existing section reference from any schedule for cross-schedule color sharing
-        const existingSection = this.findSectionAcrossSchedules(section.sectionCode, course.term);
+        // Always clone — never share references across schedules.
+        // Inherit color from an existing copy in any schedule, or assign a new one.
+        const existingColor = this.findSectionColorAcrossSchedules(section.sectionCode, course.term);
 
-        const sectionToAdd = existingSection ?? {
+        const sectionToAdd = {
             ...section,
-            color: getColorForNewSection(
-                section,
-                course,
-                this.getAllCourses().filter((c) => c.term.shortName === course.term.shortName)
-            ),
+            color:
+                existingColor ??
+                getColorForNewSection(
+                    section,
+                    course,
+                    this.getAllCourses().filter((c) => c.term.shortName === course.term.shortName)
+                ),
         };
 
         const courses = this.schedules[scheduleIndex].courses;
@@ -346,8 +349,8 @@ export class Schedules {
 
     /**
      * Change courses that match the code and term in all schedules to new color.
-     * Iterates every schedule explicitly so color updates survive undo/redo
-     * (structuredClone severs shared references).
+     * Sections are independent clones across schedules, so this iterates every
+     * schedule explicitly to keep colors in sync.
      */
     changeCourseColor(sectionCode: string, term: AATerm, newColor: string) {
         this.addUndoState();
