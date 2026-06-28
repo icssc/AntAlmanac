@@ -1,4 +1,4 @@
-import type { Context } from '$src/backend/context';
+import type { Context } from '$backend/context';
 import { TRPCError, initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 

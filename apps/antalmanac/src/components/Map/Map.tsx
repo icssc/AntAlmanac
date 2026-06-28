@@ -2,7 +2,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import { CustomEventId } from '@packages/antalmanac-types';
+import { type CustomEventId } from '@packages/antalmanac-types';
 import { type LatLngTuple, type Map, Marker } from 'leaflet';
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';

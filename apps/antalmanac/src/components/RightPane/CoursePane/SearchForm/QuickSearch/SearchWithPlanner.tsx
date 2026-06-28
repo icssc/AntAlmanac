@@ -15,7 +15,16 @@ import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { type Roadmap } from '@packages/antalmanac-types';
 import { parseAsString, useQueryState } from 'nuqs';
-import { ComponentProps, HTMLAttributes, Key, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    type ComponentProps,
+    type HTMLAttributes,
+    type Key,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 type AutocompleteProps = ComponentProps<typeof LabeledAutocomplete>['autocompleteProps'];

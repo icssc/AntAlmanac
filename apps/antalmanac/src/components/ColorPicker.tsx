@@ -9,7 +9,7 @@ import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, type PopoverProps, Tooltip } from '@mui/material';
 import { type AATerm, type CustomEventId } from '@packages/antalmanac-types';
 import Sketch from '@uiw/react-color-sketch';
-import { type PostHog, usePostHog } from 'posthog-js/react';
+import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface ColorPickerProps {

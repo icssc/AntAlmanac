@@ -1,5 +1,5 @@
 import analyticsEnum, { AANTS_ANALYTICS_ACTIONS, logAnalytics } from '$lib/analytics/analytics';
-import { Notification, NotifyOn, useNotificationStore } from '$stores/NotificationStore';
+import { type Notification, type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { Checkbox, TableCell } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';

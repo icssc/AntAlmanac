@@ -1,4 +1,4 @@
-import { UserData, isEmptySchedule, loadSchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
+import { type UserData, isEmptySchedule, loadSchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
@@ -45,18 +45,18 @@ export const AuthInitializer = () => {
 
     const postHog = usePostHog();
 
-    const handleAuthChecked = useEffectEvent(() => {
+    const handleAuthChecked = () => {
         hasInitializedRef.current = true;
         setHasCheckedAuth(true);
-    });
+    };
 
-    const handleInitialized = useEffectEvent(() => {
+    const handleInitialized = () => {
         setOpenLoadingSchedule(false);
         loadNotifications();
         if (useSessionStore.getState().areSchedulesLoaded) {
             void loadPlannerRoadmaps();
         }
-    });
+    };
 
     const loadUnsavedChanges = useEffectEvent(async (userData: UserData) => {
         if (!sessionData) {
@@ -159,6 +159,7 @@ export const AuthInitializer = () => {
             handleAuthChecked();
             handleInitialized();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- handleInitialized and handleAuthChecked are stable
     }, [
         sessionData,
         isSessionPending,

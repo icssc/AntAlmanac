@@ -26,10 +26,10 @@ import { CalendarMonth } from '@mui/icons-material';
 import { Backdrop, Box, useTheme } from '@mui/material';
 import { VisibilityState } from '@packages/antalmanac-types';
 import { type Locale, differenceInCalendarDays, format, getDay, startOfWeek } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale/en-US';
 import { useRouter } from 'next/navigation';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, Components, DateLocalizer, Views, ViewsProps, dateFnsLocalizer } from 'react-big-calendar';
+import { Calendar, type Components, DateLocalizer, Views, type ViewsProps, dateFnsLocalizer } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 
 /*

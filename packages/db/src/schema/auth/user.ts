@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { AnyPgColumn, boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { type AnyPgColumn, boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { schedules } from '../schedule';
 

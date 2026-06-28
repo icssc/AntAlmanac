@@ -1,7 +1,7 @@
 import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputBox';
 import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputLabel';
-import { Box, TextField, TextFieldProps } from '@mui/material';
-import { DesktopTimePicker, TimePickerProps } from '@mui/x-date-pickers';
+import { Box, TextField, type TextFieldProps } from '@mui/material';
+import { DesktopTimePicker, type TimePickerProps } from '@mui/x-date-pickers';
 import { forwardRef, useId, useState } from 'react';
 
 interface LabeledTimePickerProps {

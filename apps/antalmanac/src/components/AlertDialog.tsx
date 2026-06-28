@@ -1,4 +1,4 @@
-import { Alert, AlertColor, Box, Button, Dialog, DialogActions, DialogContent } from '@mui/material';
+import { Alert, type AlertColor, Box, Button, Dialog, DialogActions, DialogContent } from '@mui/material';
 
 interface AlertDialogProps {
     open: boolean;
