@@ -1,5 +1,4 @@
 import { SignInButtons } from '$components/buttons/SignInButtons/SignInButtons';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Alert, Dialog, DialogContent, DialogTitle, Stack } from '@mui/material';
 
 interface SignInDialogProps {

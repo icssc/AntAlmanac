@@ -4,7 +4,6 @@ import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageDataCache, setLocalStorageUserId } from '$lib/localStorage';
-import { isNativeIosApp } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -13,13 +12,11 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import {
-    type AACourse,
     type AASection,
     type AATerm,
     type CustomEventId,
     type RepeatingCustomEvent,
     type ShortCourseSchedule,
-    VisibilityState,
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
 import type { PostHog } from 'posthog-js/react';

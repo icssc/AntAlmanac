@@ -6,9 +6,10 @@ import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { ColorLens } from '@mui/icons-material';
-import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
-import { type AATerm, CustomEventId } from '@packages/antalmanac-types';
-import { PostHog, usePostHog } from 'posthog-js/react';
+import { IconButton, Popover, type PopoverProps, Tooltip } from '@mui/material';
+import { type AATerm, type CustomEventId } from '@packages/antalmanac-types';
+import Sketch from '@uiw/react-color-sketch';
+import { type PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface ColorPickerProps {

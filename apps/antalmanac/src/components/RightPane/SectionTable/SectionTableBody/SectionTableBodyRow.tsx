@@ -2,14 +2,12 @@ import { SectionTableBodyRowCell } from '$components/RightPane/SectionTable/Sect
 import { SectionTableBodyRowColorStrip } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRowColorStrip';
 import { type AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
+import { useColumnStore } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
-import { TableRow, useTheme } from '@mui/material';
-import { AACourse, AASection, AATerm } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-
-import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
+import { usePreviewStore } from '$stores/SettingsStore';
+import { TableRow } from '@mui/material';
+import { AASection } from '@packages/antalmanac-types';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 interface SectionTableBodyRowProps {
     section: AASection;

@@ -1,5 +1,5 @@
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
-import { getPalette, SECTION_THEMES, type SectionColorSetting, type SectionThemeId } from '$lib/sectionThemes';
+import { SECTION_THEMES, type SectionColorSetting, type SectionThemeId, getPalette } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { useSectionThemeStore } from '$stores/SectionThemeStore';
 import {

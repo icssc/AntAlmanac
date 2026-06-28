@@ -22,13 +22,7 @@ import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
-import type {
-    AATerm,
-    CustomEventId,
-    RepeatingCustomEvent,
-    ScheduleCourse,
-    ScheduleSaveState,
-} from '@packages/antalmanac-types';
+import type { AATerm, CustomEventId, RepeatingCustomEvent, ScheduleSaveState } from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;

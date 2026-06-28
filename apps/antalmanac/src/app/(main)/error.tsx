@@ -2,7 +2,7 @@
 
 import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Stack, Typography } from '@mui/material';
-import { Link, useLocation, useRouteError } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function Error({ error }: { error: Error & { digest?: string } }) {
     const pathname = usePathname();

@@ -1,5 +1,5 @@
 import { useTimeFormatStore } from '$stores/SettingsStore';
-import { Box, Typography, type SxProps, type Theme } from '@mui/material';
+import { Box, type SxProps, type Theme, Typography } from '@mui/material';
 import { useShallow } from 'zustand/react/shallow';
 
 export function TimeSelector() {

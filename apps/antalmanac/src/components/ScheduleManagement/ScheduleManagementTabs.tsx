@@ -1,5 +1,5 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { TABS, useTabStore } from '$stores/TabStore';
+import { TABS } from '$stores/TabStore';
 import { Tabs as MuiTabs, Paper } from '@mui/material';
 
 interface ScheduleManagementTabsProps {

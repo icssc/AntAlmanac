@@ -1,4 +1,3 @@
-import { useThemeStore } from '$stores/SettingsStore';
 import { DarkMode, LightMode, SettingsBrightness } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { useColorScheme } from '@mui/material/styles';

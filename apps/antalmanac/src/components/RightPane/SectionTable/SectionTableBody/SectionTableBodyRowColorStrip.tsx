@@ -2,11 +2,11 @@ import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
+    type SectionColorSetting,
+    type ThemeAssignmentMap,
     courseColorKey,
     getPalette,
     resolveAssignment,
-    type SectionColorSetting,
-    type ThemeAssignmentMap,
 } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
@@ -119,7 +119,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
             AppStore.removeListener('currentScheduleIndexChange', syncColor);
             AppStore.removeListener('colorChange', syncColor);
         };
-    }, [section, term]);
+    }, [section, term, activeSectionColor, assignments, palette]);
 
     useEffect(() => {
         if (!visible) {

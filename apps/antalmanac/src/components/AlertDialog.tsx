@@ -1,5 +1,3 @@
-import { LIGHT_BLUE } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Alert, AlertColor, Box, Button, Dialog, DialogActions, DialogContent } from '@mui/material';
 
 interface AlertDialogProps {

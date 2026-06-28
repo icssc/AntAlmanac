@@ -1,6 +1,6 @@
 'use client';
 
-import { undoDelete, redoDelete } from '$actions/AppStoreActions';
+import { redoDelete, undoDelete } from '$actions/AppStoreActions';
 import { AuthInitializer } from '$components/AuthInitializer';
 import { AutoSignIn } from '$components/AutoSignIn';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';

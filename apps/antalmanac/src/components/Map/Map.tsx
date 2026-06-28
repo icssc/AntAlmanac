@@ -9,7 +9,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { LocationMarker } from './Marker';
 

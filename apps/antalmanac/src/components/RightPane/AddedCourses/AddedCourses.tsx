@@ -125,7 +125,7 @@ export function AddedCourses() {
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps -- mount-only: listeners handle subsequent changes
 
     const scheduleUnits = useMemo(() => {
         let result = 0;

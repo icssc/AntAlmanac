@@ -8,7 +8,6 @@ import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchP
 import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/types';
 import { LIGHT_BLUE } from '$src/globals';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { ToggleButton, ToggleButtonGroup, alpha } from '@mui/material';
 import { useShallow } from 'zustand/react/shallow';
 

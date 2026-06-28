@@ -3,7 +3,7 @@ import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { MoreHoriz } from '@mui/icons-material';
 import { IconButton, Menu, MenuItem } from '@mui/material';
-import { AACourse, AASection, type AATerm } from '@packages/antalmanac-types';
+import { AASection } from '@packages/antalmanac-types';
 import { memo, useCallback, useState } from 'react';
 
 interface SectionActionMenuProps {

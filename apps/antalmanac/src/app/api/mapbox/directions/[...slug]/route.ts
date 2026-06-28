@@ -1,4 +1,3 @@
-import { backendEnvSchema } from '$src/backend/env';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 

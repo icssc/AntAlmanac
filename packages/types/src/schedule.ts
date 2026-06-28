@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import type { AACourseWithTerm } from './course';
-import { RepeatingCustomEventSchema, type RepeatingCustomEvent } from './customEvent';
+import { type RepeatingCustomEvent, RepeatingCustomEventSchema } from './customEvent';
 
 /** Max length for schedule notes (UI and server validation). */
 export const SCHEDULE_NOTE_MAX_LENGTH = 5000;
