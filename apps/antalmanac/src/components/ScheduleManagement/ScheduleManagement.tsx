@@ -1,10 +1,9 @@
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { GlobalStyles, Stack } from '@mui/material';
+import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
 import dynamic from 'next/dynamic';
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -25,7 +24,8 @@ const ScheduleManagementContent = dynamic(
 export function ScheduleManagement() {
     const segment = useSelectedLayoutSegment();
     const router = useRouter();
-    const isMobile = useIsMobile();
+    const theme = useTheme();
+    const isDesktop = useMediaQuery(theme.breakpoints.up('sm'));
     const activeTab = useActiveTab();
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -72,10 +72,10 @@ export function ScheduleManagement() {
             return;
         }
 
-        if (!isMobile && segment === 'calendar') {
+        if (isDesktop && segment === 'calendar') {
             router.replace(TAB_HREF.search);
         }
-    }, [segment, isMobile, fallbackMode, router]);
+    }, [segment, isDesktop, fallbackMode, router]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
@@ -99,7 +99,6 @@ export function ScheduleManagement() {
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
             <Stack
-                direction="column"
                 flexGrow={1}
                 height="0"
                 sx={(theme) => ({
