@@ -1,16 +1,16 @@
 import { FuzzySearch } from '$components/RightPane/CoursePane/SearchForm/QuickSearch/FuzzySearch';
 import { SearchWithPlanner } from '$components/RightPane/CoursePane/SearchForm/QuickSearch/SearchWithPlanner';
+import { containerQuery, containerSx, containers } from '$lib/containerQueries';
 import { Box, Stack, Typography, useTheme } from '@mui/material';
 
 export const QuickSearch = () => {
     const theme = useTheme();
-    const quickSearchStack = `@container quick-search (max-width: ${theme.breakpoints.values.sm}px)`;
+    const quickSearchStack = containerQuery(containers.quickSearch, theme.breakpoints.values.sm);
 
     return (
         <Box
             sx={{
-                containerType: 'inline-size',
-                containerName: 'quick-search',
+                ...containerSx(containers.quickSearch),
                 minWidth: 0,
             }}
         >
