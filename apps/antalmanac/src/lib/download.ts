@@ -1,4 +1,4 @@
-import { isCustomEvent, type FinalExam } from '$components/Calendar/types';
+import { type FinalExam, isCustomEvent } from '$components/Calendar/types';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm } from '$lib/term';
 import { notNull, saveAs } from '$lib/utils';

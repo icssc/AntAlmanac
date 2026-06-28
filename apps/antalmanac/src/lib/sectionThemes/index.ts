@@ -1,4 +1,4 @@
-import { isCustomEvent, isSkeletonEvent, type CalendarEvent } from '$components/Calendar/types';
+import { type CalendarEvent, isCustomEvent, isSkeletonEvent } from '$components/Calendar/types';
 import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import type { AACourseWithTerm, AASection, AATerm } from '@packages/antalmanac-types';
 

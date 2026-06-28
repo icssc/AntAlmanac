@@ -1,6 +1,6 @@
 import {
-    addCustomEvent,
     addCourse,
+    addCustomEvent,
     importScheduleWithUsername,
     mergeShortCourseSchedules,
 } from '$actions/AppStoreActions';
@@ -39,7 +39,7 @@ import {
     Tabs,
     Tooltip,
 } from '@mui/material';
-import { type AATerm, type AACourse, type ShortCourseSchedule } from '@packages/antalmanac-types';
+import { type AACourse, type AATerm, type ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 

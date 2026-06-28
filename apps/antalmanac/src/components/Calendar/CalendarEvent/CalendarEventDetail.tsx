@@ -1,7 +1,7 @@
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { isCourseEvent, type CourseEvent, type CustomEvent } from '$components/Calendar/types';
+import { type CourseEvent, type CustomEvent, isCourseEvent } from '$components/Calendar/types';
 import { ColorPicker } from '$components/ColorPicker';
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -12,7 +12,7 @@ import AppStore from '$stores/AppStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
+import { Box, Button, Chip, IconButton, Paper, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useRef } from 'react';
 

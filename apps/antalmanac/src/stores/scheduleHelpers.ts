@@ -1,7 +1,7 @@
 import {
     amber,
-    brown,
     blue,
+    brown,
     cyan,
     deepOrange,
     deepPurple,

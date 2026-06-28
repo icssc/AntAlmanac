@@ -1,7 +1,7 @@
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { parseSectionCodes, type SectionCodesGraphQLResponse } from '$backend/lib/term-section-codes';
+import { type SectionCodesGraphQLResponse, parseSectionCodes } from '$backend/lib/term-section-codes';
 import { termData } from '$lib/term';
 import { canTermEnrollmentChange } from '$lib/termHelpers';
 import { env } from '$scripts/env';

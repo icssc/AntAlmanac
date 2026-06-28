@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { pgTable, text, timestamp, pgEnum, primaryKey, index, check } from 'drizzle-orm/pg-core';
+import { check, index, pgEnum, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { users } from './auth/user';
 

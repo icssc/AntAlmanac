@@ -2,11 +2,11 @@ import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
+    type SectionColorSetting,
+    type ThemeAssignmentMap,
     courseColorKey,
     getPalette,
     resolveAssignment,
-    type SectionColorSetting,
-    type ThemeAssignmentMap,
 } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';

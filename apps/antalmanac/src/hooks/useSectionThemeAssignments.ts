@@ -1,5 +1,5 @@
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
-import { getPalette, type SectionColorSetting, type ThemeAssignmentMap } from '$lib/sectionThemes';
+import { type SectionColorSetting, type ThemeAssignmentMap, getPalette } from '$lib/sectionThemes';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { useMemo } from 'react';
 

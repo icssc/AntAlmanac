@@ -1,4 +1,4 @@
-import { COURSE_RENAMES, type CourseRenameKey, type CourseRename } from '$lib/renames/renames';
+import { COURSE_RENAMES, type CourseRename, type CourseRenameKey } from '$lib/renames/renames';
 import type { AggregateGrades } from '@packages/anteater-api/types';
 import { buildCourseId } from '@packages/anteater-api/utils';
 

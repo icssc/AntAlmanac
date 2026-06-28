@@ -6,12 +6,12 @@ import {
     setLocalStorageSectionColorAssignments,
 } from '$lib/localStorage';
 import {
-    computeAssignments,
-    getPalette,
-    isSectionColorSetting,
     type SectionColorSetting,
     type SectionThemeId,
     type ThemeAssignmentMap,
+    computeAssignments,
+    getPalette,
+    isSectionColorSetting,
 } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import type { PostHog } from 'posthog-js/react';

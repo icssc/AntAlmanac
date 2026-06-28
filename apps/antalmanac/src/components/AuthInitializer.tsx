@@ -1,4 +1,4 @@
-import { isEmptySchedule, loadSchedule, mergeShortCourseSchedules, type UserData } from '$actions/AppStoreActions';
+import { type UserData, isEmptySchedule, loadSchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
@@ -159,6 +159,7 @@ export const AuthInitializer = () => {
             handleAuthChecked();
             handleInitialized();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- handleInitialized and handleAuthChecked are stable
     }, [
         sessionData,
         isSessionPending,

@@ -1,6 +1,6 @@
 'use client';
 
-import { isCourseEvent, isSkeletonEvent, type CalendarEvent } from '$components/Calendar/types';
+import { type CalendarEvent, isCourseEvent, isSkeletonEvent } from '$components/Calendar/types';
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { cloneElement, isValidElement, memo, useCallback } from 'react';

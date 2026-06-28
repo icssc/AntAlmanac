@@ -6,12 +6,12 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    type DialogProps,
     DialogTitle,
     TextField,
-    type DialogProps,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 interface CopyScheduleDialogProps extends DialogProps {
     index: number;

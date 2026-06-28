@@ -5,7 +5,7 @@ import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { unreachableCase } from '$lib/utils';
 import Image from 'next/image';
-import { lazy, Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 
 const UCIMap = lazy(() => import('$components/Map/Map').then((m) => ({ default: m.CourseMap })));
 

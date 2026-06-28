@@ -6,7 +6,7 @@ import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody
 import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell';
 import analyticsEnum from '$lib/analytics/analytics';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
-import { TableRow, TableCell } from '@mui/material';
+import { TableCell, TableRow } from '@mui/material';
 import { memo } from 'react';
 
 interface NotificationTableRowProps {

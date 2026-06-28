@@ -6,10 +6,10 @@ import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { getColorForNewSection, scheduleOfferingKey, scheduleSectionKey } from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
-    AATerm,
     AACourse,
     AACourseWithTerm,
     AASection,
+    AATerm,
     CustomEventId,
     RepeatingCustomEvent,
     Schedule,

@@ -2,9 +2,9 @@
     "name": "@packages/antalmanac-types",
     "version": "0.0.1",
     "description": "Internal types for AntAlmanac",
+    "type": "module",
     "main": "./src/index.ts",
     "types": "./src/index.ts",
-    "type": "module",
     "scripts": {},
     "dependencies": {
         "@packages/anteater-api": "workspace:*",
