@@ -1,15 +1,9 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
-import {
-    courseColorKey,
-    getPalette,
-    resolveAssignment,
-    type SectionColorSetting,
-    type ThemeAssignmentMap,
-} from '$lib/sectionThemes';
+import { getPalette, resolveAssignment, type SectionColorSetting, type ThemeAssignmentMap } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
-import { colorPickerPresetColors } from '$stores/scheduleHelpers';
+import { colorPickerPresetColors, scheduleSectionKey } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { Box, Popover, type PopoverProps, type SxProps, TableCell, Tooltip } from '@mui/material';
 import { type AASection, type AATerm } from '@packages/antalmanac-types';
@@ -44,7 +38,7 @@ function getDisplayColor(
     if (setting === 'custom') {
         return scheduledSection.color;
     }
-    const value = assignments[courseColorKey(term, section.sectionCode)];
+    const value = assignments[scheduleSectionKey(term, section.sectionCode)];
     return value != null ? resolveAssignment(value, palette) : scheduledSection.color;
 }
 
@@ -95,7 +89,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
             // On a preset theme, store an override layered on the theme; on custom, edit
             // the section's stored color directly.
             if (sectionColor !== 'custom') {
-                setManualColor(sectionColor, courseColorKey(term, section.sectionCode), newColor.hex);
+                setManualColor(sectionColor, scheduleSectionKey(term, section.sectionCode), newColor.hex);
             } else {
                 changeCourseColor(section.sectionCode, term, newColor.hex);
             }
@@ -125,7 +119,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
         if (!visible) {
             return;
         }
-        const pickerId = courseColorKey(term, section.sectionCode);
+        const pickerId = scheduleSectionKey(term, section.sectionCode);
         AppStore.registerColorPicker(pickerId, updateColorFromPicker);
         return () => {
             AppStore.unregisterColorPicker(pickerId, updateColorFromPicker);

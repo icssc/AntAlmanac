@@ -17,10 +17,10 @@ import actionTypesStore, {
     type AddScheduleAction,
     type ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
-import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
+import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { Schedules } from '$stores/Schedules';
 import type {
     AACourseWithTerm,
@@ -436,7 +436,7 @@ class AppStore extends EventEmitter {
             newColor: newColor,
         };
         actionTypesStore.autoSaveSchedule(action);
-        this.colorPickers[courseColorKey(term, sectionCode)]?.emit('colorChange', newColor);
+        this.colorPickers[scheduleSectionKey(term, sectionCode)]?.emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
 

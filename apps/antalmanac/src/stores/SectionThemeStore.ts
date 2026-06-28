@@ -54,13 +54,39 @@ function readStoredSectionColor(): SectionColorSetting {
     return isSectionColorSetting(raw) ? raw : 'custom';
 }
 
+/**
+ * Migrate persisted assignment keys from the old `term|sectionCode` format
+ * to the canonical `term::sectionCode` format used by `scheduleSectionKey`.
+ */
+function migrateAssignmentKeys(map: ThemeAssignmentMap): ThemeAssignmentMap {
+    const migrated: ThemeAssignmentMap = {};
+    for (const [key, value] of Object.entries(map)) {
+        migrated[key.includes('|') ? key.replace('|', '::') : key] = value;
+    }
+    return migrated;
+}
+
 function readStoredAssignments(): AssignmentsByTheme {
     if (typeof window === 'undefined') return {};
     const raw = getLocalStorageSectionColorAssignments();
     if (!raw) return {};
     try {
         const parsed = JSON.parse(raw);
-        return parsed && typeof parsed === 'object' ? (parsed as AssignmentsByTheme) : {};
+        if (!parsed || typeof parsed !== 'object') return {};
+        const assignments = parsed as AssignmentsByTheme;
+        const migrated: AssignmentsByTheme = {};
+        let didMigrate = false;
+        for (const [themeId, themeMap] of Object.entries(assignments)) {
+            if (!themeMap) continue;
+            const needsMigration = Object.keys(themeMap).some((k) => k.includes('|'));
+            const migratedMap = needsMigration ? migrateAssignmentKeys(themeMap) : themeMap;
+            migrated[themeId as SectionThemeId] = migratedMap;
+            if (needsMigration) didMigrate = true;
+        }
+        if (didMigrate) {
+            persistAssignments(migrated);
+        }
+        return migrated;
     } catch {
         return {};
     }
@@ -144,7 +170,7 @@ export const useSectionThemeStore = create<SectionThemeStore>((set, get) => {
             const existing = assignments[sectionColor] ?? {};
             const { map } = computeAssignments(existing, courses, customEventIds, palette);
 
-            // Merge rather than replace: assignment keys are global (term|sectionCode), and
+            // Merge rather than replace: assignment keys are global (term::sectionCode), and
             // computeAssignments only returns the *current* schedule's keys. Replacing would
             // drop assignments/overrides belonging to other schedules, losing them on switch.
             const hasNew = Object.keys(map).some((key) => existing[key] !== map[key]);

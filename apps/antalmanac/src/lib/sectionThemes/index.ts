@@ -1,6 +1,6 @@
 import { isCustomEvent, isSkeletonEvent, type CalendarEvent } from '$components/Calendar/types';
-import { scheduleOfferingKey } from '$stores/scheduleHelpers';
-import type { AACourseWithTerm, AASection, AATerm } from '@packages/antalmanac-types';
+import { scheduleOfferingKey, scheduleSectionKey } from '$stores/scheduleHelpers';
+import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 
 import { SECTION_THEMES, type SectionTheme, type SectionThemeId } from './themes';
 
@@ -71,16 +71,8 @@ export function resolveAssignment(value: string, palette: readonly (readonly str
     return palette[slot.family]?.[slot.variant] ?? palette[slot.family]?.[0] ?? palette[0][0];
 }
 
-// TODO: consolidate with scheduleSectionKey once theme assignment keys are migrated off `term|sectionCode`.
-export function courseColorKey(term: AATerm | string, sectionCode: string): string {
-    // Use the term's stable short name (e.g. "2024 Fall"); stringifying the AATerm object
-    // would collapse every term to "[object Object]" and collide on shared section codes.
-    const termId = typeof term === 'string' ? term : term.shortName;
-    return `${termId}|${sectionCode}`;
-}
-
 export function customEventColorKey(customEventID: unknown): string {
-    return `custom|${String(customEventID)}`;
+    return `custom::${String(customEventID)}`;
 }
 
 /**
@@ -148,7 +140,7 @@ export function computeAssignments(
     const courseKeys: string[] = [];
     for (const course of courses) {
         for (const section of course.sections) {
-            courseKeys.push(courseColorKey(course.term, section.sectionCode));
+            courseKeys.push(scheduleSectionKey(course.term, section.sectionCode));
         }
     }
     const customKeys = customEventIds.map(customEventColorKey);
@@ -162,7 +154,7 @@ export function computeAssignments(
     for (const course of courses) {
         const offeringKey = scheduleOfferingKey(course);
         for (const section of course.sections) {
-            const value = next[courseColorKey(course.term, section.sectionCode)];
+            const value = next[scheduleSectionKey(course.term, section.sectionCode)];
             const slot = value != null ? parseSlot(value) : null;
             if (slot) {
                 assigned.push({
@@ -179,7 +171,7 @@ export function computeAssignments(
     for (const course of courses) {
         const offeringKey = scheduleOfferingKey(course);
         for (const section of course.sections) {
-            const key = courseColorKey(course.term, section.sectionCode);
+            const key = scheduleSectionKey(course.term, section.sectionCode);
             if (next[key] != null) continue;
             const slot = pickCourseSlot(offeringKey, section, assigned, palette);
             next[key] = encodeSlot(slot);
@@ -232,7 +224,7 @@ export function applyThemeToCalendarEvents<E extends CalendarEvent>(
         if (isSkeletonEvent(event)) return event;
         const key = isCustomEvent(event)
             ? customEventColorKey(event.customEventID)
-            : courseColorKey(event.term, event.sectionCode);
+            : scheduleSectionKey(event.term, event.sectionCode);
         const value = assignments[key];
         return value != null ? { ...event, color: resolveAssignment(value, palette) } : event;
     });

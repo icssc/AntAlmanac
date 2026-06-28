@@ -1,9 +1,9 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { courseColorKey, customEventColorKey, getPalette, resolveAssignment } from '$lib/sectionThemes';
+import { customEventColorKey, getPalette, resolveAssignment } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
-import { colorPickerPresetColors } from '$stores/scheduleHelpers';
+import { colorPickerPresetColors, scheduleSectionKey } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, type PopoverProps, Tooltip } from '@mui/material';
@@ -53,7 +53,7 @@ export const ColorPicker = memo(function ColorPicker({
             isCustomEvent && customEventID != null
                 ? customEventColorKey(customEventID)
                 : sectionCode != null && term != null
-                  ? courseColorKey(term, sectionCode)
+                  ? scheduleSectionKey(term, sectionCode)
                   : null;
         const value = key != null ? activeAssignments[key] : undefined;
         return value != null ? resolveAssignment(value, getPalette(activeSectionColor, isDark)) : null;
@@ -73,7 +73,7 @@ export const ColorPicker = memo(function ColorPicker({
     useEffect(() => {
         let colorPickerId;
         if (isCustomEvent && customEventID) colorPickerId = customEventID.toString();
-        else if (sectionCode && term) colorPickerId = courseColorKey(term, sectionCode);
+        else if (sectionCode && term) colorPickerId = scheduleSectionKey(term, sectionCode);
         else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
         AppStore.registerColorPicker(colorPickerId, updateColor);
 
@@ -110,7 +110,7 @@ export const ColorPicker = memo(function ColorPicker({
                 isCustomEvent && customEventID
                     ? customEventColorKey(customEventID)
                     : sectionCode != null && term != null
-                      ? courseColorKey(term, sectionCode)
+                      ? scheduleSectionKey(term, sectionCode)
                       : null;
             if (key != null) setManualColor(sectionColor, key, newColor.hex);
             return;
