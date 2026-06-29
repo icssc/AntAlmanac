@@ -7,7 +7,6 @@ import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSele
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { containerQuery, containerSx, containers } from '$lib/containerQueries';
-import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import {
     DeleteOutline,
@@ -40,9 +39,6 @@ interface CalendarPaneToolbarProps {
     toggleDisplayFinalsSchedule: () => void;
 }
 
-/**
- * The root toolbar will pass down the schedule names to its children.
- */
 export const CalendarToolbar = memo(({ showFinalsSchedule, toggleDisplayFinalsSchedule }: CalendarPaneToolbarProps) => {
     const theme = useTheme();
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -50,7 +46,6 @@ export const CalendarToolbar = memo(({ showFinalsSchedule, toggleDisplayFinalsSc
     const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(menuAnchorEl);
-
     const postHog = usePostHog();
 
     // Refs to trigger existing button components
@@ -191,7 +186,7 @@ export const CalendarToolbar = memo(({ showFinalsSchedule, toggleDisplayFinalsSc
                         <IconButton onClick={handleRedo} disabled={fallbackMode}>
                             <RedoIcon fontSize="small" />
                         </IconButton>
-                        <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                        <CustomEventDialog key="custom" />
 
                         <Tooltip title="More options">
                             <IconButton onClick={handleMenuOpen} disabled={fallbackMode}>
@@ -281,7 +276,7 @@ export const CalendarToolbar = memo(({ showFinalsSchedule, toggleDisplayFinalsSc
 
                     <ClearScheduleButton size="medium" fontSize="small" analyticsCategory={analyticsEnum.calendar} />
 
-                    <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                    <CustomEventDialog key="custom" />
                 </Box>
             </Box>
         </Paper>

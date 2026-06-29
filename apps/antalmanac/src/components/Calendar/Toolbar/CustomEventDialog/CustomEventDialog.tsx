@@ -20,11 +20,10 @@ import {
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
-    scheduleNames: string[];
 }
 
 const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
@@ -38,6 +37,17 @@ const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
+    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+
+    useEffect(() => {
+        const handleScheduleNamesChange = () => setScheduleNames(AppStore.getScheduleNames());
+
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+
+        return () => {
+            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+        };
+    }, []);
 
     const [open, setOpen] = useState(false);
     const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
@@ -202,7 +212,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}
-                        scheduleNames={props.scheduleNames}
+                        scheduleNames={scheduleNames}
                     />
                 </DialogContent>
 

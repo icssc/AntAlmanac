@@ -13,7 +13,6 @@ import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { format, isValid, set } from 'date-fns';
 
 interface CustomEventDetailViewProps {
-    scheduleNames: string[];
     customEvent: RepeatingCustomEvent;
     /**
      * Wraps the rendered card in MUI's children-aware Skeleton so the card
@@ -73,7 +72,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
                         analyticsCategory={analyticsEnum.addedClasses}
                     />
 
-                    <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
+                    <CustomEventDialog customEvent={customEvent} />
 
                     <Tooltip title="Delete">
                         <IconButton

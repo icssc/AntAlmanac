@@ -66,7 +66,6 @@ export const CalendarGrid = memo(({ showFinalsSchedule }: CalendarGridProps) => 
     const [rawEventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [rawFinalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleId, setCurrentScheduleId] = useState(() => AppStore.getCurrentScheduleId());
-    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const theme = useTheme();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
@@ -285,22 +284,16 @@ export const CalendarGrid = memo(({ showFinalsSchedule }: CalendarGridProps) => 
             setCurrentScheduleCustomEvents(AppStore.schedule.getCurrentCustomEvents());
         };
 
-        const updateScheduleNames = () => {
-            setScheduleNames(AppStore.getScheduleNames());
-        };
-
         AppStore.on('addedCoursesChange', updateEventsInCalendar);
         AppStore.on('customEventsChange', updateEventsInCalendar);
         AppStore.on('colorChange', updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', updateEventsInCalendar);
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
 
         return () => {
             AppStore.off('addedCoursesChange', updateEventsInCalendar);
             AppStore.off('customEventsChange', updateEventsInCalendar);
             AppStore.off('colorChange', updateEventsInCalendar);
             AppStore.off('currentScheduleIndexChange', updateEventsInCalendar);
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
     }, []);
 
@@ -329,7 +322,7 @@ export const CalendarGrid = memo(({ showFinalsSchedule }: CalendarGridProps) => 
                 })}
             >
                 <TbaCalendarCard />
-                <CalendarEventPopover scheduleNames={scheduleNames} />
+                <CalendarEventPopover />
 
                 <Backdrop
                     open={showEmptyState}
