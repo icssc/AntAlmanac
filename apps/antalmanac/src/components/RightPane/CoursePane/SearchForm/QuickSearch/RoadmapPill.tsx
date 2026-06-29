@@ -193,10 +193,6 @@ function getRoadmapCourseIds(roadmap: Roadmap, term: AATerm): string[] {
     return getSearchableRoadmapCourseIds(roadmap, term);
 }
 
-function hasSearchableCoursesForTerm(roadmap: Roadmap, term: AATerm): boolean {
-    return getSearchableRoadmapCourseIds(roadmap, term).length > 0;
-}
-
 type RoadmapMenuItemsProps = {
     roadmaps: Roadmap[];
     term: AATerm;
@@ -240,8 +236,7 @@ function RoadmapMenuItems({ roadmaps, term, activeRoadmapId, onSelect }: Roadmap
                         </HorizontalRightDivider>
                     </Box>,
                     ...items.map((roadmap) => {
-                        const hasCourses =
-                            relation === RoadmapTermRelation.IncludesTerm && hasSearchableCoursesForTerm(roadmap, term);
+                        const hasCourses = relation === RoadmapTermRelation.IncludesTerm;
 
                         return (
                             <MenuItem
@@ -329,7 +324,9 @@ const RoadmapPillInstance = memo(
         }, [plannerRoadmaps, term]);
 
         const roadmapsForTerm = useMemo(() => {
-            return sortedRoadmaps.filter((roadmap) => hasSearchableCoursesForTerm(roadmap, term));
+            return sortedRoadmaps.filter(
+                (roadmap) => getRoadmapTermRelation(roadmap, term) === RoadmapTermRelation.IncludesTerm
+            );
         }, [sortedRoadmaps, term]);
 
         const activeRoadmap = useMemo(() => {
@@ -380,7 +377,7 @@ const RoadmapPillInstance = memo(
 
         // TODO: Restore sessionIsValid-only gate before merging (drop usingMockRoadmaps bypass).
         const showPill = isSignedIn && isPlannerReady && roadmapsForTerm.length > 0;
-        const showMenu = roadmapsForTerm.length > 1;
+        const showMenu = sortedRoadmaps.length > 1;
 
         useEffect(() => {
             if (!showMenu) {

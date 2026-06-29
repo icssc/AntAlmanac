@@ -42,7 +42,6 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
 
     const [courseColors, setCourseColors] = useState(() => getCourseColors());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
-    const [unofferedCourseIds, setUnofferedCourseIds] = useState<string[]>([]);
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
@@ -88,11 +87,7 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
                             fieldName: 'courseId',
                         })
                     );
-
-                    const returnedIds = new Set(flattenCourses(response).map((c) => c.courseId));
-                    setUnofferedCourseIds(formData.courseIds.filter((id) => !returnedIds.has(id)));
                 } else {
-                    setUnofferedCourseIds([]);
                     const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
                     response =
                         selectedGEs.length > 1
@@ -123,6 +118,12 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
         utils.websoc.invalidate();
         utils.grades.invalidate();
     }, [postHog, refetch, utils]);
+
+    const unofferedCourseIds = useMemo(() => {
+        if (!searchResponse || formData.courseIds.length === 0) return [];
+        const returnedIds = new Set(flattenCourses(searchResponse).map((c) => c.courseId));
+        return formData.courseIds.filter((id) => !returnedIds.has(id));
+    }, [searchResponse, formData.courseIds]);
 
     const courseData = useMemo(() => {
         if (!searchResponse) {

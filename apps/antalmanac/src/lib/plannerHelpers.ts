@@ -20,7 +20,8 @@ export function getRoadmapTermRelation(roadmap: Roadmap, term: AATerm): RoadmapT
     if (quarterPlan === null) {
         return RoadmapTermRelation.ExcludesTerm;
     }
-    if (quarterPlan.courses.length > 0) {
+    const searchable = quarterPlan.courses.filter((c) => !c.courseId.startsWith('CUSTOM#'));
+    if (searchable.length > 0) {
         return RoadmapTermRelation.IncludesTerm;
     }
     return RoadmapTermRelation.NoCourses;
