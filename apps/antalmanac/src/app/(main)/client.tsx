@@ -11,7 +11,7 @@ import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
-import { Stack, useTheme } from '@mui/material';
+import { Stack, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -43,6 +43,7 @@ const SplitGroup = styled(Group)(({ theme }) => ({
 function Home() {
     const theme = useTheme();
     const groupRef = useGroupRef();
+    const showCalendarPane = useMediaQuery(theme.breakpoints.up('sm'));
 
     const handleSeparatorDoubleClick = useCallback(() => {
         groupRef.current?.setLayout({ ...DEFAULT_LAYOUT });
@@ -58,7 +59,7 @@ function Home() {
         >
             <Panel id={CALENDAR_PANEL_ID} minSize="40%" style={{ overflow: 'hidden' }}>
                 <Stack direction="column" height="100%">
-                    <CalendarPane />
+                    <CalendarPane mountGrid={showCalendarPane} />
                 </Stack>
             </Panel>
 

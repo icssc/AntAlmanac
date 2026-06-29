@@ -74,8 +74,7 @@ interface DevModeStore {
 
 export const useDevModeStore = create<DevModeStore>((set) => {
     const stored = typeof Storage !== 'undefined' ? getLocalStorageDevMode() : null;
-    const isLocalDev = process.env.NODE_ENV === 'development';
-    const devMode = stored === null ? isLocalDev : stored === 'true';
+    const devMode = stored === 'true';
 
     return {
         devMode,
