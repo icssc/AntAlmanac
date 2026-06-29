@@ -3,17 +3,17 @@ import {
     areFriends,
     blockUser,
     deleteFriendship,
+    getBlockedUsers,
     getFriends,
     getFriendshipsBetween,
-    getBlockedUsers,
     getPendingFriendRequests,
     getSentPendingRequests,
     insertFriendRequest,
     unblockUser,
-} from '$src/backend/lib/rds/friendships';
-import { getScheduleSharingStatuses, toggleScheduleSharing } from '$src/backend/lib/rds/schedules';
-import { getUserByEmail } from '$src/backend/lib/rds/users';
-import { protectedProcedure, router } from '$src/backend/trpc';
+} from '$backend/lib/rds/friendships';
+import { getScheduleSharingStatuses, toggleScheduleSharing } from '$backend/lib/rds/schedules';
+import { getUserByEmail } from '$backend/lib/rds/users';
+import { protectedProcedure, router } from '$backend/trpc';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';

@@ -1,8 +1,7 @@
 import { NotificationsTable } from '$components/RightPane/AddedCourses/Notifications/NotificationsTable';
 import { type Notification, useNotificationStore } from '$stores/NotificationStore';
 import { NotificationAddOutlined } from '@mui/icons-material';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Tab, Paper, CircularProgress, Typography, useTheme } from '@mui/material';
+import { Box, CircularProgress, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -22,7 +21,6 @@ function groupNotificationsByTerm(notifications: Partial<Record<string, Notifica
 }
 
 export function NotificationsTabs() {
-    const theme = useTheme();
     const { initialized, notifications } = useNotificationStore(
         useShallow((store) => ({ initialized: store.initialized, notifications: store.notifications }))
     );
@@ -49,7 +47,10 @@ export function NotificationsTabs() {
             <Box
                 sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}
             >
-                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center' }}>
+                <Typography
+                    variant="body1"
+                    sx={{ textAlign: 'center', color: (theme) => theme.vars.palette.text.secondary }}
+                >
                     You don&apos;t have any notifications enabled.
                 </Typography>
                 <Box
@@ -62,11 +63,20 @@ export function NotificationsTabs() {
                         flexWrap: 'wrap',
                     }}
                 >
-                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    <Typography
+                        variant="body2"
+                        sx={{ textAlign: 'center', color: (theme) => theme.vars.palette.text.secondary }}
+                    >
                         Enable notifications for courses using the
                     </Typography>
-                    <NotificationAddOutlined fontSize="small" sx={{ color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    <NotificationAddOutlined
+                        fontSize="small"
+                        sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                    />
+                    <Typography
+                        variant="body2"
+                        sx={{ textAlign: 'center', color: (theme) => theme.vars.palette.text.secondary }}
+                    >
                         icon to get notified about status changes.
                     </Typography>
                 </Box>
@@ -80,37 +90,41 @@ export function NotificationsTabs() {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <TabContext value={displayTab}>
-                <Paper
-                    elevation={0}
-                    variant="outlined"
-                    square
-                    sx={{ bgcolor: theme.palette.background.elevated, borderColor: 'divider' }}
+            <Paper
+                elevation={0}
+                variant="outlined"
+                square
+                sx={(theme) => ({
+                    bgcolor: theme.vars.palette.background.elevated,
+                    borderColor: theme.vars.palette.divider,
+                })}
+            >
+                <Tabs
+                    value={displayTab}
+                    onChange={handleTabChange}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    centered
+                    sx={{
+                        '& .MuiTab-root': {
+                            minHeight: { xs: 40, md: 48 },
+                            fontSize: { xs: '0.8125rem', md: '0.9375rem' },
+                        },
+                    }}
                 >
-                    <TabList
-                        onChange={handleTabChange}
-                        indicatorColor="primary"
-                        variant="fullWidth"
-                        centered
-                        sx={{
-                            '& .MuiTab-root': {
-                                minHeight: { xs: 40, md: 48 },
-                                fontSize: { xs: '0.8125rem', md: '0.9375rem' },
-                            },
-                        }}
-                    >
-                        {sortedTerms.map((term) => (
-                            <Tab label={term} key={term} value={term} />
-                        ))}
-                    </TabList>
-                </Paper>
+                    {sortedTerms.map((term) => (
+                        <Tab label={term} key={term} value={term} />
+                    ))}
+                </Tabs>
+            </Paper>
 
-                {sortedTerms.map((term) => (
-                    <TabPanel key={term} value={term} sx={{ paddingX: 0 }}>
+            {sortedTerms.map((term) =>
+                displayTab === term ? (
+                    <Box key={term} role="tabpanel" sx={{ paddingX: 0 }}>
                         <NotificationsTable keys={groups[term]} />
-                    </TabPanel>
-                ))}
-            </TabContext>
+                    </Box>
+                ) : null
+            )}
         </Box>
     );
 }

@@ -1,28 +1,23 @@
 import { trpc } from '$lib/api/trpc';
 import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { moveArrayElements } from '$lib/utils';
-import {
-    getColorForNewSection,
-    groupCourseSections,
-    scheduleOfferingKey,
-    scheduleSectionKey,
-} from '$stores/scheduleHelpers';
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
+import { getColorForNewSection, scheduleOfferingKey, scheduleSectionKey } from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
-    AATerm,
     AACourse,
+    AACourseWithTerm,
+    AASection,
+    AATerm,
     CustomEventId,
     RepeatingCustomEvent,
     Schedule,
-    ScheduleCourse,
     ScheduleSaveState,
     ScheduleUndoState,
     ShortCourseSchedule,
 } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
-
-import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
-import { useHiddenCoursesStore } from './HiddenCoursesStore';
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.
@@ -173,18 +168,21 @@ export class Schedules {
      * Copy the schedule at the provided index to a newly created schedule with the specified name.
      */
     copySchedule(scheduleIndex: number, newScheduleName: string) {
+        const previousIndex = this.currentScheduleIndex;
         this.addNewSchedule(newScheduleName);
         this.currentScheduleIndex = scheduleIndex; // temporarily set current schedule to the one being copied
         const to = this.getNumberOfSchedules() - 1;
 
         for (const course of this.getCurrentCourses()) {
-            this.addCourse(course, to, false);
+            for (const section of course.sections) {
+                this.addCourse(section, course, to, false);
+            }
         }
 
         for (const customEvent of this.getCurrentCustomEvents()) {
             this.addCustomEvent(customEvent, [to], false);
         }
-        this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previously selected schedule index
+        this.currentScheduleIndex = previousIndex;
     }
 
     /**
@@ -204,10 +202,10 @@ export class Schedules {
     }
 
     /**
-     * Moves a course's sections from one position to another.
+     * Moves a course from one position to another.
      *
      * @param scheduleIndex Index of the schedule to reorder courses for.
-     * @param movedOfferingKey Offering key (`term::courseId::title`) whose sections should be moved.
+     * @param movedOfferingKey Offering key (`term::courseId::title`) of the course to move.
      * @param nextOfferingKey Offering key directly after the moved course after reordering.
      * Pass `null` if the course is being moved to the end.
      */
@@ -232,10 +230,7 @@ export class Schedules {
             return;
         }
 
-        const sectionCount =
-            courses.findLastIndex((course) => scheduleOfferingKey(course) === movedOfferingKey) - fromIndex + 1;
-
-        moveArrayElements(courses, fromIndex, toIndex, { elementMoveCount: sectionCount });
+        moveArrayElements(courses, fromIndex, toIndex);
     }
 
     getCurrentCourses() {
@@ -244,7 +239,9 @@ export class Schedules {
 
     getAddedSectionCodes() {
         return new Set(
-            this.getCurrentCourses().map((course) => scheduleSectionKey(course.term, course.section.sectionCode))
+            this.getCurrentCourses().flatMap((course) =>
+                course.sections.map((section) => scheduleSectionKey(course.term, section.sectionCode))
+            )
         );
     }
 
@@ -256,127 +253,147 @@ export class Schedules {
     }
 
     /**
-     * Get course that matches the params across **all** schedules.
+     * Find the color of a section across **all** schedules.
+     * Used to inherit color when adding an already-scheduled section to another schedule.
      */
-    getExistingCourse(sectionCode: string, term: AATerm) {
-        for (const course of this.getAllCourses()) {
-            if (course.section.sectionCode === sectionCode && term.shortName === course.term.shortName) {
-                return course;
+    private findSectionColorAcrossSchedules(sectionCode: string, term: AATerm): string | undefined {
+        for (const schedule of this.schedules) {
+            for (const course of schedule.courses) {
+                if (course.term.shortName !== term.shortName) continue;
+                const section = course.sections.find((s) => s.sectionCode === sectionCode);
+                if (section) return section.color;
             }
         }
         return undefined;
     }
 
     /**
-     * Get a course that matches the params in the **current** schedule.
+     * Find a section in the **current** schedule.
      */
-    getExistingCourseInSchedule(sectionCode: string, term: AATerm) {
+    findSectionInSchedule(sectionCode: string, term: AATerm): AASection | undefined {
         for (const course of this.getCurrentCourses()) {
-            if (course.section.sectionCode === sectionCode && term.shortName === course.term.shortName) {
-                return course;
-            }
+            if (course.term.shortName !== term.shortName) continue;
+            const section = course.sections.find((s) => s.sectionCode === sectionCode);
+            if (section) return section;
         }
         return undefined;
     }
 
     /**
-     * Adds a course to a given schedule index.
-     * Sets color to an unused color in set, also will not add class if already exists
+     * Adds a section to a course in a given schedule index.
+     * Groups sections under the same offering. Sets color to an unused color.
+     * Will not add if the section already exists in the target schedule.
      *
-     * @param newCourse The course to add
-     * @param scheduleIndex Defaults to current schedule
+     * @param section The section to add
+     * @param course The course the section belongs to
+     * @param scheduleIndex Target schedule index
      * @param addUndoState Defaults to true
-     * @returns The course object that was added.
      */
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
+    addCourse(section: AASection, course: AACourseWithTerm, scheduleIndex: number, addUndoState = true) {
         if (addUndoState) {
             this.addUndoState();
         }
 
-        const existingSection = this.getExistingCourseInSchedule(newCourse.section.sectionCode, newCourse.term);
-
-        const existsInSchedule = this.doesCourseExistInSchedule(
-            newCourse.section.sectionCode,
-            newCourse.term,
-            scheduleIndex
-        );
-
-        // If it's already present in a schedule, then no need to push it.
-        if (existsInSchedule && existingSection) {
-            return existingSection;
+        // Already present in target schedule
+        if (this.doesCourseExistInSchedule(section.sectionCode, course.term, scheduleIndex)) {
+            return;
         }
 
-        // existingSection is pushed so methods (e.g. @changeCourseColor) have the same course reference across all schedules.
-        if (existingSection) {
-            this.schedules[scheduleIndex].courses.push(existingSection);
-            return existingSection;
-        }
+        // Always clone — never share references across schedules.
+        // Inherit color from an existing copy in any schedule, or assign a new one.
+        const existingColor = this.findSectionColorAcrossSchedules(section.sectionCode, course.term);
+
         const sectionToAdd = {
-            ...newCourse,
-            section: {
-                ...newCourse.section,
-                // New colors are drawn from a Set of unused colors across the newCourse's term
-                color: getColorForNewSection(
-                    newCourse,
-                    this.getAllCourses().filter((course) => course.term.shortName === newCourse.term.shortName)
+            ...section,
+            color:
+                existingColor ??
+                getColorForNewSection(
+                    section,
+                    course,
+                    this.getAllCourses().filter((c) => c.term.shortName === course.term.shortName)
                 ),
-            },
         };
 
         const courses = this.schedules[scheduleIndex].courses;
-        const offeringKey = scheduleOfferingKey(sectionToAdd);
-        const courseLastSectionIndex = courses.findLastIndex((course) => scheduleOfferingKey(course) === offeringKey);
-        if (courseLastSectionIndex !== -1) {
-            courses.splice(courseLastSectionIndex + 1, 0, sectionToAdd);
-        } else {
-            courses.push(sectionToAdd);
-        }
+        const offeringKey = scheduleOfferingKey(course);
+        const existingCourse = courses.find((c) => scheduleOfferingKey(c) === offeringKey);
 
-        return sectionToAdd;
+        if (existingCourse) {
+            existingCourse.sections.push(sectionToAdd);
+            existingCourse.sections.sort((a, b) => parseInt(a.sectionCode, 10) - parseInt(b.sectionCode, 10));
+        } else {
+            courses.push({
+                term: course.term,
+                deptCode: course.deptCode,
+                courseNumber: course.courseNumber,
+                courseId: course.courseId,
+                courseTitle: course.courseTitle,
+                courseComment: course.courseComment,
+                prerequisiteLink: course.prerequisiteLink,
+                sectionTypes: course.sectionTypes,
+                sections: [sectionToAdd],
+                updatedAt: course.updatedAt ?? null,
+            });
+        }
     }
 
     /**
-     * Add a course to every schedule.
-     * @returns the course object that was added.
+     * Add a section to a course in every schedule.
      */
-    addCourseToAllSchedules(newCourse: ScheduleCourse) {
+    addCourseToAllSchedules(section: AASection, course: AACourseWithTerm) {
         this.addUndoState();
         for (let i = 0; i < this.getNumberOfSchedules(); i++) {
-            this.addCourse(newCourse, i, false);
+            this.addCourse(section, course, i, false);
         }
-        return newCourse;
     }
 
     /**
      * Change courses that match the code and term in all schedules to new color.
+     * Sections are independent clones across schedules, so this iterates every
+     * schedule explicitly to keep colors in sync.
      */
     changeCourseColor(sectionCode: string, term: AATerm, newColor: string) {
         this.addUndoState();
 
-        const course = this.getExistingCourseInSchedule(sectionCode, term);
-
-        if (course) {
-            course.section.color = newColor;
+        for (const schedule of this.schedules) {
+            for (const course of schedule.courses) {
+                if (course.term.shortName !== term.shortName) continue;
+                const section = course.sections.find((s) => s.sectionCode === sectionCode);
+                if (section) {
+                    section.color = newColor;
+                }
+            }
         }
     }
 
     /**
-     * Delete a course in current schedule.
+     * Delete a section from a course in the given schedule.
+     * Removes the entire course if it has no sections left.
      */
     deleteCourse(sectionCode: string, term: AATerm, scheduleIndex: number) {
         this.addUndoState();
-        this.setCurrentScheduleIndex(scheduleIndex);
-        this.schedules[scheduleIndex].courses = this.schedules[this.currentScheduleIndex].courses.filter((course) => {
-            return !(course.section.sectionCode === sectionCode && course.term.shortName === term.shortName);
-        });
+        const courses = this.schedules[scheduleIndex].courses;
+        for (let i = 0; i < courses.length; i++) {
+            const course = courses[i];
+            if (course.term.shortName !== term.shortName) continue;
+            const sectionIndex = course.sections.findIndex((s) => s.sectionCode === sectionCode);
+            if (sectionIndex !== -1) {
+                course.sections.splice(sectionIndex, 1);
+                if (course.sections.length === 0) {
+                    courses.splice(i, 1);
+                }
+                return;
+            }
+        }
     }
 
     /**
-     * Check if a course has already been added to a schedule.
+     * Check if a section has already been added to a schedule.
      */
     doesCourseExistInSchedule(sectionCode: string, term: AATerm, scheduleIndex: number) {
         for (const course of this.schedules[scheduleIndex].courses) {
-            if (course.section.sectionCode === sectionCode && term.shortName === course.term.shortName) {
+            if (course.term.shortName !== term.shortName) continue;
+            if (course.sections.some((s) => s.sectionCode === sectionCode)) {
                 return true;
             }
         }
@@ -388,7 +405,7 @@ export class Schedules {
     }
 
     /**
-     * Get a reference ito the custom event that matches the ID.
+     * Get a reference to the custom event that matches the ID.
      */
     getExistingCustomEvent(customEventId: CustomEventId) {
         for (const customEvent of this.getAllCustomEvents()) {
@@ -611,14 +628,14 @@ export class Schedules {
                 id: schedule.scheduleId,
                 scheduleName: schedule.scheduleName,
                 customEvents: schedule.customEvents,
-                courses: schedule.courses.map((course) => {
-                    return {
-                        color: course.section.color,
+                courses: schedule.courses.flatMap((course) =>
+                    course.sections.map((section) => ({
+                        color: section.color,
                         term: course.term.shortName,
-                        sectionCode: course.section.sectionCode,
-                        visibility: getVisibility(schedule.scheduleId, course.term, course.section.sectionCode),
-                    };
-                }),
+                        sectionCode: section.sectionCode,
+                        visibility: getVisibility(schedule.scheduleId, course.term, section.sectionCode),
+                    }))
+                ),
                 scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],
             };
         });
@@ -685,9 +702,9 @@ export class Schedules {
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
 
-            // Map course info to courses and transform shortened schedule to normal schedule
+            // Map course info to courses and group sections by offering
             for (const shortCourseSchedule of saveState.schedules) {
-                const courses: ScheduleCourse[] = [];
+                const groupedCourses: AACourseWithTerm[] = [];
                 for (const shortCourse of shortCourseSchedule.courses) {
                     const courseInfoMap = courseInfoDict.get(shortCourse.term);
                     if (courseInfoMap !== undefined) {
@@ -708,25 +725,36 @@ export class Schedules {
                             continue;
                         }
 
-                        courses.push({
-                            courseComment: course.courseComment,
-                            courseNumber: course.courseNumber,
-                            courseTitle: course.courseTitle,
-                            courseId: course.courseId,
-                            deptCode: course.deptCode,
-                            prerequisiteLink: course.prerequisiteLink,
-                            sectionTypes: course.sectionTypes,
+                        const aaSection: AASection = { ...section, color: shortCourse.color };
+
+                        // Group into existing course or create new one
+                        const offeringKey = scheduleOfferingKey({
                             term,
-                            section: {
-                                ...section,
-                                color: shortCourse.color,
-                            },
+                            courseId: course.courseId,
+                            courseTitle: course.courseTitle,
                         });
+                        const existingCourse = groupedCourses.find((c) => scheduleOfferingKey(c) === offeringKey);
+                        if (existingCourse) {
+                            existingCourse.sections.push(aaSection);
+                            existingCourse.sections.sort(
+                                (a, b) => parseInt(a.sectionCode, 10) - parseInt(b.sectionCode, 10)
+                            );
+                        } else {
+                            groupedCourses.push({
+                                term,
+                                deptCode: course.deptCode,
+                                courseNumber: course.courseNumber,
+                                courseId: course.courseId,
+                                courseTitle: course.courseTitle,
+                                courseComment: course.courseComment,
+                                prerequisiteLink: course.prerequisiteLink,
+                                sectionTypes: course.sectionTypes,
+                                sections: [aaSection],
+                                updatedAt: course.updatedAt ?? null,
+                            });
+                        }
                     }
                 }
-
-                /** See {@link groupCourseSections} */
-                const groupedCourses = groupCourseSections(courses);
 
                 const scheduleNoteId = Math.random();
                 if ('scheduleNote' in shortCourseSchedule) {

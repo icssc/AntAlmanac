@@ -1,6 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { Link } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
-import { Link } from 'react-router-dom';
 
 interface SyllabusCellProps {
     section: AASection;
@@ -14,7 +14,7 @@ export const SyllabusCell = ({ section }: SyllabusCellProps) => {
 
     return (
         <TableBodyCellContainer>
-            <Link to={webURL} target="_blank" referrerPolicy="no-referrer">
+            <Link href={webURL} target="_blank" rel="noopener noreferrer">
                 Link
             </Link>
         </TableBodyCellContainer>

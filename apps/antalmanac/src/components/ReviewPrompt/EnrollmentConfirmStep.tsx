@@ -44,18 +44,18 @@ export function EnrollmentConfirmStep() {
             />
 
             <CardContent sx={{ paddingTop: 0 }}>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body1" sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
                     Did you take{' '}
-                    <Box component="span" fontWeight={600} color="text.primary">
+                    <Box component="span" fontWeight={600} sx={{ color: (theme) => theme.vars.palette.text.primary }}>
                         {courseId}
                     </Box>{' '}
                     {courseTitle && <>({courseTitle}) </>}
                     in{' '}
-                    <Box component="span" fontWeight={600} color="text.primary">
+                    <Box component="span" fontWeight={600} sx={{ color: (theme) => theme.vars.palette.text.primary }}>
                         {term?.shortName}
                     </Box>{' '}
                     with{' '}
-                    <Box component="span" fontWeight={600} color="text.primary">
+                    <Box component="span" fontWeight={600} sx={{ color: (theme) => theme.vars.palette.text.primary }}>
                         {professorId}
                     </Box>
                     ?

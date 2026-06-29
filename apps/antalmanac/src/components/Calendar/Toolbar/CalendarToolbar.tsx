@@ -1,62 +1,51 @@
 import { redoAction, undoDelete } from '$actions/AppStoreActions';
 import { ClearScheduleButton } from '$components/buttons/Clear';
-import DownloadButton from '$components/buttons/Download';
-import ScreenshotButton from '$components/buttons/Screenshot';
+import { DownloadButton } from '$components/buttons/Download';
+import { ScreenshotButton } from '$components/buttons/Screenshot';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { CONTAINER_NAMES } from '$lib/containerQueries';
-import AppStore from '$stores/AppStore';
+import { containerQuery, containerSx, containers } from '$lib/containerQueries';
 import { useFallbackStore } from '$stores/FallbackStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import {
-    Undo as UndoIcon,
-    Redo as RedoIcon,
+    DeleteOutline,
     Description as DescriptionIcon,
     DescriptionOutlined as DescriptionOutlinedIcon,
+    Download,
     MoreVert as MoreVertIcon,
     Panorama,
-    Download,
-    DeleteOutline,
+    Redo as RedoIcon,
+    Undo as UndoIcon,
 } from '@mui/icons-material';
 import {
-    useTheme,
-    useMediaQuery,
     Box,
     Button,
     IconButton,
-    Paper,
-    Tooltip,
-    Menu,
-    MenuItem,
     ListItemIcon,
     ListItemText,
+    Menu,
+    MenuItem,
+    Paper,
+    Tooltip,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState, useCallback, memo, useRef } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 
 interface CalendarPaneToolbarProps {
-    scheduleNames: string[];
-    currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
-    onScreenshot?: () => void;
 }
 
-/**
- * The root toolbar will pass down the schedule names to its children.
- */
-export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
+export const CalendarToolbar = memo(({ showFinalsSchedule, toggleDisplayFinalsSchedule }: CalendarPaneToolbarProps) => {
     const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
-    const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
     const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(menuAnchorEl);
-
     const postHog = usePostHog();
 
     // Refs to trigger existing button components
@@ -134,8 +123,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 alignItems: 'center',
                 padding: 1,
                 borderRadius: '4px 4px 0 0',
-                containerType: 'inline-size',
-                containerName: CONTAINER_NAMES.toolbar,
+                ...containerSx(containers.toolbar),
                 borderWidth: '1px 0px 1px 0px',
             }}
         >
@@ -151,17 +139,17 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             size="small"
                             sx={{
                                 border: '1px solid',
-                                borderColor: showFinalsSchedule ? theme.palette.primary.main : 'inherit',
+                                borderColor: showFinalsSchedule ? theme.vars.palette.primary.main : 'inherit',
                                 borderRadius: '4px',
                                 padding: '3px',
                                 ...(showFinalsSchedule &&
-                                    isDark && {
-                                        backgroundColor: theme.palette.primary.main,
+                                    theme.applyStyles('dark', {
+                                        backgroundColor: theme.vars.palette.primary.main,
                                         color: '#fff',
                                         '&:hover': {
-                                            backgroundColor: theme.palette.primary.dark,
+                                            backgroundColor: theme.vars.palette.primary.dark,
                                         },
-                                    }),
+                                    })),
                             }}
                         >
                             {showFinalsSchedule ? <DescriptionIcon /> : <DescriptionOutlinedIcon />}
@@ -185,7 +173,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             <Box
                 sx={{
                     display: isMobile ? 'flex' : 'none',
-                    [`@container ${CONTAINER_NAMES.toolbar} (max-width: 500px)`]: {
+                    [containerQuery(containers.toolbar, 500)]: {
                         display: 'flex',
                     },
                 }}
@@ -198,7 +186,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         <IconButton onClick={handleRedo} disabled={fallbackMode}>
                             <RedoIcon fontSize="small" />
                         </IconButton>
-                        <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                        <CustomEventDialog key="custom" />
 
                         <Tooltip title="More options">
                             <IconButton onClick={handleMenuOpen} disabled={fallbackMode}>
@@ -265,13 +253,13 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     flexWrap: 'nowrap',
                     alignItems: 'center',
                     gap: 0.5,
-                    [`@container ${CONTAINER_NAMES.toolbar} (max-width: 500px)`]: {
+                    [containerQuery(containers.toolbar, 500)]: {
                         display: 'none',
                     },
                 }}
             >
                 <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <ScreenshotButton onScreenshot={props.onScreenshot} />
+                    <ScreenshotButton />
 
                     <DownloadButton />
 
@@ -288,7 +276,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
 
                     <ClearScheduleButton size="medium" fontSize="small" analyticsCategory={analyticsEnum.calendar} />
 
-                    <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                    <CustomEventDialog key="custom" />
                 </Box>
             </Box>
         </Paper>

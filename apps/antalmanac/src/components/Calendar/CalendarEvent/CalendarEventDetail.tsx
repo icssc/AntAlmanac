@@ -1,8 +1,8 @@
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { isCourseEvent, type CourseEvent, type CustomEvent } from '$components/Calendar/types';
-import ColorPicker from '$components/ColorPicker';
+import { type CourseEvent, type CustomEvent, isCourseEvent } from '$components/Calendar/types';
+import { ColorPicker } from '$components/ColorPicker';
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
@@ -12,19 +12,18 @@ import AppStore from '$stores/AppStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
+import { Box, Button, Chip, IconButton, Paper, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useRef } from 'react';
 
 interface CalendarEventDetailProps {
     selectedEvent: CourseEvent | CustomEvent;
-    scheduleNames: string[];
     closePopover: () => void;
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-export function CalendarEventDetail({ selectedEvent, scheduleNames, closePopover }: CalendarEventDetailProps) {
+export function CalendarEventDetail({ selectedEvent, closePopover }: CalendarEventDetailProps) {
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
@@ -170,10 +169,7 @@ export function CalendarEventDetail({ selectedEvent, scheduleNames, closePopover
                     customEventID={selectedEvent.customEventID}
                     analyticsCategory={analyticsEnum.calendar}
                 />
-                <CustomEventDialog
-                    customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
-                    scheduleNames={scheduleNames}
-                />
+                <CustomEventDialog customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)} />
 
                 <Tooltip title="Delete">
                     <IconButton

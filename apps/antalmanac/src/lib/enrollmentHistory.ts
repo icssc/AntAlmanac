@@ -1,7 +1,6 @@
+import { getTermByYearAndQuarter, termData } from '$lib/term';
 import type { AATerm } from '@packages/antalmanac-types';
 import type { EnrollmentHistoryEntry } from '@packages/anteater-api/types';
-
-import { getTermByYearAndQuarter, termData } from './term';
 
 export interface EnrollmentHistory {
     term: AATerm;

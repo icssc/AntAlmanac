@@ -4,7 +4,6 @@ enum LocalStorageKeys {
     patchNotesKey = 'latestPatchSeen',
     recruitmentDismissalTime = 'recruitmentDismissalTime',
     tourHasRun = 'tourHasRun',
-    theme = 'theme',
     sectionColor = 'sectionColor',
     sectionColorAssignments = 'sectionColorAssignments',
     show24HourTime = 'show24HourTime',
@@ -14,11 +13,14 @@ enum LocalStorageKeys {
     columnToggles = 'columnToggles',
     wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
-    importedUser = 'importedUser',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
     addedCoursesSkeletonBlueprint = 'addedCoursesSkeletonBlueprint',
 
+    /** @deprecated Guest import confirmation now uses a snackbar in AuthInitializer. */
+    importedUser = 'importedUser',
+    /** @deprecated Theme preference is now managed by MUI via modeStorageKey="theme". */
+    theme = 'theme',
     /** @deprecated No longer used. Low impact feature. */
     recentlySearched = 'recentlySearched',
     /** @deprecated Removed for being a net negative on UX and confusing schedule persistence behavior */
@@ -34,18 +36,6 @@ enum LocalStorageKeys {
 }
 
 const LSK = LocalStorageKeys;
-
-export function setLocalStorageImportedUser(value: string) {
-    window.localStorage.setItem(LSK.importedUser, value);
-}
-
-export function getLocalStorageImportedUser() {
-    return window.localStorage.getItem(LSK.importedUser);
-}
-
-export function removeLocalStorageImportedUser() {
-    window.localStorage.removeItem(LSK.importedUser);
-}
 
 export function setLocalStorageDataCache(value: string) {
     window.localStorage.setItem(LSK.dataCache, value);
@@ -108,15 +98,6 @@ export function setLocalStorageTourHasRun(value: string) {
 
 export function getLocalStorageTourHasRun() {
     return window.localStorage.getItem(LSK.tourHasRun);
-}
-
-// Helper functions for theme
-export function setLocalStorageTheme(value: string) {
-    window.localStorage.setItem(LSK.theme, value);
-}
-
-export function getLocalStorageTheme() {
-    return window.localStorage.getItem(LSK.theme);
 }
 
 // Helper functions for sectionColor

@@ -113,8 +113,7 @@ async function sendNotification(
 
         const time = getFormattedTime();
 
-        // Add staging prefix to subject line if not in production
-        const isStaging = env.NODE_ENV !== 'production';
+        const isStaging = env.STAGE !== 'production';
         const stagingPrefix = isStaging ? '[SQS] [STAGING] ' : '';
 
         const usersWithEmail = users.filter(

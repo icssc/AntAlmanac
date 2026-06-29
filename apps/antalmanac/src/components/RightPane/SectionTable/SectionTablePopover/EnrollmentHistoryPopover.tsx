@@ -1,7 +1,7 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
-import { parseAndSortEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
+import { type EnrollmentHistory, parseAndSortEnrollmentHistory } from '$lib/enrollmentHistory';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
@@ -11,10 +11,13 @@ import type { WebsocSectionType } from '@packages/anteater-api/types';
 import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
 
-const EnrollmentHistoryPopoverChart = dynamic(() => import('./EnrollmentHistoryPopoverChart'), {
-    ssr: false,
-    loading: () => <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />,
-});
+const EnrollmentHistoryPopoverChart = dynamic(
+    () => import('./EnrollmentHistoryPopoverChart').then((m) => ({ default: m.EnrollmentHistoryPopoverChart })),
+    {
+        ssr: false,
+        loading: () => <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />,
+    }
+);
 
 interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
@@ -144,7 +147,7 @@ export function EnrollmentHistoryPopover({
                             px: 1,
                         }}
                     >
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography variant="body1" sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
                             No past enrollment data found for this course
                         </Typography>
                     </Box>

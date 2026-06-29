@@ -1,26 +1,23 @@
 'use server';
-import { auth, type AuthorizationUrlParams } from '$lib/auth/auth';
+import { type AuthorizationUrlParams, auth } from '$lib/auth/auth';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
 import { type AuthAdditionalData, Provider } from '$lib/auth/authTypes';
 import { getProviderIcsscName } from '$lib/auth/authUtils';
-import { getNativeIosRedirectUri } from '$lib/platform';
 import { env } from '$src/env';
 
 interface GetSignInUrlOptions {
     authorizationUrlParams?: AuthorizationUrlParams;
     returnUrl?: string;
-    isNativeIosApp?: boolean;
 }
 
 export async function getSignInUrl(
     provider: Provider,
-    { authorizationUrlParams, returnUrl, isNativeIosApp }: GetSignInUrlOptions = {}
+    { authorizationUrlParams, returnUrl }: GetSignInUrlOptions = {}
 ) {
     const { url } = await auth.api.signInWithOAuth2({
         body: {
             providerId: AUTH_PROVIDER_ID,
             newUserCallbackURL: '/welcome',
-            callbackURL: isNativeIosApp ? getNativeIosRedirectUri(env.BETTER_AUTH_URL) : undefined,
             additionalData: {
                 returnUrl,
                 provider,

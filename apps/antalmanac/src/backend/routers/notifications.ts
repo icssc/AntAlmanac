@@ -4,8 +4,8 @@ import {
     retrieveNotifications,
     updateAllNotifications,
     upsertNotification,
-} from '$src/backend/lib/rds/notifications';
-import { procedure, protectedProcedure, router } from '$src/backend/trpc';
+} from '$backend/lib/rds/notifications';
+import { procedure, protectedProcedure, router } from '$backend/trpc';
 import { env } from '$src/env';
 import { QuarterSchema, WebsocSectionStatusSchema, WebsocSectionTypeSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';

@@ -1,4 +1,4 @@
-import { protectedProcedure, router } from '$src/backend/trpc';
+import { protectedProcedure, router } from '$backend/trpc';
 import { env } from '$src/env';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { headers } from 'next/headers';

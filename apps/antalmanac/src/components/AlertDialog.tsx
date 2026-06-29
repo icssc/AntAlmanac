@@ -1,6 +1,4 @@
-import { LIGHT_BLUE } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
-import { Alert, Box, Dialog, DialogContent, type AlertColor, DialogActions, Button } from '@mui/material';
+import { Alert, type AlertColor, Box, Button, Dialog, DialogActions, DialogContent } from '@mui/material';
 
 interface AlertDialogProps {
     open: boolean;
@@ -11,18 +9,12 @@ interface AlertDialogProps {
     onClose?: () => void;
 }
 export const AlertDialog = ({ open, title, children, severity = 'info', onClose }: AlertDialogProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogContent
-                sx={{
-                    fontSize: 'small',
-                    ...(isDark && { '& a, & a:hover, & a:visited': { color: LIGHT_BLUE } }),
-                }}
-            >
+            <DialogContent sx={{ fontSize: 'small' }}>
                 <Alert
                     severity={severity}
-                    variant={isDark ? 'outlined' : 'standard'}
+                    variant="filled"
                     sx={{
                         alignItems: 'center',
                         justifyContent: 'center',

@@ -15,19 +15,19 @@ interface EnrollmentHistoryPopoverChartProps {
     days: EnrollmentHistoryDay[];
 }
 
-export default function EnrollmentHistoryPopoverChart({ days }: EnrollmentHistoryPopoverChartProps) {
+export function EnrollmentHistoryPopoverChart({ days }: EnrollmentHistoryPopoverChartProps) {
     const theme = useTheme();
-    const chartColors = theme.palette.enrollmentStatus;
+    const chartColors = theme.vars.palette.enrollmentStatus;
 
     return (
         <ResponsiveContainer>
             <LineChart data={days} style={{ cursor: 'pointer' }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <RechartsTooltip contentStyle={{ backgroundColor: theme.palette.background.paper }} />
+                <RechartsTooltip contentStyle={{ backgroundColor: theme.vars.palette.background.paper }} />
                 <Legend wrapperStyle={{ left: 0, width: '100%' }} />
 
-                <XAxis dataKey="date" tick={{ fontSize: 12, fill: theme.palette.text.primary }} />
-                <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} width={35} />
+                <XAxis dataKey="date" tick={{ fontSize: 12, fill: theme.vars.palette.text.primary }} />
+                <YAxis tick={{ fontSize: 12, fill: theme.vars.palette.text.primary }} width={35} />
 
                 <Line
                     type="monotone"

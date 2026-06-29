@@ -8,15 +8,13 @@ import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchP
 import type { CourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/types';
 import { LIGHT_BLUE } from '$src/globals';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { useThemeStore } from '$stores/SettingsStore';
-import { alpha, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup, alpha } from '@mui/material';
 import { useShallow } from 'zustand/react/shallow';
 
 export function SearchFormModeToggle() {
     const { manualSearchEnabled, setSearchMode } = useCourseSearchMode();
     const { resetForm, setFields } = useCourseSearchForm();
     const { clearView } = useCourseSearchView();
-    const isDark = useThemeStore((store) => store.isDark);
     const { savedManualSearch, saveManualSearch } = useSavedSearchStore(
         useShallow((store) => ({
             savedManualSearch: store.savedManualSearch,
@@ -51,12 +49,14 @@ export function SearchFormModeToggle() {
             value={manualSearchEnabled ? COURSE_SEARCH_MODE.MANUAL : COURSE_SEARCH_MODE.QUICK}
             exclusive
             aria-label="Search selection"
-            sx={{
+            sx={(theme) => ({
                 paddingTop: 1,
                 '& .MuiToggleButton-root.Mui-selected': {
-                    backgroundColor: isDark ? alpha(LIGHT_BLUE, 0.05) : undefined,
+                    ...theme.applyStyles('dark', {
+                        backgroundColor: alpha(LIGHT_BLUE, 0.05),
+                    }),
                 },
-            }}
+            })}
             onChange={toggleSearchMode}
         >
             <ToggleButton value={COURSE_SEARCH_MODE.QUICK}>Quick Search</ToggleButton>

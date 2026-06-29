@@ -17,3 +17,14 @@ body {
     white-space: nowrap;
     border-width: 0;
 }
+
+/* Hide the scrollbars on mobile devices */
+@media (max-width: 799px) {
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    * {
+        scrollbar-width: none;
+    }
+}

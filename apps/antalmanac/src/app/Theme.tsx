@@ -1,12 +1,9 @@
 'use client';
 
 import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
 import { CssBaseline, type PaletteOptions } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, type ThemeVars, createTheme } from '@mui/material/styles';
 import { Roboto } from 'next/font/google';
-import { useEffect, useMemo } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -14,8 +11,8 @@ const roboto = Roboto({
     display: 'swap',
 });
 
-const lightTheme: PaletteOptions = {
-    primary: { main: BLUE }, // #305db7
+const lightPalette: PaletteOptions = {
+    primary: { main: BLUE, contrastText: '#fff' },
     secondary: { main: BLUE },
     settingsSegment: {
         border: '#d3d4d5',
@@ -47,8 +44,8 @@ const darkPaperOverride = {
     color: '#fff',
 };
 
-const darkTheme: PaletteOptions = {
-    primary: { main: BLUE }, // #305db7
+const darkPalette: PaletteOptions = {
+    primary: { main: BLUE, contrastText: '#fff' },
     secondary: { main: LIGHT_BLUE },
     settingsSegment: {
         border: '#888888',
@@ -74,11 +71,11 @@ const darkTheme: PaletteOptions = {
     },
 };
 
-interface Props {
-    children?: React.ReactNode;
-}
-
 declare module '@mui/material/styles' {
+    interface Theme {
+        vars: ThemeVars;
+    }
+
     interface BreakpointOverrides {
         xxs: true;
         default: true;
@@ -115,161 +112,141 @@ declare module '@mui/material/styles' {
     }
 }
 
-/**
- * sets and provides the MUI theme for the app
- */
-export default function AppThemeProvider(props: Props) {
-    const [isDark, syncSystemTheme] = useThemeStore(useShallow((store) => [store.isDark, store.syncSystemTheme]));
-
-    useEffect(() => {
-        const onChange = (e: MediaQueryListEvent) => {
-            syncSystemTheme(e.matches);
-        };
-
-        const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
-
-        mediaQueryList.addEventListener('change', onChange);
-
-        return () => {
-            mediaQueryList.removeEventListener('change', onChange);
-        };
-    }, [syncSystemTheme]);
-
-    const theme = useMemo(
-        () =>
-            createTheme({
-                typography: {
-                    fontFamily: roboto.style.fontFamily,
+const appTheme = createTheme({
+    cssVariables: {
+        colorSchemeSelector: 'class',
+    },
+    colorSchemes: {
+        light: {
+            palette: lightPalette,
+        },
+        dark: {
+            palette: darkPalette,
+        },
+    },
+    typography: {
+        fontFamily: roboto.style.fontFamily,
+    },
+    components: {
+        MuiAlert: {
+            styleOverrides: {
+                standardWarning: {
+                    backgroundColor: '#FFEA99',
+                    color: '#302800ff',
                 },
-                components: {
-                    MuiAppBar: {
-                        styleOverrides: {
-                            root: {
-                                backgroundImage: 'none',
-                            },
-                        },
-                    },
-                    MuiButton: {
-                        styleOverrides: {
-                            root: ({ ownerState }) => ({
-                                ...(ownerState.variant === 'contained' &&
-                                    ownerState.color === 'primary' && {
-                                        backgroundColor: BLUE,
-                                        ':hover': {
-                                            backgroundColor: '#003A75',
-                                        },
-                                    }),
-                                ...(ownerState.variant === 'contained' &&
-                                    ownerState.color === 'secondary' && {
-                                        backgroundColor: '#E0E0E0',
-                                        color: '#212529',
-                                        ':hover': {
-                                            backgroundColor: '#D5D5D5',
-                                        },
-                                    }),
-                            }),
-                        },
-                    },
-                    MuiCssBaseline: {
-                        styleOverrides: {
-                            a: {
-                                color: isDark ? LIGHT_BLUE : BLUE,
-                            },
-                        },
-                    },
-                    // NB: https://github.com/mui/material-ui/issues/43683#issuecomment-2492787970
-                    MuiDialog: {
-                        styleOverrides: {
-                            paper: {
-                                backgroundImage: 'none',
-                                ...(isDark && darkPaperOverride),
-                            },
-                        },
-                    },
-                    MuiDrawer: {
-                        styleOverrides: {
-                            paper: {
-                                backgroundImage: 'none',
-                            },
-                        },
-                    },
-                    MuiInputLabel: {
-                        defaultProps: {
-                            variant: 'standard',
-                        },
-                    },
-                    MuiPaper: {
-                        styleOverrides: {
-                            root: ({ theme }) => ({
-                                ...(theme.palette.mode === 'dark' && {
-                                    backgroundImage: 'none',
-                                    background: theme.palette.background.paper,
-                                    backgroundColor: theme.palette.background.paper,
-                                    color: theme.palette.text.primary,
-                                }),
-                            }),
-                        },
-                    },
-                    MuiPopover: {
-                        styleOverrides: {
-                            paper: {
-                                backgroundImage: 'none',
-                                ...(isDark && darkPaperOverride),
-                            },
-                        },
-                    },
-                    MuiMenu: {
-                        styleOverrides: {
-                            paper: {
-                                backgroundImage: 'none',
-                                ...(isDark && darkPaperOverride),
-                            },
-                        },
-                    },
-                    MuiSelect: {
-                        defaultProps: {
-                            variant: 'standard',
-                        },
-                    },
-                    MuiTextField: {
-                        defaultProps: {
-                            variant: 'standard',
-                        },
-                    },
-                    MuiAlert: {
-                        styleOverrides: {
-                            standardWarning: {
-                                backgroundColor: '#FFEA99',
-                                color: '#302800ff',
-                            },
-                        },
-                    },
+            },
+        },
+        MuiAppBar: {
+            defaultProps: {
+                enableColorOnDark: true,
+            },
+            styleOverrides: {
+                root: {
+                    backgroundImage: 'none',
                 },
-                breakpoints: {
-                    /**
-                     * Based on Tailwind's breakpoints.
-                     * @see https://tailwindcss.com/docs/screens
-                     */
-                    values: {
-                        default: 0,
-                        xxs: 400,
-                        xs: 640,
-                        sm: 800,
-                        md: 1024,
-                        lg: 1280,
-                        xl: 1536,
+            },
+        },
+        MuiButton: {
+            styleOverrides: {
+                root: ({ ownerState }) => ({
+                    ...(ownerState.variant === 'contained' &&
+                        ownerState.color === 'primary' && {
+                            backgroundColor: BLUE,
+                            ':hover': {
+                                backgroundColor: '#003A75',
+                            },
+                        }),
+                    ...(ownerState.variant === 'contained' &&
+                        ownerState.color === 'secondary' && {
+                            backgroundColor: '#E0E0E0',
+                            color: '#212529',
+                            ':hover': {
+                                backgroundColor: '#D5D5D5',
+                            },
+                        }),
+                }),
+            },
+        },
+        MuiLink: {
+            defaultProps: {
+                color: 'secondary',
+            },
+            styleOverrides: {
+                root: ({ theme }) => [
+                    {
+                        color: BLUE,
+                        ':visited': { color: LIGHT_BLUE },
                     },
+                    theme.applyStyles('dark', {
+                        color: LIGHT_BLUE,
+                        ':visited': { color: LIGHT_BLUE },
+                    }),
+                ],
+            },
+        },
+        // NB: https://github.com/mui/material-ui/issues/43683#issuecomment-2492787970
+        MuiDialog: {
+            styleOverrides: {
+                paper: ({ theme }) => [{ backgroundImage: 'none' }, theme.applyStyles('dark', darkPaperOverride)],
+            },
+        },
+        MuiDrawer: {
+            styleOverrides: {
+                paper: {
+                    backgroundImage: 'none',
                 },
-                palette: {
-                    mode: isDark ? 'dark' : 'light',
-                    ...(isDark ? darkTheme : lightTheme),
-                },
-            }),
-        [isDark]
-    );
+            },
+        },
+        MuiInputLabel: {
+            defaultProps: {
+                variant: 'standard',
+            },
+        },
+        MuiPopover: {
+            styleOverrides: {
+                paper: ({ theme }) => [{ backgroundImage: 'none' }, theme.applyStyles('dark', darkPaperOverride)],
+            },
+        },
+        MuiMenu: {
+            styleOverrides: {
+                paper: ({ theme }) => [{ backgroundImage: 'none' }, theme.applyStyles('dark', darkPaperOverride)],
+            },
+        },
+        MuiSelect: {
+            defaultProps: {
+                variant: 'standard',
+            },
+        },
+        MuiTextField: {
+            defaultProps: {
+                variant: 'standard',
+            },
+        },
+    },
+    breakpoints: {
+        /**
+         * Based on Tailwind's breakpoints.
+         * @see https://tailwindcss.com/docs/screens
+         */
+        values: {
+            default: 0,
+            xxs: 400,
+            xs: 640,
+            sm: 800,
+            md: 1024,
+            lg: 1280,
+            xl: 1536,
+        },
+    },
+});
 
+interface Props {
+    children?: React.ReactNode;
+}
+
+export function AppThemeProvider(props: Props) {
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={appTheme} defaultMode="system" modeStorageKey="theme" disableTransitionOnChange>
             <CssBaseline />
             {props.children}
         </ThemeProvider>

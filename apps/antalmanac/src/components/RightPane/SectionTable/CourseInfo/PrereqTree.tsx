@@ -24,8 +24,8 @@ const Node: FC<NodeProps> = (props) => {
             <div
                 className={'course'}
                 style={{
-                    backgroundColor: theme.palette.background.paper,
-                    color: theme.palette.text.primary,
+                    backgroundColor: theme.vars.palette.background.paper,
+                    color: theme.vars.palette.text.primary,
                 }}
             >
                 {props.label}
@@ -91,7 +91,7 @@ interface PrereqTreeProps {
     course: Course;
 }
 
-const PrereqTree: FC<PrereqTreeProps> = ({ course }) => {
+export const PrereqTree: FC<PrereqTreeProps> = ({ course }) => {
     const { id, department, courseNumber, prerequisiteTree, dependencies } = course;
     const hasPrereqs = Object.keys(prerequisiteTree).length > 0;
     const hasDependencies = dependencies.length > 0;
@@ -176,5 +176,3 @@ const PrereqTree: FC<PrereqTreeProps> = ({ course }) => {
         </div>
     );
 };
-
-export default PrereqTree;

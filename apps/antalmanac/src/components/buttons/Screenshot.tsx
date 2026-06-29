@@ -1,16 +1,12 @@
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useThemeStore } from '$stores/SettingsStore';
+import { saveAs } from '$lib/utils';
 import { Panorama } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import { saveAs } from 'file-saver';
 import { usePostHog } from 'posthog-js/react';
 
-interface ScreenshotButtonProps {
-    onScreenshot?: () => void;
-}
-
-const ScreenshotButton = ({ onScreenshot }: ScreenshotButtonProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
+export function ScreenshotButton() {
+    const isDark = useIsDarkMode();
     const postHog = usePostHog();
 
     const handleClick = () => {
@@ -18,8 +14,6 @@ const ScreenshotButton = ({ onScreenshot }: ScreenshotButtonProps) => {
             category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.SCREENSHOT,
         });
-
-        onScreenshot?.();
 
         setTimeout(() => {
             void (async () => {
@@ -46,6 +40,4 @@ const ScreenshotButton = ({ onScreenshot }: ScreenshotButtonProps) => {
             </IconButton>
         </Tooltip>
     );
-};
-
-export default ScreenshotButton;
+}

@@ -1,6 +1,6 @@
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { advancedSearchParsers } from '$components/RightPane/CoursePane/SearchParams/parsers';
-import SectionTable, { type SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
+import { SectionTable, type SectionTableProps } from '$components/RightPane/SectionTable/SectionTable';
 import { trpcReact } from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import type { AACourseWithTerm } from '@packages/antalmanac-types';
@@ -13,7 +13,7 @@ import { useMemo } from 'react';
  * This is because all the non-lecture sections don't have the GE specified so the initial search that included the
  * GE criteria will miss them.
  */
-const GeDataFetchProvider = (props: SectionTableProps) => {
+export function GeDataFetchProvider(props: SectionTableProps) {
     const [term] = useCourseSearchParam('term');
     const [advanced] = useQueryStates(advancedSearchParsers);
 
@@ -51,12 +51,12 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
             return props.course;
         }
 
-        const courseColors = AppStore.schedule
-            .getCurrentCourses()
-            .reduce<Record<string, string>>((acc, { section }) => {
+        const courseColors = AppStore.schedule.getCurrentCourses().reduce<Record<string, string>>((acc, course) => {
+            for (const section of course.sections) {
                 acc[section.sectionCode] = section.color;
-                return acc;
-            }, {});
+            }
+            return acc;
+        }, {});
 
         return {
             ...websocCourse,
@@ -67,6 +67,4 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
     }, [data, props.course, term]);
 
     return <SectionTable {...props} course={course} />;
-};
-
-export default GeDataFetchProvider;
+}

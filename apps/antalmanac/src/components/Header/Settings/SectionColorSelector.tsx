@@ -1,7 +1,7 @@
-import { getPalette, SECTION_THEMES, type SectionColorSetting, type SectionThemeId } from '$lib/sectionThemes';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
+import { SECTION_THEMES, type SectionColorSetting, type SectionThemeId, getPalette } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { useSectionThemeStore } from '$stores/SectionThemeStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import {
     Check,
     Colorize,
@@ -14,7 +14,6 @@ import {
     type SvgIconComponent,
 } from '@mui/icons-material';
 import { Box, Button, ListItemText, Menu, MenuItem, Stack, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useRef, useState } from 'react';
 
@@ -37,7 +36,7 @@ interface ThemeOption {
 
 /** Swatches for "Custom" = the distinct colors the user currently has in their schedule. */
 function getCustomSwatches(isDark: boolean): string[] {
-    const distinct = [...new Set(AppStore.schedule.getCurrentCourses().map((c) => c.section.color))];
+    const distinct = [...new Set(AppStore.schedule.getCurrentCourses().flatMap((c) => c.sections.map((s) => s.color)))];
     if (distinct.length > 0) return distinct.slice(0, 4);
     return getPalette('default', isDark)
         .map((family) => family[0])
@@ -45,7 +44,6 @@ function getCustomSwatches(isDark: boolean): string[] {
 }
 
 function Swatches({ colors }: { colors: string[] }) {
-    const theme = useTheme();
     if (colors.length === 0) return null;
     return (
         <Stack direction="row" gap={0.5} sx={{ flexShrink: 0 }}>
@@ -57,7 +55,8 @@ function Swatches({ colors }: { colors: string[] }) {
                         height: 14,
                         borderRadius: '3px',
                         backgroundColor: c,
-                        border: `1px solid ${theme.palette.divider}`,
+                        border: 1,
+                        borderColor: (theme) => theme.vars.palette.divider,
                     }}
                 />
             ))}
@@ -73,9 +72,7 @@ function Swatches({ colors }: { colors: string[] }) {
  * hovers, committing on click and reverting on dismiss. No modal.
  */
 export function SectionColorSelector() {
-    const muiTheme = useTheme();
-    const isDark = useThemeStore((s) => s.isDark);
-    const accent = muiTheme.palette.secondary.main;
+    const isDark = useIsDarkMode();
 
     const sectionColor = useSectionThemeStore((s) => s.sectionColor);
     const setSectionColor = useSectionThemeStore((s) => s.setSectionColor);
@@ -164,7 +161,7 @@ export function SectionColorSelector() {
                         openMenu();
                     }
                 }}
-                sx={{
+                sx={(theme) => ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -173,22 +170,30 @@ export function SectionColorSelector() {
                     minHeight: 42,
                     boxSizing: 'border-box',
                     padding: '8px 12px',
-                    border: `1px solid ${muiTheme.palette.divider}`,
+                    border: 1,
+                    borderColor: theme.vars.palette.divider,
                     borderRadius: 1,
                     cursor: 'pointer',
-                    backgroundColor: muiTheme.palette.settingsSegment.background,
-                    '&:hover': { backgroundColor: muiTheme.palette.settingsSegment.hoverBackground },
-                }}
+                    backgroundColor: theme.vars.palette.settingsSegment.background,
+                    '&:hover': { backgroundColor: theme.vars.palette.settingsSegment.hoverBackground },
+                })}
             >
                 <Stack direction="row" alignItems="center" gap={1} sx={{ minWidth: 0 }}>
-                    <ActiveIcon fontSize="medium" sx={{ color: accent }} />
-                    <Typography noWrap sx={{ fontWeight: 'bold', fontSize: '1.1rem', color: accent }}>
+                    <ActiveIcon fontSize="medium" sx={{ color: (theme) => theme.vars.palette.secondary.main }} />
+                    <Typography
+                        noWrap
+                        sx={{
+                            fontWeight: 'bold',
+                            fontSize: '1.1rem',
+                            color: (theme) => theme.vars.palette.secondary.main,
+                        }}
+                    >
                         {activeOption.name}
                     </Typography>
                 </Stack>
                 <Stack direction="row" alignItems="center" gap={1}>
                     <Swatches colors={activeOption.swatches} />
-                    <ExpandMore fontSize="small" sx={{ color: accent }} />
+                    <ExpandMore fontSize="small" sx={{ color: (theme) => theme.vars.palette.secondary.main }} />
                 </Stack>
             </Box>
 
@@ -215,7 +220,7 @@ export function SectionColorSelector() {
                             <Check
                                 sx={{
                                     fontSize: 18,
-                                    color: accent,
+                                    color: (theme) => theme.vars.palette.secondary.main,
                                     flexShrink: 0,
                                     visibility: isSelected ? 'visible' : 'hidden',
                                 }}
@@ -235,7 +240,12 @@ export function SectionColorSelector() {
                     size="small"
                     color="inherit"
                     onClick={() => resetTheme(sectionColor as SectionThemeId)}
-                    sx={{ alignSelf: 'flex-start', textTransform: 'none', color: 'text.secondary', px: 0.5 }}
+                    sx={{
+                        alignSelf: 'flex-start',
+                        textTransform: 'none',
+                        color: (theme) => theme.vars.palette.text.secondary,
+                        px: 0.5,
+                    }}
                 >
                     Restore Theme Colors
                 </Button>

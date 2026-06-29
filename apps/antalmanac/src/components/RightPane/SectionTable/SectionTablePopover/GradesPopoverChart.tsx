@@ -1,5 +1,5 @@
 import { useTheme } from '@mui/material/styles';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 interface GradesPopoverChartProps {
     grades: {
@@ -8,23 +8,25 @@ interface GradesPopoverChartProps {
     }[];
 }
 
-export default function GradesPopoverChart({ grades }: GradesPopoverChartProps) {
+export function GradesPopoverChart({ grades }: GradesPopoverChartProps) {
     const theme = useTheme();
-    const secondaryColor = theme.palette.secondary.main;
+    const accentColor = theme.vars.palette.secondary.main;
+    const textColor = theme.vars.palette.text.primary;
+    const paperColor = theme.vars.palette.background.paper;
 
     return (
         <ResponsiveContainer>
             <BarChart data={grades} style={{ cursor: 'pointer' }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: theme.palette.text.primary }} height={20} />
-                <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} unit="%" width={35} />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: textColor }} height={20} />
+                <YAxis tick={{ fontSize: 12, fill: textColor }} unit="%" width={35} />
                 <RechartsTooltip
                     contentStyle={{
-                        backgroundColor: theme.palette.background.paper,
+                        backgroundColor: paperColor,
                         border: 0,
                     }}
-                    labelStyle={{ color: secondaryColor }}
-                    itemStyle={{ color: secondaryColor }}
+                    labelStyle={{ color: accentColor }}
+                    itemStyle={{ color: accentColor }}
                     labelFormatter={(gradeLabel) => `Grade ${gradeLabel}`}
                     formatter={(value) => {
                         const n = typeof value === 'number' ? value : Number(value);
@@ -32,7 +34,7 @@ export default function GradesPopoverChart({ grades }: GradesPopoverChartProps) 
                         return [`${pct}%`];
                     }}
                 />
-                <Bar dataKey="all" fill={theme.palette.primary.main} />
+                <Bar dataKey="all" fill={accentColor} />
             </BarChart>
         </ResponsiveContainer>
     );

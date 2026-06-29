@@ -1,12 +1,11 @@
 groups:
-  - name: devs
-    reviewers: 1
-    usernames:
-      - kevinwu098
-      - EricPedley
-      - bevm0
-      - MinhxNguyen7
-      - stevenguyukai
-      - Douglas-Hong
-      - JacE070
-      
+    - name: devs
+      reviewers: 1
+      usernames:
+          - kevinwu098
+          - EricPedley
+          - bevm0
+          - MinhxNguyen7
+          - stevenguyukai
+          - Douglas-Hong
+          - JacE070

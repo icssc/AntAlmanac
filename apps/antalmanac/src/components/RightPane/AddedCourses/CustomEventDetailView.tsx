@@ -1,7 +1,7 @@
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import ColorPicker from '$components/ColorPicker';
+import { ColorPicker } from '$components/ColorPicker';
 import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';
@@ -13,7 +13,6 @@ import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { format, isValid, set } from 'date-fns';
 
 interface CustomEventDetailViewProps {
-    scheduleNames: string[];
     customEvent: RepeatingCustomEvent;
     /**
      * Wraps the rendered card in MUI's children-aware Skeleton so the card
@@ -73,7 +72,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
                         analyticsCategory={analyticsEnum.addedClasses}
                     />
 
-                    <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
+                    <CustomEventDialog customEvent={customEvent} />
 
                     <Tooltip title="Delete">
                         <IconButton

@@ -5,7 +5,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-export default function AppTourProvider({ children }: Props) {
+export function AppTourProvider({ children }: Props) {
     return (
         <TourProvider
             steps={[] /** Will be populated by Tutorial component */}

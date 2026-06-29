@@ -8,7 +8,7 @@ import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
 import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
-import { VisibilityState, type AASection, type AACourseWithTerm } from '@packages/antalmanac-types';
+import { type AACourseWithTerm, type AASection, VisibilityState } from '@packages/antalmanac-types';
 import { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -47,7 +47,15 @@ export const ActionCell = memo(({ section, course, scheduleConflict, addedCourse
                     <AddButton section={section} course={course} scheduleConflict={scheduleConflict} />
                 )}
 
-                {addedCourse && (
+                {initialized ? (
+                    <NotificationsMenu section={section} course={course} />
+                ) : (
+                    <IconButton disabled size="small" sx={{ p: 0.5 }}>
+                        <CircularProgress size={15} />
+                    </IconButton>
+                )}
+
+                {addedCourse ? (
                     <Tooltip
                         title={
                             classVisibility === VisibilityState.Visible
@@ -68,17 +76,9 @@ export const ActionCell = memo(({ section, course, scheduleConflict, addedCourse
                             )}
                         </IconButton>
                     </Tooltip>
-                )}
-
-                {initialized ? (
-                    <NotificationsMenu section={section} course={course} />
                 ) : (
-                    <IconButton disabled size="small" sx={{ p: 0.5 }}>
-                        <CircularProgress size={15} />
-                    </IconButton>
+                    <SectionActionMenu section={section} course={course} scheduleNames={scheduleNames} />
                 )}
-
-                {!addedCourse && <SectionActionMenu section={section} course={course} scheduleNames={scheduleNames} />}
             </Box>
         </TableBodyCellContainer>
     );

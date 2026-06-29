@@ -13,14 +13,12 @@ import { StartTimeField } from '$components/RightPane/CoursePane/SearchForm/Manu
 import { UnitsField } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/AdvancedSearchFields/UnitsField';
 import { hasAdvancedParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { readAdvancedSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
-import { useThemeStore } from '$stores/SettingsStore';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Box, Button, Collapse, Typography } from '@mui/material';
 import { useState } from 'react';
 
 export function AdvancedSearch() {
     const [expanded, setExpanded] = useState(() => hasAdvancedParams(readAdvancedSearchParams()));
-    const isDark = useThemeStore((store) => store.isDark);
 
     const handleExpand = () => setExpanded((value) => !value);
 
@@ -28,12 +26,15 @@ export function AdvancedSearch() {
         <>
             <Button
                 onClick={handleExpand}
-                color={isDark ? 'secondary' : 'primary'}
-                sx={{
+                color="primary"
+                sx={(theme) => ({
                     textTransform: 'none',
                     display: 'flex',
                     justifyContent: 'start',
-                }}
+                    ...theme.applyStyles('dark', {
+                        color: theme.vars.palette.secondary.main,
+                    }),
+                })}
             >
                 <Typography noWrap>Advanced Search Options</Typography>
                 {expanded ? <ExpandLess /> : <ExpandMore />}

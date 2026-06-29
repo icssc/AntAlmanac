@@ -1,12 +1,35 @@
 /**
- * Centralized container name constants for CSS container queries.
+ * Centralized container query definitions.
  *
- * Components declare a container by setting `containerType: 'inline-size'`
- * and `containerName: CONTAINER_NAMES.<key>` on a wrapper element, then
- * reference the same name in descendant `@container` query strings.
+ * Similar to `queryKeys.ts` for TanStack Query, this file is the single
+ * source of truth for CSS container names and query builders used throughout
+ * the app.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries
  */
-export const CONTAINER_NAMES = {
+
+export const containers = {
     toolbar: 'toolbar',
-    manualSearch: 'manualSearch',
-    scheduleManagement: 'scheduleManagement',
+    scheduleManagement: 'schedule-management',
+    manualSearch: 'manual-search',
+    quickSearch: 'quick-search',
 } as const;
+
+type ContainerName = (typeof containers)[keyof typeof containers];
+
+/**
+ * Returns the `sx` properties needed to make an element a sized container.
+ */
+export function containerSx(name: ContainerName) {
+    return { containerType: 'inline-size', containerName: name } as const;
+}
+
+/**
+ * Builds a `@container` query string for use as an `sx` prop key.
+ *
+ * @example
+ * sx={{ [containerQuery(containers.toolbar, 500)]: { display: 'none' } }}
+ */
+export function containerQuery(name: ContainerName, maxWidth: number) {
+    return `@container ${name} (max-width: ${maxWidth}px)`;
+}

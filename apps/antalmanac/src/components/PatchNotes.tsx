@@ -2,15 +2,15 @@ import { setLocalStoragePatchNotesKey } from '$lib/localStorage';
 import { LATEST_PATCH_NOTES_UPDATE, usePatchNotesStore } from '$stores/PatchNotesStore';
 import {
     Backdrop,
-    Box,
     type BackdropProps,
+    Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    Typography,
     Stack,
+    Typography,
 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -27,7 +27,7 @@ function PatchNotesBackdrop(props: BackdropProps) {
 /**
  * PatchNotes follows structure/layout of AboutPage.tsx
  */
-function PatchNotes() {
+export function PatchNotes() {
     const [showPatchNotes, setShowPatchNotes] = usePatchNotesStore(
         useShallow((store) => [store.showPatchNotes, store.setShowPatchNotes])
     );
@@ -125,8 +125,6 @@ function PatchNotes() {
         </Dialog>
     );
 }
-
-export default PatchNotes;
 
 /* Used for Tests */
 export const dialogTestId = 'patch-notes-dialog';

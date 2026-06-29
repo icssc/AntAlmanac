@@ -1,16 +1,16 @@
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { courseColorKey, customEventColorKey, getPalette, resolveAssignment } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, type PopoverProps, Tooltip } from '@mui/material';
-import { type CustomEventId, type AATerm } from '@packages/antalmanac-types';
+import { type AATerm, type CustomEventId } from '@packages/antalmanac-types';
+import Sketch from '@uiw/react-color-sketch';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { SketchPicker } from 'react-color';
 
 interface ColorPickerProps {
     color: string;
@@ -25,7 +25,7 @@ interface ColorPickerProps {
     sectionCode?: string;
 }
 
-const ColorPicker = memo(function ColorPicker({
+export const ColorPicker = memo(function ColorPicker({
     color,
     analyticsCategory,
     isCustomEvent,
@@ -40,7 +40,7 @@ const ColorPicker = memo(function ColorPicker({
     const activeSectionColor = useSectionThemeStore(selectActiveSectionColor);
     const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
     const setManualColor = useSectionThemeStore((s) => s.setManualColor);
-    const isDark = useThemeStore((s) => s.isDark);
+    const isDark = useIsDarkMode();
 
     const postHog = usePostHog();
 
@@ -148,14 +148,8 @@ const ColorPicker = memo(function ColorPicker({
                     horizontal: 'left',
                 }}
             >
-                <SketchPicker
-                    color={displayColor}
-                    onChange={handleColorChange}
-                    presetColors={colorPickerPresetColors}
-                />
+                <Sketch color={displayColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
             </Popover>
         </>
     );
 });
-
-export default ColorPicker;

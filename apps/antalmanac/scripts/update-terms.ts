@@ -1,12 +1,12 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
+import { parseTermShortName } from '$lib/termHelpers';
 import { env } from '$scripts/env';
 import { createClient } from '@packages/anteater-api/client';
 import type { WebsocTerm } from '@packages/anteater-api/types';
 import { flattenSections } from '@packages/anteater-api/utils';
 
-import { parseTermShortName } from '../src/lib/termHelpers.js';
 import { DEPLOYED_TERMS_FILE } from './lib/paths.js';
 
 interface DeployedTermsData {

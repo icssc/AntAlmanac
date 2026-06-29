@@ -1,15 +1,14 @@
-import { VisibilityState, VISIBILITY_STATES, type ShortCourseSchedule } from '@packages/antalmanac-types';
+import type { DatabaseOrTransaction } from '$backend/lib/rds/types';
+import { type ShortCourseSchedule, VISIBILITY_STATES, VisibilityState } from '@packages/antalmanac-types';
 import {
-    coursesInSchedule,
-    customEvents,
-    schedules,
     type CourseInSchedule,
     type CustomEvent,
     type Schedule,
+    coursesInSchedule,
+    customEvents,
+    schedules,
 } from '@packages/db/src/schema';
-import { eq, type SQL } from 'drizzle-orm';
-
-import type { DatabaseOrTransaction } from './types';
+import { type SQL, eq } from 'drizzle-orm';
 
 /**
  * Loads schedules matching the given condition with courses and custom events joined in parallel.

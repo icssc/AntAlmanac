@@ -102,54 +102,50 @@ export const useReviewPromptStore = create(
                 if (pastTermNames.size === 0) return;
 
                 const allCourses = AppStore.schedule.getAllCourses();
-                const courseGroups = new Map<string, (typeof allCourses)[number][]>();
+
+                const candidateMap = new Map<string, { candidate: ReviewCandidate; hasLec: boolean }>();
 
                 for (const course of allCourses) {
-                    const term = course.term;
-                    if (!pastTermNames.has(term.shortName)) {
+                    if (!pastTermNames.has(course.term.shortName)) {
                         continue;
                     }
 
-                    const sectionType = course.section.sectionType;
-                    if (
-                        sectionType === 'Act' ||
-                        sectionType === 'Col' ||
-                        sectionType === 'Dis' ||
-                        sectionType === 'Qiz' ||
-                        sectionType === 'Tap'
-                    ) {
-                        continue;
-                    }
+                    for (const section of course.sections) {
+                        const sectionType = section.sectionType;
+                        if (
+                            sectionType === 'Act' ||
+                            sectionType === 'Col' ||
+                            sectionType === 'Dis' ||
+                            sectionType === 'Qiz' ||
+                            sectionType === 'Tap'
+                        ) {
+                            continue;
+                        }
 
-                    const instructor = course.section.instructors.at(0)?.trim();
-                    if (!instructor || instructor === 'STAFF') {
-                        continue;
-                    }
+                        const instructor = section.instructors.at(0)?.trim();
+                        if (!instructor || instructor === 'STAFF') {
+                            continue;
+                        }
 
-                    const dedupKey = `${course.courseId}::${instructor}::${term.shortName}`;
-                    const group = courseGroups.get(dedupKey);
-                    if (group) {
-                        group.push(course);
-                    } else {
-                        courseGroups.set(dedupKey, [course]);
+                        const dedupKey = `${course.courseId}::${instructor}::${course.term.shortName}`;
+                        const isLec = sectionType === 'Lec';
+                        const existing = candidateMap.get(dedupKey);
+
+                        if (!existing || (isLec && !existing.hasLec)) {
+                            candidateMap.set(dedupKey, {
+                                candidate: {
+                                    courseId: course.courseId,
+                                    courseTitle: course.courseTitle,
+                                    professorId: instructor,
+                                    term: course.term,
+                                },
+                                hasLec: isLec,
+                            });
+                        }
                     }
                 }
 
-                const candidates: ReviewCandidate[] = [];
-                for (const courses of courseGroups.values()) {
-                    const picked = courses.find((c) => c.section.sectionType === 'Lec') ?? courses.at(0);
-                    const instructor = picked?.section.instructors.at(0)?.trim();
-                    if (!instructor || !picked) {
-                        continue;
-                    }
-
-                    candidates.push({
-                        courseId: picked.courseId,
-                        courseTitle: picked.courseTitle,
-                        professorId: instructor,
-                        term: picked.term,
-                    });
-                }
+                const candidates = [...candidateMap.values()].map((v) => v.candidate);
 
                 if (candidates.length === 0) return;
 

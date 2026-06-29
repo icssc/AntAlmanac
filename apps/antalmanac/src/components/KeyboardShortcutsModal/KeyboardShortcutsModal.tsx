@@ -2,26 +2,17 @@
 
 import {
     KEYBOARD_SHORTCUT_SECTIONS,
-    formatShortcutKeys,
-    isMacPlatform,
     type ShortcutKey,
     type ShortcutSectionIcon,
+    formatShortcutKeys,
+    isMacPlatform,
 } from '$lib/keyboardShortcuts';
-import { useThemeStore } from '$stores/SettingsStore';
 import { ChatBubbleOutlineOutlined, Close, Keyboard, SearchOutlined, SettingsOutlined } from '@mui/icons-material';
-import { Box, Dialog, IconButton, Stack, Typography, useMediaQuery, useTheme, alpha } from '@mui/material';
+import { Box, Dialog, IconButton, Stack, type Theme, Typography, alpha, useMediaQuery, useTheme } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 
-/** Accent blue: theme maps light → primary (BLUE), dark → secondary (LIGHT_BLUE) — matches links & app chrome */
-function useShortcutsAccentColor() {
-    const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
-    return isDark ? theme.palette.secondary.main : theme.palette.primary.main;
-}
-
 function SectionHeaderIcon({ icon }: { icon: ShortcutSectionIcon }) {
-    const accent = useShortcutsAccentColor();
-    const sx = { fontSize: 'small' as const, color: accent };
+    const sx = { fontSize: 'small' as const, color: (theme: Theme) => theme.vars.palette.secondary.main };
     switch (icon) {
         case 'general':
             return <SettingsOutlined sx={sx} aria-hidden />;
@@ -33,11 +24,10 @@ function SectionHeaderIcon({ icon }: { icon: ShortcutSectionIcon }) {
 }
 
 function Kbd({ children }: { children: React.ReactNode }) {
-    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box
             component="kbd"
-            sx={{
+            sx={(theme) => ({
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -50,11 +40,14 @@ function Kbd({ children }: { children: React.ReactNode }) {
                 fontSize: 'inherit',
                 fontWeight: 600,
                 lineHeight: 1.2,
-                color: 'text.primary',
-                bgcolor: (t) => (isDark ? alpha(t.palette.common.white, 0.1) : alpha(t.palette.text.primary, 0.06)),
+                color: theme.vars.palette.text.primary,
+                bgcolor: alpha(theme.vars.palette.text.primary, 0.06),
+                ...theme.applyStyles('dark', {
+                    bgcolor: alpha(theme.vars.palette.common.white, 0.1),
+                }),
                 border: '1px solid',
-                borderColor: 'divider',
-            }}
+                borderColor: theme.vars.palette.divider,
+            })}
         >
             {children}
         </Box>
@@ -73,10 +66,10 @@ function KeyCombo({ keys }: { keys: ShortcutKey[] }) {
                         <Typography
                             component="span"
                             variant="caption"
-                            sx={{
-                                color: 'text.disabled',
+                            sx={(theme) => ({
+                                color: theme.vars.palette.text.disabled,
                                 fontWeight: 600,
-                            }}
+                            })}
                         >
                             +
                         </Typography>
@@ -91,7 +84,7 @@ function KeyCombo({ keys }: { keys: ShortcutKey[] }) {
 function ShortcutRow({ description, keys, isLast }: { description: string; keys: ShortcutKey[]; isLast: boolean }) {
     return (
         <Box
-            sx={{
+            sx={(theme) => ({
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -99,19 +92,19 @@ function ShortcutRow({ description, keys, isLast }: { description: string; keys:
                 gap: 1.5,
                 py: 1,
                 borderBottom: isLast ? 'none' : '1px solid',
-                borderColor: 'divider',
-            }}
+                borderColor: theme.vars.palette.divider,
+            })}
         >
             <Typography
                 variant="body1"
-                sx={{
+                sx={(theme) => ({
                     lineHeight: 1.45,
-                    color: 'text.secondary',
+                    color: theme.vars.palette.text.secondary,
                     flex: 1,
                     minWidth: 0,
                     pr: { sm: 2 },
                     overflowWrap: 'anywhere',
-                }}
+                })}
             >
                 {description}
             </Typography>
@@ -138,31 +131,29 @@ function SectionBlock({
     icon: ShortcutSectionIcon;
     children: React.ReactNode;
 }) {
-    const accent = useShortcutsAccentColor();
-
     return (
         <Box sx={{ mb: 2, '&:last-child': { mb: 0 } }}>
             <Stack
                 direction="row"
                 alignItems="center"
                 gap={1}
-                sx={{
+                sx={(theme) => ({
                     pb: 1,
                     mb: 0.5,
                     borderBottom: '1px solid',
-                    borderColor: 'divider',
-                }}
+                    borderColor: theme.vars.palette.divider,
+                })}
             >
                 <SectionHeaderIcon icon={icon} />
                 <Typography
                     component="h2"
                     variant="caption"
-                    sx={{
+                    sx={(theme) => ({
                         fontWeight: 700,
                         letterSpacing: '0.1em',
                         textTransform: 'uppercase',
-                        color: accent,
-                    }}
+                        color: theme.vars.palette.secondary.main,
+                    })}
                 >
                     {title}
                 </Typography>
@@ -182,10 +173,8 @@ interface KeyboardShortcutsModalProps {
  */
 export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModalProps) {
     const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
     const isFullScreenLayout = useMediaQuery(theme.breakpoints.down('md'));
     const mac = isMacPlatform();
-    const accent = isDark ? theme.palette.secondary.main : theme.palette.primary.main;
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
@@ -213,13 +202,16 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
             onKeyDown={handleKeyDown}
             slotProps={{
                 backdrop: {
-                    sx: {
-                        backgroundColor: (t) => alpha(t.palette.common.black, isDark ? 0.55 : 0.36),
+                    sx: (t: Theme) => ({
+                        backgroundColor: alpha(t.vars.palette.common.black, 0.36),
                         backdropFilter: 'blur(6px)',
-                    },
+                        ...t.applyStyles('dark', {
+                            backgroundColor: alpha(t.vars.palette.common.black, 0.55),
+                        }),
+                    }),
                 },
                 paper: {
-                    sx: {
+                    sx: (t) => ({
                         borderRadius: isFullScreenLayout ? 0 : 3,
                         ...(isFullScreenLayout
                             ? {
@@ -234,34 +226,38 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                         overflow: 'hidden',
                         display: 'flex',
                         flexDirection: 'column',
-                        bgcolor: 'background.paper',
+                        bgcolor: t.vars.palette.background.paper,
                         border: isFullScreenLayout ? 'none' : '1px solid',
-                        borderColor: 'divider',
-                        boxShadow: isFullScreenLayout ? 'none' : (t) => (isDark ? t.shadows[16] : t.shadows[8]),
+                        borderColor: t.vars.palette.divider,
+                        boxShadow: isFullScreenLayout ? 'none' : t.shadows[8],
+                        ...(!isFullScreenLayout &&
+                            t.applyStyles('dark', {
+                                boxShadow: t.shadows[16],
+                            })),
                         pt: isFullScreenLayout ? 'env(safe-area-inset-top, 0px)' : undefined,
                         pb: isFullScreenLayout ? 'env(safe-area-inset-bottom, 0px)' : undefined,
-                    },
+                    }),
                 },
             }}
         >
             <Box
-                sx={{
+                sx={(t) => ({
                     flexShrink: 0,
                     px: 3,
                     py: 2,
                     borderBottom: '1px solid',
-                    borderColor: 'divider',
-                }}
+                    borderColor: t.vars.palette.divider,
+                })}
             >
                 <Stack direction="row" alignItems="flex-start" justifyContent="space-between" gap={1}>
                     <Stack direction="row" alignItems="flex-start" gap={1.5} sx={{ minWidth: 0 }}>
                         <Keyboard
-                            sx={{
+                            sx={(t) => ({
                                 fontSize: 30,
-                                color: accent,
+                                color: t.vars.palette.secondary.main,
                                 flexShrink: 0,
                                 mt: 0.25,
-                            }}
+                            })}
                         />
                         <Box sx={{ minWidth: 0 }}>
                             <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap" useFlexGap>
@@ -269,17 +265,17 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                                     component="h1"
                                     variant="h5"
                                     id="keyboard-shortcuts-title"
-                                    sx={{
+                                    sx={(t) => ({
                                         fontWeight: 700,
                                         lineHeight: 1.2,
-                                        color: 'text.primary',
-                                    }}
+                                        color: t.vars.palette.text.primary,
+                                    })}
                                 >
                                     Shortcuts
                                 </Typography>
                                 <Box
                                     component="span"
-                                    sx={{
+                                    sx={(t) => ({
                                         px: 1,
                                         py: 0.35,
                                         borderRadius: 1,
@@ -287,32 +283,28 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                                         fontWeight: 700,
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.06em',
-                                        color: accent,
-                                        bgcolor: (t) =>
-                                            alpha(
-                                                isDark ? t.palette.secondary.main : t.palette.primary.main,
-                                                isDark ? 0.2 : 0.12
-                                            ),
+                                        color: t.vars.palette.secondary.main,
+                                        bgcolor: alpha(t.vars.palette.secondary.main, 0.12),
                                         border: '1px solid',
-                                        borderColor: (t) =>
-                                            alpha(
-                                                isDark ? t.palette.secondary.main : t.palette.primary.main,
-                                                isDark ? 0.4 : 0.28
-                                            ),
-                                    }}
+                                        borderColor: alpha(t.vars.palette.secondary.main, 0.28),
+                                        ...t.applyStyles('dark', {
+                                            bgcolor: alpha(t.vars.palette.secondary.main, 0.2),
+                                            borderColor: alpha(t.vars.palette.secondary.main, 0.4),
+                                        }),
+                                    })}
                                 >
                                     {mac ? 'Mac' : 'Windows'}
                                 </Box>
                             </Stack>
                             <Typography
                                 variant="caption"
-                                sx={{
+                                sx={(t) => ({
                                     mt: 0.75,
                                     fontFamily:
                                         'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace',
-                                    color: 'text.secondary',
+                                    color: t.vars.palette.text.secondary,
                                     letterSpacing: '0.02em',
-                                }}
+                                })}
                             >
                                 {mac ? '⌘' : 'Ctrl'} + / to toggle
                             </Typography>
@@ -321,19 +313,22 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                     <IconButton
                         aria-label="Close"
                         onClick={onClose}
-                        sx={{
-                            color: 'text.secondary',
+                        sx={(t) => ({
+                            color: t.vars.palette.text.secondary,
                             minWidth: 44,
                             minHeight: 44,
                             mr: -0.75,
                             borderRadius: 1.5,
                             border: '1px solid',
-                            borderColor: 'divider',
-                            bgcolor: (t) => alpha(t.palette.text.primary, isDark ? 0.06 : 0.04),
+                            borderColor: t.vars.palette.divider,
+                            bgcolor: alpha(t.vars.palette.text.primary, 0.04),
+                            ...t.applyStyles('dark', {
+                                bgcolor: alpha(t.vars.palette.text.primary, 0.06),
+                            }),
                             '&:hover': {
-                                bgcolor: 'action.hover',
+                                bgcolor: t.vars.palette.action.hover,
                             },
-                        }}
+                        })}
                     >
                         <Close fontSize="small" />
                     </IconButton>

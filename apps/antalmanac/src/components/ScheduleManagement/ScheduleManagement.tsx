@@ -1,34 +1,35 @@
-import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
-import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
-import { readCourseSearchParams, readSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
-import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { useIsMobile } from '$hooks/useIsMobile';
-import { getWasLoggedIn } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
+import { containerSx, containers } from '$lib/containerQueries';
+import { useActiveTab } from '$lib/tabs/hooks';
+import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { TAB_INDEX, useTabStore } from '$stores/TabStore';
-import { GlobalStyles, Stack } from '@mui/material';
+import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
+import dynamic from 'next/dynamic';
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
+
+const ScheduleManagementContent = dynamic(
+    () =>
+        import('$components/ScheduleManagement/ScheduleManagementContent').then((m) => ({
+            default: m.ScheduleManagementContent,
+        })),
+    { ssr: false }
+);
 
 /**
  * List of interactive tab buttons with their accompanying content.
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
-    const { tab } = useParams();
-    const isMobile = useIsMobile();
+    const segment = useSelectedLayoutSegment();
+    const router = useRouter();
+    const theme = useTheme();
+    const isDesktop = useMediaQuery(theme.breakpoints.up('sm'));
+    const activeTab = useActiveTab();
 
-    const { activeTab, setActiveTab, setActiveTabValue } = useTabStore(
-        useShallow((store) => ({
-            activeTab: store.activeTab,
-            setActiveTab: store.setActiveTab,
-            setActiveTabValue: store.setActiveTabValue,
-        }))
-    );
+    const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const { saveSearch, popSavedSearch } = useSavedSearchStore(
         useShallow((store) => ({
             saveSearch: store.saveSearch,
@@ -36,8 +37,8 @@ export function ScheduleManagement() {
         }))
     );
 
-    // Tab index mapped to the last known scrollTop.
-    const [positions, setPositions] = useState<Record<number, number>>({});
+    // Tab name mapped to the last known scrollTop.
+    const [positions, setPositions] = useState<Partial<Record<TabName, number>>>({});
 
     /**
      * Ref to the scrollable container with all of the tabs-content within it.
@@ -54,57 +55,28 @@ export function ScheduleManagement() {
     };
 
     const handleTabChange = useCallback(
-        (nextTab: number) => {
-            if (activeTab === TAB_INDEX.search && nextTab !== TAB_INDEX.search) {
-                saveSearch();
+        (nextTab: TabName) => {
+            if (activeTab === 'search' && nextTab !== 'search') {
+                saveSearch(globalThis.location.search);
             }
 
-            if (nextTab === TAB_INDEX.search) {
+            if (nextTab === 'search') {
                 popSavedSearch();
             }
-
-            setActiveTabValue(nextTab);
         },
-        [activeTab, popSavedSearch, saveSearch, setActiveTabValue]
+        [activeTab, popSavedSearch, saveSearch]
     );
 
-    // Sync tab store when the route changes (back/forward, /added, /map).
-    // Calendar and search both live at `/`, so leave tab state alone for that route.
     useEffect(() => {
-        if (tab === 'added' || tab === 'map') {
-            setActiveTab(tab);
-        }
-    }, [tab, setActiveTab]);
-
-    // Sets a smart default on mount
-    useEffect(() => {
-        if (tab) {
+        if (fallbackMode && segment !== 'added') {
+            router.replace(TAB_HREF.added);
             return;
         }
 
-        const formData = readCourseSearchParams();
-        const hasParams = hasManualParams(formData) || hasAdvancedParams(formData);
-        const isManualSearchMode = readSearchMode() === COURSE_SEARCH_MODE.MANUAL;
-
-        if (hasParams || isManualSearchMode) {
-            setActiveTab('search');
-        } else if (!isMobile) {
-            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-            setActiveTab(hasSession ? 'added' : 'search');
-        } else {
-            const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
-            const hasLocalScheduleData = AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
-
-            if (hasSession || hasLocalScheduleData) {
-                setActiveTab('calendar');
-            } else {
-                setActiveTab('search');
-            }
+        if (isDesktop && segment === 'calendar') {
+            router.replace(TAB_HREF.search);
         }
-
-        // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile, setActiveTab]);
+    }, [segment, isDesktop, fallbackMode, router]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
@@ -124,26 +96,33 @@ export function ScheduleManagement() {
     }, [activeTab, positions]);
 
     return (
-        <Stack direction="column" flexGrow={1} height="0">
+        <Stack direction="column" flexGrow={1} height="0" sx={containerSx(containers.scheduleManagement)}>
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            {!isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
+            <Stack
+                flexGrow={1}
+                height="0"
+                sx={(theme) => ({
+                    flexDirection: 'column-reverse',
+                    [theme.breakpoints.up('sm')]: { flexDirection: 'column' },
+                })}
+            >
+                <ScheduleManagementTabs onTabChange={handleTabChange} />
 
-            <Stack width="100%" height="0" flexGrow={1} padding={1}>
-                <Stack
-                    id="course-pane-box"
-                    direction="column"
-                    overflow="auto"
-                    height="0px"
-                    flexGrow={1}
-                    ref={ref}
-                    onScroll={onScroll}
-                >
-                    <ScheduleManagementContent />
+                <Stack width="100%" height="0" flexGrow={1} padding={1}>
+                    <Stack
+                        id="course-pane-box"
+                        direction="column"
+                        overflow="auto"
+                        height="0px"
+                        flexGrow={1}
+                        ref={ref}
+                        onScroll={onScroll}
+                    >
+                        <ScheduleManagementContent />
+                    </Stack>
                 </Stack>
             </Stack>
-
-            {isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
         </Stack>
     );
 }

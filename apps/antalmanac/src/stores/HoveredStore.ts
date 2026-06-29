@@ -1,11 +1,11 @@
 import type { CourseEvent } from '$components/Calendar/types';
 import { calendarizeCourseEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
-import { type AACourseWithTerm, type AASection, type ScheduleCourse } from '@packages/antalmanac-types';
+import { type AACourseWithTerm, type AASection } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 const HOVERED_SECTION_COLOR = '#80808080';
 interface HoveredStore {
-    hoveredEvent: ScheduleCourse | undefined;
+    hoveredEvent: AACourseWithTerm | undefined;
     setHoveredEvent: (section?: AASection, course?: AACourseWithTerm) => void;
     hoveredCalendarizedCourses: CourseEvent[] | undefined;
     hoveredCalendarizedFinal: CourseEvent | undefined;
@@ -26,12 +26,14 @@ export const useHoveredStore = create<HoveredStore>((set) => {
                 return;
             }
 
-            const event = {
+            const event: AACourseWithTerm = {
                 ...course,
-                section: {
-                    ...section,
-                    color: HOVERED_SECTION_COLOR,
-                },
+                sections: [
+                    {
+                        ...section,
+                        color: HOVERED_SECTION_COLOR,
+                    },
+                ],
             };
 
             set({

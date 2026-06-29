@@ -4,12 +4,11 @@ import {
     getReviewedCombos,
     insertInstructorReview,
     insertReviewDismissal,
-} from '$src/backend/lib/rds/reviews';
+} from '$backend/lib/rds/reviews';
+import { protectedProcedure, router } from '$backend/trpc';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-
-import { protectedProcedure, router } from '../trpc';
 
 const reviewTagsEnum = z.enum([
     'Textbook Required',

@@ -3,7 +3,6 @@ import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
 import { SectionColorSelector } from '$components/Header/Settings/SectionColorSelector';
 import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
 import { TimeSelector } from '$components/Header/Settings/TimeSelector';
-import { useThemeStore } from '$stores/SettingsStore';
 import { AccountCircle } from '@mui/icons-material';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import type { UserProfile } from '@packages/db/src/schema/auth/user';
@@ -14,8 +13,6 @@ interface UserProfileSectionProps {
 }
 
 function UserProfileSection({ user }: UserProfileSectionProps) {
-    const isDark = useThemeStore((store) => store.isDark);
-
     if (!user) {
         return null;
     }
@@ -48,16 +45,16 @@ function UserProfileSection({ user }: UserProfileSectionProps) {
                     {user.name}
                 </Typography>
                 <Typography
-                    style={{
+                    sx={(theme) => ({
                         fontSize: '14px',
-                        color: isDark ? '#96969b' : '#606166',
+                        color: theme.vars.palette.text.secondary,
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         paddingBottom: '4px',
                         margin: 0,
                         lineHeight: 1,
                         fontWeight: 600,
-                    }}
+                    })}
                 >
                     {user.email}
                 </Typography>

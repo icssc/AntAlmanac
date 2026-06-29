@@ -1,15 +1,15 @@
-import { router } from '../trpc';
-import courseRouter from './course';
-import enrollHistRouter from './enrollHist';
-import friendsRouter from './friends';
-import gradesRouter from './grades';
-import notificationsRouter from './notifications';
-import reviewRouter from './review';
-import roadmapRouter from './roadmap';
-import scheduleRouter from './schedule';
-import searchRouter from './search';
-import websocRouter from './websoc';
-import zotcourseRouter from './zotcourse';
+import courseRouter from '$backend/routers/course';
+import enrollHistRouter from '$backend/routers/enrollHist';
+import friendsRouter from '$backend/routers/friends';
+import gradesRouter from '$backend/routers/grades';
+import notificationsRouter from '$backend/routers/notifications';
+import reviewRouter from '$backend/routers/review';
+import roadmapRouter from '$backend/routers/roadmap';
+import scheduleRouter from '$backend/routers/schedule';
+import searchRouter from '$backend/routers/search';
+import websocRouter from '$backend/routers/websoc';
+import zotcourseRouter from '$backend/routers/zotcourse';
+import { router } from '$backend/trpc';
 
 const appRouter = router({
     course: courseRouter,

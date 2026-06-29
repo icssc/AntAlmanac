@@ -6,8 +6,8 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
     type DialogProps,
+    DialogTitle,
 } from '@mui/material';
 import { useCallback } from 'react';
 
@@ -21,7 +21,7 @@ interface ScheduleNameDialogProps extends DialogProps {
 /**
  * Dialog with a prompt to delete the specified schedule.
  */
-function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
+export function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
     /**
      * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
      */
@@ -61,5 +61,3 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
         </Dialog>
     );
 }
-
-export default DeleteScheduleDialog;

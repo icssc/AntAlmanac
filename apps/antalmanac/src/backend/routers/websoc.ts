@@ -1,11 +1,12 @@
+import { aapiClient, aapiProcedure } from '$backend/lib/aapi';
+import { router } from '$backend/trpc';
 import { getRenamedCoursesIdentifiers } from '$lib/renames/utils';
-import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import {
+    type AACourse,
     QuarterSchema,
+    type WebsocSearchInput,
     WebsocSearchInputKeysSchema,
     WebsocSearchInputSchema,
-    type AACourse,
-    type WebsocSearchInput,
 } from '@packages/antalmanac-types';
 import type {
     WebsocAPIResponse,
@@ -15,8 +16,6 @@ import type {
 } from '@packages/anteater-api/types';
 import { sortWebsocResponse, unionWebsocResponses } from '@packages/anteater-api/utils';
 import { z } from 'zod';
-
-import { router } from '../trpc';
 
 function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
     const { department, courseNumber, excludeRestrictionCodes, days, ...rest } = params;

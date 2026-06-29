@@ -1,5 +1,5 @@
 import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { CONTAINER_NAMES } from '$lib/containerQueries';
+import { containerQuery, containers } from '$lib/containerQueries';
 import { Box, Button, Paper, Popover } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
@@ -55,14 +55,14 @@ export const CourseInfoButton = ({
                     {icon}
                     <Box
                         component="span"
-                        sx={{
+                        sx={(theme) => ({
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            [`@container ${CONTAINER_NAMES.scheduleManagement} (max-width: 640px)`]: {
+                            [containerQuery(containers.scheduleManagement, theme.breakpoints.values.xs)]: {
                                 display: 'none',
                             },
-                        }}
+                        })}
                     >
                         {text}
                     </Box>

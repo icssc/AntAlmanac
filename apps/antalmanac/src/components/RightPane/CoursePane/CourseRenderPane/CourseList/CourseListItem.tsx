@@ -5,8 +5,8 @@ import {
     isSchoolEntry,
 } from '$components/RightPane/CoursePane/CourseRenderPane/CourseList/helpers';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
-import SectionTable from '$components/RightPane/SectionTable/SectionTable';
+import { GeDataFetchProvider } from '$components/RightPane/SectionTable/GEDataFetchProvider';
+import { SectionTable } from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 
 interface CourseListItemProps {

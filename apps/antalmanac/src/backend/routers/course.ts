@@ -1,11 +1,10 @@
+import { aapiClient, aapiProcedure } from '$backend/lib/aapi';
+import { router } from '$backend/trpc';
 import { getRenamedCoursesIdentifiers } from '$lib/renames/utils';
-import { aapiClient, aapiProcedure } from '$src/backend/lib/aapi';
 import { AAPIError } from '@packages/anteater-api/client';
 import type { Course, CoursesBatchAPIResult } from '@packages/anteater-api/types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-
-import { router } from '../trpc';
 
 const courseRouter = router({
     get: aapiProcedure

@@ -6,9 +6,9 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    type DialogProps,
     DialogTitle,
     TextField,
-    type DialogProps,
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 
@@ -22,7 +22,7 @@ interface ScheduleNameDialogProps extends DialogProps {
 /**
  * Dialog with a form to rename a schedule.
  */
-function RenameScheduleDialog(props: ScheduleNameDialogProps) {
+export function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     /**
      * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
      * A custom {@link onKeyDown} handler is provided to handle the Enter and Escape keys.
@@ -86,5 +86,3 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
         </Dialog>
     );
 }
-
-export default RenameScheduleDialog;

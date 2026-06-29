@@ -1,4 +1,4 @@
-import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
+import { DeleteScheduleDialog } from '$components/dialogs/DeleteSchedule';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { Clear as ClearIcon } from '@mui/icons-material';
