@@ -6,7 +6,7 @@ import {
     useCourseSearchParam,
     useCourseSearchView,
 } from '$components/RightPane/CoursePane/SearchParams/hooks';
-import { getRoadmapTermRelation, getSearchableRoadmapCourseIds, RoadmapTermRelation } from '$lib/plannerHelpers';
+import { RoadmapTermRelation, getRoadmapTermRelation, getSearchableRoadmapCourseIds } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
 import { usePlannerStore } from '$stores/PlannerStore';
 import { useSessionStore } from '$stores/SessionStore';

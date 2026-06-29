@@ -1,7 +1,7 @@
 import { mergeSx } from '$lib/helpers';
 import { ArrowDropDown } from '@mui/icons-material';
-import { Box, Chip, Menu, type ChipProps } from '@mui/material';
-import { type MouseEvent, type ReactElement, type ReactNode, Children, useRef } from 'react';
+import { Box, Chip, type ChipProps, Menu } from '@mui/material';
+import { Children, type MouseEvent, type ReactElement, type ReactNode, useRef } from 'react';
 
 interface PillSplitButtonProps extends Omit<
     ChipProps,
