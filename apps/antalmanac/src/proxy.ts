@@ -1,8 +1,4 @@
-import {
-    COURSE_SEARCH_MODE,
-    COURSE_SEARCH_MODE_KEY,
-    COURSE_SEARCH_PLANNER_KEY,
-} from '$components/RightPane/CoursePane/SearchParams/constants';
+import { COURSE_SEARCH_MODE, COURSE_SEARCH_MODE_KEY } from '$components/RightPane/CoursePane/SearchParams/constants';
 import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { loadCourseSearchParams, loadSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
@@ -25,10 +21,6 @@ function maybeRedirectDefaultTab(request: NextRequest): NextResponse | null {
     }
 
     const { searchParams } = request.nextUrl;
-
-    if (searchParams.has(COURSE_SEARCH_PLANNER_KEY)) {
-        return null;
-    }
 
     if (!getSessionCookie(request)) {
         return null;
