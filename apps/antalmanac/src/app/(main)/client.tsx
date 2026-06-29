@@ -3,6 +3,7 @@
 import { redoDelete, undoDelete } from '$actions/AppStoreActions';
 import { AuthInitializer } from '$components/AuthInitializer';
 import { AutoSignIn } from '$components/AutoSignIn';
+import { CalendarPane } from '$components/Calendar/CalendarPane';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import { PatchNotes } from '$components/PatchNotes';
@@ -10,18 +11,12 @@ import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
-import { Stack, useMediaQuery, useTheme } from '@mui/material';
+import { Stack, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import dynamic from 'next/dynamic';
 import { useCallback, useEffect } from 'react';
 import { Group, Panel, Separator, useGroupRef } from 'react-resizable-panels';
-
-const ScheduleCalendar = dynamic(
-    () => import('$components/Calendar/CalendarRoot').then((m) => ({ default: m.ScheduleCalendar })),
-    { ssr: false }
-);
 
 const CALENDAR_PANEL_ID = 'calendar-pane';
 const SCHEDULE_PANEL_ID = 'schedule-pane';
@@ -49,8 +44,6 @@ function Home() {
     const theme = useTheme();
     const groupRef = useGroupRef();
 
-    const showCalendarPane = useMediaQuery(theme.breakpoints.up('sm'));
-
     const handleSeparatorDoubleClick = useCallback(() => {
         groupRef.current?.setLayout({ ...DEFAULT_LAYOUT });
     }, [groupRef]);
@@ -65,7 +58,7 @@ function Home() {
         >
             <Panel id={CALENDAR_PANEL_ID} minSize="40%" style={{ overflow: 'hidden' }}>
                 <Stack direction="column" height="100%">
-                    {showCalendarPane && <ScheduleCalendar />}
+                    <CalendarPane />
                 </Stack>
             </Panel>
 

@@ -1,4 +1,4 @@
-import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
+import { CalendarPane } from '$components/Calendar/CalendarPane';
 import { AddedCoursesRoot } from '$components/RightPane/AddedCourses/AddedCoursesRoot';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
@@ -15,7 +15,7 @@ export function ScheduleManagementContent() {
 
     switch (activeTab) {
         case 'calendar':
-            return <ScheduleCalendar />;
+            return <CalendarPane />;
         case 'search':
             return <CoursePaneRoot />;
         case 'added':

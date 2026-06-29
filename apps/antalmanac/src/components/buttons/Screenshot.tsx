@@ -5,11 +5,7 @@ import { Panorama } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 
-interface ScreenshotButtonProps {
-    onScreenshot?: () => void;
-}
-
-export function ScreenshotButton({ onScreenshot }: ScreenshotButtonProps) {
+export function ScreenshotButton() {
     const isDark = useIsDarkMode();
     const postHog = usePostHog();
 
@@ -18,8 +14,6 @@ export function ScreenshotButton({ onScreenshot }: ScreenshotButtonProps) {
             category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.SCREENSHOT,
         });
-
-        onScreenshot?.();
 
         setTimeout(() => {
             void (async () => {

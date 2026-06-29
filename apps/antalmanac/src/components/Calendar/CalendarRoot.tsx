@@ -7,7 +7,6 @@ import { CalendarEventTile } from '$components/Calendar/CalendarEvent/CalendarEv
 import { CalendarEventWrapper } from '$components/Calendar/CalendarEvent/CalendarEventWrapper';
 import { CALENDAR_BASE_DATE, createSkeletonEvents } from '$components/Calendar/Skeleton/skeletonHelpers';
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
-import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { type CalendarEvent, type SkeletonEvent, isCourseEvent, isSkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -54,16 +53,18 @@ const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 const noop = () => {};
 
-export const ScheduleCalendar = memo(() => {
+interface CalendarGridProps {
+    showFinalsSchedule: boolean;
+}
+
+export const CalendarGrid = memo(({ showFinalsSchedule }: CalendarGridProps) => {
     const router = useRouter();
-    const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
     const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
         AppStore.schedule.getCurrentCustomEvents()
     );
     const [rawEventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [rawFinalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [currentScheduleId, setCurrentScheduleId] = useState(() => AppStore.getCurrentScheduleId());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
@@ -150,10 +151,6 @@ export const ScheduleCalendar = memo(() => {
         () => (openLoadingSchedule ? createSkeletonEvents(skeletonColor) : getEventsForCalendar()),
         [openLoadingSchedule, getEventsForCalendar, skeletonColor]
     );
-
-    const toggleDisplayFinalsSchedule = useCallback(() => {
-        setShowFinalsSchedule((prevState) => !prevState);
-    }, []);
 
     /**
      * Finds the earliest start time and returns that or 7AM, whichever is earlier
@@ -281,7 +278,6 @@ export const ScheduleCalendar = memo(() => {
 
     useEffect(() => {
         const updateEventsInCalendar = () => {
-            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
             setCurrentScheduleId(AppStore.getCurrentScheduleId());
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
@@ -318,24 +314,6 @@ export const ScheduleCalendar = memo(() => {
             flexDirection="column"
             position="relative"
         >
-            <Backdrop
-                sx={(theme) => ({
-                    color: '#ffff',
-                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                    zIndex: theme.zIndex.drawer + 1,
-                    position: 'absolute',
-                    padding: 0,
-                })}
-                open={openLoadingSchedule}
-            />
-
-            <CalendarToolbar
-                currentScheduleIndex={currentScheduleIndex}
-                toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
-                showFinalsSchedule={showFinalsSchedule}
-                scheduleNames={scheduleNames}
-            />
-
             <Box
                 id="screenshot"
                 height="0"
@@ -401,4 +379,4 @@ export const ScheduleCalendar = memo(() => {
     );
 });
 
-ScheduleCalendar.displayName = 'ScheduleCalendar';
+CalendarGrid.displayName = 'CalendarGrid';

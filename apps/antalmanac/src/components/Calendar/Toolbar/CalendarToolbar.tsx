@@ -36,19 +36,15 @@ import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useRef, useState } from 'react';
 
 interface CalendarPaneToolbarProps {
-    scheduleNames: string[];
-    currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
-    onScreenshot?: () => void;
 }
 
 /**
  * The root toolbar will pass down the schedule names to its children.
  */
-export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
+export const CalendarToolbar = memo(({ showFinalsSchedule, toggleDisplayFinalsSchedule }: CalendarPaneToolbarProps) => {
     const theme = useTheme();
-    const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
     const isMobile = useIsMobile();
@@ -268,7 +264,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 }}
             >
                 <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <ScreenshotButton onScreenshot={props.onScreenshot} />
+                    <ScreenshotButton />
 
                     <DownloadButton />
 
