@@ -18,13 +18,12 @@ import { useRef } from 'react';
 
 interface CalendarEventDetailProps {
     selectedEvent: CourseEvent | CustomEvent;
-    scheduleNames: string[];
     closePopover: () => void;
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-export function CalendarEventDetail({ selectedEvent, scheduleNames, closePopover }: CalendarEventDetailProps) {
+export function CalendarEventDetail({ selectedEvent, closePopover }: CalendarEventDetailProps) {
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
@@ -170,10 +169,7 @@ export function CalendarEventDetail({ selectedEvent, scheduleNames, closePopover
                     customEventID={selectedEvent.customEventID}
                     analyticsCategory={analyticsEnum.calendar}
                 />
-                <CustomEventDialog
-                    customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
-                    scheduleNames={scheduleNames}
-                />
+                <CustomEventDialog customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)} />
 
                 <Tooltip title="Delete">
                     <IconButton

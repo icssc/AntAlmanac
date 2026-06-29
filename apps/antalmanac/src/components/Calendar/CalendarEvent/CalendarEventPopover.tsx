@@ -7,11 +7,7 @@ import { Popover } from '@mui/material';
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-interface CalendarEventPopoverProps {
-    scheduleNames: string[];
-}
-
-export function CalendarEventPopover({ scheduleNames }: CalendarEventPopoverProps) {
+export function CalendarEventPopover() {
     const [anchorEl, selectedEvent, setSelectedEvent] = useSelectedEventStore(
         useShallow((state) => [state.selectedEventAnchorEl, state.selectedEvent, state.setSelectedEvent])
     );
@@ -38,11 +34,7 @@ export function CalendarEventPopover({ scheduleNames }: CalendarEventPopoverProp
                 horizontal: 'left',
             }}
         >
-            <CalendarEventDetail
-                closePopover={handleClosePopover}
-                selectedEvent={selectedEvent}
-                scheduleNames={scheduleNames}
-            />
+            <CalendarEventDetail closePopover={handleClosePopover} selectedEvent={selectedEvent} />
         </Popover>
     );
 }

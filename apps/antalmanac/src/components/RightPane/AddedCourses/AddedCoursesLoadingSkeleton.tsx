@@ -127,7 +127,6 @@ export function AddedCoursesLoadingSkeleton() {
                                     key={customEvent.customEventID}
                                     skeleton
                                     customEvent={customEvent}
-                                    scheduleNames={scheduleNames}
                                 />
                             ))}
                         </Box>

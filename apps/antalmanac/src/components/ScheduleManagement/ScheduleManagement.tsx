@@ -1,15 +1,22 @@
-import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { containerSx, containers } from '$lib/containerQueries';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
-import { GlobalStyles, Stack } from '@mui/material';
+import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
+import dynamic from 'next/dynamic';
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+
+const ScheduleManagementContent = dynamic(
+    () =>
+        import('$components/ScheduleManagement/ScheduleManagementContent').then((m) => ({
+            default: m.ScheduleManagementContent,
+        })),
+    { ssr: false }
+);
 
 /**
  * List of interactive tab buttons with their accompanying content.
@@ -18,7 +25,8 @@ import { useShallow } from 'zustand/react/shallow';
 export function ScheduleManagement() {
     const segment = useSelectedLayoutSegment();
     const router = useRouter();
-    const isMobile = useIsMobile();
+    const theme = useTheme();
+    const isDesktop = useMediaQuery(theme.breakpoints.up('sm'));
     const activeTab = useActiveTab();
 
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -65,10 +73,10 @@ export function ScheduleManagement() {
             return;
         }
 
-        if (!isMobile && segment === 'calendar') {
+        if (isDesktop && segment === 'calendar') {
             router.replace(TAB_HREF.search);
         }
-    }, [segment, isMobile, fallbackMode, router]);
+    }, [segment, isDesktop, fallbackMode, router]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
@@ -91,23 +99,30 @@ export function ScheduleManagement() {
         <Stack direction="column" flexGrow={1} height="0" sx={containerSx(containers.scheduleManagement)}>
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            {!isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
+            <Stack
+                flexGrow={1}
+                height="0"
+                sx={(theme) => ({
+                    flexDirection: 'column-reverse',
+                    [theme.breakpoints.up('sm')]: { flexDirection: 'column' },
+                })}
+            >
+                <ScheduleManagementTabs onTabChange={handleTabChange} />
 
-            <Stack width="100%" height="0" flexGrow={1} padding={1}>
-                <Stack
-                    id="course-pane-box"
-                    direction="column"
-                    overflow="auto"
-                    height="0px"
-                    flexGrow={1}
-                    ref={ref}
-                    onScroll={onScroll}
-                >
-                    <ScheduleManagementContent />
+                <Stack width="100%" height="0" flexGrow={1} padding={1}>
+                    <Stack
+                        id="course-pane-box"
+                        direction="column"
+                        overflow="auto"
+                        height="0px"
+                        flexGrow={1}
+                        ref={ref}
+                        onScroll={onScroll}
+                    >
+                        <ScheduleManagementContent />
+                    </Stack>
                 </Stack>
             </Stack>
-
-            {isMobile && <ScheduleManagementTabs onTabChange={handleTabChange} />}
         </Stack>
     );
 }

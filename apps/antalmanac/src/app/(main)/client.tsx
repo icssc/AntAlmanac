@@ -3,70 +3,99 @@
 import { redoDelete, undoDelete } from '$actions/AppStoreActions';
 import { AuthInitializer } from '$components/AuthInitializer';
 import { AutoSignIn } from '$components/AutoSignIn';
-import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
+import { CalendarPane } from '$components/Calendar/CalendarPane';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import { PatchNotes } from '$components/PatchNotes';
 import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { TutorialInitializer } from '$components/TutorialInitializer';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
-import { BLUE } from '$src/globals';
-import { Stack } from '@mui/material';
+import { Stack, useMediaQuery, useTheme } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { useCallback, useEffect, useState } from 'react';
-import Split from 'react-split';
+import { useCallback, useEffect } from 'react';
+import { Group, Panel, Separator, useGroupRef } from 'react-resizable-panels';
 
-const DEFAULT_SPLIT_SIZES: [number, number] = [42.5, 57.5];
+const CALENDAR_PANEL_ID = 'calendar-pane';
+const SCHEDULE_PANEL_ID = 'schedule-pane';
+const SEPARATOR_ID = 'split-separator';
 
-function MobileHome() {
-    return <ScheduleManagement />;
-}
+const DEFAULT_LAYOUT = {
+    [CALENDAR_PANEL_ID]: 42.5,
+    [SCHEDULE_PANEL_ID]: 57.5,
+} as const;
 
-function DesktopHome() {
-    const [sizes, setSizes] = useState<number[]>(DEFAULT_SPLIT_SIZES);
+// Below `sm`: hide calendar pane + separator, force schedule pane to fill.
+// `!important` overrides inline styles set by react-resizable-panels.
+const SplitGroup = styled(Group)(({ theme }) => ({
+    [theme.breakpoints.down('sm')]: {
+        [`& #${CALENDAR_PANEL_ID}, & #${SEPARATOR_ID}`]: {
+            display: 'none !important',
+        },
+        [`& #${SCHEDULE_PANEL_ID}`]: {
+            flex: '1 1 0% !important',
+        },
+    },
+}));
 
-    const gutter = useCallback((_index: number, direction: string) => {
-        const el = document.createElement('div');
-        el.className = `gutter gutter-${direction}`;
-        el.addEventListener('dblclick', () => setSizes(DEFAULT_SPLIT_SIZES));
-        return el;
-    }, []);
+function Home() {
+    const theme = useTheme();
+    const groupRef = useGroupRef();
+    const showCalendarPane = useMediaQuery(theme.breakpoints.up('sm'));
+
+    const handleSeparatorDoubleClick = useCallback(() => {
+        groupRef.current?.setLayout({ ...DEFAULT_LAYOUT });
+    }, [groupRef]);
 
     return (
-        <Split
-            sizes={sizes}
-            minSize={400}
-            expandToMin={false}
-            gutterSize={10}
-            gutterAlign="center"
-            snapOffset={0}
-            dragInterval={1}
-            direction="horizontal"
-            cursor="col-resize"
-            style={{ display: 'flex', flexGrow: 1, marginTop: 4 }}
-            gutter={gutter}
-            gutterStyle={() => ({
-                backgroundColor: BLUE,
-                width: '10px',
-                paddingRight: '1px',
-            })}
-            onDragEnd={setSizes}
+        <SplitGroup
+            id="home-split"
+            groupRef={groupRef}
+            orientation="horizontal"
+            defaultLayout={DEFAULT_LAYOUT}
+            style={{ flexGrow: 1, marginTop: 4 }}
         >
-            <Stack direction="column">
-                <ScheduleCalendar />
-            </Stack>
-            <Stack direction="column">
-                <ScheduleManagement />
-            </Stack>
-        </Split>
+            <Panel id={CALENDAR_PANEL_ID} minSize="40%" style={{ overflow: 'hidden' }}>
+                <Stack direction="column" height="100%">
+                    <CalendarPane mountGrid={showCalendarPane} />
+                </Stack>
+            </Panel>
+
+            <Separator
+                id={SEPARATOR_ID}
+                disableDoubleClick
+                onDoubleClick={handleSeparatorDoubleClick}
+                style={{
+                    width: 10,
+                    paddingRight: 1,
+                    boxSizing: 'border-box',
+                    alignSelf: 'stretch',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: theme.vars.palette.primary.main,
+                    color: theme.vars.palette.primary.contrastText,
+                    fontSize: 30,
+                    lineHeight: 1,
+                    userSelect: 'none',
+                    cursor: 'col-resize',
+                }}
+            >
+                ⋮
+            </Separator>
+
+            <Panel id={SCHEDULE_PANEL_ID} minSize="40%">
+                <Stack direction="column" height="100%">
+                    <ScheduleManagement />
+                </Stack>
+            </Panel>
+        </SplitGroup>
     );
 }
 
 export default function Client() {
-    const isMobile = useIsMobile();
     const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 
     useEffect(() => {
@@ -86,7 +115,7 @@ export default function Client() {
             <PatchNotes />
 
             <Stack component="main" height="calc(100svh - 52px - env(safe-area-inset-top))">
-                {isMobile ? <MobileHome /> : <DesktopHome />}
+                <Home />
             </Stack>
 
             <NotificationSnackbar />

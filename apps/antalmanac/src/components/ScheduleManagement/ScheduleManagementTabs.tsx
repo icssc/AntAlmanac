@@ -1,15 +1,18 @@
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { useActiveTab } from '$lib/tabs/hooks';
-import { TABS, TAB_INDEX, type TabName } from '$lib/tabs/tabs';
+import { TABS, TAB_INDEX, type TabName, isTabName } from '$lib/tabs/tabs';
 import { Tabs as MuiTabs, Paper } from '@mui/material';
+import { useSelectedLayoutSegment } from 'next/navigation';
 
 interface ScheduleManagementTabsProps {
     onTabChange: (tabName: TabName) => void;
 }
 
 export function ScheduleManagementTabs({ onTabChange }: ScheduleManagementTabsProps) {
-    const activeTab = useActiveTab();
-    const activeTabIndex = TAB_INDEX[activeTab];
+    const segment = useSelectedLayoutSegment();
+
+    // NB: We don't use useActiveTab here because it calls useMediaQuery internally,
+    // which returns a wrong default on the server and corrects on the client
+    const activeTabIndex = segment && isTabName(segment) ? TAB_INDEX[segment] : TAB_INDEX.search;
 
     return (
         <Paper
