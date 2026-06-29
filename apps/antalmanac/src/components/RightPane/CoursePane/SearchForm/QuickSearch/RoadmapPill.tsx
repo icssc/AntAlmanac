@@ -19,26 +19,18 @@ import { useShallow } from 'zustand/react/shallow';
 
 const ROADMAP_PILL_MAX_WIDTH = 220;
 
+type AnnotatedRoadmap = { roadmap: Roadmap; relation: RoadmapTermRelation };
+
 type RoadmapMenuItemsProps = {
-    roadmaps: Roadmap[];
+    annotated: AnnotatedRoadmap[];
     term: AATerm;
     activeRoadmapId: string | null;
     onSelect: (roadmap: Roadmap) => void;
 };
 
-function RoadmapMenuItems({ roadmaps, term, activeRoadmapId, onSelect }: RoadmapMenuItemsProps) {
-    if (roadmaps.length === 0) {
+function RoadmapMenuItems({ annotated, term, activeRoadmapId, onSelect }: RoadmapMenuItemsProps) {
+    if (annotated.length === 0) {
         return <CreateRoadmapLinkItem verticalPadding="6px" />;
-    }
-
-    const grouped: Record<RoadmapTermRelation, Roadmap[]> = {
-        [RoadmapTermRelation.IncludesTerm]: [],
-        [RoadmapTermRelation.ExcludesTerm]: [],
-        [RoadmapTermRelation.NoCourses]: [],
-    };
-
-    for (const roadmap of roadmaps) {
-        grouped[getRoadmapTermRelation(roadmap, term)].push(roadmap);
     }
 
     const sections: { relation: RoadmapTermRelation; label: string }[] = [
@@ -50,7 +42,7 @@ function RoadmapMenuItems({ roadmaps, term, activeRoadmapId, onSelect }: Roadmap
     return (
         <>
             {sections.flatMap(({ relation, label }) => {
-                const items = grouped[relation];
+                const items = annotated.filter((a) => a.relation === relation);
                 if (items.length === 0) {
                     return [];
                 }
@@ -61,26 +53,22 @@ function RoadmapMenuItems({ roadmaps, term, activeRoadmapId, onSelect }: Roadmap
                             <Typography sx={{ fontSize: 12 }}>{label}</Typography>
                         </HorizontalRightDivider>
                     </Box>,
-                    ...items.map((roadmap) => {
-                        const hasCourses = relation === RoadmapTermRelation.IncludesTerm;
+                    ...items.map(({ roadmap }) => {
+                        const selectable = relation === RoadmapTermRelation.IncludesTerm;
 
                         return (
                             <MenuItem
                                 key={roadmap.id}
                                 dense
+                                disabled={!selectable}
                                 selected={roadmap.id.toString() === activeRoadmapId}
-                                onClick={() => {
-                                    if (hasCourses) {
-                                        onSelect(roadmap);
-                                    }
-                                }}
+                                onClick={selectable ? () => onSelect(roadmap) : undefined}
                                 sx={{
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     gap: 1,
                                     pr: 0.5,
                                     fontSize: 12,
-                                    ...(!hasCourses && { opacity: 0.5 }),
                                 }}
                             >
                                 <ListItemText
@@ -137,22 +125,20 @@ export const RoadmapPill = memo(() => {
         }
     }, [sessionIsValid, plannerRoadmaps.length, isPlannerLoading, loadPlannerRoadmaps]);
 
-    const sortedRoadmaps = useMemo(() => {
-        return plannerRoadmaps.toSorted((a, b) => {
-            const aIncludesTerm = getRoadmapTermRelation(a, term) === RoadmapTermRelation.IncludesTerm;
-            const bIncludesTerm = getRoadmapTermRelation(b, term) === RoadmapTermRelation.IncludesTerm;
-            if (aIncludesTerm === bIncludesTerm) {
-                return 0;
-            }
-            return aIncludesTerm ? -1 : 1;
-        });
+    const annotated = useMemo<AnnotatedRoadmap[]>(() => {
+        return plannerRoadmaps.map((roadmap) => ({ roadmap, relation: getRoadmapTermRelation(roadmap, term) }));
     }, [plannerRoadmaps, term]);
 
     const roadmapsForTerm = useMemo(() => {
-        return sortedRoadmaps.filter(
-            (roadmap) => getRoadmapTermRelation(roadmap, term) === RoadmapTermRelation.IncludesTerm
-        );
-    }, [sortedRoadmaps, term]);
+        return annotated.filter((a) => a.relation === RoadmapTermRelation.IncludesTerm).map((a) => a.roadmap);
+    }, [annotated]);
+
+    const sortedAnnotated = useMemo(() => {
+        return annotated.toSorted((a, b) => {
+            if (a.relation === b.relation) return 0;
+            return a.relation === RoadmapTermRelation.IncludesTerm ? -1 : 1;
+        });
+    }, [annotated]);
 
     const activeRoadmap = useMemo(() => {
         if (selectedId) {
@@ -183,11 +169,12 @@ export const RoadmapPill = memo(() => {
     }, [activeRoadmap, searchWithRoadmap]);
 
     const handleToggleMenu = useCallback(() => {
-        setMenuOpen((open) => !open);
-        if (plannerRoadmaps.length === 0) {
-            void loadPlannerRoadmaps();
-        }
-    }, [loadPlannerRoadmaps, plannerRoadmaps.length]);
+        setMenuOpen((prev) => !prev);
+    }, []);
+
+    const handleCloseMenu = useCallback(() => {
+        setMenuOpen(false);
+    }, []);
 
     const handleSelect = useCallback(
         (roadmap: Roadmap) => {
@@ -199,13 +186,8 @@ export const RoadmapPill = memo(() => {
     );
 
     const showPill = sessionIsValid && hasLoadedPlannerRoadmaps && roadmapsForTerm.length > 0;
-    const showMenu = sortedRoadmaps.length > 1;
-
-    useEffect(() => {
-        if (!showMenu) {
-            setMenuOpen(false);
-        }
-    }, [showMenu]);
+    const showMenu = annotated.length > 1;
+    const effectiveMenuOpen = menuOpen && showMenu;
 
     if (!showPill || !activeRoadmap) {
         return null;
@@ -225,22 +207,19 @@ export const RoadmapPill = memo(() => {
             }
             icon={<Search />}
             onPrimaryClick={handlePrimaryClick}
-            {...(showMenu
-                ? {
-                      open: menuOpen,
-                      onToggleMenu: handleToggleMenu,
-                      onCloseMenu: () => setMenuOpen(false),
-                      children: (
-                          <RoadmapMenuItems
-                              roadmaps={sortedRoadmaps}
-                              term={term}
-                              activeRoadmapId={activeRoadmap.id.toString()}
-                              onSelect={handleSelect}
-                          />
-                      ),
-                  }
-                : {})}
-        />
+            open={effectiveMenuOpen}
+            onToggleMenu={showMenu ? handleToggleMenu : undefined}
+            onCloseMenu={showMenu ? handleCloseMenu : undefined}
+        >
+            {showMenu ? (
+                <RoadmapMenuItems
+                    annotated={sortedAnnotated}
+                    term={term}
+                    activeRoadmapId={activeRoadmap.id.toString()}
+                    onSelect={handleSelect}
+                />
+            ) : null}
+        </PillSplitButton>
     );
 });
 
