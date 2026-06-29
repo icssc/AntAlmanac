@@ -17,181 +17,7 @@ import type { AATerm, Roadmap } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-// TODO: Remove mock data before merging. Hardcoded roadmaps for testing the pill UI.
-
-type MockQuarter = 'Fall' | 'Winter' | 'Spring' | 'Summer1' | 'Summer2' | 'Summer10wk';
-
-function mockYearPlan(startYear: number, quarters: Partial<Record<MockQuarter, string[]>>): Roadmap['content'][number] {
-    const quarterOrder: MockQuarter[] = ['Fall', 'Winter', 'Spring', 'Summer1', 'Summer10wk', 'Summer2'];
-    return {
-        name: `${startYear}-${startYear + 1}`,
-        startYear,
-        quarters: quarterOrder
-            .filter((name) => name in quarters)
-            .map((name) => ({
-                name,
-                courses: (quarters[name] ?? []).map((courseId) => ({ courseId })),
-            })),
-    };
-}
-
-const MOCK_ROADMAPS_ALL: Roadmap[] = [
-    {
-        id: 'mock-1',
-        name: "Peter's Roadmap",
-        content: [2024, 2025, 2026].map((startYear) =>
-            mockYearPlan(startYear, {
-                Fall: ['COMPSCI161'],
-                Winter: ['COMPSCI162'],
-                Spring: ['COMPSCI171'],
-            })
-        ),
-    },
-    {
-        id: 'mock-2',
-        name: 'GE Roadmap',
-        content: [2024, 2025, 2026].map((startYear) =>
-            mockYearPlan(startYear, {
-                Fall: ['WRITING39B'],
-                Winter: ['HUMANIT1AS'],
-                Spring: ['MATH2A'],
-            })
-        ),
-    },
-    {
-        id: 'mock-3',
-        name: 'Pre-2026 Plan',
-        content: [2023, 2024].map((startYear) =>
-            mockYearPlan(startYear, {
-                Fall: ['WRITING39B'],
-                Winter: ['HUMANIT1AS'],
-                Spring: ['MATH2A'],
-            })
-        ),
-    },
-    {
-        id: 'mock-4',
-        name: 'Spring TBD',
-        content: [
-            mockYearPlan(2025, {
-                Fall: ['ECON20A'],
-                Winter: ['ECON20B'],
-                Spring: [],
-            }),
-        ],
-    },
-    {
-        id: 'mock-5',
-        name: 'Fall 2026 Only',
-        content: [
-            mockYearPlan(2026, {
-                Fall: ['COMPSCI178'],
-            }),
-        ],
-    },
-    {
-        id: 'mock-6',
-        name: 'No Spring Quarter',
-        content: [
-            mockYearPlan(2025, {
-                Fall: ['PHYSICS7A'],
-                Winter: ['PHYSICS7B'],
-            }),
-        ],
-    },
-];
-
-const MOCK_ROADMAPS_SINGLE: Roadmap[] = [
-    {
-        id: 'mock-single',
-        name: 'CS Major Roadmap',
-        content: [
-            mockYearPlan(2025, {
-                Fall: ['COMPSCI161'],
-                Winter: ['COMPSCI162'],
-                Spring: ['COMPSCI171'],
-            }),
-        ],
-    },
-];
-
-const MOCK_ROADMAPS_SUMMER2: Roadmap[] = [
-    {
-        id: 'mock-summer2-a',
-        name: '2026 Summer Session 2',
-        content: [
-            mockYearPlan(2025, {
-                Summer2: ['MATH2D', 'CHEM1C'],
-            }),
-        ],
-    },
-    {
-        id: 'mock-summer2-b',
-        name: 'Summer GE Progress',
-        content: [
-            mockYearPlan(2025, {
-                Summer2: ['WRITING39C', 'HUMANIT1ES'],
-            }),
-        ],
-    },
-    {
-        id: 'mock-summer2-c',
-        name: 'CS Summer Catch-up',
-        content: [
-            mockYearPlan(2025, {
-                Summer2: ['COMPSCI161', 'COMPSCI162'],
-            }),
-        ],
-    },
-    {
-        id: 'mock-summer2-exclude-a',
-        name: 'No Summer Quarters',
-        content: [
-            mockYearPlan(2025, {
-                Fall: ['ECON20A'],
-                Winter: ['ECON20B'],
-                Spring: ['MATH2A'],
-            }),
-        ],
-    },
-    {
-        id: 'mock-summer2-exclude-b',
-        name: 'Summer Session 1 Only',
-        content: [
-            mockYearPlan(2025, {
-                Summer1: ['PHYSICS7C'],
-            }),
-        ],
-    },
-    {
-        id: 'mock-summer2-exclude-c',
-        name: '2024 Archive',
-        content: [
-            mockYearPlan(2024, {
-                Fall: ['WRITING39B'],
-                Winter: ['HUMANIT1AS'],
-                Spring: ['MATH2A'],
-            }),
-        ],
-    },
-    {
-        id: 'mock-summer2-empty',
-        name: 'Summer2 TBD',
-        content: [
-            mockYearPlan(2025, {
-                Summer2: [],
-            }),
-        ],
-    },
-];
-
-const MOCK_ENABLED = MOCK_ROADMAPS_ALL.length > 0;
-
 const ROADMAP_PILL_MAX_WIDTH = 220;
-
-function getRoadmapCourseIds(roadmap: Roadmap, term: AATerm): string[] {
-    return getSearchableRoadmapCourseIds(roadmap, term);
-}
 
 type RoadmapMenuItemsProps = {
     roadmaps: Roadmap[];
@@ -288,152 +114,9 @@ function RoadmapMenuItems({ roadmaps, term, activeRoadmapId, onSelect }: Roadmap
     );
 }
 
-type RoadmapPillInstanceProps = {
-    plannerRoadmaps: Roadmap[];
-    isSignedIn: boolean;
-    isPlannerReady: boolean;
-    usingMockRoadmaps: boolean;
-    realRoadmaps: Roadmap[];
-    loadPlannerRoadmaps: () => Promise<void>;
-};
-
-const RoadmapPillInstance = memo(
-    ({
-        plannerRoadmaps,
-        isSignedIn,
-        isPlannerReady,
-        usingMockRoadmaps,
-        realRoadmaps,
-        loadPlannerRoadmaps,
-    }: RoadmapPillInstanceProps) => {
-        const [term] = useCourseSearchParam('term');
-        const { setField } = useCourseSearchForm();
-        const { showResults } = useCourseSearchView();
-        const [selectedId, setSelectedId] = useState<string | null>(null);
-        const [menuOpen, setMenuOpen] = useState(false);
-
-        const sortedRoadmaps = useMemo(() => {
-            return plannerRoadmaps.toSorted((a, b) => {
-                const aIncludesTerm = getRoadmapTermRelation(a, term) === RoadmapTermRelation.IncludesTerm;
-                const bIncludesTerm = getRoadmapTermRelation(b, term) === RoadmapTermRelation.IncludesTerm;
-                if (aIncludesTerm === bIncludesTerm) {
-                    return 0;
-                }
-                return aIncludesTerm ? -1 : 1;
-            });
-        }, [plannerRoadmaps, term]);
-
-        const roadmapsForTerm = useMemo(() => {
-            return sortedRoadmaps.filter(
-                (roadmap) => getRoadmapTermRelation(roadmap, term) === RoadmapTermRelation.IncludesTerm
-            );
-        }, [sortedRoadmaps, term]);
-
-        const activeRoadmap = useMemo(() => {
-            if (selectedId) {
-                return (
-                    roadmapsForTerm.find((roadmap) => roadmap.id.toString() === selectedId) ??
-                    roadmapsForTerm[0] ??
-                    null
-                );
-            }
-            return roadmapsForTerm[0] ?? null;
-        }, [roadmapsForTerm, selectedId]);
-
-        const searchWithRoadmap = useCallback(
-            (roadmap: Roadmap) => {
-                const ids = getRoadmapCourseIds(roadmap, term);
-                if (ids.length === 0) {
-                    openSnackbar('error', `No courses found in "${roadmap.name}" for ${term.shortName}`);
-                    return;
-                }
-
-                setField('courseIds', ids);
-                showResults();
-            },
-            [setField, showResults, term]
-        );
-
-        const handlePrimaryClick = useCallback(() => {
-            if (!activeRoadmap) return;
-            searchWithRoadmap(activeRoadmap);
-        }, [activeRoadmap, searchWithRoadmap]);
-
-        const handleToggleMenu = useCallback(() => {
-            setMenuOpen((open) => !open);
-            if (!usingMockRoadmaps && realRoadmaps.length === 0) {
-                void loadPlannerRoadmaps();
-            }
-        }, [loadPlannerRoadmaps, realRoadmaps.length, usingMockRoadmaps]);
-
-        const handleSelect = useCallback(
-            (roadmap: Roadmap) => {
-                setSelectedId(roadmap.id.toString());
-                setMenuOpen(false);
-                searchWithRoadmap(roadmap);
-            },
-            [searchWithRoadmap]
-        );
-
-        // TODO: Restore sessionIsValid-only gate before merging (drop usingMockRoadmaps bypass).
-        const showPill = isSignedIn && isPlannerReady && roadmapsForTerm.length > 0;
-        const showMenu = sortedRoadmaps.length > 1;
-
-        useEffect(() => {
-            if (!showMenu) {
-                setMenuOpen(false);
-            }
-        }, [showMenu]);
-
-        if (!showPill || !activeRoadmap) {
-            return null;
-        }
-
-        return (
-            <PillSplitButton
-                sx={{ maxWidth: ROADMAP_PILL_MAX_WIDTH }}
-                menuWidth={ROADMAP_PILL_MAX_WIDTH}
-                label={
-                    <Box
-                        component="span"
-                        sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}
-                    >
-                        Search:&nbsp;{activeRoadmap.name}
-                    </Box>
-                }
-                icon={<Search />}
-                onPrimaryClick={handlePrimaryClick}
-                {...(showMenu
-                    ? {
-                          open: menuOpen,
-                          onToggleMenu: handleToggleMenu,
-                          onCloseMenu: () => setMenuOpen(false),
-                          children: (
-                              <RoadmapMenuItems
-                                  roadmaps={sortedRoadmaps}
-                                  term={term}
-                                  activeRoadmapId={activeRoadmap.id.toString()}
-                                  onSelect={handleSelect}
-                              />
-                          ),
-                      }
-                    : {})}
-            />
-        );
-    }
-);
-
-RoadmapPillInstance.displayName = 'RoadmapPillInstance';
-
 export const RoadmapPill = memo(() => {
     const sessionIsValid = useSessionStore((s) => s.sessionIsValid);
-    const hasCheckedAuth = useSessionStore((s) => s.hasCheckedAuth);
-    const {
-        plannerRoadmaps: realRoadmaps,
-        isPlannerLoading,
-        hasLoadedPlannerRoadmaps,
-        loadPlannerRoadmaps,
-    } = usePlannerStore(
+    const { plannerRoadmaps, isPlannerLoading, hasLoadedPlannerRoadmaps, loadPlannerRoadmaps } = usePlannerStore(
         useShallow((s) => ({
             plannerRoadmaps: s.plannerRoadmaps,
             isPlannerLoading: s.isPlannerLoading,
@@ -442,48 +125,123 @@ export const RoadmapPill = memo(() => {
         }))
     );
 
-    // TODO: Remove mock override before merging.
-    const usingMockRoadmaps = MOCK_ENABLED;
-    const isSignedIn = usingMockRoadmaps || sessionIsValid;
-    const isPlannerReady = usingMockRoadmaps
-        ? hasCheckedAuth && (!sessionIsValid || hasLoadedPlannerRoadmaps)
-        : hasLoadedPlannerRoadmaps;
+    const [term] = useCourseSearchParam('term');
+    const { setField } = useCourseSearchForm();
+    const { showResults } = useCourseSearchView();
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
-        if (usingMockRoadmaps) return;
-        if (sessionIsValid && realRoadmaps.length === 0 && !isPlannerLoading) {
+        if (sessionIsValid && plannerRoadmaps.length === 0 && !isPlannerLoading) {
             void loadPlannerRoadmaps();
         }
-    }, [usingMockRoadmaps, sessionIsValid, realRoadmaps.length, isPlannerLoading, loadPlannerRoadmaps]);
+    }, [sessionIsValid, plannerRoadmaps.length, isPlannerLoading, loadPlannerRoadmaps]);
 
-    const instanceProps = {
-        isSignedIn,
-        isPlannerReady,
-        usingMockRoadmaps,
-        realRoadmaps,
-        loadPlannerRoadmaps,
-    };
+    const sortedRoadmaps = useMemo(() => {
+        return plannerRoadmaps.toSorted((a, b) => {
+            const aIncludesTerm = getRoadmapTermRelation(a, term) === RoadmapTermRelation.IncludesTerm;
+            const bIncludesTerm = getRoadmapTermRelation(b, term) === RoadmapTermRelation.IncludesTerm;
+            if (aIncludesTerm === bIncludesTerm) {
+                return 0;
+            }
+            return aIncludesTerm ? -1 : 1;
+        });
+    }, [plannerRoadmaps, term]);
 
-    if (usingMockRoadmaps) {
-        return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    gap: 1,
-                    flexWrap: 'wrap',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                }}
-            >
-                <RoadmapPillInstance {...instanceProps} plannerRoadmaps={MOCK_ROADMAPS_SINGLE} />
-                <RoadmapPillInstance {...instanceProps} plannerRoadmaps={MOCK_ROADMAPS_ALL} />
-                <RoadmapPillInstance {...instanceProps} plannerRoadmaps={MOCK_ROADMAPS_SUMMER2} />
-            </Box>
+    const roadmapsForTerm = useMemo(() => {
+        return sortedRoadmaps.filter(
+            (roadmap) => getRoadmapTermRelation(roadmap, term) === RoadmapTermRelation.IncludesTerm
         );
+    }, [sortedRoadmaps, term]);
+
+    const activeRoadmap = useMemo(() => {
+        if (selectedId) {
+            return (
+                roadmapsForTerm.find((roadmap) => roadmap.id.toString() === selectedId) ?? roadmapsForTerm[0] ?? null
+            );
+        }
+        return roadmapsForTerm[0] ?? null;
+    }, [roadmapsForTerm, selectedId]);
+
+    const searchWithRoadmap = useCallback(
+        (roadmap: Roadmap) => {
+            const ids = getSearchableRoadmapCourseIds(roadmap, term);
+            if (ids.length === 0) {
+                openSnackbar('error', `No courses found in "${roadmap.name}" for ${term.shortName}`);
+                return;
+            }
+
+            setField('courseIds', ids);
+            showResults();
+        },
+        [setField, showResults, term]
+    );
+
+    const handlePrimaryClick = useCallback(() => {
+        if (!activeRoadmap) return;
+        searchWithRoadmap(activeRoadmap);
+    }, [activeRoadmap, searchWithRoadmap]);
+
+    const handleToggleMenu = useCallback(() => {
+        setMenuOpen((open) => !open);
+        if (plannerRoadmaps.length === 0) {
+            void loadPlannerRoadmaps();
+        }
+    }, [loadPlannerRoadmaps, plannerRoadmaps.length]);
+
+    const handleSelect = useCallback(
+        (roadmap: Roadmap) => {
+            setSelectedId(roadmap.id.toString());
+            setMenuOpen(false);
+            searchWithRoadmap(roadmap);
+        },
+        [searchWithRoadmap]
+    );
+
+    const showPill = sessionIsValid && hasLoadedPlannerRoadmaps && roadmapsForTerm.length > 0;
+    const showMenu = sortedRoadmaps.length > 1;
+
+    useEffect(() => {
+        if (!showMenu) {
+            setMenuOpen(false);
+        }
+    }, [showMenu]);
+
+    if (!showPill || !activeRoadmap) {
+        return null;
     }
 
-    return <RoadmapPillInstance {...instanceProps} plannerRoadmaps={realRoadmaps} />;
+    return (
+        <PillSplitButton
+            sx={{ maxWidth: ROADMAP_PILL_MAX_WIDTH }}
+            menuWidth={ROADMAP_PILL_MAX_WIDTH}
+            label={
+                <Box
+                    component="span"
+                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}
+                >
+                    Search:&nbsp;{activeRoadmap.name}
+                </Box>
+            }
+            icon={<Search />}
+            onPrimaryClick={handlePrimaryClick}
+            {...(showMenu
+                ? {
+                      open: menuOpen,
+                      onToggleMenu: handleToggleMenu,
+                      onCloseMenu: () => setMenuOpen(false),
+                      children: (
+                          <RoadmapMenuItems
+                              roadmaps={sortedRoadmaps}
+                              term={term}
+                              activeRoadmapId={activeRoadmap.id.toString()}
+                              onSelect={handleSelect}
+                          />
+                      ),
+                  }
+                : {})}
+        />
+    );
 });
 
 RoadmapPill.displayName = 'RoadmapPill';
