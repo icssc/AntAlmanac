@@ -1,10 +1,10 @@
 import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputBox';
 import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputLabel';
-import { Box, TextField, type TextFieldProps } from '@mui/material';
+import { Box, type TextFieldProps } from '@mui/material';
 import { DesktopTimePicker, type TimePickerProps } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { forwardRef, useId, useState } from 'react';
+import { useId, useState } from 'react';
 
 interface LabeledTimePickerContentProps {
     label: string;
@@ -21,11 +21,6 @@ export default function LabeledTimePickerContent({
 }: LabeledTimePickerContentProps) {
     const id = useId();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-    const TimePickerTextField = forwardRef<HTMLInputElement, TextFieldProps>((params, ref) => (
-        <TextField size="small" variant="outlined" {...params} {...textFieldProps} id={id} inputRef={ref} />
-    ));
-    TimePickerTextField.displayName = 'TimePickerTextField';
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -45,9 +40,12 @@ export default function LabeledTimePickerContent({
                             popper: {
                                 anchorEl,
                             },
-                        }}
-                        slots={{
-                            textField: TimePickerTextField,
+                            textField: {
+                                size: 'small' as const,
+                                variant: 'outlined' as const,
+                                ...textFieldProps,
+                                id,
+                            },
                         }}
                     />
                 </CustomInputBox>
