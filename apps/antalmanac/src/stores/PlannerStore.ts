@@ -1,8 +1,8 @@
 import { trpc } from '$lib/api/trpc';
 import { getDefaultTerm, getTermByYearAndQuarter, termData } from '$lib/term';
-import { parseQuarter } from '$lib/termHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type { AATerm, Roadmap } from '@packages/antalmanac-types';
+import type { Quarter } from '@packages/anteater-api/types';
 import { create } from 'zustand';
 
 interface PlannerStore {
@@ -16,12 +16,7 @@ interface PlannerStore {
     updateTakenCourses: (selectedRoadmapId: string) => void;
 }
 
-function roadmapQuarterToTerm(startYear: number, quarterName: string): AATerm | undefined {
-    const quarter = parseQuarter(quarterName);
-    if (!quarter) {
-        return undefined;
-    }
-
+function roadmapQuarterToTerm(startYear: number, quarter: Quarter): AATerm | undefined {
     const year = quarter === 'Fall' ? startYear : startYear + 1;
     return getTermByYearAndQuarter(year.toString(), quarter);
 }
