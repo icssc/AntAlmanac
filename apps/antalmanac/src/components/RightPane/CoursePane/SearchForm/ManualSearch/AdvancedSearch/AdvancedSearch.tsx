@@ -14,7 +14,7 @@ import { readAdvancedSearchParams } from '$components/RightPane/CoursePane/Searc
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Box, Button, Collapse, Skeleton, Typography } from '@mui/material';
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const StartTimeField = dynamic(
     () => import('./AdvancedSearchFields/StartTimeField').then((m) => ({ default: m.StartTimeField })),
@@ -28,11 +28,6 @@ const EndTimeField = dynamic(
 
 export function AdvancedSearch() {
     const [expanded, setExpanded] = useState(() => hasAdvancedParams(readAdvancedSearchParams()));
-    const [mounted, setMounted] = useState(expanded);
-
-    useEffect(() => {
-        if (expanded) setMounted(true);
-    }, [expanded]);
 
     const handleExpand = () => setExpanded((value) => !value);
 
@@ -54,41 +49,39 @@ export function AdvancedSearch() {
                 {expanded ? <ExpandLess /> : <ExpandMore />}
             </Button>
 
-            <Collapse in={expanded}>
-                {mounted && (
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: 2,
-                            marginBottom: '1rem',
-                        }}
-                    >
-                        <AdvancedSearchFieldRow>
-                            <InstructorField />
-                            <UnitsField />
-                            <FullCoursesField />
-                        </AdvancedSearchFieldRow>
+            <Collapse in={expanded} mountOnEnter>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                        marginBottom: '1rem',
+                    }}
+                >
+                    <AdvancedSearchFieldRow>
+                        <InstructorField />
+                        <UnitsField />
+                        <FullCoursesField />
+                    </AdvancedSearchFieldRow>
 
-                        <AdvancedSearchFieldRow>
-                            <DivisionField />
-                            <StartTimeField />
-                            <EndTimeField />
-                        </AdvancedSearchFieldRow>
+                    <AdvancedSearchFieldRow>
+                        <DivisionField />
+                        <StartTimeField />
+                        <EndTimeField />
+                    </AdvancedSearchFieldRow>
 
-                        <AdvancedSearchFieldRow>
-                            <OnlineField />
-                            <BuildingField />
-                            <RoomField />
-                        </AdvancedSearchFieldRow>
+                    <AdvancedSearchFieldRow>
+                        <OnlineField />
+                        <BuildingField />
+                        <RoomField />
+                    </AdvancedSearchFieldRow>
 
-                        <AdvancedSearchFieldRow>
-                            <ExcludeRoadmapField />
-                            <ExcludeRestrictionsField />
-                            <DaysField />
-                        </AdvancedSearchFieldRow>
-                    </Box>
-                )}
+                    <AdvancedSearchFieldRow>
+                        <ExcludeRoadmapField />
+                        <ExcludeRestrictionsField />
+                        <DaysField />
+                    </AdvancedSearchFieldRow>
+                </Box>
             </Collapse>
         </>
     );
