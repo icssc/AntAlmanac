@@ -156,7 +156,11 @@ export const SearchWithPlanner = () => {
                 </MenuItem>
 
                 <Tooltip title="Open Planner">
-                    <IconButton href={PLANNER_LINK} size="small" aria-label="Open Planner">
+                    <IconButton
+                        href={`${PLANNER_LINK}?${new URLSearchParams({ plan: roadmap.id.toString() })}`}
+                        size="small"
+                        aria-label="Open Planner"
+                    >
                         <OpenInBrowser fontSize="small" />
                     </IconButton>
                 </Tooltip>
