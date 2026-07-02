@@ -47,13 +47,6 @@ const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge
 
 type GECategoryKey = (typeof geCategoryKeys)[number];
 
-const bareCourseSchema = z.object({
-    department: z.string(),
-    courseNumber: z.string(),
-});
-
-type BareCourse = z.infer<typeof bareCourseSchema>;
-
 const termInputSchema = WebsocSearchInputSchema.pick({ year: true, quarter: true });
 type SearchTermInput = z.infer<typeof termInputSchema>;
 
@@ -170,28 +163,6 @@ const searchRouter = router({
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
                 ...matchedCourses.map((x) => [x.obj.id, x.obj]),
             ]);
-        }),
-    filterOfferedCourses: procedure
-        .input(
-            z.object({
-                courses: z.array(bareCourseSchema),
-                term: termInputSchema,
-            })
-        )
-        .query(async ({ input }): Promise<Record<BareCourse['department'], Set<BareCourse['courseNumber']>>> => {
-            const { courses, term } = input;
-            const termSectionCodes = await getTermSectionCodes(term);
-            const offeredCourseSet = getOfferedCourses(termSectionCodes);
-            const offeredCourses: Record<string, Set<string>> = {};
-            for (const course of courses) {
-                if (isCourseOffered(course.department, course.courseNumber, offeredCourseSet)) {
-                    if (!Object.hasOwn(offeredCourses, course.department)) {
-                        offeredCourses[course.department] = new Set();
-                    }
-                    offeredCourses[course.department].add(course.courseNumber);
-                }
-            }
-            return offeredCourses;
         }),
 });
 
