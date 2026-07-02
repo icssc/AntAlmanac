@@ -19,7 +19,6 @@ export type ManualSearchParam = (typeof MANUAL_SEARCH_PARAMS)[number];
 
 export const COURSE_SEARCH_MODE_KEY = 'search';
 export const COURSE_SEARCH_VIEW_KEY = 'view';
-export const COURSE_SEARCH_PLANNER_KEY = 'importRoadmap';
 
 export const COURSE_SEARCH_MODE = {
     QUICK: 'quick',

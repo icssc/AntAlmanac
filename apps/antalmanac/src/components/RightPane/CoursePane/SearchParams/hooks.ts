@@ -1,7 +1,6 @@
 import {
     COURSE_SEARCH_MODE,
     COURSE_SEARCH_MODE_KEY,
-    COURSE_SEARCH_PLANNER_KEY,
     COURSE_SEARCH_VIEW,
     COURSE_SEARCH_VIEW_KEY,
 } from '$components/RightPane/CoursePane/SearchParams/constants';
@@ -10,7 +9,6 @@ import { deriveCourseSearchView, isValidSearch } from '$components/RightPane/Cou
 import { readCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import {
     courseSearchParamParsers,
-    plannerSearchParser,
     searchModeParser,
     searchViewParser,
 } from '$components/RightPane/CoursePane/SearchParams/parsers';
@@ -38,9 +36,8 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(
 
 export function useCourseSearchMode() {
     const [searchMode, setSearchModeParam] = useQueryState(COURSE_SEARCH_MODE_KEY, searchModeParser);
-    const [plannerSearchParam] = useQueryState(COURSE_SEARCH_PLANNER_KEY, plannerSearchParser);
 
-    const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL && plannerSearchParam === null;
+    const manualSearchEnabled = searchMode === COURSE_SEARCH_MODE.MANUAL;
 
     const setSearchMode = useCallback(
         (mode: CourseSearchMode) => {

@@ -1,8 +1,6 @@
-import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
 import { CreateRoadmapLinkItem } from '$components/RightPane/CoursePane/SearchForm/CreateRoadmapLinkItem';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import { COURSE_SEARCH_PLANNER_KEY } from '$components/RightPane/CoursePane/SearchParams/constants';
 import {
     useCourseSearchForm,
     useCourseSearchParam,
@@ -21,17 +19,7 @@ import { openSnackbar } from '$stores/SnackbarStore';
 import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { type Roadmap } from '@packages/antalmanac-types';
-import { parseAsString, useQueryState } from 'nuqs';
-import {
-    type ComponentProps,
-    type HTMLAttributes,
-    type Key,
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { type ComponentProps, type HTMLAttributes, type Key, useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 type AutocompleteProps = ComponentProps<typeof LabeledAutocomplete>['autocompleteProps'];
@@ -51,21 +39,9 @@ export const SearchWithPlanner = () => {
     const [term] = useCourseSearchParam('term');
     const { showResults } = useCourseSearchView();
     const { setField } = useCourseSearchForm();
-    const [plannerSearchParam, setPlannerSearchParam] = useQueryState(
-        COURSE_SEARCH_PLANNER_KEY,
-        parseAsString.withOptions({ history: 'replace' })
-    );
     const [termRoadmapGrouping, setTermRoadmapGrouping] = useState<TermRoadmapGrouping>(getDefaultTermRoadmapGrouping);
-    const [openSignInDialog, setOpenSignInDialog] = useState(false);
-    const hasSearchedWithUrlParamsRef = useRef(false);
 
-    const { sessionIsValid, hasCheckedAuth } = useSessionStore(
-        useShallow((state) => ({
-            sessionIsValid: state.sessionIsValid,
-
-            hasCheckedAuth: state.hasCheckedAuth,
-        }))
-    );
+    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
 
     const { isPlannerLoading, plannerRoadmaps } = usePlannerStore(
         useShallow((state) => ({ isPlannerLoading: state.isPlannerLoading, plannerRoadmaps: state.plannerRoadmaps }))
@@ -189,26 +165,6 @@ export const SearchWithPlanner = () => {
         updateTermRoadmaps();
     }, [plannerRoadmaps, term]);
 
-    useEffect(() => {
-        if (plannerRoadmaps.length === 0 || hasSearchedWithUrlParamsRef.current) {
-            return;
-        }
-
-        if (plannerSearchParam) {
-            const success = search(plannerSearchParam);
-            if (success) {
-                hasSearchedWithUrlParamsRef.current = true;
-                void setPlannerSearchParam(null);
-            }
-        }
-    }, [plannerSearchParam, plannerRoadmaps, search, setPlannerSearchParam]);
-
-    useEffect(() => {
-        if (hasCheckedAuth && !sessionIsValid && plannerSearchParam !== null) {
-            setOpenSignInDialog(true);
-        }
-    }, [plannerSearchParam, sessionIsValid, hasCheckedAuth]);
-
     const searchComponent = (
         <LabeledAutocomplete
             label="Roadmap"
@@ -237,17 +193,9 @@ export const SearchWithPlanner = () => {
 
     if (!sessionIsValid) {
         return (
-            <>
-                <Tooltip title="Sign in to search with Planner">
-                    <span>{searchComponent}</span>
-                </Tooltip>
-
-                <SignInDialog
-                    open={openSignInDialog}
-                    onClose={() => setOpenSignInDialog(false)}
-                    feature="PlannerSearch"
-                />
-            </>
+            <Tooltip title="Sign in to search with Planner">
+                <span>{searchComponent}</span>
+            </Tooltip>
         );
     }
 
