@@ -83,7 +83,6 @@ export function FuzzySearch() {
         let nextFormData: CourseSearchParams;
         switch (result.type) {
             case resultType.GE_CATEGORY: {
-                // A GE result's key is already the option code (e.g. "GE-2").
                 const parsedGe = WebsocGeOptionSchema.safeParse(option.key);
                 nextFormData = { ...baseFormData, ge: parsedGe.success ? [parsedGe.data] : [] };
                 break;
