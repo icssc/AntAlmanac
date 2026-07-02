@@ -79,18 +79,20 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
         queryKey: queryKeys.courseSearch.result(formData),
         queryFn: async (): Promise<WebsocAPIResponse | null> => {
             try {
-                const websocQueryParams = getQueryParams(formData);
                 let response: WebsocAPIResponse;
 
                 if (formData.courseIds.length > 0) {
+                    // A roadmap search is identified solely by courseId + term; the other
+                    // form fields (dept, courseNumber, GE, ...) must not constrain it.
                     response = unionWebsocResponses(
                         await trpc.websoc.getManyOfField.query({
-                            params: websocQueryParams,
+                            params: { year: formData.term.year, quarter: formData.term.quarter },
                             fieldName: 'courseId',
                             values: formData.courseIds,
                         })
                     );
                 } else {
+                    const websocQueryParams = getQueryParams(formData);
                     const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
                     response =
                         selectedGEs.length > 1
