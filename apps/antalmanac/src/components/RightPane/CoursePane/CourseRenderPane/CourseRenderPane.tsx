@@ -81,9 +81,8 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             try {
                 let response: WebsocAPIResponse;
 
+                // NB: Searching courseId(s) is exclusive to the "Search with Planner" feature and is identified solely by term + courseId. This could probably be written/exposed better...
                 if (formData.courseIds.length > 0) {
-                    // A roadmap search is identified solely by courseId + term; the other
-                    // form fields (dept, courseNumber, GE, ...) must not constrain it.
                     response = unionWebsocResponses(
                         await trpc.websoc.getManyOfField.query({
                             params: { year: formData.term.year, quarter: formData.term.quarter },
