@@ -1,5 +1,5 @@
 import { DEFAULT_MANUAL_SEARCH_VALUES } from '$components/RightPane/CoursePane/SearchParams/defaults';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { BLUE } from '$src/globals';
 import { Alert, Link } from '@mui/material';
 import { buildCourseId } from '@packages/anteater-api/utils';
@@ -10,13 +10,13 @@ interface PlannerCourseLinkBannerProps {
 }
 
 export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCourseLinkBannerProps) {
+    const [courseIds] = useCourseSearchParam('courseIds');
+
     if (deptValue === DEFAULT_MANUAL_SEARCH_VALUES.deptValue || !courseNumber.trim()) {
         return null;
     }
 
-    const multiSearchData = RightPaneStore.getMultiSearchData();
-
-    if (multiSearchData.length > 0) {
+    if (courseIds.length > 0) {
         return null;
     }
 

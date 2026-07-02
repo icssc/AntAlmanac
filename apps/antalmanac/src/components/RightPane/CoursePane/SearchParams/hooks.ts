@@ -15,7 +15,6 @@ import {
     searchViewParser,
 } from '$components/RightPane/CoursePane/SearchParams/parsers';
 import type { CourseSearchMode, CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { useQueryState, useQueryStates } from 'nuqs';
 import { useCallback } from 'react';
@@ -29,7 +28,6 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(
 
     const setValue = useCallback(
         (next: CourseSearchParams[K]) => {
-            RightPaneStore.clearMultiSearchData();
             void (setValueRaw as (next: CourseSearchParams[K]) => ReturnType<typeof setValueRaw>)(next);
         },
         [setValueRaw]
@@ -62,7 +60,6 @@ export function useCourseSearchForm() {
 
     const setField = useCallback(
         <Field extends keyof CourseSearchParams>(field: Field, value: CourseSearchParams[Field]) => {
-            RightPaneStore.clearMultiSearchData();
             void setFormData({ [field]: value });
         },
         [setFormData]
@@ -70,7 +67,6 @@ export function useCourseSearchForm() {
 
     const setFields = useCallback(
         (values: Partial<CourseSearchParams> | null) => {
-            RightPaneStore.clearMultiSearchData();
             void setFormData(values);
         },
         [setFormData]
@@ -78,7 +74,6 @@ export function useCourseSearchForm() {
 
     const resetForm = useCallback(
         ({ preserveTerm = false }: { preserveTerm?: boolean } = {}) => {
-            RightPaneStore.clearMultiSearchData();
             void setFormData(preserveTerm ? { ...DEFAULT_FORM_DATA, term: formData.term } : DEFAULT_FORM_DATA);
         },
         [formData.term, setFormData]
@@ -104,7 +99,6 @@ export function useCourseSearchView() {
     }, [setViewParam]);
 
     const showSearchForm = useCallback(() => {
-        RightPaneStore.clearMultiSearchData();
         void setViewParam(COURSE_SEARCH_VIEW.SEARCH_FORM);
     }, [setViewParam]);
 
@@ -132,7 +126,6 @@ export function useCourseSearchSubmit() {
         (data?: CourseSearchParams) => {
             const payload = data ?? readCourseSearchParams();
             if (isValidSearch(payload)) {
-                RightPaneStore.clearMultiSearchData();
                 showResults();
                 return true;
             }
