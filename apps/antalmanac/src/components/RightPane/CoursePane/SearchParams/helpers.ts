@@ -18,7 +18,7 @@ export function isValidSearch(formData: CourseSearchParams) {
     const { ge, deptValue, sectionCode, instructor, courseIds } = formData;
     return (
         courseIds.length > 0 ||
-        ge !== DEFAULT_FORM_DATA.ge ||
+        ge.length > 0 ||
         deptValue !== DEFAULT_FORM_DATA.deptValue ||
         sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
         instructor !== DEFAULT_FORM_DATA.instructor
@@ -30,7 +30,11 @@ export function hasManualParams(formData: CourseSearchParams) {
         if (key === 'term') {
             return formData.term.shortName !== DEFAULT_FORM_DATA.term.shortName;
         }
-        return formData[key] !== DEFAULT_FORM_DATA[key];
+        const value = formData[key];
+        if (Array.isArray(value)) {
+            return value.length > 0;
+        }
+        return value !== DEFAULT_FORM_DATA[key];
     });
 }
 
@@ -51,7 +55,7 @@ function shouldShowSearchForm(formData: CourseSearchParams) {
         formData.courseIds.length > 0 ||
         formData.sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
         formData.courseNumber !== DEFAULT_FORM_DATA.courseNumber ||
-        formData.ge !== DEFAULT_FORM_DATA.ge ||
+        formData.ge.length > 0 ||
         formData.deptValue !== DEFAULT_FORM_DATA.deptValue ||
         formData.instructor !== DEFAULT_FORM_DATA.instructor;
 

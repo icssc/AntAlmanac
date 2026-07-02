@@ -83,6 +83,21 @@ export const WEBSOC_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 export const WebsocDayOptionSchema = z.enum(WEBSOC_DAYS);
 export type WebsocDayOption = z.infer<typeof WebsocDayOptionSchema>;
 
+export const WEBSOC_GE_OPTIONS = [
+    'GE-1A',
+    'GE-1B',
+    'GE-2',
+    'GE-3',
+    'GE-4',
+    'GE-5A',
+    'GE-5B',
+    'GE-6',
+    'GE-7',
+    'GE-8',
+] as const satisfies readonly Exclude<NonNullable<WebsocQueryParams['ge']>, 'ANY'>[];
+export const WebsocGeOptionSchema = z.enum(WEBSOC_GE_OPTIONS);
+export type WebsocGeOption = z.infer<typeof WebsocGeOptionSchema>;
+
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,
