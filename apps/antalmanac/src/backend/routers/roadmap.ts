@@ -60,17 +60,7 @@ const roadmapRouter = router({
             }
 
             const data = await response.json();
-            // Parse per-roadmap so a single malformed roadmap (e.g. an unexpected
-            // quarter name) is dropped instead of discarding the user's entire list.
-            const rawRoadmaps = z.array(z.unknown()).catch([]).parse(data?.result?.data);
-            return rawRoadmaps.flatMap((raw) => {
-                const parsed = roadmapSchema.safeParse(raw);
-                if (!parsed.success) {
-                    console.error('Skipping malformed planner roadmap:', parsed.error);
-                    return [];
-                }
-                return [parsed.data];
-            });
+            return z.array(roadmapSchema).parse(data.result.data);
         } catch (e) {
             console.error('Planner fetch failed:', e);
             return [];
