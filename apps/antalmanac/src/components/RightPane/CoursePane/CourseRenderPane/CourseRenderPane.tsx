@@ -19,6 +19,7 @@ import { trpc, trpcReact } from '$lib/api/trpc';
 import { queryKeys } from '$lib/queryKeys';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { usePlannerStore } from '$stores/PlannerStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Box } from '@mui/material';
 import type { WebsocSearchInput } from '@packages/antalmanac-types';
@@ -44,6 +45,7 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
+    const filterTakenCourses = usePlannerStore((store) => store.filterTakenCourses);
 
     const getQueryParams = useCallback(
         (searchData: CourseSearchParams): WebsocSearchInput => ({
@@ -166,6 +168,9 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             <CoursePaneButtonRow onDismissSearchResults={onDismissSearchResults} onRefreshSearch={refreshSearch} />
             <Box sx={{ height: '56px' }} />
 
+            {filterTakenCourses && !hasRenderableCourseResults && (
+                <WarningAlert>Filtered taken courses is toggled.</WarningAlert>
+            )}
             {unofferedCourseIds.map((id) => (
                 <WarningAlert closable key={id}>
                     {id} is not offered in {formData.term.longName}.
