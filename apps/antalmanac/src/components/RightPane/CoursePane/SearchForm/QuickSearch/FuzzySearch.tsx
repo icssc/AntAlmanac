@@ -84,8 +84,8 @@ export function FuzzySearch() {
         let nextFormData: CourseSearchParams;
         switch (result.type) {
             case resultType.GE_CATEGORY: {
-                const geCode = `GE-${option.key.split('-')[1].toUpperCase()}`;
-                nextFormData = { ...baseFormData, ge: isGeOption(geCode) ? [geCode] : [] };
+                // A GE result's key is already the option code (e.g. "GE-2"), so use it as-is.
+                nextFormData = { ...baseFormData, ge: isGeOption(option.key) ? [option.key] : [] };
                 break;
             }
             case resultType.DEPARTMENT: {
