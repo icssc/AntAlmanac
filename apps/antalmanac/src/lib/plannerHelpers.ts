@@ -30,6 +30,8 @@ export function getRoadmapTermRelation(roadmap: Roadmap, term: AATerm): RoadmapT
 
 export function getSearchableRoadmapCourseIds(roadmap: Roadmap, term: AATerm): string[] {
     const quarterPlan = getQuarterPlan(roadmap, term);
-    if (!quarterPlan) return [];
+    if (!quarterPlan) {
+        return [];
+    }
     return quarterPlan.courses.filter(isSearchableCourse).map((c) => c.courseId);
 }
