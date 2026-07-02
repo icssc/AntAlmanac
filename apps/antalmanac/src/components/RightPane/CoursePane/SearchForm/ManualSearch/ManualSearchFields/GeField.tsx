@@ -1,28 +1,25 @@
 import {
     ANY_GE,
-    GE_LIST,
-    getSelectedGEs,
-    normalizeGeSelection,
+    ANY_GE_LABEL,
+    GE_OPTIONS,
+    getGeLabel,
+    getGeShortLabel,
+    isGeOption,
 } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 import { memo } from 'react';
 
-const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
-const getShortLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.shortLabel ?? value;
-
 export const GeField = memo(() => {
     const [ge, setGe] = useCourseSearchParam('ge');
-    const selectedGEs = getSelectedGEs(ge);
 
     const handleChange = (event: SelectChangeEvent<string[]>) => {
         const value = event.target.value;
-        const values = (typeof value === 'string' ? value.split(',') : value).filter(Boolean);
-        const selectedValues = values.includes(ANY_GE) ? [] : values.filter((currentValue) => currentValue !== ANY_GE);
-        const searchValue = normalizeGeSelection(selectedValues.join(','));
+        const values = typeof value === 'string' ? value.split(',') : value;
 
-        setGe(searchValue);
+        // Picking "Any GEs" clears the filter; otherwise keep the valid GE codes.
+        setGe(values.includes(ANY_GE) ? [] : values.filter(isGeOption));
     };
 
     return (
@@ -31,13 +28,13 @@ export const GeField = memo(() => {
             selectProps={{
                 multiple: true,
                 displayEmpty: true,
-                value: selectedGEs,
+                value: ge,
                 onChange: handleChange,
                 renderValue: (selected) => {
-                    const values = selected as string[];
-                    if (values.length === 0) return getLabel(ANY_GE);
-                    if (values.length === 1) return getLabel(values[0]);
-                    return values.map((value) => getShortLabel(value)).join(' and ');
+                    const values = selected as typeof ge;
+                    if (values.length === 0) return ANY_GE_LABEL;
+                    if (values.length === 1) return getGeLabel(values[0]);
+                    return values.map(getGeShortLabel).join(' and ');
                 },
                 sx: {
                     width: '100%',
@@ -45,17 +42,16 @@ export const GeField = memo(() => {
             }}
             isAligned={true}
         >
-            {GE_LIST.map((category) => {
-                const isChecked =
-                    category.value === ANY_GE ? selectedGEs.length === 0 : selectedGEs.includes(category.value);
-
-                return (
-                    <MenuItem key={category.value} value={category.value} sx={{ paddingY: 0.25 }}>
-                        <Checkbox checked={isChecked} size="small" />
-                        <ListItemText primary={category.label} />
-                    </MenuItem>
-                );
-            })}
+            <MenuItem value={ANY_GE} sx={{ paddingY: 0.25 }}>
+                <Checkbox checked={ge.length === 0} size="small" />
+                <ListItemText primary={ANY_GE_LABEL} />
+            </MenuItem>
+            {GE_OPTIONS.map((category) => (
+                <MenuItem key={category.value} value={category.value} sx={{ paddingY: 0.25 }}>
+                    <Checkbox checked={ge.includes(category.value)} size="small" />
+                    <ListItemText primary={category.label} />
+                </MenuItem>
+            ))}
         </LabeledSelect>
     );
 });

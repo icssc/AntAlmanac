@@ -1,5 +1,12 @@
-export const GE_LIST = [
-    { value: 'ANY', label: "ANY: Don't filter for GE", shortLabel: 'Any GEs' },
+import { WEBSOC_GE_OPTIONS, type WebsocGeOption } from '@packages/antalmanac-types';
+
+interface GeOption {
+    value: WebsocGeOption;
+    label: string;
+    shortLabel: string;
+}
+
+export const GE_OPTIONS: readonly GeOption[] = [
     { value: 'GE-1A', label: 'GE Ia (1a): Lower Division Writing', shortLabel: 'GE Ia (1a)' },
     { value: 'GE-1B', label: 'GE Ib (1b): Upper Division Writing', shortLabel: 'GE Ib (1b)' },
     { value: 'GE-2', label: 'GE II (2): Science and Technology', shortLabel: 'GE II (2)' },
@@ -10,22 +17,18 @@ export const GE_LIST = [
     { value: 'GE-6', label: 'GE VI (6): Language other than English', shortLabel: 'GE VI (6)' },
     { value: 'GE-7', label: 'GE VII (7): Multicultural Studies', shortLabel: 'GE VII (7)' },
     { value: 'GE-8', label: 'GE VIII (8): International/Global Issues', shortLabel: 'GE VIII (8)' },
-] as const;
+];
 
-export const ANY_GE = GE_LIST[0].value;
+/** UI-only sentinel for the "don't filter for GE" menu entry (an empty selection). */
+export const ANY_GE = 'ANY';
+export const ANY_GE_LABEL = "ANY: Don't filter for GE";
 
-const VALID_GES: Set<string> = new Set(GE_LIST.map((option) => option.value).filter((value) => value !== ANY_GE));
+const GE_OPTION_BY_VALUE = new Map(GE_OPTIONS.map((option) => [option.value, option]));
 
-export const getSelectedGEs = (ge: string) => {
-    const validGEs = ge
-        .split(',')
-        .map((value) => value.trim().toUpperCase())
-        .filter((value) => VALID_GES.has(value));
+export const getGeLabel = (value: WebsocGeOption) => GE_OPTION_BY_VALUE.get(value)?.label ?? value;
+export const getGeShortLabel = (value: WebsocGeOption) => GE_OPTION_BY_VALUE.get(value)?.shortLabel ?? value;
 
-    return validGEs.length === 0 ? [] : [...new Set(validGEs)];
-};
+const GE_OPTION_VALUES = new Set<string>(WEBSOC_GE_OPTIONS);
 
-export const normalizeGeSelection = (ge: string) => {
-    const selectedGEs = getSelectedGEs(ge);
-    return selectedGEs.length > 0 ? selectedGEs.join(',') : ANY_GE;
-};
+/** Type guard narrowing an arbitrary string to a valid GE category code. */
+export const isGeOption = (value: string): value is WebsocGeOption => GE_OPTION_VALUES.has(value);

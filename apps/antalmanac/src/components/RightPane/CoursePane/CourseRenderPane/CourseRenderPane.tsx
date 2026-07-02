@@ -10,7 +10,6 @@ import {
 import { LoadingMessage } from '$components/RightPane/CoursePane/CourseRenderPane/LoadingMessage';
 import { NoResults } from '$components/RightPane/CoursePane/CourseRenderPane/NoResults';
 import { RecruitmentBanner } from '$components/RightPane/CoursePane/CourseRenderPane/RecruitmentBanner';
-import { getSelectedGEs } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { useCourseSearchForm, useCourseSearchMode } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import { WarningAlert } from '$components/WarningAlert';
@@ -52,7 +51,7 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
             year: searchData.term.year,
             quarter: searchData.term.quarter,
             department: searchData.deptValue,
-            ge: searchData.ge,
+            ge: searchData.ge[0],
             courseNumber: searchData.courseNumber,
             sectionCodes: searchData.sectionCode,
             instructorName: searchData.instructor,
@@ -92,14 +91,15 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
                     );
                 } else {
                     const websocQueryParams = getQueryParams(formData);
-                    const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
+                    // Multiple GEs can't be expressed in one WebSOC query, so fetch each and
+                    // intersect; a single (or no) GE goes straight through getQueryParams.
                     response =
-                        selectedGEs.length > 1
+                        formData.ge.length > 1
                             ? intersectWebsocResponses(
                                   await trpc.websoc.getManyOfField.query({
                                       params: websocQueryParams,
                                       fieldName: 'ge',
-                                      values: selectedGEs,
+                                      values: formData.ge,
                                   })
                               )
                             : await trpc.websoc.getOne.query(websocQueryParams);

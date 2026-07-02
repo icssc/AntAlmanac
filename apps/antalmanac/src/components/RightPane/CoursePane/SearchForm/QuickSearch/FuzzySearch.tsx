@@ -1,4 +1,5 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
+import { isGeOption } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
 import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams/defaults';
@@ -83,8 +84,8 @@ export function FuzzySearch() {
         let nextFormData: CourseSearchParams;
         switch (result.type) {
             case resultType.GE_CATEGORY: {
-                const geCode = option.key.split('-')[1].toUpperCase();
-                nextFormData = { ...baseFormData, ge: `GE-${geCode}` };
+                const geCode = `GE-${option.key.split('-')[1].toUpperCase()}`;
+                nextFormData = { ...baseFormData, ge: isGeOption(geCode) ? [geCode] : [] };
                 break;
             }
             case resultType.DEPARTMENT: {

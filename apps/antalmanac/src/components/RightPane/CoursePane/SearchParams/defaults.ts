@@ -1,9 +1,9 @@
-import { ANY_GE } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm } from '$lib/term';
 import {
     WebsocDayOptionSchema,
     WebsocDivisionOptionSchema,
     WebsocFullCoursesOptionSchema,
+    type WebsocGeOption,
     WebsocRestrictionCodeOptionSchema,
 } from '@packages/antalmanac-types';
 
@@ -11,10 +11,10 @@ export const DEFAULT_TERM = getDefaultTerm();
 
 export const DEFAULT_MANUAL_SEARCH_VALUES = {
     deptValue: 'ALL',
-    ge: ANY_GE,
+    ge: [] satisfies WebsocGeOption[],
     courseNumber: '',
     sectionCode: '',
-} as const;
+};
 
 export const DEFAULT_ADVANCED_SEARCH_VALUES = {
     instructor: '',
