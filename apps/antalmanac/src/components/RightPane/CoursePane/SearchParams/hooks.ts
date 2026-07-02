@@ -22,12 +22,20 @@ export function useCourseSearchParam<K extends keyof CourseSearchParams>(
 ): readonly [CourseSearchParams[K], (next: CourseSearchParams[K]) => void] {
     const parser = courseSearchParamParsers[field] as (typeof courseSearchParamParsers)[K];
     const [value, setValueRaw] = useQueryState(field, parser);
+    const [courseIds, setCourseIds] = useQueryState('courseIds', courseSearchParamParsers.courseIds);
 
     const setValue = useCallback(
         (next: CourseSearchParams[K]) => {
+            // A roadmap search (courseIds) is mutually exclusive with the other search
+            // fields — editing any of them starts a fresh search, so clear the stale
+            // courseIds that would otherwise silently override the new input.
+            if (field !== 'courseIds' && courseIds.length > 0) {
+                void setCourseIds([]);
+            }
+
             void (setValueRaw as (next: CourseSearchParams[K]) => ReturnType<typeof setValueRaw>)(next);
         },
-        [setValueRaw]
+        [field, courseIds, setValueRaw, setCourseIds]
     );
 
     return [value as CourseSearchParams[K], setValue];

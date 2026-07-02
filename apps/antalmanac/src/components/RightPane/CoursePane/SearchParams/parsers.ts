@@ -57,7 +57,7 @@ export const courseSearchParamParsers = {
     days: parseAsArrayOf(parseAsStringLiteral(WebsocDayOptionSchema.options)).withDefault(
         DEFAULT_ADVANCED_SEARCH_VALUES.days
     ),
-    courseIds: parseAsArrayOf(parseAsString).withDefault([]),
+    courseIds: parseAsArrayOf(parseAsString).withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.courseIds),
 };
 
 export const advancedSearchParsers: Pick<typeof courseSearchParamParsers, AdvancedSearchParam> = {

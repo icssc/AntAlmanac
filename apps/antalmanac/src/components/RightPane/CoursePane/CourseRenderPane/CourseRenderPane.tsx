@@ -77,24 +77,27 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
         queryKey: queryKeys.courseSearch.result(formData),
         queryFn: async (): Promise<WebsocAPIResponse | null> => {
             try {
-                const websocQueryParams = getQueryParams(formData);
                 let response: WebsocAPIResponse;
 
+                // NB: Searching courseId(s) is exclusive to the "Search with Planner" feature and is identified solely by term + courseId. This could probably be written/exposed better...
                 if (formData.courseIds.length > 0) {
                     response = unionWebsocResponses(
                         await trpc.websoc.getManyOfField.query({
-                            params: { ...websocQueryParams, courseId: formData.courseIds.join(',') },
+                            params: { year: formData.term.year, quarter: formData.term.quarter },
                             fieldName: 'courseId',
+                            values: formData.courseIds,
                         })
                     );
                 } else {
+                    const websocQueryParams = getQueryParams(formData);
                     const selectedGEs = getSelectedGEs(websocQueryParams.ge ?? '');
                     response =
                         selectedGEs.length > 1
                             ? intersectWebsocResponses(
                                   await trpc.websoc.getManyOfField.query({
-                                      params: { ...websocQueryParams, ge: selectedGEs.join(',') },
+                                      params: websocQueryParams,
                                       fieldName: 'ge',
+                                      values: selectedGEs,
                                   })
                               )
                             : await trpc.websoc.getOne.query(websocQueryParams);
