@@ -83,10 +83,6 @@ export const WEBSOC_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 export const WebsocDayOptionSchema = z.enum(WEBSOC_DAYS);
 export type WebsocDayOption = z.infer<typeof WebsocDayOptionSchema>;
 
-/**
- * UCI GE (General Education) category codes. Excludes the API's `'ANY'` sentinel:
- * "no GE filter" is modeled as an empty selection rather than a magic value.
- */
 export const WEBSOC_GE_OPTIONS = [
     'GE-1A',
     'GE-1B',
