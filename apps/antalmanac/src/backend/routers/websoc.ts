@@ -58,16 +58,12 @@ const websocRouter = router({
             z.object({
                 params: WebsocSearchInputSchema,
                 fieldName: z.enum([WebsocSearchInputKeysSchema.enum.ge, WebsocSearchInputKeysSchema.enum.courseId]),
-                values: z.array(z.string()),
+                values: z.array(z.string()).min(1),
             })
         )
-        .query(async ({ input }): Promise<WebsocAPIResponse[]> => {
+        .query(({ input }): Promise<WebsocAPIResponse[]> => {
             const { fieldName, params, values } = input;
-            const fields = values.map((value) => value.replaceAll(' ', '')).filter((value) => value.length > 0);
-
-            if (!fields.length) {
-                return [await queryWebsoc(params)];
-            }
+            const fields = values.map((value) => value.trim()).filter((value) => value.length > 0);
 
             return Promise.all(fields.map((value) => queryWebsoc({ ...params, [fieldName]: value })));
         }),
