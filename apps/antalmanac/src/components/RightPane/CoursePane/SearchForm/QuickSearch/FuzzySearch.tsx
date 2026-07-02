@@ -1,5 +1,4 @@
 import { HorizontalRightDivider } from '$components/HorizontalRightDivider';
-import { isGeOption } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import { COURSE_SEARCH_MODE } from '$components/RightPane/CoursePane/SearchParams/constants';
 import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams/defaults';
@@ -13,7 +12,7 @@ import type { CourseSearchParams } from '$components/RightPane/CoursePane/Search
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
-import type { AATerm, SearchResult } from '@packages/antalmanac-types';
+import { type AATerm, type SearchResult, WebsocGeOptionSchema } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -84,8 +83,9 @@ export function FuzzySearch() {
         let nextFormData: CourseSearchParams;
         switch (result.type) {
             case resultType.GE_CATEGORY: {
-                // A GE result's key is already the option code (e.g. "GE-2"), so use it as-is.
-                nextFormData = { ...baseFormData, ge: isGeOption(option.key) ? [option.key] : [] };
+                // A GE result's key is already the option code (e.g. "GE-2").
+                const parsedGe = WebsocGeOptionSchema.safeParse(option.key);
+                nextFormData = { ...baseFormData, ge: parsedGe.success ? [parsedGe.data] : [] };
                 break;
             }
             case resultType.DEPARTMENT: {

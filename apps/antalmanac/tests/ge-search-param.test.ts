@@ -1,4 +1,3 @@
-import { ANY_GE, GE_OPTIONS, isGeOption } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { DEFAULT_FORM_DATA } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { hasManualParams, isValidSearch } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { loadCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/loaders';
@@ -6,23 +5,17 @@ import {
     courseSearchParamParsers,
     serializeCourseSearchParams,
 } from '$components/RightPane/CoursePane/SearchParams/parsers';
-import { WEBSOC_GE_OPTIONS } from '@packages/antalmanac-types';
+import { WebsocGeOptionSchema } from '@packages/antalmanac-types';
 import { describe, expect, test } from 'vitest';
 
 const geParser = courseSearchParamParsers.ge;
 
 describe('ge search param (nuqs array of enum)', () => {
-    test('GE_OPTIONS matches the shared enum (no ANY sentinel stored)', () => {
-        expect(GE_OPTIONS.map((option) => option.value)).toEqual([...WEBSOC_GE_OPTIONS]);
-        expect(GE_OPTIONS.map((option) => option.value)).not.toContain(ANY_GE);
-    });
-
-    test('isGeOption narrows valid codes only', () => {
-        expect(isGeOption('GE-2')).toBe(true);
-        expect(isGeOption('GE-5A')).toBe(true);
-        expect(isGeOption('ANY')).toBe(false);
-        expect(isGeOption('GE-99')).toBe(false);
-        expect(isGeOption('')).toBe(false);
+    test('the GE enum has no ANY sentinel', () => {
+        expect(WebsocGeOptionSchema.safeParse('GE-2').success).toBe(true);
+        expect(WebsocGeOptionSchema.safeParse('GE-5A').success).toBe(true);
+        expect(WebsocGeOptionSchema.safeParse('ANY').success).toBe(false);
+        expect(WebsocGeOptionSchema.safeParse('GE-99').success).toBe(false);
     });
 
     test('parses a comma-separated list into an enum array', () => {
