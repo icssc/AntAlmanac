@@ -1,6 +1,6 @@
 import { protectedProcedure, router } from '$backend/trpc';
 import { env } from '$src/env';
-import type { Roadmap } from '@packages/antalmanac-types';
+import { QuarterSchema, type Roadmap } from '@packages/antalmanac-types';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 
@@ -16,7 +16,7 @@ const roadmapSchema = z.object({
             startYear: z.number(),
             quarters: z.array(
                 z.object({
-                    name: z.string(),
+                    name: QuarterSchema,
                     courses: z.array(
                         z.object({
                             courseId: z.string(),

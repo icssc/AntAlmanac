@@ -13,10 +13,11 @@ import type {
     CourseSearchView,
 } from '$components/RightPane/CoursePane/SearchParams/types';
 
-/** Enough to run a WebSOC search (dept, GE, section, or instructor). */
+/** Enough to run a WebSOC search (dept, GE, section, instructor, or courseIds). */
 export function isValidSearch(formData: CourseSearchParams) {
-    const { ge, deptValue, sectionCode, instructor } = formData;
+    const { ge, deptValue, sectionCode, instructor, courseIds } = formData;
     return (
+        courseIds.length > 0 ||
         ge !== DEFAULT_FORM_DATA.ge ||
         deptValue !== DEFAULT_FORM_DATA.deptValue ||
         sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
@@ -47,6 +48,7 @@ export function hasAdvancedParams(formData: AdvancedSearchParams) {
 
 function shouldShowSearchForm(formData: CourseSearchParams) {
     const hasPrimarySearchInput =
+        formData.courseIds.length > 0 ||
         formData.sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
         formData.courseNumber !== DEFAULT_FORM_DATA.courseNumber ||
         formData.ge !== DEFAULT_FORM_DATA.ge ||

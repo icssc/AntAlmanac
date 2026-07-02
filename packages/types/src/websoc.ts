@@ -89,6 +89,7 @@ export const WebsocSearchInputSchema = z.object({
     department: z.string().optional(),
     ge: z.string().optional(),
     courseNumber: z.string().optional(),
+    courseId: z.string().optional(),
     courseTitle: z.string().optional(),
     sectionCodes: z.string().optional(),
     instructorName: z.string().optional(),
