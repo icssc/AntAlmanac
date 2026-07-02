@@ -13,8 +13,6 @@ import { TutorialInitializer } from '$components/TutorialInitializer';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { Stack, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useCallback, useEffect } from 'react';
 import { Group, Panel, Separator, useGroupRef } from 'react-resizable-panels';
 
@@ -108,7 +106,7 @@ export default function Client() {
     }, []);
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <>
             <AutoSignIn />
             <TutorialInitializer />
             <AuthInitializer />
@@ -121,6 +119,6 @@ export default function Client() {
             <NotificationSnackbar />
             <ReviewPrompt />
             <KeyboardShortcutsModal open={shortcutsOpen} onClose={closeShortcutsModal} />
-        </LocalizationProvider>
+        </>
     );
 }

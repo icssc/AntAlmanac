@@ -40,7 +40,7 @@ export function AdvancedSearch() {
                 {expanded ? <ExpandLess /> : <ExpandMore />}
             </Button>
 
-            <Collapse in={expanded}>
+            <Collapse in={expanded} mountOnEnter>
                 <Box
                     sx={{
                         display: 'flex',
