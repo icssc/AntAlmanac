@@ -1,0 +1,37 @@
+{
+    "name": "AntAlmanac",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest",
+            "moby": true
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "forwardPorts": [3000, 5432],
+    "portsAttributes": {
+        "3000": {
+            "label": "AntAlmanac Web",
+            "onAutoForward": "openPreview"
+        },
+        "5432": {
+            "label": "PostgreSQL",
+            "onAutoForward": "silent"
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "remoteUser": "node",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "oxc.oxc-vscode",
+                "ms-azuretools.vscode-docker",
+                "mikestead.dotenv"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "editor.formatOnSave": false
+            }
+        }
+    }
+}
