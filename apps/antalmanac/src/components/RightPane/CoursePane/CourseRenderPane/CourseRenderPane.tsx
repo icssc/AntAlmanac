@@ -83,8 +83,9 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
                 if (formData.courseIds.length > 0) {
                     response = unionWebsocResponses(
                         await trpc.websoc.getManyOfField.query({
-                            params: { ...websocQueryParams, courseId: formData.courseIds.join(',') },
+                            params: websocQueryParams,
                             fieldName: 'courseId',
+                            values: formData.courseIds,
                         })
                     );
                 } else {
@@ -93,8 +94,9 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
                         selectedGEs.length > 1
                             ? intersectWebsocResponses(
                                   await trpc.websoc.getManyOfField.query({
-                                      params: { ...websocQueryParams, ge: selectedGEs.join(',') },
+                                      params: websocQueryParams,
                                       fieldName: 'ge',
+                                      values: selectedGEs,
                                   })
                               )
                             : await trpc.websoc.getOne.query(websocQueryParams);

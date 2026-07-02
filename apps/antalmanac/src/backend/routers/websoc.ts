@@ -14,7 +14,7 @@ import type {
     WebsocSectionType,
     WebsocSyllabiResponse,
 } from '@packages/anteater-api/types';
-import { sortWebsocResponse, unionWebsocResponses } from '@packages/anteater-api/utils';
+import { sortWebsocResponse } from '@packages/anteater-api/utils';
 import { z } from 'zod';
 
 function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
@@ -58,26 +58,19 @@ const websocRouter = router({
             z.object({
                 params: WebsocSearchInputSchema,
                 fieldName: z.enum([WebsocSearchInputKeysSchema.enum.ge, WebsocSearchInputKeysSchema.enum.courseId]),
+                values: z.array(z.string()),
             })
         )
         .query(async ({ input }): Promise<WebsocAPIResponse[]> => {
-            const { fieldName, params } = input;
-            const fieldValue = params[fieldName]?.trim().replaceAll(' ', '');
-            const fields = fieldValue?.split(',').filter((value) => value.length > 0);
+            const { fieldName, params, values } = input;
+            const fields = values.map((value) => value.replaceAll(' ', '')).filter((value) => value.length > 0);
 
-            if (!fields?.length) {
+            if (!fields.length) {
                 return [await queryWebsoc(params)];
             }
 
             return Promise.all(fields.map((value) => queryWebsoc({ ...params, [fieldName]: value })));
         }),
-
-    getMultiple: aapiProcedure
-        .input(z.object({ params: z.array(WebsocSearchInputSchema) }))
-        .query(
-            ({ input }): Promise<WebsocAPIResponse> =>
-                Promise.all(input.params.map(queryWebsoc)).then(unionWebsocResponses)
-        ),
 
     getCourseInfo: aapiProcedure
         .input(WebsocSearchInputSchema)
