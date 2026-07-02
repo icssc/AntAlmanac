@@ -30,10 +30,11 @@ export function hasManualParams(formData: CourseSearchParams) {
         if (key === 'term') {
             return formData.term.shortName !== DEFAULT_FORM_DATA.term.shortName;
         }
-        if (key === 'ge') {
-            return formData.ge.length > 0;
+        const value = formData[key];
+        if (Array.isArray(value)) {
+            return value.length > 0;
         }
-        return formData[key] !== DEFAULT_FORM_DATA[key];
+        return value !== DEFAULT_FORM_DATA[key];
     });
 }
 
