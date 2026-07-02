@@ -22,7 +22,7 @@ export function GeDataFetchProvider(props: SectionTableProps) {
             year: term.year,
             quarter: term.quarter,
             department: props.course.deptCode,
-            // Intentionally unfiltered by GE — this refetch pulls every section for the course.
+            ge: 'ANY',
             courseNumber: props.course.courseNumber,
             courseTitle: props.course.courseTitle,
             instructorName: advanced.instructor,
