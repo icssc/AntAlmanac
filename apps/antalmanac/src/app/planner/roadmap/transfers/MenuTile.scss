@@ -1,0 +1,61 @@
+@use '../../../../planner/globals.scss';
+
+.menu-tile {
+    border: 2px solid var(--planner-palette-divider);
+    border-radius: 8px;
+    padding: 10px 12px;
+    position: relative;
+    font-size: 12px;
+    color: var(--planner-palette-secondary-main);
+
+    &.clickable {
+        cursor: pointer;
+    }
+
+    .tile-info {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-block: -2px 4px;
+        &:last-child {
+            margin-block: -2px;
+        }
+    }
+    .tile-info p {
+        margin-block: 0;
+    }
+
+    .name {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    hr {
+        border: none;
+        margin: auto;
+    }
+    button {
+        background: none;
+        border: none;
+        padding: 0;
+        width: 16px;
+        height: 16px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 13px;
+    }
+
+    button.MuiIconButton-root {
+        color: inherit;
+        width: 24px;
+        height: 24px;
+        margin: -8px -4px;
+        .MuiSvgIcon-root {
+            font-size: 18px;
+        }
+    }
+    button.delete-btn {
+        margin-inline: -4px;
+    }
+}

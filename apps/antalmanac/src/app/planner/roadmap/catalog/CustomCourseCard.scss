@@ -1,0 +1,111 @@
+.custom-card {
+    background: var(--planner-palette-overlay-overlay1);
+    border: 1px solid var(--planner-palette-divider);
+    height: 73px;
+    font-size: 16px;
+    padding: 12px;
+    position: relative;
+    color: var(--planner-palette-secondary-main);
+
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+
+    .title {
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .course-drag-handle {
+        flex: 0 0 auto;
+        width: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        left: -6px;
+        cursor: grab;
+        user-select: none;
+        -webkit-user-select: none;
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
+
+    .main {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: grid;
+        grid-template-areas:
+            'B'
+            'C';
+        grid-template-rows: 1fr 1fr;
+        align-items: center;
+    }
+
+    .course-card-top {
+        grid-area: B;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-width: 0;
+    }
+
+    .course-description {
+        grid-area: C;
+        min-width: 0;
+    }
+
+    .description-body {
+        font-size: 14px;
+    }
+
+    .name {
+        font-weight: bold;
+        min-width: 0;
+    }
+
+    .description-input {
+        width: 75%;
+        min-width: 0;
+    }
+
+    .units {
+        margin-left: auto;
+        white-space: nowrap;
+    }
+
+    .units-input {
+        width: 45px;
+        margin-left: auto;
+        margin-right: 2px;
+    }
+
+    .MuiInputBase-root {
+        height: 20px;
+    }
+
+    .MuiInputBase-input {
+        padding: 4px;
+        font-size: 14px;
+    }
+
+    button.MuiIconButton-root {
+        width: 24px;
+        height: 24px;
+        margin: -8px 0;
+        margin-right: -4px;
+        color: inherit;
+
+        .MuiSvgIcon-root {
+            font-size: 20px;
+        }
+    }
+
+    .course-edit-btn.MuiIconButton-root .MuiSvgIcon-root {
+        font-size: 18px;
+    }
+}

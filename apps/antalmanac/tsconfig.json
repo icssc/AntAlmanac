@@ -16,6 +16,8 @@
             "$generated/*": ["src/generated/*"],
             "$lib/*": ["src/lib/*"],
             "$hooks/*": ["src/hooks/*"],
+            "$planner/*": ["src/planner/*"],
+            "$plannerApp/*": ["src/app/planner/*"],
             "$providers/*": ["src/providers/*"],
             "$stores/*": ["src/stores/*"],
             "$src/*": ["src/*"],

@@ -148,6 +148,13 @@
       "when": 1779234866805,
       "tag": "0020_better_auth",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1783653023888,
+      "tag": "0021_planner_tables",
+      "breakpoints": true
     }
   ]
 }

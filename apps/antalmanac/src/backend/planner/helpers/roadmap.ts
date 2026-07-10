@@ -1,0 +1,210 @@
+import { type SavedPlannerData, quarters } from '@packages/planner-types';
+import {
+    type PlannerDeletion,
+    type PlannerQuarterDeletion,
+    type PlannerQuarterSaveInfo,
+    type PlannerSaveInfo,
+    type PlannerYearDeletion,
+    type PlannerYearSaveInfo,
+} from '@packages/planner-types';
+import { SQL, and, asc, eq, inArray, or, sql } from 'drizzle-orm';
+import { getTableConfig } from 'drizzle-orm/pg-core';
+
+import { type TransactionType, db } from '../db';
+import { planner, plannerCourse, plannerQuarter, plannerYear, user } from '../db/schema';
+
+export async function queryGetPlanners(where: SQL) {
+    const planYearTableName = getTableConfig(plannerYear).name;
+    const planners = (await db
+        .select({
+            id: planner.id,
+            name: planner.name,
+            chc: planner.chc,
+            content: sql.raw(`jsonb_agg(jsonb_build_object(
+        'name', ${planYearTableName}."${plannerYear.name.name}",
+        'startYear', ${planYearTableName}."${plannerYear.startYear.name}",
+        'collapsed', ${planYearTableName}."${plannerYear.collapsed.name}",
+        'quarters', (SELECT jsonb_agg(jsonb_build_object(
+          'name', ${plannerQuarter.quarterName.name},
+          'courses', (
+            SELECT COALESCE(
+              jsonb_agg(
+                CASE
+                  WHEN pc.course_id = 'CUSTOM' AND pc.custom_card_id IS NOT NULL
+                    THEN jsonb_build_object('courseId', ('CUSTOM#' || pc.custom_card_id::text))
+                  ELSE jsonb_build_object(
+                    'courseId', pc.course_id,
+                    'userChosenUnits', pc.units
+                  )
+                END
+                ORDER BY pc.index ASC
+              ),
+              '[]'::jsonb
+            )
+            FROM planner_course pc
+            WHERE pc.planner_id = pq.planner_id
+              AND pc.start_year = pq.start_year
+              AND pc.quarter_name = pq.quarter_name
+          )
+        )) AS quarters FROM planner_quarter pq
+          WHERE pq.planner_id = ${planYearTableName}."${plannerYear.plannerId.name}"
+            AND pq.start_year = ${planYearTableName}."${plannerYear.startYear.name}"
+        )
+      ) ORDER BY ${planYearTableName}."${plannerYear.startYear.name}" ASC)`),
+        })
+        .from(planner)
+        .innerJoin(plannerYear, eq(planner.id, plannerYear.plannerId))
+        .innerJoin(user, eq(planner.userId, user.id))
+        .where(where)
+        .groupBy(planner.id, planner.name)
+        .orderBy(asc(planner.id))) as SavedPlannerData[];
+
+    planners.forEach((planner) =>
+        planner.content.forEach((year) => {
+            year.quarters.forEach((quarter) => {
+                quarter.courses.forEach((course) => {
+                    if (course.userChosenUnits === null) delete course.userChosenUnits;
+                });
+            });
+            year.quarters.sort((a, b) => quarters.indexOf(a.name) - quarters.indexOf(b.name));
+        })
+    );
+
+    return planners;
+}
+
+export async function deletePlanners(tx: TransactionType, planners: PlannerDeletion[]) {
+    if (!planners.length) return;
+    await tx.delete(planner).where(
+        inArray(
+            planner.id,
+            planners.map((p) => p.id)
+        )
+    );
+}
+
+export async function deletePlannerYears(tx: TransactionType, years: PlannerYearDeletion[]) {
+    if (!years.length) return;
+    const conditions = years.map((year) =>
+        and(eq(plannerYear.plannerId, year.plannerId), eq(plannerYear.startYear, year.id))
+    );
+    await tx.delete(plannerYear).where(or(...conditions));
+}
+
+export async function deletePlannerQuarters(tx: TransactionType, quarters: PlannerQuarterDeletion[]) {
+    if (!quarters.length) return;
+    const conditions = quarters.map((quarter) =>
+        and(
+            eq(plannerQuarter.plannerId, quarter.plannerId),
+            eq(plannerQuarter.startYear, quarter.startYear),
+            eq(plannerQuarter.quarterName, quarter.id)
+        )
+    );
+    await tx.delete(plannerQuarter).where(or(...conditions));
+}
+
+export async function setQuarterCourses(tx: TransactionType, quarters: PlannerQuarterSaveInfo[], skipDelete = false) {
+    // Because name is the identifier, a rename shows up as deleted & recreated quarters
+    // in the diff as opposed to an update
+    const updates = quarters.map(async (quarter) => {
+        const {
+            plannerId,
+            startYear,
+            data: { name: quarterName },
+        } = quarter;
+
+        // Delete old courses associated with the quarter
+        const matchesQuarter = and(
+            eq(plannerCourse.plannerId, plannerId),
+            eq(plannerCourse.startYear, startYear),
+            eq(plannerCourse.quarterName, quarterName)
+        );
+        if (!skipDelete) await tx.delete(plannerCourse).where(matchesQuarter);
+
+        if (quarter.data.courses.length === 0) return;
+
+        const rows = quarter.data.courses.map((course, index) => {
+            const match = /^CUSTOM#(\d+)$/.exec(course.courseId);
+            const customCardId = match ? Number.parseInt(match[1], 10) : null;
+            return {
+                index,
+                plannerId,
+                startYear,
+                quarterName,
+                courseId: customCardId !== null ? 'CUSTOM' : course.courseId,
+                customCardId,
+                units: course.userChosenUnits,
+            };
+        });
+        await tx.insert(plannerCourse).values(rows);
+    });
+    await Promise.all(updates);
+}
+
+export async function updateYears(tx: TransactionType, years: PlannerYearSaveInfo[]) {
+    const updates = years.map(async (year) => {
+        await tx
+            .update(plannerYear)
+            .set({ name: year.data.name, collapsed: year.data.collapsed })
+            .where(and(eq(plannerYear.plannerId, year.plannerId), eq(plannerYear.startYear, year.data.startYear)));
+    });
+    await Promise.all(updates);
+}
+
+export async function updatePlanners(tx: TransactionType, planners: PlannerSaveInfo[]) {
+    const updates = planners.map(async ({ data }) => {
+        await tx.update(planner).set({ name: data.name }).where(eq(planner.id, data.id));
+    });
+    // db.$with('test').as(tx.select().from(planner)).
+    await Promise.all(updates);
+}
+
+export async function createPlanners(
+    tx: TransactionType,
+    planners: PlannerSaveInfo[],
+    userId: number
+): Promise<Record<number, number>> {
+    if (!planners.length) return {};
+
+    // insert values one-by-one so we can guarantee the returned IDs match with their
+    // corresponding planners. While observations detail that RETURNING should return
+    // results in the same order, there is no explicit guarantee of this in any docs.
+    const insertionIds = planners.map(async (plan) => {
+        const result = await tx.insert(planner).values({ userId, name: plan.data.name }).returning({ id: planner.id });
+        return { [plan.data.id]: result[0].id };
+    });
+
+    const lookups = await Promise.all(insertionIds);
+    // Convert ID lookups from [{ old1: new1 }, { old2: new2 }] into one dict { old1: new1, old2: new2 }
+    return lookups.reduce((dict, curr) => Object.assign(dict, curr), {});
+}
+
+export async function createYears(tx: TransactionType, years: PlannerYearSaveInfo[]) {
+    if (!years.length) return;
+    await tx
+        .insert(plannerYear)
+        .values(
+            years.map((year) => ({
+                plannerId: year.plannerId,
+                startYear: year.data.startYear,
+                name: year.data.name,
+                collapsed: year.data.collapsed,
+            }))
+        )
+        .onConflictDoNothing();
+}
+
+export async function createQuarters(tx: TransactionType, quarters: PlannerQuarterSaveInfo[]) {
+    if (!quarters.length) return;
+    await tx
+        .insert(plannerQuarter)
+        .values(
+            quarters.map((quarter) => ({
+                plannerId: quarter.plannerId,
+                startYear: quarter.startYear,
+                quarterName: quarter.data.name,
+            }))
+        )
+        .onConflictDoNothing();
+    await setQuarterCourses(tx, quarters, true);
+}

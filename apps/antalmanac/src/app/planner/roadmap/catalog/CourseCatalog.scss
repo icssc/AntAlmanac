@@ -1,0 +1,16 @@
+@use '../../../../planner/globals';
+
+.course-catalog {
+    .major-select,
+    .minor-select {
+        margin-bottom: 12px;
+    }
+
+    .filter-group {
+        margin-top: 8px;
+    }
+
+    .loading-spinner {
+        margin-top: 24px;
+    }
+}

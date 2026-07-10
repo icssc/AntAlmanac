@@ -110,9 +110,12 @@ export const instructorReviews = pgTable(
             'difficulty_check',
             sql`${table.difficulty} IS NULL OR (${table.difficulty} >= 1 AND ${table.difficulty} <= 5)`
         ),
-        unique('unique_review').on(table.userId, table.professorId, table.courseId, table.quarter),
-        index('reviews_professor_id_idx').on(table.professorId),
-        index('reviews_course_id_idx').on(table.courseId),
+        // Names are prefixed with `instructor_` to avoid colliding with the
+        // Planner `review` table's indexes (Postgres index names are global
+        // within a schema).
+        unique('unique_instructor_review').on(table.userId, table.professorId, table.courseId, table.quarter),
+        index('instructor_reviews_professor_id_idx').on(table.professorId),
+        index('instructor_reviews_course_id_idx').on(table.courseId),
     ]
 );
 

@@ -23,6 +23,17 @@ const nextConfig: NextConfig = {
                 destination: '/api/auth/oauth2/callback/icssc',
                 permanent: false,
             },
+            // Legacy Planner URLs.
+            {
+                source: '/planner/roadmap',
+                destination: '/planner',
+                permanent: true,
+            },
+            {
+                source: '/planner/professor/:id',
+                destination: '/planner/instructor/:id',
+                permanent: true,
+            },
         ];
     },
     async rewrites() {

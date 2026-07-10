@@ -1,0 +1,204 @@
+.reviewcard {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: var(--planner-palette-overlay-overlay2);
+    padding: 12px 20px 16px 20px;
+    font-size: 14px;
+
+    &.MuiCard-root {
+        border-radius: var(--planner-shape-borderRadiusLg);
+        background-color: var(--planner-palette-overlay-overlay1);
+    }
+}
+
+.reviewcard-header {
+    display: flex;
+    flex-direction: column;
+
+    .reviewcard-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 8px;
+
+        .MuiIconButton-root {
+            color: var(--planner-palette-text-secondary);
+        }
+
+        .reviewcard-identifier {
+            font-size: 18px;
+            margin: 0;
+            a {
+                color: var(--planner-palette-text-primary);
+            }
+        }
+    }
+
+    .reviewcard-header-bottom {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 8px;
+
+        .reviewcard-author {
+            display: flex;
+            gap: 0 4px;
+
+            .reviewcard-author-name {
+                font-weight: 500;
+                font-size: 12px;
+                color: var(--planner-palette-text-secondary);
+            }
+        }
+
+        .reviewcard-date {
+            font-size: 12px;
+            color: var(--planner-palette-text-secondary);
+        }
+    }
+
+    @media (max-width: 500px) {
+        .reviewcard-header-bottom {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+    }
+}
+
+.reviewcard-content {
+    display: flex;
+    gap: 1rem;
+}
+
+// Rating boxes (quality and difficulty)
+.reviewcard-ratings {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .rating {
+        border-radius: var(--planner-shape-borderRadiusLg);
+        width: 56px;
+        height: 56px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        gap: 2px;
+    }
+
+    .rating-quality {
+        background-color: var(--planner-palette-primary-main);
+    }
+
+    .rating-difficulty {
+        background-color: var(--planner-palette-secondary-main);
+    }
+    .rating-label {
+        font-size: 10px;
+        line-height: 100%;
+    }
+    .rating-value {
+        font-size: 30px;
+        line-height: 100%;
+    }
+}
+
+.reviewcard-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .review-content {
+        // font alignment
+        margin: -3px 0 3px;
+    }
+}
+
+.reviewcard-author-icon {
+    display: flex;
+    margin-left: 2px;
+
+    .MuiSvgIcon-root {
+        font-size: 16px;
+    }
+}
+
+.reviewcard-footer-row {
+    display: flex;
+    align-items: flex-end;
+    margin-top: auto;
+}
+
+.reviewcard-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.reviewcard-voting-buttons {
+    display: flex;
+    gap: 8px;
+    margin-left: 12px;
+}
+
+.reviewcard-footer {
+    color: var(--planner-palette-text-secondary);
+    margin-left: auto;
+
+    .upvote,
+    .downvote {
+        display: flex;
+        border-radius: 3px;
+        border: 1px solid color-mix(in srgb, var(--planner-palette-text-secondary) 40%, transparent);
+        padding: 0 4px;
+        cursor: pointer;
+
+        .vote-count {
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .MuiIconButton-root {
+            padding: 2px;
+            color: var(--planner-palette-text-secondary);
+
+            .MuiSvgIcon-root {
+                font-size: 14px;
+            }
+
+            &:hover {
+                background-color: transparent;
+            }
+        }
+
+        &:hover {
+            background-color: color-mix(in srgb, var(--planner-palette-text-secondary) 10%, transparent);
+        }
+    }
+}
+
+.review-menu {
+    .MuiList-root {
+        padding: 4px 0;
+    }
+
+    .MuiMenuItem-root {
+        font-size: 14px;
+        min-height: unset;
+    }
+}
+
+// screen width is less than or equal to 599px
+@media only screen and (max-width: 599px) {
+    .reviewcard-content {
+        flex-direction: column;
+    }
+    .reviewcard-ratings {
+        flex-direction: row;
+    }
+}

@@ -1,0 +1,166 @@
+@use '../../globals.scss';
+
+.result-preview {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    padding-top: 64px;
+    z-index: 10;
+    background-color: var(--planner-palette-background-default);
+    overscroll-behavior: contain;
+    container-type: inline-size;
+
+    @media (max-width: 360px) {
+        padding-top: 100px;
+    }
+
+    .result-page-section {
+        margin-inline: auto;
+    }
+
+    h2,
+    h3,
+    h4 {
+        font-weight: 600;
+    }
+
+    .preview-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        min-height: globals.$roadmap-toolbar-height;
+        border-width: 0 0 2px 0;
+        border-radius: 0;
+        display: flex;
+        align-items: center;
+        padding: 6px 16px 6px 12px;
+        gap: 4px;
+
+        button {
+            padding-block: 4px;
+        }
+
+        .preview-buttons {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            @media (max-width: 360px) {
+                gap: 5px;
+            }
+        }
+    }
+
+    .preview-title {
+        margin-block: 0;
+
+        @media (max-width: 360px) {
+            min-width: 40%;
+        }
+    }
+
+    .preview-nav-bar {
+        display: flex;
+        gap: 7px;
+        margin-inline: auto;
+        padding: 5px;
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        background-color: var(--planner-palette-Button-inheritContainedBg);
+    }
+
+    .preview-nav-button.MuiButton-root {
+        margin: 0;
+        border-radius: 8px;
+        background-color: var(--planner-palette-background-paper);
+        font-weight: 700;
+        text-transform: capitalize;
+
+        &:hover {
+            background-color: var(--planner-palette-background-paper);
+        }
+
+        &.active {
+            color: var(--planner-palette-secondary-main);
+        }
+    }
+
+    // Target the Twemoji wrapper since we can't add a class name to it
+    > div:last-child {
+        height: 100%;
+        overflow: auto;
+        padding: 24px;
+
+        @media (max-width: globals.$mobile-cutoff) {
+            padding: 16px;
+        }
+    }
+
+    .professor-summary {
+        margin-inline: auto;
+        max-width: 1000px;
+        margin-bottom: 32px;
+    }
+
+    @container (max-width: 940px) {
+        .preview-title {
+            margin-right: auto;
+        }
+
+        .preview-nav-bar {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 999px;
+            z-index: 999;
+        }
+
+        .preview-nav-button.MuiButton-root {
+            border-radius: 999px;
+
+            .MuiButton-startIcon {
+                margin: 0;
+            }
+
+            > span:not(.MuiButton-icon) {
+                width: 1px;
+                height: 1px;
+                margin: -1px;
+                overflow: hidden;
+            }
+        }
+        @container (max-width: 433px) {
+            .preview-nav-bar {
+                right: auto;
+                bottom: 20px;
+                padding: 4px;
+                gap: 4px;
+            }
+
+            .preview-nav-button.MuiButton-root {
+                min-width: 40px;
+                padding: 10px;
+            }
+        }
+
+        @container (min-width: 434px) and (max-width: 940px) {
+            .preview-nav-bar {
+                right: auto;
+                bottom: 30px;
+                padding: 6px;
+                gap: 6px;
+                @media (min-width: 802px) {
+                    // layout expands to preview and sidebar
+                    left: calc((100vw - 367px) / 2 + 367px); // center based on preview container width only
+                }
+            }
+
+            .preview-nav-button.MuiButton-root {
+                min-width: 45px;
+                padding: 12px;
+            }
+        }
+    }
+}

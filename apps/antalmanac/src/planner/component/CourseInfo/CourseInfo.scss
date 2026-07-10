@@ -1,0 +1,35 @@
+.course-info-warning {
+    .warning-icon {
+        font-size: 20px;
+        margin-bottom: 4px;
+        margin-right: 4px;
+    }
+
+    .warning-primary {
+        color: var(--planner-palette-error-main);
+    }
+
+    .warning-secondary {
+        color: var(--planner-palette-warning-main);
+    }
+
+    .warning-hint-italics {
+        padding-top: 6px;
+        font-weight: 400;
+        font-size: 14px;
+        font-style: italic;
+        color: var(--planner-palette-misc-midGray);
+        margin-bottom: 10px;
+    }
+}
+
+.course-info-clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    .title::after {
+        content: ': ';
+    }
+}

@@ -14,6 +14,8 @@ export default defineConfig({
             $generated: resolve(rootDir, './src/generated'),
             $hooks: resolve(rootDir, './src/hooks'),
             $lib: resolve(rootDir, './src/lib'),
+            $planner: resolve(rootDir, './src/planner'),
+            $plannerApp: resolve(rootDir, './src/app/planner'),
             $providers: resolve(rootDir, './src/providers'),
             $src: resolve(rootDir, './src'),
             $stores: resolve(rootDir, './src/stores'),

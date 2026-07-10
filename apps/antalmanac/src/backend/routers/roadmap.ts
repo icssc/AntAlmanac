@@ -1,70 +1,29 @@
+import { queryGetPlanners } from '$backend/planner/helpers/roadmap';
 import { protectedProcedure, router } from '$backend/trpc';
-import { env } from '$src/env';
-import { QuarterSchema, type Roadmap } from '@packages/antalmanac-types';
-import { headers } from 'next/headers';
-import { z } from 'zod';
-
-const PLANNER_API_URL_PATH = '/planner/api/trpc/external.roadmaps.getByEmail';
-
-const roadmapSchema = z.object({
-    id: z.union([z.string(), z.number()]),
-    name: z.string(),
-    chc: z.string().nullable().optional(),
-    content: z.array(
-        z.object({
-            name: z.string(),
-            startYear: z.number(),
-            quarters: z.array(
-                z.object({
-                    name: QuarterSchema,
-                    courses: z.array(
-                        z.object({
-                            courseId: z.string(),
-                            userChosenUnits: z.number().optional(),
-                        })
-                    ),
-                })
-            ),
-        })
-    ),
-});
-
-function getPlannerApiDomain(domain: string) {
-    return domain === 'staging-shared.antalmanac.com' ? domain : 'antalmanac.com';
-}
+import { type Roadmap } from '@packages/antalmanac-types';
+import { db } from '@packages/db';
+import { user } from '@packages/db/src/schema/planner';
+import { eq } from 'drizzle-orm';
 
 const roadmapRouter = router({
+    /**
+     * Returns the Planner roadmaps belonging to the signed-in user.
+     *
+     * Previously this proxied over HTTP to the standalone Planner service's
+     * external API; the Planner now lives in this app, so we query its
+     * tables directly.
+     */
     fetchUserPlannerRoadmaps: protectedProcedure.query(async ({ ctx }): Promise<Roadmap[]> => {
         if (!ctx.userEmail) {
             return [];
         }
 
-        const apiKey = env.PLANNER_CLIENT_API_KEY;
-        if (!apiKey) {
-            console.warn('PLANNER_CLIENT_API_KEY is not set; skipping planner roadmap fetch');
+        const [matchedUser] = await db.select({ id: user.id }).from(user).where(eq(user.email, ctx.userEmail));
+        if (!matchedUser) {
             return [];
         }
-        const domain = (await headers()).get('host') ?? 'antalmanac.com';
-        const url = `https://${getPlannerApiDomain(domain)}${PLANNER_API_URL_PATH}?${new URLSearchParams({ input: JSON.stringify({ email: ctx.userEmail }) })}`;
 
-        try {
-            const response = await fetch(url, {
-                headers: {
-                    Authorization: `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            return z.array(roadmapSchema).parse(data.result.data);
-        } catch (e) {
-            console.error('Planner fetch failed:', e);
-            return [];
-        }
+        return await queryGetPlanners(eq(user.id, matchedUser.id));
     }),
 });
 

@@ -1,0 +1,77 @@
+.library {
+    h3 {
+        margin-bottom: 0;
+        font-size: 24px;
+        font-weight: 600;
+    }
+}
+
+.custom-courses {
+    gap: 4px;
+    .section-content .custom-card {
+        border-width: 2px;
+        border-radius: 8px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+}
+
+.saved-courses,
+.custom-courses {
+    margin-block: 12px 12px;
+    display: flex;
+    flex-direction: column;
+
+    .header-tab {
+        background: none;
+        border: none;
+        font: inherit;
+        display: flex;
+        width: 100%;
+        align-items: center;
+        overflow: visible;
+        padding: 0 0.5px;
+        cursor: pointer;
+
+        h4 {
+            margin-bottom: 0;
+            text-align: left;
+            font-size: 20px;
+        }
+    }
+
+    .section-content {
+        display: flex;
+        flex-direction: column;
+
+        h4 {
+            margin-bottom: 0;
+            text-align: left;
+            font-size: 20px;
+        }
+    }
+}
+
+.custom-courses {
+    .section-content {
+        .add-card-button {
+            border: 2px solid var(--planner-palette-divider);
+            background: var(--planner-palette-overlay-overlay1);
+            border-radius: 8px;
+            height: auto;
+            font-size: 16px;
+            padding: 12px;
+            position: relative;
+            color: var(--planner-palette-divider);
+            align-items: center;
+
+            svg {
+                color: var(--planner-palette-text-secondary);
+            }
+            &:hover {
+                border-color: var(--planner-palette-text-secondary);
+                cursor: pointer;
+            }
+        }
+    }
+}

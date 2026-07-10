@@ -31,7 +31,7 @@ const aasa = {
                 components: [
                     {
                         '/': '/planner/api/users/auth/google/callback/native',
-                        comment: 'Planner iOS OAuth callback (PeterPortal)',
+                        comment: 'Planner iOS OAuth callback',
                     },
                 ],
             },

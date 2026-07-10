@@ -8,6 +8,7 @@ AntAlmanac is a schedule planner website for classes at UC Irvine. These are som
 - **_Integrated calendar_** to preview class times.
 - **_Quick links_** to professor reviews, prerequisites, grade distributions, and past enrollment data.
 - **_Interactive map_** with markers for your class locations.
+- **_AntAlmanac Planner_** at [antalmanac.com/planner](https://antalmanac.com/planner) — a 4-year course planner with an enhanced catalogue, degree requirement tracking, transfer credits, and professor/course reviews.
 
 ![project screenshot](https://github.com/user-attachments/assets/e1f8d3ce-8188-41ab-817a-850e51e6bd1a)
 

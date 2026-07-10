@@ -1,0 +1,185 @@
+@use '../../../../planner/globals.scss';
+
+.quarter-custom-course-logged-out {
+    padding: 8px 12px;
+
+    p {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.5;
+    }
+}
+
+[data-theme='dark'] {
+    .quarter .quarter-header .quarter-title,
+    .quarter {
+        color: #eee;
+    }
+}
+
+@mixin dragged-quarter-styles() {
+    &.sortable-ghost {
+        opacity: 0.35;
+        width: auto;
+        color: var(--planner-palette-secondary-main);
+        pointer-events: none;
+
+        border: 1px solid var(--border-secondary);
+
+        .course-info {
+            display: contents;
+        }
+
+        .course-info-clamp {
+            margin-bottom: 0;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .course-info-clamp .title {
+            font-weight: inherit;
+
+            &::after {
+                display: none;
+            }
+        }
+
+        .course-drag-handle,
+        .MuiIconButton-root {
+            color: inherit;
+        }
+
+        .course-tags,
+        .course-info-clamp .description {
+            display: none;
+        }
+    }
+}
+
+div.quarter {
+    border-radius: 0;
+    flex: 1 1 30%;
+    min-width: 250px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    margin: -1px -0.75px;
+    background-color: transparent;
+    transition: height 0.3s ease-in-out;
+
+    .quarter-header {
+        background-color: var(--planner-palette-background-paper);
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 12px;
+        border-bottom: 2px solid var(--border-primary);
+        margin-bottom: -2px;
+        z-index: 1;
+
+        .quarter-title {
+            color: #202e47;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 0;
+            margin-right: auto;
+        }
+
+        button {
+            height: 24px;
+            font-size: 11px;
+            font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-weight: 600;
+
+            .MuiButton-icon {
+                margin-right: 4px;
+            }
+        }
+    }
+
+    .quarter-units {
+        color: #808080;
+        font-size: 16px;
+    }
+
+    .quarter-course-list {
+        margin-bottom: -2px;
+        height: 100%;
+        overflow: hidden;
+
+        &:empty {
+            padding: 16px 32px;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+
+            &::before {
+                content: 'Drag courses here to add them to your roadmap';
+                max-width: 200px;
+            }
+        }
+
+        .program-course-tile {
+            border-radius: 0;
+        }
+
+        .course,
+        .custom-card {
+            border-radius: 0;
+            @include dragged-quarter-styles();
+        }
+    }
+
+    .course,
+    .custom-card {
+        margin-block: 0;
+        margin-inline: -1px;
+    }
+}
+
+body[data-theme='light'] {
+    div.quarter .quarter-header button.MuiButton-root:hover {
+        --variant-containedBg: #e8e8e8;
+    }
+}
+
+@media only screen and (max-width: globals.$mobile-cutoff) {
+    div.quarter .quarter-course-list:empty {
+        padding: 16px;
+        border: none;
+        margin-block: -16px;
+        pointer-events: none;
+
+        &::before {
+            content: '';
+        }
+
+        &.dropzone-active {
+            pointer-events: auto;
+        }
+    }
+}
+
+// Although :has is not super widely supported, this style is not critical to page functionality.
+// It should be fine to make it work for just browsers that do support it.
+body:has(> .profile-popover) {
+    button.MuiButtonBase-root:not(:hover) {
+        transition: background-color 0s !important;
+    }
+}
+
+body:has(> .sortable-fallback:is(.course, .program-course-tile)) * {
+    // when a course is dragged, show grabbing cursor no matter what
+    cursor: grabbing !important;
+}

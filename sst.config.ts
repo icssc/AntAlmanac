@@ -67,7 +67,9 @@ export default $config({
                 BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
                 NEXT_PUBLIC_BASE_URL: domain,
                 NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
-                PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
+                PUBLIC_API_URL: process.env.PUBLIC_API_URL,
+                ADMIN_EMAILS: process.env.ADMIN_EMAILS,
+                EXTERNAL_USER_READ_SECRET: process.env.EXTERNAL_USER_READ_SECRET,
                 STAGE: $app.stage,
             },
         });

@@ -18,7 +18,8 @@ const FALL_2023: AATerm = {
 
 describe('download-ics', () => {
     test('converts schedule courses to events for the ics library', () => {
-        const courses: CalendarEvent[] = [
+        // Match the parameter type of getEventsFromCourses (excludes SkeletonEvent).
+        const courses: Exclude<CalendarEvent, { eventKind: 'skeleton' }>[] = [
             // CourseEvent
             {
                 color: 'placeholderColor',

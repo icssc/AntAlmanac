@@ -3,7 +3,7 @@
  * that the user has an active ICSSC auth session.
  *
  * This is a non-HttpOnly hint cookie readable by both AntAlmanac (/)
- * and PeterPortal (/planner). It is NOT a session token.
+ * and the Planner (/planner). It is NOT a session token.
  */
 
 import { NextRequest, NextResponse } from 'next/server';

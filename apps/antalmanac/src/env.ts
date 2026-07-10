@@ -10,7 +10,12 @@ export const env = createEnv({
         BETTER_AUTH_SECRET: z.string().min(1),
         BETTER_AUTH_URL: z.string().min(1),
         MAPBOX_ACCESS_TOKEN: z.string().min(1).optional(),
-        PLANNER_CLIENT_API_KEY: z.string().min(1).optional(),
+        /** Anteater API base URL used by the Planner backend (with trailing slash). */
+        PUBLIC_API_URL: z.string().min(1).default('https://anteaterapi.com/v2/rest/'),
+        /** JSON array of emails allowed to use the Planner admin pages. */
+        ADMIN_EMAILS: z.string().min(1).optional(),
+        /** Bearer secret for the Planner external API (`external.roadmaps.getByEmail`). */
+        EXTERNAL_USER_READ_SECRET: z.string().min(1).optional(),
         STAGE: z.string().min(1),
     },
     client: {
@@ -29,7 +34,9 @@ export const env = createEnv({
         OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
         BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
         BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-        PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
+        PUBLIC_API_URL: process.env.PUBLIC_API_URL,
+        ADMIN_EMAILS: process.env.ADMIN_EMAILS,
+        EXTERNAL_USER_READ_SECRET: process.env.EXTERNAL_USER_READ_SECRET,
         STAGE: process.env.STAGE,
         NEXT_PUBLIC_TILES_ENDPOINT: process.env.NEXT_PUBLIC_TILES_ENDPOINT,
         NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,

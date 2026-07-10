@@ -1,0 +1,129 @@
+.profile-popover {
+    .MuiSvgIcon-root {
+        font-size: 18px;
+    }
+
+    .MuiListItemButton-root {
+        height: 38px;
+    }
+
+    .MuiPaper-root {
+        border: 1px solid var(--planner-palette-overlay-overlay2);
+        border-radius: var(--planner-shape-borderRadiusLg);
+        width: 330px;
+        max-width: 100vw;
+        padding: 16px 20px;
+    }
+
+    .profile-popover-header {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+
+        h1 {
+            font-size: 18px;
+            line-height: 18px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: bold;
+            padding-bottom: 8px;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 14px;
+            color: var(--planner-palette-text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-bottom: 4px;
+            margin: 0;
+        }
+
+        div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        img {
+            border-radius: 100%;
+        }
+    }
+
+    .MuiDivider-root {
+        margin: 8px 0;
+    }
+
+    .profile-popover-theme-selector {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 16px;
+
+        h4 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .tab-selector {
+            background-color: var(--planner-palette-overlay-overlay2);
+        }
+
+        .MuiSvgIcon-root {
+            font-size: 18px;
+        }
+    }
+
+    .profile-popover-links {
+        padding: 0;
+
+        .MuiListItem-root {
+            padding: 0;
+        }
+
+        .MuiListItemButton-root {
+            padding-inline: 10px;
+            border-radius: var(--planner-shape-borderRadius);
+        }
+
+        .MuiListItemIcon-root {
+            min-width: 32px;
+        }
+
+        .profile-popover-link.active {
+            color: var(--planner-palette-secondary-main);
+
+            .MuiSvgIcon-root {
+                color: var(--planner-palette-secondary-main);
+            }
+        }
+    }
+
+    .external-links-row {
+        display: flex;
+        justify-content: space-between;
+
+        & .MuiTypography-root {
+            font-size: 10.75px;
+            font-weight: 500;
+        }
+
+        .MuiSvgIcon-root {
+            font-size: 22px;
+            color: var(--planner-palette-text-primary);
+        }
+    }
+
+    .profile-menu-links {
+        .MuiTypography-root {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .MuiSvgIcon-root {
+            color: var(--planner-palette-text-primary);
+        }
+    }
+}
