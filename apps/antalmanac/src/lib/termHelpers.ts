@@ -1,6 +1,6 @@
 import { type AATerm, QuarterSchema } from '@packages/antalmanac-types';
 import type { Quarter, Year } from '@packages/anteater-api/types';
-import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
+import { addWeeks, differenceInWeeks, endOfDay, setDay } from 'date-fns';
 import { z } from 'zod';
 
 export const termSchema = z
@@ -63,6 +63,24 @@ export function parseQuarter(rawQuarter: unknown) {
     return quarter.success ? quarter.data : undefined;
 }
 
+export function getTermEnrollmentDropDeadline(term: AATerm) {
+    const isTermShort = differenceInWeeks(term.finalsStart, term.instructionStart) < 9;
+    const hasWeekZero = term.instructionStart.getDay() !== 1;
+    let weeksUntilDropDeadline = isTermShort ? 0 : 1;
+    if (hasWeekZero) {
+        weeksUntilDropDeadline++;
+    }
+
+    const dropDeadline = setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
+    if (term.isSummerTerm) {
+        return endOfDay(dropDeadline);
+    }
+
+    dropDeadline.setHours(17, 0, 0, 0);
+
+    return dropDeadline;
+}
+
 /**
  * Enrollment can change until the drop deadline, i.e. when enrollment closes.
  * For full terms (10-week quarters), enrollment closes on the Friday of Week 2.
@@ -76,12 +94,5 @@ export function canTermEnrollmentChange(term: AATerm) {
         return false;
     }
 
-    const isTermShort = differenceInWeeks(term.finalsStart, term.instructionStart) < 9;
-    const hasWeekZero = term.instructionStart.getDay() !== 1;
-    let weeksUntilDropDeadline = isTermShort ? 0 : 1;
-    if (hasWeekZero) {
-        weeksUntilDropDeadline++;
-    }
-
-    return new Date() <= setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
+    return new Date() <= getTermEnrollmentDropDeadline(term);
 }
