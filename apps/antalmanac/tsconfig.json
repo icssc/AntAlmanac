@@ -1,0 +1,27 @@
+{
+    "extends": ["@total-typescript/tsconfig/bundler/dom", "../../tsconfig.base.json"],
+    "compilerOptions": {
+        "lib": ["es2024", "esnext.collection", "dom", "dom.iterable"],
+        "jsx": "react-jsx",
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "$actions/*": ["../antalmanac-scheduler/src/actions/*"],
+            "$backend/*": ["../antalmanac-scheduler/src/backend/*"],
+            "$components/*": ["../antalmanac-scheduler/src/components/*"],
+            "$generated/*": ["../antalmanac-scheduler/src/generated/*"],
+            "$lib/*": ["../antalmanac-scheduler/src/lib/*"],
+            "$hooks/*": ["../antalmanac-scheduler/src/hooks/*"],
+            "$providers/*": ["../antalmanac-scheduler/src/providers/*"],
+            "$stores/*": ["../antalmanac-scheduler/src/stores/*"],
+            "$src/*": ["../antalmanac-scheduler/src/*"],
+            "$scripts/*": ["../antalmanac-scheduler/scripts/*"]
+        }
+    },
+    "include": ["./dist/types/**/*.ts", "./next-env.d.ts", "./src", "./tests", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "./scripts"],
+    "exclude": ["./node_modules"]
+}

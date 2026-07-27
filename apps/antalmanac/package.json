@@ -1,5 +1,5 @@
 {
-    "name": "@antalmanac-scheduler",
+    "name": "antalmanac",
     "version": "1.0.0",
     "private": true,
     "description": "A course exploration and scheduling tool for UCI Anteaters",
@@ -41,6 +41,9 @@
         "@trpc/client": "^11.17.0",
         "@trpc/react-query": "^11.17.0",
         "@trpc/server": "^11.17.0",
+        "@antalmanac-planner/api": "workspace:^",
+        "@antalmanac-planner/site": "workspace:^",
+        "@antalmanac-scheduler": "workspace:^",
         "better-auth": "^1.6.1",
         "date-fns": "^3.6.0",
         "drizzle-orm": "^0.45.2",

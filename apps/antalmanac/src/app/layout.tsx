@@ -4,7 +4,9 @@ import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import type { WebApplication, WebSite, WithContext } from 'schema-dts';
 
-import './globals.css';
+import '$src/app/globals.css';
+
+//export * from '@antalmanac-scheduler/src/app/layout';
 
 export const metadata: Metadata = {
     title: ANTALMANAC_TITLE,
@@ -77,7 +79,7 @@ const siteSchema: WithContext<WebSite> = {
     },
 };
 
-function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
             <body>
@@ -97,5 +99,3 @@ function RootLayout({ children }: { children: React.ReactNode }) {
         </html>
     );
 }
-
-export default RootLayout;
