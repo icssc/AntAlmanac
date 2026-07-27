@@ -14,7 +14,6 @@ import { CourseBookmarkButton } from '../CourseInfo/CourseInfo';
 import { useAppDispatch } from '../../store/hooks';
 import { useCourseData } from '../../hooks/catalog';
 import { setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/roadmapSlice';
-import Twemoji from 'react-twemoji';
 import PreviewNavBar from './PreviewNavBar';
 import trpc from '../../trpc';
 
@@ -22,6 +21,9 @@ import MaterialsIcon from '../../helpers/courseMaterials';
 import CloseIcon from '@mui/icons-material/Close';
 import BackIcon from '@mui/icons-material/ArrowBack';
 import IosShareIcon from '@mui/icons-material/IosShare';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import RateReviewIcon from '@mui/icons-material/RateReview';
 
 interface PreviewTitleProps {
   isLoading: boolean;
@@ -86,11 +88,11 @@ const CoursePreviewContent: FC<{ data: CourseGQLData }> = ({ data }) => {
         <CourseSummary course={data} />
       </ResultPageSection>
 
-      <ResultPageSection id="preview-grades" title="📊 Grade Distribution">
+      <ResultPageSection id="preview-grades" icon={<BarChartIcon />} title="Grade Distribution">
         <GradeDist course={data} />
       </ResultPageSection>
 
-      <ResultPageSection id="preview-schedule" title="🗓️ Schedule of Classes">
+      <ResultPageSection id="preview-schedule" icon={<CalendarTodayIcon />} title="Schedule of Classes">
         <Schedule
           key={data.id}
           courseID={data.department + ' ' + data.courseNumber}
@@ -98,7 +100,7 @@ const CoursePreviewContent: FC<{ data: CourseGQLData }> = ({ data }) => {
         />
       </ResultPageSection>
 
-      <ResultPageSection id="preview-reviews" title="💬 Reviews">
+      <ResultPageSection id="preview-reviews" icon={<RateReviewIcon />} title="Reviews">
         <Review key={data.id} course={data} terms={sortTerms(data.terms)} />
       </ResultPageSection>
     </div>
@@ -168,11 +170,9 @@ const CoursePreview: FC<{ courseId: string; onClose: () => void; onBack: () => v
           <CourseBookmarkButton course={courseData} disabled={isLoading} includeLabel={true} />
         </div>
       </Paper>
-      <Twemoji options={{ className: 'twemoji' }}>
-        <div className="popup-scroll">
-          <CoursePreviewContent data={courseData} />
-        </div>
-      </Twemoji>
+      <div className="popup-scroll">
+        <CoursePreviewContent data={courseData} />
+      </div>
     </div>
   );
 };

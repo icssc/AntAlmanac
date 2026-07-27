@@ -22,13 +22,6 @@
     }
   }
 
-  // twemoji wrapper does not allow setting className
-  > .side-content-wrapper + * {
-    width: 100%;
-    max-height: 100%;
-    max-width: 100% - $base-percent;
-  }
-
   .side-info {
     max-height: 100%;
     max-width: $side-info-width;
@@ -61,13 +54,13 @@
       background-color: var(--mui-palette-overlay-overlay2);
       width: 150px;
     }
-
-    .twemoji {
-      width: 1.25em;
-    }
   }
 
   .result-page-body {
+    width: 100%;
+    max-height: 100%;
+    max-width: 100% - $base-percent;
+
     max-height: 100%;
     overflow: auto;
     margin-top: 0;
@@ -127,9 +120,5 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .twemoji {
-    width: 1.25em;
   }
 }

@@ -7,6 +7,10 @@ import GradeDist from '../../component/GradeDist/GradeDist';
 import SideInfo from '../../component/SideInfo/SideInfo';
 import Error from '../../component/Error/Error';
 
+import BarChartIcon from '@mui/icons-material/BarChart';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+
 import { unionTerms, sortTerms } from '../../helpers/util';
 import { getProfessorTerms } from '../../helpers/reviews';
 import ResultPageContent, { ResultPageSection } from '../../component/ResultPageContent/ResultPageContent';
@@ -48,18 +52,18 @@ const ProfessorPage: FC<ProfessorPageProps> = ({ ucinetid: id }) => {
     );
     return (
       <ResultPageContent sideInfo={sideInfo}>
-        <ResultPageSection title="📊 Grade Distribution">
+        <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
           <GradeDist professor={professorGQLData} />
         </ResultPageSection>
 
-        <ResultPageSection title="🗓️ Schedule of Classes">
+        <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
           <Schedule
             professorIDs={professorGQLData.shortenedNames}
             termsOffered={unionTerms(professorGQLData.courses)}
           />
         </ResultPageSection>
 
-        <ResultPageSection title="💬 Reviews">
+        <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
           <Review professor={professorGQLData} terms={sortTerms(getProfessorTerms(professorGQLData))} />
         </ResultPageSection>
       </ResultPageContent>

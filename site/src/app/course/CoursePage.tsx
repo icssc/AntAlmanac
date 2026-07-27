@@ -9,6 +9,11 @@ import Review from '../../component/Review/Review';
 import SideInfo from '../../component/SideInfo/SideInfo';
 import Error from '../../component/Error/Error';
 
+import BarChartIcon from '@mui/icons-material/BarChart';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+
 import { useAppDispatch } from '../../store/hooks';
 import { getCourseTags, sortTerms } from '../../helpers/util';
 import ResultPageContent, { ResultPageSection } from '../../component/ResultPageContent/ResultPageContent';
@@ -52,15 +57,15 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id }) => {
     );
     return (
       <ResultPageContent sideInfo={sideInfo}>
-        <ResultPageSection title="📊 Grade Distribution">
+        <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
           <GradeDist course={courseGQLData} />
         </ResultPageSection>
 
-        <ResultPageSection title="🌲 Prerequisite Tree">
+        <ResultPageSection icon={<AccountTreeIcon />} title="Prerequisite Tree">
           <PrereqTree key={courseGQLData.id} {...courseGQLData} />
         </ResultPageSection>
 
-        <ResultPageSection title="🗓️ Schedule of Classes">
+        <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
           <Schedule
             key={courseGQLData.id}
             courseID={courseGQLData.department + ' ' + courseGQLData.courseNumber}
@@ -68,7 +73,7 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id }) => {
           />
         </ResultPageSection>
 
-        <ResultPageSection title="💬 Reviews">
+        <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
           <Review key={courseGQLData.id} course={courseGQLData} terms={sortTerms(courseGQLData.terms)} />
         </ResultPageSection>
       </ResultPageContent>
