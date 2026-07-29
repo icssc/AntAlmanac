@@ -4,9 +4,15 @@ import { Popover } from '@mui/material';
 import './OverlayTrigger.scss';
 import { useAppSelector } from '../../store/hooks';
 
+type OverlayTriggerChildProps = {
+  onMouseEnter?: React.MouseEventHandler<HTMLElement>;
+  onMouseOver?: React.MouseEventHandler<HTMLElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLElement>;
+};
+
 interface OverlayTriggerProps {
   popoverContent: ReactNode;
-  children: React.ReactElement;
+  children: React.ReactElement<OverlayTriggerChildProps>;
   popupListener?: (open: boolean) => void;
   disabled?: boolean;
   anchor: 'bottom' | 'left' | 'right';
@@ -51,18 +57,20 @@ const OverlayTrigger: FC<OverlayTriggerProps> = ({
     popupListener?.(false);
   };
 
+  const { onMouseEnter, onMouseOver, onMouseLeave } = children.props;
+
   const clonedChild = React.cloneElement(children, {
-    onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
+    onMouseEnter: (e) => {
       showPopover(e);
-      children.props.onMouseEnter?.(e);
+      onMouseEnter?.(e);
     },
-    onMouseOver: (e: React.MouseEvent<HTMLElement>) => {
+    onMouseOver: (e) => {
       showPopover(e);
-      children.props.onMouseEnter?.(e);
+      onMouseOver?.(e);
     },
-    onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
+    onMouseLeave: (e) => {
       hidePopover();
-      children.props.onMouseLeave?.(e);
+      onMouseLeave?.(e);
     },
   });
 

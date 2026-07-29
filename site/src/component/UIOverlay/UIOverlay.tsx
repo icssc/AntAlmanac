@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 
-type UIOverlayProps = JSX.IntrinsicElements['div'] & {
+type UIOverlayProps = React.JSX.IntrinsicElements['div'] & {
   zIndex: number;
 };
 

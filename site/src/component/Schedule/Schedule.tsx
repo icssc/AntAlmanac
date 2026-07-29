@@ -217,7 +217,7 @@ const Schedule: FC<ScheduleProps> = (props) => {
   if (!scheduleData) {
     return <p> Loading Schedule..</p>;
   } else {
-    const sectionElements: JSX.Element[] = [];
+    const sectionElements: React.JSX.Element[] = [];
     Object.keys(scheduleData).forEach((courseID) => {
       const sortedSections = [...scheduleData[courseID]].sort((a, b) => a.sectionCode.localeCompare(b.sectionCode));
 

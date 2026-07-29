@@ -21,10 +21,11 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.145",
-    "@types/node": "20.12.8",
-    "concurrently": "^9.1.0",
+    "@types/node": "22.19.17",
+    "concurrently": "^10.0.3",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
+    "prettier": "^3.8.4",
     "oxfmt": "0.55.0",
     "oxlint": "1.70.0"
   }

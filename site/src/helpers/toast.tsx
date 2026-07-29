@@ -22,7 +22,7 @@ const iconSx = {
   fontSize: 20,
 };
 
-const iconMap: Record<ToastSeverity, () => JSX.Element> = {
+const iconMap: Record<ToastSeverity, () => React.JSX.Element> = {
   success: () => <CheckCircleIcon sx={iconSx} />,
   error: () => <ErrorIcon sx={iconSx} />,
   info: () => <InfoIcon sx={iconSx} />,
