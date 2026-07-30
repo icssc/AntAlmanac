@@ -1,0 +1,36 @@
+{
+    "$schema": "../node_modules/oxlint/configuration_schema.json",
+    "plugins": ["typescript", "react", "jsx-a11y", "nextjs", "oxc"],
+    "categories": {
+        "correctness": "error"
+    },
+    "rules": {
+        "no-console": [
+            "warn",
+            {
+                "allow": ["warn", "error"]
+            }
+        ],
+        "no-unused-vars": [
+            "error",
+            {
+                "caughtErrors": "none"
+            }
+        ],
+        "jsx_a11y/control-has-associated-label": "off",
+        "jsx_a11y/prefer-tag-over-role": "off",
+        "typescript/triple-slash-reference": "off"
+    },
+    "settings": {
+        "next": {
+            "rootDir": ["site/"]
+        }
+    },
+    "env": {
+        "builtin": true,
+        "browser": true,
+        "node": true,
+        "es2020": true
+    },
+    "ignorePatterns": ["dist"]
+}

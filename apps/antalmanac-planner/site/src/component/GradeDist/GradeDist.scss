@@ -1,123 +1,173 @@
-.gradedist-module-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
+.MuiCardContent-root {
+    background-color: var(--mui-palette-overlay-overlay2);
+}
 
-  .chart-container {
-    display: flex;
+.gradedist-module-container {
     width: 100%;
-    flex-wrap: wrap;
-    padding-inline: 20px;
-  }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px;
+
+    .chart-container {
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        padding-inline: 20px;
+    }
 }
 .gradedist-menu {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 10px 20px 0px;
-  gap: 16px;
-  width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    width: 100%;
 }
 .gradedist-filter {
-  .MuiInputBase-root {
-    width: 200px;
-    .MuiInputBase-input {
-      width: 150px;
+    .MuiInputBase-root {
+        width: 200px;
+        .MuiInputBase-input {
+            width: 150px;
+        }
     }
-  }
-  .MuiAutocomplete-root {
-    width: 200px;
-  }
+    .MuiAutocomplete-root {
+        width: 200px;
+    }
 }
 
-#grade-dist-label {
-  margin: '0';
-  width: 100%;
+.gradedist-content {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 16px;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    height: 420px;
 }
 
-#menu {
-  display: flex;
-  margin: 0;
-}
-
-#chart {
-  display: flex;
-  justify-content: space-evenly;
-  margin-left: 0;
-  margin-right: 0;
-}
-
-.grade_distribution_chart-container {
-  display: inline-flex;
-  height: 400px;
-}
-
-.chart {
-  width: 50%;
-}
-
-.pie {
-  width: 50%;
-}
-
-.pie-text {
-  font-size: 1.5em;
-}
-
-.grade-dist-mini {
-  width: 100%;
-
-  #menu {
-    padding-top: 2vh;
-  }
-
-  .chart {
-    width: 80%;
-  }
-
-  .pie {
-    width: 80%;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  #chart {
+.gradedist-stats {
+    display: flex;
     flex-direction: column;
-  }
+    gap: 16px;
+    flex-shrink: 0;
+    width: 200px;
+    height: 100%;
+}
 
-  .chart {
+.grade-dist-chart-card {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .MuiCardContent-root {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    .grade-dist-chart-container {
+        width: 100%;
+        flex: 1;
+        display: flex;
+    }
+}
+
+.stat-card {
     width: 100%;
-  }
+    flex: 1;
 
-  .pie {
-    width: 100%;
-  }
+    .MuiCardContent-root {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 
-  .pie-text {
-    font-size: 1.25em;
-  }
+    .stat-label {
+        color: var(--mui-palette-text-secondary);
+    }
+
+    .stat-value-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+
+        .stat-unit {
+            color: var(--mui-palette-text-secondary);
+
+            &--baseline {
+                align-self: flex-end;
+                padding-bottom: 4px;
+            }
+        }
+    }
+
+    .stat-change-row {
+        display: flex;
+        gap: 4px;
+    }
 }
 
-@media only screen and (max-width: 400px) {
-  .pie-text {
-    font-size: 1em;
-  }
-}
+@container (max-width: 600px) {
+    .gradedist-module-container {
+        .gradedist-menu {
+            flex-direction: column;
+            gap: 12px;
+        }
 
-@media only screen and (max-width: 1319px) {
-  .pie-text {
-    font-size: 1.1em;
-  }
-}
+        .gradedist-filter {
+            width: 100%;
 
-@media only screen and (min-device-width: 1320px) and (max-device-width: 1440px) {
-  .pie-text {
-    font-size: 1.2em;
-  }
-}
-@media only screen and (min-device-width: 1441px) and (max-device-width: 1600px) {
-  .pie-text {
-    font-size: 1.3em;
-  }
+            .MuiInputBase-root {
+                width: 100%;
+
+                .MuiInputBase-input {
+                    width: 100%;
+                }
+            }
+
+            .MuiAutocomplete-root {
+                width: 100%;
+            }
+        }
+
+        .gradedist-content {
+            height: auto;
+        }
+
+        .gradedist-stats {
+            height: auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .gradedist-stats .stat-card:first-child {
+            grid-column: 1 / -1;
+        }
+
+        .gradedist-stats .stat-card {
+            min-height: 112px;
+        }
+
+        .grade-dist-chart-card {
+            width: 100%;
+            min-width: unset;
+            flex: unset;
+            height: auto;
+            min-height: 280px;
+
+            .grade-dist-chart-container {
+                min-height: 220px;
+            }
+        }
+
+        .gradedist-failed {
+            padding-top: 8px;
+        }
+    }
 }

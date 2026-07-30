@@ -6,7 +6,7 @@ import type { Request } from 'express';
  * this first-party cookie is visible on every request originating from inside
  * the native iOS wrapper.
  *
- * Mirrors AntAlmanac's apps/antalmanac/src/lib/platform.ts.
+ * Mirrors the AntAlmanac iOS cookie convention (see apps/ios WebView.swift).
  */
 const NATIVE_IOS_COOKIE = 'app-platform=iOS App Store';
 
@@ -18,5 +18,5 @@ const NATIVE_IOS_COOKIE = 'app-platform=iOS App Store';
  * without hijacking the real `/callback` path that web users depend on.
  */
 export function isNativeIosApp(req: Pick<Request, 'headers'>): boolean {
-  return (req.headers.cookie ?? '').includes(NATIVE_IOS_COOKIE);
+    return (req.headers.cookie ?? '').includes(NATIVE_IOS_COOKIE);
 }

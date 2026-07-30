@@ -1,40 +1,50 @@
 import { ReactSortableProps, SortableOptions } from 'react-sortablejs';
 import { CourseGQLData, CustomCourse, PlannerQuarterCourse } from '../types/types';
+import { RoadmapPlan } from '../types/roadmap';
 
 const baseSortable: SortableOptions = {
-  animation: 150,
-  forceFallback: true,
-  fallbackOnBody: true,
-  fallbackTolerance: 4,
+    animation: 150,
+    forceFallback: true,
+    fallbackOnBody: true,
+    fallbackTolerance: 4,
 };
 
 export const quarterSortable: SortableOptions & Partial<ReactSortableProps<PlannerQuarterCourse>> = {
-  ...baseSortable,
-  setList: () => {},
-  handle: '.course-drag-handle',
-  group: { name: 'courses' },
+    ...baseSortable,
+    setList: () => {},
+    handle: '.course-drag-handle',
+    group: { name: 'courses' },
 };
 
 export const customCourseSortable: SortableOptions & Partial<ReactSortableProps<CustomCourse>> = {
-  ...baseSortable,
-  setList: () => {},
-  handle: '.course-drag-handle',
-  group: { name: 'courses', pull: 'clone', put: false },
+    ...baseSortable,
+    setList: () => {},
+    handle: '.course-drag-handle',
+    group: { name: 'courses', pull: 'clone', put: false },
 };
 
 export const courseSearchSortable: SortableOptions & Partial<ReactSortableProps<CourseGQLData>> = {
-  ...baseSortable,
-  setList: () => {},
-  sort: false,
-  revertOnSpill: true,
-  handle: '.course-drag-handle',
-  group: { name: 'courses', pull: 'clone', put: false },
+    ...baseSortable,
+    setList: () => {},
+    sort: false,
+    revertOnSpill: true,
+    handle: '.course-drag-handle',
+    group: { name: 'courses', pull: 'clone', put: false },
 };
 
 export const programRequirementsSortable: SortableOptions & Partial<ReactSortableProps<{ id: string }>> = {
-  ...baseSortable,
-  setList: () => {},
-  sort: false,
-  revertOnSpill: true,
-  group: { name: 'courses', pull: 'clone', put: false },
+    ...baseSortable,
+    setList: () => {},
+    sort: false,
+    revertOnSpill: true,
+    group: { name: 'courses', pull: 'clone', put: false },
+};
+
+export const planSortable: SortableOptions & Partial<ReactSortableProps<RoadmapPlan>> = {
+    animation: 150,
+    forceFallback: false,
+    fallbackOnBody: false,
+    fallbackTolerance: 4,
+    setList: () => {},
+    handle: '.drag-icon',
 };
