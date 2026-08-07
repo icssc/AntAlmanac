@@ -9,7 +9,7 @@ import {
 } from '../types/types';
 import trpc from '../trpc';
 import { CourseAAPIResponse, GETitle, ProfessorAAPIResponse } from '@peterportal/types';
-import { ReactNode } from 'react';
+import { Fragment, ReactNode, cloneElement, isValidElement } from 'react';
 import { useMediaQuery } from '@mui/material';
 
 export function getCourseTags(course: CourseGQLData) {
@@ -159,12 +159,19 @@ export function getCourseIdWithSpaces(course: Pick<CourseGQLData, 'department'> 
 }
 
 export function addDelimiter(items: ReactNode[], between: ReactNode, last?: ReactNode) {
-  const lastIdx = items.length - 1;
-  last ??= between;
-  return items.flatMap((item, idx) => {
-    if (idx === lastIdx) return [item];
-    return [item, idx === lastIdx - 1 ? last : between];
-  });
+  if (items.length === 0) return [];
+
+  const separator = last ?? between;
+  const withKey = (node: ReactNode, key: string) =>
+    isValidElement(node) ? cloneElement(node, { key }) : <Fragment key={key}>{node}</Fragment>;
+
+  return items.reduce<ReactNode[]>((acc, item, idx) => {
+    if (idx > 0) {
+      acc.push(withKey(idx === items.length - 1 ? separator : between, `delimiter-${idx - 1}`));
+    }
+    acc.push(withKey(item, `item-${idx}`));
+    return acc;
+  }, []);
 }
 
 export function checkModalOpen() {
