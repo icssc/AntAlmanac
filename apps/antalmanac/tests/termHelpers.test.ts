@@ -1,8 +1,10 @@
 import { canTermEnrollmentChange, getTermEnrollmentDropDeadline } from '$lib/termHelpers';
 import type { AATerm } from '@packages/antalmanac-types';
+import { formatInTimeZone } from 'date-fns-tz';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
 const PACIFIC_TIME_ZONE = 'America/Los_Angeles';
+const PACIFIC_TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSS';
 
 const FALL_2024: AATerm = {
     year: '2024',
@@ -43,33 +45,6 @@ const SUMMER_10WK_2024: AATerm = {
     isSummerTerm: true,
 };
 
-function getPacificTimeParts(date: Date) {
-    const parts = new Intl.DateTimeFormat('en-US', {
-        timeZone: PACIFIC_TIME_ZONE,
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        second: '2-digit',
-        fractionalSecondDigits: 3,
-        hour12: true,
-    }).formatToParts(date);
-
-    const getPart = (type: string) => parts.find((part) => part.type === type)?.value ?? '';
-
-    return {
-        year: getPart('year'),
-        month: getPart('month'),
-        day: getPart('day'),
-        hour: getPart('hour'),
-        minute: getPart('minute'),
-        second: getPart('second'),
-        fractionalSecond: getPart('fractionalSecond'),
-        dayPeriod: getPart('dayPeriod'),
-    };
-}
-
 describe('canTermEnrollmentChange', () => {
     afterEach(() => {
         vi.useRealTimers();
@@ -79,16 +54,7 @@ describe('canTermEnrollmentChange', () => {
         vi.useFakeTimers();
 
         const dropDeadline = getTermEnrollmentDropDeadline(FALL_2024);
-        expect(getPacificTimeParts(dropDeadline)).toEqual({
-            year: '2024',
-            month: '9',
-            day: '6',
-            hour: '5',
-            minute: '00',
-            second: '00',
-            fractionalSecond: '000',
-            dayPeriod: 'PM',
-        });
+        expect(formatInTimeZone(dropDeadline, PACIFIC_TIME_ZONE, PACIFIC_TIME_FORMAT)).toBe('2024-09-06 17:00:00.000');
 
         vi.setSystemTime(new Date('2024-09-06T23:59:59.999Z'));
         expect(canTermEnrollmentChange(FALL_2024)).toBe(true);
@@ -107,16 +73,7 @@ describe('canTermEnrollmentChange', () => {
         vi.useFakeTimers();
 
         const dropDeadline = getTermEnrollmentDropDeadline(SUMMER_SESSION_I_2024);
-        expect(getPacificTimeParts(dropDeadline)).toEqual({
-            year: '2024',
-            month: '6',
-            day: '28',
-            hour: '11',
-            minute: '59',
-            second: '59',
-            fractionalSecond: '999',
-            dayPeriod: 'PM',
-        });
+        expect(formatInTimeZone(dropDeadline, PACIFIC_TIME_ZONE, PACIFIC_TIME_FORMAT)).toBe('2024-06-28 23:59:59.999');
 
         vi.setSystemTime(new Date('2024-06-29T06:59:59.999Z'));
         expect(canTermEnrollmentChange(SUMMER_SESSION_I_2024)).toBe(true);
@@ -129,16 +86,7 @@ describe('canTermEnrollmentChange', () => {
         vi.useFakeTimers();
 
         const dropDeadline = getTermEnrollmentDropDeadline(SUMMER_10WK_2024);
-        expect(getPacificTimeParts(dropDeadline)).toEqual({
-            year: '2024',
-            month: '7',
-            day: '5',
-            hour: '11',
-            minute: '59',
-            second: '59',
-            fractionalSecond: '999',
-            dayPeriod: 'PM',
-        });
+        expect(formatInTimeZone(dropDeadline, PACIFIC_TIME_ZONE, PACIFIC_TIME_FORMAT)).toBe('2024-07-05 23:59:59.999');
 
         // 11:59:59.999 PM PDT (UTC-7) = 2024-07-06T06:59:59.999Z
         vi.setSystemTime(new Date('2024-07-06T06:59:59.999Z'));
