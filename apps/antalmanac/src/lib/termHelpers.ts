@@ -1,7 +1,9 @@
 import { QuarterSchema, type AATerm } from '@packages/antalmanac-types';
 import type { Quarter, Year } from '@packages/anteater-api/types';
-import { addWeeks, differenceInWeeks, endOfDay, setDay } from 'date-fns';
+import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 import { z } from 'zod';
+
+const PACIFIC_TIME_ZONE = 'America/Los_Angeles';
 
 export const termSchema = z
     .object({
@@ -58,6 +60,46 @@ function parseLocalDate(dateStr: string): Date {
     return new Date(y, month - 1, day);
 }
 
+function getTimeZoneOffsetMinutes(date: Date, timeZone: string): number {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    }).formatToParts(date);
+
+    const resolvedParts = Object.fromEntries(
+        parts.filter((part) => part.type !== 'literal').map((part) => [part.type, part.value])
+    );
+
+    const zonedUtcMillis = Date.UTC(
+        Number(resolvedParts.year),
+        Number(resolvedParts.month) - 1,
+        Number(resolvedParts.day),
+        Number(resolvedParts.hour),
+        Number(resolvedParts.minute),
+        Number(resolvedParts.second)
+    );
+
+    return (zonedUtcMillis - date.getTime()) / 60000;
+}
+
+function createDateInTimeZone(date: Date, timeZone: string, hours: number, minutes = 0, seconds = 0, milliseconds = 0) {
+    const calendarDateUtc = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes, seconds, 0);
+    let zonedMillis = calendarDateUtc;
+
+    for (let i = 0; i < 3; i++) {
+        const offsetMinutes = getTimeZoneOffsetMinutes(new Date(zonedMillis), timeZone);
+        zonedMillis = calendarDateUtc - offsetMinutes * 60_000;
+    }
+
+    return new Date(zonedMillis + milliseconds);
+}
+
 export function parseQuarter(rawQuarter: unknown) {
     const quarter = QuarterSchema.safeParse(rawQuarter);
     return quarter.success ? quarter.data : undefined;
@@ -73,12 +115,12 @@ export function getTermEnrollmentDropDeadline(term: AATerm) {
 
     const dropDeadline = setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
     if (term.isSummerTerm) {
-        return endOfDay(dropDeadline);
+        // For summer terms, enrollment closes at the end of the drop deadline day in Pacific time.
+        return createDateInTimeZone(dropDeadline, PACIFIC_TIME_ZONE, 23, 59, 59, 999);
     }
 
-    dropDeadline.setHours(17, 0, 0, 0);
-
-    return dropDeadline;
+    // For regular terms, enrollment closes at 5 PM on the drop deadline day in Pacific time.
+    return createDateInTimeZone(dropDeadline, PACIFIC_TIME_ZONE, 17, 0, 0, 0);
 }
 
 /**
