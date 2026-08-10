@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { timestamp, pgTable, text, index } from 'drizzle-orm/pg-core';
+import { index, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { users } from './user';
 

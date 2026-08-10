@@ -2,20 +2,20 @@ import { EventEmitter } from 'events';
 
 import actionTypesStore, {
     type AddCourseAction,
-    type DeleteCourseAction,
     type AddCustomEventAction,
-    type DeleteCustomEventAction,
-    type EditCustomEventAction,
+    type AddScheduleAction,
+    type ChangeCourseColorAction,
     type ChangeCustomEventColorAction,
     type ClearScheduleAction,
     type CopyScheduleAction,
-    type RenameScheduleAction,
+    type DeleteCourseAction,
+    type DeleteCustomEventAction,
     type DeleteScheduleAction,
-    type ReorderScheduleAction,
-    type ChangeCourseColorAction,
-    type UndoRedoAction,
-    type AddScheduleAction,
+    type EditCustomEventAction,
+    type RenameScheduleAction,
     type ReorderAddedCoursesAction,
+    type ReorderScheduleAction,
+    type UndoRedoAction,
 } from '$actions/ActionTypesStore';
 import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -23,11 +23,12 @@ import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import type {
-    ScheduleCourse,
-    ScheduleSaveState,
-    RepeatingCustomEvent,
-    CustomEventId,
+    AACourseWithTerm,
+    AASection,
     AATerm,
+    CustomEventId,
+    RepeatingCustomEvent,
+    ScheduleSaveState,
 } from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
@@ -85,23 +86,25 @@ class AppStore extends EventEmitter {
         return this.schedule.getAllCustomEvents();
     }
 
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
-        let addedCourse: ScheduleCourse;
+    addCourse(
+        section: AASection,
+        course: AACourseWithTerm,
+        scheduleIndex: number = this.schedule.getCurrentScheduleIndex()
+    ) {
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
-            addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
+            this.schedule.addCourseToAllSchedules(section, course);
         } else {
-            addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
+            this.schedule.addCourse(section, course, scheduleIndex);
         }
         this.unsavedChanges = true;
         const action: AddCourseAction = {
             type: 'addCourse',
-            course: newCourse,
-            scheduleIndex: scheduleIndex,
+            section,
+            course,
+            scheduleIndex,
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
-
-        return addedCourse;
     }
 
     getEventsInCalendar() {
@@ -165,7 +168,7 @@ class AppStore extends EventEmitter {
             type: 'deleteCourse',
             sectionCode: sectionCode,
             term: term,
-            scheduleIndex: this.schedule.getCurrentScheduleIndex(),
+            scheduleIndex: scheduleIndex,
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');

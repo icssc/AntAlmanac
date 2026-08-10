@@ -39,12 +39,12 @@ export function EmptyState({
             className={className}
             sx={sx}
         >
-            <Icon sx={{ fontSize: 48, color: 'text.secondary' }} aria-hidden="true" />
-            <Typography variant="h6" color="text.primary">
+            <Icon sx={{ fontSize: 48, color: (theme) => theme.vars.palette.text.secondary }} aria-hidden="true" />
+            <Typography variant="h6" sx={{ color: (theme) => theme.vars.palette.text.primary }}>
                 {title}
             </Typography>
             {description && (
-                <Typography variant="body2" color="text.secondary" maxWidth={360}>
+                <Typography variant="body2" sx={{ color: (theme) => theme.vars.palette.text.secondary }} maxWidth={360}>
                     {description}
                 </Typography>
             )}

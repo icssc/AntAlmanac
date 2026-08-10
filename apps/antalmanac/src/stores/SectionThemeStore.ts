@@ -6,15 +6,14 @@ import {
     setLocalStorageSectionColorAssignments,
 } from '$lib/localStorage';
 import {
-    computeAssignments,
-    getPalette,
-    isSectionColorSetting,
     type SectionColorSetting,
     type SectionThemeId,
     type ThemeAssignmentMap,
+    computeAssignments,
+    getPalette,
+    isSectionColorSetting,
 } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import type { PostHog } from 'posthog-js/react';
 import { create } from 'zustand';
 
@@ -50,12 +49,13 @@ interface SectionThemeStore {
 }
 
 function readStoredSectionColor(): SectionColorSetting {
+    if (typeof window === 'undefined') return 'custom';
     const raw = getLocalStorageSectionColor();
-    // Default users to 'custom' so their hand-picked colors are preserved.
     return isSectionColorSetting(raw) ? raw : 'custom';
 }
 
 function readStoredAssignments(): AssignmentsByTheme {
+    if (typeof window === 'undefined') return {};
     const raw = getLocalStorageSectionColorAssignments();
     if (!raw) return {};
     try {
@@ -139,7 +139,7 @@ export const useSectionThemeStore = create<SectionThemeStore>((set, get) => {
 
             const courses = AppStore.schedule.getCurrentCourses();
             const customEventIds = AppStore.schedule.getCurrentCustomEvents().map((event) => event.customEventID);
-            const palette = getPalette(sectionColor, useThemeStore.getState().isDark);
+            const palette = getPalette(sectionColor, false);
 
             const existing = assignments[sectionColor] ?? {};
             const { map } = computeAssignments(existing, courses, customEventIds, palette);

@@ -1,6 +1,6 @@
 import { useFallbackStore } from '$stores/FallbackStore';
 import { AccountCircle, Menu } from '@mui/icons-material';
-import { Button, IconButton, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, IconButton } from '@mui/material';
 import type { UserProfile } from '@packages/db/src/schema/auth/user';
 import Image from 'next/image';
 

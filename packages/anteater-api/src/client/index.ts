@@ -6,11 +6,11 @@ import type {
     CoursesBatchAPIResult,
     CoursesFilteredAPIResult,
     EnrollmentHistory,
-    paths,
     WebsocAPIDepartmentsResponse,
     WebsocAPIResponse,
     WebsocSyllabiResponse,
     WebsocTerm,
+    paths,
 } from '@packages/anteater-api/types';
 import createFetchClient, { type Middleware } from 'openapi-fetch';
 

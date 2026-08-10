@@ -5,13 +5,13 @@ import { type WebsocSectionStatus } from '@packages/anteater-api/types';
 
 const SECTION_STATUS_COLORS: Partial<Record<WebsocSectionStatus, SxProps<Theme>>> = {
     OPEN: {
-        color: (theme) => theme.palette.enrollmentStatus.open,
+        color: (theme) => theme.vars.palette.enrollmentStatus.open,
     },
     Waitl: {
-        color: (theme) => theme.palette.enrollmentStatus.waitlist,
+        color: (theme) => theme.vars.palette.enrollmentStatus.waitlist,
     },
     FULL: {
-        color: (theme) => theme.palette.enrollmentStatus.full,
+        color: (theme) => theme.vars.palette.enrollmentStatus.full,
     },
 };
 

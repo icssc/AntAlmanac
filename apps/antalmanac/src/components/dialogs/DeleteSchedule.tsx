@@ -6,8 +6,8 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
     type DialogProps,
+    DialogTitle,
 } from '@mui/material';
 import { useCallback } from 'react';
 

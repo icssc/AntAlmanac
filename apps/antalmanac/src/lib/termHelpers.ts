@@ -1,4 +1,4 @@
-import { QuarterSchema, type AATerm } from '@packages/antalmanac-types';
+import { type AATerm, QuarterSchema } from '@packages/antalmanac-types';
 import type { Quarter, Year } from '@packages/anteater-api/types';
 import { addWeeks, differenceInWeeks, endOfDay, setDay } from 'date-fns';
 import { z } from 'zod';

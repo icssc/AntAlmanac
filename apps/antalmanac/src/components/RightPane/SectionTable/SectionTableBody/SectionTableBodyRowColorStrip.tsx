@@ -1,20 +1,20 @@
 import { changeCourseColor } from '$actions/AppStoreActions';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
+    type SectionColorSetting,
+    type ThemeAssignmentMap,
     courseColorKey,
     getPalette,
     resolveAssignment,
-    type SectionColorSetting,
-    type ThemeAssignmentMap,
 } from '$lib/sectionThemes';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { selectActiveSectionColor, useSectionThemeStore } from '$stores/SectionThemeStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Box, Popover, type PopoverProps, type SxProps, TableCell, Tooltip } from '@mui/material';
 import { type AASection, type AATerm } from '@packages/antalmanac-types';
+import Sketch from '@uiw/react-color-sketch';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { SketchPicker } from 'react-color';
 
 const STRIP_SHRINK_PX = 5;
 const STRIP_EXPAND_PX = 8;
@@ -37,15 +37,15 @@ function getDisplayColor(
     assignments: ThemeAssignmentMap,
     palette: readonly (readonly string[])[]
 ): string {
-    const course = AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term);
-    if (!course) {
+    const scheduledSection = AppStore.schedule.findSectionInSchedule(section.sectionCode, term);
+    if (!scheduledSection) {
         return section.color ?? '#5ec8e0';
     }
     if (setting === 'custom') {
-        return course.section.color;
+        return scheduledSection.color;
     }
     const value = assignments[courseColorKey(term, section.sectionCode)];
-    return value != null ? resolveAssignment(value, palette) : course.section.color;
+    return value != null ? resolveAssignment(value, palette) : scheduledSection.color;
 }
 
 interface SectionTableBodyRowColorStripProps {
@@ -64,7 +64,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
     // Read the single resolved source of truth so the strip always matches the calendar
     // (which reads the same map via useSectionThemeAssignments).
     const activeAssignments = useSectionThemeStore((s) => s.activeAssignments);
-    const isDark = useThemeStore((s) => s.isDark);
+    const isDark = useIsDarkMode();
 
     const palette = useMemo(() => getPalette(activeSectionColor, isDark), [activeSectionColor, isDark]);
     const assignments = activeSectionColor === 'custom' ? EMPTY_ASSIGNMENTS : activeAssignments;
@@ -195,11 +195,7 @@ export const SectionTableBodyRowColorStrip = memo(({ section, term, visible }: S
                         horizontal: 'left',
                     }}
                 >
-                    <SketchPicker
-                        color={currColor}
-                        onChange={handleColorChange}
-                        presetColors={colorPickerPresetColors}
-                    />
+                    <Sketch color={currColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
                 </Popover>
             )}
         </>

@@ -12,7 +12,7 @@ import type { CourseSearchParams } from '$components/RightPane/CoursePane/Search
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
-import type { AATerm, SearchResult } from '@packages/antalmanac-types';
+import { type AATerm, type SearchResult, WebsocGeOptionSchema } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -83,8 +83,8 @@ export function FuzzySearch() {
         let nextFormData: CourseSearchParams;
         switch (result.type) {
             case resultType.GE_CATEGORY: {
-                const geCode = option.key.split('-')[1].toUpperCase();
-                nextFormData = { ...baseFormData, ge: `GE-${geCode}` };
+                const parsedGe = WebsocGeOptionSchema.safeParse(option.key);
+                nextFormData = { ...baseFormData, ge: parsedGe.success ? [parsedGe.data] : [] };
                 break;
             }
             case resultType.DEPARTMENT: {

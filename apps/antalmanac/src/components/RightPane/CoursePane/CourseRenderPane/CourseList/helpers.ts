@@ -19,8 +19,10 @@ export function isCourseEntry(item: CourseListEntry): item is AACourseWithTerm {
 
 export function getCourseColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    return currentCourses.reduce<Record<string, string>>((accumulator, { section }) => {
-        accumulator[section.sectionCode] = section.color;
+    return currentCourses.reduce<Record<string, string>>((accumulator, course) => {
+        for (const section of course.sections) {
+            accumulator[section.sectionCode] = section.color;
+        }
         return accumulator;
     }, {});
 }

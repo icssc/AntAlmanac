@@ -3,8 +3,8 @@ import { DirectionsWalk as DirectionsWalkIcon, Info } from '@mui/icons-material'
 import { Box, Button, IconButton, Typography } from '@mui/material';
 import { type Marker, divIcon } from 'leaflet';
 import { usePostHog } from 'posthog-js/react';
-import { forwardRef, type Ref } from 'react';
-import { Marker as ReactLeafletMarker, Popup } from 'react-leaflet';
+import { type Ref, forwardRef } from 'react';
+import { Popup, Marker as ReactLeafletMarker } from 'react-leaflet';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
@@ -137,7 +137,9 @@ export const LocationMarker = forwardRef(
                             <Button
                                 variant="contained"
                                 color="primary"
-                                startIcon={<DirectionsWalkIcon sx={{ color: 'common.white' }} />}
+                                startIcon={
+                                    <DirectionsWalkIcon sx={{ color: (theme) => theme.vars.palette.common.white }} />
+                                }
                                 href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
                                 target="_blank"
                                 sx={{
@@ -151,7 +153,7 @@ export const LocationMarker = forwardRef(
                                         fontSize: '1.25rem',
                                         letterSpacing: 1.25,
                                         fontWeight: 500,
-                                        color: 'common.white',
+                                        color: (theme) => theme.vars.palette.common.white,
                                     }}
                                 >
                                     Directions

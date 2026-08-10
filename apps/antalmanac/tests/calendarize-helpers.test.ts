@@ -1,7 +1,7 @@
 import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
-import type { AATerm, Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { describe, test, expect } from 'vitest';
+import type { AATerm, RepeatingCustomEvent, Schedule } from '@packages/antalmanac-types';
+import { describe, expect, test } from 'vitest';
 
 const WINTER_2024: AATerm = {
     year: '2024',
@@ -24,18 +24,35 @@ describe('calendarize-helpers', () => {
             courseTitle: 'placeholderCourseTitle',
             deptCode: 'placeholderDeptCode',
             prerequisiteLink: 'placeholderPrerequisiteLink',
-            section: {
-                color: 'placeholderColor',
-                sectionCode: 'placeholderSectionCode',
-                sectionType: 'Lec',
-                sectionNum: 'placeholderSectionNum',
-                units: 'placeholderUnits',
-                instructors: [],
-                meetings: [
-                    {
-                        timeIsTBA: false,
-                        bldg: [],
-                        days: 'MWF',
+            courseId: 'PLACEHOLDER',
+            sections: [
+                {
+                    color: 'placeholderColor',
+                    sectionCode: 'placeholderSectionCode',
+                    sectionType: 'Lec',
+                    sectionNum: 'placeholderSectionNum',
+                    units: 'placeholderUnits',
+                    instructors: [],
+                    meetings: [
+                        {
+                            timeIsTBA: false,
+                            bldg: [],
+                            days: 'MWF',
+                            startTime: {
+                                hour: 1,
+                                minute: 2,
+                            },
+                            endTime: {
+                                hour: 3,
+                                minute: 4,
+                            },
+                        },
+                    ],
+                    finalExam: {
+                        examStatus: 'SCHEDULED_FINAL',
+                        dayOfWeek: 'Sun',
+                        month: 2,
+                        day: 3,
                         startTime: {
                             hour: 1,
                             minute: 2,
@@ -44,39 +61,28 @@ describe('calendarize-helpers', () => {
                             hour: 3,
                             minute: 4,
                         },
+                        bldg: [],
                     },
-                ],
-                finalExam: {
-                    examStatus: 'SCHEDULED_FINAL',
-                    dayOfWeek: 'Sun',
-                    month: 2,
-                    day: 3,
-                    startTime: {
-                        hour: 1,
-                        minute: 2,
+                    maxCapacity: 'placeholderMaxCapacity',
+                    numCurrentlyEnrolled: {
+                        totalEnrolled: 'placeholderTotalEnrolled',
+                        sectionEnrolled: 'placeholderSectionEnrolled',
                     },
-                    endTime: {
-                        hour: 3,
-                        minute: 4,
-                    },
-                    bldg: [],
+                    numOnWaitlist: 'placeholderNumOnWaitlist',
+                    numWaitlistCap: 'placeholderNumWaitlistCap',
+                    numRequested: 'placeholderNumRequested',
+                    numNewOnlyReserved: 'placeholderNumNewOnlyReserved',
+                    restrictions: 'placeholderRestrictions',
+                    status: 'OPEN',
+                    sectionComment: 'placeholderSectionComment',
+                    updatedAt: 'placeholderUpdatedAt',
+                    webURL: '',
+                    isCancelled: false,
                 },
-                maxCapacity: 'placeholderMaxCapacity',
-                numCurrentlyEnrolled: {
-                    totalEnrolled: 'placeholderTotalEnrolled',
-                    sectionEnrolled: 'placeholderSectionEnrolled',
-                },
-                numOnWaitlist: 'placeholderNumOnWaitlist',
-                numWaitlistCap: 'placeholderNumWaitlistCap',
-                numRequested: 'placeholderNumRequested',
-                numNewOnlyReserved: 'placeholderNumNewOnlyReserved',
-                restrictions: 'placeholderRestrictions',
-                status: 'OPEN',
-                sectionComment: 'placeholderSectionComment',
-                updatedAt: 'placeholderUpdatedAt',
-            },
+            ],
             term: WINTER_2024,
             sectionTypes: ['Lec'],
+            updatedAt: null,
         },
     ];
 

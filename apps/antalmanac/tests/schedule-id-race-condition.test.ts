@@ -11,7 +11,7 @@
  *      NEW code (map-keyed): looks up each schedule by its current CUID → only Fall and Winter are updated.
  */
 
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 // ---------------------------------------------------------------------------
 // Module mocks

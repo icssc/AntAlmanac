@@ -1,4 +1,5 @@
 import { ActionCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/ActionCell';
+import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { EnrollmentCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell';
@@ -6,7 +7,6 @@ import { GpaCell } from '$components/RightPane/SectionTable/SectionTableBody/Sec
 import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell';
 import { LocationsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/LocationsCell';
 import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell';
-import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
 import { type AnalyticsCategory } from '$lib/analytics/analytics';
@@ -45,7 +45,7 @@ export function SectionTableBodyRowCell({
                 />
             );
         case 'sectionCode':
-            return <SectionCodeCell section={section} analyticsCategory={analyticsCategory} />;
+            return <CourseCodeCell sectionCode={section.sectionCode} analyticsCategory={analyticsCategory} />;
         case 'sectionDetails':
             return <DetailsCell section={section} />;
         case 'instructors':

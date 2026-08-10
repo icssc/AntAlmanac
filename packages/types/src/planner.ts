@@ -1,10 +1,12 @@
+import type { Quarter } from '@packages/anteater-api/types';
+
 interface RoadmapCourse {
     courseId: string;
     userChosenUnits?: number;
 }
 
 interface RoadmapQuarter {
-    name: string;
+    name: Quarter;
     courses: RoadmapCourse[];
 }
 

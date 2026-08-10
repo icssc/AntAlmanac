@@ -1,7 +1,7 @@
 import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/AdvancedSearch/constants';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { Box, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, Link, Popover, Tooltip, Typography } from '@mui/material';
 import type { AASection } from '@packages/antalmanac-types';
 import { Fragment, useCallback, useMemo, useState } from 'react';
 
@@ -16,8 +16,6 @@ const RESTRICTION_CODE_LABELS = Object.fromEntries(
 export const RestrictionsCell = ({ section }: RestrictionsCellProps) => {
     const { restrictions } = section;
     const isMobile = useIsMobile();
-    const theme = useTheme();
-    const secondaryColor = theme.palette.secondary.main;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const parsedRestrictions = useMemo(
@@ -50,8 +48,7 @@ export const RestrictionsCell = ({ section }: RestrictionsCellProps) => {
             }}
         >
             <Typography>{parsedRestrictions}</Typography>
-            <Typography
-                component="a"
+            <Link
                 href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -61,7 +58,7 @@ export const RestrictionsCell = ({ section }: RestrictionsCellProps) => {
                 }}
             >
                 University Requirements
-            </Typography>
+            </Link>
         </Box>
     );
 
@@ -81,7 +78,7 @@ export const RestrictionsCell = ({ section }: RestrictionsCellProps) => {
                                 background: 'none',
                                 border: 0,
                                 textDecoration: 'underline',
-                                color: secondaryColor,
+                                color: (theme) => theme.vars.palette.secondary.main,
                             }}
                         >
                             {restrictions}
@@ -98,15 +95,14 @@ export const RestrictionsCell = ({ section }: RestrictionsCellProps) => {
                     </>
                 ) : (
                     <Tooltip title={restrictionDescriptions}>
-                        <Typography
-                            variant="inherit"
-                            component="a"
+                        <Link
                             href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
                             target="_blank"
                             rel="noopener noreferrer"
+                            sx={{ color: 'inherit', font: 'inherit' }}
                         >
                             {restrictions}
-                        </Typography>
+                        </Link>
                     </Tooltip>
                 )}
             </Box>

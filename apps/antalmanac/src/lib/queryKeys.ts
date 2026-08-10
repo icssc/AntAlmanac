@@ -1,17 +1,6 @@
 import { serializeCourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/parsers';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 
-function serializeMultiSearchData(multiSearchData: CourseSearchParams[]) {
-    if (multiSearchData.length === 0) {
-        return '';
-    }
-
-    return multiSearchData
-        .map((course) => `${course.deptValue}:${course.courseNumber}`)
-        .sort()
-        .join('|');
-}
-
 /**
  * TanStack Query keys for queries that are not managed by tRPC React Query hooks.
  *
@@ -24,11 +13,7 @@ export const queryKeys = {
     courseSearch: {
         all: ['courseSearch'] as const,
         results: () => [...queryKeys.courseSearch.all, 'results'] as const,
-        result: (formData: CourseSearchParams, multiSearchData: CourseSearchParams[]) =>
-            [
-                ...queryKeys.courseSearch.results(),
-                serializeCourseSearchParams(formData) ?? '',
-                serializeMultiSearchData(multiSearchData),
-            ] as const,
+        result: (formData: CourseSearchParams) =>
+            [...queryKeys.courseSearch.results(), serializeCourseSearchParams(formData) ?? ''] as const,
     },
 } as const;
