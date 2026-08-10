@@ -11,10 +11,10 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
-import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
+import { Alert, Button, IconButton, Link, Snackbar, Stack } from '@mui/material';
 import { TRPCClientError } from '@trpc/client';
 import { usePostHog } from 'posthog-js/react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {

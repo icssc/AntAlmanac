@@ -1,11 +1,6 @@
-import {
-    getColorForNewSection,
-    groupCourseSections,
-    scheduleOfferingKey,
-    scheduleSectionKey,
-} from '$stores/scheduleHelpers';
+import { getColorForNewSection, scheduleOfferingKey, scheduleSectionKey } from '$stores/scheduleHelpers';
 import { blue } from '@mui/material/colors';
-import type { AATerm, ScheduleCourse } from '@packages/antalmanac-types';
+import type { AACourseWithTerm, AASection, AATerm } from '@packages/antalmanac-types';
 import { describe, expect, test } from 'vitest';
 
 const FALL_2024: AATerm = {
@@ -34,21 +29,50 @@ const WINTER_2025: AATerm = {
     isSummerTerm: false,
 };
 
-function scheduleCourse({
-    term,
-    courseId,
-    courseTitle = 'Intro',
+function makeSection({
     sectionCode,
     sectionType,
     color,
 }: {
-    term: AATerm;
-    courseId: string;
-    courseTitle?: string;
     sectionCode: string;
     sectionType: 'Lec' | 'Dis';
     color: string;
-}): ScheduleCourse {
+}): AASection {
+    return {
+        sectionCode,
+        sectionType,
+        sectionNum: '1',
+        units: '4',
+        instructors: [],
+        meetings: [],
+        finalExam: { examStatus: 'NO_FINAL' },
+        maxCapacity: '0',
+        numCurrentlyEnrolled: { totalEnrolled: '0', sectionEnrolled: '0' },
+        numOnWaitlist: '0',
+        numWaitlistCap: '0',
+        numRequested: '0',
+        numNewOnlyReserved: '0',
+        restrictions: '',
+        status: 'OPEN',
+        sectionComment: '',
+        isCancelled: false,
+        updatedAt: null,
+        webURL: '',
+        color,
+    };
+}
+
+function makeCourse({
+    term,
+    courseId,
+    courseTitle = 'Intro',
+    sections,
+}: {
+    term: AATerm;
+    courseId: string;
+    courseTitle?: string;
+    sections: AASection[];
+}): AACourseWithTerm {
     return {
         courseId,
         deptCode: 'ICS',
@@ -56,17 +80,10 @@ function scheduleCourse({
         courseTitle,
         courseComment: '',
         prerequisiteLink: '',
-        sectionTypes: [sectionType],
+        sectionTypes: [sections[0]?.sectionType ?? 'Lec'],
         term,
-        section: {
-            sectionCode,
-            sectionType,
-            sectionNum: '1',
-            units: '4',
-            instructors: [],
-            meetings: [],
-            color,
-        },
+        sections,
+        updatedAt: null,
     };
 }
 
@@ -82,53 +99,39 @@ describe('scheduleSectionKey', () => {
 
 describe('scheduleOfferingKey', () => {
     test('formats term, courseId, and title', () => {
-        const course = scheduleCourse({
+        const section = makeSection({ sectionCode: '00100', sectionType: 'Lec', color: blue[300] });
+        const course = makeCourse({
             term: FALL_2024,
             courseId: 'ICS31',
             courseTitle: 'Intro',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
+            sections: [section],
         });
 
         expect(scheduleOfferingKey(course)).toBe('2024 Fall::ICS31::Intro');
     });
 
     test('differs across terms for the same courseId and title', () => {
-        const fall = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS31',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
-        });
-        const winter = scheduleCourse({
-            term: WINTER_2025,
-            courseId: 'ICS31',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
-        });
+        const section = makeSection({ sectionCode: '00100', sectionType: 'Lec', color: blue[300] });
+        const fall = makeCourse({ term: FALL_2024, courseId: 'ICS31', sections: [section] });
+        const winter = makeCourse({ term: WINTER_2025, courseId: 'ICS31', sections: [section] });
 
         expect(scheduleOfferingKey(fall)).not.toBe(scheduleOfferingKey(winter));
     });
 
     test('differs across titles for the same courseId and term', () => {
-        const intro = scheduleCourse({
+        const section1 = makeSection({ sectionCode: '00100', sectionType: 'Lec', color: blue[300] });
+        const section2 = makeSection({ sectionCode: '00200', sectionType: 'Lec', color: blue[300] });
+        const intro = makeCourse({
             term: FALL_2024,
             courseId: 'ICS31',
             courseTitle: 'Intro',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
+            sections: [section1],
         });
-        const honors = scheduleCourse({
+        const honors = makeCourse({
             term: FALL_2024,
             courseId: 'ICS31',
             courseTitle: 'Honors Intro',
-            sectionCode: '00200',
-            sectionType: 'Lec',
-            color: blue[300],
+            sections: [section2],
         });
 
         expect(scheduleOfferingKey(intro)).not.toBe(scheduleOfferingKey(honors));
@@ -137,138 +140,55 @@ describe('scheduleOfferingKey', () => {
 
 describe('getColorForNewSection', () => {
     test('same offering and section type reuse the existing color', () => {
-        const firstLec = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS31',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
-        });
-        const secondLec = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS31',
-            sectionCode: '00200',
-            sectionType: 'Lec',
-            color: '',
-        });
+        const firstLec = makeSection({ sectionCode: '00100', sectionType: 'Lec', color: blue[300] });
+        const existingCourse = makeCourse({ term: FALL_2024, courseId: 'ICS31', sections: [firstLec] });
 
-        expect(getColorForNewSection(secondLec, [firstLec])).toBe(blue[300]);
+        const secondLec = makeSection({ sectionCode: '00200', sectionType: 'Lec', color: '' });
+        const newCourse = makeCourse({ term: FALL_2024, courseId: 'ICS31', sections: [secondLec] });
+
+        expect(getColorForNewSection(secondLec, newCourse, [existingCourse])).toBe(blue[300]);
     });
 
     test('same offering with a different section type gets a near color variant', () => {
-        const lecture = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS31',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
-        });
-        const discussion = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS31',
-            sectionCode: '00300',
-            sectionType: 'Dis',
-            color: '',
-        });
+        const lecture = makeSection({ sectionCode: '00100', sectionType: 'Lec', color: blue[300] });
+        const existingCourse = makeCourse({ term: FALL_2024, courseId: 'ICS31', sections: [lecture] });
 
-        const discussionColor = getColorForNewSection(discussion, [lecture]);
+        const discussion = makeSection({ sectionCode: '00300', sectionType: 'Dis', color: '' });
+        const newCourse = makeCourse({ term: FALL_2024, courseId: 'ICS31', sections: [discussion] });
+
+        const discussionColor = getColorForNewSection(discussion, newCourse, [existingCourse]);
 
         expect(discussionColor).not.toBe(blue[300]);
         expect(discussionColor).toBe(blue[200]);
     });
 
     test('different term is a separate offering with its own default color', () => {
-        const fallLec = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS31',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
-        });
-        const winterLec = scheduleCourse({
-            term: WINTER_2025,
-            courseId: 'ICS31',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: '',
-        });
+        const fallLec = makeSection({ sectionCode: '00100', sectionType: 'Lec', color: blue[300] });
+        const fallCourse = makeCourse({ term: FALL_2024, courseId: 'ICS31', sections: [fallLec] });
 
-        expect(getColorForNewSection(winterLec, [fallLec])).not.toBe(blue[300]);
+        const winterLec = makeSection({ sectionCode: '00100', sectionType: 'Lec', color: '' });
+        const winterCourse = makeCourse({ term: WINTER_2025, courseId: 'ICS31', sections: [winterLec] });
+
+        expect(getColorForNewSection(winterLec, winterCourse, [fallCourse])).not.toBe(blue[300]);
     });
 
     test('different title in the same term is a separate offering', () => {
-        const intro = scheduleCourse({
+        const introSec = makeSection({ sectionCode: '00100', sectionType: 'Lec', color: blue[300] });
+        const intro = makeCourse({
             term: FALL_2024,
             courseId: 'ICS31',
             courseTitle: 'Intro',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
+            sections: [introSec],
         });
-        const honors = scheduleCourse({
+
+        const honorsSec = makeSection({ sectionCode: '00200', sectionType: 'Lec', color: '' });
+        const honors = makeCourse({
             term: FALL_2024,
             courseId: 'ICS31',
             courseTitle: 'Honors Intro',
-            sectionCode: '00200',
-            sectionType: 'Lec',
-            color: '',
+            sections: [honorsSec],
         });
 
-        expect(getColorForNewSection(honors, [intro])).not.toBe(blue[300]);
-    });
-});
-
-describe('groupCourseSections', () => {
-    test('groups sections under the same offering together', () => {
-        const lec = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS31',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
-        });
-        const dis = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS31',
-            sectionCode: '00300',
-            sectionType: 'Dis',
-            color: blue[200],
-        });
-        const other = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS32',
-            sectionCode: '00400',
-            sectionType: 'Lec',
-            color: blue[100],
-        });
-
-        const grouped = groupCourseSections([other, dis, lec]);
-        const codes = grouped.map((c) => c.section.sectionCode);
-
-        expect(codes).toContain('00100');
-        expect(codes).toContain('00300');
-        expect(codes).toContain('00400');
-        expect(Math.abs(codes.indexOf('00100') - codes.indexOf('00300'))).toBe(1);
-    });
-
-    test('does not group the same courseId across terms', () => {
-        const fall = scheduleCourse({
-            term: FALL_2024,
-            courseId: 'ICS31',
-            sectionCode: '00100',
-            sectionType: 'Lec',
-            color: blue[300],
-        });
-        const winter = scheduleCourse({
-            term: WINTER_2025,
-            courseId: 'ICS31',
-            sectionCode: '00200',
-            sectionType: 'Lec',
-            color: blue[200],
-        });
-
-        const grouped = groupCourseSections([winter, fall]);
-
-        expect(grouped.map((c) => c.term.shortName)).toEqual(['2025 Winter', '2024 Fall']);
+        expect(getColorForNewSection(honorsSec, honors, [intro])).not.toBe(blue[300]);
     });
 });

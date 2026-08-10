@@ -1,5 +1,6 @@
 import { Providers } from '$src/app/providers';
 import { ANTALMANAC_DESCRIPTION, ANTALMANAC_TITLE } from '$src/app/seo-constants';
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import type { WebApplication, WebSite, WithContext } from 'schema-dts';
@@ -79,8 +80,9 @@ const siteSchema: WithContext<WebSite> = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body>
+                <InitColorSchemeScript attribute="class" modeStorageKey="theme" defaultMode="system" />
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify([webAppSchema, siteSchema]) }}

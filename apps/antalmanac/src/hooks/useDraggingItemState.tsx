@@ -1,8 +1,8 @@
 import { SortableItemContext } from '$components/drag-and-drop/SortableItem';
 import {
-    SortableListContext,
     DraggingItemContext,
     type DraggingItemState,
+    SortableListContext,
 } from '$components/drag-and-drop/SortableList';
 import { useContext, useEffect } from 'react';
 
@@ -21,6 +21,7 @@ export const useDraggingItemState = (getDraggingItemState: () => DraggingItemSta
         if (setDraggingItemState && isDragging) {
             setDraggingItemState(getDraggingItemState());
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- getDraggingItemState is stable
     }, [isDragging, setDraggingItemState]);
 
     return state;

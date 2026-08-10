@@ -1,4 +1,3 @@
-import { normalizeGeSelection } from '$components/RightPane/CoursePane/SearchForm/constants';
 import {
     type AdvancedSearchParam,
     COURSE_SEARCH_MODE,
@@ -12,13 +11,14 @@ import {
 } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { getTermByShortName } from '$lib/term';
 import {
+    type AATerm,
+    WEBSOC_GE_OPTIONS,
     WebsocDayOptionSchema,
     WebsocDivisionOptionSchema,
     WebsocFullCoursesOptionSchema,
     WebsocRestrictionCodeOptionSchema,
-    type AATerm,
 } from '@packages/antalmanac-types';
-import { createParser, createSerializer, parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs';
+import { createParser, createSerializer, parseAsArrayOf, parseAsString, parseAsStringLiteral } from 'nuqs/server';
 
 const parseAsCourseSearchTerm = createParser<AATerm>({
     parse: (value: string) => getTermByShortName(value) ?? null,
@@ -26,16 +26,10 @@ const parseAsCourseSearchTerm = createParser<AATerm>({
     eq: (a: AATerm, b: AATerm) => a.shortName === b.shortName,
 }).withDefault(DEFAULT_TERM);
 
-const parseAsNormalizedGe = createParser<string>({
-    parse: (value: string) => normalizeGeSelection(value),
-    serialize: (value: string) => normalizeGeSelection(value),
-    eq: (a: string, b: string) => normalizeGeSelection(a) === normalizeGeSelection(b),
-}).withDefault(DEFAULT_MANUAL_SEARCH_VALUES.ge);
-
 export const courseSearchParamParsers = {
     term: parseAsCourseSearchTerm,
     deptValue: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.deptValue),
-    ge: parseAsNormalizedGe,
+    ge: parseAsArrayOf(parseAsStringLiteral(WEBSOC_GE_OPTIONS)).withDefault(DEFAULT_MANUAL_SEARCH_VALUES.ge),
     courseNumber: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.courseNumber),
     sectionCode: parseAsString.withDefault(DEFAULT_MANUAL_SEARCH_VALUES.sectionCode),
     instructor: parseAsString.withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.instructor),
@@ -57,6 +51,7 @@ export const courseSearchParamParsers = {
     days: parseAsArrayOf(parseAsStringLiteral(WebsocDayOptionSchema.options)).withDefault(
         DEFAULT_ADVANCED_SEARCH_VALUES.days
     ),
+    courseIds: parseAsArrayOf(parseAsString).withDefault(DEFAULT_ADVANCED_SEARCH_VALUES.courseIds),
 };
 
 export const advancedSearchParsers: Pick<typeof courseSearchParamParsers, AdvancedSearchParam> = {
@@ -71,12 +66,11 @@ export const advancedSearchParsers: Pick<typeof courseSearchParamParsers, Advanc
     excludeRoadmapCourses: courseSearchParamParsers.excludeRoadmapCourses,
     excludeRestrictionCodes: courseSearchParamParsers.excludeRestrictionCodes,
     days: courseSearchParamParsers.days,
+    courseIds: courseSearchParamParsers.courseIds,
 };
 
 export const searchModeParser = parseAsStringLiteral(COURSE_SEARCH_MODES).withDefault(COURSE_SEARCH_MODE.QUICK);
 
 export const searchViewParser = parseAsStringLiteral(COURSE_SEARCH_VIEWS);
-
-export const plannerSearchParser = parseAsString;
 
 export const serializeCourseSearchParams = createSerializer(courseSearchParamParsers);

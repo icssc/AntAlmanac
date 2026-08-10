@@ -15,7 +15,7 @@ export const HorizontalRightDivider = ({ children, sx }: HorizontalRightDividerP
                 (theme) => ({
                     margin: 1,
                     '&::before': { width: 0 },
-                    '&::after': { borderColor: theme.palette.text.primary },
+                    '&::after': { borderColor: theme.vars.palette.text.primary },
                 }),
                 sx
             )}

@@ -1,6 +1,5 @@
 import './src/env';
 import type { NextConfig } from 'next';
-import withPWA from 'next-pwa';
 
 const nextConfig: NextConfig = {
     images: {
@@ -13,8 +12,10 @@ const nextConfig: NextConfig = {
         // TODO: Remove this once Next.js/Opennext fixes image optimization
         unoptimized: true,
     },
-    serverExternalPackages: ['@node-rs/argon2'],
     turbopack: {},
+    experimental: {
+        optimizePackageImports: ['@mui/material', '@mui/icons-material', '@mui/system', '@mui/x-date-pickers'],
+    },
     async redirects() {
         return [
             {
@@ -38,9 +39,4 @@ const nextConfig: NextConfig = {
     },
 };
 
-export default withPWA({
-    dest: 'public',
-    register: true,
-    skipWaiting: true,
-    disable: process.env.NODE_ENV === 'development',
-})(nextConfig);
+export default nextConfig;

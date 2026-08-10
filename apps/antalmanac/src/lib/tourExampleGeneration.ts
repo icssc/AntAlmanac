@@ -1,6 +1,6 @@
 import { getDefaultTerm } from '$lib/term';
 import AppStore from '$stores/AppStore';
-import { type ScheduleCourse } from '@packages/antalmanac-types';
+import { type AACourseWithTerm, type AASection } from '@packages/antalmanac-types';
 import { type HourMinute, type WebsocSectionFinalExam, type WebsocSectionMeeting } from '@packages/anteater-api/types';
 import { buildCourseId } from '@packages/anteater-api/utils';
 
@@ -89,11 +89,11 @@ export function addSampleClasses() {
         },
     ];
 
-    const sampleClasses: Array<ScheduleCourse> = sampleClassesOptions.map(sampleClassFactory);
+    const sampleClasses = sampleClassesOptions.map(sampleClassFactory);
 
-    sampleClasses.forEach((sampleClass) => {
-        AppStore.addCourse(sampleClass);
-        sampleClassesSectionCodes.push(sampleClass.section.sectionCode);
+    sampleClasses.forEach(({ section, course }) => {
+        AppStore.addCourse(section, course);
+        sampleClassesSectionCodes.push(section.sectionCode);
     });
 }
 
@@ -202,10 +202,36 @@ function sampleClassFactory({
     instructors = ['Professor X'],
     meetings,
     finalExam,
-}: sampleClassOptions): ScheduleCourse {
+}: sampleClassOptions): { section: AASection; course: AACourseWithTerm } {
     const resolvedCourseNumber = courseNumber == '-1' ? randint(100, 199).toString() : courseNumber;
 
-    return {
+    const section: AASection = {
+        color: '#FF0000',
+        instructors: instructors,
+        isCancelled: false,
+        maxCapacity: '500',
+        meetings: meetings ?? sampleMeetingsFactory({}),
+        finalExam: finalExam ?? sampleFinalExamFactory({}),
+        numCurrentlyEnrolled: {
+            sectionEnrolled: '500',
+            totalEnrolled: '500',
+        },
+        numNewOnlyReserved: '0',
+        numOnWaitlist: '99',
+        numRequested: '0',
+        numWaitlistCap: '100',
+        restrictions: '',
+        sectionCode: randint(10000, 99999).toString(),
+        sectionComment: '',
+        sectionNum: '1',
+        sectionType: 'Lec',
+        status: 'Waitl',
+        units: '4',
+        updatedAt: null,
+        webURL: '',
+    };
+
+    const course: AACourseWithTerm = {
         sectionTypes: ['Lec'],
         courseComment: courseComment,
         courseId: buildCourseId(deptCode, resolvedCourseNumber),
@@ -214,30 +240,9 @@ function sampleClassFactory({
         deptCode: deptCode,
         prerequisiteLink: '',
         term: CURRENT_TERM,
-        section: {
-            color: '#FF0000',
-            instructors: instructors,
-            isCancelled: false,
-            maxCapacity: '500',
-            meetings: meetings ?? sampleMeetingsFactory({}),
-            finalExam: finalExam ?? sampleFinalExamFactory({}),
-            numCurrentlyEnrolled: {
-                sectionEnrolled: '500',
-                totalEnrolled: '500',
-            },
-            numNewOnlyReserved: '0',
-            numOnWaitlist: '99',
-            numRequested: '0',
-            numWaitlistCap: '100',
-            restrictions: '',
-            sectionCode: randint(10000, 99999).toString(),
-            sectionComment: '',
-            sectionNum: '1',
-            sectionType: 'Lec',
-            status: 'Waitl',
-            units: '4',
-            updatedAt: null,
-            webURL: '',
-        },
+        sections: [section],
+        updatedAt: null,
     };
+
+    return { section, course };
 }

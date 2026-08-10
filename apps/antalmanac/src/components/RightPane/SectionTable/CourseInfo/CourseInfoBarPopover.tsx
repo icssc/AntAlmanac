@@ -55,7 +55,10 @@ export function CourseInfoBarPopover({
                     }}
                 />
                 <CardContent sx={{ maxWidth: 500, pt: 0 }}>
-                    <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    <Typography
+                        variant="body1"
+                        sx={{ textAlign: 'center', color: (theme) => theme.vars.palette.text.secondary }}
+                    >
                         No description available.
                     </Typography>
                 </CardContent>
@@ -86,7 +89,7 @@ export function CourseInfoBarPopover({
                             textAlign: 'center',
                         }}
                     >
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography variant="body1" sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
                             No description available.
                         </Typography>
                     </Box>

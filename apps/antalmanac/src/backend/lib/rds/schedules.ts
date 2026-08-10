@@ -1,17 +1,17 @@
 import { loadSchedules } from '$backend/lib/rds/helpers';
 import type { DatabaseOrTransaction, Transaction } from '$backend/lib/rds/types';
 import {
-    VisibilityState,
-    type ShortCourse,
-    type ShortCourseSchedule,
     type RepeatingCustomEvent,
     type ScheduleSaveState,
+    type ShortCourse,
+    type ShortCourseSchedule,
+    VisibilityState,
 } from '@packages/antalmanac-types';
 import { coursesInSchedule, customEvents, schedules, users } from '@packages/db/src/schema';
 import {
+    type ConflictUpdatePolicy,
     buildConflictUpdateSet,
     buildConflictUpdateWhereChanged,
-    type ConflictUpdatePolicy,
 } from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
 import { and, eq, not, notInArray, or } from 'drizzle-orm';

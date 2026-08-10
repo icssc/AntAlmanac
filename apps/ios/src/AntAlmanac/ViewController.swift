@@ -272,21 +272,13 @@ extension ViewController: WKScriptMessageHandler {
 //      work in top-level Safari context, not in a WKWebView owned by our app
 //      (passkeys.dev, Apple docs on passkey use in web browsers).
 //
-// The callback uses a Universal Link (`https://antalmanac.com/auth/native`)
-// instead of a custom URL scheme. Apple's iOS 17.4+ ASWebAuthenticationSession
-// HTTPS-callback initializer matches the callback via the AASA file served at
-// `https://antalmanac.com/.well-known/apple-app-site-association`, so the
-// callback can only be delivered to our AASA-verified app binary. A malicious
-// app registering a lookalike custom URL scheme cannot intercept it, and
-// cannot initiate an OAuth flow that redirects to our app (the system would
-// route the Universal Link to the real AntAlmanac, which has no matching
-// PKCE code_verifier cookie and would reject the exchange).
+// ASW uses the `redirect_uri` query param from auth.icssc.club/authorize (Better
+// Auth: `/api/auth/oauth2/callback/icssc`). Domain ownership is validated via
+// the `webcredentials` AASA entry; that callback path is intentionally not
+// listed under `applinks` so mobile Safari logins are not hijacked into the app.
 //
-// On callback, we rewrite the URL path from /auth/native to /auth and load it
-// in the WKWebView. The oauth_state / oauth_code_verifier / oauth_redirect_uri
-// cookies set when the WKWebView originally called getGoogleAuthUrl are still
-// present in the WKWebView's cookie jar, so AuthPage.tsx + the tRPC exchange
-// work without any further native involvement.
+// On callback, load the redirect URL in the WKWebView. Better Auth PKCE cookies
+// from the original sign-in request remain in the WKWebView jar.
 extension ViewController: ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         return view.window ?? ASPresentationAnchor()
@@ -311,11 +303,8 @@ extension ViewController: ASWebAuthenticationPresentationContextProviding {
             .value
             .flatMap { URL(string: $0) }
 
-        // Fall back to the AntAlmanac default if redirect_uri is missing or
-        // unparseable. Shouldn't happen in practice since auth.icssc.club
-        // always includes it.
         let callbackHost = redirectUri?.host ?? "antalmanac.com"
-        let callbackPath = redirectUri?.path ?? "/auth/native"
+        let callbackPath = redirectUri?.path ?? "/api/auth/oauth2/callback/icssc"
 
         let callback: ASWebAuthenticationSession.Callback = .https(
             host: callbackHost,
@@ -344,21 +333,8 @@ extension ViewController: ASWebAuthenticationPresentationContextProviding {
                 return
             }
 
-            // ICSSC-wide convention: any OAuth callback path ending in
-            // `/native` is a Universal-Link sink that exists only so ASW's
-            // `.https(host:path:)` callback API (iOS 17.4+) has an
-            // AASA-listed path to match. The real server handler lives at
-            // the same path without the `/native` suffix, and relies on
-            // cookies that are already in the WKWebView jar from the
-            // /authorize step (AntAlmanac's oauth_state / oauth_code_verifier
-            // for /auth, peterportal's connect.sid for /planner/...).
-            //
-            // Strip the suffix so the WKWebView loads the real handler.
-            // Listing `/native` paths in AASA (instead of the bare
-            // callback paths) is what prevents iOS from hijacking normal
-            // mobile-Safari logins on antalmanac.com into the app —
-            // nothing legitimately navigates to a `/native` path except
-            // ASW's callback, which we're capturing here.
+            // PeterPortal native uses a `/callback/native` sink (listed in AASA).
+            // Strip `/native` so the WKWebView loads the real planner handler.
             if components.path.hasSuffix("/native") {
                 components.path = String(components.path.dropLast("/native".count))
             }

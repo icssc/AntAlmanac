@@ -1,7 +1,6 @@
-import { useIsMobile } from '$hooks/useIsMobile';
 import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
-import { Box, Button, Paper, Popover, useTheme } from '@mui/material';
+import { containerQuery, containers } from '$lib/containerQueries';
+import { Box, Button, Paper, Popover } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
@@ -23,13 +22,8 @@ export const CourseInfoButton = ({
     analyticsCategory,
 }: CourseInfoButtonProps) => {
     const postHog = usePostHog();
-    const theme = useTheme();
-    const isMobile = useIsMobile();
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-    const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
-    const compact = isMobile || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
@@ -59,17 +53,19 @@ export const CourseInfoButton = ({
             <Button variant="contained" size="small" color="primary" onClick={handleClick}>
                 <span style={{ display: 'flex', gap: 4 }}>
                     {icon}
-                    {compact ? null : (
-                        <span
-                            style={{
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                            }}
-                        >
-                            {text}
-                        </span>
-                    )}
+                    <Box
+                        component="span"
+                        sx={(theme) => ({
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            [containerQuery(containers.scheduleManagement, theme.breakpoints.values.xs)]: {
+                                display: 'none',
+                            },
+                        })}
+                    >
+                        {text}
+                    </Box>
                 </span>
             </Button>
 

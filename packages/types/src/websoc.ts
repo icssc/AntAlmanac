@@ -1,10 +1,10 @@
 import type {
+    WebsocCancelledCoursesOption,
+    WebsocDivisionOption,
+    WebsocFullCoursesOption,
     WebsocQueryParams,
     WebsocSectionStatus,
     WebsocSectionType,
-    WebsocDivisionOption,
-    WebsocFullCoursesOption,
-    WebsocCancelledCoursesOption,
 } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
@@ -83,12 +83,28 @@ export const WEBSOC_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
 export const WebsocDayOptionSchema = z.enum(WEBSOC_DAYS);
 export type WebsocDayOption = z.infer<typeof WebsocDayOptionSchema>;
 
+export const WEBSOC_GE_OPTIONS = [
+    'GE-1A',
+    'GE-1B',
+    'GE-2',
+    'GE-3',
+    'GE-4',
+    'GE-5A',
+    'GE-5B',
+    'GE-6',
+    'GE-7',
+    'GE-8',
+] as const satisfies readonly Exclude<NonNullable<WebsocQueryParams['ge']>, 'ANY'>[];
+export const WebsocGeOptionSchema = z.enum(WEBSOC_GE_OPTIONS);
+export type WebsocGeOption = z.infer<typeof WebsocGeOptionSchema>;
+
 export const WebsocSearchInputSchema = z.object({
     year: z.string(),
     quarter: QuarterSchema,
     department: z.string().optional(),
     ge: z.string().optional(),
     courseNumber: z.string().optional(),
+    courseId: z.string().optional(),
     courseTitle: z.string().optional(),
     sectionCodes: z.string().optional(),
     instructorName: z.string().optional(),

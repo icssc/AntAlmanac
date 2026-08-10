@@ -2,9 +2,9 @@ import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useAutoSaveStore, useDevModeStore } from '$stores/SettingsStore';
+import { useAutoSaveStore, useDevModeStore, usePreviewStore } from '$stores/SettingsStore';
 import { Help } from '@mui/icons-material';
-import { Stack, Box, Typography, Tooltip, Switch } from '@mui/material';
+import { Box, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useShallow } from 'zustand/react/shallow';
 

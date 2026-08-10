@@ -1,27 +1,35 @@
-import { useThemeStore } from '$stores/SettingsStore';
-import { LightMode, SettingsBrightness, DarkMode } from '@mui/icons-material';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { DarkMode, LightMode, SettingsBrightness } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { useColorScheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
-import { useShallow } from 'zustand/react/shallow';
 
 const THEME_OPTIONS = [
     { value: 'light', label: 'Light', icon: <LightMode fontSize="medium" /> },
     { value: 'system', label: 'System', icon: <SettingsBrightness fontSize="medium" /> },
     { value: 'dark', label: 'Dark', icon: <DarkMode fontSize="medium" /> },
-];
+] as const;
+
+type ThemeSetting = (typeof THEME_OPTIONS)[number]['value'];
 
 export function ThemeSelector() {
-    const theme = useTheme();
-    const accentColor = theme.palette.secondary.main;
-    const segment = theme.palette.settingsSegment;
-
-    const [themeSetting, setTheme] = useThemeStore(useShallow((store) => [store.themeSetting, store.setAppTheme]));
+    const { mode, setMode } = useColorScheme();
     const postHog = usePostHog();
 
-    const handleThemeChange = (value: 'light' | 'dark' | 'system') => {
-        setTheme(value, postHog);
+    const handleThemeChange = (value: ThemeSetting) => {
+        setMode(value);
+        logAnalytics(postHog, {
+            category: analyticsEnum.nav,
+            action: analyticsEnum.nav.actions.CHANGE_THEME,
+            customProps: {
+                themeSetting: value,
+            },
+        });
     };
+
+    if (!mode) {
+        return null;
+    }
 
     return (
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
@@ -30,20 +38,21 @@ export function ThemeSelector() {
             </Typography>
 
             <Box
-                sx={{
+                sx={(theme) => ({
                     display: 'flex',
-                    border: `1px solid ${theme.palette.divider}`,
+                    border: 1,
+                    borderColor: theme.vars.palette.divider,
                     borderRadius: 1,
-                }}
+                })}
             >
                 {THEME_OPTIONS.map((tab, index) => {
-                    const isSelected = themeSetting === tab.value;
+                    const isSelected = mode === tab.value;
 
                     return (
                         <Box
                             key={tab.value}
-                            onClick={() => handleThemeChange(tab.value as 'light' | 'dark' | 'system')}
-                            sx={{
+                            onClick={() => handleThemeChange(tab.value)}
+                            sx={(theme) => ({
                                 flex: 1,
                                 display: 'flex',
                                 alignItems: 'center',
@@ -56,17 +65,24 @@ export function ThemeSelector() {
                                 cursor: 'pointer',
                                 fontWeight: 'bold',
                                 fontSize: '1.1rem',
-                                backgroundColor: isSelected ? theme.palette.primary.main : segment.background,
-                                color: isSelected ? theme.palette.primary.contrastText : accentColor,
-                                borderRight: index < 2 ? `1px solid ${theme.palette.divider}` : 'none',
+                                backgroundColor: isSelected
+                                    ? theme.vars.palette.primary.main
+                                    : theme.vars.palette.settingsSegment.background,
+                                color: isSelected
+                                    ? theme.vars.palette.primary.contrastText
+                                    : theme.vars.palette.secondary.main,
+                                borderRight: index < 2 ? 1 : 0,
+                                borderColor: theme.vars.palette.divider,
                                 borderTopLeftRadius: tab.value === 'light' ? 2 : 0,
                                 borderBottomLeftRadius: tab.value === 'light' ? 2 : 0,
                                 borderTopRightRadius: tab.value === 'dark' ? 2 : 0,
                                 borderBottomRightRadius: tab.value === 'dark' ? 2 : 0,
                                 '&:hover': {
-                                    backgroundColor: isSelected ? theme.palette.primary.main : segment.hoverBackground,
+                                    backgroundColor: isSelected
+                                        ? theme.vars.palette.primary.main
+                                        : theme.vars.palette.settingsSegment.hoverBackground,
                                 },
-                            }}
+                            })}
                         >
                             {tab.icon}
                             {tab.label}

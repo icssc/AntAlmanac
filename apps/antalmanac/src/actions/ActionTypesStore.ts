@@ -5,7 +5,13 @@ import { getLocalStorageAutoSave } from '$lib/localStorage';
 import { postHog } from '$providers/AppPostHogProvider';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import type { AATerm, CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
+import type {
+    AACourseWithTerm,
+    AASection,
+    AATerm,
+    CustomEventId,
+    RepeatingCustomEvent,
+} from '@packages/antalmanac-types';
 
 export interface UndoRedoAction {
     type: 'undoRedoAction';
@@ -14,7 +20,8 @@ export interface UndoRedoAction {
 
 export interface AddCourseAction {
     type: 'addCourse';
-    course: ScheduleCourse;
+    section: AASection;
+    course: AACourseWithTerm;
     scheduleIndex: number;
 }
 

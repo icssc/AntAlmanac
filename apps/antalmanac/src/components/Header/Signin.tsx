@@ -7,7 +7,6 @@ import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { trpc } from '$lib/api/trpc';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { AccountCircle, ExpandMore } from '@mui/icons-material';
 import {
     Alert,
@@ -28,12 +27,10 @@ import {
     TextField,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useState, type KeyboardEvent } from 'react';
+import { type KeyboardEvent, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Signin = () => {
-    const isDark = useThemeStore((store) => store.isDark);
-
     const { openLoadingSchedule, setOpenLoadingSchedule } = useScheduleComponentsToggleStore(
         useShallow((state) => ({
             openLoadingSchedule: state.openLoadingSchedule,
@@ -53,11 +50,9 @@ export const Signin = () => {
     const handleOpen = useCallback(() => {
         setIsOpen(true);
         setSettingsAnchorEl(null);
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = getLocalStorageUserId();
-            if (savedUserID !== null) {
-                setUserID(savedUserID);
-            }
+        const savedUserID = getLocalStorageUserId();
+        if (savedUserID !== null) {
+            setUserID(savedUserID);
         }
     }, []);
 
@@ -152,7 +147,7 @@ export const Signin = () => {
                                     Enter your unique user ID here to sign in your schedule.
                                 </DialogContentText>
 
-                                <Alert severity="info" variant={isDark ? 'outlined' : 'standard'}>
+                                <Alert severity="info" variant="filled">
                                     <AlertTitle>
                                         Note: Existing schedules saved to a unique user ID can no longer be updated.
                                     </AlertTitle>
@@ -199,7 +194,7 @@ export const Signin = () => {
                 }}
                 slotProps={{
                     paper: {
-                        sx: getSettingsPopoverPaperSx(isDark),
+                        sx: getSettingsPopoverPaperSx(),
                     },
                 }}
             >

@@ -2,7 +2,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { EnrollmentHistoryPopover } from '$components/RightPane/SectionTable/SectionTablePopover/EnrollmentHistoryPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useTimeFormatStore } from '$stores/SettingsStore';
-import { Box, ButtonBase, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, ButtonBase, Popover, Tooltip, Typography } from '@mui/material';
 import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -14,8 +14,6 @@ interface EnrollmentCellProps {
 export const EnrollmentCell = ({ section, course }: EnrollmentCellProps) => {
     const isMobile = useIsMobile();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
-    const theme = useTheme();
-    const secondaryColor = theme.palette.secondary.main;
 
     const formattedTime = useMemo(() => {
         if (!section.updatedAt) {
@@ -56,7 +54,7 @@ export const EnrollmentCell = ({ section, course }: EnrollmentCellProps) => {
                 sx={{
                     fontFamily: 'inherit',
                     fontSize: 'unset',
-                    color: secondaryColor,
+                    color: (theme) => theme.vars.palette.secondary.main,
                     fontWeight: 700,
                 }}
                 onClick={handleClick}
@@ -64,7 +62,7 @@ export const EnrollmentCell = ({ section, course }: EnrollmentCellProps) => {
                 {section.numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
             </ButtonBase>
         ),
-        [handleClick, section.numCurrentlyEnrolled.totalEnrolled, maxCapacity, secondaryColor]
+        [handleClick, section.numCurrentlyEnrolled.totalEnrolled, maxCapacity]
     );
 
     return (

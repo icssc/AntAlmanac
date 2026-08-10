@@ -1,6 +1,6 @@
 import { PlannerCourseLinkBanner } from '$components/RightPane/CoursePane/CourseRenderPane/PlannerCourseLinkBanner';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useIsDarkMode } from '$hooks/useIsDarkMode';
 import { Box } from '@mui/material';
 import Image from 'next/image';
 
@@ -9,7 +9,7 @@ interface NoResultsProps {
 }
 
 export function NoResults({ formData }: NoResultsProps) {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useIsDarkMode();
 
     return (
         <Box

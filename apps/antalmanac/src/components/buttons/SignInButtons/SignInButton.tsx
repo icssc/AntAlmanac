@@ -1,7 +1,7 @@
 import { loginUser } from '$actions/AppStoreActions';
 import { Provider } from '$lib/auth/authTypes';
 import { getProviderDisplayName } from '$lib/auth/authUtils';
-import { Button, type SxProps } from '@mui/material';
+import { Button, type SxProps, type Theme } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { type ComponentProps, type ReactNode, useState } from 'react';
 
@@ -9,7 +9,7 @@ interface Props {
     icon: ReactNode;
     provider: Provider;
     fullWidth?: ComponentProps<typeof Button>['fullWidth'];
-    sx?: SxProps;
+    sx?: SxProps<Theme>;
 }
 
 export const SignInButton = ({ icon, provider, fullWidth, sx }: Props) => {

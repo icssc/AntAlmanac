@@ -26,7 +26,7 @@ export function CourseListItem({ item, scheduleNames, formData }: CourseListItem
                     comment={item.deptComment}
                     type={'dept'}
                 />
-            ) : formData.ge !== 'ANY' ? (
+            ) : formData.ge.length > 0 ? (
                 <GeDataFetchProvider
                     course={item}
                     allowHighlight={true}

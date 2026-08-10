@@ -1,6 +1,5 @@
-import type { MetadataRoute } from 'next';
-
 import { BLUE } from '$src/globals';
+import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
     return {

@@ -3,13 +3,13 @@ import { trpcReact } from '$lib/api/trpc';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import {
     Box,
+    Card,
+    CardContent,
+    CardHeader,
+    Skeleton,
     ToggleButton,
     ToggleButtonGroup,
     Typography,
-    Card,
-    CardHeader,
-    CardContent,
-    Skeleton,
 } from '@mui/material';
 import type { AggregateGrades } from '@packages/anteater-api/types';
 import dynamic from 'next/dynamic';
@@ -153,7 +153,7 @@ export function GradesPopover(props: GradesPopoverProps) {
                             px: 1,
                         }}
                     >
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography variant="body1" sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
                             {view === 'instructor'
                                 ? "This instructor doesn't have a specific GPA for this course."
                                 : 'No data available.'}

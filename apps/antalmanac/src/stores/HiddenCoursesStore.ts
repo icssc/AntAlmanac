@@ -1,5 +1,5 @@
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
-import { type ShortCourse, VisibilityState, type AATerm } from '@packages/antalmanac-types';
+import { type AATerm, type ShortCourse, VisibilityState } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 type VisibilityMap = Record<string, Record<string, VisibilityState>>;
