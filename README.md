@@ -11,6 +11,8 @@ AntAlmanac is a schedule planner website for classes at UC Irvine. These are som
 
 ![project screenshot](https://github.com/user-attachments/assets/e1f8d3ce-8188-41ab-817a-850e51e6bd1a)
 
+> **Note:** As of February 2026, AntAlmanac and PeterPortal have unified into a single course-planning platform at [antalmanac.com](https://antalmanac.com). This repository powers **AntAlmanac Scheduler** (quarterly schedule planning). Read more in the [merge announcement](https://docs.icssc.club/docs/about/antalmanac/merge).
+
 ## Technology
 
 Our website is a Next.js application deployed on AWS using SST (Serverless Stack).
@@ -39,6 +41,17 @@ A summary of the libraries we use are listed below.
 - [Vitest](https://vitest.dev) - Test runner.
 - [TypeScript](https://www.typescriptlang.org) - JavaScript with type-checking.
 
+## Repository Structure
+
+This is a [pnpm](https://pnpm.io) monorepo:
+
+- `apps/antalmanac` — the main Next.js web application (AntAlmanac Scheduler).
+- `apps/aants` — AANTS, the class notification service (AWS Lambda + SQS + SES) that watches WebSoc and emails users when a section's enrollment status changes.
+- `apps/ios` — the native iOS wrapper (Swift WebView + push notifications).
+- `packages/db` — Drizzle schema, migrations, and the database client.
+- `packages/anteater-api` — Anteater API types, client, and utilities.
+- `packages/types` — shared internal TypeScript types.
+
 ## History
 
 AntAlmanac was created in 2018 by a small group of students under the leadership of @the-rango.  
@@ -62,7 +75,8 @@ Since then, the project has continued to evolve and grow with successive generat
 | 2023 - 2024    | @ap0nia              |
 | 2024 - 2025    | @MinhxNguyen7        |
 | 2024 - 2025    | @adcockdalton        |
-| 2025 - Present | @alexespejo          |
+| 2025 - 2026    | @alexespejo          |
+| 2026 - Present | @sicn4rf             |
 
 # Contributing
 
@@ -186,7 +200,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 ### Notes
 
-- For more detailed information, see the [frontend README](/apps/antalmanac/README.md).
+- For more detailed contributor documentation, see the [AntAlmanac Scheduler docs](https://docs.icssc.club/docs/contributor/antalmanac-scheduler).
 
 ## Testing
 
@@ -198,8 +212,9 @@ AntAlmanac is deployed to AWS using [SST (Serverless Stack)](https://sst.dev). T
 
 ### Deployment Environments
 
-- **Production**: Deployed to `sst.antalmanac.com`
-- **Staging**: Deployed to `staging-{PR_NUMBER}.antalmanac.com` for pull request previews
+- **Production**: Deployed to `antalmanac.com` (with a `www.antalmanac.com` alias)
+- **Staging**: Each pull request gets a preview deploy at `scheduler-{PR_NUMBER}.antalmanac.com`
+- **Shared staging**: `staging-shared.antalmanac.com` is a persistent environment for cross-team (Scheduler ⇄ Planner) integration testing; deployed manually
 
 ### Deploying to Production
 
@@ -215,7 +230,7 @@ This command runs `sst deploy --stage production` which:
 
 1. Builds the Next.js application
 2. Deploys the infrastructure to AWS (Lambda, CloudFront, etc.)
-3. Updates the live website at sst.antalmanac.com
+3. Updates the live website at antalmanac.com
 
 ### Environment Variables
 
@@ -229,6 +244,9 @@ The following environment variables are required for deployment and should be co
 - `OIDC_ISSUER_URL` - OAuth issuer URL
 - `BETTER_AUTH_URL` - URL used for OAuth (automatically set based on stage)
 - `BETTER_AUTH_SECRET` - OAuth secret key, you can [generate one here](https://better-auth.com/docs/installation#set-environment-variables)
+- `NEXT_PUBLIC_BASE_URL` - Base URL of the site (automatically set based on stage)
+- `NEXT_PUBLIC_PUBLIC_POSTHOG_KEY` - PostHog project key for product analytics
+- `PLANNER_CLIENT_API_KEY` - API key for the AntAlmanac Planner integration
 
 # Troubleshooting
 
