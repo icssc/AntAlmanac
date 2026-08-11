@@ -1,7 +1,10 @@
 import { type AATerm, QuarterSchema } from '@packages/antalmanac-types';
 import type { Quarter, Year } from '@packages/anteater-api/types';
-import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
+import { addWeeks, differenceInWeeks, set, setDay } from 'date-fns';
+import { fromZonedTime } from 'date-fns-tz';
 import { z } from 'zod';
+
+const PACIFIC_TIME_ZONE = 'America/Los_Angeles';
 
 export const termSchema = z
     .object({
@@ -63,6 +66,22 @@ export function parseQuarter(rawQuarter: unknown) {
     return quarter.success ? quarter.data : undefined;
 }
 
+export function getTermEnrollmentDropDeadline(term: AATerm) {
+    const isTermShort = differenceInWeeks(term.finalsStart, term.instructionStart) < 9;
+    const hasWeekZero = term.instructionStart.getDay() !== 1;
+    let weeksUntilDropDeadline = isTermShort ? 0 : 1;
+    if (hasWeekZero) {
+        weeksUntilDropDeadline++;
+    }
+
+    const dropDeadline = setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
+    const closingTime = term.isSummerTerm
+        ? { hours: 23, minutes: 59, seconds: 59, milliseconds: 999 }
+        : { hours: 17, minutes: 0, seconds: 0, milliseconds: 0 };
+
+    return fromZonedTime(set(dropDeadline, closingTime), PACIFIC_TIME_ZONE);
+}
+
 /**
  * Enrollment can change until the drop deadline, i.e. when enrollment closes.
  * For full terms (10-week quarters), enrollment closes on the Friday of Week 2.
@@ -76,12 +95,5 @@ export function canTermEnrollmentChange(term: AATerm) {
         return false;
     }
 
-    const isTermShort = differenceInWeeks(term.finalsStart, term.instructionStart) < 9;
-    const hasWeekZero = term.instructionStart.getDay() !== 1;
-    let weeksUntilDropDeadline = isTermShort ? 0 : 1;
-    if (hasWeekZero) {
-        weeksUntilDropDeadline++;
-    }
-
-    return new Date() <= setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
+    return new Date() <= getTermEnrollmentDropDeadline(term);
 }
