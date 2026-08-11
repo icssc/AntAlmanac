@@ -108,7 +108,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 ## Pre-requisites
 
-1. Install `Node.js` (version 22 or higher). This allows you to run JavaScript on your computer (outside of a browser).
+1. Install `Node.js`. This allows you to run JavaScript on your computer (outside of a browser). The required version is pinned in the repo's `.nvmrc`, so a version manager can read it automatically (`nvm use` / `fnm use`).
    This is best done with a version manager that allows you to easily switch between
    Node.js versions based on the requirements of different projects.
    Try using any of the following.
@@ -119,7 +119,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
     If none of those work for any reason, you can defer to your Operating System's
     package manager or [the downloads from the official website](https://nodejs.org/en/download).
 
-2. Install `pnpm` (version 10 or higher). This is our package manager of choice for this project.
+2. Install `pnpm`. This is our package manager of choice for this project. The exact version we use is pinned in the root `package.json` (the `packageManager` field).
    It's responsible for installing, uninstalling, and keeping track of the app's dependencies.
 
     ```bash
@@ -151,7 +151,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
     docker compose up -d --build
     ```
 
-    This will start a PostgreSQL database on port 5432 with the credentials specified in `docker-compose.yml`.
+    This will start a PostgreSQL database with the port and credentials defined in `docker-compose.yml`.
 
 4. Set up environment variables:
     - Copy `apps/antalmanac/.env.example` to `apps/antalmanac/.env` and fill in values.
@@ -176,7 +176,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
     pnpm dev
     ```
 
-8. View the local website at http://localhost:3000.
+8. View the local website at the URL printed in your terminal (by default http://localhost:3000).
    As you make changes to the application, those changes will be automatically reflected on the local website with hot reloading.
 
 ### Additional Commands
@@ -234,19 +234,19 @@ This command runs `sst deploy --stage production` which:
 
 ### Environment Variables
 
-The following environment variables are required for deployment and should be configured in your AWS environment or CI/CD pipeline:
+The variables below configure a full production/staging **deployment** and are set in your AWS environment or CI/CD pipeline. **For local development you only need the variables in `apps/antalmanac/.env.example` and `packages/db/.env.example`;** anything tagged _(optional locally)_ — maps, analytics, and the Planner integration — can be left unset when running locally.
 
 - `DB_URL` - Database connection string
-- `MAPBOX_ACCESS_TOKEN` - Mapbox API token for map features
-- `NEXT_PUBLIC_TILES_ENDPOINT` - Endpoint for map tiles
+- `MAPBOX_ACCESS_TOKEN` _(optional locally)_ - Mapbox API token for map features
+- `NEXT_PUBLIC_TILES_ENDPOINT` _(optional locally)_ - Endpoint for map tiles
 - `ANTEATER_API_KEY` - API key for Anteater API
 - `OIDC_CLIENT_ID` - OAuth client ID for Google authentication
 - `OIDC_ISSUER_URL` - OAuth issuer URL
 - `BETTER_AUTH_URL` - URL used for OAuth (automatically set based on stage)
 - `BETTER_AUTH_SECRET` - OAuth secret key, you can [generate one here](https://better-auth.com/docs/installation#set-environment-variables)
 - `NEXT_PUBLIC_BASE_URL` - Base URL of the site (automatically set based on stage)
-- `NEXT_PUBLIC_PUBLIC_POSTHOG_KEY` - PostHog project key for product analytics
-- `PLANNER_CLIENT_API_KEY` - API key for the AntAlmanac Planner integration
+- `NEXT_PUBLIC_PUBLIC_POSTHOG_KEY` _(optional locally)_ - PostHog project key for product analytics
+- `PLANNER_CLIENT_API_KEY` _(optional locally)_ - API key for the AntAlmanac Planner integration
 
 # Troubleshooting
 
