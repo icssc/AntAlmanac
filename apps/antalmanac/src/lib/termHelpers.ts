@@ -1,6 +1,6 @@
 import { type AATerm, QuarterSchema } from '@packages/antalmanac-types';
 import type { Quarter, Year } from '@packages/anteater-api/types';
-import { addWeeks, differenceInWeeks, set, setDay } from 'date-fns';
+import { addDays, addWeeks, differenceInWeeks, set, setDay } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 import { z } from 'zod';
 
@@ -74,12 +74,13 @@ export function getTermEnrollmentDropDeadline(term: AATerm) {
         weeksUntilDropDeadline++;
     }
 
-    const dropDeadline = setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
-    const closingTime = term.isSummerTerm
-        ? { hours: 23, minutes: 59, seconds: 59, milliseconds: 999 }
-        : { hours: 17, minutes: 0, seconds: 0, milliseconds: 0 };
+    const friday = setDay(addWeeks(term.instructionStart, weeksUntilDropDeadline), 5);
+    // Summer terms close end of Friday; otherwise Friday 5 PM Pacific.
+    const dropDeadline = term.isSummerTerm
+        ? set(addDays(friday, 1), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
+        : set(friday, { hours: 17, minutes: 0, seconds: 0, milliseconds: 0 });
 
-    return fromZonedTime(set(dropDeadline, closingTime), PACIFIC_TIME_ZONE);
+    return fromZonedTime(dropDeadline, PACIFIC_TIME_ZONE);
 }
 
 /**

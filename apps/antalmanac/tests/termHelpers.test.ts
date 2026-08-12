@@ -69,30 +69,29 @@ describe('canTermEnrollmentChange', () => {
         expect(canTermEnrollmentChange(FALL_2024)).toBe(false);
     });
 
-    test('uses the first Friday for Summer Session I', () => {
+    test('stays open through end of the first Friday for Summer Session I', () => {
         vi.useFakeTimers();
 
         const dropDeadline = getTermEnrollmentDropDeadline(SUMMER_SESSION_I_2024);
-        expect(formatInTimeZone(dropDeadline, PACIFIC_TIME_ZONE, PACIFIC_TIME_FORMAT)).toBe('2024-06-28 23:59:59.999');
-
-        vi.setSystemTime(new Date('2024-06-29T06:59:59.999Z'));
-        expect(canTermEnrollmentChange(SUMMER_SESSION_I_2024)).toBe(true);
+        expect(formatInTimeZone(dropDeadline, PACIFIC_TIME_ZONE, PACIFIC_TIME_FORMAT)).toBe('2024-06-29 00:00:00.000');
 
         vi.setSystemTime(new Date('2024-06-29T07:00:00.000Z'));
+        expect(canTermEnrollmentChange(SUMMER_SESSION_I_2024)).toBe(true);
+
+        vi.setSystemTime(new Date('2024-06-29T07:00:00.001Z'));
         expect(canTermEnrollmentChange(SUMMER_SESSION_I_2024)).toBe(false);
     });
 
-    test('uses the second Friday for Summer Session 10-week', () => {
+    test('stays open through end of the second Friday for Summer Session 10-week', () => {
         vi.useFakeTimers();
 
         const dropDeadline = getTermEnrollmentDropDeadline(SUMMER_10WK_2024);
-        expect(formatInTimeZone(dropDeadline, PACIFIC_TIME_ZONE, PACIFIC_TIME_FORMAT)).toBe('2024-07-05 23:59:59.999');
-
-        // 11:59:59.999 PM PDT (UTC-7) = 2024-07-06T06:59:59.999Z
-        vi.setSystemTime(new Date('2024-07-06T06:59:59.999Z'));
-        expect(canTermEnrollmentChange(SUMMER_10WK_2024)).toBe(true);
+        expect(formatInTimeZone(dropDeadline, PACIFIC_TIME_ZONE, PACIFIC_TIME_FORMAT)).toBe('2024-07-06 00:00:00.000');
 
         vi.setSystemTime(new Date('2024-07-06T07:00:00.000Z'));
+        expect(canTermEnrollmentChange(SUMMER_10WK_2024)).toBe(true);
+
+        vi.setSystemTime(new Date('2024-07-06T07:00:00.001Z'));
         expect(canTermEnrollmentChange(SUMMER_10WK_2024)).toBe(false);
     });
 });
