@@ -39,7 +39,6 @@ jobs:
         run: pnpm sst deploy --stage prod
         env:
           DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
-          NODE_ENV: production
 
           PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
@@ -53,4 +52,3 @@ jobs:
           EXTERNAL_USER_READ_SECRET: ${{ secrets.EXTERNAL_USER_READ_SECRET }}
           NEXT_PUBLIC_POSTHOG_HOST: ${{ vars.NEXT_PUBLIC_POSTHOG_HOST}}
           NEXT_PUBLIC_POSTHOG_KEY: ${{ vars.NEXT_PUBLIC_POSTHOG_KEY}}
-          OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}

@@ -62,7 +62,6 @@ jobs:
         run: pnpm sst deploy --stage staging-${{ env.PR_NUM }}
         env:
           DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
-          NODE_ENV: staging
 
           PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}

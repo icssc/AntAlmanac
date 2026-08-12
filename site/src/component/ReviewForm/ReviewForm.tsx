@@ -31,7 +31,7 @@ import {
 import './ReviewForm.scss';
 import { getProfessorTerms, getQuarters, getReviewHeadingName, getYears } from '../../helpers/reviews';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { searchAPIResult, sortTerms } from '../../helpers/util';
+import { searchAPIResult, searchAPIResults, sortTerms } from '../../helpers/util';
 import trpc from '../../trpc';
 import { addReview, editReview, setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/reviewSlice';
 import { ProfessorGQLData } from '../../types/types';
@@ -101,21 +101,21 @@ const ReviewForm: FC<ReviewFormProps> = ({
     ) => {
       const resultMap: Record<string, string[]> = {};
 
-      await Promise.all(
-        keysToIterate.map(async (key) => {
-          try {
-            const ucinetid = getUcinetid(key);
-            const professorData = await searchAPIResult('instructor', ucinetid);
-            const terms = getTermsFromData(professorData!, key);
+      try {
+        const professorIdsByKey = new Map(keysToIterate.map((key) => [key, getUcinetid(key)]));
+        const professors = await searchAPIResults('instructors', [...new Set(professorIdsByKey.values())]);
 
-            if (terms) {
-              resultMap[key] = parseTerms(terms);
-            }
-          } catch (e) {
-            console.error(`Failed to fetch ${errorLabel} for ${key}:`, e);
+        for (const [key, ucinetid] of professorIdsByKey) {
+          const terms = getTermsFromData(professors[ucinetid], key);
+
+          if (terms) {
+            resultMap[key] = parseTerms(terms);
           }
-        }),
-      );
+        }
+      } catch (e) {
+        console.error(`Failed to fetch ${errorLabel} terms:`, e);
+      }
+
       onComplete(resultMap);
     };
 

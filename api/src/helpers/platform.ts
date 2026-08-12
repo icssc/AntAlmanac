@@ -1,5 +1,3 @@
-import type { Request } from 'express';
-
 /**
  * Cookie set by the AntAlmanac iOS app's WKWebView on the antalmanac.com
  * domain. Because peterportal-client is served from antalmanac.com/planner,
@@ -17,6 +15,6 @@ const NATIVE_IOS_COOKIE = 'app-platform=iOS App Store';
  * Universal Link on a dedicated `/callback/native` path (claimed by AASA),
  * without hijacking the real `/callback` path that web users depend on.
  */
-export function isNativeIosApp(req: Pick<Request, 'headers'>): boolean {
-  return (req.headers.cookie ?? '').includes(NATIVE_IOS_COOKIE);
+export function isNativeIosApp(request: Pick<Request, 'headers'>): boolean {
+  return request.headers.get('cookie')?.includes(NATIVE_IOS_COOKIE) ?? false;
 }

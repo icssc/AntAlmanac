@@ -8,7 +8,7 @@ import { queryGetPlanners } from '../../helpers/roadmap';
 
 const externalRoadmapsRouter = router({
   getByEmail: publicProcedure.input(z.object({ email: z.string() })).query(async ({ input, ctx }) => {
-    const authToken = ctx.req.headers.authorization;
+    const authToken = ctx.req.headers.get('authorization');
     if (authToken !== `Bearer ${process.env.EXTERNAL_USER_READ_SECRET}`) {
       throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
