@@ -94,6 +94,7 @@ export const roadmapSlice = createSlice({
         showToast: false,
         toastAction: null as 'library' | null,
         selectedSidebarTab: 1,
+        selectedMobileTab: 0,
     },
     reducers: {
         // Roadmap Window State
@@ -265,6 +266,9 @@ export const roadmapSlice = createSlice({
         setSelectedSidebarTab: (state, action: PayloadAction<number>) => {
             state.selectedSidebarTab = action.payload;
         },
+        setSelectedMobileTab: (state, action: PayloadAction<number>) => {
+            state.selectedMobileTab = action.payload;
+        },
     },
 });
 
@@ -296,6 +300,7 @@ export const {
     updateRoadmapCustomCourse,
     removeCustomCourseFromRoadmap,
     setSelectedSidebarTab,
+    setSelectedMobileTab,
     setToastAction,
 } = roadmapSlice.actions;
 
