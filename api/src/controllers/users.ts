@@ -29,6 +29,11 @@ const usersRouter = router({
     await db.update(user).set({ theme: input.theme }).where(eq(user.id, ctx.session.userId!));
     return input;
   }),
+
+  setAutoSave: userProcedure.input(z.object({ autoSaveEnabled: z.boolean() })).mutation(async ({ input, ctx }) => {
+    await db.update(user).set({ autoSaveEnabled: input.autoSaveEnabled }).where(eq(user.id, ctx.session.userId!));
+    return input;
+  }),
 });
 
 export default usersRouter;

@@ -1,7 +1,17 @@
 import React, { FC, useContext, useState } from 'react';
 import ThemeContext from '../../style/theme-context';
 
-import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Popover, Divider } from '@mui/material';
+import {
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Popover,
+  Divider,
+  Switch,
+  Typography,
+} from '@mui/material';
 import './Profile.scss';
 
 import Link from 'next/link';
@@ -20,7 +30,9 @@ import InfoIcon from '@mui/icons-material/Info';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 
 import { usePathname } from 'next/navigation';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setAutosaveEnabled } from '../../store/slices/userSlice';
+import trpc from '../../trpc';
 import Image from 'next/image';
 import TabSelector, { TabOption } from '../../app/roadmap/sidebar/TabSelector';
 import { Theme, UserMetadata } from '@peterportal/types';
@@ -151,6 +163,35 @@ const ProfileThemeMenu = () => {
   );
 };
 
+const ExperimentalFeaturesMenu = () => {
+  const dispatch = useAppDispatch();
+  const autosaveEnabled = useAppSelector((state) => state.user.autosaveEnabled);
+  const isLoggedIn = useIsLoggedIn();
+
+  const handleToggle = () => {
+    const next = !autosaveEnabled;
+    dispatch(setAutosaveEnabled(next));
+    if (isLoggedIn) {
+      trpc.users.setAutoSave.mutate({ autoSaveEnabled: next });
+    } else {
+      localStorage.setItem('autosaveEnabled', String(next));
+    }
+  };
+
+  return (
+    <List className="profile-popover-links experimental-features">
+      <ListItem>
+        <ListItemButton className="profile-popover-link">
+          <ListItemText primary="Autosave" />
+          <ListItemIcon>
+            <Switch checked={autosaveEnabled} onChange={handleToggle} inputProps={{ 'aria-label': 'Autosave' }} />
+          </ListItemIcon>
+        </ListItemButton>
+      </ListItem>
+    </List>
+  );
+};
+
 const ExternalLinksRow = () => {
   const [aboutOpen, setAboutOpen] = useState(false);
 
@@ -263,6 +304,12 @@ const Profile = () => {
         <div>
           <UserInformation user={user} />
           <ProfileThemeMenu />
+          <Divider>
+            <Typography variant="caption" color="textSecondary">
+              Experimental Features
+            </Typography>
+          </Divider>
+          <ExperimentalFeaturesMenu />
           <Divider />
           <ExternalLinksRow />
           <Divider />

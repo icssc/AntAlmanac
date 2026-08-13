@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useSaveRoadmap } from '../../hooks/planner';
 import { Button } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
@@ -8,16 +8,15 @@ import { useIsLoggedIn } from '../../hooks/isLoggedIn';
 const SaveButton: FC = () => {
   const { handler: saveRoadmap } = useSaveRoadmap();
   const roadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
+  const saveInProgress = useAppSelector((state) => state.roadmap.saveInProgress);
   const customCoursesLoaded = useAppSelector((state) => state.customCourses.customCoursesLoaded);
   const isLoggedIn = useIsLoggedIn();
 
-  const [saveInProgress, setSaveInProgress] = useState(false);
   const saveDisabled = roadmapLoading || (isLoggedIn && !customCoursesLoaded) || saveInProgress;
 
   const handleSave = useCallback(() => {
     if (saveDisabled) return;
-    setSaveInProgress(true);
-    saveRoadmap().finally(() => setSaveInProgress(false));
+    saveRoadmap();
   }, [saveDisabled, saveRoadmap]);
 
   useEffect(() => {

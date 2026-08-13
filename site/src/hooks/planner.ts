@@ -5,7 +5,12 @@ import { useTransferredCredits } from './transferCredits';
 import { getNamesOfTransfers } from '../helpers/transferCredits';
 import { useIsLoggedIn } from './isLoggedIn';
 import { RoadmapRevision } from '../types/roadmap';
-import { reviseRoadmap, setSavedRevisionIndex, updateTempPlannerIds } from '../store/slices/roadmapSlice';
+import {
+  reviseRoadmap,
+  setSavedRevisionIndex,
+  setSaveInProgress,
+  updateTempPlannerIds,
+} from '../store/slices/roadmapSlice';
 import { deepCopy } from '../helpers/util';
 import { restoreRevision } from '../helpers/roadmap';
 import { setToastMsg, setToastSeverity, setShowToast } from '../store/slices/roadmapSlice';
@@ -62,7 +67,8 @@ export function useSaveRoadmap() {
   const lastSaveIdx = useAppSelector((state) => state.roadmap.savedRevisionIndex);
   const currentPlanIndex = useAppSelector((state) => state.roadmap.currentPlanIndex);
 
-  const handler = async () => {
+  const handler = async ({ silent = false } = {}) => {
+    dispatch(setSaveInProgress(true));
     // generate before and after from the current state
     const lastSavedRoadmapPlans = deepCopy(planners);
     restoreRevision(lastSavedRoadmapPlans, revisions, currIdx, lastSaveIdx);
@@ -71,25 +77,28 @@ export function useSaveRoadmap() {
 
     const result = await saveRoadmap(isLoggedIn, collapsedPrevious, collapsedCurrent, currentPlanIndex);
 
-    if (result.success && isLoggedIn) {
-      dispatch(setToastMsg('Roadmap saved to your account!'));
-      dispatch(setToastSeverity('success'));
+    if (!result.success) {
+      dispatch(setToastMsg('Unable to save roadmap to your account'));
+      dispatch(setToastSeverity('error'));
       dispatch(setShowToast(true));
-    } else if (result.success && !isLoggedIn) {
+    } else if (!isLoggedIn && !localStorage.getItem('shownLocalSaveToast')) {
+      localStorage.setItem('shownLocalSaveToast', 'true');
       dispatch(setToastMsg('Roadmap saved locally! Log in to save it to your account'));
       dispatch(setToastSeverity('success'));
       dispatch(setShowToast(true));
-    } else if (!result.success) {
-      dispatch(setToastMsg('Unable to save roadmap to your account'));
-      dispatch(setToastSeverity('error'));
+    } else if (!silent && isLoggedIn) {
+      dispatch(setToastMsg('Roadmap saved to your account!'));
+      dispatch(setToastSeverity('success'));
       dispatch(setShowToast(true));
     }
 
     if (result.success && result.plannerIdLookup) {
       dispatch(updateTempPlannerIds(result.plannerIdLookup));
     }
-
-    dispatch(setSavedRevisionIndex(currIdx));
+    dispatch(setSaveInProgress(false));
+    if (result.success) {
+      dispatch(setSavedRevisionIndex(currIdx));
+    }
 
     return result;
   };

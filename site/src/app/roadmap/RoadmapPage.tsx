@@ -18,10 +18,24 @@ import MobilePopup from './MobilePopup';
 import { Fade, useTheme } from '@mui/material';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { usePreviewDepth } from '../../hooks/usePreviewDepth';
+import { useSaveRoadmap } from '../../hooks/planner';
 
 const RoadmapPage: FC = () => {
   const isMobile = useIsMobile();
   const dispatch = useAppDispatch();
+
+  const roadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
+  const saveInProgress = useAppSelector((state) => state.roadmap.saveInProgress);
+  const currentRevisionIndex = useAppSelector((state) => state.roadmap.currentRevisionIndex);
+  const savedRevisionIndex = useAppSelector((state) => state.roadmap.savedRevisionIndex);
+  const autosaveEnabled = useAppSelector((state) => state.user.autosaveEnabled);
+  const { handler: saveRoadmap } = useSaveRoadmap();
+
+  useEffect(() => {
+    if (!autosaveEnabled || roadmapLoading || saveInProgress || currentRevisionIndex === savedRevisionIndex) return;
+    const timer = setTimeout(() => saveRoadmap({ silent: true }), 1000);
+    return () => clearTimeout(timer);
+  }, [autosaveEnabled, currentRevisionIndex, savedRevisionIndex, roadmapLoading, saveInProgress, saveRoadmap]);
 
   const toastMsg = useAppSelector((state) => state.roadmap.toastMsg);
   const toastSeverity = useAppSelector((state) => state.roadmap.toastSeverity);

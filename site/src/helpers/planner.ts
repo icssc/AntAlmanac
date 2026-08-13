@@ -349,6 +349,14 @@ function saveLocalRoadmap(planners: SavedPlannerData[], currentPlanIndex: number
   localStorage.setItem('roadmap', JSON.stringify(roadmap));
 }
 
+function getLocalRoadmapTimestamp(): string {
+  try {
+    return JSON.parse(localStorage.getItem('roadmap') ?? '{}')?.timestamp ?? new Date().toISOString();
+  } catch {
+    return new Date().toISOString();
+  }
+}
+
 function updateTempIdsInLocalRoadmap(
   planners: SavedPlannerData[],
   plannerIdLookup: Record<number, number>,
@@ -362,7 +370,7 @@ function updateTempIdsInLocalRoadmap(
     return planner;
   });
   const roadmap: SavedRoadmap = {
-    timestamp: JSON.parse(localStorage.getItem('roadmap') ?? '{}')?.timestamp ?? new Date().toISOString(),
+    timestamp: getLocalRoadmapTimestamp(),
     planners: updatedPlanners,
     currentPlanIndex: currentPlanIndex,
     version: latestRoadmapVersion,
@@ -370,43 +378,53 @@ function updateTempIdsInLocalRoadmap(
   localStorage.setItem('roadmap', JSON.stringify(roadmap));
 }
 
+export interface SaveRoadmapResult {
+  success: boolean;
+  plannerIdLookup: Record<number, number>;
+}
+
 export const saveRoadmap = async (
   isLoggedIn: boolean,
   lastSavedPlanners: SavedPlannerData[] | null,
   planners: SavedPlannerData[],
   currentPlanIndex?: number,
-) => {
-  if (!isLoggedIn) {
-    saveLocalRoadmap(planners, currentPlanIndex);
-    return { success: true };
-  } else {
-    const roadmap: SavedRoadmap = {
-      timestamp: JSON.parse(localStorage.getItem('roadmap') ?? '{}')?.timestamp ?? new Date().toISOString(),
-      planners: planners,
-      currentPlanIndex: currentPlanIndex,
-      version: latestRoadmapVersion,
-    };
-    localStorage.setItem('roadmap', JSON.stringify(roadmap));
+): Promise<SaveRoadmapResult> => {
+  try {
+    if (!isLoggedIn) {
+      saveLocalRoadmap(planners, currentPlanIndex);
+      await new Promise<void>((resolve) => setTimeout(resolve, 400));
+      return { success: true, plannerIdLookup: {} };
+    } else {
+      const roadmap: SavedRoadmap = {
+        timestamp: getLocalRoadmapTimestamp(),
+        planners: planners,
+        currentPlanIndex: currentPlanIndex,
+        version: latestRoadmapVersion,
+      };
+      localStorage.setItem('roadmap', JSON.stringify(roadmap));
+    }
+
+    let res = false;
+    let plannerIdLookup: Record<number, number> = {};
+
+    const changes = compareRoadmaps(lastSavedPlanners ?? [], planners);
+    changes.overwrite = !lastSavedPlanners;
+    changes.currentPlanIndex = currentPlanIndex;
+    await trpc.roadmaps.save
+      .mutate(changes)
+      .then((lookup) => {
+        plannerIdLookup = lookup;
+        res = true;
+        updateTempIdsInLocalRoadmap(planners, plannerIdLookup, currentPlanIndex);
+      })
+      .catch(() => {
+        res = false;
+      });
+
+    return { success: res, plannerIdLookup: plannerIdLookup };
+  } catch {
+    return { success: false, plannerIdLookup: {} };
   }
-
-  let res = false;
-  let plannerIdLookup: Record<number, number> = {};
-
-  const changes = compareRoadmaps(lastSavedPlanners ?? [], planners);
-  changes.overwrite = !lastSavedPlanners;
-  changes.currentPlanIndex = currentPlanIndex;
-  await trpc.roadmaps.save
-    .mutate(changes)
-    .then((lookup) => {
-      plannerIdLookup = lookup;
-      res = true;
-      updateTempIdsInLocalRoadmap(planners, plannerIdLookup, currentPlanIndex);
-    })
-    .catch(() => {
-      res = false;
-    });
-
-  return { success: res, plannerIdLookup: plannerIdLookup };
 };
 
 function normalizePlannerQuarterNames(yearPlans: LegacySavedPlannerYearData[]) {

@@ -101,6 +101,16 @@
     }
   }
 
+  .experimental-features {
+    display: flex;
+    justify-content: space-between;
+
+    .MuiTypography-root {
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+
   .external-links-row {
     display: flex;
     justify-content: space-between;

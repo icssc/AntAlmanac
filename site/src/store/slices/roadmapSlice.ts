@@ -87,6 +87,7 @@ export const roadmapSlice = createSlice({
     activeCourseDragSource: null as Omit<SetActiveCoursePayload, 'course'> | null,
     /** Whether the roadmap is loading */
     roadmapLoading: true,
+    saveInProgress: false,
     toastMsg: '',
     toastSeverity: 'info' as ToastSeverity,
     showToast: false,
@@ -110,6 +111,9 @@ export const roadmapSlice = createSlice({
     },
     setRoadmapLoading: (state, action: PayloadAction<boolean>) => {
       state.roadmapLoading = action.payload;
+    },
+    setSaveInProgress: (state, action: PayloadAction<boolean>) => {
+      state.saveInProgress = action.payload;
     },
 
     // Modifying the Roadmap
@@ -277,6 +281,7 @@ export const {
   setPlanIndex,
   setShowSavedCourses,
   setRoadmapLoading,
+  setSaveInProgress,
   reviseRoadmap,
   undoRoadmapRevision,
   redoRoadmapRevision,
