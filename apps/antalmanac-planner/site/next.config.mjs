@@ -4,14 +4,6 @@ const nextConfig = {
     unoptimized: true,
   },
   basePath: '/planner',
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:8080/planner/api/:path*',
-      },
-    ];
-  },
 
   async redirects() {
     return [

@@ -37,7 +37,7 @@ AntAlmanac Planner is a web application designed to aid UCI students with course
 
 ### Backend
 - [Anteater API](https://github.com/icssc/anteater-api) - API maintained by ICSSC for retrieving UCI data.
-- [Express](https://expressjs.com/) - Minimalist backend framework for Node.js.
+- [Next.js Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) - Server routes for Planner auth and API traffic.
 - [tRPC](https://trpc.io/) - Library for type-safe APIs.
 - [PostgreSQL](https://www.postgresql.org/) - Relational database for storing user data and planners.
 - [Drizzle ORM](https://orm.drizzle.team/) - High-performance type-safe SQL-like access layer.
@@ -104,7 +104,7 @@ git clone https://github.com/<your username>/peterportal-client
 
 4. Run `pnpm install` to install all node dependencies for the site and API. This may take a few minutes.
 
-5. Make a copy of the `.env.example` file in the api directory and name it `.env`. This includes the minimum environment variables needed for running the backend.
+5. Make a copy of the `.env.example` file in the site directory and name it `.env`. This includes the minimum environment variables needed for running the backend.
 
 6. (Optional) Set up your own PostgreSQL database and Google OAuth to be able to test features that require signing in such as leaving reviews or saving roadmaps to your account. Add additional variables/secrets to the .env file from the previous step.
 
@@ -128,11 +128,9 @@ git checkout -b [branch name]
 
 1. Open a terminal in the root directory of the repo.
 
-2. Run `pnpm run dev` to start both the backend Express server and frontend Next.js dev server
+2. Run `pnpm run dev` to start the Next.js dev server
 
 3. Visit the link printed to the console by Next.js!
-
-Optionally, you can run the site/api separately by changing into their respective directories in two different terminal windows and running `pnpm run dev`
 
 # Where Does the Data Come From?
 

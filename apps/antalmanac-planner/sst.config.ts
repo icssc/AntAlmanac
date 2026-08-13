@@ -58,47 +58,6 @@ function getDomainConfig() {
     return { name: domainName, redirects: domainRedirects };
 }
 
-function createTrpcLambdaFunction() {
-    const domainName = getDomainConfig().name;
-    const productionDomain = `https://${domainName}`;
-
-    const environment = {
-        DATABASE_URL: process.env.DATABASE_URL!,
-        SESSION_SECRET: process.env.SESSION_SECRET!,
-        PUBLIC_API_URL: process.env.PUBLIC_API_URL!,
-        OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID!,
-        OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL!,
-        PRODUCTION_DOMAIN: productionDomain, // Dynamically set based on stage
-        ADMIN_EMAILS: process.env.ADMIN_EMAILS!,
-        NODE_ENV: process.env.NODE_ENV ?? 'staging',
-        ANTEATER_API_KEY: process.env.ANTEATER_API_KEY!,
-        EXTERNAL_USER_READ_SECRET: process.env.EXTERNAL_USER_READ_SECRET!,
-        OTEL_EXPORTER_OTLP_HEADERS: process.env.OTEL_EXPORTER_OTLP_HEADERS!,
-        // hardcoded OTEL options
-        ...($app.stage === 'prod' && {
-            AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
-            NODE_OPTIONS: '--require @opentelemetry/auto-instrumentations-node/register',
-            OTEL_SERVICE_NAME: 'peterportal-backend',
-            OTEL_EXPORTER_OTLP_ENDPOINT: 'https://ingress.us-west-2.aws.dash0.com',
-        }),
-    };
-
-    return new sst.aws.Function('PeterPortal-Backend', {
-        handler: 'api/src/app.handler',
-        memory: '256 MB',
-        runtime: 'nodejs22.x',
-        logging: {
-            retention: $app.stage === 'prod' ? '2 years' : '1 week',
-        },
-        environment,
-        url: true,
-        layers: ['arn:aws:lambda:us-west-1:184161586896:layer:opentelemetry-nodejs-0_13_0:1'],
-        nodejs: {
-            install: ['@opentelemetry/auto-instrumentations-node'],
-        },
-    });
-}
-
 enum AWSPolicyId {
     // See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
     CachingDisabled = '4135ea2d-6df8-44a3-9df3-4b5a84be39ad',
@@ -118,9 +77,16 @@ function createNextJsApplication(router: sst.aws.Router) {
             path: '/planner',
         },
         environment: {
+            DATABASE_URL: process.env.DATABASE_URL!,
+            SESSION_SECRET: process.env.SESSION_SECRET!,
+            PUBLIC_API_URL: process.env.PUBLIC_API_URL!,
+            OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID!,
+            OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL!,
+            ADMIN_EMAILS: process.env.ADMIN_EMAILS!,
+            ANTEATER_API_KEY: process.env.ANTEATER_API_KEY!,
+            EXTERNAL_USER_READ_SECRET: process.env.EXTERNAL_USER_READ_SECRET!,
             NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY!,
             NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST!,
-            BACKEND_ROOT_URL: `https://${getDomainConfig().name}/planner/api`,
         },
         cachePolicy: AWSPolicyId.OrgNextjsCachePolicy,
         path: './site',
@@ -163,11 +129,7 @@ export default $config({
             return;
         }
 
-        const lambdaFunction = createTrpcLambdaFunction();
-
         const router = createOrGetRouter();
-
-        router.route('/planner/api', lambdaFunction.url);
 
         createNextJsApplication(router);
 

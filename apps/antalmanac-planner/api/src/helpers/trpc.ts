@@ -1,11 +1,10 @@
-import * as trpcExpress from '@trpc/server/adapters/express';
 import { TRPCError, initTRPC } from '@trpc/server';
-import '../types/session'; // load session module augmentation
+import { getSessionFromRequest } from '../next/session';
+import type { SessionData } from '../types/session';
 
-export const createContext = ({ req, res }: trpcExpress.CreateExpressContextOptions) => ({
+export const createContext = (req: Request) => ({
     req,
-    session: req.session,
-    res,
+    session: getSessionFromRequest(req) as SessionData,
 });
 
 type Context = Awaited<ReturnType<typeof createContext>>;

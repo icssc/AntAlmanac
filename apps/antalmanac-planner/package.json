@@ -2,7 +2,7 @@
     "name": "antalmanac-planner",
     "version": "0.1.0",
     "scripts": {
-        "dev": "concurrently -n backend,frontend -c blue,green \"pnpm --filter=api dev\" \"pnpm --filter=site dev\"",
+        "dev": "pnpm --filter=site dev",
         "prepare": "husky",
         "format": "oxfmt --write \"**/*.{css,scss,cjs,js,ts,tsx,yml,json,html}\" --no-error-on-unmatched-pattern",
         "lint": "oxfmt --check \"**/*.{css,scss,cjs,js,ts,tsx,yml,json,html}\" --no-error-on-unmatched-pattern && pnpm --filter=site lint && pnpm --filter=api lint",
@@ -22,7 +22,6 @@
     "devDependencies": {
         "@types/aws-lambda": "8.10.145",
         "@types/node": "22.19.17",
-        "concurrently": "^10.0.3",
         "husky": "^9.1.7",
         "lint-staged": "^15.2.10",
         "prettier": "^3.8.4",

@@ -1,23 +1,20 @@
-import 'express-session';
-
-declare module 'express-session' {
-  export interface SessionData {
+export interface SessionData {
     /**
      * URL to return to when finish authentication
      */
-    returnTo: string;
+    returnTo?: string;
     /**
      * Internal user ID
      */
-    userId: number;
+    userId?: number;
     /**
      * User's display name
      */
-    userName: string;
+    userName?: string;
     /**
      * Whether the user is an admin
      */
-    isAdmin: boolean;
+    isAdmin?: boolean;
     /**
      * OAuth state for CSRF protection
      */
@@ -32,5 +29,4 @@ declare module 'express-session' {
      * `/callback/native` URI) exchanges against the same URI it advertised.
      */
     oauthRedirectUri?: string;
-  }
 }
