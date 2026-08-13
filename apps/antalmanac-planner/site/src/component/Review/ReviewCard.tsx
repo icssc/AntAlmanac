@@ -60,7 +60,7 @@ const ThreeDotsMenu: FC<AuthorEditButtonsProps> = ({ review, course, professor }
 
     const pathname = usePathname();
     const isAdmin = useAppSelector((state) => state.user.isAdmin);
-    const isAdminVerifyPage = pathname === '/admin/verify';
+    const isAdminVerifyPage = pathname === '/planner/admin/verify';
 
     const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(e.currentTarget);

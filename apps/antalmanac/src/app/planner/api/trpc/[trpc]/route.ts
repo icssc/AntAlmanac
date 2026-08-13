@@ -1,1 +1,1 @@
-export * from '@antalmanac-planner/api/src/next/trpc';
+export { GET, POST } from '@antalmanac-planner/api/src/next/trpc';
