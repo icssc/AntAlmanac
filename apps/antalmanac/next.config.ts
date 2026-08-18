@@ -21,6 +21,16 @@ const nextConfig: NextConfig = {
                 destination: '/api/auth/oauth2/callback/icssc',
                 permanent: false,
             },
+            {
+                source: '/planner/roadmap',
+                destination: '/planner',
+                permanent: true,
+            },
+            {
+                source: '/planner/professor/:id',
+                destination: '/planner/instructor/:id',
+                permanent: true,
+            },
         ];
     },
     async rewrites() {
