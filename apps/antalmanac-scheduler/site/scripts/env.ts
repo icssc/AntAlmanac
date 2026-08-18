@@ -5,7 +5,7 @@ import { createEnv } from '@t3-oss/env-nextjs';
 import { config } from 'dotenv';
 import { z } from 'zod';
 
-const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../../antalmanac/');
 config({ path: resolve(appRoot, '.env') });
 
 export const env = createEnv({

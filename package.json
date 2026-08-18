@@ -16,7 +16,8 @@
         "test": "vitest",
         "deploy": "sst deploy --stage production",
         "format": "oxfmt",
-        "lint": "oxlint --deny-warnings"
+        "lint": "oxlint --deny-warnings",
+        "get-data": "pnpm --filter @antalmanac-scheduler get-data"
     },
     "devDependencies": {
         "@total-typescript/tsconfig": "^1.0.4",

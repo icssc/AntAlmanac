@@ -153,7 +153,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 6. Fetch the static data (course information, term data, etc.).
 
     ```bash
-    cd apps/antalmanac && pnpm get-data
+    pnpm get-data
     ```
 
 7. Start the development server.
