@@ -4,8 +4,8 @@
     "references": [
         { "path": "apps/antalmanac" },
         { "path": "apps/aants" },
-        { "path": "packages/types" },
-        { "path": "packages/db" },
+        { "path": "apps/antalmanac-scheduler" },
+        { "path": "apps/antalmanac-planner" },
         { "path": "packages/anteater-api" }
     ]
 }

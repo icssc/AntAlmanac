@@ -10,16 +10,16 @@
         ],
         "baseUrl": ".",
         "paths": {
-            "$actions/*": ["../antalmanac-scheduler/src/actions/*"],
-            "$backend/*": ["../antalmanac-scheduler/src/backend/*"],
-            "$components/*": ["../antalmanac-scheduler/src/components/*"],
-            "$generated/*": ["../antalmanac-scheduler/src/generated/*"],
-            "$lib/*": ["../antalmanac-scheduler/src/lib/*"],
-            "$hooks/*": ["../antalmanac-scheduler/src/hooks/*"],
-            "$providers/*": ["../antalmanac-scheduler/src/providers/*"],
-            "$stores/*": ["../antalmanac-scheduler/src/stores/*"],
-            "$src/*": ["../antalmanac-scheduler/src/*"],
-            "$scripts/*": ["../antalmanac-scheduler/scripts/*"]
+            "$actions/*": ["../antalmanac-scheduler/site/src/actions/*"],
+            "$backend/*": ["../antalmanac-scheduler/site/src/backend/*"],
+            "$components/*": ["../antalmanac-scheduler/site/src/components/*"],
+            "$generated/*": ["../antalmanac-scheduler/site/src/generated/*"],
+            "$lib/*": ["../antalmanac-scheduler/site/src/lib/*"],
+            "$hooks/*": ["../antalmanac-scheduler/site/src/hooks/*"],
+            "$providers/*": ["../antalmanac-scheduler/site/src/providers/*"],
+            "$stores/*": ["../antalmanac-scheduler/site/src/stores/*"],
+            "$src/*": ["../antalmanac-scheduler/site/src/*"],
+            "$scripts/*": ["../antalmanac-scheduler/site/scripts/*"]
         }
     },
     "include": ["./dist/types/**/*.ts", "./next-env.d.ts", "./src", "./tests", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "./scripts"],

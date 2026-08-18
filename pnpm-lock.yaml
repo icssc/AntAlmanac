@@ -58,13 +58,13 @@ importers:
         version: 3.980.0
       '@packages/antalmanac-types':
         specifier: workspace:*
-        version: link:../../packages/types
+        version: link:../antalmanac-scheduler/types
       '@packages/anteater-api':
         specifier: workspace:*
         version: link:../../packages/anteater-api
       '@packages/db':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../antalmanac-scheduler/db
       '@react-email/components':
         specifier: ^1.0.8
         version: 1.0.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -116,7 +116,7 @@ importers:
         version: link:../antalmanac-planner/site
       '@antalmanac-scheduler':
         specifier: workspace:^
-        version: link:../antalmanac-scheduler
+        version: link:../antalmanac-scheduler/site
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -155,13 +155,13 @@ importers:
         version: 8.28.5(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@mui/system@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(date-fns@3.6.0)(dayjs@1.11.13)(luxon@3.2.1)(moment@2.30.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@packages/antalmanac-types':
         specifier: workspace:^
-        version: link:../../packages/types
+        version: link:../antalmanac-scheduler/types
       '@packages/anteater-api':
         specifier: workspace:^
         version: link:../../packages/anteater-api
       '@packages/db':
         specifier: workspace:^
-        version: link:../../packages/db
+        version: link:../antalmanac-scheduler/db
       '@paralleldrive/cuid2':
         specifier: ^2.2.2
         version: 2.2.2
@@ -510,7 +510,38 @@ importers:
         specifier: ^7.4.3
         version: 7.13.0(typescript@5.9.3)
 
-  apps/antalmanac-scheduler:
+  apps/antalmanac-scheduler/db:
+    dependencies:
+      '@paralleldrive/cuid2':
+        specifier: ^2.2.2
+        version: 2.2.2
+      '@t3-oss/env-core':
+        specifier: 0.13.11
+        version: 0.13.11(typescript@5.9.3)(zod@3.24.3)
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.15.6)(gel@2.2.0)(knex@0.8.6)(kysely@0.28.17)(pg@8.16.3)(postgres@3.4.5)
+      pg:
+        specifier: ^8.16.3
+        version: 8.16.3
+      zod:
+        specifier: 3.24.3
+        version: 3.24.3
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.6
+        version: 8.15.6
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      drizzle-kit:
+        specifier: ^0.30.6
+        version: 0.30.6
+      jiti:
+        specifier: 2.4.2
+        version: 2.4.2
+
+  apps/antalmanac-scheduler/site:
     dependencies:
       '@dnd-kit/core':
         specifier: ^6.3.1
@@ -550,13 +581,13 @@ importers:
         version: 8.28.5(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@mui/system@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(date-fns@3.6.0)(dayjs@1.11.13)(luxon@3.2.1)(moment@2.30.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@packages/antalmanac-types':
         specifier: workspace:^
-        version: link:../../packages/types
+        version: link:../types
       '@packages/anteater-api':
         specifier: workspace:^
-        version: link:../../packages/anteater-api
+        version: link:../../../packages/anteater-api
       '@packages/db':
         specifier: workspace:^
-        version: link:../../packages/db
+        version: link:../db
       '@paralleldrive/cuid2':
         specifier: ^2.2.2
         version: 2.2.2
@@ -703,6 +734,19 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  apps/antalmanac-scheduler/types:
+    dependencies:
+      '@packages/anteater-api':
+        specifier: workspace:*
+        version: link:../../../packages/anteater-api
+      zod:
+        specifier: 3.24.3
+        version: 3.24.3
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/anteater-api:
     dependencies:
       openapi-fetch:
@@ -712,50 +756,6 @@ importers:
       openapi-typescript:
         specifier: 7.13.0
         version: 7.13.0(typescript@5.9.3)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  packages/db:
-    dependencies:
-      '@paralleldrive/cuid2':
-        specifier: ^2.2.2
-        version: 2.2.2
-      '@t3-oss/env-core':
-        specifier: 0.13.11
-        version: 0.13.11(typescript@5.9.3)(zod@3.24.3)
-      drizzle-orm:
-        specifier: ^0.45.2
-        version: 0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.15.6)(gel@2.2.0)(knex@0.8.6)(kysely@0.28.17)(pg@8.16.3)(postgres@3.4.5)
-      pg:
-        specifier: ^8.16.3
-        version: 8.16.3
-      zod:
-        specifier: 3.24.3
-        version: 3.24.3
-    devDependencies:
-      '@types/pg':
-        specifier: ^8.15.6
-        version: 8.15.6
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
-      drizzle-kit:
-        specifier: ^0.30.6
-        version: 0.30.6
-      jiti:
-        specifier: 2.4.2
-        version: 2.4.2
-
-  packages/types:
-    dependencies:
-      '@packages/anteater-api':
-        specifier: workspace:*
-        version: link:../anteater-api
-      zod:
-        specifier: 3.24.3
-        version: 3.24.3
-    devDependencies:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2738,14 +2738,6 @@ packages:
       '@types/react':
         optional: true
 
-  '@mui/types@7.4.10':
-    resolution: {integrity: sha512-0+4mSjknSu218GW3isRqoxKRTOrTLd/vHi/7UC4+wZcUrOAqD9kRk7UQRL1mcrzqRoe7s3UT6rsRpbLkW5mHpQ==}
-    peerDependencies:
-      '@types/react': 19.2.14
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-
   '@mui/types@7.4.12':
     resolution: {integrity: sha512-iKNAF2u9PzSIj40CjvKJWxFXJo122jXVdrmdh0hMYd+FR+NuJMkr/L88XwWLCRiJ5P1j+uyac25+Kp6YC4hu6w==}
     peerDependencies:
@@ -2756,16 +2748,6 @@ packages:
 
   '@mui/utils@7.3.11':
     resolution: {integrity: sha512-XTjGnifwteg71/ij+0e7Y7d+hwyntMYP5wPoA/g2drdGH+Flkvjwy0OfrVpKBbaOvofq4zU/LIyUZyKgmWu18g==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      '@types/react': 19.2.14
-      react: ^17.0.0 || ^18.0.0 || ^19.0.0
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-
-  '@mui/utils@7.3.7':
-    resolution: {integrity: sha512-+YjnjMRnyeTkWnspzoxRdiSOgkrcpTikhNPoxOZW0APXx+urHtUoXJ9lbtCZRCA5a4dg5gSbd19alL1DvRs5fg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       '@types/react': 19.2.14
@@ -11097,12 +11079,6 @@ snapshots:
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6)
       '@types/react': 19.2.14
 
-  '@mui/types@7.4.10(@types/react@19.2.14)':
-    dependencies:
-      '@babel/runtime': 7.28.6
-    optionalDependencies:
-      '@types/react': 19.2.14
-
   '@mui/types@7.4.12(@types/react@19.2.14)':
     dependencies:
       '@babel/runtime': 7.28.6
@@ -11121,24 +11097,12 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  '@mui/utils@7.3.7(@types/react@19.2.14)(react@19.2.6)':
-    dependencies:
-      '@babel/runtime': 7.28.6
-      '@mui/types': 7.4.10(@types/react@19.2.14)
-      '@types/prop-types': 15.7.15
-      clsx: 2.1.1
-      prop-types: 15.8.1
-      react: 19.2.6
-      react-is: 19.2.3
-    optionalDependencies:
-      '@types/react': 19.2.14
-
   '@mui/x-date-pickers@8.28.5(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@mui/system@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(date-fns@3.6.0)(dayjs@1.11.13)(luxon@3.2.1)(moment@2.30.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@babel/runtime': 7.28.6
+      '@babel/runtime': 7.29.7
       '@mui/material': 7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@mui/system': 7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6)
-      '@mui/utils': 7.3.7(@types/react@19.2.14)(react@19.2.6)
+      '@mui/utils': 7.3.11(@types/react@19.2.14)(react@19.2.6)
       '@mui/x-internals': 8.26.0(@types/react@19.2.14)(react@19.2.6)
       '@types/react-transition-group': 4.4.12(@types/react@19.2.14)
       clsx: 2.1.1
@@ -11158,8 +11122,8 @@ snapshots:
 
   '@mui/x-internals@8.26.0(@types/react@19.2.14)(react@19.2.6)':
     dependencies:
-      '@babel/runtime': 7.28.6
-      '@mui/utils': 7.3.7(@types/react@19.2.14)(react@19.2.6)
+      '@babel/runtime': 7.29.7
+      '@mui/utils': 7.3.11(@types/react@19.2.14)(react@19.2.6)
       react: 19.2.6
       reselect: 5.2.0
       use-sync-external-store: 1.6.0(react@19.2.6)
