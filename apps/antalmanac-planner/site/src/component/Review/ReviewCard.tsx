@@ -248,7 +248,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, course, professor }) => {
                 const courseLink = (
                     <span>
                         <Link
-                            href={{ pathname: `/course/${encodeURIComponent(review.courseId)}` }}
+                            href={{ pathname: `/planner/course/${encodeURIComponent(review.courseId)}` }}
                             onClick={(e) => handleLinkClick(e, review.courseId)}
                         >
                             {courseName}
@@ -264,7 +264,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, course, professor }) => {
                 const profLink = (
                     <span>
                         <Link
-                            href={{ pathname: `/instructor/${review.professorId}` }}
+                            href={{ pathname: `/planner/instructor/${review.professorId}` }}
                             onClick={(e) => handleLinkClick(e, review.professorId)}
                         >
                             {profName}
@@ -280,9 +280,11 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, course, professor }) => {
                 const profName = foundCourseAndProfName?.profName ?? review.professorId;
                 const courseAndProfLink = (
                     <span>
-                        <Link href={{ pathname: `/course/${encodeURIComponent(review.courseId)}` }}>{courseName}</Link>
+                        <Link href={{ pathname: `/planner/course/${encodeURIComponent(review.courseId)}` }}>
+                            {courseName}
+                        </Link>
                         {' • '}
-                        <Link href={{ pathname: `/instructor/${review.professorId}` }}>
+                        <Link href={{ pathname: `/planner/instructor/${review.professorId}` }}>
                             {profName ?? review.professorId}
                         </Link>
                         {' • '}
