@@ -4,8 +4,12 @@
     "references": [
         { "path": "apps/antalmanac" },
         { "path": "apps/aants" },
-        { "path": "apps/antalmanac-scheduler" },
-        { "path": "apps/antalmanac-planner" },
+        { "path": "apps/antalmanac-scheduler/site" },
+        { "path": "apps/antalmanac-scheduler/db" },
+        { "path": "apps/antalmanac-scheduler/types" },
+        { "path": "apps/antalmanac-planner/site" },
+        { "path": "apps/antalmanac-planner/api" },
+        { "path": "apps/antalmanac-planner/types" },
         { "path": "packages/anteater-api" }
     ]
 }
