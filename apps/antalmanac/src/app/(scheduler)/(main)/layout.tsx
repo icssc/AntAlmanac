@@ -1,13 +1,1 @@
 export { default } from '@antalmanac-scheduler/src/app/(main)/layout';
-/*import { ClientShell } from '$src/app/(main)/client-shell';
-import { SeoContent } from '$src/app/(main)/seo-content';
-
-export default function Layout({ children }: { children: React.ReactNode }) {
-    return (
-        <>
-            <SeoContent />
-            <ClientShell />
-            {children}
-        </>
-    );
-    }*/
