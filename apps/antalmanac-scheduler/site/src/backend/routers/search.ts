@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { procedure, router } from '$backend/trpc';
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
+import { GENERATED_DIR } from '$lib/paths';
 import {
     type GESearchResult,
     type SearchResult,
@@ -41,7 +42,7 @@ const searchData = searchDataSchema.parse(_searchData);
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
-const termsFolderPath = join(process.cwd(), 'src', 'generated', 'terms');
+const termsFolderPath = join(GENERATED_DIR, 'terms');
 
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 

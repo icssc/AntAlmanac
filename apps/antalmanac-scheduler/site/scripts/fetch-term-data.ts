@@ -1,11 +1,10 @@
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 
+import { GENERATED_DIR, LEGACY_TERM_DATA_TS, TERM_DATA_FILE } from '$lib/paths';
 import { env } from '$scripts/env';
 import { type AATerm } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { CalendarTerm, Quarter, Year } from '@packages/anteater-api/types';
-
-import { GENERATED_DIR, LEGACY_TERM_DATA_TS, TERM_DATA_FILE } from './lib/paths.js';
 
 const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 

@@ -1,10 +1,9 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 
+import { DEPARTMENTS_FILE, GENERATED_DIR } from '$lib/paths';
 import { env } from '$scripts/env';
 import { createClient } from '@packages/anteater-api/client';
 import type { WebsocAPIDepartmentsResponse } from '@packages/anteater-api/types';
-
-import { DEPARTMENTS_FILE, GENERATED_DIR } from './lib/paths.js';
 
 const DEPARTMENT_YEAR_RANGE = 10;
 

@@ -2,14 +2,13 @@ import { access, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { type SectionCodesGraphQLResponse, parseSectionCodes } from '$backend/lib/term-section-codes';
+import { GENERATED_DIR, GENERATED_TERMS_DIR, SEARCH_DATA_FILE } from '$lib/paths';
 import { termData } from '$lib/term';
 import { canTermEnrollmentChange } from '$lib/termHelpers';
 import { env } from '$scripts/env';
 import type { AATerm, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
-
-import { GENERATED_DIR, GENERATED_TERMS_DIR, SEARCH_DATA_FILE } from './lib/paths.js';
 
 const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 
