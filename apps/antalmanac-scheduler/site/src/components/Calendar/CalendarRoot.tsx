@@ -7,8 +7,7 @@ import { CalendarEventTile } from '$components/Calendar/CalendarEvent/CalendarEv
 import { CalendarEventWrapper } from '$components/Calendar/CalendarEvent/CalendarEventWrapper';
 import { CALENDAR_BASE_DATE, createSkeletonEvents } from '$components/Calendar/Skeleton/skeletonHelpers';
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
-import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
-import { isCourseEvent, isSkeletonEvent, type CalendarEvent, type SkeletonEvent } from '$components/Calendar/types';
+import { type CalendarEvent, type SkeletonEvent, isCourseEvent, isSkeletonEvent } from '$components/Calendar/types';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSectionThemeAssignments } from '$hooks/useSectionThemeAssignments';
@@ -21,15 +20,15 @@ import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
-import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { CalendarMonth } from '@mui/icons-material';
-import { Box, Backdrop, useTheme } from '@mui/material';
+import { Backdrop, Box, useTheme } from '@mui/material';
 import { VisibilityState } from '@packages/antalmanac-types';
-import { differenceInCalendarDays, format, getDay, startOfWeek, type Locale } from 'date-fns';
+import { type Locale, differenceInCalendarDays, format, getDay, startOfWeek } from 'date-fns';
 import { enUS } from 'date-fns/locale/en-US';
 import { useRouter } from 'next/navigation';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, type Components, DateLocalizer, dateFnsLocalizer, Views, type ViewsProps } from 'react-big-calendar';
+import { Calendar, type Components, DateLocalizer, Views, type ViewsProps, dateFnsLocalizer } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 
 /*
@@ -54,26 +53,25 @@ const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 const noop = () => {};
 
-export const ScheduleCalendar = memo(() => {
+interface CalendarGridProps {
+    showFinalsSchedule: boolean;
+}
+
+export const CalendarGrid = memo(({ showFinalsSchedule }: CalendarGridProps) => {
     const router = useRouter();
-    const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [currentScheduleCourses, setCurrentScheduleCourses] = useState(() => AppStore.schedule.getCurrentCourses());
     const [currentScheduleCustomEvents, setCurrentScheduleCustomEvents] = useState(() =>
         AppStore.schedule.getCurrentCustomEvents()
     );
     const [rawEventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [rawFinalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [currentScheduleId, setCurrentScheduleId] = useState(() => AppStore.getCurrentScheduleId());
-    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const theme = useTheme();
     const isMilitaryTime = useTimeFormatStore((store) => store.isMilitaryTime);
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
-    const isDark = useThemeStore((store) => store.isDark);
-
     const { setting, palette, assignments } = useSectionThemeAssignments();
 
     const eventsInCalendar = useMemo(
@@ -146,16 +144,12 @@ export const ScheduleCalendar = memo(() => {
         }
     }, [eventsInCalendar, openLoadingSchedule]);
 
-    const skeletonColor = theme.palette.action.disabledBackground;
+    const skeletonColor = theme.vars.palette.action.disabledBackground;
 
     const events = useMemo(
         () => (openLoadingSchedule ? createSkeletonEvents(skeletonColor) : getEventsForCalendar()),
         [openLoadingSchedule, getEventsForCalendar, skeletonColor]
     );
-
-    const toggleDisplayFinalsSchedule = useCallback(() => {
-        setShowFinalsSchedule((prevState) => !prevState);
-    }, []);
 
     /**
      * Finds the earliest start time and returns that or 7AM, whichever is earlier
@@ -175,7 +169,7 @@ export const ScheduleCalendar = memo(() => {
             const style =
                 visibility === VisibilityState.Outlined
                     ? {
-                          backgroundColor: theme.palette.background.default,
+                          backgroundColor: theme.vars.palette.background.default,
                           border: `2px solid ${event.color}`,
                           borderRadius: '4px',
                           color: event.color,
@@ -197,24 +191,6 @@ export const ScheduleCalendar = memo(() => {
             return isSkeletonEvent(event) ? { style, className: 'calendar-loading-event' } : { style };
         },
         [currentScheduleId, theme, visibilityMap]
-    );
-
-    /**
-     * This prop getter overrides `react-big-calendar`'s built-in `.rbc-today` style which applies a light blue coloring on both light and dark mode.
-     */
-    const dayStyleGetter = useCallback(
-        (date: Date) => {
-            if (date.toLocaleDateString() !== new Date().toLocaleDateString()) {
-                return {};
-            }
-
-            const style = {
-                backgroundColor: isDark ? theme.palette.background.paper : '',
-            };
-
-            return { style };
-        },
-        [isDark, theme]
     );
 
     const colorContrastSufficient = (bg: string) => {
@@ -301,7 +277,6 @@ export const ScheduleCalendar = memo(() => {
 
     useEffect(() => {
         const updateEventsInCalendar = () => {
-            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
             setCurrentScheduleId(AppStore.getCurrentScheduleId());
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
@@ -309,22 +284,16 @@ export const ScheduleCalendar = memo(() => {
             setCurrentScheduleCustomEvents(AppStore.schedule.getCurrentCustomEvents());
         };
 
-        const updateScheduleNames = () => {
-            setScheduleNames(AppStore.getScheduleNames());
-        };
-
         AppStore.on('addedCoursesChange', updateEventsInCalendar);
         AppStore.on('customEventsChange', updateEventsInCalendar);
         AppStore.on('colorChange', updateEventsInCalendar);
         AppStore.on('currentScheduleIndexChange', updateEventsInCalendar);
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
 
         return () => {
             AppStore.off('addedCoursesChange', updateEventsInCalendar);
             AppStore.off('customEventsChange', updateEventsInCalendar);
             AppStore.off('colorChange', updateEventsInCalendar);
             AppStore.off('currentScheduleIndexChange', updateEventsInCalendar);
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
     }, []);
 
@@ -338,27 +307,22 @@ export const ScheduleCalendar = memo(() => {
             flexDirection="column"
             position="relative"
         >
-            <Backdrop
+            <Box
+                id="screenshot"
+                height="0"
+                flexGrow={1}
+                position="relative"
                 sx={(theme) => ({
-                    color: '#ffff',
-                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                    zIndex: theme.zIndex.drawer + 1,
-                    position: 'absolute',
-                    padding: 0,
+                    // Override react-big-calendar's .rbc-today light-blue bg in dark mode
+                    '& .rbc-today': {
+                        ...theme.applyStyles('dark', {
+                            backgroundColor: theme.vars.palette.background.paper,
+                        }),
+                    },
                 })}
-                open={openLoadingSchedule}
-            />
-
-            <CalendarToolbar
-                currentScheduleIndex={currentScheduleIndex}
-                toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
-                showFinalsSchedule={showFinalsSchedule}
-                scheduleNames={scheduleNames}
-            />
-
-            <Box id="screenshot" height="0" flexGrow={1} position="relative">
+            >
                 <TbaCalendarCard />
-                <CalendarEventPopover scheduleNames={scheduleNames} />
+                <CalendarEventPopover />
 
                 <Backdrop
                     open={showEmptyState}
@@ -400,7 +364,6 @@ export const ScheduleCalendar = memo(() => {
                     scrollToTime={startTime}
                     events={events}
                     eventPropGetter={eventStyleGetter}
-                    dayPropGetter={dayStyleGetter}
                     showMultiDayTimes={false}
                     components={CALENDAR_COMPONENTS}
                 />
@@ -409,4 +372,4 @@ export const ScheduleCalendar = memo(() => {
     );
 });
 
-ScheduleCalendar.displayName = 'ScheduleCalendar';
+CalendarGrid.displayName = 'CalendarGrid';

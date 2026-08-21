@@ -2,7 +2,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePopover/GradesPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
-import { ButtonBase, Popover, useTheme } from '@mui/material';
+import { ButtonBase, Popover } from '@mui/material';
 import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -15,7 +15,6 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
     const { deptCode, courseNumber } = course;
     const { instructors } = section;
     const isMobile = useIsMobile();
-    const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<Element>();
 
     const namedInstructors = useMemo(() => instructors.filter((i) => i !== 'STAFF'), [instructors]);
@@ -54,7 +53,7 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
                 sx={{
                     fontFamily: 'inherit',
                     fontSize: 'unset',
-                    color: theme.palette.secondary.main,
+                    color: (theme) => theme.vars.palette.secondary.main,
                     fontWeight: 700,
                 }}
                 onClick={handleClick}

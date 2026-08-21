@@ -1,7 +1,7 @@
 import {
     amber,
-    brown,
     blue,
+    brown,
     cyan,
     deepOrange,
     deepPurple,
@@ -15,9 +15,9 @@ import {
     teal,
     yellow,
 } from '@mui/material/colors';
-import type { AATerm, ScheduleCourse } from '@packages/antalmanac-types';
+import type { AACourseWithTerm, AASection, AATerm } from '@packages/antalmanac-types';
 
-export function scheduleOfferingKey(course: Pick<ScheduleCourse, 'term' | 'courseId' | 'courseTitle'>): string {
+export function scheduleOfferingKey(course: Pick<AACourseWithTerm, 'term' | 'courseId' | 'courseTitle'>): string {
     return `${course.term.shortName}::${course.courseId}::${course.courseTitle}`;
 }
 
@@ -86,57 +86,32 @@ function generateColorVariant(originalColor: string, usedColors: Set<string>): s
     return originalColor;
 }
 
-export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: ScheduleCourse[]): string {
+export function getColorForNewSection(
+    newSection: AASection,
+    course: AACourseWithTerm,
+    coursesInSchedule: AACourseWithTerm[]
+): string {
     const defaultColors: string[] = Object.values(colorVariants).map((variants) => variants[0]);
-    const usedColors = sectionsInSchedule.map((course) => course.section.color);
+    const usedColors = coursesInSchedule.flatMap((c) => c.sections.map((s) => s.color));
     const lastDefaultIndex = usedColors.findLastIndex((color) => defaultColors.includes(color));
 
-    const offeringKey = scheduleOfferingKey(newSection);
-    const sameOfferingSections = sectionsInSchedule
-        .filter((course) => scheduleOfferingKey(course) === offeringKey)
+    const offeringKey = scheduleOfferingKey(course);
+    const sameOfferingSections = coursesInSchedule
+        .filter((c) => scheduleOfferingKey(c) === offeringKey)
+        .flatMap((c) => c.sections)
         .sort(
             (a, b) =>
-                Math.abs(parseInt(a.section.sectionCode) - parseInt(newSection.section.sectionCode)) -
-                Math.abs(parseInt(b.section.sectionCode) - parseInt(newSection.section.sectionCode))
+                Math.abs(parseInt(a.sectionCode) - parseInt(newSection.sectionCode)) -
+                Math.abs(parseInt(b.sectionCode) - parseInt(newSection.sectionCode))
         );
 
-    const sameSectionType = sameOfferingSections.filter(
-        (course) => course.section.sectionType === newSection.section.sectionType
-    );
-    if (sameSectionType.length > 0) return sameSectionType[0].section.color;
+    const sameSectionType = sameOfferingSections.filter((s) => s.sectionType === newSection.sectionType);
+    if (sameSectionType.length > 0) return sameSectionType[0].color;
 
     if (sameOfferingSections.length > 0) {
-        return generateColorVariant(sameOfferingSections[0].section.color, new Set(usedColors));
+        return generateColorVariant(sameOfferingSections[0].color, new Set(usedColors));
     }
 
     const nextDefaultIndex = (lastDefaultIndex + 1) % defaultColors.length;
     return defaultColors.find((color) => !usedColors.includes(color)) ?? defaultColors[nextDefaultIndex];
-}
-
-/**
- * Temporary measure to group each course's sections together
- * since previous courses were unsorted.
- *
- * Once there are likely no users with unsorted courses, probably in a few years,
- * this function and its call can be deleted.
- *
- * Date written: March 2026
- */
-export function groupCourseSections(courses: ScheduleCourse[]): ScheduleCourse[] {
-    const offeringIndexes: Record<string, number> = {};
-    const groupedCourses: ScheduleCourse[][] = [];
-    let index = 0;
-    for (const course of courses) {
-        const key = scheduleOfferingKey(course);
-        if (!Object.hasOwn(offeringIndexes, key)) {
-            offeringIndexes[key] = index;
-            groupedCourses.push([]);
-            index++;
-        }
-    }
-    for (const course of courses) {
-        const key = scheduleOfferingKey(course);
-        groupedCourses[offeringIndexes[key]].push(course);
-    }
-    return groupedCourses.flat();
 }

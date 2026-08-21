@@ -1,6 +1,6 @@
 import type { CourseEvent, CustomEvent, FinalExam, Location } from '$components/Calendar/types';
 import { getReferencesOccurring } from '$lib/utils';
-import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { AACourseWithTerm, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { WEBSOC_DAYS } from '@packages/antalmanac-types';
 import type { HourMinute } from '@packages/anteater-api/types';
 
@@ -35,145 +35,125 @@ function mapLocationsWithDay(bldg: string[], dayIndex: number, includeDays: bool
     return locations;
 }
 
-export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
+export const calendarizeCourseEvents = (currentCourses: AACourseWithTerm[] = []): CourseEvent[] => {
     return currentCourses.flatMap((course) => {
         const term = course.term;
-        const events: CourseEvent[] = [];
 
-        for (const meeting of course.section.meetings) {
-            if (meeting.timeIsTBA) {
-                continue;
+        return course.sections.flatMap((section) => {
+            const events: CourseEvent[] = [];
+
+            for (const meeting of section.meetings) {
+                if (meeting.timeIsTBA) {
+                    continue;
+                }
+
+                const startHour = meeting.startTime.hour;
+                const startMin = meeting.startTime.minute;
+                const endHour = meeting.endTime.hour;
+                const endMin = meeting.endTime.minute;
+
+                const daysOccurring = getReferencesOccurring(COURSE_WEEK_DAYS, meeting.days);
+                const dayIndicesOccurring = getDayIndicesOccurring(daysOccurring);
+
+                let finalExamField: FinalExam;
+                if (section.finalExam.examStatus === 'SCHEDULED_FINAL') {
+                    const { bldg, ...finalExamWithoutBldg } = section.finalExam;
+                    finalExamField = {
+                        ...finalExamWithoutBldg,
+                        locations: bldg.map(getLocation),
+                    };
+                } else {
+                    finalExamField = { examStatus: section.finalExam.examStatus };
+                }
+
+                for (const dayIndex of dayIndicesOccurring) {
+                    events.push({
+                        color: section.color,
+                        term,
+                        title: `${course.deptCode} ${course.courseNumber}`,
+                        deptValue: course.deptCode,
+                        courseNumber: course.courseNumber,
+                        courseTitle: course.courseTitle,
+                        locations: mapLocationsWithDay(meeting.bldg, dayIndex, Boolean(meeting.days)),
+                        showLocationInfo: false,
+                        instructors: section.instructors,
+                        sectionCode: section.sectionCode,
+                        sectionType: section.sectionType,
+                        start: new Date(2018, 0, dayIndex, startHour, startMin),
+                        end: new Date(2018, 0, dayIndex, endHour, endMin),
+                        finalExam: finalExamField,
+                        eventKind: 'course',
+                    });
+                }
             }
 
-            const startHour = meeting.startTime.hour;
-            const startMin = meeting.startTime.minute;
-            const endHour = meeting.endTime.hour;
-            const endMin = meeting.endTime.minute;
-
-            /**
-             * An array of booleans indicating whether a course meeting occurs on that day.
-             *
-             * @example [false, true, false, true, false, true, false], i.e. [M, W, F]
-             */
-            const daysOccurring = getReferencesOccurring(COURSE_WEEK_DAYS, meeting.days);
-
-            /**
-             * Only include the day indices that the meeting occurs.
-             *
-             * @example [false, true, false, true, false, true, false] -> [1, 3, 5]
-             */
-            const dayIndicesOccurring = getDayIndicesOccurring(daysOccurring);
-
-            let finalExamField: FinalExam;
-            if (course.section.finalExam.examStatus === 'SCHEDULED_FINAL') {
-                const { bldg, ...finalExamWithoutBldg } = course.section.finalExam;
-                finalExamField = {
-                    ...finalExamWithoutBldg,
-                    locations: bldg.map(getLocation),
-                };
-            } else {
-                finalExamField = { examStatus: course.section.finalExam.examStatus };
-            }
-
-            for (const dayIndex of dayIndicesOccurring) {
-                events.push({
-                    color: course.section.color,
-                    term,
-                    title: `${course.deptCode} ${course.courseNumber}`,
-                    deptValue: course.deptCode,
-                    courseNumber: course.courseNumber,
-                    courseTitle: course.courseTitle,
-                    locations: mapLocationsWithDay(meeting.bldg, dayIndex, Boolean(meeting.days)),
-                    showLocationInfo: false,
-                    instructors: course.section.instructors,
-                    sectionCode: course.section.sectionCode,
-                    sectionType: course.section.sectionType,
-                    start: new Date(2018, 0, dayIndex, startHour, startMin),
-                    end: new Date(2018, 0, dayIndex, endHour, endMin),
-                    finalExam: finalExamField,
-                    eventKind: 'course',
-                });
-            }
-        }
-
-        return events;
+            return events;
+        });
     });
 };
 
-export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
-    return currentCourses.flatMap((course) => {
-        const sectionFinalExam = course.section.finalExam;
-        if (sectionFinalExam.examStatus !== 'SCHEDULED_FINAL') {
-            return [];
-        }
+export function calendarizeFinals(currentCourses: AACourseWithTerm[] = []): CourseEvent[] {
+    return currentCourses.flatMap((course) =>
+        course.sections.flatMap((section) => {
+            const sectionFinalExam = section.finalExam;
+            if (sectionFinalExam.examStatus !== 'SCHEDULED_FINAL') {
+                return [];
+            }
 
-        const { bldg, ...finalExam } = sectionFinalExam;
+            const { bldg, ...finalExam } = sectionFinalExam;
 
-        const startHour = finalExam.startTime.hour;
-        const startMin = finalExam.startTime.minute;
-        const endHour = finalExam.endTime.hour;
-        const endMin = finalExam.endTime.minute;
+            const startHour = finalExam.startTime.hour;
+            const startMin = finalExam.startTime.minute;
+            const endHour = finalExam.endTime.hour;
+            const endMin = finalExam.endTime.minute;
 
-        /**
-         * An array of booleans indicating whether the day at that index is a day that the final.
-         *
-         * @example [false, false, false, true, false, true, false], i.e. [T, Th]
-         */
-        const weekdaysOccurring = getReferencesOccurring(FINALS_WEEK_DAYS, finalExam.dayOfWeek);
+            const weekdaysOccurring = getReferencesOccurring(FINALS_WEEK_DAYS, finalExam.dayOfWeek);
+            const dayIndicesOccurring = getDayIndicesOccurring(weekdaysOccurring);
 
-        /**
-         * Only include the day indices that the final is occurring.
-         *
-         * @example [false, false, false, true, false, true, false] -> [3, 5]
-         */
-        const dayIndicesOccurring = getDayIndicesOccurring(weekdaysOccurring);
+            const locationsWithNoDays = bldg
+                ? bldg.map(getLocation)
+                : !section.meetings[0].timeIsTBA
+                  ? section.meetings[0].bldg.map(getLocation)
+                  : [];
 
-        const locationsWithNoDays = bldg
-            ? bldg.map(getLocation)
-            : !course.section.meetings[0].timeIsTBA
-              ? course.section.meetings[0].bldg.map(getLocation)
-              : [];
+            const term = course.term;
+            const finalsStartDate = term.finalsStart;
+            const finalExamLocations = bldg?.map(getLocation) ?? [];
 
-        const term = course.term;
-        const finalsStartDate = term.finalsStart;
-        const finalExamLocations = bldg?.map(getLocation) ?? [];
+            return dayIndicesOccurring.map((dayIndex) => {
+                const startDate = new Date(finalsStartDate);
+                startDate.setDate(finalsStartDate.getDate() + dayIndex);
+                startDate.setHours(startHour, startMin);
 
-        return dayIndicesOccurring.map((dayIndex) => {
-            const startDate = new Date(finalsStartDate);
-            startDate.setDate(finalsStartDate.getDate() + dayIndex);
-            startDate.setHours(startHour, startMin);
+                const endDate = new Date(startDate);
+                endDate.setHours(endHour, endMin);
 
-            // Copy startDate, which already has the correct day
-            const endDate = new Date(startDate);
-            endDate.setHours(endHour, endMin);
-
-            return {
-                color: course.section.color,
-                term,
-                title: `${course.deptCode} ${course.courseNumber}`,
-                courseTitle: course.courseTitle,
-                locations: locationsWithNoDays.map((location: Location) => {
-                    return {
+                return {
+                    color: section.color,
+                    term,
+                    title: `${course.deptCode} ${course.courseNumber}`,
+                    courseTitle: course.courseTitle,
+                    locations: locationsWithNoDays.map((location: Location) => ({
                         ...location,
                         days: COURSE_WEEK_DAYS[dayIndex],
-                    };
-                }),
-                showLocationInfo: true,
-                instructors: course.section.instructors,
-                sectionCode: course.section.sectionCode,
-                deptValue: course.deptCode,
-                courseNumber: course.courseNumber,
-                sectionType: 'Fin',
-                start: startDate,
-                end: endDate,
-                finalExam: {
-                    ...finalExam,
-                    locations: finalExamLocations,
-                },
-                eventKind: 'course',
-            };
-        });
-    });
+                    })),
+                    showLocationInfo: true,
+                    instructors: section.instructors,
+                    sectionCode: section.sectionCode,
+                    deptValue: course.deptCode,
+                    courseNumber: course.courseNumber,
+                    sectionType: 'Fin',
+                    start: startDate,
+                    end: endDate,
+                    finalExam: {
+                        ...finalExam,
+                        locations: finalExamLocations,
+                    },
+                    eventKind: 'course',
+                };
+            });
+        })
+    );
 }
 
 export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
@@ -237,11 +217,6 @@ interface NormalizedWebSOCTime {
     endTime: string;
 }
 
-/**
- * @param section
- * @returns The start and end time of a course in a 24 hour time with a leading zero (##:##).
- * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
- */
 interface NormalizeTimeOptions {
     timeIsTBA?: boolean;
     startTime?: HourMinute | null;
@@ -249,9 +224,8 @@ interface NormalizeTimeOptions {
 }
 
 /**
- * @param section
- * @returns The start and end time of a course in a 24 hour time with a leading zero (##:##).
- * @returns undefined if there is no WebSOC time (e.g. 'TBA', undefined)
+ * @returns Start and end time as 24-hour strings with leading zeros (##:##),
+ * or undefined when time is TBA or missing.
  */
 export function normalizeTime(options: NormalizeTimeOptions): NormalizedWebSOCTime | undefined {
     if (options.timeIsTBA || !options.startTime || !options.endTime) {

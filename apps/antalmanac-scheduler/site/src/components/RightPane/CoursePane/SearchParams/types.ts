@@ -1,7 +1,7 @@
 import {
+    type AdvancedSearchParam,
     COURSE_SEARCH_MODES,
     COURSE_SEARCH_VIEWS,
-    type AdvancedSearchParam,
     type ManualSearchParam,
 } from '$components/RightPane/CoursePane/SearchParams/constants';
 import { courseSearchParamParsers } from '$components/RightPane/CoursePane/SearchParams/parsers';

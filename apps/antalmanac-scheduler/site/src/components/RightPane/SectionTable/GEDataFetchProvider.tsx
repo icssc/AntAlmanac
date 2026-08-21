@@ -51,12 +51,12 @@ export function GeDataFetchProvider(props: SectionTableProps) {
             return props.course;
         }
 
-        const courseColors = AppStore.schedule
-            .getCurrentCourses()
-            .reduce<Record<string, string>>((acc, { section }) => {
+        const courseColors = AppStore.schedule.getCurrentCourses().reduce<Record<string, string>>((acc, course) => {
+            for (const section of course.sections) {
                 acc[section.sectionCode] = section.color;
-                return acc;
-            }, {});
+            }
+            return acc;
+        }, {});
 
         return {
             ...websocCourse,

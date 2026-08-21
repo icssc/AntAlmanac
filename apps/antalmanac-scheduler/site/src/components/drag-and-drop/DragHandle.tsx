@@ -31,7 +31,7 @@ export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
                     borderRadius: 1,
                     touchAction: 'none',
                     '&:hover': {
-                        backgroundColor: disabled ? 'transparent' : theme.palette.action.hover,
+                        backgroundColor: disabled ? 'transparent' : theme.vars.palette.action.hover,
                     },
                     '&:focus-visible': {
                         boxShadow: disabled ? 'none' : '0 0 0 2px #4c9ffe',
@@ -43,7 +43,7 @@ export function DragHandle({ disabled = false, sx, iconSx }: DragHandleProps) {
             <DragIndicatorIcon
                 sx={mergeSx(
                     {
-                        color: disabled ? theme.palette.action.disabled : theme.palette.action.active,
+                        color: disabled ? theme.vars.palette.action.disabled : theme.vars.palette.action.active,
                     },
                     iconSx
                 )}

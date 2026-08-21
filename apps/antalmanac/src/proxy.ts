@@ -1,12 +1,8 @@
-import {
-    COURSE_SEARCH_MODE,
-    COURSE_SEARCH_MODE_KEY,
-    COURSE_SEARCH_PLANNER_KEY,
-} from '$components/RightPane/CoursePane/SearchParams/constants';
+import { COURSE_SEARCH_MODE, COURSE_SEARCH_MODE_KEY } from '$components/RightPane/CoursePane/SearchParams/constants';
 import { hasAdvancedParams, hasManualParams } from '$components/RightPane/CoursePane/SearchParams/helpers';
 import { loadCourseSearchParams, loadSearchMode } from '$components/RightPane/CoursePane/SearchParams/loaders';
 import { AUTH_PROVIDER_ID } from '$lib/auth/authConstants';
-import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie';
+import { SSO_COOKIE_NAME, getSsoResponseCookieAttributes } from '$lib/ssoCookie';
 import { TAB_HREF, type TabName } from '$lib/tabs/tabs';
 import { getSessionCookie } from 'better-auth/cookies';
 import { NextResponse, userAgent } from 'next/server';
@@ -25,10 +21,6 @@ function maybeRedirectDefaultTab(request: NextRequest): NextResponse | null {
     }
 
     const { searchParams } = request.nextUrl;
-
-    if (searchParams.has(COURSE_SEARCH_PLANNER_KEY)) {
-        return null;
-    }
 
     if (!getSessionCookie(request)) {
         return null;

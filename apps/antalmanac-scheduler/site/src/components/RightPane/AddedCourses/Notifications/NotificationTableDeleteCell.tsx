@@ -2,7 +2,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { Delete } from '@mui/icons-material';
-import { IconButton, Box } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 
 interface DeleteNotificationButtonProps {

@@ -52,10 +52,7 @@ export function CustomEventsBox() {
                 {customEvents.map((customEvent) => {
                     return (
                         <Box key={customEvent.customEventID}>
-                            <CustomEventDetailView
-                                customEvent={customEvent}
-                                scheduleNames={AppStore.getScheduleNames()}
-                            />
+                            <CustomEventDetailView customEvent={customEvent} />
                         </Box>
                     );
                 })}

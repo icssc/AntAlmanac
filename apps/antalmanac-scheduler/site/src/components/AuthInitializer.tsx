@@ -1,4 +1,4 @@
-import { isEmptySchedule, loadSchedule, mergeShortCourseSchedules, type UserData } from '$actions/AppStoreActions';
+import { type UserData, isEmptySchedule, loadSchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
@@ -8,9 +8,7 @@ import {
     getLocalStorageUserId,
     getWasLoggedIn,
     removeLocalStorageDataCache,
-    removeLocalStorageImportedUser,
     removeLocalStorageUserId,
-    setLocalStorageImportedUser,
     setWasLoggedIn,
 } from '$lib/localStorage';
 import { setSsoCookie } from '$lib/ssoCookie';
@@ -73,7 +71,6 @@ export const AuthInitializer = () => {
         // no changes to save
         if (savedUserId === null && savedData === null) {
             removeLocalStorageDataCache();
-            removeLocalStorageImportedUser();
             return;
         }
 
@@ -82,7 +79,6 @@ export const AuthInitializer = () => {
 
             if (savedUserId) {
                 await trpc.schedule.flagImported.mutate({ username: savedUserId });
-                setLocalStorageImportedUser(savedUserId);
             }
 
             const data = JSON.parse(savedData);
@@ -104,7 +100,14 @@ export const AuthInitializer = () => {
 
             removeLocalStorageDataCache();
 
-            openSnackbar('success', `Unsaved changes have been saved to your account!`);
+            if (savedUserId) {
+                openSnackbar(
+                    'success',
+                    `Schedule from "${savedUserId}" has been saved to your account! All changes made to your schedules will be saved to your account.`
+                );
+            } else {
+                openSnackbar('success', 'Unsaved changes have been saved to your account!');
+            }
         }
     });
 
@@ -156,6 +159,7 @@ export const AuthInitializer = () => {
             handleAuthChecked();
             handleInitialized();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- handleInitialized and handleAuthChecked are stable
     }, [
         sessionData,
         isSessionPending,

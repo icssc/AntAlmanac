@@ -62,3 +62,17 @@ export function moveArrayElements(
 export function unreachableCase(value: never): never {
     throw new Error(`Unreachable code reached: ${value}`);
 }
+
+/**
+ * Save a Blob or data URI to disk as a file download.
+ */
+export function saveAs(data: Blob | string, filename: string) {
+    const href = typeof data === 'string' ? data : URL.createObjectURL(data);
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = filename;
+    a.click();
+    if (typeof data !== 'string') {
+        URL.revokeObjectURL(href);
+    }
+}

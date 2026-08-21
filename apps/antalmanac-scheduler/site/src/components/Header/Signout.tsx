@@ -3,7 +3,6 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { signOut } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
 import type { UserProfile } from '@packages/db/src/schema/auth/user';
@@ -26,7 +25,6 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         }))
     );
     const postHog = usePostHog();
-    const isDark = useThemeStore((store) => store.isDark);
 
     const user = useMemo<UserProfile | null>(
         () =>
@@ -67,7 +65,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 }}
                 slotProps={{
                     paper: {
-                        sx: getSettingsPopoverPaperSx(isDark),
+                        sx: getSettingsPopoverPaperSx(),
                     },
                 }}
             >

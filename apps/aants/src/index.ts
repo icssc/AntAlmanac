@@ -1,21 +1,21 @@
 import type {
     HourMinute,
     Quarter,
-    Year,
     WebsocCourse,
     WebsocSection,
     WebsocSectionMeeting,
+    Year,
 } from '@packages/anteater-api/types';
 import { flattenSectionsWithCourse } from '@packages/anteater-api/utils';
 
-import { batchCourseCodes, sendNotification, type CourseDetails } from './helpers/notificationDispatch';
+import { type CourseDetails, batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
 import {
+    type SubscriptionWithUser,
     filterUsersToNotify,
     getLastUpdatedStatus,
     getSubscriptionSectionCodes,
     getSubscriptionsForSections,
     getUpdatedClasses,
-    type SubscriptionWithUser,
     updateSubscriptionStatus,
 } from './helpers/subscriptionData';
 

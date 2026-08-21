@@ -43,9 +43,13 @@ export function SuccessStep() {
             <CardContent sx={{ paddingTop: 0 }}>
                 <Box display="flex" alignItems="center" gap={1}>
                     <CheckCircleOutline color="success" fontSize="small" />
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
                         Thanks for reviewing{' '}
-                        <Box component="span" fontWeight={600} color="text.primary">
+                        <Box
+                            component="span"
+                            fontWeight={600}
+                            sx={{ color: (theme) => theme.vars.palette.text.primary }}
+                        >
                             {courseId}
                         </Box>{' '}
                         with {professorId}.

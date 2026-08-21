@@ -152,7 +152,11 @@ export function ReviewStep() {
                         How was {courseId}?
                     </Typography>
                 }
-                subheader={<Typography color="text.secondary">with {professorId}</Typography>}
+                subheader={
+                    <Typography sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
+                        with {professorId}
+                    </Typography>
+                }
                 action={
                     <IconButton size="small" onClick={handleDismiss} aria-label="dismiss">
                         <Close fontSize="small" />
@@ -164,24 +168,34 @@ export function ReviewStep() {
                 <Stack spacing={2}>
                     <Box display="flex" flexDirection="row" gap={8}>
                         <Box display="flex" flexDirection="column" gap={0.5}>
-                            <Typography color="text.secondary">Overall Quality</Typography>
+                            <Typography sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
+                                Overall Quality
+                            </Typography>
                             <Box display="flex" flexDirection="column" gap={1}>
                                 <Rating value={rating} onChange={(_e, value) => setRating(value ?? 0)} size="large" />
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography
+                                    variant="caption"
+                                    sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                                >
                                     {ratingLabel(rating)}
                                 </Typography>
                             </Box>
                         </Box>
 
                         <Box display="flex" flexDirection="column" gap={0.5}>
-                            <Typography color="text.secondary">Difficulty (low → high)</Typography>
+                            <Typography sx={{ color: (theme) => theme.vars.palette.text.secondary }}>
+                                Difficulty (low → high)
+                            </Typography>
                             <Box display="flex" flexDirection="column" gap={1}>
                                 <Rating
                                     value={difficulty}
                                     onChange={(_e, value) => setDifficulty(value ?? 0)}
                                     size="large"
                                 />
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography
+                                    variant="caption"
+                                    sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                                >
                                     {difficultyLabel(difficulty)}
                                 </Typography>
                             </Box>
@@ -200,14 +214,18 @@ export function ReviewStep() {
                         slotProps={{
                             htmlInput: { maxLength: 500 },
                             formHelperText: {
-                                sx: { textAlign: 'right', mx: 0, color: 'text.secondary' },
+                                sx: {
+                                    textAlign: 'right',
+                                    mx: 0,
+                                    color: (theme) => theme.vars.palette.text.secondary,
+                                },
                             },
                         }}
                         helperText={`${textReview.length}/500`}
                     />
 
                     <Box display="flex" flexDirection="column" gap={0.5}>
-                        <Typography color="text.secondary">Tags</Typography>
+                        <Typography sx={{ color: (theme) => theme.vars.palette.text.secondary }}>Tags</Typography>
                         <Box display="flex" flexWrap="wrap" gap={0.75}>
                             {REVIEW_TAGS.map((tag) => (
                                 <Chip

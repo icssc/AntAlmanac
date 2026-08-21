@@ -13,11 +13,12 @@ import type {
     CourseSearchView,
 } from '$components/RightPane/CoursePane/SearchParams/types';
 
-/** Enough to run a WebSOC search (dept, GE, section, or instructor). */
+/** Enough to run a WebSOC search (dept, GE, section, instructor, or courseIds). */
 export function isValidSearch(formData: CourseSearchParams) {
-    const { ge, deptValue, sectionCode, instructor } = formData;
+    const { ge, deptValue, sectionCode, instructor, courseIds } = formData;
     return (
-        ge !== DEFAULT_FORM_DATA.ge ||
+        courseIds.length > 0 ||
+        ge.length > 0 ||
         deptValue !== DEFAULT_FORM_DATA.deptValue ||
         sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
         instructor !== DEFAULT_FORM_DATA.instructor
@@ -29,7 +30,11 @@ export function hasManualParams(formData: CourseSearchParams) {
         if (key === 'term') {
             return formData.term.shortName !== DEFAULT_FORM_DATA.term.shortName;
         }
-        return formData[key] !== DEFAULT_FORM_DATA[key];
+        const value = formData[key];
+        if (Array.isArray(value)) {
+            return value.length > 0;
+        }
+        return value !== DEFAULT_FORM_DATA[key];
     });
 }
 
@@ -47,9 +52,10 @@ export function hasAdvancedParams(formData: AdvancedSearchParams) {
 
 function shouldShowSearchForm(formData: CourseSearchParams) {
     const hasPrimarySearchInput =
+        formData.courseIds.length > 0 ||
         formData.sectionCode !== DEFAULT_FORM_DATA.sectionCode ||
         formData.courseNumber !== DEFAULT_FORM_DATA.courseNumber ||
-        formData.ge !== DEFAULT_FORM_DATA.ge ||
+        formData.ge.length > 0 ||
         formData.deptValue !== DEFAULT_FORM_DATA.deptValue ||
         formData.instructor !== DEFAULT_FORM_DATA.instructor;
 

@@ -1,6 +1,6 @@
 import type { CourseEvent } from '$components/Calendar/types';
 import { getDefaultTerm, termData } from '$lib/term';
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 describe('termData', () => {
     /**

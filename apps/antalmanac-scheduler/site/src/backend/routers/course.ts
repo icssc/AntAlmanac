@@ -2,7 +2,7 @@ import { aapiClient, aapiProcedure } from '$backend/lib/aapi';
 import { router } from '$backend/trpc';
 import { getRenamedCoursesIdentifiers } from '$lib/renames/utils';
 import { AAPIError } from '@packages/anteater-api/client';
-import type { Course, CoursesBatchAPIResult } from '@packages/anteater-api/types';
+import type { Course } from '@packages/anteater-api/types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
@@ -25,10 +25,6 @@ const courseRouter = router({
 
             throw new TRPCError({ code: 'NOT_FOUND', message: 'Course not found' });
         }),
-
-    getMultiple: aapiProcedure
-        .input(z.object({ courseIds: z.array(z.string()) }))
-        .query(({ input }): Promise<CoursesBatchAPIResult['data']> => aapiClient.courses.getBatch(input.courseIds)),
 });
 
 export default courseRouter;
