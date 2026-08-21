@@ -117,175 +117,28 @@ importers:
       '@antalmanac-scheduler':
         specifier: workspace:^
         version: link:../antalmanac-scheduler/site
-      '@dnd-kit/core':
-        specifier: ^6.3.1
-        version: 6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@dnd-kit/modifiers':
-        specifier: ^9.0.0
-        version: 9.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
-      '@dnd-kit/sortable':
-        specifier: ^10.0.0
-        version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
-      '@dnd-kit/utilities':
-        specifier: ^3.2.2
-        version: 3.2.2(react@19.2.6)
-      '@emotion/cache':
-        specifier: ^11.14.0
-        version: 11.14.0
-      '@emotion/react':
-        specifier: ^11.14.0
-        version: 11.14.0(@types/react@19.2.14)(react@19.2.6)
-      '@emotion/styled':
-        specifier: ^11.14.0
-        version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6)
-      '@mui/icons-material':
-        specifier: ^7.3.10
-        version: 7.3.11(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@types/react@19.2.14)(react@19.2.6)
-      '@mui/material':
-        specifier: ^7.3.10
-        version: 7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@mui/material-nextjs':
-        specifier: ^7.3.10
-        version: 7.3.10(@emotion/cache@11.14.0)(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(next@16.2.6(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.101.0))(react@19.2.6)
-      '@mui/system':
-        specifier: ^7.3.10
-        version: 7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6)
-      '@mui/x-date-pickers':
-        specifier: ^8.11.1
-        version: 8.28.5(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@mui/material@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@mui/system@7.3.11(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(react@19.2.6))(@types/react@19.2.14)(date-fns@3.6.0)(dayjs@1.11.13)(luxon@3.2.1)(moment@2.30.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@packages/antalmanac-types':
-        specifier: workspace:^
-        version: link:../antalmanac-scheduler/types
-      '@packages/anteater-api':
-        specifier: workspace:^
-        version: link:../../packages/anteater-api
-      '@packages/db':
-        specifier: workspace:^
-        version: link:../antalmanac-scheduler/db
-      '@paralleldrive/cuid2':
-        specifier: ^2.2.2
-        version: 2.2.2
-      '@reactour/tour':
-        specifier: ^3.7.0
-        version: 3.7.0(react@19.2.6)
       '@t3-oss/env-nextjs':
         specifier: 0.13.11
         version: 0.13.11(typescript@5.9.3)(zod@3.24.3)
-      '@tanstack/react-query':
-        specifier: ^5.100.9
-        version: 5.100.9(react@19.2.6)
-      '@trpc/client':
-        specifier: ^11.17.0
-        version: 11.17.0(@trpc/server@11.17.0(typescript@5.9.3))(typescript@5.9.3)
-      '@trpc/react-query':
-        specifier: ^11.17.0
-        version: 11.17.0(@tanstack/react-query@5.100.9(react@19.2.6))(@trpc/client@11.17.0(@trpc/server@11.17.0(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.17.0(typescript@5.9.3))(react@19.2.6)(typescript@5.9.3)
       '@trpc/server':
         specifier: ^11.17.0
         version: 11.17.0(typescript@5.9.3)
       better-auth:
         specifier: ^1.6.1
         version: 1.6.11(@opentelemetry/api@1.9.1)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.15.6)(gel@2.2.0)(knex@0.8.6)(kysely@0.28.17)(pg@8.16.3)(postgres@3.4.5))(next@16.2.6(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.101.0))(pg@8.16.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@0.34.6(jsdom@22.1.0)(sass@1.101.0)(stylus@0.51.1)(terser@5.46.2))
-      drizzle-orm:
-        specifier: ^0.45.2
-        version: 0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.15.6)(gel@2.2.0)(knex@0.8.6)(kysely@0.28.17)(pg@8.16.3)(postgres@3.4.5)
-      events:
-        specifier: ^3.3.0
-        version: 3.3.0
-      fuzzysort:
-        specifier: 3.1.0
-        version: 3.1.0
-      html2canvas:
-        specifier: ^1.4.1
-        version: 1.4.1
-      ics:
-        specifier: ^3.8.1
-        version: 3.8.1
-      leaflet:
-        specifier: ^1.9.4
-        version: 1.9.4
-      leaflet-routing-machine:
-        specifier: ^3.2.12
-        version: 3.2.12
-      leaflet.locatecontrol:
-        specifier: ^0.79.0
-        version: 0.79.0
       next:
         specifier: 16.2.6
         version: 16.2.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.101.0)
-      nuqs:
-        specifier: ^2.8.9
-        version: 2.8.9(next@16.2.6(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.101.0))(react-router-dom@7.18.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-router@7.18.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
-      pg:
-        specifier: ^8.16.3
-        version: 8.16.3
       posthog-js:
         specifier: ^1.372.10
         version: 1.373.5
-      react:
-        specifier: 19.2.6
-        version: 19.2.6
-      react-big-calendar:
-        specifier: ^1.18.0
-        version: 1.19.4(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-dom:
-        specifier: 19.2.6
-        version: 19.2.6(react@19.2.6)
-      react-lazyload:
-        specifier: ^3.2.0
-        version: 3.2.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-leaflet:
-        specifier: 5.0.0
-        version: 5.0.0(leaflet@1.9.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-resizable-panels:
-        specifier: ^4.11.2
-        version: 4.11.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      recharts:
-        specifier: ^2.4.2
-        version: 2.13.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      schema-dts:
-        specifier: ^2.0.0
-        version: 2.0.0(typescript@5.9.3)
-      superjson:
-        specifier: ^1.12.3
-        version: 1.13.3
       zod:
         specifier: 3.24.3
         version: 3.24.3
-      zustand:
-        specifier: ^4.3.2
-        version: 4.5.5(@types/react@19.2.14)(immer@11.1.8)(react@19.2.6)
     devDependencies:
-      '@testing-library/react':
-        specifier: ^14.0.0
-        version: 14.3.1(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@types/leaflet':
-        specifier: ^1.9.14
-        version: 1.9.14
-      '@types/leaflet-routing-machine':
-        specifier: ^3.2.4
-        version: 3.2.8
-      '@types/leaflet.locatecontrol':
-        specifier: ^0.74.1
-        version: 0.74.6
       '@types/node':
         specifier: 22.19.17
         version: 22.19.17
-      '@types/react':
-        specifier: 19.2.14
-        version: 19.2.14
-      '@types/react-big-calendar':
-        specifier: ^1.16.2
-        version: 1.16.3
-      '@types/react-dom':
-        specifier: 19.2.3
-        version: 19.2.3(@types/react@19.2.14)
-      '@types/react-lazyload':
-        specifier: ^3.2.0
-        version: 3.2.3
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
