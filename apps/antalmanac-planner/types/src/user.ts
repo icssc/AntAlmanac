@@ -4,27 +4,29 @@ export const theme = z.enum(['light', 'dark', 'system']);
 export type Theme = z.infer<typeof theme>;
 
 export interface User {
-  /**
-   * google id
-   */
-  id: string;
-  email: string;
-  name: string;
-  picture: string;
+    /**
+     * google id
+     */
+    id: string;
+    email: string;
+    name: string;
+    picture: string;
 }
 
 export type UserMetadata = Omit<User, 'id'>;
 
 export interface UserData extends UserMetadata {
-  id: number;
-  theme: Theme;
-  isAdmin: boolean;
-  lastRoadmapEditAt?: string;
-  currentPlanIndex?: number;
+    id: number;
+    theme: Theme;
+    isAdmin: boolean;
+    lastRoadmapEditAt?: string;
+    currentPlanIndex?: number;
+    autoSaveEnabled: boolean;
 }
 
 export interface UserSliceState {
-  user: UserMetadata | null;
-  theme: Theme | null;
-  isAdmin: boolean;
+    user: UserMetadata | null;
+    theme: Theme | null;
+    isAdmin: boolean;
+    autosaveEnabled: boolean;
 }

@@ -13,5 +13,5 @@
         "node": true,
         "es2020": true
     },
-    "ignorePatterns": ["dist", "types/src/generated"]
+    "ignorePatterns": ["dist", "types/src/generated", "node_modules", "site/.next"]
 }

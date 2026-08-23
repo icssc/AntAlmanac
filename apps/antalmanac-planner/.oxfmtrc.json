@@ -3,5 +3,5 @@
     "printWidth": 120,
     "singleQuote": true,
     "sortPackageJson": false,
-    "ignorePatterns": ["types/src/generated/"]
+    "ignorePatterns": ["dist", "types/src/generated", "node_modules", "site/.next"]
 }
