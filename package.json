@@ -10,13 +10,16 @@
     "scripts": {
         "prepare": "husky install",
         "dev": "pnpm --filter antalmanac dev",
-        "db:generate": "pnpm --filter db db:generate",
-        "db:migrate": "pnpm --filter db db:migrate",
-        "db:studio": "pnpm --filter db db:studio",
-        "test": "vitest",
+        "sched:db:generate": "pnpm --filter @packages/db db:generate",
+        "sched:db:migrate": "pnpm --filter @packages/db db:migrate",
+        "sched:db:studio": "pnpm --filter @packages/db db:studio",
+        "plan:db:generate": "pnpm --filter @antalmanac-planner db:generate",
+        "plan:db:migrate": "pnpm --filter @antalmanac-planner db:migrate",
+        "plan:db:studio": "pnpm --filter @antalmanac-planner db:studio",
+        "test": "vitest && pnpm --filter @antalmanac-planner test",
         "deploy": "sst deploy --stage production",
         "format": "oxfmt",
-        "lint": "oxlint --deny-warnings && pnpm --filter @antalmanac-planner/site lint && pnpm --filter @antalmanac-planner/api lint",
+        "lint": "oxlint --deny-warnings && pnpm --filter @antalmanac-planner lint",
         "get-data": "pnpm --filter @antalmanac-scheduler get-data"
     },
     "devDependencies": {
