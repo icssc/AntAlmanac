@@ -3,9 +3,6 @@
     "version": "0.1.0",
     "scripts": {
         "dev": "pnpm --filter=site dev",
-        "prepare": "husky",
-        "format": "oxfmt --write \"**/*.{css,scss,cjs,js,ts,tsx,yml,json,html}\" --no-error-on-unmatched-pattern",
-        "lint": "oxfmt --check \"**/*.{css,scss,cjs,js,ts,tsx,yml,json,html}\" --no-error-on-unmatched-pattern && pnpm --filter=site lint && pnpm --filter=api lint",
         "test": "pnpm --filter=site test",
         "db:generate": "pnpm --filter=api db:generate",
         "db:migrate": "pnpm --filter=api db:migrate",
@@ -21,11 +18,6 @@
     },
     "devDependencies": {
         "@types/aws-lambda": "8.10.145",
-        "@types/node": "22.19.17",
-        "husky": "^9.1.7",
-        "lint-staged": "^15.2.10",
-        "prettier": "^3.8.4",
-        "oxfmt": "0.55.0",
-        "oxlint": "1.70.0"
+        "@types/node": "22.19.17"
     }
 }
