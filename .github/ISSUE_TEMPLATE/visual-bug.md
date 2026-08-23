@@ -1,9 +1,9 @@
 ---
-name: Problem Loading or Saving User Data
-about: My account/device data (i.e. roadmap, saved courses) are being read or saved
-  incorrectly
+name: App Crash / Visual Bug
+about: AntAlmanac crashes, is unresponsive, or otherwise exhibits unexpected visual
+  behavior
 title: ''
-labels: ''
+labels: frontend
 assignees: ''
 
 ---

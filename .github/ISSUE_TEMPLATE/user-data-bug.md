@@ -1,9 +1,9 @@
 ---
-name: App Crash / Visual Bug
-about: PeterPortal crashes, is unresponsive, or otherwise exhibits unexpected visual
-  behavior
+name: Problem Loading or Saving User Data
+about: My account/device data (i.e. schedule, roadmap) are being read or saved
+  incorrectly
 title: ''
-labels: frontend
+labels: ''
 assignees: ''
 
 ---
