@@ -1,14 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./.sst/platform/config.d.ts" />
 
+function isStaging(stage: string) {
+    return stage.match(/^staging-(\d+)$/);
+}
+
 function getDomain() {
     if ($app.stage === 'production') {
         return 'antalmanac.com';
     } else if ($app.stage === 'staging-shared') {
         return 'staging-shared.antalmanac.com';
-    } else if ($app.stage.match(/^staging-(\d+)$/)) {
-        const subdomainPrefix = $app.stage.replace('staging-', 'scheduler-');
-        return `${subdomainPrefix}.antalmanac.com`;
+    } else if (isStaging($app.stage)) {
+        return `${$app.stage}.antalmanac.com`;
     }
 
     throw new Error('Invalid stage');
@@ -16,6 +19,35 @@ function getDomain() {
 
 const isPermanentStage = ['production', 'scheduler', 'staging-shared'];
 const AANTS_STAGES = ['production', 'staging-1521', 'staging-1542'];
+const PETERPORTAL_LEGACY_STAGE = 'peterportal-legacy';
+
+const ANTALMANAC_WEBSITE_SERVER_CACHE_POLICY = '92d18877-845e-47e7-97e6-895382b1bf7c';
+
+// peterportal-legacy stage: redirect all traffic from peterportal.org/* to antalmanac.com/planner/*
+function peterportalLegacy() {
+    // Lambda function to dynamically redirect requests to antalmanac.com/planner/*
+    const redirectFunction = new sst.aws.Function('PPRedirect', {
+        runtime: 'nodejs22.x',
+        memory: '128 MB',
+        handler: 'apps/antalmanac-planner/infra/redirect-handler.handler',
+        url: true,
+    });
+
+    new sst.aws.Router('PPLegacyRouter', {
+        domain: {
+            domainName: 'peterportal.org',
+            domainRedirects: ['www.peterportal.org'],
+        },
+        routes: {
+            '/*': redirectFunction.url,
+        },
+        transform: {
+            cachePolicy(_, opts) {
+                opts.id = ANTALMANAC_WEBSITE_SERVER_CACHE_POLICY;
+            },
+        },
+    });
+}
 
 export default $config({
     app(input) {
@@ -28,47 +60,46 @@ export default $config({
     },
     async run() {
         const domain = getDomain();
-        const dbUrl = process.env.DB_URL;
 
-        const router = new sst.aws.Router('AntAlmanacRouter', {
-            domain: {
-                name: domain,
-                aliases: $app.stage === 'production' ? [`www.${domain}`] : undefined,
-            },
-            transform: {
-                cachePolicy(_, opts) {
-                    opts.id = '92d18877-845e-47e7-97e6-895382b1bf7c';
-                },
-                cdn(args) {
-                    if ($app.stage !== 'production') {
-                        args.wait = false;
-                    }
-                },
-            },
-        });
+        if ($app.stage === PETERPORTAL_LEGACY_STAGE) {
+            peterportalLegacy();
+            return;
+        }
+
+        const dbUrl = process.env.DB_URL;
 
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',
             // TODO (@KevinWu098): Unpin once https://github.com/opennextjs/opennextjs-aws/issues/1133 is fixed
             openNextVersion: '3.6.6',
-            router: {
-                instance: router,
-                path: '/',
+            domain: {
+                name: domain,
+                aliases: $app.stage === 'production' ? [`www.${domain}`] : undefined,
             },
-            cachePolicy: '92d18877-845e-47e7-97e6-895382b1bf7c',
+            cachePolicy: ANTALMANAC_WEBSITE_SERVER_CACHE_POLICY,
             environment: {
+                // Shared
+                ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
+                OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
+                NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
+                NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+                // Scheduler
                 DB_URL: dbUrl,
                 MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
                 NEXT_PUBLIC_TILES_ENDPOINT: process.env.NEXT_PUBLIC_TILES_ENDPOINT,
-                ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
                 OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID,
-                OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
                 BETTER_AUTH_URL: `https://${domain}`,
                 BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
                 NEXT_PUBLIC_BASE_URL: domain,
-                NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
                 PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
                 STAGE: $app.stage,
+                // Planner
+                DATABASE_URL: process.env.DATABASE_URL,
+                SESSION_SECRET: process.env.SESSION_SECRET,
+                PUBLIC_API_URL: process.env.PUBLIC_API_URL,
+                PLANNER_OIDC_CLIENT_ID: process.env.PLANNER_OIDC_CLIENT_ID,
+                ADMIN_EMAILS: process.env.ADMIN_EMAILS,
+                EXTERNAL_USER_READ_SECRET: process.env.EXTERNAL_USER_READ_SECRET,
             },
         });
 

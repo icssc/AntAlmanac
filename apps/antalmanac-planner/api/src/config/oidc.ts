@@ -22,11 +22,10 @@ export function buildRedirectUri(native = false): string {
  */
 export function createOIDCClient(redirectUri: string = buildRedirectUri()): OAuth2Client {
     const issuerUrl = process.env.OIDC_ISSUER_URL;
-    // TODO: consolidate auth for monorepo, making this unnecessary
-    const clientId = process.env.OIDC_CLIENT_ID === 'antalmanac-dev' ? 'peterportal-dev' : process.env.OIDC_CLIENT_ID;
+    const clientId = process.env.PLANNER_OIDC_CLIENT_ID;
 
     if (!issuerUrl || !clientId) {
-        throw new Error('OIDC_ISSUER_URL and OIDC_CLIENT_ID must be defined');
+        throw new Error('OIDC_ISSUER_URL and PLANNER_OIDC_CLIENT_ID must be defined');
     }
 
     return new OAuth2Client(clientId, null, redirectUri);
