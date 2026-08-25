@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "tsc --watch",
         "build": "tsc",
-        "lint": "tsc --noEmit && oxlint . --report-unused-disable-directives --deny-warnings",
+        "lint": "oxlint . --report-unused-disable-directives --deny-warnings",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
         "db:studio": "drizzle-kit studio"

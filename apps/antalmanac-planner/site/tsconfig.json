@@ -2,7 +2,8 @@
     "compilerOptions": {
         "target": "ES2020",
         "useDefineForClassFields": true,
-        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "lib": ["es2024", "esnext.collection", "dom", "dom.iterable"],
+        "jsx": "react-jsx",
         "module": "ESNext",
         "baseUrl": ".",
         "paths": {
@@ -15,7 +16,6 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react-jsx",
         /* Linting */
         "strict": true,
         "noUnusedLocals": true,
@@ -32,6 +32,6 @@
             }
         ]
     },
-    "include": [".next/types/**/*.ts", "./next-env.d.ts", "src/", ".next/dev/types/**/*.ts"],
+    "include": ["../../antalmanac/.next/types/**/*.ts", "../../antalmanac/./next-env.d.ts", "src/", "../../antalmanac/.next/dev/types/**/*.ts"],
     "exclude": ["./node_modules"]
 }

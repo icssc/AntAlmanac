@@ -19,7 +19,7 @@
         "test": "vitest && pnpm --filter @antalmanac-planner test",
         "deploy": "sst deploy --stage production",
         "format": "oxfmt",
-        "lint": "oxlint --deny-warnings && pnpm --filter @antalmanac-planner lint",
+        "lint": "pnpm --filter antalmanac check-tsc && oxlint --deny-warnings",
         "get-data": "pnpm --filter @antalmanac-scheduler get-data"
     },
     "devDependencies": {

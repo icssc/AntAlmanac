@@ -1,5 +1,7 @@
 import { createTheme, PaletteOptions } from '@mui/material';
 
+import './theme-d';
+
 const sharedTokens = {
     primary: {
         main: '#305db7',

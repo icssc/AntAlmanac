@@ -33,7 +33,7 @@
         "dev": "next dev",
         "build": "next build",
         "typegen": "next typegen",
-        "lint": "tsc --noEmit && oxlint . --report-unused-disable-directives",
+        "lint": "oxlint . --report-unused-disable-directives",
         "test": "jest"
     },
     "browserslist": {

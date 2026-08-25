@@ -20,7 +20,14 @@
             "$stores/*": ["../antalmanac-scheduler/site/src/stores/*"],
             "$src/*": ["../antalmanac-scheduler/site/src/*"],
             "$scripts/*": ["../antalmanac-scheduler/site/scripts/*"]
-        }
+        },
+        /* Necessary for Planner */
+        "skipLibCheck": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
+        "strict": true,
+        /* Necessary for monorepo planner */
+        "verbatimModuleSyntax": false
     },
     "include": [
         "./dist/types/**/*.ts",
