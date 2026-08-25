@@ -33,7 +33,6 @@
         "dev": "next dev",
         "build": "next build",
         "typegen": "next typegen",
-        "lint": "oxlint . --report-unused-disable-directives",
         "test": "jest"
     },
     "browserslist": {
@@ -61,7 +60,6 @@
         "esbuild": "^0.25.9",
         "jest": "^30.1.1",
         "jest-environment-jsdom": "^30.1.1",
-        "oxlint": "1.70.0",
         "sass": "^1.101.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3"

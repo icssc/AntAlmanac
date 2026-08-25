@@ -178,9 +178,6 @@ importers:
       drizzle-kit:
         specifier: ^0.30.6
         version: 0.30.6
-      oxlint:
-        specifier: 1.70.0
-        version: 1.70.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -293,9 +290,6 @@ importers:
       jest-environment-jsdom:
         specifier: ^30.1.1
         version: 30.4.1
-      oxlint:
-        specifier: 1.70.0
-        version: 1.70.0
       sass:
         specifier: ^1.101.0
         version: 1.101.0

@@ -2,7 +2,6 @@
     "name": "@antalmanac-planner",
     "version": "0.1.0",
     "scripts": {
-        "lint": "pnpm --filter=api lint && pnpm --filter=site lint",
         "test": "pnpm --filter=site test",
         "db:generate": "pnpm --filter=api db:generate",
         "db:migrate": "pnpm --filter=api db:migrate",
