@@ -68,13 +68,30 @@ export default $config({
 
         const dbUrl = process.env.DB_URL;
 
+        const router = new sst.aws.Router('AntAlmanacRouter', {
+            domain: {
+                name: domain,
+                aliases: $app.stage === 'production' ? [`www.${domain}`] : undefined,
+            },
+            transform: {
+                cachePolicy(_, opts) {
+                    opts.id = '92d18877-845e-47e7-97e6-895382b1bf7c';
+                },
+                cdn(args) {
+                    if ($app.stage !== 'production') {
+                        args.wait = false;
+                    }
+                },
+            },
+        });
+
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',
             // TODO (@KevinWu098): Unpin once https://github.com/opennextjs/opennextjs-aws/issues/1133 is fixed
             openNextVersion: '3.6.6',
-            domain: {
-                name: domain,
-                aliases: $app.stage === 'production' ? [`www.${domain}`] : undefined,
+            router: {
+                instance: router,
+                path: '/',
             },
             cachePolicy: ANTALMANAC_WEBSITE_SERVER_CACHE_POLICY,
             environment: {
