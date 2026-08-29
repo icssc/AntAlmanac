@@ -1,5 +1,6 @@
 import {
     getDismissedCombos,
+    getReviewCounts,
     getReviewPromptLastInteractionAt,
     getReviewedCombos,
     insertInstructorReview,
@@ -80,6 +81,15 @@ const reviewRouter = router({
     getDismissedCombos: protectedProcedure.query(async ({ ctx }) => {
         return getDismissedCombos(db, ctx.userId);
     }),
+
+    /**
+     * Review counts per (professorId, courseId) across all users
+     */
+    getReviewCounts: protectedProcedure
+        .input(z.object({ courseIds: z.array(z.string()).min(1).max(200) }))
+        .query(async ({ input }) => {
+            return getReviewCounts(db, input.courseIds);
+        }),
 
     /**
      * Latest time the user dismissed a review prompt or submitted a quick review.

@@ -43,6 +43,22 @@ const PAST_TERMS_WINDOW = 4;
 /** Min time between review prompts after the user last dismissed, skipped, or submitted. */
 const REVIEW_PROMPT_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 
+export function reviewSelectionWeight(reviewCount: number): number {
+    return 1 / (reviewCount + 1);
+}
+
+/** Key for looking a candidate up in the review count map. */
+function reviewCountKey(courseId: string, professorId: string): string {
+    return `${courseId}::${professorId}`;
+}
+
+export function weightedOrder<T>(items: T[], weightOf: (item: T) => number): T[] {
+    return items
+        .map((item) => ({ item, key: Math.random() ** (1 / weightOf(item)) }))
+        .sort((a, b) => b.key - a.key)
+        .map(({ item }) => item);
+}
+
 type ReviewPromptState = {
     candidate: ReviewCandidate | null;
     eligibleCandidates: ReviewCandidate[];
@@ -178,13 +194,20 @@ export const useReviewPromptStore = create(
 
                 if (eligible.length === 0) return;
 
-                const shuffled = [...eligible];
-                for (let i = shuffled.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-                }
-                const first = shuffled[0];
-                toStep('enrollment-confirm', { ...RESET_STATE, candidate: first, eligibleCandidates: shuffled });
+                let reviewCounts = new Map<string, number>();
+                try {
+                    const rows = await trpc.review.getReviewCounts.query({
+                        courseIds: [...new Set(eligible.map((c) => c.courseId))],
+                    });
+                    reviewCounts = new Map(rows.map((r) => [reviewCountKey(r.courseId, r.professorId), r.reviewCount]));
+                } catch {}
+
+                const candidateReviewCount = (candidate: ReviewCandidate) =>
+                    reviewCounts.get(reviewCountKey(candidate.courseId, candidate.professorId)) ?? 0;
+
+                const ordered = weightedOrder(eligible, (c) => reviewSelectionWeight(candidateReviewCount(c)));
+                const first = ordered[0];
+                toStep('enrollment-confirm', { ...RESET_STATE, candidate: first, eligibleCandidates: ordered });
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
                     action: analyticsEnum.review.actions.PROMPT_SHOWN,
@@ -193,6 +216,7 @@ export const useReviewPromptStore = create(
                         courseTitle: first.courseTitle,
                         professorId: first.professorId,
                         term: first.term.shortName,
+                        reviewCount: candidateReviewCount(first),
                     },
                 });
             },
