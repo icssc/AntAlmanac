@@ -1,3 +1,4 @@
+import { REVIEW_COUNT_BATCH_SIZE, chunk } from '$lib/reviewPrompt';
 import { reviewSelectionWeight, weightedOrder } from '$stores/ReviewPromptStore';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
@@ -26,6 +27,49 @@ describe('reviewSelectionWeight', () => {
         for (let i = 1; i < weights.length; i++) {
             expect(weights[i]).toBeLessThan(weights[i - 1]);
         }
+    });
+});
+
+describe('chunk', () => {
+    test('splits into chunks of at most size', () => {
+        expect(chunk([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]]);
+    });
+
+    test('returns a single chunk when input fits exactly', () => {
+        const items = Array.from({ length: REVIEW_COUNT_BATCH_SIZE }, (_, i) => i);
+        const chunks = chunk(items, REVIEW_COUNT_BATCH_SIZE);
+
+        expect(chunks).toHaveLength(1);
+        expect(chunks[0]).toHaveLength(REVIEW_COUNT_BATCH_SIZE);
+    });
+
+    test('splits at one past the batch size — the case that previously failed validation', () => {
+        const items = Array.from({ length: REVIEW_COUNT_BATCH_SIZE + 1 }, (_, i) => i);
+        const chunks = chunk(items, REVIEW_COUNT_BATCH_SIZE);
+
+        expect(chunks).toHaveLength(2);
+        expect(chunks[0]).toHaveLength(REVIEW_COUNT_BATCH_SIZE);
+        expect(chunks[1]).toHaveLength(1);
+
+        expect(chunks.every((c) => c.length <= REVIEW_COUNT_BATCH_SIZE)).toBe(true);
+    });
+
+    test('preserves all items in order across chunks', () => {
+        const items = Array.from({ length: 457 }, (_, i) => i);
+        const chunks = chunk(items, REVIEW_COUNT_BATCH_SIZE);
+
+        expect(chunks).toHaveLength(3);
+        expect(chunks.flat()).toEqual(items);
+        expect(chunks.every((c) => c.length >= 1 && c.length <= REVIEW_COUNT_BATCH_SIZE)).toBe(true);
+    });
+
+    test('returns no chunks for empty input, so no request is made', () => {
+        expect(chunk([], REVIEW_COUNT_BATCH_SIZE)).toEqual([]);
+    });
+
+    test('rejects a non-positive size rather than looping forever', () => {
+        expect(() => chunk([1, 2, 3], 0)).toThrow();
+        expect(() => chunk([1, 2, 3], -1)).toThrow();
     });
 });
 
@@ -95,6 +139,41 @@ describe('weightedOrder', () => {
         }
 
         expect(seenFirst).toEqual(new Set(['unreviewed', 'reviewed']));
+    });
+
+    test('stays random at review counts that underflow a naive u**(1/w) key', () => {
+        const TRIALS = 6_000;
+        const HEAVY = 5_000;
+        const items = ['a', 'b', 'c'];
+        const firstCounts = new Map(items.map((item) => [item, 0]));
+
+        for (let i = 0; i < TRIALS; i++) {
+            const first = weightedOrder(items, () => reviewSelectionWeight(HEAVY))[0];
+            firstCounts.set(first, (firstCounts.get(first) ?? 0) + 1);
+        }
+
+        for (const item of items) {
+            const share = (firstCounts.get(item) ?? 0) / TRIALS;
+            expect(share).toBeGreaterThan(0.25);
+            expect(share).toBeLessThan(0.42);
+        }
+    });
+
+    test('still favors an unreviewed candidate over a heavily reviewed one', () => {
+        const TRIALS = 2_000;
+        const items = [
+            { name: 'unreviewed', count: 0 },
+            { name: 'heavy', count: 5_000 },
+        ];
+
+        let unreviewedFirst = 0;
+        for (let i = 0; i < TRIALS; i++) {
+            if (weightedOrder(items, (item) => reviewSelectionWeight(item.count))[0].name === 'unreviewed') {
+                unreviewedFirst++;
+            }
+        }
+
+        expect(unreviewedFirst / TRIALS).toBeGreaterThan(0.99);
     });
 
     test('approximates uniform selection when all weights are equal', () => {

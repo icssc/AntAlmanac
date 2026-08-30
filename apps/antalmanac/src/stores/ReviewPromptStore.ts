@@ -1,5 +1,6 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
+import { REVIEW_COUNT_BATCH_SIZE, chunk } from '$lib/reviewPrompt';
 import { termData } from '$lib/term';
 import { postHog } from '$providers/AppPostHogProvider';
 import AppStore from '$stores/AppStore';
@@ -54,7 +55,7 @@ function reviewCountKey(courseId: string, professorId: string): string {
 
 export function weightedOrder<T>(items: T[], weightOf: (item: T) => number): T[] {
     return items
-        .map((item) => ({ item, key: Math.random() ** (1 / weightOf(item)) }))
+        .map((item) => ({ item, key: Math.log(Math.random()) / weightOf(item) }))
         .sort((a, b) => b.key - a.key)
         .map(({ item }) => item);
 }
@@ -195,12 +196,26 @@ export const useReviewPromptStore = create(
                 if (eligible.length === 0) return;
 
                 let reviewCounts = new Map<string, number>();
+                let reviewCountsLoaded = true;
                 try {
-                    const rows = await trpc.review.getReviewCounts.query({
-                        courseIds: [...new Set(eligible.map((c) => c.courseId))],
-                    });
-                    reviewCounts = new Map(rows.map((r) => [reviewCountKey(r.courseId, r.professorId), r.reviewCount]));
-                } catch {}
+                    const batches = chunk([...new Set(eligible.map((c) => c.courseId))], REVIEW_COUNT_BATCH_SIZE);
+                    const results = await Promise.all(
+                        batches.map((courseIds) => trpc.review.getReviewCounts.query({ courseIds }))
+                    );
+
+                    reviewCounts = new Map(
+                        results.flat().map((r) => [reviewCountKey(r.courseId, r.professorId), r.reviewCount])
+                    );
+                } catch (error) {
+                    // Non-fatal by design: counts only bias the ordering, so a failure degrades
+                    // to uniform selection rather than suppressing the prompt entirely. But it
+                    // is reported rather than swallowed — an empty map makes every candidate
+                    // report reviewCount 0, which is indistinguishable from genuinely equal
+                    // counts and would otherwise silently pollute the PROMPT_SHOWN analytics
+                    // used to validate the weighting.
+                    reviewCountsLoaded = false;
+                    console.warn('[ReviewPrompt] Failed to load review counts; selection is unweighted', error);
+                }
 
                 const candidateReviewCount = (candidate: ReviewCandidate) =>
                     reviewCounts.get(reviewCountKey(candidate.courseId, candidate.professorId)) ?? 0;
@@ -217,6 +232,9 @@ export const useReviewPromptStore = create(
                         professorId: first.professorId,
                         term: first.term.shortName,
                         reviewCount: candidateReviewCount(first),
+                        // False means `reviewCount` above is a fallback zero, not a real count.
+                        // Filter these out before analyzing the selection distribution.
+                        reviewCountsLoaded,
                     },
                 });
             },

@@ -7,6 +7,7 @@ import {
     insertReviewDismissal,
 } from '$backend/lib/rds/reviews';
 import { protectedProcedure, router } from '$backend/trpc';
+import { REVIEW_COUNT_BATCH_SIZE } from '$lib/reviewPrompt';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -86,7 +87,7 @@ const reviewRouter = router({
      * Review counts per (professorId, courseId) across all users
      */
     getReviewCounts: protectedProcedure
-        .input(z.object({ courseIds: z.array(z.string()).min(1).max(200) }))
+        .input(z.object({ courseIds: z.array(z.string()).min(1).max(REVIEW_COUNT_BATCH_SIZE) }))
         .query(async ({ input }) => {
             return getReviewCounts(db, input.courseIds);
         }),
