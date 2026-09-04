@@ -1,5 +1,6 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
+import { REVIEW_COUNT_BATCH_SIZE, chunk } from '$lib/reviewPrompt';
 import { termData } from '$lib/term';
 import { postHog } from '$providers/AppPostHogProvider';
 import AppStore from '$stores/AppStore';
@@ -42,6 +43,22 @@ const PAST_TERMS_WINDOW = 4;
 
 /** Min time between review prompts after the user last dismissed, skipped, or submitted. */
 const REVIEW_PROMPT_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+
+export function reviewSelectionWeight(reviewCount: number): number {
+    return 1 / (reviewCount + 1);
+}
+
+/** Key for looking a candidate up in the review count map. */
+function reviewCountKey(courseId: string, professorId: string): string {
+    return `${courseId}::${professorId}`;
+}
+
+export function weightedOrder<T>(items: T[], weightOf: (item: T) => number): T[] {
+    return items
+        .map((item) => ({ item, key: Math.log(Math.random()) / weightOf(item) }))
+        .sort((a, b) => b.key - a.key)
+        .map(({ item }) => item);
+}
 
 type ReviewPromptState = {
     candidate: ReviewCandidate | null;
@@ -178,13 +195,34 @@ export const useReviewPromptStore = create(
 
                 if (eligible.length === 0) return;
 
-                const shuffled = [...eligible];
-                for (let i = shuffled.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                let reviewCounts = new Map<string, number>();
+                let reviewCountsLoaded = true;
+                try {
+                    const batches = chunk([...new Set(eligible.map((c) => c.courseId))], REVIEW_COUNT_BATCH_SIZE);
+                    const results = await Promise.all(
+                        batches.map((courseIds) => trpc.review.getReviewCounts.query({ courseIds }))
+                    );
+
+                    reviewCounts = new Map(
+                        results.flat().map((r) => [reviewCountKey(r.courseId, r.professorId), r.reviewCount])
+                    );
+                } catch (error) {
+                    // Non-fatal by design: counts only bias the ordering, so a failure degrades
+                    // to uniform selection rather than suppressing the prompt entirely. But it
+                    // is reported rather than swallowed — an empty map makes every candidate
+                    // report reviewCount 0, which is indistinguishable from genuinely equal
+                    // counts and would otherwise silently pollute the PROMPT_SHOWN analytics
+                    // used to validate the weighting.
+                    reviewCountsLoaded = false;
+                    console.warn('[ReviewPrompt] Failed to load review counts; selection is unweighted', error);
                 }
-                const first = shuffled[0];
-                toStep('enrollment-confirm', { ...RESET_STATE, candidate: first, eligibleCandidates: shuffled });
+
+                const candidateReviewCount = (candidate: ReviewCandidate) =>
+                    reviewCounts.get(reviewCountKey(candidate.courseId, candidate.professorId)) ?? 0;
+
+                const ordered = weightedOrder(eligible, (c) => reviewSelectionWeight(candidateReviewCount(c)));
+                const first = ordered[0];
+                toStep('enrollment-confirm', { ...RESET_STATE, candidate: first, eligibleCandidates: ordered });
                 logAnalytics(postHog, {
                     category: analyticsEnum.review,
                     action: analyticsEnum.review.actions.PROMPT_SHOWN,
@@ -193,6 +231,10 @@ export const useReviewPromptStore = create(
                         courseTitle: first.courseTitle,
                         professorId: first.professorId,
                         term: first.term.shortName,
+                        reviewCount: candidateReviewCount(first),
+                        // False means `reviewCount` above is a fallback zero, not a real count.
+                        // Filter these out before analyzing the selection distribution.
+                        reviewCountsLoaded,
                     },
                 });
             },
