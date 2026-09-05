@@ -1,6 +1,18 @@
-import React, { FC, useContext, useState } from 'react';
-import ThemeContext from '../../style/theme-context';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 
+import './Profile.scss';
+
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import FlagIcon from '@mui/icons-material/Flag';
+import InfoIcon from '@mui/icons-material/Info';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
 import {
     List,
     ListItem,
@@ -12,35 +24,22 @@ import {
     Switch,
     Typography,
 } from '@mui/material';
-import './Profile.scss';
-
-import Link from 'next/link';
-
-import EventNoteIcon from '@mui/icons-material/EventNote';
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from '@mui/icons-material/Logout';
-import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import RateReviewIcon from '@mui/icons-material/RateReview';
-import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
-import FlagIcon from '@mui/icons-material/Flag';
-import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
-import InfoIcon from '@mui/icons-material/Info';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-
-import { usePathname } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setAutosaveEnabled } from '../../store/slices/userSlice';
-import trpc from '../../trpc';
-import Image from 'next/image';
-import TabSelector, { TabOption } from '../../app/roadmap/sidebar/TabSelector';
 import { Theme, UserMetadata } from '@peterportal/types';
-import { useIsMobile } from '../../helpers/util';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React, { FC, useContext, useState } from 'react';
+
+import TabSelector, { TabOption } from '../../app/roadmap/sidebar/TabSelector';
 import { FEEDBACK_FORM_URL } from '../../helpers/constants';
+import { useIsMobile } from '../../helpers/util';
 import { useIsLoggedIn } from '../../hooks/isLoggedIn';
 import ProfileMenuButtons from '../../shared-components/ProfileMenuButtons';
 import SignInDialog from '../../shared-components/SignInDialog';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setAutosaveEnabled } from '../../store/slices/userSlice';
+import ThemeContext from '../../style/theme-context';
+import trpc from '../../trpc';
 import AboutDialog from './AboutDialog';
 
 interface AdminProfileLinksProps {
@@ -53,7 +52,7 @@ const AdminProfileLinks = ({ pathname, onClose }: AdminProfileLinksProps) => {
             <ListItem>
                 <ListItemButton
                     className={'profile-popover-link' + (pathname === '/admin/verify' ? ' active' : '')}
-                    href="/admin/verify"
+                    href="/planner/admin/verify"
                     onClick={onClose}
                     component={Link}
                 >
@@ -66,7 +65,7 @@ const AdminProfileLinks = ({ pathname, onClose }: AdminProfileLinksProps) => {
             <ListItem>
                 <ListItemButton
                     className={'profile-popover-link' + (pathname === '/admin/reports' ? ' active' : '')}
-                    href="/admin/reports"
+                    href="/planner/admin/reports"
                     onClick={onClose}
                     component={Link}
                 >
@@ -105,7 +104,7 @@ const ProfileMenuLinks: FC<ProfileMenuLinksProps> = ({ handleLinkClick }) => {
                 <ListItem>
                     <ListItemButton
                         className={'profile-popover-link' + (pathname === '/reviews' ? ' active' : '')}
-                        href="/reviews"
+                        href="/planner/reviews"
                         onClick={handleLinkClick}
                         component={Link}
                     >

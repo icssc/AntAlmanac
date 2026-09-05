@@ -142,7 +142,7 @@ export function LogoAndSwitcher() {
                             }}
                             variant="outlined"
                             component={Link}
-                            href="https://antalmanac.com/"
+                            href="/"
                         >
                             Scheduler
                         </Button>
