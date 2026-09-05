@@ -112,7 +112,7 @@ export default $config({
                 STAGE: $app.stage,
                 // Planner
                 PLANNER_DATABASE_URL: process.env.PLANNER_DATABASE_URL,
-                PLANNER_SESSION_SECRET: process.env.SESSION_SECRET,
+                PLANNER_SESSION_SECRET: process.env.PLANNER_SESSION_SECRET,
                 PUBLIC_API_URL: process.env.PUBLIC_API_URL,
                 PLANNER_OIDC_CLIENT_ID: process.env.PLANNER_OIDC_CLIENT_ID,
                 ADMIN_EMAILS: process.env.ADMIN_EMAILS,
