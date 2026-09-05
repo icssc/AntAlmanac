@@ -7,10 +7,10 @@ const LOGGED_IN_COOKIE_NAME = 'icssc_logged_in';
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 
 function getSessionSecret() {
-    const secret = process.env.SESSION_SECRET;
+    const secret = process.env.PLANNER_SESSION_SECRET;
 
     if (!secret) {
-        throw new Error('SESSION_SECRET must be defined');
+        throw new Error('PLANNER_SESSION_SECRET must be defined');
     }
 
     return secret;
@@ -75,7 +75,7 @@ function parseCookies(cookieHeader: string | null) {
                     return [cookie, ''];
                 }
                 return [cookie.slice(0, separatorIndex), cookie.slice(separatorIndex + 1)];
-            }),
+            })
     );
 }
 

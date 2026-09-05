@@ -1,15 +1,16 @@
 import { TRPCError } from '@trpc/server';
-import { publicProcedure, router } from '../../helpers/trpc';
-import { user } from '../../db/schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
+
 import { db } from '../../db';
+import { user } from '../../db/schema';
 import { queryGetPlanners } from '../../helpers/roadmap';
+import { publicProcedure, router } from '../../helpers/trpc';
 
 const externalRoadmapsRouter = router({
     getByEmail: publicProcedure.input(z.object({ email: z.string() })).query(async ({ input, ctx }) => {
         const authToken = ctx.req.headers.get('authorization');
-        if (authToken !== `Bearer ${process.env.EXTERNAL_USER_READ_SECRET}`) {
+        if (authToken !== `Bearer ${process.env.PLANNER_CLIENT_API_KEY}`) {
             throw new TRPCError({ code: 'UNAUTHORIZED' });
         }
 
