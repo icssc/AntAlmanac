@@ -1,18 +1,17 @@
-import type { Metadata } from 'next';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 import '../globals.scss';
 import '../App.scss';
 
-import AppHeader from '../component/AppHeader/AppHeader';
-import ChangelogModal from '../component/ChangelogModal/ChangelogModal';
-
-// Import Global Store
-import AppProvider from '../component/AppProvider/AppProvider';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { createServerSideTrpcCaller } from '../trpc';
+import type { Metadata } from 'next';
+import { Roboto } from 'next/font/google';
 import { headers } from 'next/headers';
 
-import { Roboto } from 'next/font/google';
+import AppHeader from '../component/AppHeader/AppHeader';
+// Import Global Store
+import AppProvider from '../component/AppProvider/AppProvider';
+import ChangelogModal from '../component/ChangelogModal/ChangelogModal';
+import { createServerSideTrpcCaller } from '../trpc';
 
 const roboto = Roboto({
     subsets: ['latin'],
@@ -45,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
                 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
                 {/* oxlint-disable-next-line nextjs/no-sync-scripts */}
-                <script src="/planner/theme-script.js"></script>
+                <script src="/planner-files/theme-script.js"></script>
                 {/* This script must run and apply styles to the root HTML element before the
         <body> tag opens to avoid an unstyled body tag causing a white flash in dark mode */}
             </head>
