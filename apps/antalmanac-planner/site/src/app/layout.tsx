@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <link rel="shortcut icon" href="/favicon.ico" />
                 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
                 <meta name="apple-mobile-web-app-title" content="AntAlmanac Planner" />
-                <link rel="manifest" href="/site.webmanifest" />
+                <link rel="manifest" href="/planner-files/site.webmanifest" />
                 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
                 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
                 {/* oxlint-disable-next-line nextjs/no-sync-scripts */}
