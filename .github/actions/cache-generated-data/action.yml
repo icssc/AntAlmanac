@@ -19,7 +19,7 @@ runs:
                   termData-cache-main-
 
         - name: Generate termData
-          run: pnpm --filter @antalmanac-scheduler get-data
+          run: pnpm get-data
           shell: bash
           env:
               ANTEATER_API_KEY: ${{ inputs.api-key }}

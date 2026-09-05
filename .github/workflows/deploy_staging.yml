@@ -39,7 +39,7 @@ jobs:
         runs-on: ubuntu-latest
         environment:
             name: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
-            url: https://scheduler-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
+            url: https://staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
 
         env:
             SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
@@ -75,7 +75,7 @@ jobs:
             - name: Migrate database
               env:
                   DB_URL: ${{ secrets.DEV_DB_URL }}
-              run: pnpm db:migrate
+              run: pnpm sched:db:migrate
 
             - name: Generate termData
               uses: ./.github/actions/cache-generated-data
@@ -86,7 +86,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: apps/antalmanac/.next/cache
-                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/antalmanac/src/**') }}
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/antalmanac/src/**') }}-${{ hashFiles('apps/antalmanac-planner/site/src/**') }}-${{ hashFiles('apps/antalmanac-scheduler/site/src/**') }}
                   restore-keys: |
                       ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
                       ${{ runner.os }}-nextjs-
@@ -104,7 +104,7 @@ jobs:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
                   state: success
-                  environment-url: https://scheduler-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
+                  environment-url: https://staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
 
             - name: Add reaction to comment
               if: github.event_name == 'repository_dispatch'

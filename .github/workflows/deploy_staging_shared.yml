@@ -68,7 +68,7 @@ jobs:
             - name: Migrate database
               env:
                   DB_URL: ${{ secrets.DEV_DB_URL }}
-              run: pnpm db:migrate
+              run: pnpm sched:db:migrate
 
             - name: Generate termData
               uses: ./.github/actions/cache-generated-data
@@ -79,7 +79,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: apps/antalmanac/.next/cache
-                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/antalmanac/src/**') }}
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/antalmanac/src/**') }}-${{ hashFiles('apps/antalmanac-planner/site/src/**') }}-${{ hashFiles('apps/antalmanac-scheduler/site/src/**') }}
                   restore-keys: |
                       ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
                       ${{ runner.os }}-nextjs-
