@@ -16,7 +16,7 @@
         "plan:db:generate": "pnpm --filter @antalmanac-planner db:generate",
         "plan:db:migrate": "pnpm --filter @antalmanac-planner db:migrate",
         "plan:db:studio": "pnpm --filter @antalmanac-planner db:studio",
-        "test": "vitest && pnpm --filter @antalmanac-planner test",
+        "test": "pnpm --filter @antalmanac-planner test && vitest",
         "deploy": "sst deploy --stage production",
         "format": "oxfmt",
         "lint": "oxlint --deny-warnings",
