@@ -98,7 +98,7 @@ export default $config({
                 // Shared
                 ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
                 OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
-                NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
+                NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
                 NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
                 // Scheduler
                 DB_URL: dbUrl,
