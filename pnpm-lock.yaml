@@ -217,9 +217,6 @@ importers:
       node-html-parser:
         specifier: ^6.1.13
         version: 6.1.13
-      posthog-js:
-        specifier: ^1.372.10
-        version: 1.373.5
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -4779,6 +4776,7 @@ packages:
 
   hashmap@2.4.0:
     resolution: {integrity: sha512-Ngj48lhnxJdnBAEVbubKBJuN1elfVLZJs94ZixRi98X3GCU4v6pgj9qRkHt6H8WaVJ69Wv0r1GhtS7hvF9zCgg==}
+    deprecated: hashmap 3.x is backwards compatible for typical require() usage and much faster. See https://github.com/flesler/hashmap/blob/main/docs/backwards-compatibility.md
 
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
