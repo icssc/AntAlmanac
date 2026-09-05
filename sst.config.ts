@@ -111,7 +111,7 @@ export default $config({
                 PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
                 STAGE: $app.stage,
                 // Planner
-                DATABASE_URL: process.env.DATABASE_URL,
+                PLANNER_DATABASE_URL: process.env.PLANNER_DATABASE_URL,
                 SESSION_SECRET: process.env.SESSION_SECRET,
                 PUBLIC_API_URL: process.env.PUBLIC_API_URL,
                 PLANNER_OIDC_CLIENT_ID: process.env.PLANNER_OIDC_CLIENT_ID,
