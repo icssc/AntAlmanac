@@ -29,9 +29,9 @@ describe('hasIosAppStorePlatformCookie', () => {
     });
 
     test('detects a URI-encoded cookie value among other cookies', () => {
-        expect(
-            hasIosAppStorePlatformCookie(`icssc_logged_in=1; ${name}=${encodeURIComponent(value)}; other=1`)
-        ).toBe(true);
+        expect(hasIosAppStorePlatformCookie(`icssc_logged_in=1; ${name}=${encodeURIComponent(value)}; other=1`)).toBe(
+            true
+        );
     });
 
     test('ignores a similarly named cookie with a different value', () => {
