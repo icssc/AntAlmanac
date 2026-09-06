@@ -6,7 +6,7 @@ import { useFallbackStore } from '$stores/FallbackStore';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
 import dynamic from 'next/dynamic';
-import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -23,8 +23,7 @@ const ScheduleManagementContent = dynamic(
  * Each tab's content has functionality for managing the user's schedule.
  */
 export function ScheduleManagement() {
-    const segment = useSelectedLayoutSegment();
-    const router = useRouter();
+    const pathname = usePathname();
     const theme = useTheme();
     const isDesktop = useMediaQuery(theme.breakpoints.up('sm'));
     const activeTab = useActiveTab();
@@ -68,15 +67,15 @@ export function ScheduleManagement() {
     );
 
     useEffect(() => {
-        if (fallbackMode && segment !== 'added') {
-            router.replace(TAB_HREF.added);
+        if (fallbackMode && pathname !== TAB_HREF.added) {
+            window.history.replaceState(null, '', TAB_HREF.added);
             return;
         }
 
-        if (isDesktop && segment === 'calendar') {
-            router.replace(TAB_HREF.search);
+        if (isDesktop && pathname === TAB_HREF.calendar) {
+            window.history.replaceState(null, '', TAB_HREF.search);
         }
-    }, [segment, isDesktop, fallbackMode, router]);
+    }, [pathname, isDesktop, fallbackMode]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
