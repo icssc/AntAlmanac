@@ -14,19 +14,37 @@ let rootUrl = URL(string: "https://antalmanac.com")!
 // This should also appear in Info.plist
 let allowedOrigins: [String] = ["antalmanac.com"]
 
-// IdP host for ICSSC. Not every path on this host should use ASWebAuthenticationSession —
-// only interactive OAuth/OIDC *authorize* requests. See
-// `shouldHandOffOidcToASWebAuthenticationSession(_:)`.
+// IdP host for ICSSC. Interactive /authorize and /logout use ASWebAuthenticationSession
+// so they share Safari's cookie jar. See `shouldHandOffOidcToASWebAuthenticationSession(_:)`.
 let authOrigins: [String] = ["auth.icssc.club"]
 
-/// `true` only for URLs that must run in a real Safari context (Google OAuth, passkeys).
-/// `/logout` and other IdP pages load in the WKWebView so `post_logout_redirect_uri` works
-/// and users don't see a bogus "sign in" sheet on logout.
+struct AuthHandoffCallback {
+    let host: String
+    let path: String
+}
+
+func isOidcLogoutURL(_ url: URL) -> Bool {
+    guard let host = url.host else { return false }
+    guard authOrigins.contains(where: { host.range(of: $0) != nil }) else { return false }
+    return url.path.hasPrefix("/logout")
+}
+
+/// `true` for URLs that must run in Safari (ASWebAuthenticationSession), not WKWebView.
+///
+/// Interactive `/authorize` needs Safari for Google OAuth and passkeys.
+/// `/logout` must also run in Safari: sign-in writes the HttpOnly `sid` cookie
+/// into Safari's jar, and auth.icssc.club/logout only deletes that session when
+/// it receives the cookie. WKWebView has a separate jar, so in-app logout
+/// appears to succeed while the next ASW sign-in silently reuses the old
+/// account (icssc/AntAlmanac#1829, icssc/auth#8).
 func shouldHandOffOidcToASWebAuthenticationSession(_ url: URL) -> Bool {
     guard let host = url.host else { return false }
     guard authOrigins.contains(where: { host.range(of: $0) != nil }) else { return false }
-    // OIDC spec: authorization request hits .../authorize. (auth.icssc.club)
-    // Logout, discovery, JWKS, etc. stay in-app.
+
+    if url.path.hasPrefix("/logout") {
+        return true
+    }
+
     guard url.path.hasPrefix("/authorize") else { return false }
 
     // prompt=none is a silent-SSO probe (AutoSignIn). auth.icssc.club either
@@ -50,6 +68,24 @@ func shouldHandOffOidcToASWebAuthenticationSession(_ url: URL) -> Bool {
     }
 
     return true
+}
+
+/// HTTPS callback that should terminate ASWebAuthenticationSession.
+/// Authorize uses `redirect_uri`; logout uses `post_logout_redirect_uri`.
+func authHandoffCallback(for url: URL) -> AuthHandoffCallback {
+    let isLogout = url.path.hasPrefix("/logout")
+    let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+    let paramName = isLogout ? "post_logout_redirect_uri" : "redirect_uri"
+    let redirectURI = components?.queryItems?
+        .first(where: { $0.name == paramName })?
+        .value
+        .flatMap { URL(string: $0) }
+
+    let host = redirectURI?.host ?? "antalmanac.com"
+    let defaultPath = isLogout ? "/" : "/api/auth/oauth2/callback/icssc"
+    let rawPath = redirectURI?.path ?? defaultPath
+    let path = rawPath.isEmpty ? "/" : rawPath
+    return AuthHandoffCallback(host: host, path: path)
 }
 
 let platformCookie = Cookie(name: "app-platform", value: "iOS App Store")

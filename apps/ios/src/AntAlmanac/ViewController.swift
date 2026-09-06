@@ -264,18 +264,21 @@ extension ViewController: WKScriptMessageHandler {
 // MARK: - ASWebAuthenticationSession handoff
 //
 // When the WKWebView tries to navigate to auth.icssc.club (the ICSSC OIDC
-// issuer), we cancel the navigation and re-run the flow inside an
-// ASWebAuthenticationSession. Reasons:
+// issuer) for interactive authorize or logout, we cancel the navigation and
+// re-run the flow inside an ASWebAuthenticationSession. Reasons:
 //   1. Google rejects OAuth inside embedded webviews with `disallowed_useragent`
 //      since 2021-09-30 (Google Developers Blog).
 //   2. Passkeys / WebAuthn bound to a third-party RP ID (e.g. google.com) only
 //      work in top-level Safari context, not in a WKWebView owned by our app
 //      (passkeys.dev, Apple docs on passkey use in web browsers).
+//   3. Logout must see the HttpOnly `sid` cookie that ASW wrote into Safari.
+//      Hitting /logout in WKWebView cannot send that cookie, so the IdP
+//      session survives and the next sign-in is silent SSO.
 //
-// ASW uses the `redirect_uri` query param from auth.icssc.club/authorize (Better
-// Auth: `/api/auth/oauth2/callback/icssc`). Domain ownership is validated via
-// the `webcredentials` AASA entry; that callback path is intentionally not
-// listed under `applinks` so mobile Safari logins are not hijacked into the app.
+// ASW callback comes from `redirect_uri` (authorize) or `post_logout_redirect_uri`
+// (logout). Domain ownership is validated via the `webcredentials` AASA entry;
+// OAuth callback paths are intentionally not listed under `applinks` so mobile
+// Safari logins are not hijacked into the app.
 //
 // On callback, load the redirect URL in the WKWebView. Better Auth PKCE cookies
 // from the original sign-in request remain in the WKWebView jar.
@@ -285,30 +288,21 @@ extension ViewController: ASWebAuthenticationPresentationContextProviding {
     }
 
     func startAuthSession(url: URL, webView: WKWebView) {
-        // Derive the ASW callback from the redirect_uri embedded in the OIDC
-        // authorize URL. Each ICSSC app (AntAlmanac, peterportal-client planner)
-        // registers its own redirect_uri with auth.icssc.club and includes it as
-        // a query param on /authorize, so we can route ASW's termination to the
-        // correct Universal Link path without hard-coding per-app knowledge here.
+        // Derive the ASW callback from the OIDC URL:
+        //   - /authorize: `redirect_uri` (Better Auth `/api/auth/oauth2/callback/icssc`)
+        //   - /logout: `post_logout_redirect_uri` (usually https://antalmanac.com)
         //
+        // Each ICSSC app registers its own redirect_uri with auth.icssc.club.
         // Every registered callback must also be listed in the AASA file
         // (apps/antalmanac/src/app/apple-app-site-association/route.ts) — ASW's
-        // .https(host:path:) requires AASA verification on iOS 17.4+. If a new
-        // ICSSC app is added with its own OAuth callback on antalmanac.com,
-        // append the path there.
-        let authComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        let redirectUri = authComponents?
-            .queryItems?
-            .first(where: { $0.name == "redirect_uri" })?
-            .value
-            .flatMap { URL(string: $0) }
-
-        let callbackHost = redirectUri?.host ?? "antalmanac.com"
-        let callbackPath = redirectUri?.path ?? "/api/auth/oauth2/callback/icssc"
+        // .https(host:path:) requires AASA verification on iOS 17.4+. Logout
+        // returns to the site origin, which is covered by `webcredentials`.
+        let callbackTarget = authHandoffCallback(for: url)
+        let isLogout = isOidcLogoutURL(url)
 
         let callback: ASWebAuthenticationSession.Callback = .https(
-            host: callbackHost,
-            path: callbackPath
+            host: callbackTarget.host,
+            path: callbackTarget.path
         )
 
         let session = ASWebAuthenticationSession(
@@ -319,17 +313,28 @@ extension ViewController: ASWebAuthenticationPresentationContextProviding {
 
             if let error = error {
                 let nsError = error as NSError
-                // User-cancelled is expected; ignore silently.
+                // User-cancelled is expected for login. For logout, Better Auth
+                // already cleared the first-party session, so reload so the UI
+                // is not stuck in a signed-in state.
                 if nsError.domain == ASWebAuthenticationSessionError.errorDomain &&
                     nsError.code == ASWebAuthenticationSessionError.canceledLogin.rawValue {
+                    if isLogout {
+                        webView?.load(URLRequest(url: rootUrl))
+                    }
                     return
                 }
                 print("ASWebAuthenticationSession error: \(error)")
+                if isLogout {
+                    webView?.load(URLRequest(url: rootUrl))
+                }
                 return
             }
 
             guard let callbackURL = callbackURL,
                   var components = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false) else {
+                if isLogout {
+                    webView?.load(URLRequest(url: rootUrl))
+                }
                 return
             }
 
@@ -341,6 +346,8 @@ extension ViewController: ASWebAuthenticationPresentationContextProviding {
 
             if let redirectURL = components.url {
                 webView?.load(URLRequest(url: redirectURL))
+            } else if isLogout {
+                webView?.load(URLRequest(url: rootUrl))
             }
         }
         session.presentationContextProvider = self

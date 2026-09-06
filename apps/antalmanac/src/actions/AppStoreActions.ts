@@ -2,6 +2,7 @@ import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analyti
 import { trpc } from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
+import { getSignInAuthorizationUrlParams } from '$lib/auth/authUtils';
 import { warnMultipleTerms } from '$lib/helpers';
 import { shouldIgnoreShortcutTarget } from '$lib/keyboardShortcuts';
 import { setLocalStorageDataCache, setLocalStorageUserId } from '$lib/localStorage';
@@ -395,7 +396,10 @@ const cacheSchedule = () => {
 export const loginUser = async (provider: Provider, { silent = false, postHog }: LoginUserOptions = {}) => {
     try {
         const authUrl = await getSignInUrl(provider, {
-            authorizationUrlParams: silent ? { prompt: 'none' } : undefined,
+            authorizationUrlParams: getSignInAuthorizationUrlParams({
+                silent,
+                cookieString: document.cookie,
+            }),
             returnUrl: `${window.location.pathname}${window.location.search}${window.location.hash}`,
         });
 

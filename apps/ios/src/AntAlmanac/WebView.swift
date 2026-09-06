@@ -125,13 +125,14 @@ extension ViewController: WKUIDelegate, WKDownloadDelegate {
                 let handOffOidc = authOrigins.contains(where: { requestHost.range(of: $0) != nil })
                     && shouldHandOffOidcToASWebAuthenticationSession(requestUrl)
                 if handOffOidc {
-                    // Only /authorize: Google + passkeys; see Settings.swift. Logout (/logout) etc. stay in WKWebView.
+                    // Interactive /authorize (Google + passkeys) and /logout (Safari sid cookie).
+                    // See Settings.swift. prompt=none stays in WKWebView.
                     decisionHandler(.cancel)
                     self.startAuthSession(url: requestUrl, webView: webView)
                     return
                 }
 
-                // Remaining IdP URLs (e.g. /logout with post_logout_redirect_uri) load in the webview
+                // Remaining IdP URLs (discovery, JWKS) load in the webview
                 if authOrigins.contains(where: { requestHost.range(of: $0) != nil }) {
                     decisionHandler(.allow)
                     return
