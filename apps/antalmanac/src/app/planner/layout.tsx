@@ -1,1 +1,1 @@
-export { default } from '@antalmanac-planner/site/src/app/layout';
+export { default, metadata } from '@antalmanac-planner/site/src/app/layout';
