@@ -48,3 +48,7 @@ export const TAB_HREF = Object.fromEntries(TABS.map((tab) => [tab.name, tab.href
 export function isTabName(value: string): value is TabName {
     return Object.hasOwn(TAB_INDEX, value);
 }
+
+export function getTabFromPathname(pathname: string): TabName {
+    return TABS.find((tab) => tab.href === pathname)?.name ?? 'search';
+}

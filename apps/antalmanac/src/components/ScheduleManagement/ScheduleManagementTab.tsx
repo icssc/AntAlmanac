@@ -1,7 +1,7 @@
 import { TAB_INDEX, type TabInfo, type TabName } from '$lib/tabs/tabs';
 import { useSavedSearchStore } from '$stores/SavedSearchStore';
 import { Box, Tab } from '@mui/material';
-import Link from 'next/link';
+import Link, { type LinkProps } from 'next/link';
 
 interface ScheduleManagementTabProps {
     tab: TabInfo;
@@ -14,8 +14,11 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
 
     const href = value === TAB_INDEX.search && savedSearch ? `${tab.href}${savedSearch}` : tab.href || '/';
 
-    const handleClick = () => {
+    const handleNavigate: NonNullable<LinkProps['onNavigate']> = (event) => {
+        event.preventDefault();
         onTabChange(tab.name);
+        // NB: This is necessary to sync History API without an RSC request.
+        window.history.pushState(null, '', href);
     };
 
     const TabIcon = tab.icon;
@@ -25,6 +28,8 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
             id={tab.id}
             component={Link}
             href={href}
+            prefetch={false}
+            onNavigate={handleNavigate}
             label={
                 <Box
                     component="span"
@@ -56,7 +61,6 @@ export const ScheduleManagementTab = ({ tab, value, onTabChange }: ScheduleManag
                     ...(tab.mobileOnly ? { display: 'none' } : {}),
                 },
             })}
-            onClick={handleClick}
             value={value}
         />
     );

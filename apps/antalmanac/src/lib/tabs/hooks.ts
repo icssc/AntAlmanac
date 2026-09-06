@@ -1,18 +1,14 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import { type TabName } from '$lib/tabs/tabs';
-import { useSelectedLayoutSegment } from 'next/navigation';
+import { type TabName, getTabFromPathname } from '$lib/tabs/tabs';
+import { usePathname } from 'next/navigation';
 
 export function useActiveTab(): TabName {
-    const segment = useSelectedLayoutSegment();
+    const tab = getTabFromPathname(usePathname());
     const isMobile = useIsMobile();
 
-    if (segment === 'calendar') {
+    if (tab === 'calendar') {
         return isMobile ? 'calendar' : 'search';
     }
 
-    if (segment === 'added' || segment === 'map') {
-        return segment;
-    }
-
-    return 'search';
+    return tab;
 }
