@@ -7,11 +7,11 @@ afterEach(() => {
 });
 
 describe('reviewSelectionWeight', () => {
-    test('is inverse-linear in the review count', () => {
+    test('is inverse-logarithmic in the review count', () => {
         expect(reviewSelectionWeight(0)).toBe(1);
-        expect(reviewSelectionWeight(1)).toBe(0.5);
-        expect(reviewSelectionWeight(3)).toBe(0.25);
-        expect(reviewSelectionWeight(9)).toBeCloseTo(0.1);
+        expect(reviewSelectionWeight(1)).toBeCloseTo(0.5906161, 6);
+        expect(reviewSelectionWeight(3)).toBeCloseTo(0.4190598, 6);
+        expect(reviewSelectionWeight(9)).toBeCloseTo(0.3027931, 6);
     });
 
     test('stays positive and finite for large counts', () => {
@@ -111,7 +111,7 @@ describe('weightedOrder', () => {
         const TRIALS = 10_000;
         const items = [
             { name: 'unreviewed', count: 0 }, // weight 1
-            { name: 'reviewed', count: 9 }, // weight 0.1
+            { name: 'reviewed', count: 9 }, // weight ≈ 0.3028
         ];
 
         let unreviewedFirst = 0;
@@ -122,8 +122,9 @@ describe('weightedOrder', () => {
             }
         }
 
-        expect(unreviewedFirst / TRIALS).toBeGreaterThan(0.87);
-        expect(unreviewedFirst / TRIALS).toBeLessThan(0.94);
+        // Exponential-race selection gives P(first) = w / Σw = 1 / (1 + 0.3028) ≈ 0.7676.
+        expect(unreviewedFirst / TRIALS).toBeGreaterThan(0.75);
+        expect(unreviewedFirst / TRIALS).toBeLessThan(0.79);
     });
 
     test('still reaches heavily-reviewed candidates sometimes', () => {
@@ -141,24 +142,6 @@ describe('weightedOrder', () => {
         expect(seenFirst).toEqual(new Set(['unreviewed', 'reviewed']));
     });
 
-    test('stays random at review counts that underflow a naive u**(1/w) key', () => {
-        const TRIALS = 6_000;
-        const HEAVY = 5_000;
-        const items = ['a', 'b', 'c'];
-        const firstCounts = new Map(items.map((item) => [item, 0]));
-
-        for (let i = 0; i < TRIALS; i++) {
-            const first = weightedOrder(items, () => reviewSelectionWeight(HEAVY))[0];
-            firstCounts.set(first, (firstCounts.get(first) ?? 0) + 1);
-        }
-
-        for (const item of items) {
-            const share = (firstCounts.get(item) ?? 0) / TRIALS;
-            expect(share).toBeGreaterThan(0.25);
-            expect(share).toBeLessThan(0.42);
-        }
-    });
-
     test('still favors an unreviewed candidate over a heavily reviewed one', () => {
         const TRIALS = 2_000;
         const items = [
@@ -173,7 +156,10 @@ describe('weightedOrder', () => {
             }
         }
 
-        expect(unreviewedFirst / TRIALS).toBeGreaterThan(0.99);
+        // The logarithmic formula compresses the gap far more than 1/(n+1) did: at 5000
+        // reviews the weight floor is ≈ 0.1051, not ≈ 0.0002, so P(first) ≈ 0.9049 rather
+        // than ≈ 0.9998. Still a strong preference, but no longer near-certain.
+        expect(unreviewedFirst / TRIALS).toBeGreaterThan(0.87);
     });
 
     test('approximates uniform selection when all weights are equal', () => {

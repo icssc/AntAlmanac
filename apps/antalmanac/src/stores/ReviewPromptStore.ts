@@ -45,7 +45,7 @@ const PAST_TERMS_WINDOW = 4;
 const REVIEW_PROMPT_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function reviewSelectionWeight(reviewCount: number): number {
-    return 1 / (reviewCount + 1);
+    return 1 / (1 + Math.log(reviewCount + 1));
 }
 
 /** Key for looking a candidate up in the review count map. */
