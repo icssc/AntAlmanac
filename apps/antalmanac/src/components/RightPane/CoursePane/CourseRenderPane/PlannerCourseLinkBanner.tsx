@@ -42,7 +42,8 @@ export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCour
                 }}
             >
                 <span>
-                    Search for <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> on AntAlmanac Planner!
+                    No sections for <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> in this session.
+                    Please see class information on AntAlmanac Planner!
                 </span>
             </Alert>
         </Link>
