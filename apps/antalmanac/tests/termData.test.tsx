@@ -1,6 +1,7 @@
-import type { CourseEvent } from '$components/Calendar/types';
 import { getDefaultTerm, termData } from '$lib/term';
 import { describe, expect, test } from 'vitest';
+
+import { FALL_2023, WINTER_2024, courseEvent, customEvent } from './helpers/term-fixtures';
 
 describe('termData', () => {
     /**
@@ -12,28 +13,25 @@ describe('termData', () => {
         expect(term.shortName).toEqual(termData[defaultTermIndex].shortName);
     });
 
-    test('uses first term found in event list if provided', () => {
-        const term = getDefaultTerm();
-        const event: CourseEvent = {
-            locations: [],
-            showLocationInfo: false,
-            finalExam: {
-                examStatus: 'NO_FINAL',
-            },
-            courseTitle: '',
-            instructors: [],
-            eventKind: 'course',
-            sectionCode: '',
-            sectionType: '',
-            term,
-            color: '',
-            deptValue: '',
-            courseNumber: '',
-            start: new Date(0),
-            end: new Date(0),
-            title: '',
-        };
+    test('uses the term found in event list if provided', () => {
+        const event = courseEvent(getDefaultTerm());
 
         expect(getDefaultTerm([event]).shortName).toEqual(event.term.shortName);
+    });
+
+    test('uses the latest term when the events span multiple terms', () => {
+        const events = [courseEvent(FALL_2023), courseEvent(WINTER_2024)];
+
+        expect(getDefaultTerm(events).shortName).toEqual(WINTER_2024.shortName);
+    });
+
+    test('uses the latest term regardless of the order of the events', () => {
+        const events = [courseEvent(WINTER_2024), courseEvent(FALL_2023)];
+
+        expect(getDefaultTerm(events).shortName).toEqual(WINTER_2024.shortName);
+    });
+
+    test('falls back to the no-events default term when the events contain no courses', () => {
+        expect(getDefaultTerm([customEvent()]).shortName).toEqual(getDefaultTerm().shortName);
     });
 });

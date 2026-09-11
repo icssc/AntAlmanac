@@ -224,8 +224,8 @@ export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCale
     const customEventIDs = new Set();
     const calendarEvents = events.flatMap((event) => {
         if (isCustomEvent(event)) {
-            // FIXME: We don't have a way to get the term for custom events,
-            // so we just use the default term.
+            // Custom events aren't tied to a term, so they take the latest term on the
+            // schedule; a schedule with no courses falls back to the default term.
             const term = getDefaultTerm(events);
             const { title, start, end, building } = event;
             const days = getByDays(event.days.join(''));
