@@ -1,10 +1,12 @@
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { AddedCoursesList } from '$components/RightPane/AddedCourses/AddedCoursesList';
 import { CustomEventsBox } from '$components/RightPane/AddedCourses/CustomEventsBox';
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { ScheduleNoteBox } from '$components/RightPane/AddedCourses/ScheduleNoteBox';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import {
     removeLocalStorageAddedCoursesSkeletonBlueprint,
@@ -66,6 +68,7 @@ export function AddedCourses() {
     const [courses, setCourses] = useState(getCurrentCourses);
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
+    const isMobile = useIsMobile();
 
     const handleCourseOrderChange = useCallback(
         (updatedCourses: AACourseWithTerm[], _activeIndex: number, overIndex: number) => {
@@ -154,11 +157,14 @@ export function AddedCourses() {
                 <NotificationsDialog buttonSx={buttonSx} />
             </Box>
             <Box sx={{ marginTop: 7 }}>
-                <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {/*
-                TODO (@KevinWu098) Looks too out of place. Will be added back in the calendar toolbar refactor work.
-                {isMobile && <SelectSchedulePopover />} 
-                */}
+                {isMobile ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <SelectSchedulePopover />
+                        <Typography variant="h6">{`(${scheduleUnits} Units)`}</Typography>
+                    </Box>
+                ) : (
+                    <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                )}
                 <AddedCoursesList
                     courses={courses}
                     scheduleNames={scheduleNames}
