@@ -64,6 +64,21 @@ function persistFromAppStore() {
     persistSkeletonBlueprint(getCurrentCourses(), AppStore.schedule.getCurrentCustomEvents());
 }
 
+interface ScheduleActionButtonsProps {
+    scheduleIndex: number;
+}
+
+function ScheduleActionButtons({ scheduleIndex }: ScheduleActionButtonsProps) {
+    return (
+        <>
+            <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
+            <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
+            <ColumnToggleDropdown />
+            <NotificationsDialog buttonSx={buttonSx} />
+        </>
+    );
+}
+
 export function AddedCourses() {
     const [courses, setCourses] = useState(getCurrentCourses);
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
@@ -150,21 +165,20 @@ export function AddedCourses() {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
-                <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-                <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
-                <ColumnToggleDropdown />
-                <NotificationsDialog buttonSx={buttonSx} />
-            </Box>
-            <Box sx={{ marginTop: 7 }}>
-                {isMobile ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <SelectSchedulePopover />
-                        <Typography variant="h6">{`(${scheduleUnits} Units)`}</Typography>
+            <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
+                    {isMobile ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                            <SelectSchedulePopover />
+                            <Typography variant="h6" whiteSpace="nowrap">{`(${scheduleUnits} Units)`}</Typography>
+                        </Box>
+                    ) : (
+                        <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                    )}
+                    <Box sx={{ display: 'flex' }}>
+                        <ScheduleActionButtons scheduleIndex={scheduleIndex} />
                     </Box>
-                ) : (
-                    <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                )}
+                </Box>
                 <AddedCoursesList
                     courses={courses}
                     scheduleNames={scheduleNames}
