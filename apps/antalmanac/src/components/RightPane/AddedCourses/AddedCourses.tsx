@@ -189,7 +189,7 @@ export function AddedCourses() {
                             }}
                         >
                             <SelectSchedulePopover maxWidth={220} />
-                            <Typography variant="body1" whiteSpace="nowrap">{`(${scheduleUnits} Units)`}</Typography>
+                            <Typography variant="h6" whiteSpace="nowrap">{`(${scheduleUnits} Units)`}</Typography>
                         </Box>
                     ) : (
                         <Typography
