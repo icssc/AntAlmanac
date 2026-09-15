@@ -34,6 +34,12 @@ const buttonSx: SxProps = {
     pointerEvents: 'auto',
 };
 
+const compactButtonSx: SxProps = {
+    ...buttonSx,
+    marginRight: 0.5,
+    padding: 0.75,
+};
+
 /**
  * Save the rendered schedule (courses + custom events) as JSON so the
  * skeleton on the next load can render the previous shape via
@@ -66,15 +72,18 @@ function persistFromAppStore() {
 
 interface ScheduleActionButtonsProps {
     scheduleIndex: number;
+    compact: boolean;
 }
 
-function ScheduleActionButtons({ scheduleIndex }: ScheduleActionButtonsProps) {
+function ScheduleActionButtons({ scheduleIndex, compact }: ScheduleActionButtonsProps) {
+    const sx = compact ? compactButtonSx : buttonSx;
+
     return (
         <>
-            <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-            <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
-            <ColumnToggleDropdown />
-            <NotificationsDialog buttonSx={buttonSx} />
+            <CopyScheduleButton index={scheduleIndex} buttonSx={sx} />
+            <ClearScheduleButton buttonSx={sx} analyticsCategory={analyticsEnum.addedClasses} />
+            <ColumnToggleDropdown buttonSx={sx} />
+            <NotificationsDialog buttonSx={sx} />
         </>
     );
 }
@@ -166,17 +175,33 @@ export function AddedCourses() {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
+                <Box sx={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center', gap: 1 }}>
                     {isMobile ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-                            <SelectSchedulePopover />
-                            <Typography variant="h6" whiteSpace="nowrap">{`(${scheduleUnits} Units)`}</Typography>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                minWidth: 0,
+                                flexShrink: 1,
+                                transform: 'scale(0.9)',
+                                transformOrigin: 'left center',
+                            }}
+                        >
+                            <SelectSchedulePopover maxWidth={220} />
+                            <Typography variant="body1" whiteSpace="nowrap">{`(${scheduleUnits} Units)`}</Typography>
                         </Box>
                     ) : (
-                        <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            sx={{ minWidth: 0, flexShrink: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}
+                        >
+                            {`${scheduleName} (${scheduleUnits} Units)`}
+                        </Typography>
                     )}
-                    <Box sx={{ display: 'flex' }}>
-                        <ScheduleActionButtons scheduleIndex={scheduleIndex} />
+                    <Box sx={{ display: 'flex', flexShrink: 0, marginLeft: 'auto' }}>
+                        <ScheduleActionButtons scheduleIndex={scheduleIndex} compact={isMobile} />
                     </Box>
                 </Box>
                 <AddedCoursesList
