@@ -11,6 +11,7 @@ interface PlannerCourseLinkBannerProps {
 
 export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCourseLinkBannerProps) {
     const [courseIds] = useCourseSearchParam('courseIds');
+    const [term] = useCourseSearchParam('term');
 
     if (deptValue === DEFAULT_MANUAL_SEARCH_VALUES.deptValue || !courseNumber.trim()) {
         return null;
@@ -42,8 +43,8 @@ export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCour
                 }}
             >
                 <span>
-                    No sections for <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> in this session.
-                    Please see class information on AntAlmanac Planner!
+                    No sections for <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> in{' '}
+                    {term.longName}. See recent offerings and course info on the AntAlmanac Planner tab.
                 </span>
             </Alert>
         </Link>
