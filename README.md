@@ -39,7 +39,6 @@ A summary of the libraries we use are listed below.
 - [Anteater API](https://docs.icssc.club/docs/about/anteaterapi) - API maintained by ICSSC for retrieving UCI data.
 - [Drizzle ORM](https://orm.drizzle.team/) - [high-performance](https://orm.drizzle.team/benchmarks) type-safe SQL-like access layer compatible with all major SQL dialects.
 - [PostgreSQL](https://www.postgresql.org) - Relational database for storing user data and schedules.
-- [Next.js Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) - Server routes for Planner auth and API
 
 ### Tooling
 
