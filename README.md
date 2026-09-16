@@ -248,6 +248,8 @@ anything tagged _(optional locally)_ - maps, analytics, and the Planner integrat
     - `ADMIN_EMAILS` _(optional locally)_ - List of emails with access to administrative actions
     - `PLANNER_SESSION_SECRET` _(optional locally)_ - Secret key for session management
 
+If you need access to development credentials, please contact a project lead in [our Discord](https://discord.gg/Zu8KZHERtJ).
+
 > ⚠️ Note: Anteater API requires a special API key in order for search functionality to work. If you'd like to work on a feature relating to this, please send a message in [our Discord](https://discord.gg/Zu8KZHERtJ).
 
 # Troubleshooting
@@ -265,16 +267,6 @@ these sorts of permissions:
 - [nvm-windows](https://github.com/coreybutler/nvm-windows)
 
 A more convenient, but less secure way to resolve this is to run the command with admin privileges, e.g with `sudo`.
-
-## The website doesn't seem to load at all
-
-Try disabling your adblocker or browser extensions that might interfere with local development.
-
-## I need environment variables!
-
-Please reference the `.env.example` files provided.
-
-If you need production credentials to access the production database or other private resources, please contact a project lead.
 
 # Where Does the Data Come From?
 
