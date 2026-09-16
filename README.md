@@ -55,14 +55,14 @@ A summary of the libraries we use are listed below.
 This is a [pnpm](https://pnpm.io) monorepo:
 
 - `apps/`
-    - `aants/` — AANTS, the class notification service (AWS Lambda + SQS + SES) that watches WebSoc and emails users when a section's enrollment status changes.
-    - `antalmanac/` — the main Next.js web application, unifying AntAlmanac Scheduler and AntAlmanac Planner.
+    - `aants/` - AANTS, the class notification service (AWS Lambda + SQS + SES) that watches WebSoc and emails users when a section's enrollment status changes.
+    - `antalmanac/` - the main Next.js web application, unifying AntAlmanac Scheduler and AntAlmanac Planner.
     - `antalmanac-planner/` - AntAlmanac Planner frontend and backend
     - `antalmanac-scheduler/` - AntAlmanac Scheduler frontend and backend
         - `db/` - Drizzle schema, migrations, and the database client.
-        - `types/` — shared internal TypeScript types.
-    - `apps/ios` — the native iOS wrapper (Swift WebView + push notifications).
-- `packages/anteater-api` — Anteater API types, client, and utilities.
+        - `types/` - shared internal TypeScript types.
+    - `apps/ios` - the native iOS wrapper (Swift WebView + push notifications).
+- `packages/anteater-api` - Anteater API types, client, and utilities.
 
 ## History
 
@@ -257,11 +257,14 @@ This command runs `sst deploy --stage production` which:
 
 The variables below configure a full production/staging **deployment** and are set in your AWS environment or CI/CD pipeline.
 **For local development you only need the variables in `apps/antalmanac/.env.example` and `apps/antalmanac-scheduler/db/.env.example`;**
-anything tagged _(optional locally)_ — maps, analytics, and the Planner integration — can be left unset when running locally.
+anything tagged _(optional locally)_ - maps, analytics, and the Planner integration - can be left unset when running locally.
 
 - Shared
     - `OIDC_ISSUER_URL` - OAuth issuer URL
     - `ANTEATER_API_KEY` - API key for Anteater API
+    - `PLANNER_CLIENT_API_KEY` _(optional locally)_ - API key for the AntAlmanac Planner integration
+    - `NEXT_PUBLIC_POSTHOG_KEY` _(optional locally)_ - PostHog project key for product analytics
+    - `NEXT_PUBLIC_POSTHOG_HOST` _(optional locally)_ - PostHog host for product analytics
 - Scheduler
     - `DB_URL` - Database connection string
     - `MAPBOX_ACCESS_TOKEN` _(optional locally)_ - Mapbox API token for map features
@@ -270,16 +273,13 @@ anything tagged _(optional locally)_ — maps, analytics, and the Planner integr
     - `BETTER_AUTH_URL` - URL used for OAuth (automatically set based on stage)
     - `BETTER_AUTH_SECRET` - OAuth secret key, you can [generate one here](https://better-auth.com/docs/installation#set-environment-variables)
     - `NEXT_PUBLIC_BASE_URL` - Base URL of the site (automatically set based on stage)
-    - `NEXT_PUBLIC_PUBLIC_POSTHOG_KEY` _(optional locally)_ - PostHog project key for product analytics
-    - `PLANNER_CLIENT_API_KEY` _(optional locally)_ - API key for the AntAlmanac Planner integration
 - Planner
     - `PUBLIC_API_URL` - Anteater API URL
     - `PRODUCTION_DOMAIN` - Domain for current deployment
     - `PLANNER_OIDC_CLIENT_ID` - OAuth client ID for Google authentication
-    - `DATABASE_URL` _(optional locally)_ - Database connection string
+    - `PLANNER_DATABASE_URL` _(optional locally)_ - Database connection string
     - `ADMIN_EMAILS` _(optional locally)_ - List of emails with access to administrative actions
-    - `SESSION_SECRET` _(optional locally)_ - Secret key for session management
-    - `EXTERNAL_USER_READ_SECRET` _(optional locally)_ - API key for external read-only access to user data
+    - `PLANNER_SESSION_SECRET` _(optional locally)_ - Secret key for session management
 
 > ⚠️ Note: Anteater API requires a special API key in order for search functionality to work. If you'd like to work on a feature relating to this, please send a message in [our Discord](https://discord.gg/Zu8KZHERtJ).
 
