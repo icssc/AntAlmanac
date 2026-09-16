@@ -171,9 +171,6 @@ If you ever need help, feel free to get in touch on the [ICSSC Projects Discord 
     - Copy `apps/antalmanac-scheduler/db/.env.example` to `apps/antalmanac-scheduler/db/.env` (same `DB_URL` as above is fine).
     - For AANTS local runs, use `apps/aants/.env.example` as a template.
 
-    (Optional) Also set up your own Google OAuth to be able to test features that require signing in such as leaving reviews or saving roadmaps to your account.
-    Add the relevant variables/secrets to the .env file.
-
 5. Run database migrations to set up the database schema.
 
     ```bash
