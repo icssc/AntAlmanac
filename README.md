@@ -252,22 +252,6 @@ If you need access to development credentials, please contact a project lead in 
 
 > ⚠️ Note: Anteater API requires a special API key in order for search functionality to work. If you'd like to work on a feature relating to this, please send a message in [our Discord](https://discord.gg/Zu8KZHERtJ).
 
-# Troubleshooting
-
-## `npm i -g <package>` fails
-
-This is usually an issue with permissions because `npm` is trying to install a Node package
-into a globally accessible location like `/bin`, which requires admin permissions.
-
-The best way to resolve this is to install Node via a version manager to properly handle
-these sorts of permissions:
-
-- [nvm](https://github.com/nvm-sh/nvm) - Node-Version-Manager.
-- [fnm](https://github.com/Schniz/fnm) - Fast-Node-Manager.
-- [nvm-windows](https://github.com/coreybutler/nvm-windows)
-
-A more convenient, but less secure way to resolve this is to run the command with admin privileges, e.g with `sudo`.
-
 # Where Does the Data Come From?
 
 We consolidate our data directly from official UCI sources such as: UCI Catalogue, UCI Public Records Office, and UCI WebReg (courtesy of [Anteater API](https://github.com/icssc/anteater-api)).
