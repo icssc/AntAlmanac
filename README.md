@@ -26,9 +26,6 @@ A summary of the libraries we use are listed below.
     - [Next.js](https://nextjs.org) - React framework with server-side rendering.
     - [Material UI (MUI)](https://mui.com/material-ui/) - React component library that implements Google's Material Design.
 - Scheduler
-    - [React Big Calendar](https://github.com/jquense/react-big-calendar) - React calendar component.
-    - [Recharts](https://recharts.org/en-US) - React chart component.
-    - [Leaflet](https://leafletjs.com) - Interactive JS maps.
     - [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) - State management.
 - Planner
     - [Redux](https://redux.js.org/) - State management.
