@@ -204,20 +204,7 @@ If you ever need help, feel free to get in touch on the [ICSSC Projects Discord 
     pnpm plan:db:studio
     ```
 
-- **Generate Database Migrations**: After modifying the database schema, generate a new migration.
-
-    ```bash
-    pnpm sched:db:generate
-    ```
-
-    ```bash
-    pnpm plan:db:generate
-    ```
-
-- **Run Tests**: Execute the test suite.
-    ```bash
-    pnpm test
-    ```
+- **Refer to `package.json` for all available commands.**
 
 ### Notes
 
@@ -232,22 +219,6 @@ AntAlmanac is deployed to AWS using [SST (Serverless Stack)](https://sst.dev). T
 - **Production**: Deployed to `antalmanac.com` (with a `www.antalmanac.com` alias)
 - **Staging**: Each pull request gets a preview deploy at `staging-{PR_NUMBER}.antalmanac.com`
 - **Shared staging**: `staging-shared.antalmanac.com` is a persistent environment for cross-team (Scheduler ⇄ Planner) integration testing; deployed manually
-
-### Deploying to Production
-
-> **Note**: Only maintainers with proper AWS credentials can deploy to production.
-
-To deploy the production environment:
-
-```bash
-pnpm deploy
-```
-
-This command runs `sst deploy --stage production` which:
-
-1. Builds the Next.js application
-2. Deploys the infrastructure to AWS (Lambda, CloudFront, etc.)
-3. Updates the live website at antalmanac.com
 
 ### Environment Variables
 
