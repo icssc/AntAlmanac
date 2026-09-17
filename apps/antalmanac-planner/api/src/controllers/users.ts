@@ -2,13 +2,14 @@
  @module UsersRoute
 */
 
-import { router, userProcedure } from '../helpers/trpc';
 import { theme, UserData } from '@peterportal/types';
-import { db } from '../db';
-import { user } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
+
+import { db } from '../db';
+import { user } from '../db/schema';
 import { datesToStrings } from '../helpers/date';
+import { router, userProcedure } from '../helpers/trpc';
 
 const usersRouter = router({
     /**

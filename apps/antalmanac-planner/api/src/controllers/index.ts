@@ -1,23 +1,23 @@
 import { router } from '../helpers/trpc';
-import coursesRouter from './courses';
+import courseMaterialsRouter from './courseMaterials';
 import { courseNotesRouter } from './courseNotes';
+import courseRequirementsRouter from './courseRequirements';
+import coursesRouter from './courses';
+import { customCoursesRouter } from './customCourses';
+import departmentRouter from './department';
+import { externalAppRouter } from './external';
+import overrideRouter from './override';
 import professorsRouter from './professors';
 import programsRouter from './programs';
 import reportsRouter from './reports';
 import reviewsRouter from './reviews';
 import roadmapsRouter from './roadmap';
-import courseRequirementsRouter from './courseRequirements';
-import courseMaterialsRouter from './courseMaterials';
 import { savedCoursesRouter } from './savedCourses';
 import scheduleRouter from './schedule';
+import searchRouter from './search';
 import transferCreditsRouter from './transferCredits';
 import usersRouter from './users';
-import searchRouter from './search';
 import zot4PlanImportRouter from './zot4planimport';
-import departmentRouter from './department';
-import overrideRouter from './override';
-import { externalAppRouter } from './external';
-import { customCoursesRouter } from './customCourses';
 
 export const appRouter = router({
     external: externalAppRouter,

@@ -1,11 +1,10 @@
 ---
 name: Problem Loading or Saving User Data
 about: My account/device data (i.e. schedule, roadmap) are being read or saved
-  incorrectly
+    incorrectly
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 **Describe the bug**
@@ -13,6 +12,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. [actions taken]
 

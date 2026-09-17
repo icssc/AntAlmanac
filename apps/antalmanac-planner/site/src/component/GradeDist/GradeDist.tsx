@@ -1,17 +1,19 @@
-import { FC, useState, useEffect, useCallback } from 'react';
-import Chart from './Chart';
+import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
+import { Autocomplete, Card, CardContent, MenuItem, Select, Skeleton, TextField, Typography } from '@mui/material';
+
 import './GradeDist.scss';
 
-import { CourseGQLData, ProfessorGQLData } from '../../types/types';
 import { GradesRaw, QuarterName } from '@peterportal/types';
-import trpc from '../../trpc';
-import { Autocomplete, Card, CardContent, MenuItem, Select, Skeleton, TextField, Typography } from '@mui/material';
-import MostUsedTags from './MostUsedTags';
+import { FC, useState, useEffect, useCallback } from 'react';
+
 import { getAggregateGradeData, getDiffAndColor } from '../../helpers/gradeDist';
-import { shortenQuarter } from '../../helpers/util';
-import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
-import { useAppSelector } from '../../store/hooks';
 import { getAvgDifficulty, getAvgRating } from '../../helpers/reviews';
+import { shortenQuarter } from '../../helpers/util';
+import { useAppSelector } from '../../store/hooks';
+import trpc from '../../trpc';
+import { CourseGQLData, ProfessorGQLData } from '../../types/types';
+import Chart from './Chart';
+import MostUsedTags from './MostUsedTags';
 
 interface GradeDistProps {
     course?: CourseGQLData;
@@ -162,7 +164,7 @@ const GradeDist: FC<GradeDistProps> = (props) => {
                 } else {
                     return Number.parseInt(thatYear, 10) - Number.parseInt(thisYear, 10);
                 }
-            }),
+            })
         );
         setSelectedQuarter(result[0].value);
         setLastQuarter(result[1].value);
@@ -257,12 +259,12 @@ const GradeDist: FC<GradeDistProps> = (props) => {
             gradeDistData,
             currentProf,
             lastQuarter,
-            currentCourse,
+            currentCourse
         );
 
         const { diff: gpaDiff, color: gpaColor } = getDiffAndColor(
             aggregateGradeData.averageGPA,
-            lastQuarterAggregateGradeData.averageGPA,
+            lastQuarterAggregateGradeData.averageGPA
         );
 
         const formattedLastQuarter = shortenQuarter(lastQuarter);

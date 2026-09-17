@@ -1,6 +1,15 @@
 import './ProgramRequirementsList.scss';
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Badge, Checkbox, Collapse } from '@mui/material';
+import { ProgramRequirement, TransferredGE } from '@peterportal/types';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { ReactSortable, SortableEvent } from 'react-sortablejs';
+
+import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
+import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
+import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
 import {
     COMPLETE_ALL_TEXT,
     formatRequirements,
@@ -11,13 +20,19 @@ import {
     useMatchingGETransfers,
     saveOverriddenRequirement,
 } from '../../../helpers/courseRequirements';
-import { CourseNameAndInfo } from '../planner/Course';
-import { CourseGQLData, PlannerCourseData } from '../../../types/types';
 import { isCustomCourse } from '../../../helpers/customCourses';
-import trpc from '../../../trpc';
+import { getMissingPrerequisites } from '../../../helpers/planner';
 import { programRequirementsSortable } from '../../../helpers/sortable';
-import { ReactSortable, SortableEvent } from 'react-sortablejs';
 import { pluralize, useIsMobile } from '../../../helpers/util';
+import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useClearedCourses } from '../../../hooks/planner';
+import { useTransferredCredits, TransferredCourseWithType } from '../../../hooks/transferCredits';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import {
+    setGroupExpanded,
+    setMarkerComplete,
+    setRequirementOverride,
+} from '../../../store/slices/courseRequirementsSlice';
 import {
     setActiveCourse,
     setActiveCourseLoading,
@@ -26,25 +41,11 @@ import {
     setShowAddCourse,
     selectCurrentPlan,
 } from '../../../store/slices/roadmapSlice';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
-import { ProgramRequirement, TransferredGE } from '@peterportal/types';
-import {
-    setGroupExpanded,
-    setMarkerComplete,
-    setRequirementOverride,
-} from '../../../store/slices/courseRequirementsSlice';
-import { getMissingPrerequisites } from '../../../helpers/planner';
-import { useClearedCourses } from '../../../hooks/planner';
-import { useTransferredCredits, TransferredCourseWithType } from '../../../hooks/transferCredits';
-import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
-import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
-import { Badge, Checkbox, Collapse } from '@mui/material';
-import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import MenuTile from '../transfers/MenuTile';
 import { setShowMobileCreditsMenu } from '../../../store/slices/transferCreditsSlice';
-import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
+import trpc from '../../../trpc';
+import { CourseGQLData, PlannerCourseData } from '../../../types/types';
+import { CourseNameAndInfo } from '../planner/Course';
+import MenuTile from '../transfers/MenuTile';
 
 const DEPARTMENT_GROUPING_COURSE_THRESHOLD = 30;
 const COURSE_ID_DEPARTMENT_OVERRIDES = ['IN4MATX'];
@@ -425,14 +426,14 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
     const activePlanID = useAppSelector(selectCurrentPlan)?.id;
 
     const overridden = useAppSelector(
-        (state) => state.courseRequirements.overriddenRequirements[activePlanID]?.[data.requirementId] ?? false,
+        (state) => state.courseRequirements.overriddenRequirements[activePlanID]?.[data.requirementId] ?? false
     );
 
     const setOverride = (override: boolean) => {
         if (!activePlanID) return;
         saveOverriddenRequirement(activePlanID, data.requirementId, override, isLoggedIn);
         dispatch(
-            setRequirementOverride({ plannerId: activePlanID, requirement: data.requirementId, override: override }),
+            setRequirementOverride({ plannerId: activePlanID, requirement: data.requirementId, override: override })
         );
     };
 
@@ -560,14 +561,14 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
     const activePlanID = useAppSelector(selectCurrentPlan)?.id;
 
     const overridden = useAppSelector(
-        (state) => state.courseRequirements.overriddenRequirements[activePlanID]?.[data.requirementId] ?? false,
+        (state) => state.courseRequirements.overriddenRequirements[activePlanID]?.[data.requirementId] ?? false
     );
 
     const setOverride = (override: boolean) => {
         if (!activePlanID) return;
         saveOverriddenRequirement(activePlanID, data.requirementId, override, isLoggedIn);
         dispatch(
-            setRequirementOverride({ plannerId: activePlanID, requirement: data.requirementId, override: override }),
+            setRequirementOverride({ plannerId: activePlanID, requirement: data.requirementId, override: override })
         );
     };
 
@@ -705,7 +706,7 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
     const takenCourseSet: CompletedCourseSet = Object.assign(
         {},
         Object.fromEntries(roadmapCourseMap),
-        Object.fromEntries(transferCourseMap),
+        Object.fromEntries(transferCourseMap)
     );
 
     return (

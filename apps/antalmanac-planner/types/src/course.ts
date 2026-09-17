@@ -2,7 +2,7 @@ import { components, paths } from './generated/anteater-api-types';
 import { ProfessorAAPIResponse } from './professor';
 
 export type CourseAAPIResponse =
-  paths['/v2/rest/courses/{id}']['get']['responses'][200]['content']['application/json']['data'];
+    paths['/v2/rest/courses/{id}']['get']['responses'][200]['content']['application/json']['data'];
 
 export type Prerequisite = components['schemas']['prereq'];
 

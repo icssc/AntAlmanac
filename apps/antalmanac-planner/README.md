@@ -5,37 +5,39 @@
 AntAlmanac Planner is a web application designed to aid UCI students with course discovery and planning. We consolidate public data available on multiple UCI sources via [Anteater API](https://docs.icssc.club/docs/about/anteaterapi) to improve the user experience when planning course schedules. Features include:
 
 - **A drag-and-drop multi-year course planner**:
-  - Select multiple majors and minors
-  - Import your unofficial transcript via [StudentAccess](https://www.reg.uci.edu/access/student/transcript/?seg=U) to automatically fill in your roadmap to date
-  - View how your planned roadmap fulfills your **major**, **specialization**, **minor**, and **GE** requirements
-  - Import any **transferred courses**, **AP exams**, and **GE/Elective credits**
+    - Select multiple majors and minors
+    - Import your unofficial transcript via [StudentAccess](https://www.reg.uci.edu/access/student/transcript/?seg=U) to automatically fill in your roadmap to date
+    - View how your planned roadmap fulfills your **major**, **specialization**, **minor**, and **GE** requirements
+    - Import any **transferred courses**, **AP exams**, and **GE/Elective credits**
 
 ![Roadmap](assets/roadmap.png)
 
 - **Course Search**:
-  - Recent offerings 
-  - Grade distribution visualizations
-  - Visual prerequisite tree
-  - Historic Schedule of Classes data
-  - Reviews from UCI students
+    - Recent offerings
+    - Grade distribution visualizations
+    - Visual prerequisite tree
+    - Historic Schedule of Classes data
+    - Reviews from UCI students
 
 ![Course Search](assets/coursesearch.png)
 
 - **Instructor Search**:
-  - Grade distribution visualizations
-  - Historic Schedule of Classes data
-  - Reviews from UCI students
-  
+    - Grade distribution visualizations
+    - Historic Schedule of Classes data
+    - Reviews from UCI students
+
 ![Instructor Search](assets/instructorsearch.png)
 
 ## Technology
 
 ### Frontend
+
 - [React](https://react.dev/) - Library to build dynamic, component-based UIs.
 - [Next.js](https://nextjs.org/) - React framework with server-side rendering.
-- [Material UI](https://mui.com/material-ui/) - React component library that implements Google's Material Design. 
+- [Material UI](https://mui.com/material-ui/) - React component library that implements Google's Material Design.
 
 ### Backend
+
 - [Anteater API](https://github.com/icssc/anteater-api) - API maintained by ICSSC for retrieving UCI data.
 - [Next.js Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) - Server routes for Planner auth and API traffic.
 - [tRPC](https://trpc.io/) - Library for type-safe APIs.
@@ -43,24 +45,27 @@ AntAlmanac Planner is a web application designed to aid UCI students with course
 - [Drizzle ORM](https://orm.drizzle.team/) - High-performance type-safe SQL-like access layer.
 
 ### Tooling
+
 - [SST](https://sst.dev/) - Infrastructure as code framework for AWS deployment.
 - [TypeScript](https://www.typescriptlang.org/) - JavaScript with type-checking.
 
 ## History
+
 AntAlmanac Planner was originally created in 2020 under the name **PeterPortal** by a team of ICSSC Projects Committee members led by @uci-mars, aiming to unify fragmented course information and long-term planning resources in one application.
 
 In February 2026, PeterPortal [merged](https://docs.icssc.club/docs/about/antalmanac/merge) with [AntAlmanac](https://github.com/icssc/AntAlmanac/) into one ultimate course planning platform. Following the merger, PeterPortal was rebranded as **AntAlmanac Planner**, while the original AntAlmanac became **AntAlmanac Scheduler**.
 
-Year|Project Lead
-:-:|:-:
-2020 - 2021|@uci-mars
-2021 - 2022|@chenaaron3
-2022 - 2023|@ethanwong16
-2023 - 2024|@js0mmer
-2024 - 2025|@Awesome-E
-2025 - Present|@CadenLee2
+|      Year      | Project Lead |
+| :------------: | :----------: |
+|  2020 - 2021   |  @uci-mars   |
+|  2021 - 2022   | @chenaaron3  |
+|  2022 - 2023   | @ethanwong16 |
+|  2023 - 2024   |   @js0mmer   |
+|  2024 - 2025   |  @Awesome-E  |
+| 2025 - Present |  @CadenLee2  |
 
 # Contributing
+
 We welcome all open-source contributions! Here is a rough guide on how to contribute:
 
 ## First Time Setup
@@ -75,9 +80,9 @@ We welcome all open-source contributions! Here is a rough guide on how to contri
 
 1. Clone the repository to your local machine:
 
-   ```
-   git clone https://github.com/icssc/peterportal-client
-   ```
+    ```
+    git clone https://github.com/icssc/peterportal-client
+    ```
 
 2. `cd` into the cloned repo.
 
@@ -86,9 +91,9 @@ We welcome all open-source contributions! Here is a rough guide on how to contri
 4. Set up the appropriate environment variables provided by the project lead.
 
 5. Switch to a branch you will be working on for your current task (pick a name that's relevant to the issue).
-   ```
-   git checkout -b [branch name]
-   ```
+    ```
+    git checkout -b [branch name]
+    ```
 
 ### Open Source Contributors
 
@@ -109,7 +114,7 @@ git clone https://github.com/<your username>/peterportal-client
 6. (Optional) Set up your own PostgreSQL database and Google OAuth to be able to test features that require signing in such as leaving reviews or saving roadmaps to your account. Add additional variables/secrets to the .env file from the previous step.
 
 **Have any questions or need some help? Feel free to join the [ICSSC Projects Discord](https://discord.gg/GzF76D7UhY) and ask around in the `#peterportal` channel!**
-  
+
 > ⚠️ Note: Anteater API requires a special API key in order for search functionality to work. If you'd like to work on a feature relating to this, please send a message in our Discord.
 
 ## Open Source Contribution Guide

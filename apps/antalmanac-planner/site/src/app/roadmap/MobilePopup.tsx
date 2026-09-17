@@ -1,9 +1,10 @@
 'use client';
 import './MobilePopup.scss';
 import { FC, PropsWithChildren, useEffect, useRef } from 'react';
+import { CSSTransition } from 'react-transition-group';
+
 import UIOverlay from '../../component/UIOverlay/UIOverlay';
 import { useIsMobile } from '../../helpers/util';
-import { CSSTransition } from 'react-transition-group';
 
 interface MobilePopupProps extends PropsWithChildren {
     show: boolean;

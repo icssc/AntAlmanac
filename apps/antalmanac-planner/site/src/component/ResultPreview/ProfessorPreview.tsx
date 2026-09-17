@@ -1,24 +1,24 @@
-import { FC, ReactNode, useEffect } from 'react';
-import { ResultPageSection } from '../ResultPageContent/ResultPageContent';
-import GradeDist from '../GradeDist/GradeDist';
-import Schedule from '../Schedule/Schedule';
-import Review from '../Review/Review';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
-import { checkModalOpen, sortTerms, unionTerms } from '../../helpers/util';
-import { ProfessorGQLData } from '../../types/types';
-import { Button, IconButton, Paper, Tooltip, useMediaQuery } from '@mui/material';
-import { useAppDispatch } from '../../store/hooks';
-import { setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/roadmapSlice';
-
-import CloseIcon from '@mui/icons-material/Close';
 import BackIcon from '@mui/icons-material/ArrowBack';
-import IosShareIcon from '@mui/icons-material/IosShare';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import CloseIcon from '@mui/icons-material/Close';
+import IosShareIcon from '@mui/icons-material/IosShare';
 import RateReviewIcon from '@mui/icons-material/RateReview';
+import { Button, IconButton, Paper, Tooltip, useMediaQuery } from '@mui/material';
+import { FC, ReactNode, useEffect } from 'react';
+
 import { getProfessorTerms } from '../../helpers/reviews';
-import SideInfo from '../SideInfo/SideInfo';
+import { checkModalOpen, sortTerms, unionTerms } from '../../helpers/util';
 import { useProfessorData } from '../../hooks/professorReviews';
+import { useAppDispatch } from '../../store/hooks';
+import { setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/roadmapSlice';
+import { ProfessorGQLData } from '../../types/types';
+import GradeDist from '../GradeDist/GradeDist';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import { ResultPageSection } from '../ResultPageContent/ResultPageContent';
+import Review from '../Review/Review';
+import Schedule from '../Schedule/Schedule';
+import SideInfo from '../SideInfo/SideInfo';
 import PreviewNavBar from './PreviewNavBar';
 
 interface PreviewTitleProps {

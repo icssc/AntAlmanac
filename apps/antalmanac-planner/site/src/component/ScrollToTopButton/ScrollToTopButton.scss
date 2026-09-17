@@ -1,24 +1,24 @@
 @use '../../globals';
 
 button.scroll-to-top-button {
-  position: absolute;
-  right: 1.5rem;
-  z-index: 50;
-  bottom: 1.5rem;
-  background-color: var(--mui-palette-primary-main);
-  color: var(--mui-palette-primary-contrastText);
+    position: absolute;
+    right: 1.5rem;
+    z-index: 50;
+    bottom: 1.5rem;
+    background-color: var(--mui-palette-primary-main);
+    color: var(--mui-palette-primary-contrastText);
 
-  &:hover {
-    background-color: var(--mui-palette-primary-dark);
-  }
+    &:hover {
+        background-color: var(--mui-palette-primary-dark);
+    }
 }
 
 button.scroll-to-top-button-raised {
-  bottom: 4rem;
+    bottom: 4rem;
 }
 
 @media (max-width: globals.$mobile-cutoff) {
-  button.scroll-to-top-button {
-    position: fixed;
-  }
+    button.scroll-to-top-button {
+        position: fixed;
+    }
 }

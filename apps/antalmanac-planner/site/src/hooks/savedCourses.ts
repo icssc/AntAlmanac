@@ -1,12 +1,13 @@
 'use client';
 import { useCallback, useEffect } from 'react';
-import trpc from '../trpc';
-import { CourseGQLData } from '../types/types';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setSavedCourses, saveCourseInState, unsaveCourseInState } from '../store/slices/savedCoursesSlice';
-import { useIsLoggedIn } from './isLoggedIn';
+
 import { sortSavedCourses } from '../helpers/savedCourses';
 import { searchAPIResults } from '../helpers/util';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { setSavedCourses, saveCourseInState, unsaveCourseInState } from '../store/slices/savedCoursesSlice';
+import trpc from '../trpc';
+import { CourseGQLData } from '../types/types';
+import { useIsLoggedIn } from './isLoggedIn';
 
 export function useSavedCourses() {
     const savedCourses = useAppSelector((state) => state.savedCourses.savedCourses);
@@ -23,7 +24,7 @@ export function useSavedCourses() {
             dispatch(saveCourseInState(course));
             if (isLoggedIn) trpc.savedCourses.add.mutate({ courseId: course.id });
         },
-        [dispatch, isLoggedIn],
+        [dispatch, isLoggedIn]
     );
 
     const unsaveCourse = useCallback(
@@ -31,7 +32,7 @@ export function useSavedCourses() {
             dispatch(unsaveCourseInState(course));
             if (isLoggedIn) trpc.savedCourses.remove.mutate({ courseId: course.id });
         },
-        [dispatch, isLoggedIn],
+        [dispatch, isLoggedIn]
     );
 
     const isCourseSaved = useCallback(
@@ -39,7 +40,7 @@ export function useSavedCourses() {
             if (!savedCourses) return false;
             return savedCourses.some((c) => c.id === course.id);
         },
-        [savedCourses],
+        [savedCourses]
     );
 
     const toggleSavedCourse = useCallback(
@@ -50,7 +51,7 @@ export function useSavedCourses() {
                 saveCourse(course);
             }
         },
-        [saveCourse, unsaveCourse, isCourseSaved],
+        [saveCourse, unsaveCourse, isCourseSaved]
     );
 
     return {

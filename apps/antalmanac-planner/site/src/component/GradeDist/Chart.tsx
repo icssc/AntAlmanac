@@ -1,10 +1,11 @@
+import { GradesRaw } from '@peterportal/types';
 import { useContext } from 'react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
-import ThemeContext from '../../style/theme-context';
-import { GradesRaw } from '@peterportal/types';
+
 import { getAggregateGradeData } from '../../helpers/gradeDist.ts';
-import ChartTooltip from '../ChartTooltip/ChartTooltip.tsx';
 import { getCssVariable } from '../../helpers/styling.ts';
+import ThemeContext from '../../style/theme-context';
+import ChartTooltip from '../ChartTooltip/ChartTooltip.tsx';
 
 interface ChartProps {
     gradeData: GradesRaw;

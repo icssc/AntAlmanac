@@ -1,4 +1,5 @@
 import { ReviewData } from '@peterportal/types';
+
 import { CourseGQLData, ProfessorGQLData } from '../types/types';
 
 export function getProfessorTerms(professorGQLData: ProfessorGQLData): string[] {
@@ -16,7 +17,7 @@ export function getQuarters(terms: string[], yearTaken: string): string[] {
 export function getReviewHeadingName(
     reviewToEdit: ReviewData | undefined,
     course: CourseGQLData | undefined,
-    instructor: ProfessorGQLData | undefined,
+    instructor: ProfessorGQLData | undefined
 ) {
     if (!course && !instructor) {
         return `${reviewToEdit?.courseId}`;

@@ -1,19 +1,18 @@
 'use client';
-import { FC, useState, useEffect } from 'react';
-import LoadingSpinner from '../../component/LoadingSpinner/LoadingSpinner';
-import Schedule from '../../component/Schedule/Schedule';
-import Review from '../../component/Review/Review';
-import GradeDist from '../../component/GradeDist/GradeDist';
-import SideInfo from '../../component/SideInfo/SideInfo';
-import Error from '../../component/Error/Error';
-
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import RateReviewIcon from '@mui/icons-material/RateReview';
+import { FC, useState, useEffect } from 'react';
 
-import { unionTerms, sortTerms } from '../../helpers/util';
-import { getProfessorTerms } from '../../helpers/reviews';
+import Error from '../../component/Error/Error';
+import GradeDist from '../../component/GradeDist/GradeDist';
+import LoadingSpinner from '../../component/LoadingSpinner/LoadingSpinner';
 import ResultPageContent, { ResultPageSection } from '../../component/ResultPageContent/ResultPageContent';
+import Review from '../../component/Review/Review';
+import Schedule from '../../component/Schedule/Schedule';
+import SideInfo from '../../component/SideInfo/SideInfo';
+import { getProfessorTerms } from '../../helpers/reviews';
+import { unionTerms, sortTerms } from '../../helpers/util';
 import { useProfessorData } from '../../hooks/professorReviews';
 
 interface ProfessorPageProps {

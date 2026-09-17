@@ -1,23 +1,23 @@
-import { FC, useState, useEffect, useCallback } from 'react';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
+
 import './Schedule.scss';
 import { Chip, LinearProgress, Tooltip } from '@mui/material';
-
+import { MenuItem, Select } from '@mui/material';
 import {
     WebsocAPIResponse,
     WebsocAPIResponse as WebsocResponse,
     WebsocSection as Section,
     CourseMaterialsAAPIResponse,
 } from '@peterportal/types';
+import Link from 'next/link';
+import { FC, useState, useEffect, useCallback } from 'react';
+
+import MaterialsIcon from '../../helpers/courseMaterials';
+import { parseRestrictions } from '../../helpers/schedule';
+import Toast, { ToastSeverity } from '../../helpers/toast';
 import { hourMinuteTo12HourString } from '../../helpers/util';
 import { useAppSelector } from '../../store/hooks';
 import trpc from '../../trpc';
-
-import { MenuItem, Select } from '@mui/material';
-import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
-import MaterialsIcon from '../../helpers/courseMaterials';
-import Toast, { ToastSeverity } from '../../helpers/toast';
-import Link from 'next/link';
-import { parseRestrictions } from '../../helpers/schedule';
 
 interface ScheduleProps {
     courseID?: string;
@@ -53,7 +53,7 @@ const Schedule: FC<ScheduleProps> = (props) => {
     const [materialsData, setMaterialsData] = useState<MaterialsData>(null!);
     const currentQuarter = useAppSelector((state) => state.schedule.currentQuarter);
     const [selectedQuarter, setSelectedQuarter] = useState(
-        props?.termsOffered ? props?.termsOffered[0] : currentQuarter,
+        props?.termsOffered ? props?.termsOffered[0] : currentQuarter
     );
 
     const [showToast, setShowToast] = useState(false);
@@ -83,8 +83,8 @@ const Schedule: FC<ScheduleProps> = (props) => {
         } else if (props.professorIDs) {
             apiResponse = await Promise.all(
                 props.professorIDs.map((professor) =>
-                    trpc.schedule.getTermProf.query({ term: selectedQuarter, professor }),
-                ),
+                    trpc.schedule.getTermProf.query({ term: selectedQuarter, professor })
+                )
             ).then(mergeWebsocAPIResponses);
         }
 
@@ -224,7 +224,7 @@ const Schedule: FC<ScheduleProps> = (props) => {
         const sectionElements: React.JSX.Element[] = [];
         Object.keys(scheduleData).forEach((courseID) => {
             const sortedSections = [...scheduleData[courseID]].sort((a, b) =>
-                a.sectionCode.localeCompare(b.sectionCode),
+                a.sectionCode.localeCompare(b.sectionCode)
             );
 
             sortedSections.forEach((section, i) => {

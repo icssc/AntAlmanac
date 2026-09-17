@@ -1,12 +1,12 @@
 'use client';
 import './PrereqTree.scss';
-import { FC } from 'react';
-import type { Prerequisite, PrerequisiteTree, PrerequisiteNode } from '@peterportal/types';
-
-import { CourseGQLData, CourseLookup } from '../../types/types';
 import { Box, Tooltip } from '@mui/material';
+import type { Prerequisite, PrerequisiteTree, PrerequisiteNode } from '@peterportal/types';
 import Link from 'next/link';
+import { FC } from 'react';
+
 import { createTooltipOffset } from '../../helpers/slotProps';
+import { CourseGQLData, CourseLookup } from '../../types/types';
 
 type PrerequisiteTreeNodeType = 'course' | 'prerequisite' | 'dependent';
 

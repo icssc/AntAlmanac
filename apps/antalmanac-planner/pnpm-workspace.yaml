@@ -2,6 +2,6 @@
 minimumReleaseAge: 1440
 
 packages:
-  - site
-  - api
-  - types
+    - site
+    - api
+    - types

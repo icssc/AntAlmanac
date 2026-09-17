@@ -15,6 +15,7 @@ import {
     SavedPlannerYearData,
     SavedPlannerQuarterData,
 } from '@peterportal/types';
+
 import {
     FullPlannerChangeData,
     PlannerCourseChangeData,
@@ -48,7 +49,7 @@ export function applyPlannerOrderEdit(planners: RoadmapPlan[], orderedIds: numbe
 export function applyFullPlannerEdit(
     plans: RoadmapPlan[],
     oldData: FullPlannerChangeData,
-    newData: FullPlannerChangeData,
+    newData: FullPlannerChangeData
 ): void {
     if (!oldData && !newData) return;
 
@@ -70,7 +71,7 @@ export function applyYearEdit(
     plans: RoadmapPlan[],
     plannerId: number,
     oldData: PlannerYearChangeData,
-    newData: PlannerYearChangeData,
+    newData: PlannerYearChangeData
 ) {
     if (!oldData && !newData) return;
 
@@ -100,7 +101,7 @@ export function applyQuarterEdit(
     plannerId: number,
     startYear: number,
     oldData: PlannerQuarterChangeData,
-    newData: PlannerQuarterChangeData,
+    newData: PlannerQuarterChangeData
 ) {
     if (!oldData && !newData) return;
 
@@ -131,7 +132,7 @@ export function applyCourseEdit(
     quarterName: string,
     courseIndex: number,
     oldData: PlannerCourseChangeData,
-    newData: PlannerCourseChangeData,
+    newData: PlannerCourseChangeData
 ) {
     if (!oldData && !newData) return;
 
@@ -191,7 +192,7 @@ function updatePlannerFromRevisionStack(planners: RoadmapPlan[], stack: Revision
                     edit.quarterName,
                     edit.courseIndex,
                     edit[oldKey],
-                    edit[newKey],
+                    edit[newKey]
                 );
             }
             case 'plannerOrder':
@@ -205,7 +206,7 @@ function hasSameSavedCourses(before: SavedPlannerQuarterData['courses'], after: 
         before.length === after.length &&
         before.every(
             (course, index) =>
-                course.courseId === after[index]?.courseId && course.userChosenUnits === after[index]?.userChosenUnits,
+                course.courseId === after[index]?.courseId && course.userChosenUnits === after[index]?.userChosenUnits
         )
     );
 }
@@ -219,7 +220,7 @@ export function restoreRevision(
     planners: RoadmapPlan[],
     revisionHistory: RoadmapRevision[],
     start: number,
-    end: number,
+    end: number
 ) {
     const stack = getRevisionStack(revisionHistory, start, end);
     updatePlannerFromRevisionStack(planners, stack);
@@ -260,7 +261,7 @@ function getDiffsAndPairs<C extends CollapsedRoadmapItem, Del extends Omit<Roadm
     before: C[],
     after: C[],
     itemIdKey: keyof C,
-    parentIdentifier: Del,
+    parentIdentifier: Del
 ) {
     type IdType = Del extends Omit<PlannerQuarterDeletion, 'id'> ? string : number;
     type SaveType = Extract<RoadmapSaveInfo, Del & { data: Record<typeof itemIdKey, unknown> }>;
@@ -286,7 +287,7 @@ function comparePlannerQuarterPair(
     after: SavedPlannerQuarterData,
     plannerId: number,
     startYear: number,
-    plannerDiffs: PlannerQuarterDiffs,
+    plannerDiffs: PlannerQuarterDiffs
 ) {
     if (!before) return;
 
@@ -306,18 +307,18 @@ function comparePlannerYearPair(
     before: SavedPlannerYearData | null,
     after: SavedPlannerYearData,
     plannerId: number,
-    plannerDiffs: PlannerYearDiffs,
+    plannerDiffs: PlannerYearDiffs
 ) {
     const yearEditsIdentifier = { plannerId, startYear: after.startYear };
     const { removed, added, pairs } = getDiffsAndPairs(
         before?.quarters ?? [],
         after.quarters,
         'name',
-        yearEditsIdentifier,
+        yearEditsIdentifier
     );
 
     pairs.forEach(([oldYear, newYear]) =>
-        comparePlannerQuarterPair(oldYear, newYear, plannerId, after.startYear, plannerDiffs),
+        comparePlannerQuarterPair(oldYear, newYear, plannerId, after.startYear, plannerDiffs)
     );
 
     if (before && before.name !== after.name) {

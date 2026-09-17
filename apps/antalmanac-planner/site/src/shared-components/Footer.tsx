@@ -1,9 +1,10 @@
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { Button, Container, Stack, SvgIcon, useMediaQuery, useTheme } from '@mui/material';
 import { FC } from 'react';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import ICSSCLogo from './IcsscLogo';
+
 import { FEEDBACK_FORM_URL } from '../helpers/constants';
+import ICSSCLogo from './IcsscLogo';
 
 const Footer: FC<{ className?: string }> = ({ className }) => {
     const theme = useTheme();

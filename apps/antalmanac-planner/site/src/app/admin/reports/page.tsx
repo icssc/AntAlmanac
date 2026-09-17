@@ -1,8 +1,9 @@
 import { FC } from 'react';
+
 import Reports from './Reports';
 
 const Page: FC = () => {
-  return <Reports />;
+    return <Reports />;
 };
 
 export default Page;

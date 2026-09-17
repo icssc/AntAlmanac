@@ -1,6 +1,7 @@
 import { ReactSortableProps, SortableOptions } from 'react-sortablejs';
-import { CourseGQLData, CustomCourse, PlannerQuarterCourse } from '../types/types';
+
 import { RoadmapPlan } from '../types/roadmap';
+import { CourseGQLData, CustomCourse, PlannerQuarterCourse } from '../types/types';
 
 const baseSortable: SortableOptions = {
     animation: 150,

@@ -1,3 +1,8 @@
+import { useMediaQuery } from '@mui/material';
+import { CourseAAPIResponse, GETitle, ProfessorAAPIResponse } from '@peterportal/types';
+import { Fragment, ReactNode, cloneElement, isValidElement } from 'react';
+
+import trpc from '../trpc';
 import {
     SearchIndex,
     CourseGQLData,
@@ -7,10 +12,6 @@ import {
     SearchType,
     CourseWithTermsLookup,
 } from '../types/types';
-import trpc from '../trpc';
-import { CourseAAPIResponse, GETitle, ProfessorAAPIResponse } from '@peterportal/types';
-import { Fragment, ReactNode, cloneElement, isValidElement } from 'react';
-import { useMediaQuery } from '@mui/material';
 
 export function getCourseTags(course: CourseGQLData) {
     // data to be displayed in pills
@@ -45,7 +46,7 @@ export function shortenCourseLevel(courseLevel: CourseGQLData['courseLevel']): s
 // helper function to search 1 result from course/professor page
 export async function searchAPIResult<T extends SearchType>(
     type: T,
-    name: string,
+    name: string
 ): Promise<(T extends 'course' ? CourseGQLData : ProfessorGQLData) | undefined> {
     const results = await searchAPIResults(`${type}s`, [name]);
     if (Object.keys(results).length > 0) {
@@ -58,7 +59,7 @@ export async function searchAPIResult<T extends SearchType>(
 // helper function to query from API and transform to data used in redux
 export async function searchAPIResults<T extends SearchIndex>(
     index: T,
-    names: string[],
+    names: string[]
 ): Promise<T extends 'courses' ? BatchCourseData : BatchProfessorData> {
     const data =
         index === 'courses'
@@ -90,7 +91,7 @@ export function transformCourseGQL(data: CourseAAPIResponse) {
     const course = { ...data } as unknown as CourseGQLData;
     course.instructors = Object.fromEntries(data.instructors.map((instructor) => [instructor.ucinetid, instructor]));
     course.prerequisites = Object.fromEntries(
-        data.prerequisites.map((prerequisite) => [prerequisite.id, prerequisite]),
+        data.prerequisites.map((prerequisite) => [prerequisite.id, prerequisite])
     );
     /** @todo Change "dependencies" to "dependents" once it is changed in AAPI */
     course.dependents = Object.fromEntries(data.dependencies.map((dependency) => [dependency.id, dependency]));

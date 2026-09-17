@@ -1,6 +1,7 @@
 'use client';
-import React, { FC, ReactNode, useState } from 'react';
 import { Popover } from '@mui/material';
+import React, { FC, ReactNode, useState } from 'react';
+
 import './OverlayTrigger.scss';
 import { useAppSelector } from '../../store/hooks';
 

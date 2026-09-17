@@ -1,24 +1,13 @@
 'use client';
 import './ReviewCard.scss';
-import { FC, useState, useEffect, useCallback, ReactNode } from 'react';
-import { Chip, Tooltip } from '@mui/material';
-import { CourseGQLData, ProfessorGQLData } from '../../types/types';
-import ReportForm from '../ReportForm/ReportForm';
-import { selectReviews, setReviews } from '../../store/slices/reviewSlice';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import trpc from '../../trpc';
-import { ReviewData } from '@peterportal/types';
-import { useIsLoggedIn } from '../../hooks/isLoggedIn';
-import { sortTerms, shortenQuarter } from '../../helpers/util';
-import { getProfessorTerms, displayReviewDate } from '../../helpers/reviews';
-import { useProfessorData } from '../../hooks/professorReviews';
-
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PersonIcon from '@mui/icons-material/Person';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import { Chip, Tooltip } from '@mui/material';
 import {
     Button,
     IconButton,
@@ -33,11 +22,22 @@ import {
     MenuItem,
     Divider,
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { ReviewData } from '@peterportal/types';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { createTooltipOffset } from '../../helpers/slotProps';
 import { useRouter } from 'next/navigation';
+import { FC, useState, useEffect, useCallback, ReactNode } from 'react';
+
+import { getProfessorTerms, displayReviewDate } from '../../helpers/reviews';
+import { createTooltipOffset } from '../../helpers/slotProps';
+import { sortTerms, shortenQuarter } from '../../helpers/util';
+import { useIsLoggedIn } from '../../hooks/isLoggedIn';
+import { useProfessorData } from '../../hooks/professorReviews';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { selectReviews, setReviews } from '../../store/slices/reviewSlice';
+import trpc from '../../trpc';
+import { CourseGQLData, ProfessorGQLData } from '../../types/types';
+import ReportForm from '../ReportForm/ReportForm';
 import ReviewForm from '../ReviewForm/ReviewForm';
 
 interface AuthorEditButtonsProps {
@@ -228,7 +228,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, course, professor }) => {
                 router.push(`?course=${encodeURIComponent(id)}`);
             }
         },
-        [isStandalonePage, course, router],
+        [isStandalonePage, course, router]
     );
 
     useEffect(() => {
@@ -324,8 +324,8 @@ const ReviewCard: FC<ReviewCardProps> = ({ review, course, professor }) => {
                     } else {
                         return otherReview;
                     }
-                }),
-            ),
+                })
+            )
         );
     };
 

@@ -1,6 +1,7 @@
-import { FC } from 'react';
-import ReviewCard from '../../../component/Review/ReviewCard';
 import { ReviewData } from '@peterportal/types';
+import { FC } from 'react';
+
+import ReviewCard from '../../../component/Review/ReviewCard';
 
 interface UnverifiedReviewProps {
     review: ReviewData;

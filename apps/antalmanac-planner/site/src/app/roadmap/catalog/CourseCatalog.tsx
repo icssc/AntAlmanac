@@ -5,41 +5,41 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { hideMobileCatalog } from '../../../store/slices/roadmapSlice';
 import SavedAndSearch from '../search/SavedAndSearch';
 import GERequiredCourseList from './GERequiredCourseList';
+import Library from './Library';
 import MajorSelector from './MajorSelector';
 import MinorSelector from './MinorSelector';
 import RequirementsListSelector from './RequirementsListSelector';
-import Library from './Library';
 
 const CloseRoadmapSearchButton = () => {
-  const isMobile = useIsMobile();
-  const dispatch = useAppDispatch();
-  const { year, quarter } = useNamedAcademicTerm();
+    const isMobile = useIsMobile();
+    const dispatch = useAppDispatch();
+    const { year, quarter } = useNamedAcademicTerm();
 
-  if (!isMobile) return <></>;
+    if (!isMobile) return <></>;
 
-  const closeSearch = () => dispatch(hideMobileCatalog());
+    const closeSearch = () => dispatch(hideMobileCatalog());
 
-  return (
-    <button className="fixed" onClick={closeSearch}>
-      Cancel Selecting for {quarter} {year}
-    </button>
-  );
+    return (
+        <button className="fixed" onClick={closeSearch}>
+            Cancel Selecting for {quarter} {year}
+        </button>
+    );
 };
 
 export const CourseCatalog = () => {
-  const selectedCourseList = useAppSelector((state) => state.courseRequirements.selectedTab);
+    const selectedCourseList = useAppSelector((state) => state.courseRequirements.selectedTab);
 
-  return (
-    <div className="course-catalog">
-      <RequirementsListSelector />
+    return (
+        <div className="course-catalog">
+            <RequirementsListSelector />
 
-      {selectedCourseList === 'Major' && <MajorSelector />}
-      {selectedCourseList === 'Minor' && <MinorSelector />}
-      {selectedCourseList === 'GE' && <GERequiredCourseList />}
-      {selectedCourseList === 'Library' && <Library />}
-      {selectedCourseList === 'Search' && <SavedAndSearch showSavedCoursesOnEmpty />}
+            {selectedCourseList === 'Major' && <MajorSelector />}
+            {selectedCourseList === 'Minor' && <MinorSelector />}
+            {selectedCourseList === 'GE' && <GERequiredCourseList />}
+            {selectedCourseList === 'Library' && <Library />}
+            {selectedCourseList === 'Search' && <SavedAndSearch showSavedCoursesOnEmpty />}
 
-      <CloseRoadmapSearchButton />
-    </div>
-  );
+            <CloseRoadmapSearchButton />
+        </div>
+    );
 };

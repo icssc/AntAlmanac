@@ -3,11 +3,11 @@
 import { useRef, useEffect } from 'react';
 
 export function useFirstRender() {
-  const firstRender = useRef(true);
+    const firstRender = useRef(true);
 
-  useEffect(() => {
-    firstRender.current = false;
-  }, []);
+    useEffect(() => {
+        firstRender.current = false;
+    }, []);
 
-  return firstRender.current;
+    return firstRender.current;
 }

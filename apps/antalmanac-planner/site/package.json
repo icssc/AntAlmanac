@@ -2,7 +2,15 @@
     "name": "@antalmanac-planner/site",
     "version": "0.1.0",
     "private": true,
+    "homepage": "https://antalmanac.com/planner",
     "type": "module",
+    "scripts": {
+        "start": "next start",
+        "dev": "next dev",
+        "build": "next build",
+        "typegen": "next typegen",
+        "test": "jest"
+    },
     "dependencies": {
         "@emotion/cache": "^11.14.0",
         "@emotion/react": "^11.14.0",
@@ -27,25 +35,6 @@
         "react-transition-group": "^4.4.5",
         "recharts": "^3.8.1"
     },
-    "scripts": {
-        "start": "next start",
-        "dev": "next dev",
-        "build": "next build",
-        "typegen": "next typegen",
-        "test": "jest"
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
-    },
     "devDependencies": {
         "@peterportal/types": "workspace:*",
         "@testing-library/dom": "^10.4.1",
@@ -63,5 +52,16 @@
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3"
     },
-    "homepage": "https://antalmanac.com/planner"
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
 }

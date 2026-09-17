@@ -1,11 +1,12 @@
-import { FC } from 'react';
+import { CoursePreviewWithTerms } from '@peterportal/types';
+
 import './HitItem.scss';
 import { useRouter } from 'next/navigation';
+import { FC } from 'react';
 
-import { ProfessorGQLData } from '../../types/types';
-import { addDelimiter } from '../../helpers/util';
-import { CoursePreviewWithTerms } from '@peterportal/types';
 import ClickableDiv from '../../component/ClickableDiv/ClickableDiv';
+import { addDelimiter } from '../../helpers/util';
+import { ProfessorGQLData } from '../../types/types';
 
 interface ProfessorHitItemProps extends ProfessorGQLData {}
 
@@ -33,7 +34,7 @@ const RecentlyTaughtList: FC<RecentlyTaughtListProps> = ({ courses }) => {
                         {c.department} {c.courseNumber}
                     </a>
                 )),
-                ', ',
+                ', '
             )}
             {courses.length > 10 && ` + ${courses.length - 10} more...`}
         </>

@@ -1,10 +1,11 @@
-import { FC, Fragment } from 'react';
-import { Snackbar, SnackbarContent, IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
 import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
+import { Snackbar, SnackbarContent, IconButton } from '@mui/material';
 import Slide from '@mui/material/Slide';
+import { FC, Fragment } from 'react';
+
 import ClickableDiv from '../component/ClickableDiv/ClickableDiv';
 
 export type ToastSeverity = 'error' | 'success' | 'info';

@@ -1,6 +1,6 @@
 import ReviewsPage from './ReviewsPage';
 
 const Page = () => {
-  return <ReviewsPage />;
+    return <ReviewsPage />;
 };
 export default Page;

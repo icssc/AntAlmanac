@@ -1,10 +1,11 @@
-import { pluralize } from '../../helpers/util';
+import CheckIcon from '@mui/icons-material/Check';
+
 import './CustomUnitsContainer.scss';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import { IconButton, TextField } from '@mui/material';
 import { FC, FormEvent, useState } from 'react';
 
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
-import CheckIcon from '@mui/icons-material/Check';
-import { IconButton, TextField } from '@mui/material';
+import { pluralize } from '../../helpers/util';
 
 interface UnitsContainerProps {
     units: number | undefined;

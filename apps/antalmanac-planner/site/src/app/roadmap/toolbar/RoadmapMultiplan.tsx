@@ -1,28 +1,12 @@
 'use client';
-import { FC, ReactNode, useRef, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import {
-    defaultPlan,
-    getNextPlannerTempId,
-    initialPlanState,
-    reviseRoadmap,
-    setPlanIndex,
-    setToastMsg,
-    setToastSeverity,
-    setShowToast,
-} from '../../../store/slices/roadmapSlice';
-import { ReactSortable, SortableEvent } from 'react-sortablejs';
-import { planSortable } from '../../../helpers/sortable';
-import './RoadmapMultiplan.scss';
-import { makeUniquePlanName } from '../../../helpers/planner';
-import ImportTranscriptPopup from './ImportTranscriptPopup';
-import ImportZot4PlanPopup from './ImportZot4PlanPopup';
-
-import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import AddIcon from '@mui/icons-material/Add';
-import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
+
+import './RoadmapMultiplan.scss';
+import EditIcon from '@mui/icons-material/Edit';
 import {
     Box,
     Button,
@@ -35,12 +19,28 @@ import {
     DialogActions,
     DialogContentText,
 } from '@mui/material';
+import { FC, ReactNode, useRef, useState } from 'react';
+import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { RoadmapPlan } from '../../../types/roadmap';
+import { makeUniquePlanName } from '../../../helpers/planner';
 import { addPlanner, deletePlanner, reorderPlannersRevision, updatePlannerName } from '../../../helpers/roadmapEdits';
+import { planSortable } from '../../../helpers/sortable';
 import { deepCopy } from '../../../helpers/util';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import {
+    defaultPlan,
+    getNextPlannerTempId,
+    initialPlanState,
+    reviseRoadmap,
+    setPlanIndex,
+    setToastMsg,
+    setToastSeverity,
+    setShowToast,
+} from '../../../store/slices/roadmapSlice';
 import { theme } from '../../../style/theme';
+import { RoadmapPlan } from '../../../types/roadmap';
+import ImportTranscriptPopup from './ImportTranscriptPopup';
+import ImportZot4PlanPopup from './ImportZot4PlanPopup';
 
 interface RoadmapSelectableItemProps {
     plan: RoadmapPlan;
@@ -140,7 +140,7 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
                         setIsDragging(false);
                         if (event.oldIndex !== event.newIndex) {
                             dispatch(
-                                reviseRoadmap(reorderPlannersRevision(allPlans, event.oldIndex!, event.newIndex!)),
+                                reviseRoadmap(reorderPlannersRevision(allPlans, event.oldIndex!, event.newIndex!))
                             );
                         }
                     }}
@@ -212,7 +212,7 @@ const RoadmapMultiplan: FC = () => {
             const recreateInitialPlan = addPlanner(
                 nextPlanTempId,
                 "Peter's Roadmap",
-                deepCopy(initialPlanState.yearPlans),
+                deepCopy(initialPlanState.yearPlans)
             );
             revision.edits.push(...recreateInitialPlan.edits);
         }
