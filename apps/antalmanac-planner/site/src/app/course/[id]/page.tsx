@@ -1,0 +1,33 @@
+import { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { notFound } from 'next/navigation';
+
+import { createServerSideTrpcCaller } from '../../../trpc';
+import CoursePage from '../CoursePage';
+
+interface CoursePageParams {
+    params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: CoursePageParams): Promise<Metadata> {
+    const id = decodeURIComponent((await params).id);
+
+    const reqHeaders = await headers().then((h) => Object.fromEntries(h.entries()));
+    const serverTrpc = createServerSideTrpcCaller(reqHeaders);
+    const course = await serverTrpc.courses.get.query({ courseID: id });
+
+    if (!course) return notFound();
+
+    const title = `${course.department} ${course.courseNumber} | ${course.title}`;
+    const description = course.description;
+
+    return {
+        title,
+        description,
+    };
+}
+
+const Page = async ({ params }: CoursePageParams) => {
+    return <CoursePage courseId={decodeURIComponent((await params).id)} />;
+};
+export default Page;

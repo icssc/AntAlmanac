@@ -1,0 +1,3 @@
+'use client';
+
+export { default } from '@antalmanac-scheduler/src/app/(main)/error';

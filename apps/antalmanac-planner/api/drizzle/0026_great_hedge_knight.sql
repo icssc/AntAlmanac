@@ -1,0 +1,1 @@
+ALTER TABLE "review" ALTER COLUMN "grade_received" DROP NOT NULL;

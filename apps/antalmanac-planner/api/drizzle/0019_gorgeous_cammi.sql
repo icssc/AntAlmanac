@@ -1,0 +1,1 @@
+ALTER TABLE "planner" DROP COLUMN IF EXISTS "years";

@@ -1,0 +1,1 @@
+ALTER TABLE "review" ALTER COLUMN "updated_at" DROP DEFAULT;

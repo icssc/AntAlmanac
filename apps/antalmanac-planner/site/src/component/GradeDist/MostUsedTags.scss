@@ -1,0 +1,37 @@
+.most-used-tags {
+    width: 100%;
+    margin-top: 16px;
+
+    .most-used-tags-header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .num-reviews {
+        color: var(--mui-palette-text-secondary);
+    }
+
+    .most-used-tags-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .MuiLinearProgress-root {
+            height: 10px;
+            border-radius: 5px;
+            background-color: var(--mui-palette-background-default);
+        }
+    }
+
+    .view-more-btn {
+        margin-top: 20px;
+        color: var(--mui-palette-text-secondary);
+        cursor: pointer;
+        text-align: center;
+    }
+}

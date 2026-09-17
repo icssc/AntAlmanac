@@ -1,0 +1,9 @@
+{
+    "extends": ["@total-typescript/tsconfig/bundler/no-dom", "../../../tsconfig.base.json"],
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "rootDir": "src",
+        "outDir": "dist"
+    },
+    "include": ["src/**/*"]
+}
