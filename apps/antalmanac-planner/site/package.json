@@ -15,7 +15,6 @@
         "@trpc/server": "^11.17.0",
         "next": "16.2.6",
         "node-html-parser": "^6.1.13",
-        "posthog-js": "^1.372.10",
         "react": "^19.2.6",
         "react-cookie": "^7.2.2",
         "react-dom": "19.2.6",

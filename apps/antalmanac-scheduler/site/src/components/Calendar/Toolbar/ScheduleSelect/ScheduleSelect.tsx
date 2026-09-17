@@ -7,11 +7,10 @@ import { SortableList } from '$components/drag-and-drop/SortableList';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
-import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type MouseEvent, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
@@ -49,13 +48,7 @@ function handleScheduleChange(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
-    const { openScheduleSelect, setOpenScheduleSelect } = useScheduleComponentsToggleStore(
-        useShallow((state) => ({
-            openScheduleSelect: state.openScheduleSelect,
-            setOpenScheduleSelect: state.setOpenScheduleSelect,
-        }))
-    );
-
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(() => getScheduleItems());
     const { fallbackMode, getFallbackScheduleNames } = useFallbackStore(
@@ -66,17 +59,15 @@ export function SelectSchedulePopover() {
     );
     const fallbackScheduleMapping = getScheduleItems(getFallbackScheduleNames());
 
-    const anchorElementRef = useRef(null);
-
     const postHog = usePostHog();
 
-    const handleClick = useCallback(() => {
-        setOpenScheduleSelect(true);
-    }, [setOpenScheduleSelect]);
+    const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    }, []);
 
     const handleClose = useCallback(() => {
-        setOpenScheduleSelect(false);
-    }, [setOpenScheduleSelect]);
+        setAnchorEl(null);
+    }, []);
 
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
@@ -139,7 +130,6 @@ export function SelectSchedulePopover() {
                 disableInteractive
             >
                 <Button
-                    ref={anchorElementRef}
                     size="small"
                     color="inherit"
                     variant="outlined"
@@ -158,8 +148,8 @@ export function SelectSchedulePopover() {
             </Tooltip>
 
             <Popover
-                open={openScheduleSelect}
-                anchorEl={anchorElementRef.current}
+                open={anchorEl !== null}
+                anchorEl={anchorEl}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >

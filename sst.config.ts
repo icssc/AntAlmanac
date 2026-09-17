@@ -75,7 +75,7 @@ export default $config({
             },
             transform: {
                 cachePolicy(_, opts) {
-                    opts.id = '92d18877-845e-47e7-97e6-895382b1bf7c';
+                    opts.id = ANTALMANAC_WEBSITE_SERVER_CACHE_POLICY;
                 },
                 cdn(args) {
                     if ($app.stage !== 'production') {
@@ -98,7 +98,7 @@ export default $config({
                 // Shared
                 ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
                 OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
-                NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
+                NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
                 NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
                 // Scheduler
                 DB_URL: dbUrl,
@@ -111,12 +111,11 @@ export default $config({
                 PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
                 STAGE: $app.stage,
                 // Planner
-                DATABASE_URL: process.env.DATABASE_URL,
-                SESSION_SECRET: process.env.SESSION_SECRET,
+                PLANNER_DATABASE_URL: process.env.PLANNER_DATABASE_URL,
+                PLANNER_SESSION_SECRET: process.env.PLANNER_SESSION_SECRET,
                 PUBLIC_API_URL: process.env.PUBLIC_API_URL,
                 PLANNER_OIDC_CLIENT_ID: process.env.PLANNER_OIDC_CLIENT_ID,
                 ADMIN_EMAILS: process.env.ADMIN_EMAILS,
-                EXTERNAL_USER_READ_SECRET: process.env.EXTERNAL_USER_READ_SECRET,
             },
         });
 

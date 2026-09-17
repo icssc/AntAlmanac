@@ -239,7 +239,6 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
             openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
             useScheduleComponentsToggleStore.setState({
-                openScheduleSelect: true,
                 openLoadingSchedule: false,
             });
 

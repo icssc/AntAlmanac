@@ -7,13 +7,13 @@ declare global {
             PORT?: string;
             PUBLIC_API_URL: string;
             MONGO_URL: string;
-            SESSION_SECRET: string;
+            PLANNER_SESSION_SECRET: string;
             OIDC_CLIENT_ID: string;
             OIDC_ISSUER_URL: string;
             PRODUCTION_DOMAIN: string;
             ADMIN_EMAILS: string;
             ANTEATER_API_KEY?: string;
-            EXTERNAL_USER_READ_SECRET?: string;
+            PLANNER_CLIENT_API_KEY?: string;
         }
     }
 }

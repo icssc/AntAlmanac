@@ -1,22 +1,22 @@
 'use client';
 
-// Import Global Store
-import { generateStore } from '../../store/store';
+import { UserData } from '@peterportal/types';
+import { FC, PropsWithChildren, useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { PostHogProvider } from 'posthog-js/react';
-import AppThemeProvider from '../AppThemeProvider/AppThemeProvider';
-import { FC, PropsWithChildren, ReactNode, useEffect } from 'react';
+
+import PlannerLoader from '../../app/roadmap/planner/PlannerLoader';
+import { useLoadCompletedMarkers, useLoadOverriddenRequirements } from '../../hooks/courseRequirements';
+import { useLoadDepartments } from '../../hooks/departments';
+import { useIsLoggedIn } from '../../hooks/isLoggedIn';
 import { useLoadSavedCourses } from '../../hooks/savedCourses';
 import { useSetSchedule } from '../../hooks/schedule';
-import { useLoadDepartments } from '../../hooks/departments';
-import { UserData } from '@peterportal/types';
-import { useLoadCompletedMarkers, useLoadOverriddenRequirements } from '../../hooks/courseRequirements';
 import { useLoadTransferredCredits } from '../../hooks/transferCredits';
-import PlannerLoader from '../../app/roadmap/planner/PlannerLoader';
-import { AutoSignIn } from '../AutoSignIn/AutoSignIn';
-import { useIsLoggedIn } from '../../hooks/isLoggedIn';
 import { useAppDispatch } from '../../store/hooks';
 import { setAutosaveEnabled } from '../../store/slices/userSlice';
+// Import Global Store
+import { generateStore } from '../../store/store';
+import AppThemeProvider from '../AppThemeProvider/AppThemeProvider';
+import { AutoSignIn } from '../AutoSignIn/AutoSignIn';
 
 const UserDataLoader: FC = () => {
     useLoadSavedCourses();
@@ -37,30 +37,12 @@ const UserDataLoader: FC = () => {
     return null;
 };
 
-const wrapInPostHogIfNeeded = (children: ReactNode) => {
-    const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-    const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST;
-    if (!posthogHost || !posthogKey) {
-        // Send warning about misconfiguration, though on development this can be safely ignored
-        console.warn('PostHog Host or Key was not provided');
-        return children;
-    }
-
-    const posthogOptions = { api_host: posthogHost, autocapture: true, enable_heatmaps: true };
-
-    return (
-        <PostHogProvider apiKey={posthogKey} options={posthogOptions}>
-            {children}
-        </PostHogProvider>
-    );
-};
-
 interface AppProviderProps extends PropsWithChildren {
     user: UserData | null;
 }
 
 const AppProvider: FC<AppProviderProps> = ({ children, user }) => {
-    const baseContent = (
+    const appContent = (
         <>
             <UserDataLoader />
             <AutoSignIn />
@@ -71,7 +53,6 @@ const AppProvider: FC<AppProviderProps> = ({ children, user }) => {
         </>
     );
 
-    const appContent = wrapInPostHogIfNeeded(baseContent);
     const store = generateStore({
         user,
         theme: user?.theme ?? 'system',
