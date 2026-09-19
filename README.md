@@ -50,15 +50,19 @@ A summary of the libraries we use are listed below.
 
 This is a [pnpm](https://pnpm.io) monorepo:
 
-- `apps/`
-    - `aants/` - AANTS, the class notification service (AWS Lambda + SQS + SES) that watches WebSoc and emails users when a section's enrollment status changes.
-    - `antalmanac/` - the main Next.js web application, unifying AntAlmanac Scheduler and AntAlmanac Planner.
-    - `antalmanac-planner/` - AntAlmanac Planner frontend and backend
-    - `antalmanac-scheduler/` - AntAlmanac Scheduler frontend and backend
-        - `db/` - Drizzle schema, migrations, and the database client.
-        - `types/` - shared internal TypeScript types.
-    - `apps/ios` - the native iOS wrapper (Swift WebView + push notifications).
-- `packages/anteater-api` - Anteater API types, client, and utilities.
+```
+antalmanac
+├── apps
+│    ├── aants/ - the class notification service (AWS Lambda + SQS + SES) for enrollment status changes.
+│    ├── antalmanac/ - the main Next.js app, unifying AntAlmanac Scheduler and AntAlmanac Planner.
+│    ├── antalmanac-planner/ - AntAlmanac Planner frontend and backend.
+│    ├── antalmanac-scheduler - AntAlmanac Scheduler frontend and backend.
+│    │   ├── db/ - Drizzle schema, migrations, and the database client.
+│    │   └── types/ - shared internal TypeScript types.
+│    └── ios/ - the native iOS wrapper (Swift WebView + push notifications).
+└── packages
+     └── anteater-api/ - Anteater API types, client, and utilities.
+```
 
 ## History
 
@@ -205,7 +209,7 @@ If you ever need help, feel free to get in touch on the [ICSSC Projects Discord 
 
 ### Notes
 
-- For more detailed contributor documentation, see the [AntAlmanac docs](https://docs.icssc.club/docs/contributor/antalmanac-scheduler).
+- For more detailed contributor documentation, see the [AntAlmanac docs](https://docs.icssc.club/docs/contributor/antalmanac).
 
 ## Deployment
 
