@@ -18,8 +18,9 @@ import {
     SavedPlannerCourseData,
     latestRoadmapVersion,
 } from '@peterportal/types';
-import { searchAPIResults } from './util';
+
 import { defaultPlan } from '../store/slices/roadmapSlice';
+import trpc from '../trpc';
 import {
     BatchCourseData,
     CustomCourse,
@@ -31,9 +32,9 @@ import {
     RoadmapPlan,
 } from '../types/types';
 import { isCustomCourse } from './customCourses';
-import trpc from '../trpc';
-import { LocalTransferSaveKey, saveLocalTransfers } from './transferCredits';
 import { compareRoadmaps } from './roadmap';
+import { LocalTransferSaveKey, saveLocalTransfers } from './transferCredits';
+import { searchAPIResults } from './util';
 
 /** If a custom course ID, get its ID number; otherwise, null */
 export function getCustomId(courseId: string): number | null {
@@ -146,7 +147,7 @@ export const expandPlanner = async (savedPlanner: SavedPlannerYearData[]): Promi
     savedPlanner.forEach((year) =>
         year.quarters.forEach((quarter) => {
             courses = courses.concat(quarter.courses);
-        }),
+        })
     );
 
     // separate official courses from custom courses
@@ -156,7 +157,7 @@ export const expandPlanner = async (savedPlanner: SavedPlannerYearData[]): Promi
     if (officialCourses.length > 0) {
         courseLookup = await searchAPIResults(
             'courses',
-            officialCourses.map((c) => c.courseId),
+            officialCourses.map((c) => c.courseId)
         );
     }
 
@@ -208,7 +209,7 @@ export const expandAllPlanners = async (plans: SavedPlannerData[]): Promise<Road
             const yearPlans = await expandPlanner(p.content);
             const planContent = { yearPlans, invalidCourses: [] };
             return { id: p.id, name: p.name, content: planContent, chc: p.chc };
-        }),
+        })
     );
 };
 
@@ -249,7 +250,7 @@ function addMultiPlanToRoadmap(roadmap: LegacySavedRoadmap | LegacyRoadmap): Leg
                     id: -1,
                     name: defaultPlan.name,
                     content: normalizePlannerQuarterNames(
-                        (roadmap as { planner: LegacySavedPlannerYearData[] }).planner,
+                        (roadmap as { planner: LegacySavedPlannerYearData[] }).planner
                     ),
                 },
             ],
@@ -367,7 +368,7 @@ function getLocalRoadmapTimestamp(): string {
 function updateTempIdsInLocalRoadmap(
     planners: SavedPlannerData[],
     plannerIdLookup: Record<number, number>,
-    currentPlanIndex: number | undefined,
+    currentPlanIndex: number | undefined
 ) {
     if (Object.keys(plannerIdLookup).length == 0) return;
     const updatedPlanners = planners.map((planner) => {
@@ -394,7 +395,7 @@ export const saveRoadmap = async (
     isLoggedIn: boolean,
     lastSavedPlanners: SavedPlannerData[] | null,
     planners: SavedPlannerData[],
-    currentPlanIndex?: number,
+    currentPlanIndex?: number
 ): Promise<SaveRoadmapResult> => {
     try {
         if (!isLoggedIn) {
@@ -452,7 +453,7 @@ export const validatePlanner = (transferNames: string[], currentPlanData: Planne
             const taking: Set<string> = new Set(
                 quarter.courses
                     .filter((c): c is PlannerCourseData => !isCustomCourse(c))
-                    .map((c) => c.department + ' ' + c.courseNumber),
+                    .map((c) => c.department + ' ' + c.courseNumber)
             );
             quarter.courses.forEach((course, courseIndex) => {
                 if (isCustomCourse(course)) return;
@@ -485,8 +486,8 @@ export const getAllCoursesFromPlan = (plan: RoadmapPlan['content']) => {
         yearPlan.quarters.flatMap((quarter) =>
             quarter.courses
                 .filter((course): course is PlannerCourseData => !isCustomCourse(course))
-                .map((course) => course.department + ' ' + course.courseNumber),
-        ),
+                .map((course) => course.department + ' ' + course.courseNumber)
+        )
     );
 };
 
@@ -569,7 +570,7 @@ const validatePrerequisites = ({ prerequisite, ...input }: ValidationInput<Prere
 export const getMissingPrerequisites = (
     clearedCourses: Set<string>,
     prerequisite: PrerequisiteTree,
-    takingCourses: Set<string> = new Set<string>(),
+    takingCourses: Set<string> = new Set<string>()
 ) => {
     const input = {
         prerequisite,

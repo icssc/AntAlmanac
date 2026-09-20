@@ -1,10 +1,11 @@
 import './ProfessorResult.scss';
-import React, { FC } from 'react';
-import { ProfessorGQLData } from '../../../types/types';
-import { addDelimiter } from '../../../helpers/util';
-import Link from 'next/link';
 import { CoursePreviewWithTerms } from '@peterportal/types';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import React, { FC } from 'react';
+
+import { addDelimiter } from '../../../helpers/util';
+import { ProfessorGQLData } from '../../../types/types';
 
 interface RecentlyTaughtListProps {
     courses: CoursePreviewWithTerms[];
@@ -29,7 +30,7 @@ const RecentlyTaughtList: FC<RecentlyTaughtListProps> = ({ courses }) => {
                         {c.department} {c.courseNumber}
                     </Link>
                 )),
-                ', ',
+                ', '
             )}
             {courses.length > 10 && ` + ${courses.length - 10} more...`}
         </>

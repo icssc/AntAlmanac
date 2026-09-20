@@ -1,24 +1,26 @@
 'use client';
-import { FC, useEffect, useState, useMemo } from 'react';
+import { Fade, useTheme } from '@mui/material';
+
 import './RoadmapPage.scss';
-import Planner from './planner/Planner';
-import MobileCourseCatalog from './catalog/MobileCourseCatalog';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import AddCoursePopup from './planner/AddCoursePopup';
-import { useIsMobile } from '../../helpers/util';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { FC, useEffect, useState, useMemo } from 'react';
+
+import MobileSearchMenu from '../../component/MobileSearchMenu/MobileSearchMenu';
 import CoursePreview from '../../component/ResultPreview/CoursePreview';
+import ProfessorPreview from '../../component/ResultPreview/ProfessorPreview';
+import Toast from '../../helpers/toast';
+import { useIsMobile } from '../../helpers/util';
+import { useSaveRoadmap } from '../../hooks/planner';
+import { usePreviewDepth } from '../../hooks/usePreviewDepth';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setSelectedTab } from '../../store/slices/courseRequirementsSlice';
+import { setShowToast, setSelectedSidebarTab } from '../../store/slices/roadmapSlice';
+import MobileCourseCatalog from './catalog/MobileCourseCatalog';
+import MobilePopup from './MobilePopup';
+import AddCoursePopup from './planner/AddCoursePopup';
+import Planner from './planner/Planner';
 import DesktopRoadmapSidebar from './sidebar/DesktopRoadmapSidebar';
 import { MobileCreditsMenu } from './transfers/MobileCreditsMenu';
-import { setShowToast, setSelectedSidebarTab } from '../../store/slices/roadmapSlice';
-import { setSelectedTab } from '../../store/slices/courseRequirementsSlice';
-import Toast from '../../helpers/toast';
-import ProfessorPreview from '../../component/ResultPreview/ProfessorPreview';
-import MobileSearchMenu from '../../component/MobileSearchMenu/MobileSearchMenu';
-import MobilePopup from './MobilePopup';
-import { Fade, useTheme } from '@mui/material';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { usePreviewDepth } from '../../hooks/usePreviewDepth';
-import { useSaveRoadmap } from '../../hooks/planner';
 
 const RoadmapPage: FC = () => {
     const isMobile = useIsMobile();

@@ -1,29 +1,29 @@
 import './ResultPreview.scss';
-import { FC, ReactNode, useEffect, useCallback, useState } from 'react';
-import { ResultPageSection } from '../ResultPageContent/ResultPageContent';
-import GradeDist from '../GradeDist/GradeDist';
-import Schedule from '../Schedule/Schedule';
-import Review from '../Review/Review';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
-import { checkModalOpen, sortTerms, useIsMobile } from '../../helpers/util';
-import CourseSummary from './CourseSummary';
-import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
-import { CourseGQLData } from '../../types/types';
-import { Button, IconButton, Paper, Tooltip, useMediaQuery } from '@mui/material';
-import { CourseBookmarkButton } from '../CourseInfo/CourseInfo';
-import { useAppDispatch } from '../../store/hooks';
-import { useCourseData } from '../../hooks/catalog';
-import { setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/roadmapSlice';
-import PreviewNavBar from './PreviewNavBar';
-import trpc from '../../trpc';
-
-import MaterialsIcon from '../../helpers/courseMaterials';
-import CloseIcon from '@mui/icons-material/Close';
 import BackIcon from '@mui/icons-material/ArrowBack';
-import IosShareIcon from '@mui/icons-material/IosShare';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import CloseIcon from '@mui/icons-material/Close';
+import IosShareIcon from '@mui/icons-material/IosShare';
 import RateReviewIcon from '@mui/icons-material/RateReview';
+import { Button, IconButton, Paper, Tooltip, useMediaQuery } from '@mui/material';
+import { FC, ReactNode, useEffect, useCallback, useState } from 'react';
+
+import MaterialsIcon from '../../helpers/courseMaterials';
+import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
+import { checkModalOpen, sortTerms, useIsMobile } from '../../helpers/util';
+import { useCourseData } from '../../hooks/catalog';
+import { useAppDispatch } from '../../store/hooks';
+import { setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/roadmapSlice';
+import trpc from '../../trpc';
+import { CourseGQLData } from '../../types/types';
+import { CourseBookmarkButton } from '../CourseInfo/CourseInfo';
+import GradeDist from '../GradeDist/GradeDist';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import { ResultPageSection } from '../ResultPageContent/ResultPageContent';
+import Review from '../Review/Review';
+import Schedule from '../Schedule/Schedule';
+import CourseSummary from './CourseSummary';
+import PreviewNavBar from './PreviewNavBar';
 
 interface PreviewTitleProps {
     isLoading: boolean;

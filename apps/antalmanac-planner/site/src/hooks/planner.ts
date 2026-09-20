@@ -1,21 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
+
+import { isCustomCourse } from '../helpers/customCourses';
 import { collapseAllPlanners, getAllCoursesFromPlan, saveRoadmap } from '../helpers/planner';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { useTransferredCredits } from './transferCredits';
+import { restoreRevision } from '../helpers/roadmap';
 import { getNamesOfTransfers } from '../helpers/transferCredits';
-import { useIsLoggedIn } from './isLoggedIn';
-import { RoadmapRevision } from '../types/roadmap';
+import { deepCopy } from '../helpers/util';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
     reviseRoadmap,
     setSavedRevisionIndex,
     setSaveInProgress,
     updateTempPlannerIds,
 } from '../store/slices/roadmapSlice';
-import { deepCopy } from '../helpers/util';
-import { restoreRevision } from '../helpers/roadmap';
 import { setToastMsg, setToastSeverity, setShowToast } from '../store/slices/roadmapSlice';
+import { RoadmapRevision } from '../types/roadmap';
 import { PlannerCourseData } from '../types/types';
-import { isCustomCourse } from '../helpers/customCourses';
+import { useIsLoggedIn } from './isLoggedIn';
+import { useTransferredCredits } from './transferCredits';
 
 export function useClearedCourses() {
     const { courses, ap, apInfo } = useTransferredCredits();

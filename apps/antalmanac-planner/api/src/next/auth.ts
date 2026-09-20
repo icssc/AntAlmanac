@@ -149,7 +149,7 @@ async function handleGoogleAuth(request: Request) {
         state,
         CodeChallengeMethod.S256,
         codeVerifier,
-        ['openid', 'profile', 'email'],
+        ['openid', 'profile', 'email']
     );
 
     const provider = new URL(request.url).searchParams.get('provider');
@@ -190,7 +190,7 @@ async function handleGoogleCallback(request: Request, native = false) {
     const tokens = await oidcClient.validateAuthorizationCode(
         `${process.env.OIDC_ISSUER_URL}/token`,
         code,
-        codeVerifier,
+        codeVerifier
     );
 
     const userInfoEndpoint = `${process.env.OIDC_ISSUER_URL}/userinfo`;

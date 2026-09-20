@@ -32,6 +32,11 @@
             }
         ]
     },
-    "include": ["../../antalmanac/.next/types/**/*.ts", "../../antalmanac/./next-env.d.ts", "src/", "../../antalmanac/.next/dev/types/**/*.ts"],
+    "include": [
+        "../../antalmanac/.next/types/**/*.ts",
+        "../../antalmanac/./next-env.d.ts",
+        "src/",
+        "../../antalmanac/.next/dev/types/**/*.ts"
+    ],
     "exclude": ["./node_modules"]
 }

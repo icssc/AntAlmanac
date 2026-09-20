@@ -28,7 +28,7 @@ export function getAggregateGradeData(
     gradeData: GradesRaw,
     professor: string | undefined,
     quarter: string,
-    course: string | undefined,
+    course: string | undefined
 ): GradesAggregate {
     const classGradeData: GradesAggregate = {
         gradeACount: 0,

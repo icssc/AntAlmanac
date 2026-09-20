@@ -1,7 +1,14 @@
-import { FC, useState, useEffect, useCallback } from 'react';
-import ReviewCard from './ReviewCard';
+import AddIcon from '@mui/icons-material/Add';
+import { Button, MenuItem, Select, Tooltip } from '@mui/material';
+
 import './Review.scss';
 
+import { Checkbox, FormControlLabel } from '@mui/material';
+import { ReviewData } from '@peterportal/types';
+import { FC, useState, useEffect, useCallback } from 'react';
+
+import { useIsLoggedIn } from '../../hooks/isLoggedIn';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import {
     selectReviews,
     setReviews,
@@ -9,16 +16,10 @@ import {
     selectReviewOrder,
     setReviewOrder,
 } from '../../store/slices/reviewSlice';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { CourseGQLData, ProfessorGQLData } from '../../types/types';
-import { Button, MenuItem, Select, Tooltip } from '@mui/material';
 import trpc from '../../trpc';
-import { ReviewData } from '@peterportal/types';
-
-import AddIcon from '@mui/icons-material/Add';
-import { Checkbox, FormControlLabel } from '@mui/material';
-import { useIsLoggedIn } from '../../hooks/isLoggedIn';
+import { CourseGQLData, ProfessorGQLData } from '../../types/types';
 import ReviewForm from '../ReviewForm/ReviewForm';
+import ReviewCard from './ReviewCard';
 
 export interface ReviewProps {
     course?: CourseGQLData;
@@ -75,12 +76,12 @@ const Review: FC<ReviewProps> = (props) => {
     if (props.course) {
         reviewFreq = sortedReviews.reduce(
             (acc, review) => acc.set(review.professorId, (acc.get(review.professorId) || 0) + 1),
-            reviewFreq,
+            reviewFreq
         );
     } else if (props.professor) {
         reviewFreq = sortedReviews.reduce(
             (acc, review) => acc.set(review.courseId, (acc.get(review.courseId) || 0) + 1),
-            reviewFreq,
+            reviewFreq
         );
     }
 
@@ -102,12 +103,12 @@ const Review: FC<ReviewProps> = (props) => {
             sortedReviews.sort(
                 (a, b) =>
                     reviewOrder.indexOf(a.id) - reviewOrder.indexOf(b.id) ||
-                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
             break;
         case SortingOption.CONTROVERSIAL:
             sortedReviews.sort(
-                (a, b) => a.score - b.score || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+                (a, b) => a.score - b.score || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
             break;
     }
@@ -138,7 +139,7 @@ const Review: FC<ReviewProps> = (props) => {
                     return { text: name, value: profID };
                 })
                 .filter(({ value }) => reviewFreq.get(value))
-                .sort((a, b) => a.text.localeCompare(b.text)),
+                .sort((a, b) => a.text.localeCompare(b.text))
         );
         const courseOptions = [{ text: 'All Courses', value: '' }].concat(
             Object.keys(props.professor?.courses ?? {})
@@ -149,7 +150,7 @@ const Review: FC<ReviewProps> = (props) => {
                     return { text: name, value: courseID };
                 })
                 .filter(({ value }) => reviewFreq.get(value))
-                .sort((a, b) => a.text.localeCompare(b.text)),
+                .sort((a, b) => a.text.localeCompare(b.text))
         );
 
         return (

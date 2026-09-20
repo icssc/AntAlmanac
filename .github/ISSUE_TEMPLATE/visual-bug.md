@@ -1,11 +1,10 @@
 ---
 name: App Crash / Visual Bug
 about: AntAlmanac crashes, is unresponsive, or otherwise exhibits unexpected visual
-  behavior
+    behavior
 title: ''
 labels: frontend
 assignees: ''
-
 ---
 
 **Describe the bug**
@@ -13,6 +12,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. [actions taken]
 

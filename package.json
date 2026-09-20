@@ -17,9 +17,8 @@
         "plan:db:migrate": "pnpm --filter @antalmanac-planner db:migrate",
         "plan:db:studio": "pnpm --filter @antalmanac-planner db:studio",
         "test": "pnpm --filter @antalmanac-planner test && vitest",
-        "deploy": "sst deploy --stage production",
         "format": "oxfmt",
-        "lint": "oxlint --deny-warnings",
+        "lint": "oxfmt --check && oxlint --deny-warnings",
         "check-tsc": "pnpm --filter antalmanac check-tsc",
         "get-data": "pnpm --filter @antalmanac-scheduler get-data"
     },

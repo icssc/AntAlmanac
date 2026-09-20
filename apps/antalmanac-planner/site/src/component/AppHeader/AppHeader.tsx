@@ -1,22 +1,20 @@
 'use client';
-import { FC } from 'react';
+import ArrowLeftIcon from '@mui/icons-material/ArrowBack';
 
 import './AppHeader.scss';
-import { LogoAndSwitcher } from '../../shared-components/LogoAndSwitcher';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import Profile from './Profile';
-import SearchModule from '../SearchModule/SearchModule';
-
 import SearchIcon from '@mui/icons-material/Search';
-import ArrowLeftIcon from '@mui/icons-material/ArrowBack';
 import { IconButton } from '@mui/material';
+import { usePathname } from 'next/navigation';
+import { FC } from 'react';
 
 import { useIsMobile } from '../../helpers/util';
+import { LogoAndSwitcher } from '../../shared-components/LogoAndSwitcher';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setShowMobileFullscreenSearch } from '../../store/slices/roadmapSlice';
-import { usePathname } from 'next/navigation';
-
-import SaveButton from './SaveButton';
+import SearchModule from '../SearchModule/SearchModule';
 import ExportButton from './Export';
+import Profile from './Profile';
+import SaveButton from './SaveButton';
 
 const AppHeader: FC = () => {
     const dispatch = useAppDispatch();

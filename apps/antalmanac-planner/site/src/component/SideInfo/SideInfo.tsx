@@ -1,19 +1,18 @@
 'use client';
-import { FC, useEffect, useState } from 'react';
+import { Button, Chip, MenuItem, Select } from '@mui/material';
+
 import './SideInfo.scss';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button, Chip, MenuItem, Select } from '@mui/material';
-
-import { CourseGQLData, ProfessorGQLData, SearchType } from '../../types/types';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { toggleFormStatus, setShowToast } from '../../store/slices/reviewSlice';
-
-import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
 import { useRouter } from 'next/navigation';
+import { FC, useEffect, useState } from 'react';
 
 import Toast from '../../helpers/toast';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { toggleFormStatus, setShowToast } from '../../store/slices/reviewSlice';
+import { CourseGQLData, ProfessorGQLData, SearchType } from '../../types/types';
+import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
 
 interface FeaturedInfoData {
     searchType: SearchType;
@@ -146,7 +145,7 @@ const SideInfo: FC<SideInfoProps> = (props) => {
         sortedKeys.sort(
             (a, b) =>
                 newAverageReviews[a].rating / newAverageReviews[a].count -
-                newAverageReviews[b].rating / newAverageReviews[b].count,
+                newAverageReviews[b].rating / newAverageReviews[b].count
         );
 
         // set the all token to all reviews
@@ -271,7 +270,7 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                                     displayName={
                                         props.searchType == 'course'
                                             ? (Object.values(props.course?.instructors ?? {})?.find(
-                                                  ({ ucinetid }) => ucinetid === highestReview,
+                                                  ({ ucinetid }) => ucinetid === highestReview
                                               )?.name ?? '')
                                             : props.professor?.courses[highestReview]
                                               ? props.professor?.courses[highestReview].department +
@@ -290,7 +289,7 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                                     displayName={
                                         props.searchType == 'course'
                                             ? (Object.values(props.course?.instructors ?? {})?.find(
-                                                  ({ ucinetid }) => ucinetid === lowestReview,
+                                                  ({ ucinetid }) => ucinetid === lowestReview
                                               )?.name ?? '')
                                             : props.professor?.courses[lowestReview]
                                               ? props.professor?.courses[lowestReview].department +

@@ -1,6 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
-import type { FormEvent } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { IosShare, WarningAmber } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -16,12 +14,17 @@ import {
     Typography,
     Divider,
 } from '@mui/material';
-import type { SelectChangeEvent } from '@mui/material/Select';
-import { IosShare, WarningAmber } from '@mui/icons-material';
 import { CircularProgress } from '@mui/material';
-import { isCustomCourse, quarterDisplayNames } from '../../helpers/planner';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import { type QuarterName } from '@peterportal/types';
-import type { PlannerQuarterCourse } from '../../types/types';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState, useCallback } from 'react';
+import type { FormEvent } from 'react';
+
+import { isCustomCourse, quarterDisplayNames } from '../../helpers/planner';
+import { useIsMobile } from '../../helpers/util';
+import { useIsLoggedIn } from '../../hooks/isLoggedIn';
+import { useSaveRoadmap } from '../../hooks/planner';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import {
     selectAllPlans,
@@ -30,10 +33,9 @@ import {
     setShowToast,
     setToastSeverity,
 } from '../../store/slices/roadmapSlice';
-import { useSaveRoadmap } from '../../hooks/planner';
-import { useIsLoggedIn } from '../../hooks/isLoggedIn';
+
 import './Export.scss';
-import { useIsMobile } from '../../helpers/util';
+import type { PlannerQuarterCourse } from '../../types/types';
 
 // Parse currentWeek like "Week 5 • Spring Quarter 2026"
 const parseCurrentWeek = (weekString: string): { week: number; quarter: QuarterName; year: number } | null => {
@@ -70,7 +72,7 @@ const isScheduleReleased = (
     targetQuarter: QuarterName,
     targetYear: number,
     currentWeek: { week: number; quarter: QuarterName; year: number } | null,
-    now: Date = new Date(),
+    now: Date = new Date()
 ): boolean => {
     // Summer schedules are released on March 1 of the target year's calendar year
     if (targetQuarter.includes('Summer')) {
@@ -116,7 +118,7 @@ const isScheduleReleased = (
 // Get next quarter chronologically that has courses
 const getNextQuarterWithCourses = (
     roadmapYears: { startYear: number; quarters: { name: QuarterName; courses?: PlannerQuarterCourse[] }[] }[],
-    currentWeek: { week: number; quarter: QuarterName; year: number } | null,
+    currentWeek: { week: number; quarter: QuarterName; year: number } | null
 ): { yearStart: string; quarterName: string } => {
     // Flatten all quarters with their years
     const allQuartersWithYears: Array<{
@@ -169,7 +171,7 @@ const getNextQuarterWithCourses = (
 
 const getDefaultExportSelection = (
     roadmapYears: { startYear: number; quarters: { name: QuarterName; courses?: PlannerQuarterCourse[] }[] }[],
-    currentWeek: { week: number; quarter: QuarterName; year: number } | null,
+    currentWeek: { week: number; quarter: QuarterName; year: number } | null
 ) => {
     return getNextQuarterWithCourses(roadmapYears, currentWeek);
 };
@@ -261,7 +263,7 @@ const ExportDialog = ({ showModal, setShowModal }: ExportDialogProps) => {
             const exportYearStart = parseInt(nextSelection.yearStart, 10);
             const releaseYear = getScheduleReleaseComparisonYear(
                 exportYearStart,
-                nextSelection.quarterName as QuarterName,
+                nextSelection.quarterName as QuarterName
             );
             const released = isScheduleReleased(nextSelection.quarterName as QuarterName, releaseYear, currentWeek);
             if (!released) {
@@ -370,7 +372,7 @@ const ExportDialog = ({ showModal, setShowModal }: ExportDialogProps) => {
         url.searchParams.set('courseIds', courseIds.join(','));
         url.searchParams.set(
             'term',
-            `${parseInt(selectedYearStart, 10) + quarterYearOffsets[quarterName]} ${quarterName}`,
+            `${parseInt(selectedYearStart, 10) + quarterYearOffsets[quarterName]} ${quarterName}`
         );
 
         window.location.assign(url.toString());
@@ -421,7 +423,7 @@ const ExportDialog = ({ showModal, setShowModal }: ExportDialogProps) => {
         const alreadySelected = allPlans.find((plan) => String(plan.id) === selectedRoadmapId);
         if (alreadySelected) {
             const selectedYearObj = alreadySelected.content.yearPlans.find(
-                (year) => String(year.startYear) === selectedYearStart,
+                (year) => String(year.startYear) === selectedYearStart
             );
 
             if (!selectedYearObj) {
@@ -448,7 +450,7 @@ const ExportDialog = ({ showModal, setShowModal }: ExportDialogProps) => {
             const exportYearStart = parseInt(nextSelection.yearStart, 10);
             const releaseYear = getScheduleReleaseComparisonYear(
                 exportYearStart,
-                nextSelection.quarterName as QuarterName,
+                nextSelection.quarterName as QuarterName
             );
             const released = isScheduleReleased(nextSelection.quarterName as QuarterName, releaseYear, currentWeek);
             if (!released) {
@@ -459,7 +461,7 @@ const ExportDialog = ({ showModal, setShowModal }: ExportDialogProps) => {
 
     const roadmapHasNoCourses = () =>
         !roadmapYears.some((y) =>
-            (y.quarters || []).some((q) => (q.courses.filter((c) => !isCustomCourse(c)) ?? []).length > 0),
+            (y.quarters || []).some((q) => (q.courses.filter((c) => !isCustomCourse(c)) ?? []).length > 0)
         );
 
     return (
@@ -500,7 +502,7 @@ const ExportDialog = ({ showModal, setShowModal }: ExportDialogProps) => {
                                 >
                                     {roadmapYears.map((year) => {
                                         const hasCourses = year.quarters.some((q) =>
-                                            (q.courses ?? []).some((c) => !isCustomCourse(c)),
+                                            (q.courses ?? []).some((c) => !isCustomCourse(c))
                                         );
                                         return (
                                             <MenuItem

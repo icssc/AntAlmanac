@@ -1,4 +1,5 @@
 import { QuarterName } from '@peterportal/types';
+
 import {
     PlannerEdit,
     PlannerOrderEdit,
@@ -9,9 +10,9 @@ import {
     RoadmapRevision,
 } from '../types/roadmap';
 import { PlannerQuarterCourse, PlannerCourseData, PlannerQuarterData, PlannerYearData } from '../types/types';
+import { LOADING_COURSE_PLACEHOLDER } from './courseRequirements';
 import { createRevision } from './roadmap';
 import { deepCopy } from './util';
-import { LOADING_COURSE_PLACEHOLDER } from './courseRequirements';
 
 // [action][Type][Property]
 // Examples:
@@ -69,7 +70,7 @@ export function addPlannerYear(
     startYear: number,
     name: string,
     collapsed = false,
-    quarters: PlannerQuarterData[],
+    quarters: PlannerQuarterData[]
 ) {
     const yearEdit: PlannerYearEdit = {
         type: 'year',
@@ -90,7 +91,7 @@ export function deletePlannerYear(
     startYear: number,
     name: string,
     collapsed: boolean,
-    quarters: PlannerQuarterData[],
+    quarters: PlannerQuarterData[]
 ) {
     return createInverseRevision(addPlannerYear(plannerId, startYear, name, collapsed, quarters));
 }
@@ -144,7 +145,7 @@ export function addPlannerQuarter(
     plannerId: number,
     startYear: number,
     name: QuarterName,
-    courses: PlannerQuarterCourse[],
+    courses: PlannerQuarterCourse[]
 ) {
     const edit: PlannerQuarterEdit = {
         type: 'quarter',
@@ -166,7 +167,7 @@ export function modifyQuarterCourse(
     plannerId: number,
     course: PlannerQuarterCourse,
     removedFrom: ModifiedQuarter | null,
-    addedTo: ModifiedQuarter | null,
+    addedTo: ModifiedQuarter | null
 ) {
     const edits: PlannerQuarterEdit[] = [];
 
@@ -211,7 +212,7 @@ export function reorderQuarterCourse(
     plannerId: number,
     course: PlannerQuarterCourse,
     oldIndex: number,
-    after: ModifiedQuarter,
+    after: ModifiedQuarter
 ) {
     const quarterCopy = deepCopy(after.quarter);
 
@@ -235,7 +236,7 @@ export function modifyVariableCourseUnit(
     quarterName: QuarterName,
     courseIndex: number,
     course: PlannerCourseData,
-    newUnit: number | undefined,
+    newUnit: number | undefined
 ) {
     const edits: PlannerCourseEdit[] = [];
     if (course && course.userChosenUnits !== newUnit) {

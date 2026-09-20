@@ -1,28 +1,29 @@
-import { FC, useState } from 'react';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+
 import './ImportTranscriptPopup.scss';
-import { getNextPlannerTempId, reviseRoadmap, selectAllPlans, setPlanIndex } from '../../../store/slices/roadmapSlice';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { parse as parseHTML, HTMLElement } from 'node-html-parser';
-import { BatchCourseData, PlannerQuarterData, PlannerYearData } from '../../../types/types';
+import DescriptionIcon from '@mui/icons-material/Description';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormLabel } from '@mui/material';
 import { quarters } from '@peterportal/types';
-import { searchAPIResults } from '../../../helpers/util';
-import { markTransfersAsUnread } from '../../../helpers/transferCredits';
 import { QuarterName } from '@peterportal/types';
+import { parse as parseHTML, HTMLElement } from 'node-html-parser';
+import { FC, useState } from 'react';
+
 import { makeUniquePlanName, normalizeQuarterName } from '../../../helpers/planner';
+import { addPlanner } from '../../../helpers/roadmapEdits';
+import { VisuallyHiddenInput } from '../../../helpers/styling';
+import { markTransfersAsUnread } from '../../../helpers/transferCredits';
+import { searchAPIResults } from '../../../helpers/util';
+import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useTransferredCredits } from '../../../hooks/transferCredits';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { getNextPlannerTempId, reviseRoadmap, selectAllPlans, setPlanIndex } from '../../../store/slices/roadmapSlice';
 import {
     setUserAPExams,
     setTransferredCourses,
     setUncategorizedCourses,
 } from '../../../store/slices/transferCreditsSlice';
-import { useTransferredCredits } from '../../../hooks/transferCredits';
-import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
 import trpc from '../../../trpc';
-
-import DescriptionIcon from '@mui/icons-material/Description';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormLabel } from '@mui/material';
-import { addPlanner } from '../../../helpers/roadmapEdits';
-import { VisuallyHiddenInput } from '../../../helpers/styling';
+import { BatchCourseData, PlannerQuarterData, PlannerYearData } from '../../../types/types';
 
 interface TransferUnitDetails {
     date: string;
@@ -99,7 +100,7 @@ async function transcriptCourseDetails(quarters: TranscriptQuarter[]): Promise<B
 
 function toPlannerQuarter(
     quarter: TranscriptQuarter,
-    courses: BatchCourseData,
+    courses: BatchCourseData
 ): { startYear: number; quarterData: PlannerQuarterData } {
     const year = parseInt(quarter.name.split(' ')[0]);
     // Removes the year number and "Session/Quarter" at the end
@@ -147,12 +148,12 @@ function groupIntoYears(qtrs: { startYear: number; quarterData: PlannerQuarterDa
 
             return years;
         },
-        {} as { [k: string]: PlannerYearData },
+        {} as { [k: string]: PlannerYearData }
     );
     const baseQtrs: QuarterName[] = ['Fall', 'Winter', 'Spring'];
     Object.values(years).forEach((year) => {
         baseQtrs.forEach(
-            (name) => !year.quarters.find((q) => q.name === name) && year.quarters.push({ name, courses: [] }),
+            (name) => !year.quarters.find((q) => q.name === name) && year.quarters.push({ name, courses: [] })
         );
         year.quarters.sort((a, b) => quarters.indexOf(a.name) - quarters.indexOf(b.name));
     });
@@ -231,17 +232,17 @@ const ImportTranscriptPopup: FC = () => {
             // Merge the new AP exams, courses, and other transfers into current transfers
             // via a process similar to the updated Zot4Plan imports
             const newAps = apUnread.filter(
-                (imported) => !currentAps.some((existing) => existing.examName == imported.examName),
+                (imported) => !currentAps.some((existing) => existing.examName == imported.examName)
             );
             const mergedAps = currentAps.concat(newAps);
 
             const newCourses = coursesUnread.filter(
-                (imported) => !currentCourses.some((existing) => existing.courseName == imported.courseName),
+                (imported) => !currentCourses.some((existing) => existing.courseName == imported.courseName)
             );
             const mergedCourses = currentCourses.concat(newCourses);
 
             const newOther = otherUnread.filter(
-                (imported) => !currentOther.some((existing) => existing.name == imported.name),
+                (imported) => !currentOther.some((existing) => existing.name == imported.name)
             );
             const mergedOther = currentOther.concat(newOther);
 

@@ -4,6 +4,6 @@
  * call out the common case where a filter narrowed the courses down to nothing.
  */
 export function getFiltersHint(dimmed: boolean, hasCourseResults: boolean): string | undefined {
-  if (!dimmed) return undefined;
-  return hasCourseResults ? 'Filters apply to course results only.' : 'No matching courses; showing instructors.';
+    if (!dimmed) return undefined;
+    return hasCourseResults ? 'Filters apply to course results only.' : 'No matching courses; showing instructors.';
 }

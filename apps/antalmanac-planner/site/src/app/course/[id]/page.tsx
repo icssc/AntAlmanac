@@ -1,8 +1,9 @@
-import CoursePage from '../CoursePage';
-import { createServerSideTrpcCaller } from '../../../trpc';
+import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { Metadata } from 'next';
+
+import { createServerSideTrpcCaller } from '../../../trpc';
+import CoursePage from '../CoursePage';
 
 interface CoursePageParams {
     params: Promise<{ id: string }>;

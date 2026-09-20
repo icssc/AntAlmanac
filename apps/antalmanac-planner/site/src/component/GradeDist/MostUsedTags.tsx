@@ -1,6 +1,7 @@
+import { Card, CardContent, LinearProgress } from '@mui/material';
 import { ReviewData, ReviewTags } from '@peterportal/types';
 import { FC, useState } from 'react';
-import { Card, CardContent, LinearProgress } from '@mui/material';
+
 import './MostUsedTags.scss';
 import ClickableDiv from '../ClickableDiv/ClickableDiv';
 

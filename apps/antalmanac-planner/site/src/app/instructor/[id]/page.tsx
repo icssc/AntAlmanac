@@ -1,8 +1,9 @@
-import ProfessorPage from '../ProfessorPage';
-import { createServerSideTrpcCaller } from '../../../trpc';
+import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { Metadata } from 'next';
+
+import { createServerSideTrpcCaller } from '../../../trpc';
+import ProfessorPage from '../ProfessorPage';
 
 interface ProfessorPageParams {
     params: Promise<{ id: string }>;

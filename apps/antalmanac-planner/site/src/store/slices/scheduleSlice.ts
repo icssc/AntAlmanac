@@ -1,19 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export const scheduleSlice = createSlice({
-  name: 'schedule',
-  initialState: {
-    currentWeek: '',
-    currentQuarter: '',
-  },
-  reducers: {
-    setCurrentWeek: (state, action: PayloadAction<string>) => {
-      state.currentWeek = action.payload;
+    name: 'schedule',
+    initialState: {
+        currentWeek: '',
+        currentQuarter: '',
     },
-    setCurrentQuarter: (state, action: PayloadAction<string>) => {
-      state.currentQuarter = action.payload;
+    reducers: {
+        setCurrentWeek: (state, action: PayloadAction<string>) => {
+            state.currentWeek = action.payload;
+        },
+        setCurrentQuarter: (state, action: PayloadAction<string>) => {
+            state.currentQuarter = action.payload;
+        },
     },
-  },
 });
 
 export const { setCurrentWeek, setCurrentQuarter } = scheduleSlice.actions;

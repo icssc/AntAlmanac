@@ -5,89 +5,90 @@
  */
 
 import dotenv from 'dotenv-flow';
-import { planner, plannerCourse, plannerQuarter, plannerYear } from '../src/db/schema';
+
 import { db } from '../src/db';
+import { planner, plannerCourse, plannerQuarter, plannerYear } from '../src/db/schema';
 
 dotenv.config();
 
 interface LegacyDBPlannerQuarter {
-  name: string;
-  courses?: string[];
+    name: string;
+    courses?: string[];
 }
 
 interface LegacyDBPlannerYear {
-  name: string;
-  startYear: number;
-  quarters?: LegacyDBPlannerQuarter[];
+    name: string;
+    startYear: number;
+    quarters?: LegacyDBPlannerQuarter[];
 }
 
 async function splitTableData() {
-  const allPlanners = await db.select().from(planner);
+    const allPlanners = await db.select().from(planner);
 
-  // list of years to add, grouped by planner
-  const plannersYearsToAdd = allPlanners.map((planner) => {
-    return (planner.years as LegacyDBPlannerYear[]).map((year) => ({
-      plannerId: planner.id,
-      startYear: year.startYear,
-      name: year.name,
-      /* This will be ignored by drizzle upon add, but we have it here so that it's easier
-       * to generate the quarter rows from */
-      quarters: year.quarters,
-    }));
-  });
-
-  // list of quarters to add, grouped by planner
-  const quartersToAdd = plannersYearsToAdd.map((yearsPerPlanner) => {
-    return yearsPerPlanner.flatMap((year) => {
-      return year.quarters!.map((q) => ({
-        plannerId: year.plannerId,
-        startYear: year.startYear,
-        quarterName: q.name,
-        courses: q.courses,
-      }));
+    // list of years to add, grouped by planner
+    const plannersYearsToAdd = allPlanners.map((planner) => {
+        return (planner.years as LegacyDBPlannerYear[]).map((year) => ({
+            plannerId: planner.id,
+            startYear: year.startYear,
+            name: year.name,
+            /* This will be ignored by drizzle upon add, but we have it here so that it's easier
+             * to generate the quarter rows from */
+            quarters: year.quarters,
+        }));
     });
-  });
 
-  // list of courses to add, grouped by planner
-  const coursesToAdd = quartersToAdd.map((quartersPerPlanner) => {
-    return quartersPerPlanner.flatMap((quarter) => {
-      return quarter.courses!.map((courseId, index) => ({
-        plannerId: quarter.plannerId,
-        startYear: quarter.startYear,
-        quarterName: quarter.quarterName,
-        index,
-        courseId,
-      }));
+    // list of quarters to add, grouped by planner
+    const quartersToAdd = plannersYearsToAdd.map((yearsPerPlanner) => {
+        return yearsPerPlanner.flatMap((year) => {
+            return year.quarters!.map((q) => ({
+                plannerId: year.plannerId,
+                startYear: year.startYear,
+                quarterName: q.name,
+                courses: q.courses,
+            }));
+        });
     });
-  });
 
-  console.log({ allPlanners, plannersYearsToAdd, quartersToAdd, coursesToAdd });
-
-  await db.transaction(async (tx) => {
-    const addYearQueries = plannersYearsToAdd.map(async (yearsPerPlanner) => {
-      if (!yearsPerPlanner.length) return null;
-      await tx.insert(plannerYear).values(yearsPerPlanner);
-      console.log(`Inserted ${yearsPerPlanner.length} years...`);
+    // list of courses to add, grouped by planner
+    const coursesToAdd = quartersToAdd.map((quartersPerPlanner) => {
+        return quartersPerPlanner.flatMap((quarter) => {
+            return quarter.courses!.map((courseId, index) => ({
+                plannerId: quarter.plannerId,
+                startYear: quarter.startYear,
+                quarterName: quarter.quarterName,
+                index,
+                courseId,
+            }));
+        });
     });
-    await Promise.all(addYearQueries);
 
-    const addQuarterQueries = quartersToAdd.map(async (quartersPerPlanner) => {
-      if (!quartersPerPlanner.length) return null;
-      await tx.insert(plannerQuarter).values(quartersPerPlanner);
-      console.log(`Inserted ${quartersPerPlanner.length} quarters...`);
+    console.log({ allPlanners, plannersYearsToAdd, quartersToAdd, coursesToAdd });
+
+    await db.transaction(async (tx) => {
+        const addYearQueries = plannersYearsToAdd.map(async (yearsPerPlanner) => {
+            if (!yearsPerPlanner.length) return null;
+            await tx.insert(plannerYear).values(yearsPerPlanner);
+            console.log(`Inserted ${yearsPerPlanner.length} years...`);
+        });
+        await Promise.all(addYearQueries);
+
+        const addQuarterQueries = quartersToAdd.map(async (quartersPerPlanner) => {
+            if (!quartersPerPlanner.length) return null;
+            await tx.insert(plannerQuarter).values(quartersPerPlanner);
+            console.log(`Inserted ${quartersPerPlanner.length} quarters...`);
+        });
+        await Promise.all(addQuarterQueries);
+
+        const addCourseQueries = coursesToAdd.map(async (coursesPerPlanner) => {
+            if (!coursesPerPlanner.length) return null;
+            await tx.insert(plannerCourse).values(coursesPerPlanner);
+            console.log(`Inserted ${coursesPerPlanner.length} courses...`);
+        });
+        await Promise.all(addCourseQueries);
     });
-    await Promise.all(addQuarterQueries);
+    console.log('Done!');
 
-    const addCourseQueries = coursesToAdd.map(async (coursesPerPlanner) => {
-      if (!coursesPerPlanner.length) return null;
-      await tx.insert(plannerCourse).values(coursesPerPlanner);
-      console.log(`Inserted ${coursesPerPlanner.length} courses...`);
-    });
-    await Promise.all(addCourseQueries);
-  });
-  console.log('Done!');
-
-  process.exit();
+    process.exit();
 }
 
 splitTableData();

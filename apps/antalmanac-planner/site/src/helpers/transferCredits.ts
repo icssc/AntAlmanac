@@ -1,10 +1,11 @@
 import {
-  APExam,
-  TransferredGE,
-  TransferredCourse,
-  TransferredUncategorized,
-  TransferredAPExam,
+    APExam,
+    TransferredGE,
+    TransferredCourse,
+    TransferredUncategorized,
+    TransferredAPExam,
 } from '@peterportal/types';
+
 import { TransferWithUnread } from '../store/slices/transferCreditsSlice';
 import trpc from '../trpc';
 
@@ -16,23 +17,23 @@ import trpc from '../trpc';
  * @returns ...
  */
 export function getNamesOfTransfers(
-  courses: TransferredCourse[],
-  apExams: TransferredAPExam[],
-  apExamInfo: APExam[],
+    courses: TransferredCourse[],
+    apExams: TransferredAPExam[],
+    apExamInfo: APExam[]
 ): string[] {
-  // a prerequisite examName may be "AP COMP SCI A", "AP CALCULUS BC" (catalogue name?????)
-  const transferNames: string[] = [];
+    // a prerequisite examName may be "AP COMP SCI A", "AP CALCULUS BC" (catalogue name?????)
+    const transferNames: string[] = [];
 
-  apExams.forEach((exam) => {
-    const examInfo = apExamInfo.find((info) => info.fullName === exam.examName);
-    transferNames.push((examInfo?.catalogueName as string | null) ?? exam.examName);
-  });
+    apExams.forEach((exam) => {
+        const examInfo = apExamInfo.find((info) => info.fullName === exam.examName);
+        transferNames.push((examInfo?.catalogueName as string | null) ?? exam.examName);
+    });
 
-  courses.forEach((course) => {
-    transferNames.push(course.courseName);
-  });
+    courses.forEach((course) => {
+        transferNames.push(course.courseName);
+    });
 
-  return transferNames;
+    return transferNames;
 }
 
 /**
@@ -42,82 +43,82 @@ export function getNamesOfTransfers(
  * @param otherTransfers A list of other (uncategorized) transferred units
  */
 export function getTotalUnitsFromTransfers(
-  courses: TransferredCourse[],
-  apExams: TransferredAPExam[],
-  geTransfers: TransferredGE[],
-  otherTransfers: TransferredUncategorized[],
+    courses: TransferredCourse[],
+    apExams: TransferredAPExam[],
+    geTransfers: TransferredGE[],
+    otherTransfers: TransferredUncategorized[]
 ) {
-  let total = 0;
+    let total = 0;
 
-  courses.forEach((course) => {
-    total += course.units;
-  });
-  apExams.forEach((apExam) => {
-    total += apExam.units;
-  });
-  geTransfers.forEach((ge) => {
-    total += ge.units;
-  });
-  otherTransfers.forEach((otherTransfer) => {
-    total += otherTransfer.units ?? 0;
-  });
+    courses.forEach((course) => {
+        total += course.units;
+    });
+    apExams.forEach((apExam) => {
+        total += apExam.units;
+    });
+    geTransfers.forEach((ge) => {
+        total += ge.units;
+    });
+    otherTransfers.forEach((otherTransfer) => {
+        total += otherTransfer.units ?? 0;
+    });
 
-  return total;
+    return total;
 }
 
 /** Make all transfers in the given list of transfers unread */
 export function markTransfersAsUnread<T>(transfer: T[]): TransferWithUnread<T>[] {
-  return transfer.map((item) => ({
-    unread: true,
-    ...item,
-  }));
+    return transfer.map((item) => ({
+        unread: true,
+        ...item,
+    }));
 }
 
 export enum LocalTransferSaveKey {
-  Course = 'transferredCourses',
-  AP = 'transferredAPs',
-  GE = 'transferredGEs',
-  Uncategorized = 'uncategorizedTransfers',
+    Course = 'transferredCourses',
+    AP = 'transferredAPs',
+    GE = 'transferredGEs',
+    Uncategorized = 'uncategorizedTransfers',
 }
 
 async function loadTransferData<T>(
-  trpcRouteName: keyof (typeof trpc)['transferCredits'],
-  isLoggedIn: boolean,
-  localKey: LocalTransferSaveKey,
+    trpcRouteName: keyof (typeof trpc)['transferCredits'],
+    isLoggedIn: boolean,
+    localKey: LocalTransferSaveKey
 ): Promise<T[]> {
-  if (isLoggedIn) {
-    // Fetch from tRPC if logged in
-    type OperationType = { query: () => Promise<T[]> };
-    return await (trpc.transferCredits[trpcRouteName] as OperationType).query();
-  } else {
-    // Get array from local storage if logged out
-    let localArray: T[] = [];
-    try {
-      localArray = JSON.parse(localStorage['roadmap__' + localKey]);
-    } catch {
-      /* ignore */
+    if (isLoggedIn) {
+        // Fetch from tRPC if logged in
+        type OperationType = { query: () => Promise<T[]> };
+        return await (trpc.transferCredits[trpcRouteName] as OperationType).query();
+    } else {
+        // Get array from local storage if logged out
+        let localArray: T[] = [];
+        try {
+            localArray = JSON.parse(localStorage['roadmap__' + localKey]);
+        } catch {
+            /* ignore */
+        }
+        return localArray;
     }
-    return localArray;
-  }
 }
 
 export function loadTransferredCourses(isLoggedIn: boolean): Promise<TransferredCourse[]> {
-  return loadTransferData<TransferredCourse>('getTransferredCourses', isLoggedIn, LocalTransferSaveKey.Course);
+    return loadTransferData<TransferredCourse>('getTransferredCourses', isLoggedIn, LocalTransferSaveKey.Course);
 }
 export function loadTransferredAPs(isLoggedIn: boolean): Promise<TransferredAPExam[]> {
-  return loadTransferData<TransferredAPExam>('getSavedAPExams', isLoggedIn, LocalTransferSaveKey.AP);
+    return loadTransferData<TransferredAPExam>('getSavedAPExams', isLoggedIn, LocalTransferSaveKey.AP);
 }
 export function loadTransferredGEs(isLoggedIn: boolean): Promise<TransferredGE[]> {
-  return loadTransferData<TransferredGE>('getTransferredGEs', isLoggedIn, LocalTransferSaveKey.GE);
+    return loadTransferData<TransferredGE>('getTransferredGEs', isLoggedIn, LocalTransferSaveKey.GE);
 }
 export function loadTransferredOther(isLoggedIn: boolean): Promise<TransferredUncategorized[]> {
-  return loadTransferData<TransferredUncategorized>(
-    'getUncategorizedTransfers',
-    isLoggedIn,
-    LocalTransferSaveKey.Uncategorized,
-  );
+    return loadTransferData<TransferredUncategorized>(
+        'getUncategorizedTransfers',
+        isLoggedIn,
+        LocalTransferSaveKey.Uncategorized
+    );
 }
 
 export function saveLocalTransfers<T>(localKey: LocalTransferSaveKey, data: T[]): void {
-  localStorage['roadmap__' + localKey] = JSON.stringify(data);
+    localStorage['roadmap__' + localKey] = JSON.stringify(data);
 }

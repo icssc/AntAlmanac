@@ -1,4 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
+
 import './AboutDialog.scss';
 import Image from 'next/image';
 

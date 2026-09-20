@@ -16,11 +16,11 @@
         "check-tsc": "tsc --noEmit"
     },
     "dependencies": {
-        "@t3-oss/env-nextjs": "0.13.11",
-        "@trpc/server": "^11.17.0",
         "@antalmanac-planner/api": "workspace:^",
         "@antalmanac-planner/site": "workspace:^",
         "@antalmanac-scheduler": "workspace:^",
+        "@t3-oss/env-nextjs": "0.13.11",
+        "@trpc/server": "^11.17.0",
         "better-auth": "^1.6.1",
         "next": "16.2.6",
         "posthog-js": "^1.372.10",

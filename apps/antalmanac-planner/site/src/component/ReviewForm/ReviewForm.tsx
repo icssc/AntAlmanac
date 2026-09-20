@@ -1,16 +1,4 @@
 import {
-    anonymousName,
-    EditReviewSubmission,
-    grades,
-    ReviewData,
-    ReviewGrade,
-    ReviewSubmission,
-    ReviewTags,
-    tags,
-} from '@peterportal/types';
-import { ReviewProps } from '../Review/Review';
-import React, { FC, useEffect, useState } from 'react';
-import {
     Box,
     Button,
     Chip,
@@ -28,13 +16,27 @@ import {
     Switch,
     TextField,
 } from '@mui/material';
-import './ReviewForm.scss';
+import {
+    anonymousName,
+    EditReviewSubmission,
+    grades,
+    ReviewData,
+    ReviewGrade,
+    ReviewSubmission,
+    ReviewTags,
+    tags,
+} from '@peterportal/types';
+import React, { FC, useEffect, useState } from 'react';
+
 import { getProfessorTerms, getQuarters, getReviewHeadingName, getYears } from '../../helpers/reviews';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+
+import './ReviewForm.scss';
 import { searchAPIResult, searchAPIResults, sortTerms } from '../../helpers/util';
-import trpc from '../../trpc';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { addReview, editReview, setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/reviewSlice';
+import trpc from '../../trpc';
 import { ProfessorGQLData } from '../../types/types';
+import { ReviewProps } from '../Review/Review';
 
 interface ReviewFormProps extends ReviewProps {
     open: boolean;
@@ -65,7 +67,7 @@ const ReviewForm: FC<ReviewFormProps> = ({
     const [instructor, setInstructor] = useState(professorProp?.ucinetid ?? reviewToEdit?.professorId ?? '');
     const [course, setCourse] = useState(courseProp?.id ?? reviewToEdit?.courseId ?? '');
     const [gradeReceived, setGradeReceived] = useState<ReviewGrade | undefined>(
-        reviewToEdit?.gradeReceived ?? undefined,
+        reviewToEdit?.gradeReceived ?? undefined
     );
 
     const [selectedTags, setSelectedTags] = useState<ReviewTags[]>([]);
@@ -99,7 +101,7 @@ const ReviewForm: FC<ReviewFormProps> = ({
             getUcinetid: (key: string) => string,
             getTermsFromData: (data: ProfessorGQLData, key: string) => string | string[] | undefined,
             onComplete: (resultMap: Record<string, string[]>) => void,
-            errorLabel: string,
+            errorLabel: string
         ) => {
             const resultMap: Record<string, string[]> = {};
 
@@ -129,7 +131,7 @@ const ReviewForm: FC<ReviewFormProps> = ({
                 setTerms: (terms: string[]) => void;
                 setInstructorName: (name: string) => void;
                 setMap: (map: Record<string, string[]>) => void;
-            },
+            }
         ) => {
             const instructor = await searchAPIResult('instructor', instructorId);
             if (instructor) {
@@ -152,8 +154,8 @@ const ReviewForm: FC<ReviewFormProps> = ({
                     (ucinetid) => ucinetid,
                     (data) => data?.courses[courseProp.id]?.terms,
                     setProfessorTermsMap,
-                    'instructor',
-                ),
+                    'instructor'
+                )
             );
         }
 
@@ -165,8 +167,8 @@ const ReviewForm: FC<ReviewFormProps> = ({
                     () => professorProp.ucinetid,
                     (data, courseId) => data?.courses[courseId]?.terms,
                     setProfessorCourseTermsMap,
-                    'course',
-                ),
+                    'course'
+                )
             );
         }
 
@@ -178,7 +180,7 @@ const ReviewForm: FC<ReviewFormProps> = ({
                     setTerms,
                     setInstructorName,
                     setMap: setProfessorTermsMap,
-                }),
+                })
             );
         }
 
@@ -191,7 +193,7 @@ const ReviewForm: FC<ReviewFormProps> = ({
                     setTerms,
                     setInstructorName,
                     setMap: setProfessorTermsMap,
-                }),
+                })
             );
         }
 
@@ -249,7 +251,7 @@ const ReviewForm: FC<ReviewFormProps> = ({
         // course context: if quarter + year selected but instructor doesn't teach in that term, clear instructor selection
         if (courseProp && instructor) {
             const taughtInYearQuarter = (professorTermsMap[instructor] ?? []).some(
-                (term) => term.startsWith(yearTaken) && (newQuarter === '' || term.includes(newQuarter)),
+                (term) => term.startsWith(yearTaken) && (newQuarter === '' || term.includes(newQuarter))
             );
             if (!taughtInYearQuarter) {
                 setInstructor('');
@@ -259,7 +261,7 @@ const ReviewForm: FC<ReviewFormProps> = ({
         // professor context: if quarter + year selected but course doesn't have that term for this professor, clear course selection
         if (professorProp && course && Object.keys(professorCourseTermsMap).length > 0) {
             const taughtInYearQuarter = (professorCourseTermsMap[course] ?? []).some(
-                (term) => term.startsWith(yearTaken) && (newQuarter === '' || term.includes(newQuarter)),
+                (term) => term.startsWith(yearTaken) && (newQuarter === '' || term.includes(newQuarter))
             );
             if (!taughtInYearQuarter) {
                 setCourse('');
@@ -386,7 +388,7 @@ const ReviewForm: FC<ReviewFormProps> = ({
 
     const alreadyReviewedCourseInstr = (courseId: string, professorId: string) => {
         return reviews.some(
-            (review) => review.courseId === courseId && review.professorId === professorId && review.authored,
+            (review) => review.courseId === courseId && review.professorId === professorId && review.authored
         );
     };
 

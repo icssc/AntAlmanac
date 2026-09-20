@@ -1,23 +1,21 @@
 'use client';
-import { FC, useState, useEffect } from 'react';
-import LoadingSpinner from '../../component/LoadingSpinner/LoadingSpinner';
-
-import GradeDist from '../../component/GradeDist/GradeDist';
-import PrereqTree from '../../component/PrereqTree/PrereqTree';
-import Schedule from '../../component/Schedule/Schedule';
-import Review from '../../component/Review/Review';
-import SideInfo from '../../component/SideInfo/SideInfo';
-import Error from '../../component/Error/Error';
-
-import BarChartIcon from '@mui/icons-material/BarChart';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import RateReviewIcon from '@mui/icons-material/RateReview';
+import { FC, useState, useEffect } from 'react';
 
-import { useAppDispatch } from '../../store/hooks';
-import { getCourseTags, sortTerms } from '../../helpers/util';
+import Error from '../../component/Error/Error';
+import GradeDist from '../../component/GradeDist/GradeDist';
+import LoadingSpinner from '../../component/LoadingSpinner/LoadingSpinner';
+import PrereqTree from '../../component/PrereqTree/PrereqTree';
 import ResultPageContent, { ResultPageSection } from '../../component/ResultPageContent/ResultPageContent';
+import Review from '../../component/Review/Review';
+import Schedule from '../../component/Schedule/Schedule';
+import SideInfo from '../../component/SideInfo/SideInfo';
+import { getCourseTags, sortTerms } from '../../helpers/util';
 import { useCourseData } from '../../hooks/catalog';
+import { useAppDispatch } from '../../store/hooks';
 
 interface CoursePageProps {
     courseId: string;

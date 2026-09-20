@@ -1,5 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
+import { isCustomCourse } from '../../helpers/customCourses';
 import { defaultYear } from '../../helpers/planner';
+import { restoreRevision } from '../../helpers/roadmap';
+import { ToastSeverity } from '../../helpers/toast';
 import {
     CourseGQLData,
     CourseIdentifier,
@@ -11,11 +16,7 @@ import {
     RoadmapPlanState,
     RoadmapRevision,
 } from '../../types/types';
-import { isCustomCourse } from '../../helpers/customCourses';
 import type { RootState } from '../store';
-import { restoreRevision } from '../../helpers/roadmap';
-import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
-import { ToastSeverity } from '../../helpers/toast';
 
 // Define the initial state using that type
 export const initialPlanState: RoadmapPlanState = {
@@ -99,7 +100,7 @@ export const roadmapSlice = createSlice({
 
         setInitialPlannerData: (
             state,
-            action: PayloadAction<{ plans: RoadmapPlan[]; timestamp: number; currentPlanIndex?: number }>,
+            action: PayloadAction<{ plans: RoadmapPlan[]; timestamp: number; currentPlanIndex?: number }>
         ) => {
             state.plans = action.payload.plans;
             state.currentPlanIndex = Math.min(action.payload.currentPlanIndex ?? 0, action.payload.plans.length - 1);
@@ -187,7 +188,7 @@ export const roadmapSlice = createSlice({
                 plan.content.yearPlans.forEach((year) => {
                     year.quarters.forEach((quarter) => {
                         quarter.courses = quarter.courses.filter(
-                            (course) => !(isCustomCourse(course) && course.id === customCourseId),
+                            (course) => !(isCustomCourse(course) && course.id === customCourseId)
                         );
                     });
                 });

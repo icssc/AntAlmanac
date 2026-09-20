@@ -1,5 +1,5 @@
-import { FC } from 'react';
 import { Box } from '@mui/material';
+import { FC } from 'react';
 
 const ChartTooltip: FC<{ label: string | number; value: string | number }> = ({ label, value }) => {
     return (

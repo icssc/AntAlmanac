@@ -1,23 +1,24 @@
-import React, { FC, useEffect, useState } from 'react';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+
 import './Course.scss';
 
-import RecentOfferingsTooltip from '../../../component/RecentOfferingsTooltip/RecentOfferingsTooltip';
-import CoursePopover from '../../../component/CoursePopover/CoursePopover';
-import OverlayTrigger from '../../../component/OverlayTrigger/OverlayTrigger';
-
-import { useIsMobile, pluralize, formatGEsTag, shortenCourseLevel } from '../../../helpers/util';
-import { QuarterName } from '@peterportal/types';
-import { CourseGQLData, PlannerCourseData } from '../../../types/types';
-import { setActiveCourse, setShowAddCourse, setActiveMissingPrerequisites } from '../../../store/slices/roadmapSlice';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { IconButton } from '@mui/material';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import UnitsContainer from '../CustomUnitsContainer';
-import { CourseBookmarkButton, CourseSynopsis } from '../../../component/CourseInfo/CourseInfo';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import { IconButton } from '@mui/material';
+import { QuarterName } from '@peterportal/types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import React, { FC, useEffect, useState } from 'react';
+
+import { CourseBookmarkButton, CourseSynopsis } from '../../../component/CourseInfo/CourseInfo';
+import CoursePopover from '../../../component/CoursePopover/CoursePopover';
+import OverlayTrigger from '../../../component/OverlayTrigger/OverlayTrigger';
+import RecentOfferingsTooltip from '../../../component/RecentOfferingsTooltip/RecentOfferingsTooltip';
+import { useIsMobile, pluralize, formatGEsTag, shortenCourseLevel } from '../../../helpers/util';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { setActiveCourse, setShowAddCourse, setActiveMissingPrerequisites } from '../../../store/slices/roadmapSlice';
+import { CourseGQLData, PlannerCourseData } from '../../../types/types';
+import UnitsContainer from '../CustomUnitsContainer';
 
 interface CourseNameAndInfoProps {
     data: CourseGQLData | string;

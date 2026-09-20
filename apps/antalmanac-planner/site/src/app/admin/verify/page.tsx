@@ -1,8 +1,9 @@
 import { FC } from 'react';
+
 import Verify from './Verify';
 
 const Page: FC = () => {
-  return <Verify />;
+    return <Verify />;
 };
 
 export default Page;
