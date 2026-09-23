@@ -1,4 +1,3 @@
-import './src/env';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -22,6 +21,16 @@ const nextConfig: NextConfig = {
                 source: '/auth',
                 destination: '/api/auth/oauth2/callback/icssc',
                 permanent: false,
+            },
+            {
+                source: '/planner/roadmap',
+                destination: '/planner',
+                permanent: true,
+            },
+            {
+                source: '/planner/professor/:id',
+                destination: '/planner/instructor/:id',
+                permanent: true,
             },
         ];
     },

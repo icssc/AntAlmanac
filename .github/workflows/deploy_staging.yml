@@ -15,23 +15,31 @@ concurrency:
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
 
+    ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+    OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+    NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+    NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
+
+    BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
     DB_URL: ${{ secrets.DEV_DB_URL }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     NEXT_PUBLIC_TILES_ENDPOINT: ${{ secrets.NEXT_PUBLIC_TILES_ENDPOINT }}
-    ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
     OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
-    OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
-    NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
+
+    PLANNER_OIDC_CLIENT_ID: ${{ secrets.PLANNER_OIDC_CLIENT_ID }}
+    ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+    PLANNER_DATABASE_URL: ${{ secrets.PLANNER_DEV_DATABASE_URL }}
+    PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
+    PLANNER_SESSION_SECRET: ${{ secrets.PLANNER_SESSION_SECRET }}
+
     PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
-    BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-    BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
 
 jobs:
     deploy-staging:
         runs-on: ubuntu-latest
         environment:
             name: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
-            url: https://scheduler-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
+            url: https://staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
 
         env:
             SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
@@ -67,7 +75,7 @@ jobs:
             - name: Migrate database
               env:
                   DB_URL: ${{ secrets.DEV_DB_URL }}
-              run: pnpm db:migrate
+              run: pnpm sched:db:migrate
 
             - name: Generate termData
               uses: ./.github/actions/cache-generated-data
@@ -78,7 +86,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: apps/antalmanac/.next/cache
-                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/antalmanac/src/**') }}
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/antalmanac/src/**') }}-${{ hashFiles('apps/antalmanac-planner/site/src/**') }}-${{ hashFiles('apps/antalmanac-scheduler/site/src/**') }}
                   restore-keys: |
                       ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
                       ${{ runner.os }}-nextjs-
@@ -96,7 +104,7 @@ jobs:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
                   state: success
-                  environment-url: https://scheduler-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
+                  environment-url: https://staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
 
             - name: Add reaction to comment
               if: github.event_name == 'repository_dispatch'
