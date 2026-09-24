@@ -3,7 +3,7 @@ name: antalmanac
 services:
     db:
         build:
-            context: packages/db
+            context: apps/antalmanac-scheduler/db
             dockerfile: Dockerfile
         ports:
             - '5432:5432'
