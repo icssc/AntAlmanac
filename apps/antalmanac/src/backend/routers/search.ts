@@ -5,6 +5,7 @@ import { procedure, router } from '$backend/trpc';
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
 import {
+    type CourseSearchResult,
     type GESearchResult,
     type SearchResult,
     type SectionSearchResult,
@@ -12,6 +13,8 @@ import {
 } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
+
+import { COURSE_RENAMES } from '../../lib/renames/renames';
 
 const departmentSchema = z.object({
     id: z.string(),
@@ -158,10 +161,56 @@ const searchRouter = router({
                           })
                           .slice(0, MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length);
 
+            const newRenamedCourseKeys = matchedCourses
+                .map((course) =>
+                    COURSE_RENAMES.find(
+                        (renames) =>
+                            renames.previously.courseNumber === course.obj.metadata.number &&
+                            renames.previously.deptCode === course.obj.metadata.department
+                    )
+                )
+                .filter((rename) => !!rename)
+                .map((rename) => rename.current)
+                .filter(
+                    (rename) =>
+                        !matchedCourses.some(
+                            (course) =>
+                                course.obj.metadata.number === rename.courseNumber &&
+                                course.obj.metadata.department === rename.deptCode
+                        )
+                );
+
+            const newRenamedCourses = newRenamedCourseKeys
+                .map((rename) =>
+                    searchData.courses.find(
+                        (course) =>
+                            course.metadata.number === rename.courseNumber &&
+                            course.metadata.department === rename.deptCode
+                    )
+                )
+                .filter((course) => !!course);
+            const newRenamedCoursesStructured = newRenamedCourses.map(
+                (x) =>
+                    [
+                        x.id,
+                        {
+                            ...x,
+                            isOffered: isCourseOffered(x.metadata.department, x.metadata.number, offeredCourseSet),
+                        },
+                    ] as [string, CourseSearchResult]
+            );
+            const matchedAndRenamedCourses = matchedCourses
+                .map((x) => [x.obj.id, x.obj] as [string, CourseSearchResult])
+                .concat(newRenamedCoursesStructured)
+                .sort((a, b) => {
+                    if (a[1].isOffered === b[1].isOffered) return 0;
+                    return a[1].isOffered ? -1 : 1;
+                });
+
             return Object.fromEntries([
                 ...matchedSections.map((x) => [x.sectionCode, x]),
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
-                ...matchedCourses.map((x) => [x.obj.id, x.obj]),
+                ...matchedAndRenamedCourses,
             ]);
         }),
 });
