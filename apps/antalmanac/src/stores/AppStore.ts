@@ -357,6 +357,7 @@ class AppStore extends EventEmitter {
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
+        this.debouncedNoteAutoSave.clear();
         const loadedStateMatchesCurrent =
             JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
@@ -445,12 +446,23 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
-    debouncedNoteAutoSave = debounce((action: UpdateScheduleNoteAction) => {
-        actionTypesStore.autoSaveSchedule(action);
+    noteEditVersion = 0;
+
+    debouncedNoteAutoSave = debounce(async (action: UpdateScheduleNoteAction) => {
+        const version = this.noteEditVersion;
+        const saved = await actionTypesStore.autoSaveSchedule(action);
+
+        // A newer edit arrived while saving; its own debounced save reports instead.
+        if (version !== this.noteEditVersion) {
+            this.unsavedChanges = true;
+            return;
+        }
+        this.emit('noteAutoSaveEnd', saved);
     }, NOTE_AUTOSAVE_DELAY_MS);
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
+        this.noteEditVersion += 1;
         this.unsavedChanges = true;
         this.debouncedNoteAutoSave({ type: 'updateScheduleNote', scheduleNote: newScheduleNote, scheduleIndex });
         this.emit('scheduleNotesChange');

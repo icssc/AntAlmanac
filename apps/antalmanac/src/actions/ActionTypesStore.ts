@@ -127,26 +127,26 @@ type ActionType =
     | UndoRedoAction;
 
 class ActionTypesStore extends EventEmitter {
-    async autoSaveSchedule(action: ActionType) {
+    /** Returns whether the schedule was saved; false when skipped or when the request failed. */
+    async autoSaveSchedule(_action: ActionType): Promise<boolean> {
         const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
-        // Note edits always autosave; the notes box prompts signed-out users itself.
-        const isNoteEdit = action.type === 'updateScheduleNote';
 
         if (!sessionStore.sessionIsValid || !sessionStore.userId) {
-            if (autoSave && !isNoteEdit) {
+            if (autoSave) {
                 useScheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }
-            return;
+            return false;
         }
 
-        if (!autoSave && !isNoteEdit) {
-            return;
+        if (!autoSave) {
+            return false;
         }
 
         this.emit('autoSaveStart');
-        await autoSaveSchedule({ postHog });
+        const saved = await autoSaveSchedule({ postHog });
         this.emit('autoSaveEnd');
+        return saved;
     }
 }
 

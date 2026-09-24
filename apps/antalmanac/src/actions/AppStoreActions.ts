@@ -146,7 +146,7 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
     }
 };
 
-export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
+export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions): Promise<boolean> {
     const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
     try {
         const result = await trpc.schedule.save.mutate({
@@ -166,6 +166,7 @@ export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
                 autoSave: true,
             },
         });
+        return true;
     } catch (e) {
         if (e instanceof TRPCClientError) {
             openSnackbar('error', 'Schedule could not be auto-saved');
@@ -180,6 +181,7 @@ export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
                 autoSave: true,
             },
         });
+        return false;
     }
 }
 

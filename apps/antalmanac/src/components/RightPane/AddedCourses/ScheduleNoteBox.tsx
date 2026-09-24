@@ -1,20 +1,20 @@
-import actionTypesStore from '$actions/ActionTypesStore';
 import { updateScheduleNote } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { useAutoSaveStore } from '$stores/SettingsStore';
 import { Box, Link, TextField, Typography } from '@mui/material';
 import { SCHEDULE_NOTE_MAX_LENGTH } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-type SaveStatus = 'idle' | 'saving' | 'saved' | 'failed' | 'signedOut';
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'unsaved' | 'signedOut';
 
 const SAVE_STATUS_TEXT: Record<Exclude<SaveStatus, 'idle' | 'signedOut'>, string> = {
     saving: 'Saving…',
     saved: '✓ Saved',
-    failed: 'Not saved',
+    unsaved: 'Not saved — click Save at the top',
 };
 
 export function ScheduleNoteBox() {
@@ -32,28 +32,33 @@ export function ScheduleNoteBox() {
     const [scheduleIndex, setScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
-    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
+    const isSignedIn = useSessionStore((store) => store.sessionIsValid && Boolean(store.userId));
+    const autoSave = useAutoSaveStore((store) => store.autoSave);
 
     const handleNoteChange = useCallback(
         (event: React.ChangeEvent<HTMLTextAreaElement>) => {
             setScheduleNote(event.target.value);
-            setSaveStatus(sessionIsValid ? 'saving' : 'signedOut');
+            if (!isSignedIn) {
+                setSaveStatus('signedOut');
+            } else {
+                setSaveStatus(autoSave ? 'saving' : 'unsaved');
+            }
             updateScheduleNote(event.target.value, scheduleIndex);
         },
-        [scheduleIndex, sessionIsValid]
+        [scheduleIndex, isSignedIn, autoSave]
     );
 
     useEffect(() => {
-        const handleScheduleSaved = () => setSaveStatus((status) => (status === 'idle' ? status : 'saved'));
-        // Autosave ends without a 'scheduleSaved' event when the request fails.
-        const handleAutoSaveEnd = () => setSaveStatus((status) => (status === 'saving' ? 'failed' : status));
+        const handleNoteAutoSaveEnd = (saved: boolean) =>
+            setSaveStatus((status) => (status === 'saving' ? (saved ? 'saved' : 'unsaved') : status));
+        const handleScheduleSaved = () => setSaveStatus((status) => (status === 'unsaved' ? 'saved' : status));
 
+        AppStore.on('noteAutoSaveEnd', handleNoteAutoSaveEnd);
         AppStore.on('scheduleSaved', handleScheduleSaved);
-        actionTypesStore.on('autoSaveEnd', handleAutoSaveEnd);
 
         return () => {
+            AppStore.off('noteAutoSaveEnd', handleNoteAutoSaveEnd);
             AppStore.off('scheduleSaved', handleScheduleSaved);
-            actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
         };
     }, []);
 
@@ -70,6 +75,7 @@ export function ScheduleNoteBox() {
 
         const handleScheduleIndexChange = () => {
             setScheduleIndex(AppStore.getCurrentScheduleIndex());
+            setSaveStatus('idle');
         };
 
         AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
