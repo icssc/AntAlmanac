@@ -99,6 +99,19 @@ export function enqueueScheduleSave<T>(run: () => Promise<T>): Promise<T> {
     return result;
 }
 
+const activeSaveControllers = new Set<AbortController>();
+
+/**
+ * Aborts every schedule save request that's queued or in flight, so none of them can
+ * persist a snapshot of the schedule from before a load that's about to replace it.
+ */
+export function abortInFlightScheduleSaves() {
+    for (const controller of activeSaveControllers) {
+        controller.abort();
+    }
+    activeSaveControllers.clear();
+}
+
 function enrichSaveStateWithVisibility(saveState: ReturnType<typeof AppStore.schedule.getScheduleAsSaveState>) {
     const { getVisibility } = useHiddenCoursesStore.getState();
     return {
@@ -128,9 +141,13 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
     const loadEpoch = AppStore.loadEpoch;
     const noteEditVersion = AppStore.noteEditVersion;
     const editVersion = AppStore.editVersion;
+    const controller = new AbortController();
+    activeSaveControllers.add(controller);
 
     try {
-        const result = await enqueueScheduleSave(() => trpc.schedule.save.mutate({ userData: scheduleSaveState }));
+        const result = await enqueueScheduleSave(() =>
+            trpc.schedule.save.mutate({ userData: scheduleSaveState }, { signal: controller.signal })
+        );
 
         // A different schedule was loaded while this request was in flight; its result no longer applies.
         if (AppStore.loadEpoch !== loadEpoch) {
@@ -152,6 +169,9 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
         });
         AppStore.saveSchedule({ editVersion, noteEditVersion });
     } catch (e) {
+        if (controller.signal.aborted) {
+            return;
+        }
         if (e instanceof TRPCClientError) {
             openSnackbar('error', `Schedule could not be saved`);
         } else {
@@ -165,6 +185,8 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
                 autoSave: false,
             },
         });
+    } finally {
+        activeSaveControllers.delete(controller);
     }
 };
 
@@ -173,8 +195,12 @@ export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions): Pr
     const loadEpoch = AppStore.loadEpoch;
     const noteEditVersion = AppStore.noteEditVersion;
     const editVersion = AppStore.editVersion;
+    const controller = new AbortController();
+    activeSaveControllers.add(controller);
     try {
-        const result = await enqueueScheduleSave(() => trpc.schedule.save.mutate({ userData: scheduleSaveState }));
+        const result = await enqueueScheduleSave(() =>
+            trpc.schedule.save.mutate({ userData: scheduleSaveState }, { signal: controller.signal })
+        );
 
         // A different schedule was loaded while this request was in flight; its result no longer applies.
         if (AppStore.loadEpoch !== loadEpoch) {
@@ -196,6 +222,9 @@ export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions): Pr
         });
         return true;
     } catch (e) {
+        if (controller.signal.aborted) {
+            return false;
+        }
         if (e instanceof TRPCClientError) {
             openSnackbar('error', 'Schedule could not be auto-saved');
         } else {
@@ -210,6 +239,8 @@ export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions): Pr
             },
         });
         return false;
+    } finally {
+        activeSaveControllers.delete(controller);
     }
 }
 

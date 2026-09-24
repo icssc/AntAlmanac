@@ -18,6 +18,7 @@ import actionTypesStore, {
     type UndoRedoAction,
     type UpdateScheduleNoteAction,
 } from '$actions/ActionTypesStore';
+import { abortInFlightScheduleSaves } from '$actions/AppStoreActions';
 import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -384,6 +385,7 @@ class AppStore extends EventEmitter {
     async loadSchedule(savedSchedule: ScheduleSaveState) {
         this.loadEpoch += 1;
         this.debouncedNoteAutoSave.clear();
+        abortInFlightScheduleSaves();
         const loadedStateMatchesCurrent =
             JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
