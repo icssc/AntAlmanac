@@ -87,8 +87,13 @@ function getOfferedCourses(termSectionCodes: Awaited<ReturnType<typeof getTermSe
     return new Set(Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`));
 }
 
-const isCourseOffered = (department: string, courseNumber: string, offeredCourseSet: Set<string>): boolean => {
-    return offeredCourseSet.has(`${department}-${courseNumber}`);
+const isCourseOffered = (course: CourseSearchResult, offeredCourseSet: Set<string>): boolean => {
+    return offeredCourseSet.has(`${course.metadata.department}-${course.metadata.number}`);
+};
+
+const sortByOffered = (a: CourseSearchResult, b: CourseSearchResult) => {
+    if (a.isOffered === b.isOffered) return 0;
+    return a.isOffered ? -1 : 1;
 };
 
 const searchRouter = router({
@@ -147,18 +152,11 @@ const searchRouter = router({
                                   ...course,
                                   obj: {
                                       ...course.obj,
-                                      isOffered: isCourseOffered(
-                                          course.obj.metadata.department,
-                                          course.obj.metadata.number,
-                                          offeredCourseSet
-                                      ),
+                                      isOffered: isCourseOffered(course.obj, offeredCourseSet),
                                   },
                               };
                           })
-                          .sort((a, b) => {
-                              if (a.obj.isOffered === b.obj.isOffered) return 0;
-                              return a.obj.isOffered ? -1 : 1;
-                          })
+                          .sort((a, b) => sortByOffered(a.obj, b.obj))
                           .slice(0, MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length);
 
             const newRenamedCourseKeys = matchedCourses
@@ -188,29 +186,21 @@ const searchRouter = router({
                             course.metadata.department === rename.deptCode
                     )
                 )
-                .filter((course) => !!course);
-            const newRenamedCoursesStructured = newRenamedCourses.map(
-                (x) =>
-                    [
-                        x.id,
-                        {
-                            ...x,
-                            isOffered: isCourseOffered(x.metadata.department, x.metadata.number, offeredCourseSet),
-                        },
-                    ] as [string, CourseSearchResult]
-            );
+                .filter((course) => !!course)
+                .map((course) => ({
+                    ...course,
+                    isOffered: isCourseOffered(course, offeredCourseSet),
+                }));
+
             const matchedAndRenamedCourses = matchedCourses
-                .map((x) => [x.obj.id, x.obj] as [string, CourseSearchResult])
-                .concat(newRenamedCoursesStructured)
-                .sort((a, b) => {
-                    if (a[1].isOffered === b[1].isOffered) return 0;
-                    return a[1].isOffered ? -1 : 1;
-                });
+                .map((x) => x.obj)
+                .concat(newRenamedCourses)
+                .sort((a, b) => sortByOffered(a, b));
 
             return Object.fromEntries([
                 ...matchedSections.map((x) => [x.sectionCode, x]),
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
-                ...matchedAndRenamedCourses,
+                ...matchedAndRenamedCourses.map((x) => [x.id, x]),
             ]);
         }),
 });
