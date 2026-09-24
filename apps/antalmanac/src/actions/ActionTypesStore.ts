@@ -128,12 +128,13 @@ type ActionType =
 
 class ActionTypesStore extends EventEmitter {
     /** Returns whether the schedule was saved; false when skipped or when the request failed. */
-    async autoSaveSchedule(_action: ActionType): Promise<boolean> {
+    async autoSaveSchedule(action: ActionType): Promise<boolean> {
         const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
 
         if (!sessionStore.sessionIsValid || !sessionStore.userId) {
-            if (autoSave) {
+            // The notes box shows its own sign-in prompt, so skip the warning for every typing pause.
+            if (autoSave && action.type !== 'updateScheduleNote') {
                 useScheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }
             return false;

@@ -362,6 +362,8 @@ class AppStore extends EventEmitter {
             JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
         if (!loadSuccess) {
+            // The cancelled note save never ran.
+            this.emit('noteAutoSaveEnd', false);
             return false;
         }
         this.unsavedChanges = false;
