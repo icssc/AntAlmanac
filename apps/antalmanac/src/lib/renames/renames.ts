@@ -40,5 +40,6 @@ export const COURSE_RENAMES: CourseRename[] = [
     courseRename({ deptCode: 'SWE', courseNumber: '122' }, { deptCode: 'IN4MATX', courseNumber: '122' }, 2026),
     courseRename({ deptCode: 'SWE', courseNumber: '124' }, { deptCode: 'IN4MATX', courseNumber: '124' }, 2026),
     courseRename({ deptCode: 'SWE', courseNumber: '141' }, { deptCode: 'IN4MATX', courseNumber: '141' }, 2026),
+    courseRename({ deptCode: 'SWE', courseNumber: '101' }, { deptCode: 'IN4MATX', courseNumber: '101' }, 2026),
     courseRename({ deptCode: 'I&C SCI', courseNumber: 'H32' }, { deptCode: 'I&C SCI', courseNumber: '32A' }, 2024),
 ];
