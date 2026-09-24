@@ -102,6 +102,12 @@ export interface ChangeCourseColorAction {
     newColor: string;
 }
 
+export interface UpdateScheduleNoteAction {
+    type: 'updateScheduleNote';
+    scheduleNote: string;
+    scheduleIndex: number;
+}
+
 type ActionType =
     | AddCourseAction
     | DeleteCourseAction
@@ -117,21 +123,24 @@ type ActionType =
     | ReorderScheduleAction
     | ReorderAddedCoursesAction
     | ChangeCourseColorAction
+    | UpdateScheduleNoteAction
     | UndoRedoAction;
 
 class ActionTypesStore extends EventEmitter {
-    async autoSaveSchedule(_action: ActionType) {
+    async autoSaveSchedule(action: ActionType) {
         const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
+        // Note edits always autosave; the notes box prompts signed-out users itself.
+        const isNoteEdit = action.type === 'updateScheduleNote';
 
         if (!sessionStore.sessionIsValid || !sessionStore.userId) {
-            if (autoSave) {
+            if (autoSave && !isNoteEdit) {
                 useScheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }
             return;
         }
 
-        if (!autoSave) {
+        if (!autoSave && !isNoteEdit) {
             return;
         }
 

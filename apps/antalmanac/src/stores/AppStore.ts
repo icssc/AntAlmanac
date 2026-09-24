@@ -16,12 +16,14 @@ import actionTypesStore, {
     type ReorderAddedCoursesAction,
     type ReorderScheduleAction,
     type UndoRedoAction,
+    type UpdateScheduleNoteAction,
 } from '$actions/ActionTypesStore';
 import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
+import { debounce } from '@mui/material';
 import type {
     AACourseWithTerm,
     AASection,
@@ -30,6 +32,8 @@ import type {
     RepeatingCustomEvent,
     ScheduleSaveState,
 } from '@packages/antalmanac-types';
+
+const NOTE_AUTOSAVE_DELAY_MS = 1000;
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -297,6 +301,7 @@ class AppStore extends EventEmitter {
 
     saveSchedule() {
         this.unsavedChanges = false;
+        this.emit('scheduleSaved');
     }
 
     copySchedule(scheduleIndex: number, newScheduleName: string) {
@@ -440,8 +445,14 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
+    debouncedNoteAutoSave = debounce((action: UpdateScheduleNoteAction) => {
+        actionTypesStore.autoSaveSchedule(action);
+    }, NOTE_AUTOSAVE_DELAY_MS);
+
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
+        this.unsavedChanges = true;
+        this.debouncedNoteAutoSave({ type: 'updateScheduleNote', scheduleNote: newScheduleNote, scheduleIndex });
         this.emit('scheduleNotesChange');
     }
 
