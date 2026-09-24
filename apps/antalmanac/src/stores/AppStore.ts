@@ -40,10 +40,24 @@ class AppStore extends EventEmitter {
 
     colorPickers: Record<string, EventEmitter>;
 
-    unsavedChanges: boolean;
+    private _unsavedChanges = false;
+
+    /** Bumped every time unsavedChanges is set true, so a save can tell if anything changed after it captured its data. */
+    editVersion = 0;
 
     /** Bumped whenever a different schedule is loaded, so a save from before the load can't be applied after it. */
     loadEpoch = 0;
+
+    get unsavedChanges() {
+        return this._unsavedChanges;
+    }
+
+    set unsavedChanges(value: boolean) {
+        this._unsavedChanges = value;
+        if (value) {
+            this.editVersion += 1;
+        }
+    }
 
     constructor() {
         super();
@@ -302,9 +316,16 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNamesChange');
     }
 
-    /** `noteEditVersion` is what {@link noteEditVersion} was when this save's data was captured. */
-    saveSchedule({ noteEditVersion }: { noteEditVersion: number }) {
-        this.unsavedChanges = false;
+    /**
+     * `editVersion`/`noteEditVersion` are what those fields were when this save's data was captured.
+     * The dirty flag only clears if nothing changed anywhere since then; a stale save can still tell
+     * the notes box its own text was captured accurately, via the emitted event, without wrongly
+     * clearing the leave-page warning for some other, still-unsaved edit.
+     */
+    saveSchedule({ editVersion, noteEditVersion }: { editVersion: number; noteEditVersion: number }) {
+        if (editVersion === this.editVersion) {
+            this._unsavedChanges = false;
+        }
         this.emit('scheduleSaved', noteEditVersion === this.noteEditVersion);
     }
 

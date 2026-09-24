@@ -127,6 +127,7 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
 
     const loadEpoch = AppStore.loadEpoch;
     const noteEditVersion = AppStore.noteEditVersion;
+    const editVersion = AppStore.editVersion;
 
     try {
         const result = await enqueueScheduleSave(() => trpc.schedule.save.mutate({ userData: scheduleSaveState }));
@@ -149,7 +150,7 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
                 autoSave: false,
             },
         });
-        AppStore.saveSchedule({ noteEditVersion });
+        AppStore.saveSchedule({ editVersion, noteEditVersion });
     } catch (e) {
         if (e instanceof TRPCClientError) {
             openSnackbar('error', `Schedule could not be saved`);
@@ -171,6 +172,7 @@ export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions): Pr
     const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
     const loadEpoch = AppStore.loadEpoch;
     const noteEditVersion = AppStore.noteEditVersion;
+    const editVersion = AppStore.editVersion;
     try {
         const result = await enqueueScheduleSave(() => trpc.schedule.save.mutate({ userData: scheduleSaveState }));
 
@@ -184,7 +186,7 @@ export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions): Pr
         }
 
         deleteTempSaveData();
-        AppStore.saveSchedule({ noteEditVersion });
+        AppStore.saveSchedule({ editVersion, noteEditVersion });
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SAVE_SCHEDULE,

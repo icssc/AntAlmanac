@@ -31,7 +31,7 @@ export const Save = () => {
     const postHog = usePostHog();
 
     // Captured right before the request fires, so a response can be checked against a later schedule load.
-    const requestContext = useRef({ loadEpoch: 0, noteEditVersion: 0 });
+    const requestContext = useRef({ loadEpoch: 0, editVersion: 0, noteEditVersion: 0 });
 
     const { mutateAsync: saveSchedule, isPending: isSaving } = trpcReact.schedule.save.useMutation({
         onSuccess: ({ scheduleIdMap }) => {
@@ -53,7 +53,10 @@ export const Save = () => {
                     autoSave: false,
                 },
             });
-            AppStore.saveSchedule({ noteEditVersion: requestContext.current.noteEditVersion });
+            AppStore.saveSchedule({
+                editVersion: requestContext.current.editVersion,
+                noteEditVersion: requestContext.current.noteEditVersion,
+            });
         },
         onError: (e) => {
             if (e instanceof TRPCClientError) {
@@ -99,7 +102,11 @@ export const Save = () => {
             return;
         }
 
-        requestContext.current = { loadEpoch: AppStore.loadEpoch, noteEditVersion: AppStore.noteEditVersion };
+        requestContext.current = {
+            loadEpoch: AppStore.loadEpoch,
+            editVersion: AppStore.editVersion,
+            noteEditVersion: AppStore.noteEditVersion,
+        };
         enqueueScheduleSave(() => saveSchedule({ userData: scheduleSaveState })).catch(() => {
             // onError already reported this; the queue only needs the rejection to not go unhandled.
         });

@@ -58,7 +58,7 @@ export function ScheduleNoteBox() {
         // before the latest keystroke doesn't mean that keystroke made it to the server.
         const handleScheduleSaved = (noteIsCurrent: boolean) => {
             if (!noteIsCurrent) return;
-            setSaveStatus((status) => (status === 'idle' || status === 'signedOut' ? status : 'saved'));
+            setSaveStatus((status) => (status === 'idle' ? status : 'saved'));
         };
 
         AppStore.on('noteAutoSaveEnd', handleNoteAutoSaveEnd);
