@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { procedure, router } from '$backend/trpc';
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
+import { COURSE_RENAMES } from '$lib/renames/renames';
 import {
     type CourseSearchResult,
     type GESearchResult,
@@ -13,8 +14,6 @@ import {
 } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
-
-import { COURSE_RENAMES } from '../../lib/renames/renames';
 
 const departmentSchema = z.object({
     id: z.string(),
