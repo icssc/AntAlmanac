@@ -1,20 +1,14 @@
 import actionTypesStore from '$actions/ActionTypesStore';
-import { enqueueScheduleSave, isEmptySchedule } from '$actions/AppStoreActions';
+import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpc';
-import { getErrorMessage } from '$lib/utils';
-import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
-import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { Alert, Button, IconButton, Link, Snackbar, Stack } from '@mui/material';
-import { TRPCClientError } from '@trpc/client';
 import { usePostHog } from 'posthog-js/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
@@ -29,52 +23,7 @@ export const Save = () => {
         }))
     );
     const postHog = usePostHog();
-
-    // Captured right before the request fires, so a response can be checked against a later schedule load.
-    const requestContext = useRef({ loadEpoch: 0, editVersion: 0, noteEditVersion: 0 });
-
-    const { mutateAsync: saveSchedule, isPending: isSaving } = trpcReact.schedule.save.useMutation({
-        onSuccess: ({ scheduleIdMap }) => {
-            // A different schedule was loaded while this request was in flight; its result no longer applies.
-            if (AppStore.loadEpoch !== requestContext.current.loadEpoch) {
-                return;
-            }
-
-            if (scheduleIdMap) {
-                AppStore.schedule.updateScheduleIds(scheduleIdMap);
-            }
-
-            openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
-            deleteTempSaveData();
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
-                customProps: {
-                    autoSave: false,
-                },
-            });
-            AppStore.saveSchedule({
-                editVersion: requestContext.current.editVersion,
-                noteEditVersion: requestContext.current.noteEditVersion,
-            });
-        },
-        onError: (e) => {
-            if (e instanceof TRPCClientError) {
-                openSnackbar('error', `Schedule could not be saved`);
-            } else {
-                openSnackbar('error', 'Network error or server is down.');
-            }
-
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SAVE_SCHEDULE_FAIL,
-                error: getErrorMessage(e),
-                customProps: {
-                    autoSave: false,
-                },
-            });
-        },
-    });
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleClickSignIn = () => {
         if (!openSignInDialog) {
@@ -90,26 +39,10 @@ export const Save = () => {
         setOpenAutoSaveWarning(false);
     };
 
-    const saveScheduleData = () => {
-        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-
-        if (
-            isEmptySchedule(scheduleSaveState.schedules) &&
-            !confirm(
-                "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
-            )
-        ) {
-            return;
-        }
-
-        requestContext.current = {
-            loadEpoch: AppStore.loadEpoch,
-            editVersion: AppStore.editVersion,
-            noteEditVersion: AppStore.noteEditVersion,
-        };
-        enqueueScheduleSave(() => saveSchedule({ userData: scheduleSaveState })).catch(() => {
-            // onError already reported this; the queue only needs the rejection to not go unhandled.
-        });
+    const saveScheduleData = async () => {
+        setIsSaving(true);
+        await saveSchedule({ postHog });
+        setIsSaving(false);
     };
 
     useEffect(() => {

@@ -18,7 +18,6 @@ import actionTypesStore, {
     type UndoRedoAction,
     type UpdateScheduleNoteAction,
 } from '$actions/ActionTypesStore';
-import { abortInFlightScheduleSaves } from '$actions/AppStoreActions';
 import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
@@ -383,17 +382,13 @@ class AppStore extends EventEmitter {
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
-        this.loadEpoch += 1;
-        this.debouncedNoteAutoSave.clear();
-        abortInFlightScheduleSaves();
         const loadedStateMatchesCurrent =
             JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
         if (!loadSuccess) {
-            // The cancelled note save never ran.
-            this.emit('noteAutoSaveEnd', false);
             return false;
         }
+        this.loadEpoch += 1;
         this.unsavedChanges = false;
 
         this.schedule.clearPreviousStates();
@@ -480,8 +475,13 @@ class AppStore extends EventEmitter {
     noteEditVersion = 0;
 
     debouncedNoteAutoSave = debounce(async (action: UpdateScheduleNoteAction) => {
+        const version = this.noteEditVersion;
         const saved = await actionTypesStore.autoSaveSchedule(action);
-        this.emit('noteAutoSaveEnd', saved);
+
+        // A newer note edit arrived while saving; its own debounced save reports instead.
+        if (version === this.noteEditVersion) {
+            this.emit('noteAutoSaveEnd', saved);
+        }
     }, NOTE_AUTOSAVE_DELAY_MS);
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
