@@ -84,6 +84,21 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
+let scheduleSaveQueue: Promise<unknown> = Promise.resolve();
+
+/**
+ * Runs schedule save requests one at a time. Without this, two in-flight saves can resolve
+ * out of order and let an older snapshot overwrite a newer one on the server.
+ */
+export function enqueueScheduleSave<T>(run: () => Promise<T>): Promise<T> {
+    const result = scheduleSaveQueue.then(run, run);
+    scheduleSaveQueue = result.then(
+        () => undefined,
+        () => undefined
+    );
+    return result;
+}
+
 function enrichSaveStateWithVisibility(saveState: ReturnType<typeof AppStore.schedule.getScheduleAsSaveState>) {
     const { getVisibility } = useHiddenCoursesStore.getState();
     return {
@@ -110,10 +125,16 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
         return;
     }
 
+    const loadEpoch = AppStore.loadEpoch;
+    const noteEditVersion = AppStore.noteEditVersion;
+
     try {
-        const result = await trpc.schedule.save.mutate({
-            userData: scheduleSaveState,
-        });
+        const result = await enqueueScheduleSave(() => trpc.schedule.save.mutate({ userData: scheduleSaveState }));
+
+        // A different schedule was loaded while this request was in flight; its result no longer applies.
+        if (AppStore.loadEpoch !== loadEpoch) {
+            return;
+        }
 
         if (result?.scheduleIdMap) {
             AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
@@ -128,7 +149,7 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
                 autoSave: false,
             },
         });
-        AppStore.saveSchedule();
+        AppStore.saveSchedule({ noteEditVersion });
     } catch (e) {
         if (e instanceof TRPCClientError) {
             openSnackbar('error', `Schedule could not be saved`);
@@ -148,17 +169,22 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
 
 export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions): Promise<boolean> {
     const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
+    const loadEpoch = AppStore.loadEpoch;
+    const noteEditVersion = AppStore.noteEditVersion;
     try {
-        const result = await trpc.schedule.save.mutate({
-            userData: scheduleSaveState,
-        });
+        const result = await enqueueScheduleSave(() => trpc.schedule.save.mutate({ userData: scheduleSaveState }));
+
+        // A different schedule was loaded while this request was in flight; its result no longer applies.
+        if (AppStore.loadEpoch !== loadEpoch) {
+            return false;
+        }
 
         if (result?.scheduleIdMap) {
             AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
         }
 
         deleteTempSaveData();
-        AppStore.saveSchedule();
+        AppStore.saveSchedule({ noteEditVersion });
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SAVE_SCHEDULE,

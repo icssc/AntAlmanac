@@ -49,9 +49,17 @@ export function ScheduleNoteBox() {
     );
 
     useEffect(() => {
+        // A failed save; a successful one is reported by 'scheduleSaved' below, which fires first.
         const handleNoteAutoSaveEnd = (saved: boolean) =>
-            setSaveStatus((status) => (status === 'saving' ? (saved ? 'saved' : 'unsaved') : status));
-        const handleScheduleSaved = () => setSaveStatus((status) => (status === 'unsaved' ? 'saved' : status));
+            setSaveStatus((status) => (status === 'saving' && !saved ? 'unsaved' : status));
+
+        // Fires for any successful save (header Save, course autosave, or note autosave). Only
+        // trust it when the note text it saved is still the current one — a save that started
+        // before the latest keystroke doesn't mean that keystroke made it to the server.
+        const handleScheduleSaved = (noteIsCurrent: boolean) => {
+            if (!noteIsCurrent) return;
+            setSaveStatus((status) => (status === 'idle' || status === 'signedOut' ? status : 'saved'));
+        };
 
         AppStore.on('noteAutoSaveEnd', handleNoteAutoSaveEnd);
         AppStore.on('scheduleSaved', handleScheduleSaved);
@@ -120,6 +128,7 @@ export function ScheduleNoteBox() {
                 <Typography
                     variant="caption"
                     color="text.secondary"
+                    role="status"
                     sx={{ display: 'block', textAlign: 'right', marginTop: 0.5 }}
                 >
                     {saveStatus === 'signedOut' ? (

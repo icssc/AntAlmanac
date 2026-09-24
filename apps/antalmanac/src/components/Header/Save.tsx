@@ -1,5 +1,5 @@
 import actionTypesStore from '$actions/ActionTypesStore';
-import { isEmptySchedule } from '$actions/AppStoreActions';
+import { enqueueScheduleSave, isEmptySchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpcReact } from '$lib/api/trpc';
@@ -14,7 +14,7 @@ import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { Alert, Button, IconButton, Link, Snackbar, Stack } from '@mui/material';
 import { TRPCClientError } from '@trpc/client';
 import { usePostHog } from 'posthog-js/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
@@ -30,8 +30,16 @@ export const Save = () => {
     );
     const postHog = usePostHog();
 
-    const { mutate: saveSchedule, isPending: isSaving } = trpcReact.schedule.save.useMutation({
+    // Captured right before the request fires, so a response can be checked against a later schedule load.
+    const requestContext = useRef({ loadEpoch: 0, noteEditVersion: 0 });
+
+    const { mutateAsync: saveSchedule, isPending: isSaving } = trpcReact.schedule.save.useMutation({
         onSuccess: ({ scheduleIdMap }) => {
+            // A different schedule was loaded while this request was in flight; its result no longer applies.
+            if (AppStore.loadEpoch !== requestContext.current.loadEpoch) {
+                return;
+            }
+
             if (scheduleIdMap) {
                 AppStore.schedule.updateScheduleIds(scheduleIdMap);
             }
@@ -45,7 +53,7 @@ export const Save = () => {
                     autoSave: false,
                 },
             });
-            AppStore.saveSchedule();
+            AppStore.saveSchedule({ noteEditVersion: requestContext.current.noteEditVersion });
         },
         onError: (e) => {
             if (e instanceof TRPCClientError) {
@@ -91,8 +99,9 @@ export const Save = () => {
             return;
         }
 
-        saveSchedule({
-            userData: scheduleSaveState,
+        requestContext.current = { loadEpoch: AppStore.loadEpoch, noteEditVersion: AppStore.noteEditVersion };
+        enqueueScheduleSave(() => saveSchedule({ userData: scheduleSaveState })).catch(() => {
+            // onError already reported this; the queue only needs the rejection to not go unhandled.
         });
     };
 

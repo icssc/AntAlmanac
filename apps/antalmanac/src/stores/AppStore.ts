@@ -42,6 +42,9 @@ class AppStore extends EventEmitter {
 
     unsavedChanges: boolean;
 
+    /** Bumped whenever a different schedule is loaded, so a save from before the load can't be applied after it. */
+    loadEpoch = 0;
+
     constructor() {
         super();
         this.setMaxListeners(300);
@@ -299,9 +302,10 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNamesChange');
     }
 
-    saveSchedule() {
+    /** `noteEditVersion` is what {@link noteEditVersion} was when this save's data was captured. */
+    saveSchedule({ noteEditVersion }: { noteEditVersion: number }) {
         this.unsavedChanges = false;
-        this.emit('scheduleSaved');
+        this.emit('scheduleSaved', noteEditVersion === this.noteEditVersion);
     }
 
     copySchedule(scheduleIndex: number, newScheduleName: string) {
@@ -357,6 +361,7 @@ class AppStore extends EventEmitter {
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
+        this.loadEpoch += 1;
         this.debouncedNoteAutoSave.clear();
         const loadedStateMatchesCurrent =
             JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
@@ -448,17 +453,11 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
+    /** Bumped on every note edit. A save only counts as "current" if this hasn't moved since it captured its data. */
     noteEditVersion = 0;
 
     debouncedNoteAutoSave = debounce(async (action: UpdateScheduleNoteAction) => {
-        const version = this.noteEditVersion;
         const saved = await actionTypesStore.autoSaveSchedule(action);
-
-        // A newer edit arrived while saving; its own debounced save reports instead.
-        if (version !== this.noteEditVersion) {
-            this.unsavedChanges = true;
-            return;
-        }
         this.emit('noteAutoSaveEnd', saved);
     }, NOTE_AUTOSAVE_DELAY_MS);
 
