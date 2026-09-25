@@ -4,7 +4,9 @@ import { join } from 'node:path';
 import { procedure, router } from '$backend/trpc';
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
+import { COURSE_RENAMES } from '$lib/renames/renames';
 import {
+    type CourseSearchResult,
     type GESearchResult,
     type SearchResult,
     type SectionSearchResult,
@@ -84,8 +86,13 @@ function getOfferedCourses(termSectionCodes: Awaited<ReturnType<typeof getTermSe
     return new Set(Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`));
 }
 
-const isCourseOffered = (department: string, courseNumber: string, offeredCourseSet: Set<string>): boolean => {
-    return offeredCourseSet.has(`${department}-${courseNumber}`);
+const isCourseOffered = (course: CourseSearchResult, offeredCourseSet: Set<string>): boolean => {
+    return offeredCourseSet.has(`${course.metadata.department}-${course.metadata.number}`);
+};
+
+const sortByOffered = (a: CourseSearchResult, b: CourseSearchResult) => {
+    if (a.isOffered === b.isOffered) return 0;
+    return a.isOffered ? -1 : 1;
 };
 
 const searchRouter = router({
@@ -144,24 +151,55 @@ const searchRouter = router({
                                   ...course,
                                   obj: {
                                       ...course.obj,
-                                      isOffered: isCourseOffered(
-                                          course.obj.metadata.department,
-                                          course.obj.metadata.number,
-                                          offeredCourseSet
-                                      ),
+                                      isOffered: isCourseOffered(course.obj, offeredCourseSet),
                                   },
                               };
                           })
-                          .sort((a, b) => {
-                              if (a.obj.isOffered === b.obj.isOffered) return 0;
-                              return a.obj.isOffered ? -1 : 1;
-                          })
+                          .sort((a, b) => sortByOffered(a.obj, b.obj))
                           .slice(0, MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length);
+
+            const newRenamedCourseKeys = matchedCourses
+                .map((course) =>
+                    COURSE_RENAMES.find(
+                        (renames) =>
+                            renames.previously.courseNumber === course.obj.metadata.number &&
+                            renames.previously.deptCode === course.obj.metadata.department
+                    )
+                )
+                .filter((rename) => !!rename)
+                .map((rename) => rename.current)
+                .filter(
+                    (rename) =>
+                        !matchedCourses.some(
+                            (course) =>
+                                course.obj.metadata.number === rename.courseNumber &&
+                                course.obj.metadata.department === rename.deptCode
+                        )
+                );
+
+            const newRenamedCourses = newRenamedCourseKeys
+                .map((rename) =>
+                    searchData.courses.find(
+                        (course) =>
+                            course.metadata.number === rename.courseNumber &&
+                            course.metadata.department === rename.deptCode
+                    )
+                )
+                .filter((course) => !!course)
+                .map((course) => ({
+                    ...course,
+                    isOffered: isCourseOffered(course, offeredCourseSet),
+                }));
+
+            const matchedAndRenamedCourses = matchedCourses
+                .map((x) => x.obj)
+                .concat(newRenamedCourses)
+                .sort((a, b) => sortByOffered(a, b));
 
             return Object.fromEntries([
                 ...matchedSections.map((x) => [x.sectionCode, x]),
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
-                ...matchedCourses.map((x) => [x.obj.id, x.obj]),
+                ...matchedAndRenamedCourses.map((x) => [x.id, x]),
             ]);
         }),
 });

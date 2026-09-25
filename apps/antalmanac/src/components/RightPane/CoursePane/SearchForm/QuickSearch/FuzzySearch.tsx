@@ -11,6 +11,8 @@ import {
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
+import { COURSE_RENAMES } from '$lib/renames/renames';
+import { BLUE } from '$src/globals';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import { type AATerm, type SearchResult, WebsocGeOptionSchema } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -288,6 +290,14 @@ export function FuzzySearch() {
 
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
 
+        const courseRenameInfo =
+            isCourse &&
+            COURSE_RENAMES.find(
+                (course) =>
+                    course.current.deptCode === object.metadata.department &&
+                    course.current.courseNumber === object.metadata.number
+            );
+
         return (
             <Box
                 component="li"
@@ -297,9 +307,21 @@ export function FuzzySearch() {
                     display: 'flex',
                     alignItems: 'center',
                     opacity: isCourse && !isOffered ? 0.6 : 1,
+                    gap: '8px',
                 }}
             >
                 {label}
+                {courseRenameInfo && (
+                    <Box
+                        sx={{
+                            backgroundColor: BLUE,
+                            paddingInline: 1,
+                            borderRadius: 1,
+                        }}
+                    >
+                        Prev. {courseRenameInfo.previously.deptCode} {courseRenameInfo.previously.courseNumber}
+                    </Box>
+                )}
             </Box>
         );
     };

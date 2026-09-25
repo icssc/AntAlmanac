@@ -1,3 +1,4 @@
+import { CourseRenameBanner } from '$components/RightPane/CoursePane/CourseRenderPane/CourseRenameBanner';
 import { PlannerCourseLinkBanner } from '$components/RightPane/CoursePane/CourseRenderPane/PlannerCourseLinkBanner';
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import { useIsDarkMode } from '$hooks/useIsDarkMode';
@@ -18,9 +19,11 @@ export function NoResults({ formData }: NoResultsProps) {
                 display: 'flex',
                 alignItems: 'center',
                 flexDirection: 'column',
+                gap: 1,
             }}
         >
             <PlannerCourseLinkBanner deptValue={formData.deptValue} courseNumber={formData.courseNumber} />
+            <CourseRenameBanner deptValue={formData.deptValue} courseNumber={formData.courseNumber} />
 
             <Image
                 src={isDark ? '/course-search/dark-no-results.png' : '/course-search/no-results.png'}
