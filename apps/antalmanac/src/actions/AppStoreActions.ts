@@ -98,65 +98,77 @@ function enrichSaveStateWithVisibility(saveState: ReturnType<typeof AppStore.sch
     };
 }
 
+const EMPTY_SCHEDULE_WARNING =
+    "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!";
+
+/** `stale`: a load replaced the schedule while the request was in flight. `cancelled`: the user declined to save an empty schedule. */
+type SaveOutcome = 'saved' | 'stale' | 'cancelled';
+
 let scheduleSaveQueue: Promise<unknown> = Promise.resolve();
-let waitingSave: Promise<void> | null = null;
+let waitingAutoSave: Promise<SaveOutcome> | null = null;
 
 /**
  * Sends the schedule to the server. Saves run one at a time, and each reads the schedule only
- * when its turn comes, so an older snapshot can never reach the server after a newer one. A save
- * requested while another is still waiting joins it instead of queueing a duplicate request.
+ * when its turn comes, so an older snapshot can never reach the server after a newer one. An
+ * autosave requested while another is still waiting joins it instead of queueing a duplicate.
+ * A manual save asks before sending an empty schedule, and never joins a waiting autosave.
  *
  * Rejects if the request failed.
  */
-function sendScheduleSave(): Promise<void> {
-    if (waitingSave) {
-        return waitingSave;
+function sendScheduleSave({ manual = false } = {}): Promise<SaveOutcome> {
+    if (!manual && waitingAutoSave) {
+        return waitingAutoSave;
     }
 
-    const save = scheduleSaveQueue.then(async () => {
-        waitingSave = null;
+    const save = scheduleSaveQueue.then(async (): Promise<SaveOutcome> => {
+        if (!manual) {
+            waitingAutoSave = null;
+        }
 
+        const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
         const loadEpoch = AppStore.loadEpoch;
         const editVersion = AppStore.editVersion;
         const noteEditVersion = AppStore.noteEditVersion;
 
-        const result = await trpc.schedule.save.mutate({
-            userData: enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState()),
-        });
+        if (manual && isEmptySchedule(scheduleSaveState.schedules) && !confirm(EMPTY_SCHEDULE_WARNING)) {
+            return 'cancelled';
+        }
+
+        const result = await trpc.schedule.save.mutate({ userData: scheduleSaveState });
 
         // Keyed by the ids this request sent, so they still apply if a load happened meanwhile.
         if (result?.scheduleIdMap) {
             AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
         }
 
-        // A load replaced the schedule while this was in flight, so this save doesn't cover it.
         if (AppStore.loadEpoch !== loadEpoch) {
-            return;
+            return 'stale';
         }
 
         deleteTempSaveData();
         AppStore.saveSchedule({ editVersion, noteEditVersion });
+        return 'saved';
     });
 
-    waitingSave = save;
+    if (!manual) {
+        waitingAutoSave = save;
+    }
     scheduleSaveQueue = save.catch(() => undefined);
     return save;
 }
 
 export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
-    if (
-        isEmptySchedule(AppStore.schedule.getScheduleAsSaveState().schedules) &&
-        !confirm(
-            "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
-        )
-    ) {
-        return;
-    }
-
     try {
-        await sendScheduleSave();
+        const outcome = await sendScheduleSave({ manual: true });
+        if (outcome === 'cancelled') {
+            return;
+        }
 
-        openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
+        if (outcome === 'stale') {
+            openSnackbar('warning', 'Your schedule changed while saving. Click Save again to save the latest version.');
+        } else {
+            openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
+        }
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SAVE_SCHEDULE,

@@ -48,6 +48,7 @@ import { setLocalStorageAutoSave } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { useSnackbarStore } from '$stores/SnackbarStore';
 
 interface PendingSave {
     userData: ScheduleSaveState;
@@ -131,10 +132,10 @@ describe('schedule saves', () => {
         await second;
     });
 
-    test('saves requested while one is already waiting are combined into one request', async () => {
+    test('autosaves requested while one is already waiting are combined into one request', async () => {
         const inFlight = autoSaveSchedule({});
         await flush();
-        const waiting = [autoSaveSchedule({}), saveSchedule({}), autoSaveSchedule({})];
+        const waiting = [autoSaveSchedule({}), autoSaveSchedule({}), autoSaveSchedule({})];
         await flush();
 
         pendingSaves[0].resolve({ scheduleIdMap: {} });
@@ -258,6 +259,67 @@ describe('schedule saves around a load', () => {
         expect(await save).toBe(true);
         expect(AppStore.unsavedChanges).toBe(false);
         expect(currentSchedule().scheduleNote).toBe('unsaved edit');
+    });
+});
+
+describe('header Save', () => {
+    test('says "Schedule saved" when the save covered the schedule on screen', async () => {
+        const save = saveSchedule({});
+        await flush();
+        pendingSaves[0].resolve({ scheduleIdMap: {} });
+        await save;
+
+        expect(useSnackbarStore.getState()).toMatchObject({ severity: 'success' });
+        expect(useSnackbarStore.getState().message).toMatch(/Schedule saved/);
+    });
+
+    test('asks to save again instead of saying "Schedule saved" if a load replaced the schedule mid-save', async () => {
+        const save = saveSchedule({});
+        await flush();
+        await AppStore.loadSchedule(scheduleState('Loaded'));
+        pendingSaves[0].resolve({ scheduleIdMap: {} });
+        await save;
+
+        expect(useSnackbarStore.getState()).toMatchObject({ severity: 'warning' });
+        expect(useSnackbarStore.getState().message).toMatch(/click save again/i);
+    });
+
+    test('checks for an empty schedule when the save sends, not when it was clicked', async () => {
+        editNote('not empty yet');
+        const inFlight = autoSaveSchedule({});
+        await flush();
+        const headerSave = saveSchedule({});
+        await flush();
+
+        expect(window.confirm).not.toHaveBeenCalled();
+
+        editNote('');
+        vi.mocked(window.confirm).mockReturnValue(false);
+        pendingSaves[0].resolve({ scheduleIdMap: {} });
+        await inFlight;
+        await headerSave;
+
+        expect(window.confirm).toHaveBeenCalledTimes(1);
+        expect(mutate).toHaveBeenCalledTimes(1);
+    });
+
+    test('sends its own request instead of joining a waiting autosave', async () => {
+        editNote('not empty');
+        const inFlight = autoSaveSchedule({});
+        await flush();
+        const waitingAutoSave = autoSaveSchedule({});
+        const headerSave = saveSchedule({});
+
+        pendingSaves[0].resolve({ scheduleIdMap: {} });
+        await inFlight;
+        await flush();
+        pendingSaves[1].resolve({ scheduleIdMap: {} });
+        await waitingAutoSave;
+        await flush();
+        pendingSaves[2].resolve({ scheduleIdMap: {} });
+        await headerSave;
+
+        expect(mutate).toHaveBeenCalledTimes(3);
     });
 });
 
