@@ -102,6 +102,12 @@ export interface ChangeCourseColorAction {
     newColor: string;
 }
 
+export interface UpdateScheduleNoteAction {
+    type: 'updateScheduleNote';
+    scheduleNote: string;
+    scheduleIndex: number;
+}
+
 type ActionType =
     | AddCourseAction
     | DeleteCourseAction
@@ -117,27 +123,31 @@ type ActionType =
     | ReorderScheduleAction
     | ReorderAddedCoursesAction
     | ChangeCourseColorAction
+    | UpdateScheduleNoteAction
     | UndoRedoAction;
 
 class ActionTypesStore extends EventEmitter {
-    async autoSaveSchedule(_action: ActionType) {
+    /** Returns whether the schedule was saved; false when skipped or when the request failed. */
+    async autoSaveSchedule(action: ActionType): Promise<boolean> {
         const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
 
         if (!sessionStore.sessionIsValid || !sessionStore.userId) {
-            if (autoSave) {
+            // The notes box shows its own sign-in prompt, so skip the warning for every typing pause.
+            if (autoSave && action.type !== 'updateScheduleNote') {
                 useScheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }
-            return;
+            return false;
         }
 
         if (!autoSave) {
-            return;
+            return false;
         }
 
         this.emit('autoSaveStart');
-        await autoSaveSchedule({ postHog });
+        const saved = await autoSaveSchedule({ postHog });
         this.emit('autoSaveEnd');
+        return saved;
     }
 }
 
