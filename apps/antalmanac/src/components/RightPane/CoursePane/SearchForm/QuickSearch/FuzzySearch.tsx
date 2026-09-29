@@ -12,8 +12,14 @@ import type { CourseSearchParams } from '$components/RightPane/CoursePane/Search
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { COURSE_RENAMES } from '$lib/renames/renames';
-import { BLUE } from '$src/globals';
-import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
+import HelpOutlineOutlined from '@mui/icons-material/HelpOutlineOutlined';
+import {
+    type AutocompleteInputChangeReason,
+    type AutocompleteRenderGroupParams,
+    Box,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import { type AATerm, type SearchResult, WebsocGeOptionSchema } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -45,6 +51,35 @@ const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 const MIN_QUERY_LENGTH = 2;
 
 const shouldAutoFocusSearch = () => globalThis.matchMedia?.('(hover: hover) and (pointer: fine)')?.matches ?? false;
+
+const courseRenameInfo = (deptCode: string, courseNumber: string) => {
+    const rename = COURSE_RENAMES.find(
+        (course) => course.current.deptCode === deptCode && course.current.courseNumber === courseNumber
+    );
+
+    if (!rename) return undefined;
+
+    const alsoRenamedWithDept = COURSE_RENAMES.filter(
+        (course) =>
+            course.effectiveYear === rename.effectiveYear &&
+            course.previously.deptCode === rename.previously.deptCode &&
+            course.current.deptCode === rename.current.deptCode &&
+            course.current.courseNumber === course.previously.courseNumber
+    );
+
+    if (alsoRenamedWithDept.length >= 2) {
+        const numbers = alsoRenamedWithDept.map((r) => r.previously.courseNumber);
+        return {
+            rename,
+            display: `As of ${rename.effectiveYear}, ${rename.previously.deptCode} ${numbers.join(', ')} have been renamed to ${rename.current.deptCode}`,
+        };
+    }
+
+    return {
+        rename,
+        display: `As of ${rename.effectiveYear}, ${rename.previously.deptCode} ${rename.previously.courseNumber} has been renamed to ${rename.current.deptCode} ${rename.current.courseNumber}`,
+    };
+};
 
 interface SearchOption {
     key: string;
@@ -290,13 +325,7 @@ export function FuzzySearch() {
 
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
 
-        const courseRenameInfo =
-            isCourse &&
-            COURSE_RENAMES.find(
-                (course) =>
-                    course.current.deptCode === object.metadata.department &&
-                    course.current.courseNumber === object.metadata.number
-            );
+        const renameInfo = isCourse ? courseRenameInfo(object.metadata.department, object.metadata.number) : undefined;
 
         return (
             <Box
@@ -307,20 +336,25 @@ export function FuzzySearch() {
                     display: 'flex',
                     alignItems: 'center',
                     opacity: isCourse && !isOffered ? 0.6 : 1,
-                    gap: '8px',
+                    gap: '4px',
                 }}
             >
                 {label}
-                {courseRenameInfo && (
-                    <Box
-                        sx={{
-                            backgroundColor: BLUE,
-                            paddingInline: 1,
-                            borderRadius: 1,
+                {renameInfo && (
+                    <Tooltip
+                        title={renameInfo.display}
+                        slotProps={{
+                            tooltip: {
+                                sx: { fontSize: '0.9rem' },
+                            },
                         }}
                     >
-                        Prev. {courseRenameInfo.previously.deptCode} {courseRenameInfo.previously.courseNumber}
-                    </Box>
+                        <Box component="i" sx={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                            (prev. {renameInfo.rename.previously.deptCode} {renameInfo.rename.previously.courseNumber}
+                            &nbsp;
+                            <HelpOutlineOutlined />)
+                        </Box>
+                    </Tooltip>
                 )}
             </Box>
         );
