@@ -15,7 +15,7 @@
         "fetch-term-data": "tsx scripts/fetch-term-data.ts",
         "fetch-departments": "tsx scripts/fetch-departments.ts",
         "get-data": "tsx scripts/fetch-term-data.ts & tsx scripts/fetch-departments.ts & wait && tsx scripts/get-search-data.ts",
-        "update-terms": "tsx scripts/update-terms.ts",
+        "get-latest-term": "tsx scripts/get-latest-term.ts",
         "build": "next build"
     },
     "dependencies": {
