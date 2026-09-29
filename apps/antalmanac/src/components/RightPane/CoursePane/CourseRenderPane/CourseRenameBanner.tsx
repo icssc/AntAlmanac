@@ -2,7 +2,7 @@ import { DEFAULT_MANUAL_SEARCH_VALUES } from '$components/RightPane/CoursePane/S
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { COURSE_RENAMES } from '$lib/renames/renames';
 import { BLUE } from '$src/globals';
-import { Alert, Link } from '@mui/material';
+import { Alert, Button } from '@mui/material';
 
 interface CourseRenameBannerProps {
     deptValue: string;
@@ -11,6 +11,9 @@ interface CourseRenameBannerProps {
 
 export function CourseRenameBanner({ deptValue, courseNumber }: CourseRenameBannerProps) {
     const [courseIds] = useCourseSearchParam('courseIds');
+
+    const [, setDeptValue] = useCourseSearchParam('deptValue');
+    const [, setCourseNumber] = useCourseSearchParam('courseNumber');
 
     if (deptValue === DEFAULT_MANUAL_SEARCH_VALUES.deptValue || !courseNumber) {
         return null;
@@ -32,11 +35,13 @@ export function CourseRenameBanner({ deptValue, courseNumber }: CourseRenameBann
 
     const newCourseLabel = `${courseRenameInfo.current.deptCode} ${courseRenameInfo.current.courseNumber}`;
 
+    const navRename = () => {
+        setDeptValue(courseRenameInfo.current.deptCode);
+        setCourseNumber(courseRenameInfo.current.courseNumber);
+    };
+
     return (
-        <Link
-            href={`?search=manual&deptValue=${encodeURIComponent(courseRenameInfo.current.deptCode)}&courseNumber=${encodeURIComponent(courseRenameInfo.current.courseNumber)}&view=results`}
-            sx={{ width: '100%' }}
-        >
+        <Button onClick={navRename} sx={{ width: '100%', padding: 0, textTransform: 'none' }}>
             <Alert
                 variant="filled"
                 severity="info"
@@ -46,6 +51,7 @@ export function CourseRenameBanner({ deptValue, courseNumber }: CourseRenameBann
                     fontSize: 14,
                     backgroundColor: BLUE,
                     color: 'white',
+                    width: '100%',
                 }}
             >
                 <span>
@@ -53,6 +59,6 @@ export function CourseRenameBanner({ deptValue, courseNumber }: CourseRenameBann
                     <span style={{ textDecoration: 'underline' }}>{newCourseLabel}</span>
                 </span>
             </Alert>
-        </Link>
+        </Button>
     );
 }
