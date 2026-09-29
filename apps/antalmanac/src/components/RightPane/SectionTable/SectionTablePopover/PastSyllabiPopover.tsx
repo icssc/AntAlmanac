@@ -3,7 +3,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { OpenInNew } from '@mui/icons-material';
-import { Card, CardContent, CardHeader, List, ListItemButton, Skeleton, Typography } from '@mui/material';
+import { Card, CardContent, CardHeader, List, ListItem, ListItemButton, Skeleton, Typography } from '@mui/material';
 import Link from 'next/link';
 
 interface PastSyllabiPopoverProps {
@@ -64,39 +64,48 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                             const instructors = syllabus.instructorNames.join(', ') || 'Instructor not listed';
 
                             return (
-                                <ListItemButton
+                                <ListItem
                                     key={syllabus.url}
-                                    LinkComponent={Link}
-                                    href={syllabus.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    disablePadding
                                     sx={{
                                         display: 'grid',
                                         gridColumn: '1 / -1',
                                         gridTemplateColumns: 'subgrid',
-                                        alignItems: 'center',
-                                        borderRadius: 1,
-                                        paddingX: 1,
                                     }}
                                 >
-                                    <Typography variant="body2" noWrap>
-                                        {syllabus.year} {syllabus.quarter}
-                                    </Typography>
-
-                                    <Typography
-                                        variant="body2"
-                                        noWrap
-                                        title={instructors}
-                                        sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                                    <ListItemButton
+                                        LinkComponent={Link}
+                                        href={syllabus.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        sx={{
+                                            display: 'grid',
+                                            gridColumn: '1 / -1',
+                                            gridTemplateColumns: 'subgrid',
+                                            alignItems: 'center',
+                                            borderRadius: 1,
+                                            paddingX: 1,
+                                        }}
                                     >
-                                        {instructors}
-                                    </Typography>
+                                        <Typography variant="body2" noWrap>
+                                            {syllabus.year} {syllabus.quarter}
+                                        </Typography>
 
-                                    <OpenInNew
-                                        fontSize="small"
-                                        sx={{ color: (theme) => theme.vars.palette.text.secondary }}
-                                    />
-                                </ListItemButton>
+                                        <Typography
+                                            variant="body2"
+                                            noWrap
+                                            title={instructors}
+                                            sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                                        >
+                                            {instructors}
+                                        </Typography>
+
+                                        <OpenInNew
+                                            fontSize="small"
+                                            sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
                             );
                         })}
                     </List>
