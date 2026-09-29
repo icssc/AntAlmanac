@@ -5,10 +5,7 @@ on:
         branches: [main]
         paths-ignore:
             - 'apps/ios/**'
-
-concurrency:
-    group: sst-production
-    cancel-in-progress: false
+    workflow_call:
 
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -27,10 +24,15 @@ env:
 jobs:
     deploy-production:
         runs-on: ubuntu-latest
+        concurrency:
+            group: sst-production
+            cancel-in-progress: false
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event_name == 'push' && github.sha || 'main' }}
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
