@@ -3,19 +3,8 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { trpcReact } from '$lib/api/trpc';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
 import { OpenInNew } from '@mui/icons-material';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    List,
-    ListItemButton,
-    ListItemText,
-    ListSubheader,
-    Skeleton,
-    Typography,
-} from '@mui/material';
+import { Card, CardContent, CardHeader, List, ListItemButton, Skeleton, Typography } from '@mui/material';
 import Link from 'next/link';
-import { useMemo } from 'react';
 
 interface PastSyllabiPopoverProps {
     deptCode: string;
@@ -35,24 +24,12 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const width = isMobile ? 250 : 400;
     const height = isMobile ? 150 : 200;
 
-    const syllabiByTerm = useMemo(() => {
-        return syllabi.reduce(
-            (acc, entry) => {
-                const term = `${entry.year} ${entry.quarter}`;
-
-                acc[term] ??= [];
-                acc[term].push(entry);
-
-                return acc;
-            },
-            {} as Record<string, (typeof syllabi)[number][]>
-        );
-    }, [syllabi]);
+    const termCount = new Set(syllabi.map((syllabus) => `${syllabus.year} ${syllabus.quarter}`)).size;
 
     const title = `${deptCode} ${courseNumber}`;
     const subheader = loading
         ? null
-        : `${syllabi.length} ${syllabi.length === 1 ? 'syllabus' : 'syllabi'} across ${Object.keys(syllabiByTerm).length} ${Object.keys(syllabiByTerm).length === 1 ? 'term' : 'terms'}`;
+        : `${syllabi.length} ${syllabi.length === 1 ? 'syllabus' : 'syllabi'} across ${termCount} ${termCount === 1 ? 'term' : 'terms'}`;
 
     return (
         <Card>
@@ -64,7 +41,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                 }}
             />
 
-            <CardContent sx={{ minWidth: width, paddingTop: 0 }}>
+            <CardContent sx={{ width, paddingTop: 0 }}>
                 {loading ? (
                     <Skeleton variant="rectangular" animation="wave" height="150px" width="100%" />
                 ) : syllabi.length === 0 ? (
@@ -72,26 +49,56 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                         No syllabi found for this course.
                     </Typography>
                 ) : (
-                    <List disablePadding sx={{ maxHeight: height, overflow: 'auto' }}>
-                        {Object.entries(syllabiByTerm).map(([term, entries]) => (
-                            <ListSubheader key={term} disableGutters disableSticky>
-                                <Typography variant="body1" sx={{ color: (theme) => theme.vars.palette.text.primary }}>
-                                    {term}
-                                </Typography>
-                                {entries.map((entry) => (
-                                    <ListItemButton
-                                        LinkComponent={Link}
-                                        href={entry.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        key={entry.url}
+                    <List
+                        dense
+                        disablePadding
+                        sx={{
+                            display: 'grid',
+                            gridTemplateColumns: 'max-content minmax(0, 1fr) auto',
+                            columnGap: 1.5,
+                            maxHeight: height,
+                            overflow: 'auto',
+                        }}
+                    >
+                        {syllabi.map((syllabus) => {
+                            const instructors = syllabus.instructorNames.join(', ') || 'Instructor not listed';
+
+                            return (
+                                <ListItemButton
+                                    key={syllabus.url}
+                                    LinkComponent={Link}
+                                    href={syllabus.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    sx={{
+                                        display: 'grid',
+                                        gridColumn: '1 / -1',
+                                        gridTemplateColumns: 'subgrid',
+                                        alignItems: 'center',
+                                        borderRadius: 1,
+                                        paddingX: 1,
+                                    }}
+                                >
+                                    <Typography variant="body2" noWrap>
+                                        {syllabus.year} {syllabus.quarter}
+                                    </Typography>
+
+                                    <Typography
+                                        variant="body2"
+                                        noWrap
+                                        title={instructors}
+                                        sx={{ color: (theme) => theme.vars.palette.text.secondary }}
                                     >
-                                        <ListItemText primary={entry.instructorNames.at(0) ?? 'N/A'} />
-                                        <OpenInNew />
-                                    </ListItemButton>
-                                ))}
-                            </ListSubheader>
-                        ))}
+                                        {instructors}
+                                    </Typography>
+
+                                    <OpenInNew
+                                        fontSize="small"
+                                        sx={{ color: (theme) => theme.vars.palette.text.secondary }}
+                                    />
+                                </ListItemButton>
+                            );
+                        })}
                     </List>
                 )}
             </CardContent>
