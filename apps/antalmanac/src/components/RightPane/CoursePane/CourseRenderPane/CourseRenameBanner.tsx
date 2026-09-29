@@ -12,7 +12,7 @@ interface CourseRenameBannerProps {
 export function CourseRenameBanner({ deptValue, courseNumber }: CourseRenameBannerProps) {
     const [courseIds] = useCourseSearchParam('courseIds');
 
-    if (deptValue === DEFAULT_MANUAL_SEARCH_VALUES.deptValue || !courseNumber.trim()) {
+    if (deptValue === DEFAULT_MANUAL_SEARCH_VALUES.deptValue || !courseNumber) {
         return null;
     }
 
@@ -20,15 +20,13 @@ export function CourseRenameBanner({ deptValue, courseNumber }: CourseRenameBann
         return null;
     }
 
-    const courseLabel = `${deptValue.trim()} ${courseNumber.trim()}`;
+    const courseLabel = `${deptValue} ${courseNumber}`;
 
     const courseRenameInfo = COURSE_RENAMES.find(
         (course) => course.previously.deptCode === deptValue && course.previously.courseNumber === courseNumber
     );
 
     if (!courseRenameInfo) {
-        console.log(deptValue);
-        console.log(courseNumber);
         return null;
     }
 

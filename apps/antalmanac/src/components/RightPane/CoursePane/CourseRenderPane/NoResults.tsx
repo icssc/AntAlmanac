@@ -23,7 +23,7 @@ export function NoResults({ formData }: NoResultsProps) {
             }}
         >
             <PlannerCourseLinkBanner deptValue={formData.deptValue} courseNumber={formData.courseNumber} />
-            <CourseRenameBanner deptValue={formData.deptValue} courseNumber={formData.courseNumber} />
+            <CourseRenameBanner deptValue={formData.deptValue.trim()} courseNumber={formData.courseNumber.trim()} />
 
             <Image
                 src={isDark ? '/course-search/dark-no-results.png' : '/course-search/no-results.png'}

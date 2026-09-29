@@ -91,7 +91,9 @@ const isCourseOffered = (course: CourseSearchResult, offeredCourseSet: Set<strin
 };
 
 const sortByOffered = (a: CourseSearchResult, b: CourseSearchResult) => {
-    if (a.isOffered === b.isOffered) return 0;
+    if (a.isOffered === b.isOffered) {
+        return 0;
+    }
     return a.isOffered ? -1 : 1;
 };
 

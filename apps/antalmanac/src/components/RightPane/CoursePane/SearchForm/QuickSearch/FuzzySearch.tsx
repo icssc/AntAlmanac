@@ -57,7 +57,9 @@ const courseRenameInfo = (deptCode: string, courseNumber: string) => {
         (course) => course.current.deptCode === deptCode && course.current.courseNumber === courseNumber
     );
 
-    if (!rename) return undefined;
+    if (!rename) {
+        return undefined;
+    }
 
     const alsoRenamedWithDept = COURSE_RENAMES.filter(
         (course) =>
