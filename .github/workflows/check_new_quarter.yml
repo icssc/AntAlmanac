@@ -22,6 +22,7 @@ jobs:
         runs-on: ubuntu-latest
         outputs:
             changed: ${{ steps.compare.outputs.changed }}
+            state: ${{ steps.compare.outputs.state }}
         steps:
             - name: Checkout
               uses: actions/checkout@v6
@@ -58,32 +59,12 @@ jobs:
                   previous_state=$(cat "$STATE_FILE" 2>/dev/null || true)
                   echo "Last deployed: ${previous_state:-<none>}"
                   echo "Current: $CURRENT_STATE"
+                  echo "state=$CURRENT_STATE" >> "$GITHUB_OUTPUT"
                   if [ "$previous_state" = "$CURRENT_STATE" ]; then
                       echo "changed=false" >> "$GITHUB_OUTPUT"
                   else
-                      printf '%s\n' "$CURRENT_STATE" > "$STATE_FILE"
                       echo "changed=true" >> "$GITHUB_OUTPUT"
                   fi
-
-            - name: Save deployed state
-              if: steps.compare.outputs.changed == 'true'
-              uses: actions/cache/save@v5
-              with:
-                  path: ${{ env.STATE_FILE }}
-                  key: ${{ env.STATE_KEY }}
-
-    confirm-state-saved:
-        needs: check-quarters
-        if: needs.check-quarters.outputs.changed == 'true'
-        runs-on: ubuntu-latest
-        steps:
-            - name: Confirm deployed state was saved
-              uses: actions/cache/restore@v5
-              with:
-                  path: ${{ env.STATE_FILE }}
-                  key: ${{ env.STATE_KEY }}
-                  lookup-only: true
-                  fail-on-cache-miss: true
 
     deploy:
         needs: check-quarters
@@ -92,3 +73,28 @@ jobs:
             contents: read
         uses: ./.github/workflows/deploy_production.yml
         secrets: inherit
+
+    # Runs only after a successful deploy, so a failed deploy is retried on the next run.
+    save-deployed-state:
+        needs: [check-quarters, deploy]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Write deployed state
+              env:
+                  DEPLOYED_STATE: ${{ needs.check-quarters.outputs.state }}
+              run: printf '%s\n' "$DEPLOYED_STATE" > "$STATE_FILE"
+
+            - name: Save deployed state
+              uses: actions/cache/save@v5
+              with:
+                  path: ${{ env.STATE_FILE }}
+                  key: ${{ env.STATE_KEY }}
+
+            # actions/cache/save only logs a warning when saving fails.
+            - name: Confirm deployed state was saved
+              uses: actions/cache/restore@v5
+              with:
+                  path: ${{ env.STATE_FILE }}
+                  key: ${{ env.STATE_KEY }}
+                  lookup-only: true
+                  fail-on-cache-miss: true
