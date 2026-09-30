@@ -85,15 +85,15 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                                             alignItems: 'center',
                                             borderRadius: 1,
                                             paddingX: 1,
-                                            paddingY: 0.75,
+                                            paddingY: 1,
                                         }}
                                     >
-                                        <Typography variant="body2" noWrap>
+                                        <Typography variant="body1" noWrap>
                                             {syllabus.year} {syllabus.quarter}
                                         </Typography>
 
                                         <Typography
-                                            variant="body2"
+                                            variant="body1"
                                             noWrap
                                             title={instructors}
                                             sx={{ color: (theme) => theme.vars.palette.text.secondary }}
