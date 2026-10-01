@@ -4,12 +4,12 @@ import { COURSE_RENAMES } from '$lib/renames/renames';
 import { BLUE } from '$src/globals';
 import { Alert, Button } from '@mui/material';
 
-interface CourseRenameBannerProps {
+interface CourseRenamedBannerProps {
     deptValue: string;
     courseNumber: string;
 }
 
-export function CourseRenameBanner({ deptValue, courseNumber }: CourseRenameBannerProps) {
+export function CourseRenamedBanner({ deptValue, courseNumber }: CourseRenamedBannerProps) {
     const [courseIds] = useCourseSearchParam('courseIds');
 
     const [, setDeptValue] = useCourseSearchParam('deptValue');
@@ -23,8 +23,6 @@ export function CourseRenameBanner({ deptValue, courseNumber }: CourseRenameBann
         return null;
     }
 
-    const courseLabel = `${deptValue} ${courseNumber}`;
-
     const courseRenameInfo = COURSE_RENAMES.find(
         (course) => course.previously.deptCode === deptValue && course.previously.courseNumber === courseNumber
     );
@@ -33,6 +31,7 @@ export function CourseRenameBanner({ deptValue, courseNumber }: CourseRenameBann
         return null;
     }
 
+    const courseLabel = `${deptValue} ${courseNumber}`;
     const newCourseLabel = `${courseRenameInfo.current.deptCode} ${courseRenameInfo.current.courseNumber}`;
 
     const navRename = () => {

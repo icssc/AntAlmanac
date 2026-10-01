@@ -45,37 +45,6 @@ const MIN_QUERY_LENGTH = 2;
 
 const shouldAutoFocusSearch = () => globalThis.matchMedia?.('(hover: hover) and (pointer: fine)')?.matches ?? false;
 
-const courseRenameInfo = (deptCode: string, courseNumber: string) => {
-    const rename = COURSE_RENAMES.find(
-        (course) => course.current.deptCode === deptCode && course.current.courseNumber === courseNumber
-    );
-
-    if (!rename) {
-        return undefined;
-    }
-
-    const alsoRenamedWithDept = COURSE_RENAMES.filter(
-        (course) =>
-            course.effectiveYear === rename.effectiveYear &&
-            course.previously.deptCode === rename.previously.deptCode &&
-            course.current.deptCode === rename.current.deptCode &&
-            course.current.courseNumber === course.previously.courseNumber
-    );
-
-    if (alsoRenamedWithDept.length >= 2) {
-        const numbers = alsoRenamedWithDept.map((r) => r.previously.courseNumber);
-        return {
-            rename,
-            display: `As of ${rename.effectiveYear}, ${rename.previously.deptCode} ${numbers.join(', ')} have been renamed to ${rename.current.deptCode}`,
-        };
-    }
-
-    return {
-        rename,
-        display: `As of ${rename.effectiveYear}, ${rename.previously.deptCode} ${rename.previously.courseNumber} has been renamed to ${rename.current.deptCode} ${rename.current.courseNumber}`,
-    };
-};
-
 interface SearchOption {
     key: string;
     result: SearchResult;
@@ -320,7 +289,13 @@ export function FuzzySearch() {
 
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
 
-        const renameInfo = isCourse ? courseRenameInfo(object.metadata.department, object.metadata.number) : undefined;
+        const courseRenameInfo = isCourse
+            ? COURSE_RENAMES.find(
+                  (course) =>
+                      course.current.deptCode === object.metadata.department &&
+                      course.current.courseNumber === object.metadata.number
+              )
+            : undefined;
 
         return (
             <Box
@@ -336,10 +311,10 @@ export function FuzzySearch() {
             >
                 <Box component="span">
                     {label}
-                    {renameInfo && (
+                    {courseRenameInfo && (
                         <Box component="i">
                             {' '}
-                            (prev. {renameInfo.rename.previously.deptCode} {renameInfo.rename.previously.courseNumber})
+                            (prev. {courseRenameInfo.previously.deptCode} {courseRenameInfo.previously.courseNumber})
                         </Box>
                     )}
                 </Box>
