@@ -33,9 +33,7 @@ export function getRenamedCoursesLabel(deptCode: string, courseNumber: string): 
     const parts: string[] = [];
 
     for (const entry of iterateRenameChain(deptCode, courseNumber)) {
-        const yr = entry.effectiveYear;
-        const yearLabel = `${String(yr).slice(-2)}/${String(yr + 1).slice(-2)}`; // 2026 -> 26/27
-        parts.push(`${entry.previously.deptCode} ${entry.previously.courseNumber} (before ${yearLabel})`);
+        parts.push(`${entry.previously.deptCode} ${entry.previously.courseNumber} (before ${entry.effectiveYear})`);
     }
 
     return parts.length > 0 ? `Previously ${parts.join(', ')}` : null;
