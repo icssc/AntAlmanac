@@ -12,14 +12,7 @@ import type { CourseSearchParams } from '$components/RightPane/CoursePane/Search
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
 import { COURSE_RENAMES } from '$lib/renames/renames';
-import HelpOutlineOutlined from '@mui/icons-material/HelpOutlineOutlined';
-import {
-    type AutocompleteInputChangeReason,
-    type AutocompleteRenderGroupParams,
-    Box,
-    Tooltip,
-    Typography,
-} from '@mui/material';
+import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import { type AATerm, type SearchResult, WebsocGeOptionSchema } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -341,23 +334,15 @@ export function FuzzySearch() {
                     gap: '4px',
                 }}
             >
-                {label}
-                {renameInfo && (
-                    <Tooltip
-                        title={renameInfo.display}
-                        slotProps={{
-                            tooltip: {
-                                sx: { fontSize: '0.9rem' },
-                            },
-                        }}
-                    >
-                        <Box component="i" sx={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
-                            (prev. {renameInfo.rename.previously.deptCode} {renameInfo.rename.previously.courseNumber}
-                            &nbsp;
-                            <HelpOutlineOutlined />)
+                <Box component="span">
+                    {label}
+                    {renameInfo && (
+                        <Box component="i">
+                            {' '}
+                            (prev. {renameInfo.rename.previously.deptCode} {renameInfo.rename.previously.courseNumber})
                         </Box>
-                    </Tooltip>
-                )}
+                    )}
+                </Box>
             </Box>
         );
     };
