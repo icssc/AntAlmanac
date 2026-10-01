@@ -11,7 +11,9 @@ function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<
 
     for (let i = 0; i < COURSE_RENAMES.length; i++) {
         const entry = COURSE_RENAMES.find((r) => r.current.courseId === current.courseId);
-        if (!entry) break;
+        if (!entry) {
+            break;
+        }
         yield entry;
         current = entry.previously;
     }
@@ -37,6 +39,24 @@ export function getRenamedCoursesLabel(deptCode: string, courseNumber: string): 
     }
 
     return parts.length > 0 ? `Previously ${parts.join(', ')}` : null;
+}
+
+export function getLatestRenamedCourseIdentifier(deptCode: string, courseNumber: string): CourseRenameKey {
+    let current = {
+        deptCode,
+        courseNumber,
+        courseId: buildCourseId(deptCode, courseNumber),
+    };
+
+    for (let i = 0; i < COURSE_RENAMES.length; i++) {
+        const entry = COURSE_RENAMES.find((r) => r.previously.courseId === current.courseId);
+        if (!entry) {
+            break;
+        }
+        current = entry.current;
+    }
+
+    return current;
 }
 
 export function mergeAggregateGrades(

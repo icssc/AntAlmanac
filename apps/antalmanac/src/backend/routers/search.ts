@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { procedure, router } from '$backend/trpc';
 // eslint-disable-next-line import/no-unresolved
 import _searchData from '$generated/searchData.json';
-import { COURSE_RENAMES } from '$lib/renames/renames';
+import { getLatestRenamedCourseIdentifier } from '$lib/renames/utils';
 import {
     type CourseSearchResult,
     type GESearchResult,
@@ -162,20 +162,14 @@ const searchRouter = router({
 
             const newRenamedCourseKeys = matchedCourses
                 .map((course) =>
-                    COURSE_RENAMES.find(
-                        (renames) =>
-                            renames.previously.courseNumber === course.obj.metadata.number &&
-                            renames.previously.deptCode === course.obj.metadata.department
-                    )
+                    getLatestRenamedCourseIdentifier(course.obj.metadata.department, course.obj.metadata.number)
                 )
-                .filter((rename) => !!rename)
-                .map((rename) => rename.current)
                 .filter(
-                    (rename) =>
+                    (courseKey) =>
                         !matchedCourses.some(
                             (course) =>
-                                course.obj.metadata.number === rename.courseNumber &&
-                                course.obj.metadata.department === rename.deptCode
+                                course.obj.metadata.number === courseKey.courseNumber &&
+                                course.obj.metadata.department === courseKey.deptCode
                         )
                 );
 
