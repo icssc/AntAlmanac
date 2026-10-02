@@ -26,7 +26,7 @@ const defaultLogo: Logo = {
 const logos: Logo[] = [
     {
         name: 'Christmas',
-        logo: '/logos/christmas-logo.png',
+        logo: '/logos/christmas-mobile-logo.png',
         mobileLogo: '/logos/christmas-mobile-logo.png',
         desktopLogo: '/logos/christmas-logo.png',
         startDay: 1,
@@ -77,6 +77,8 @@ export function Logo({ width = 78 }: { width?: number }) {
             src={currentLogo?.logo}
             height={32}
             width={width}
+            // seasonal pngs have different aspect ratios than the default svg, so keep their ratio
+            style={{ height: 32, width: 'auto', maxWidth: width, objectFit: 'contain' }}
             title={currentLogo?.attribution}
             loading="eager"
             alt="logo"
