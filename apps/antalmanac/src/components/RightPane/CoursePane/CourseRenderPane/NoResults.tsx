@@ -12,7 +12,7 @@ interface NoResultsProps {
 export function NoResults({ formData }: NoResultsProps) {
     const isDark = useIsDarkMode();
 
-    const courseNumber = formData.courseNumber.trim();
+    const courseNumber = formData.courseNumber.trim().toUpperCase();
 
     return (
         <Box
