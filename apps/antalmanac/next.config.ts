@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
     experimental: {
         optimizePackageImports: ['@mui/material', '@mui/icons-material', '@mui/system', '@mui/x-date-pickers'],
     },
+    outputFileTracingIncludes: {
+        '/*': ['../antalmanac-scheduler/site/src/generated/**/*'],
+    },
     async redirects() {
         return [
             {
