@@ -1,17 +1,28 @@
 import { Autocomplete, FilterOptionsState, TextField } from '@mui/material';
-import { MinorProgram } from '@peterportal/types';
+import { MinorProgram, SavedMinorProgram } from '@peterportal/types';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { normalizeMajorName } from '../../../helpers/courseRequirements';
 import { filterOptionsWithAbbreviations, mapAbbreviations } from '../../../helpers/selector';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { addMinor, removeMinor, setMinorList, MinorRequirements } from '../../../store/slices/courseRequirementsSlice';
+import {
+    addMinor,
+    removeMinor,
+    setMinorList,
+    MinorRequirements,
+    setMinorCatalogYear,
+} from '../../../store/slices/courseRequirementsSlice';
 import trpc from '../../../trpc';
 import MinorCourseList from './MinorCourseList';
 
-function updateSelectedMinors(minorIds: string[]) {
-    trpc.programs.saveSelectedMinor.mutate({ minorIds });
+function updateSelectedMinors(minors: SavedMinorProgram[]) {
+    trpc.programs.saveSelectedMinor.mutate({
+        minors: minors.map((m) => ({
+            minorId: m.id,
+            catalogYear: m.catalogYear,
+        })),
+    });
 }
 
 interface MinorOption {
@@ -49,8 +60,12 @@ const MinorSelector: FC = () => {
     const saveMinors = useCallback(
         (minorsToSave: MinorRequirements[]) => {
             if (!isLoggedIn) return;
-            const minorIds: string[] = minorsToSave.map((m) => m.minor.id);
-            updateSelectedMinors(minorIds);
+            const minors: SavedMinorProgram[] = minorsToSave.map((m) => ({
+                id: m.minor.id,
+                name: m.minor.name,
+                catalogYear: m.catalogYear ?? undefined,
+            }));
+            updateSelectedMinors(minors);
         },
         [isLoggedIn]
     );
@@ -70,10 +85,20 @@ const MinorSelector: FC = () => {
             const updatedMinors = newMinors.map((minor) => ({
                 minor,
                 requirements: selectedMinors.find((m) => m.minor.id === minor.id)?.requirements || [],
+                catalogYear: selectedMinors.find((m) => m.minor.id === minor.id)?.catalogYear || null,
+                fallbackCatalogYear: selectedMinors.find((m) => m.minor.id === minor.id)?.fallbackCatalogYear || null,
             }));
             saveMinors(updatedMinors);
         },
         [dispatch, saveMinors, selectedMinors]
+    );
+
+    const handleCatalogYearChange = useCallback(
+        (minorId: string, catalogYear: string | null) => {
+            const updatedMinors = selectedMinors.map((m) => (m.minor.id === minorId ? { ...m, catalogYear } : m));
+            saveMinors(updatedMinors);
+        },
+        [saveMinors, selectedMinors]
     );
 
     useEffect(() => {
@@ -85,11 +110,14 @@ const MinorSelector: FC = () => {
 
         trpc.programs.getSavedMinors
             .query()
-            .then((minorIds) => {
-                for (const minor of minorIds) {
-                    const foundMinor = minors.find((m) => m.id === minor.id);
+            .then((savedMinors) => {
+                for (const savedMinor of savedMinors) {
+                    const foundMinor = minors.find((m) => m.id === savedMinor.id);
                     if (!foundMinor) continue;
                     dispatch(addMinor(foundMinor));
+                    dispatch(
+                        setMinorCatalogYear({ minorId: savedMinor.id, catalogYear: savedMinor.catalogYear ?? null })
+                    );
                 }
             })
             .finally(() => {
@@ -134,7 +162,7 @@ const MinorSelector: FC = () => {
                 )}
             />
             {selectedMinors.map((data) => (
-                <MinorCourseList key={data.minor.id} minorReqs={data} />
+                <MinorCourseList key={data.minor.id} minorReqs={data} onCatalogYearChange={handleCatalogYearChange} />
             ))}
         </>
     );

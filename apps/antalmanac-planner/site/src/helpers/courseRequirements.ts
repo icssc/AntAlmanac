@@ -61,6 +61,25 @@ export const GE_TITLE_MAP: Record<GEName, GETitle> = {
     'GE-8': 'GE VIII: International/Global Issues',
 };
 
+export const formatCatalogYear = (year: string) => `${year.slice(0, 4)}-${year.slice(4)}`;
+
+export function getCatalogYearDefaults() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const startYear = month >= 4 ? year : year - 1; // catalog year increases when SOC is released for the next fall quarter during spring
+
+    return {
+        defaultCatalogYear: `${startYear}${startYear + 1}`,
+        catalogYearOptions: Array.from({ length: 5 }, (_, i) => {
+            const optionStartYear = startYear - i;
+            const value = `${optionStartYear}${optionStartYear + 1}`;
+            return { value, label: formatCatalogYear(value) };
+        }),
+    };
+}
+
 /** A RegEx for GE labels in Degree Requirements */
 const GE_LABEL_REGEX = /^\d courses? category ([iv]+[ab]?)$|^([iv]+[ab]?)\. (\w.*)/i;
 

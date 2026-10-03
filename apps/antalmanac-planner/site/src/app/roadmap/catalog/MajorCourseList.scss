@@ -29,6 +29,16 @@
         margin-bottom: 0;
     }
 
+    h5 {
+        position: relative;
+        top: -1px;
+        font-weight: 500;
+        font-size: 14px;
+        text-align: left;
+        margin-top: 0;
+        margin-bottom: 12;
+    }
+
     .program-requirements {
         gap: 12px;
     }
@@ -38,6 +48,6 @@
     }
 
     .MuiCollapse-wrapperInner > :first-child {
-        padding-top: 8px;
+        padding-top: 4px;
     }
 }
