@@ -81,14 +81,16 @@ function isCurrentSeason(logo: Logo) {
 export function Logo() {
   const isMobile = useIsMobile();
   const currentLogo = logos.find(isCurrentSeason) ?? defaultLogo;
+  const logo = isMobile ? currentLogo.mobileLogo : currentLogo.desktopLogo;
 
   return (
     <Image
-      src={currentLogo.desktopLogo}
+      src={logo}
       alt="logo"
       title={currentLogo?.attribution}
-      height={32}
-      width={isMobile ? 48 : 78}
+      width={logo.width}
+      height={logo.height}
+      style={{ height: 32, width: 'auto', maxWidth: '100%' }}
     />
   );
 }
