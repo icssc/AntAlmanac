@@ -10,17 +10,24 @@
         ],
         "baseUrl": ".",
         "paths": {
-            "$actions/*": ["src/actions/*"],
-            "$backend/*": ["src/backend/*"],
-            "$components/*": ["src/components/*"],
-            "$generated/*": ["src/generated/*"],
-            "$lib/*": ["src/lib/*"],
-            "$hooks/*": ["src/hooks/*"],
-            "$providers/*": ["src/providers/*"],
-            "$stores/*": ["src/stores/*"],
-            "$src/*": ["src/*"],
-            "$scripts/*": ["scripts/*"]
-        }
+            "$actions/*": ["../antalmanac-scheduler/site/src/actions/*"],
+            "$backend/*": ["../antalmanac-scheduler/site/src/backend/*"],
+            "$components/*": ["../antalmanac-scheduler/site/src/components/*"],
+            "$generated/*": ["../antalmanac-scheduler/site/src/generated/*"],
+            "$lib/*": ["../antalmanac-scheduler/site/src/lib/*"],
+            "$hooks/*": ["../antalmanac-scheduler/site/src/hooks/*"],
+            "$providers/*": ["../antalmanac-scheduler/site/src/providers/*"],
+            "$stores/*": ["../antalmanac-scheduler/site/src/stores/*"],
+            "$src/*": ["../antalmanac-scheduler/site/src/*"],
+            "$scripts/*": ["../antalmanac-scheduler/site/scripts/*"]
+        },
+        /* Necessary for Planner */
+        "skipLibCheck": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
+        "strict": true,
+        /* Necessary for monorepo planner */
+        "verbatimModuleSyntax": false
     },
     "include": [
         "./dist/types/**/*.ts",

@@ -1,0 +1,10 @@
+{
+    "extends": ["@total-typescript/tsconfig/bundler/no-dom", "../../../tsconfig.base.json"],
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "outDir": "dist"
+    },
+    "include": ["drizzle.config.ts", "src/**/*"],
+    "exclude": ["node_modules", "dist"]
+}
