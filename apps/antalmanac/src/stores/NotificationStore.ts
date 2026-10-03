@@ -2,7 +2,7 @@ import { trpc } from '$lib/api/trpc';
 import { Notifications } from '$lib/notifications';
 import { getTermByYearAndQuarter } from '$lib/term';
 import { scheduleSectionKey } from '$stores/scheduleHelpers';
-import { useSessionStore } from '$stores/SessionStore';
+import { getIsLoggedIn } from '$stores/SessionStore';
 import { debounce } from '@mui/material';
 import { type AACourse, type AASection, type AATerm, WebsocSectionStatusSchema } from '@packages/antalmanac-types';
 import { create } from 'zustand';
@@ -148,8 +148,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             });
         },
         loadNotifications: async () => {
-            const { sessionIsValid } = useSessionStore.getState();
-            if (!sessionIsValid) {
+            if (!getIsLoggedIn()) {
                 set({ notifications: {}, initialized: true });
                 return;
             }

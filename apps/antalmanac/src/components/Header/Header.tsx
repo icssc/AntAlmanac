@@ -7,13 +7,13 @@ import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import { BLUE } from '$src/globals';
-import { useSessionStore } from '$stores/SessionStore';
+import { useIsLoggedIn } from '$stores/SessionStore';
 import { AppBar, Box, Stack } from '@mui/material';
 import { useState } from 'react';
 
 export function Header() {
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
-    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
+    const isLoggedIn = useIsLoggedIn();
     const handleLogoutComplete = () => {
         setOpenSignoutDialog(true);
     };
@@ -59,7 +59,7 @@ export function Header() {
                     <Stack direction="row" alignItems="center">
                         <Import key="studylist" />
                         <Save />
-                        {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
+                        {isLoggedIn ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
                     </Stack>
 
                     <AlertDialog

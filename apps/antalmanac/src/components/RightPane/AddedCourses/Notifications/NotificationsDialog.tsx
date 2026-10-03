@@ -3,7 +3,7 @@ import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Not
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
-import { useSessionStore } from '$stores/SessionStore';
+import { useIsLoggedIn } from '$stores/SessionStore';
 import { Notifications } from '@mui/icons-material';
 import {
     Box,
@@ -29,10 +29,10 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
     const postHog = usePostHog();
 
-    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const isLoggedIn = useIsLoggedIn();
 
     const handleOpen = useCallback(() => {
-        if (sessionIsValid) {
+        if (isLoggedIn) {
             logAnalytics(postHog, {
                 category: analyticsEnum.aants,
                 action: analyticsEnum.aants.actions.OPEN_MANAGE_NOTIFICATIONS,
@@ -41,7 +41,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
         } else {
             setSignInOpen(true);
         }
-    }, [sessionIsValid, postHog]);
+    }, [isLoggedIn, postHog]);
 
     const handleClose = useCallback(() => {
         logAnalytics(postHog, {
@@ -57,11 +57,11 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
 
     return (
         <>
-            <Tooltip title={sessionIsValid ? 'Notifications Menu' : 'Sign in to access notifications'}>
+            <Tooltip title={isLoggedIn ? 'Notifications Menu' : 'Sign in to access notifications'}>
                 <IconButton
                     sx={{
                         ...buttonSx,
-                        opacity: sessionIsValid ? 1 : 0.5,
+                        opacity: isLoggedIn ? 1 : 0.5,
                     }}
                     onClick={handleOpen}
                     size="small"
