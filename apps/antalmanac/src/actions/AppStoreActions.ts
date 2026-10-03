@@ -98,29 +98,77 @@ function enrichSaveStateWithVisibility(saveState: ReturnType<typeof AppStore.sch
     };
 }
 
-const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
-    const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
+const EMPTY_SCHEDULE_WARNING =
+    "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!";
 
-    if (
-        isEmptySchedule(scheduleSaveState.schedules) &&
-        !confirm(
-            "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
-        )
-    ) {
-        return;
+/** `stale`: a load replaced the schedule while the request was in flight. `cancelled`: the user declined to save an empty schedule. */
+type SaveOutcome = 'saved' | 'stale' | 'cancelled';
+
+let scheduleSaveQueue: Promise<unknown> = Promise.resolve();
+let waitingAutoSave: Promise<SaveOutcome> | null = null;
+
+/**
+ * Sends the schedule to the server. Saves run one at a time, and each reads the schedule only
+ * when its turn comes, so an older snapshot can never reach the server after a newer one. An
+ * autosave requested while another is still waiting joins it instead of queueing a duplicate.
+ * A manual save asks before sending an empty schedule, and never joins a waiting autosave.
+ *
+ * Rejects if the request failed.
+ */
+function sendScheduleSave({ manual = false } = {}): Promise<SaveOutcome> {
+    if (!manual && waitingAutoSave) {
+        return waitingAutoSave;
     }
 
-    try {
-        const result = await trpc.schedule.save.mutate({
-            userData: scheduleSaveState,
-        });
+    const save = scheduleSaveQueue.then(async (): Promise<SaveOutcome> => {
+        if (!manual) {
+            waitingAutoSave = null;
+        }
 
+        const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
+        const loadEpoch = AppStore.loadEpoch;
+        const editVersion = AppStore.editVersion;
+        const noteEditVersion = AppStore.noteEditVersion;
+
+        if (manual && isEmptySchedule(scheduleSaveState.schedules) && !confirm(EMPTY_SCHEDULE_WARNING)) {
+            return 'cancelled';
+        }
+
+        const result = await trpc.schedule.save.mutate({ userData: scheduleSaveState });
+
+        // Keyed by the ids this request sent, so they still apply if a load happened meanwhile.
         if (result?.scheduleIdMap) {
             AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
         }
 
-        openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
+        if (AppStore.loadEpoch !== loadEpoch) {
+            return 'stale';
+        }
+
         deleteTempSaveData();
+        AppStore.saveSchedule({ editVersion, noteEditVersion });
+        return 'saved';
+    });
+
+    if (!manual) {
+        waitingAutoSave = save;
+    }
+    scheduleSaveQueue = save.catch(() => undefined);
+    return save;
+}
+
+export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
+    try {
+        const outcome = await sendScheduleSave({ manual: true });
+        if (outcome === 'cancelled') {
+            return;
+        }
+
+        if (outcome === 'stale') {
+            openSnackbar('warning', 'Your schedule changed while saving. Click Save again to save the latest version.');
+        } else {
+            openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
+        }
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
@@ -128,7 +176,6 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
                 autoSave: false,
             },
         });
-        AppStore.saveSchedule();
     } catch (e) {
         if (e instanceof TRPCClientError) {
             openSnackbar('error', `Schedule could not be saved`);
@@ -146,19 +193,9 @@ const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
     }
 };
 
-export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
-    const scheduleSaveState = enrichSaveStateWithVisibility(AppStore.schedule.getScheduleAsSaveState());
+export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions): Promise<boolean> {
     try {
-        const result = await trpc.schedule.save.mutate({
-            userData: scheduleSaveState,
-        });
-
-        if (result?.scheduleIdMap) {
-            AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
-        }
-
-        deleteTempSaveData();
-        AppStore.saveSchedule();
+        await sendScheduleSave();
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
@@ -166,6 +203,7 @@ export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
                 autoSave: true,
             },
         });
+        return true;
     } catch (e) {
         if (e instanceof TRPCClientError) {
             openSnackbar('error', 'Schedule could not be auto-saved');
@@ -180,6 +218,7 @@ export async function autoSaveSchedule({ postHog }: AutoSaveScheduleOptions) {
                 autoSave: true,
             },
         });
+        return false;
     }
 }
 
