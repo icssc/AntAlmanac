@@ -141,6 +141,7 @@ export function LogoAndSwitcher() {
                 color: BLUE,
                 '&:hover': { bgcolor: 'grey.100' },
                 bgcolor: 'white',
+                boxShadow: 'none',
                 ...desktopButtonSx,
               }}
               variant="contained"
