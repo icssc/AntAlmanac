@@ -136,13 +136,11 @@ export function LogoAndSwitcher() {
                             sx={{
                                 color: 'white',
                                 bgcolor: BLUE,
-                                borderTopRightRadius: 0,
-                                borderBottomRightRadius: 0,
                                 ...desktopButtonSx,
                             }}
                             variant="outlined"
                             component={Link}
-                            href="/"
+                            href="https://antalmanac.com/"
                         >
                             Scheduler
                         </Button>
@@ -152,9 +150,6 @@ export function LogoAndSwitcher() {
                                 color: BLUE,
                                 '&:hover': { bgcolor: 'grey.100' },
                                 bgcolor: 'white',
-                                borderTopLeftRadius: 0,
-                                borderBottomLeftRadius: 0,
-                                marginLeft: '-1px',
                                 boxShadow: 'none',
                                 ...desktopButtonSx,
                             }}
