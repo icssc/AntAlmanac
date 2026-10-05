@@ -87,8 +87,8 @@ function cookieDomain(requestUrl: string) {
   return isLocalhost(requestUrl) ? undefined : 'antalmanac.com';
 }
 
-function createCookie(name: string, options: CookieOptions) {
-  const domain = cookieDomain(options.requestUrl);
+function createCookie(name: string, options: CookieOptions, includeDomain: boolean) {
+  const domain = includeDomain ? cookieDomain(options.requestUrl) : undefined;
   const attributes = [
     `${name}=${options.value ?? ''}`,
     'Path=/',
@@ -115,39 +115,55 @@ export function getSessionFromRequest(request: Request): SessionData {
 }
 
 export function createSessionCookie(requestUrl: string, session: SessionData) {
-  return createCookie(SESSION_COOKIE_NAME, {
-    requestUrl,
-    value: serializeSession(session),
-    maxAge: COOKIE_MAX_AGE_SECONDS,
-    httpOnly: true,
-    sameSite: 'Lax',
-  });
+  return createCookie(
+    SESSION_COOKIE_NAME,
+    {
+      requestUrl,
+      value: serializeSession(session),
+      maxAge: COOKIE_MAX_AGE_SECONDS,
+      httpOnly: true,
+      sameSite: 'Lax',
+    },
+    false,
+  );
 }
 
 export function clearSessionCookie(requestUrl: string) {
-  return createCookie(SESSION_COOKIE_NAME, {
-    requestUrl,
-    maxAge: 0,
-    httpOnly: true,
-    sameSite: 'Lax',
-  });
+  return createCookie(
+    SESSION_COOKIE_NAME,
+    {
+      requestUrl,
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: 'Lax',
+    },
+    false,
+  );
 }
 
 export function createLoggedInCookie(requestUrl: string) {
-  return createCookie(LOGGED_IN_COOKIE_NAME, {
-    requestUrl,
-    value: '1',
-    maxAge: COOKIE_MAX_AGE_SECONDS,
-    sameSite: 'Lax',
-  });
+  return createCookie(
+    LOGGED_IN_COOKIE_NAME,
+    {
+      requestUrl,
+      value: '1',
+      maxAge: COOKIE_MAX_AGE_SECONDS,
+      sameSite: 'Lax',
+    },
+    true,
+  );
 }
 
 export function clearLoggedInCookie(requestUrl: string) {
-  return createCookie(LOGGED_IN_COOKIE_NAME, {
-    requestUrl,
-    maxAge: 0,
-    sameSite: 'Lax',
-  });
+  return createCookie(
+    LOGGED_IN_COOKIE_NAME,
+    {
+      requestUrl,
+      maxAge: 0,
+      sameSite: 'Lax',
+    },
+    true,
+  );
 }
 
 export function appendCookies(headers: Headers, cookies: string[]) {
