@@ -76,7 +76,7 @@ export function LogoAndSwitcher() {
                             <MenuItem
                                 onClick={() => setAnchorEl(null)}
                                 component={Link}
-                                href="https://antalmanac.com/"
+                                href="/"
                                 sx={{
                                     minHeight: 'fit-content',
                                     textDecoration: 'none',
@@ -136,11 +136,13 @@ export function LogoAndSwitcher() {
                             sx={{
                                 color: 'white',
                                 bgcolor: BLUE,
+                                borderTopRightRadius: 0,
+                                borderBottomRightRadius: 0,
                                 ...desktopButtonSx,
                             }}
                             variant="outlined"
                             component={Link}
-                            href="https://antalmanac.com/"
+                            href="/"
                         >
                             Scheduler
                         </Button>
@@ -150,6 +152,9 @@ export function LogoAndSwitcher() {
                                 color: BLUE,
                                 '&:hover': { bgcolor: 'grey.100' },
                                 bgcolor: 'white',
+                                borderTopLeftRadius: 0,
+                                borderBottomLeftRadius: 0,
+                                marginLeft: '-1px',
                                 boxShadow: 'none',
                                 ...desktopButtonSx,
                             }}
