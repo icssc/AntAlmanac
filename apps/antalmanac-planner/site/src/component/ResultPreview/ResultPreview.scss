@@ -38,7 +38,7 @@ $show-navbar-cutoff: 940px;
         padding: 6px 16px 6px 12px;
         gap: 4px;
 
-        button {
+        button:not(.MuiIconButton-root) {
             padding-block: 4px;
         }
 
