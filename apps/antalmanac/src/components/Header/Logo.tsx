@@ -77,10 +77,7 @@ export function Logo({ width = 78 }: { width?: number }) {
             src={currentLogo?.logo}
             height={32}
             width={width}
-            style={{
-                height: '32px',
-                width: 'auto',
-            }}
+            style={{ objectFit: 'contain' }}
             title={currentLogo?.attribution}
             loading="eager"
             alt="logo"
