@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "auto_save_enabled" boolean DEFAULT false NOT NULL;

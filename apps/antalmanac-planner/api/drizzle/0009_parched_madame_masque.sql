@@ -1,0 +1,1 @@
+ALTER TABLE "transferred_ap_exam" ADD COLUMN "units" real NOT NULL;

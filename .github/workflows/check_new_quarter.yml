@@ -35,12 +35,12 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Update deployed terms
-              run: pnpm --filter antalmanac update-terms
+              run: pnpm --filter @antalmanac-scheduler update-terms
 
             - name: Check for changes
               id: git-check
               run: |
-                  if [ -z "$(git status --porcelain apps/antalmanac/src/generated/deployed_terms.json)" ]; then
+                  if [ -z "$(git status --porcelain apps/antalmanac-scheduler/site/src/generated/deployed_terms.json)" ]; then
                       echo "changes=false" >> $GITHUB_OUTPUT
                   else
                       echo "changes=true" >> $GITHUB_OUTPUT
@@ -52,7 +52,7 @@ jobs:
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
 
-                  git add apps/antalmanac/src/generated/deployed_terms.json
+                  git add apps/antalmanac-scheduler/site/src/generated/deployed_terms.json
 
                   git commit -m "ci: detected new quarter or section count update" \
                              -m "Auto-updated by workflow on $(date -u +%Y-%m-%d)"

@@ -1,0 +1,20 @@
+/**
+ * Cookie set by the AntAlmanac iOS app's WKWebView on the antalmanac.com
+ * domain. Because peterportal-client is served from antalmanac.com/planner,
+ * this first-party cookie is visible on every request originating from inside
+ * the native iOS wrapper.
+ *
+ * Mirrors the AntAlmanac iOS cookie convention (see apps/ios WebView.swift).
+ */
+const NATIVE_IOS_COOKIE = 'app-platform=iOS App Store';
+
+/**
+ * Returns true if the request originates from inside the AntAlmanac iOS app's
+ * WKWebView. Used to branch the OAuth redirect_uri so that the iOS system
+ * sign-in sheet (ASWebAuthenticationSession) can capture the callback via a
+ * Universal Link on a dedicated `/callback/native` path (claimed by AASA),
+ * without hijacking the real `/callback` path that web users depend on.
+ */
+export function isNativeIosApp(request: Pick<Request, 'headers'>): boolean {
+    return request.headers.get('cookie')?.includes(NATIVE_IOS_COOKIE) ?? false;
+}
