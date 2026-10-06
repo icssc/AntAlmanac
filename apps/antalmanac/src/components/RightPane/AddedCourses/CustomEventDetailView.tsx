@@ -33,7 +33,9 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
         const endTime = set(baseDate, { hours: parseInt(end.slice(0, 2)), minutes: parseInt(end.slice(3, 5)) });
 
         const tryFormatTime = (time: Date) => {
-            if (!isValid(time)) return undefined;
+            if (!isValid(time)) {
+                return undefined;
+            }
 
             const timeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
             return format(time, timeFormat);
