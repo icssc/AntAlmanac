@@ -32,15 +32,29 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
         const startTime = set(baseDate, { hours: parseInt(start.slice(0, 2)), minutes: parseInt(start.slice(3, 5)) });
         const endTime = set(baseDate, { hours: parseInt(end.slice(0, 2)), minutes: parseInt(end.slice(3, 5)) });
 
-        // Fall back to raw strings if the time fields can't be parsed (e.g. empty string in DB).
-        if (!isValid(startTime) || !isValid(endTime)) return `${start} — ${end}`;
+        const tryFormatTime = (time: Date) => {
+            if (!isValid(time)) return undefined;
+
+            const timeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
+            return format(time, timeFormat);
+        };
+
+        // Do not display time if the time fields can't be parsed (e.g. empty string in DB).
+        const formatTimeString = (startTime: Date, endTime: Date) => {
+            const formattedStartTime = tryFormatTime(startTime);
+            const formattedEndTime = tryFormatTime(endTime);
+
+            if (formattedStartTime && formattedEndTime) return `${formattedStartTime} — ${formattedEndTime}`;
+            if (formattedStartTime) return `Starts ${formattedStartTime}`;
+            if (formattedEndTime) return `Ends ${formattedEndTime}`;
+            return '';
+        };
+        const timeString = formatTimeString(startTime, endTime);
 
         const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const daysString = days.map((includeDate, index) => (includeDate ? dayAbbreviations[index] : '')).join(' ');
 
-        const timeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
-
-        return `${format(startTime, timeFormat)} — ${format(endTime, timeFormat)} • ${daysString}`;
+        return [timeString, daysString].filter(Boolean).join(' • ');
     };
 
     const card = (
