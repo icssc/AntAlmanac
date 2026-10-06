@@ -172,7 +172,7 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
                     <hr />
                 </div>
                 <div className="select-item add-item">
-                    <Button variant="text" onClick={handleCreate}>
+                    <Button onClick={handleCreate}>
                         <AddIcon />
                         <span>Blank Roadmap</span>
                     </Button>

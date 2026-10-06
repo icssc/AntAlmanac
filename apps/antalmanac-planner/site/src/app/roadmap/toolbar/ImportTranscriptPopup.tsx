@@ -346,7 +346,7 @@ const ImportTranscriptPopup: FC = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Button variant="text" onClick={() => setShowModal(true)}>
+            <Button onClick={() => setShowModal(true)}>
                 <DescriptionIcon />
                 <span>Student Transcript</span>
             </Button>
