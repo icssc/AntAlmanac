@@ -44,7 +44,7 @@ export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCour
             >
                 <span>
                     No sections for <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> in{' '}
-                    {term.longName}. See recent offerings and course info on the AntAlmanac Planner tab.
+                    {term.shortName}. See recent offerings and course info in AntAlmanac Planner tab.
                 </span>
             </Alert>
         </Link>
