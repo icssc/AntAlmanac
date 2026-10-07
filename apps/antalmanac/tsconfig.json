@@ -11,6 +11,7 @@
         "baseUrl": ".",
         "paths": {
             "$actions/*": ["src/actions/*"],
+            "$assets/*": ["src/assets/*"],
             "$backend/*": ["src/backend/*"],
             "$components/*": ["src/components/*"],
             "$generated/*": ["src/generated/*"],

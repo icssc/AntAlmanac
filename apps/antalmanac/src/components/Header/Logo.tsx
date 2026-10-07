@@ -1,34 +1,40 @@
-import Image from 'next/image';
+import ChristmasLogo from '$assets/christmas-logo.png';
+import MobileChristmasLogo from '$assets/christmas-mobile-logo.png';
+import HalloweenLogo from '$assets/halloween-logo.png';
+import MobileHalloweenLogo from '$assets/halloween-mobile-logo.png';
+import NewDefaultLogo from '$assets/mobile-logo-cropped.svg';
+import MobileDefaultLogo from '$assets/mobile-logo.svg';
+import ThanksgivingLogo from '$assets/thanksgiving-logo.png';
+import MobileThanksgivingLogo from '$assets/thanksgiving-mobile-logo.png';
+import { useIsMobile } from '$hooks/useIsMobile';
+import Image, { type StaticImageData } from 'next/image';
 
 type Logo = {
     name: string;
-    logo: string;
-    mobileLogo: string;
-    desktopLogo: string;
-    startDay: number; // inclusive
+    desktopLogo: StaticImageData;
+    mobileLogo: StaticImageData;
+    startDay: number;
     startMonthIndex: number;
-    endDay: number; // inclusive
+    endDay: number;
     endMonthIndex: number;
     attribution?: string;
 };
 
 const defaultLogo: Logo = {
     name: 'Default',
-    logo: '/logos/mobile-logo-cropped.svg',
-    mobileLogo: '/logos/mobile-logo-cropped.svg',
-    desktopLogo: '/logos/logo.svg',
+    desktopLogo: NewDefaultLogo,
+    mobileLogo: MobileDefaultLogo,
     startDay: 0,
     startMonthIndex: 0,
     endDay: 31,
-    endMonthIndex: 12,
+    endMonthIndex: 11,
 };
 
 const logos: Logo[] = [
     {
         name: 'Christmas',
-        logo: '/logos/christmas-logo.png',
-        mobileLogo: '/logos/christmas-mobile-logo.png',
-        desktopLogo: '/logos/christmas-logo.png',
+        desktopLogo: ChristmasLogo,
+        mobileLogo: MobileChristmasLogo,
         startDay: 1,
         startMonthIndex: 11,
         endDay: 31,
@@ -37,9 +43,8 @@ const logos: Logo[] = [
     },
     {
         name: 'Thanksgiving',
-        logo: '/logos/thanksgiving-mobile-logo.png',
-        mobileLogo: '/logos/thanksgiving-mobile-logo.png',
-        desktopLogo: '/logos/thanksgiving-logo.png',
+        desktopLogo: ThanksgivingLogo,
+        mobileLogo: MobileThanksgivingLogo,
         startDay: 1,
         startMonthIndex: 10,
         endDay: 30,
@@ -48,9 +53,8 @@ const logos: Logo[] = [
     },
     {
         name: 'Halloween',
-        logo: '/logos/halloween-mobile-logo.png',
-        mobileLogo: '/logos/halloween-mobile-logo.png',
-        desktopLogo: '/logos/halloween-logo.png',
+        desktopLogo: HalloweenLogo,
+        mobileLogo: MobileHalloweenLogo,
         startDay: 1,
         startMonthIndex: 9,
         endDay: 31,
@@ -60,26 +64,29 @@ const logos: Logo[] = [
     defaultLogo,
 ];
 
-function logoIsForCurrentSeason(logo: Logo) {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const startDate = new Date(currentYear, logo.startMonthIndex, logo.startDay);
-    const endDate = new Date(currentYear, logo.endMonthIndex, logo.endDay);
+function isCurrentSeason(logo: Logo) {
+    const now = new Date();
+    const year = now.getFullYear();
 
-    return currentDate >= startDate && currentDate <= endDate;
+    const start = new Date(year, logo.startMonthIndex, logo.startDay);
+    const end = new Date(year, logo.endMonthIndex, logo.endDay);
+
+    return now >= start && now <= end;
 }
 
-export function Logo({ width = 78 }: { width?: number }) {
-    const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
+export function Logo() {
+    const isMobile = useIsMobile();
+    const currentLogo = logos.find(isCurrentSeason) ?? defaultLogo;
+    const logo = isMobile ? currentLogo.mobileLogo : currentLogo.desktopLogo;
 
     return (
         <Image
-            src={currentLogo?.logo}
-            height={32}
-            width={width}
-            title={currentLogo?.attribution}
-            loading="eager"
+            src={logo}
             alt="logo"
+            title={currentLogo?.attribution}
+            width={logo.width}
+            height={logo.height}
+            style={{ height: 32, width: 'auto', maxWidth: '100%' }}
         />
     );
 }
