@@ -24,7 +24,7 @@ export function NoResults({ formData }: NoResultsProps) {
                 gap: 1,
             }}
         >
-            <PlannerCourseLinkBanner deptValue={formData.deptValue} courseNumber={courseNumber} />
+            <PlannerCourseLinkBanner deptValue={formData.deptValue} courseNumber={courseNumber} term={formData.term} />
             <CourseRenamedBanner deptValue={formData.deptValue} courseNumber={courseNumber} />
 
             <Image
