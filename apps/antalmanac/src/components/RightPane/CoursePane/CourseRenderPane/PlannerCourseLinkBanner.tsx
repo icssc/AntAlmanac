@@ -1,7 +1,6 @@
 import { DEFAULT_MANUAL_SEARCH_VALUES } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
 import { Link } from '@mui/material';
-import type { AATerm } from '@packages/antalmanac-types';
 import { buildCourseId } from '@packages/anteater-api/utils';
 
 import { BannerAlert } from './BannerAlert';
@@ -9,7 +8,7 @@ import { BannerAlert } from './BannerAlert';
 interface PlannerCourseLinkBannerProps {
     deptValue: string;
     courseNumber: string;
-    term: AATerm;
+    term: string;
 }
 
 export function PlannerCourseLinkBanner({ deptValue, courseNumber, term }: PlannerCourseLinkBannerProps) {
@@ -34,7 +33,7 @@ export function PlannerCourseLinkBanner({ deptValue, courseNumber, term }: Plann
             sx={{ width: '100%' }}
         >
             <BannerAlert>
-                No courses for <span style={{ textDecoration: 'underline' }}>{term.shortName}</span>. Search for{' '}
+                No courses for <span style={{ textDecoration: 'underline' }}>{term}</span>. Search for{' '}
                 <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> on AntAlmanac Planner!
             </BannerAlert>
         </Link>
