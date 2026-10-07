@@ -7,7 +7,7 @@ import ThanksgivingLogo from '$assets/thanksgiving-logo.png';
 import MobileThanksgivingLogo from '$assets/thanksgiving-mobile-logo.png';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { endOfDay, isWithinInterval, parse } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import Image, { type StaticImageData } from 'next/image';
 
 type Logo = {
@@ -60,13 +60,14 @@ const seasonalLogos: SeasonalLogo[] = [
 const IRVINE_TIME_ZONE = 'America/Los_Angeles';
 
 function getCurrentLogo(): Logo {
-    const currentDate = toZonedTime(new Date(), IRVINE_TIME_ZONE);
+    const currentDate = new Date();
+    const referenceDate = toZonedTime(currentDate, IRVINE_TIME_ZONE);
 
     return (
         seasonalLogos.find(({ startDate, endDate }) =>
             isWithinInterval(currentDate, {
-                start: parse(startDate, 'MMMM d', currentDate),
-                end: endOfDay(parse(endDate, 'MMMM d', currentDate)),
+                start: fromZonedTime(parse(startDate, 'MMMM d', referenceDate), IRVINE_TIME_ZONE),
+                end: fromZonedTime(endOfDay(parse(endDate, 'MMMM d', referenceDate)), IRVINE_TIME_ZONE),
             })
         ) ?? defaultLogo
     );
