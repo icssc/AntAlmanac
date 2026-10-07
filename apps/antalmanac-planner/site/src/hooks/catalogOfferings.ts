@@ -23,7 +23,9 @@ export function useCatalogOfferings(requirements: readonly ProgramRequirement[],
         const missingIds = JSON.parse(missingKey) as string[];
         let cancelled = false;
         setError(undefined);
-        if (!missingIds.length) return;
+        if (!missingIds.length) {
+            return;
+        }
         searchAPIResults('courses', missingIds)
             .then((courses) => {
                 if (cancelled) return;
