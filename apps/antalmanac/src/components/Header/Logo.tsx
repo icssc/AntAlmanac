@@ -6,17 +6,20 @@ import MobileHalloweenLogo from '$assets/halloween-mobile-logo.png';
 import ThanksgivingLogo from '$assets/thanksgiving-logo.png';
 import MobileThanksgivingLogo from '$assets/thanksgiving-mobile-logo.png';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { addDays } from 'date-fns';
-import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+import { endOfDay, isWithinInterval, parse } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 import Image, { type StaticImageData } from 'next/image';
 
 type Logo = {
     name: string;
     desktopLogo: StaticImageData;
     mobileLogo: StaticImageData;
-    startDate?: string; // inclusive Date string
-    endDate?: string; // inclusive Date string
     attribution?: string;
+};
+
+type SeasonalLogo = Logo & {
+    startDate: string; // inclusive, 'MMMM d'
+    endDate: string; // inclusive, 'MMMM d'
 };
 
 const defaultLogo: Logo = {
@@ -25,7 +28,8 @@ const defaultLogo: Logo = {
     mobileLogo: DefaultLogo,
 };
 
-const seasonalLogos: Logo[] = [
+// start date must come before end date for a given year
+const seasonalLogos: SeasonalLogo[] = [
     {
         name: 'Christmas',
         desktopLogo: ChristmasLogo,
@@ -52,22 +56,20 @@ const seasonalLogos: Logo[] = [
     },
 ];
 
+// server and browser may be in different timezones, pin to Irvine time
 const IRVINE_TIME_ZONE = 'America/Los_Angeles';
 
-function getCurrentLogo() {
-    const currentDate = new Date();
-    const currentYear = toZonedTime(currentDate, IRVINE_TIME_ZONE).getFullYear();
+function getCurrentLogo(): Logo {
+    const currentDate = toZonedTime(new Date(), IRVINE_TIME_ZONE);
 
-    for (const logo of seasonalLogos) {
-        const startInclusive = fromZonedTime(new Date(`${logo.startDate}, ${currentYear}`), IRVINE_TIME_ZONE);
-        const endExclusive = fromZonedTime(addDays(new Date(`${logo.endDate}, ${currentYear}`), 1), IRVINE_TIME_ZONE);
-
-        if (currentDate >= startInclusive && currentDate < endExclusive) {
-            return logo;
-        }
-    }
-
-    return defaultLogo;
+    return (
+        seasonalLogos.find(({ startDate, endDate }) =>
+            isWithinInterval(currentDate, {
+                start: parse(startDate, 'MMMM d', currentDate),
+                end: endOfDay(parse(endDate, 'MMMM d', currentDate)),
+            })
+        ) ?? defaultLogo
+    );
 }
 
 export function Logo() {
