@@ -48,7 +48,6 @@ export const CourseBookmarkButton: FC<CourseProp> = ({ course, disabled = false,
                 color="inherit"
                 startIcon={courseIsSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
                 size="small"
-                disableElevation
                 onClick={handleToggleSavedCourse}
             >
                 Save

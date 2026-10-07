@@ -162,7 +162,6 @@ const CoursePreview: FC<{ courseId: string; onClose: () => void; onBack: () => v
                         color="inherit"
                         startIcon={<IosShareIcon />}
                         size="small"
-                        disableElevation
                         onClick={copyCourseLink}
                     >
                         Share

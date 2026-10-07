@@ -130,7 +130,6 @@ const ProfessorPreview: FC<{ netid: string; onClose: () => void; onBack: () => v
                     color="inherit"
                     startIcon={<IosShareIcon />}
                     size="small"
-                    disableElevation
                     onClick={copyProfLink}
                 >
                     Share
