@@ -1,8 +1,9 @@
 import { DEFAULT_MANUAL_SEARCH_VALUES } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
-import { BLUE } from '$src/globals';
-import { Alert, Link } from '@mui/material';
+import { Link } from '@mui/material';
 import { buildCourseId } from '@packages/anteater-api/utils';
+
+import { BannerAlert } from './BannerAlert';
 
 interface PlannerCourseLinkBannerProps {
     deptValue: string;
@@ -11,9 +12,8 @@ interface PlannerCourseLinkBannerProps {
 
 export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCourseLinkBannerProps) {
     const [courseIds] = useCourseSearchParam('courseIds');
-    const [term] = useCourseSearchParam('term');
 
-    if (deptValue === DEFAULT_MANUAL_SEARCH_VALUES.deptValue || !courseNumber.trim()) {
+    if (deptValue === DEFAULT_MANUAL_SEARCH_VALUES.deptValue || !courseNumber) {
         return null;
     }
 
@@ -22,7 +22,7 @@ export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCour
     }
 
     const courseId = buildCourseId(deptValue, courseNumber);
-    const courseLabel = `${deptValue.trim()} ${courseNumber.trim()}`;
+    const courseLabel = `${deptValue} ${courseNumber}`;
 
     return (
         <Link
@@ -31,22 +31,9 @@ export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCour
             rel="noopener noreferrer"
             sx={{ width: '100%' }}
         >
-            <Alert
-                variant="filled"
-                severity="info"
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    fontSize: 14,
-                    backgroundColor: BLUE,
-                    color: 'white',
-                }}
-            >
-                <span>
-                    No sections for <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> in{' '}
-                    {term.shortName}. See recent offerings and course info in AntAlmanac Planner tab.
-                </span>
-            </Alert>
+            <BannerAlert>
+                Search for <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> on AntAlmanac Planner!
+            </BannerAlert>
         </Link>
     );
 }

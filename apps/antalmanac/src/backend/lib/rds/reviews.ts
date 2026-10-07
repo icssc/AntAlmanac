@@ -1,6 +1,6 @@
 import type { DatabaseOrTransaction } from '$backend/lib/rds/types';
 import { type NewInstructorReview, instructorReviews, reviewDismissals } from '@packages/db/src/schema';
-import { eq, max } from 'drizzle-orm';
+import { count, eq, inArray, max } from 'drizzle-orm';
 
 export async function insertInstructorReview(
     db: DatabaseOrTransaction,
@@ -38,6 +38,22 @@ export async function getReviewedCombos(db: DatabaseOrTransaction, userId: strin
         })
         .from(instructorReviews)
         .where(eq(instructorReviews.userId, userId));
+}
+
+export async function getReviewCounts(db: DatabaseOrTransaction, courseIds: string[]) {
+    if (courseIds.length === 0) {
+        return [];
+    }
+
+    return db
+        .select({
+            professorId: instructorReviews.professorId,
+            courseId: instructorReviews.courseId,
+            reviewCount: count(),
+        })
+        .from(instructorReviews)
+        .where(inArray(instructorReviews.courseId, courseIds))
+        .groupBy(instructorReviews.courseId, instructorReviews.professorId);
 }
 
 export async function insertReviewDismissal(
