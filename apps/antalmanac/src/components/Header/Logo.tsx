@@ -6,16 +6,16 @@ import MobileHalloweenLogo from '$assets/halloween-mobile-logo.png';
 import ThanksgivingLogo from '$assets/thanksgiving-logo.png';
 import MobileThanksgivingLogo from '$assets/thanksgiving-mobile-logo.png';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { addDays } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import Image, { type StaticImageData } from 'next/image';
 
 type Logo = {
     name: string;
     desktopLogo: StaticImageData;
     mobileLogo: StaticImageData;
-    startDay: number;
-    startMonthIndex: number;
-    endDay: number;
-    endMonthIndex: number;
+    startDate?: string; // inclusive Date string
+    endDate?: string; // inclusive Date string
     attribution?: string;
 };
 
@@ -23,66 +23,63 @@ const defaultLogo: Logo = {
     name: 'Default',
     desktopLogo: DefaultLogo,
     mobileLogo: DefaultLogo,
-    startDay: 0,
-    startMonthIndex: 0,
-    endDay: 31,
-    endMonthIndex: 11,
 };
 
-const logos: Logo[] = [
+const seasonalLogos: Logo[] = [
     {
         name: 'Christmas',
         desktopLogo: ChristmasLogo,
         mobileLogo: MobileChristmasLogo,
-        startDay: 1,
-        startMonthIndex: 11,
-        endDay: 31,
-        endMonthIndex: 11,
+        startDate: 'December 1',
+        endDate: 'December 31',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
         name: 'Thanksgiving',
         desktopLogo: ThanksgivingLogo,
         mobileLogo: MobileThanksgivingLogo,
-        startDay: 1,
-        startMonthIndex: 10,
-        endDay: 30,
-        endMonthIndex: 10,
+        startDate: 'November 1',
+        endDate: 'November 30',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
         name: 'Halloween',
         desktopLogo: HalloweenLogo,
         mobileLogo: MobileHalloweenLogo,
-        startDay: 1,
-        startMonthIndex: 9,
-        endDay: 31,
-        endMonthIndex: 9,
+        startDate: 'October 1',
+        endDate: 'October 31',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
-    defaultLogo,
 ];
 
-function isCurrentSeason(logo: Logo) {
-    const now = new Date();
-    const year = now.getFullYear();
+const IRVINE_TIME_ZONE = 'America/Los_Angeles';
 
-    const start = new Date(year, logo.startMonthIndex, logo.startDay);
-    const end = new Date(year, logo.endMonthIndex, logo.endDay + 1);
+function getCurrentLogo() {
+    const currentDate = new Date();
+    const currentYear = toZonedTime(currentDate, IRVINE_TIME_ZONE).getFullYear();
 
-    return now >= start && now < end;
+    for (const logo of seasonalLogos) {
+        const startInclusive = fromZonedTime(new Date(`${logo.startDate}, ${currentYear}`), IRVINE_TIME_ZONE);
+        const endExclusive = fromZonedTime(addDays(new Date(`${logo.endDate}, ${currentYear}`), 1), IRVINE_TIME_ZONE);
+
+        if (currentDate >= startInclusive && currentDate < endExclusive) {
+            return logo;
+        }
+    }
+
+    return defaultLogo;
 }
 
 export function Logo() {
     const isMobile = useIsMobile();
-    const currentLogo = logos.find(isCurrentSeason) ?? defaultLogo;
+    const currentLogo = getCurrentLogo();
     const logo = isMobile ? currentLogo.mobileLogo : currentLogo.desktopLogo;
 
     return (
         <Image
             src={logo}
             alt="logo"
-            title={currentLogo?.attribution}
+            title={currentLogo.attribution}
             width={logo.width}
             height={logo.height}
             style={{ height: 32, width: 'auto', maxWidth: '100%' }}
