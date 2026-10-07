@@ -1,19 +1,14 @@
 import ChristmasLogo from '$assets/christmas-logo.png';
-import MobileChristmasLogo from '$assets/christmas-mobile-logo.png';
 import DefaultLogo from '$assets/default-logo.svg';
 import HalloweenLogo from '$assets/halloween-logo.png';
-import MobileHalloweenLogo from '$assets/halloween-mobile-logo.png';
 import ThanksgivingLogo from '$assets/thanksgiving-logo.png';
-import MobileThanksgivingLogo from '$assets/thanksgiving-mobile-logo.png';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { endOfDay, isWithinInterval, parse } from 'date-fns';
 import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import Image, { type StaticImageData } from 'next/image';
 
 type Logo = {
     name: string;
-    desktopLogo: StaticImageData;
-    mobileLogo: StaticImageData;
+    logo: StaticImageData;
     attribution?: string;
 };
 
@@ -24,32 +19,28 @@ type SeasonalLogo = Logo & {
 
 const defaultLogo: Logo = {
     name: 'Default',
-    desktopLogo: DefaultLogo,
-    mobileLogo: DefaultLogo,
+    logo: DefaultLogo,
 };
 
 // start date must come before end date for a given year
 const seasonalLogos: SeasonalLogo[] = [
     {
         name: 'Christmas',
-        desktopLogo: ChristmasLogo,
-        mobileLogo: MobileChristmasLogo,
+        logo: ChristmasLogo,
         startDate: 'December 1',
         endDate: 'December 31',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
         name: 'Thanksgiving',
-        desktopLogo: ThanksgivingLogo,
-        mobileLogo: MobileThanksgivingLogo,
+        logo: ThanksgivingLogo,
         startDate: 'November 1',
         endDate: 'November 30',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
         name: 'Halloween',
-        desktopLogo: HalloweenLogo,
-        mobileLogo: MobileHalloweenLogo,
+        logo: HalloweenLogo,
         startDate: 'October 1',
         endDate: 'October 31',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
@@ -74,18 +65,16 @@ function getCurrentLogo(): Logo {
 }
 
 export function Logo() {
-    const isMobile = useIsMobile();
     const currentLogo = getCurrentLogo();
-    const logo = isMobile ? currentLogo.mobileLogo : currentLogo.desktopLogo;
 
     return (
         <Image
-            src={logo}
+            src={currentLogo.logo}
+            height={32}
+            width={72}
             alt="logo"
             title={currentLogo.attribution}
-            width={logo.width}
-            height={logo.height}
-            style={{ height: 32, width: 'auto', maxWidth: '100%' }}
+            style={{ objectFit: 'contain' }}
         />
     );
 }
