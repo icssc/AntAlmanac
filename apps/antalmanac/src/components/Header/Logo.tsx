@@ -69,9 +69,9 @@ function isCurrentSeason(logo: Logo) {
     const year = now.getFullYear();
 
     const start = new Date(year, logo.startMonthIndex, logo.startDay);
-    const end = new Date(year, logo.endMonthIndex, logo.endDay);
+    const end = new Date(year, logo.endMonthIndex, logo.endDay + 1);
 
-    return now >= start && now <= end;
+    return now >= start && now < end;
 }
 
 export function Logo() {
