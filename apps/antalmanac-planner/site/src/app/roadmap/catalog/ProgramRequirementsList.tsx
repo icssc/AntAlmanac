@@ -22,6 +22,7 @@ import {
     saveOverriddenRequirement,
     isQuarterIsPast,
     parseQuarterString,
+    getQuarterTiming,
 } from '../../../helpers/courseRequirements';
 import { isCustomCourse } from '../../../helpers/customCourses';
 import { getMissingPrerequisites } from '../../../helpers/planner';
@@ -722,9 +723,8 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
 
     const cutoff = parseQuarterString(currentQuarter);
 
+    //     // @TODO different lists between already-completed courses and courses not taken?
     const roadmapCourseMap = yearPlans
-
-        // @TODO different lists between already-completed courses and courses not taken?
         .flatMap((year) =>
             year.quarters
                 .filter((quarter) => isQuarterIsPast(year.startYear, quarter.name, cutoff))
@@ -732,6 +732,20 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
         )
         .filter((course): course is PlannerCourseData => !isCustomCourse(course))
         .map((course) => [course.id, { units: course.minUnits }]);
+
+    const newRoadmapCourseMap: [string, CompletedCourseSet[string]][] = [];
+
+    for (const year of yearPlans) {
+        for (const quarter of year.quarters) {
+            const timing = getQuarterTiming(year.startYear, quarter.name, cutoff);
+            for (const course of quarter.courses) {
+                if (isCustomCourse(course)) continue;
+                newRoadmapCourseMap.push([course.id, { units: course.minUnits, timing }]);
+            }
+        }
+    }
+    // console.log(newRoadmapCourseMap);
+
     // @TODO kept as reference, delete later when work is complete
     // const roadmapCourseMap = yearPlans
     //     .flatMap((year) => year.quarters)
@@ -740,7 +754,7 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
     //     .map((course) => [course.id, { units: course.minUnits }]);
     const transferCourseMap = transferredCourses.map((t) => [
         t.courseName.replace(/\s/g, ''),
-        { units: t.units ?? 0, transferType: t.transferType },
+        { units: t.units ?? 0, transferType: t.transferType, timing: 'past' as const },
     ]);
 
     const takenCourseSet: CompletedCourseSet = Object.assign(
