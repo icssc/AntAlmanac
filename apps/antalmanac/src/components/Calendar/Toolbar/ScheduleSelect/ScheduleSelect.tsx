@@ -46,7 +46,11 @@ function handleScheduleChange(index: number, postHog?: PostHog) {
  *
  * Can select a schedule, and also control schedule settings with buttons.
  */
-export function SelectSchedulePopover() {
+interface SelectSchedulePopoverProps {
+    maxWidth?: number;
+}
+
+export function SelectSchedulePopover({ maxWidth = scheduleSelectButtonMaxWidth }: SelectSchedulePopoverProps = {}) {
     const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
@@ -136,7 +140,7 @@ export function SelectSchedulePopover() {
                     onClick={handleClick}
                     sx={{
                         minWidth: scheduleSelectButtonMinWidth,
-                        maxWidth: scheduleSelectButtonMaxWidth,
+                        maxWidth,
                         justifyContent: 'space-between',
                     }}
                 >
@@ -194,7 +198,7 @@ export function SelectSchedulePopover() {
                                                     color="inherit"
                                                     sx={{
                                                         minWidth: scheduleSelectButtonMinWidth,
-                                                        maxWidth: scheduleSelectButtonMaxWidth,
+                                                        maxWidth,
                                                         width: '100%',
                                                         display: 'flex',
                                                         justifyContent: 'flex-start',
