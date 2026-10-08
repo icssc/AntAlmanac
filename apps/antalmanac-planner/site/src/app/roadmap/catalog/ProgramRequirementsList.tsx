@@ -19,6 +19,8 @@ import {
     CompletedCourseSet,
     useMatchingGETransfers,
     saveOverriddenRequirement,
+    isQuarterIsPast,
+    parseQuarterString,
 } from '../../../helpers/courseRequirements';
 import { isCustomCourse } from '../../../helpers/customCourses';
 import { getMissingPrerequisites } from '../../../helpers/planner';
@@ -693,11 +695,26 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
     const roadmapPlanIndex = useAppSelector((state) => state.roadmap.currentPlanIndex);
     const yearPlans = roadmapPlans[roadmapPlanIndex].content.yearPlans;
 
+    const currentQuarter = useAppSelector((state) => state.schedule.currentQuarter);
+
+    const cutoff = parseQuarterString(currentQuarter);
+
     const roadmapCourseMap = yearPlans
-        .flatMap((year) => year.quarters)
-        .flatMap((quarter) => quarter.courses)
+
+        // @TODO different lists between already-completed courses and courses not taken?
+        .flatMap((year) =>
+            year.quarters
+                .filter((quarter) => isQuarterIsPast(year.startYear, quarter.name, cutoff))
+                .flatMap((quarter) => quarter.courses)
+        )
         .filter((course): course is PlannerCourseData => !isCustomCourse(course))
         .map((course) => [course.id, { units: course.minUnits }]);
+    // @TODO kept as reference, delete later when work is complete
+    // const roadmapCourseMap = yearPlans
+    //     .flatMap((year) => year.quarters)
+    //     .flatMap((quarter) => quarter.courses)
+    //     .filter((course): course is PlannerCourseData => !isCustomCourse(course))
+    //     .map((course) => [course.id, { units: course.minUnits }]);
     const transferCourseMap = transferredCourses.map((t) => [
         t.courseName.replace(/\s/g, ''),
         { units: t.units ?? 0, transferType: t.transferType },
