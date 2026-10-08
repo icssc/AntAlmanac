@@ -7,47 +7,19 @@ AntAlmanac is UC Irvine’s course-planning platform: **Scheduler** for quarterl
 | Search classes and preview them on a calendar         | Track majors, minors, and GE requirements           |
 | Jump to prerequisites, grades, and enrollment history | Import an unofficial transcript and transfer credit |
 | See class locations on a map                          | Build a multi-year roadmap                          |
+| ![Scheduler screenshot](assets/scheduler.jpeg)        | ![Planner screenshot](assets/planner.jpeg)          |
 
-## Start here
+## Development
 
-You need [mise](https://mise.jdx.dev/installing-mise.html) and a running Docker engine. From the repository root:
+You will only need two things to run AntAlmanac: Docker and [Mise](https://mise.jdx.dev/).
 
 ```bash
+git clone https://github.com/icssc/AntAlmanac && cd AntAlmanac
+
 mise trust
 mise install
 mise run setup
 ```
-
-The wizard asks for an [Anteater API](https://docs.icssc.club/docs/developer/anteaterapi) key and stores it in `apps/antalmanac/.env`. Create one at the [Anteater API dashboard](https://dashboard.anteaterapi.com/):
-
-1. Open https://dashboard.anteaterapi.com/
-2. If you are not signed in, sign in with your UCI Google account at https://antalmanac.com, then return to the dashboard.
-3. Choose **Sign in with ICSSC**.
-4. Create a secret API key.
-5. Paste the key into the wizard. Enter skips the course fetch so you can add the key later.
-
-`mise install` provides Node 22 and pnpm 10.22.0. The setup wizard then:
-
-1. Installs workspace dependencies
-2. Writes `apps/antalmanac/.env` and `apps/antalmanac-scheduler/db/.env`, keeping credentials you already have
-3. Starts PostgreSQL and waits until it is healthy
-4. Migrates the scheduler database (`antalmanac`) and the planner database (`planner`)
-5. Fetches course and term data
-
-When every step passes, start the app from the wizard or with `mise run dev`. Next.js prints the URL, usually http://localhost:3000.
-
-```bash
-mise run            # searchable task list
-mise run doctor     # read-only check; does not migrate or fetch
-mise run db:up      # start Postgres
-mise run db:stop    # stop Postgres, keep the data
-mise run data       # refresh course data
-mise run test:setup # wizard tests; no Docker or API key
-```
-
-Already on Node 22? `pnpm setup` is pnpm’s own command. Use `pnpm run setup` or `node scripts/setup.mjs`.
-
-The full walkthrough — screens, credentials, recovery, and daily commands — is in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Repository
 
