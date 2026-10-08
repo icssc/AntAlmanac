@@ -22,6 +22,7 @@ import {
     readEnv,
     redact,
     run,
+    saveApiKey,
 } from './core.mjs';
 
 function fixture(t) {
@@ -49,6 +50,21 @@ test('setup creates usable local defaults and is idempotent', (t) => {
     const contents = readFileSync(join(root, APP_ENV), 'utf8');
     configureEnvironment(root, 'different-key');
     assert.equal(readFileSync(join(root, APP_ENV), 'utf8'), contents);
+});
+
+test('a replacement Anteater API key overwrites the saved one', (t) => {
+    const root = fixture(t);
+    writeFileSync(
+        join(root, APP_ENV),
+        '# keep me\nANTEATER_API_KEY="old-key"\nDB_URL="postgres://postgres:postgres@localhost:5432/antalmanac"\n'
+    );
+    const saved = saveApiKey(root, 'new-key');
+    const text = readFileSync(join(root, APP_ENV), 'utf8');
+    assert.equal(saved, 'new-key');
+    assert.match(text, /ANTEATER_API_KEY="new-key"/);
+    assert.doesNotMatch(text, /old-key/);
+    assert.match(text, /# keep me/);
+    assert.match(text, /DB_URL/);
 });
 
 test('real credentials, comments, and custom database settings survive setup', (t) => {

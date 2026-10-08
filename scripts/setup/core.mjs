@@ -110,6 +110,22 @@ export function mergeEnv(source, values) {
     return result;
 }
 
+export function replaceEnvValue(source, key, value) {
+    const line = `${key}=${JSON.stringify(value)}`;
+    const existing = parseEnv(source);
+    const assignment = new RegExp(`^\\s*(?:export\\s+)?${key}\\s*=.*$`, 'gm');
+    if (Object.hasOwn(existing, key)) return source.replace(assignment, () => line);
+    return `${source}${source.endsWith('\n') || !source ? '' : '\n'}${line}\n`;
+}
+
+export function saveApiKey(root, apiKey) {
+    const path = join(root, APP_ENV);
+    const source = existsSync(path) ? readFileSync(path, 'utf8') : '';
+    const updated = replaceEnvValue(source, 'ANTEATER_API_KEY', apiKey);
+    if (!existsSync(path) || source !== updated) writeFileSync(path, updated, { mode: 0o600 });
+    return readEnv(path).ANTEATER_API_KEY;
+}
+
 export function configureEnvironment(root, apiKey) {
     const appPath = join(root, APP_ENV);
     const dbPath = join(root, DB_ENV);

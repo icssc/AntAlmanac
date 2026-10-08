@@ -34,7 +34,7 @@ if (process.env.MISSING_PNPM && process.argv[1].endsWith('/pnpm')) process.exit(
 if (args.endsWith('--version')) console.log('10.22.0');
 if (args.includes("datname = 'planner'")) console.log('1');
 if (args.includes('/proc/1/comm')) console.log('postgres');
-if (process.env.FAIL_FETCH && args.includes('get-data')) { console.error(process.env.ANTEATER_API_KEY); process.exit(9); }
+if (args.includes('get-data') && process.env.FAIL_FETCH && (process.env.FAIL_FETCH === '1' || process.env.ANTEATER_API_KEY === process.env.FAIL_FETCH)) { console.error(process.env.ANTEATER_API_KEY); process.exit(9); }
 `;
     for (const cmd of ['pnpm', 'npm', 'docker']) writeFileSync(join(root, 'bin', cmd), fake, { mode: 0o755 });
     const env = {
@@ -108,6 +108,98 @@ test('failed data fetch remains a failure even when stale generated files exist'
     assert.match(result.output, /What to do/);
     assert.match(result.output, /dashboard\.anteaterapi\.com/);
     assert.doesNotMatch(result.output, /fixture-secret|workspace ready/);
+});
+
+test('a failed course download lets the user enter a new Anteater API key', async (t) => {
+    const { root, env } = fixture(t);
+    const transcript = join(root, 'pty.log');
+    writeFileSync(
+        join(root, 'drive.py'),
+        `
+import os, pty, select, time
+root = os.environ["FIXTURE_ROOT"]
+node = os.environ["NODE"]
+log_path = os.environ["PTY_LOG"]
+script = os.path.join(root, "scripts", "setup.mjs")
+env = os.environ.copy()
+env["TERM"] = "xterm-256color"
+pid, fd = pty.fork()
+if pid == 0:
+    os.execvpe(node, [node, script, "--plain"], env)
+data = b""
+sent = {"start": False, "paste": False, "key": False, "finish": False}
+deadline = time.time() + 25
+code = 1
+exited = False
+
+def drain():
+    global data
+    while True:
+        readable, _, _ = select.select([fd], [], [], 0)
+        if not readable:
+            return
+        try:
+            chunk = os.read(fd, 8192)
+        except OSError:
+            return
+        if not chunk:
+            return
+        data += chunk
+
+while time.time() < deadline:
+    readable, _, _ = select.select([fd], [], [], 0.2)
+    if readable:
+        drain()
+    text = data.decode("utf-8", "replace")
+    if not sent["start"] and "Make yourself at home." in text:
+        os.write(fd, bytes([13]))
+        sent["start"] = True
+    elif sent["start"] and not sent["paste"] and "Course data could not be downloaded." in text:
+        os.write(fd, b"2" + bytes([13]))
+        sent["paste"] = True
+    elif sent["paste"] and not sent["key"] and "Paste your secret key" in text:
+        os.write(fd, b"fresh-key" + bytes([13]))
+        sent["key"] = True
+    elif sent["key"] and not sent["finish"] and "What would you like to do next?" in text:
+        os.write(fd, b"3" + bytes([13]))
+        sent["finish"] = True
+    result = os.waitpid(pid, os.WNOHANG)
+    if result[0] == pid:
+        code = os.waitstatus_to_exitcode(result[1])
+        drain()
+        exited = True
+        break
+if not exited:
+    os.kill(pid, 15)
+    _, status = os.waitpid(pid, 0)
+    code = os.waitstatus_to_exitcode(status)
+    drain()
+open(log_path, "w").write(data.decode("utf-8", "replace"))
+open(log_path + ".sent", "w").write(repr(sent))
+raise SystemExit(code)
+`
+    );
+    const result = await run('python3', [join(root, 'drive.py')], {
+        env: {
+            ...env,
+            FIXTURE_ROOT: root,
+            NODE: process.execPath,
+            PTY_LOG: transcript,
+            ANTEATER_API_KEY: 'bad-key',
+            FAIL_FETCH: 'bad-key',
+            TERM: 'xterm-256color',
+        },
+        timeout: 30_000,
+    });
+    const output = existsSync(transcript) ? readFileSync(transcript, 'utf8') : result.output;
+    assert.equal(result.code, 0, output);
+    assert.match(output, /Course data could not be downloaded/);
+    assert.match(output, /Paste a key I already have/);
+    assert.match(output, /workspace ready/);
+    assert.doesNotMatch(output, /bad-key|fresh-key/);
+    const calls = readFileSync(join(root, 'commands.log'), 'utf8').match(/get-data/g) || [];
+    assert.equal(calls.length, 2);
+    assert.match(readFileSync(join(root, APP_ENV), 'utf8'), /ANTEATER_API_KEY="fresh-key"/);
 });
 
 test('remote databases are preserved and never migrated', async (t) => {

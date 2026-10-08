@@ -20,6 +20,7 @@ import {
     readEnv,
     redact,
     run,
+    saveApiKey,
 } from './setup/core.mjs';
 import { Terminal, openBrowser } from './setup/ui.mjs';
 
@@ -78,6 +79,48 @@ function cancel() {
 process.once('SIGINT', cancel);
 process.once('SIGTERM', cancel);
 process.once('exit', close);
+
+const DASHBOARD = 'https://dashboard.anteaterapi.com/';
+const API_KEY_HOW =
+    'Sign in with ICSSC and create a secret key. If you are not signed in, use your UCI Google account at https://antalmanac.com first.';
+
+async function askForApiKey(title, lead, skipDescription) {
+    const choice = await ui.choose(
+        title,
+        ['Open the dashboard in my browser', 'Paste a key I already have', 'Skip for now'],
+        [
+            `Opens ${DASHBOARD}, then you paste the key here.`,
+            'Paste a secret key you already created. It is stored only in apps/antalmanac/.env.',
+            skipDescription,
+        ],
+        lead
+    );
+    if (choice === 2) return '';
+    const opened = choice === 0 ? await openBrowser(DASHBOARD) : false;
+    return ui.secret(
+        'Paste your secret key',
+        [
+            choice === 0
+                ? opened
+                    ? 'Opened the dashboard in your browser.'
+                    : `Could not open a browser. Visit ${DASHBOARD}`
+                : '',
+            API_KEY_HOW,
+        ].filter(Boolean),
+        { url: DASHBOARD }
+    );
+}
+
+function canAsk() {
+    return ui.interactive && !args.has('--yes');
+}
+
+function rememberApiKey(key) {
+    secrets.push(key);
+    const saved = saveApiKey(root, key);
+    if (process.env.ANTEATER_API_KEY) process.env.ANTEATER_API_KEY = saved;
+    return saved;
+}
 
 function captureSecrets(app, db) {
     secrets = [
@@ -331,36 +374,12 @@ async function runChecks() {
     await task('environment', async () => {
         if (!doctor) {
             let key = process.env.ANTEATER_API_KEY || app.ANTEATER_API_KEY;
-            if (isPlaceholder(key) && ui.interactive && !args.has('--yes')) {
-                const dashboard = 'https://dashboard.anteaterapi.com/';
-                const how =
-                    'Sign in with ICSSC and create a secret key. If you are not signed in, use your UCI Google account at https://antalmanac.com first.';
-                const choice = await ui.choose(
+            if (isPlaceholder(key) && canAsk()) {
+                key = await askForApiKey(
                     'Anteater API key',
-                    ['Open the dashboard in my browser', 'Paste a key I already have', 'Skip for now'],
-                    [
-                        `Opens ${dashboard}, then you paste the key here.`,
-                        'Paste a secret key you already created. It is stored only in apps/antalmanac/.env.',
-                        'Continue without a key. Course data waits until you add one.',
-                    ],
-                    ['Create a secret key on the Anteater API dashboard.', how]
+                    ['Create a secret key on the Anteater API dashboard.', API_KEY_HOW],
+                    'Continue without a key. Course data waits until you add one.'
                 );
-                if (choice === 2) key = '';
-                else {
-                    const opened = choice === 0 ? await openBrowser(dashboard) : false;
-                    key = await ui.secret(
-                        'Paste your secret key',
-                        [
-                            choice === 0
-                                ? opened
-                                    ? 'Opened the dashboard in your browser.'
-                                    : `Could not open a browser. Visit ${dashboard}`
-                                : '',
-                            how,
-                        ].filter(Boolean),
-                        { url: dashboard }
-                    );
-                }
             }
             if (key) secrets.push(key);
             ({ app, db } = configureEnvironment(root, key));
@@ -512,19 +531,54 @@ async function runChecks() {
         report('data', 'blocked', 'Course data was not fetched.', missing);
     } else
         await task('data', async () => {
-            await pm(['get-data'], {
-                env: { ANTEATER_API_KEY: app.ANTEATER_API_KEY },
-                timeout: 15 * 60_000,
-            });
-            const issues = generatedDataProblems(root);
-            if (issues.length) {
-                report('data', 'failed', 'Course data finished without usable files.', issues, [
-                    'Read the fetch output above, then run pnpm get-data again.',
-                    `If the API rejected the key, create a new secret at https://dashboard.anteaterapi.com/ and save it in ${APP_ENV}.`,
-                ]);
-                return;
+            for (;;) {
+                if (interrupted) throw new Error('Setup cancelled.');
+                let fetchError;
+                try {
+                    await pm(['get-data'], {
+                        env: { ANTEATER_API_KEY: app.ANTEATER_API_KEY },
+                        timeout: 15 * 60_000,
+                    });
+                } catch (error) {
+                    if (interrupted || !canAsk()) throw error;
+                    fetchError = error;
+                }
+                const issues = fetchError ? [] : generatedDataProblems(root);
+                if (!fetchError && !issues.length) {
+                    mark('data', 'done', 'Course search, departments, terms, and section caches generated.');
+                    return;
+                }
+                if (!canAsk()) {
+                    report('data', 'failed', 'Course data finished without usable files.', issues, [
+                        'Read the fetch output above, then run pnpm get-data again.',
+                        `If the API rejected the key, create a new secret at https://dashboard.anteaterapi.com/ and save it in ${APP_ENV}.`,
+                    ]);
+                    return;
+                }
+                const body = fetchError
+                    ? fetchError.message?.trim() || 'The step stopped before it reported a reason.'
+                    : issues.join('\n');
+                report(
+                    'data',
+                    'failed',
+                    fetchError ? headlineFor('data', body) : 'Course data finished without usable files.',
+                    fetchError ? body.split('\n') : issues,
+                    [
+                        'Enter a new Anteater API key. Setup will download course data again.',
+                        'Create one at https://dashboard.anteaterapi.com/ if you need a new secret.',
+                        API_KEY_HOW,
+                    ]
+                );
+                const key = await askForApiKey(
+                    'Course data could not be downloaded.',
+                    ['The Anteater API key may be wrong.', 'Enter a new key and setup will try the download again.'],
+                    'Keep the current key and return to the menu.'
+                );
+                if (!key || isPlaceholder(key)) return;
+                app = { ...app, ANTEATER_API_KEY: rememberApiKey(key) };
+                captureSecrets(app, db);
+                mark('data', 'running', 'Trying the new Anteater API key.');
             }
-            mark('data', 'done', 'Course search, departments, terms, and section caches generated.');
         });
 
     const required = steps.filter((item) => item.id !== 'ready' && !(doctor && item.id === 'migrations'));
