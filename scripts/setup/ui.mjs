@@ -114,7 +114,7 @@ export class Terminal {
                 return [
                     ...candidate.map((line) => ink(pad + line)),
                     '',
-                    `  ${this.color('38;5;215', '●')} ${this.title}`,
+                    `${this.color('38;5;215', '●')} ${this.title}`,
                 ];
             }
         }
@@ -134,7 +134,6 @@ export class Terminal {
         const barLength = Math.min(24, Math.max(8, width - 30));
         const count = this.steps.length ? Math.round((complete / this.steps.length) * barLength) : 0;
         const elapsed = active?.started ? `${Math.floor((Date.now() - active.started) / 1000)}s` : '';
-        const toolchain = process.env.ANTALMANAC_TOOLCHAIN === 'mise' ? 'MISE' : 'LOCAL';
         const footer = this.prompt?.lines
             ? '↑/↓ scroll · PgUp/PgDn · Enter back'
             : this.prompt
@@ -146,7 +145,7 @@ export class Terminal {
               : 'Ctrl+C stops setup · Completed work is kept';
         const budget = Math.max(1, height - 2);
         const main = [
-            `${cyan('━'.repeat(count))}${muted('━'.repeat(barLength - count))}  ${complete}/${this.steps.length} ready${needsFix.length ? ` · ${needsFix.length} ${needsFix.length === 1 ? 'step' : 'steps'} to fix` : ''}  ${muted(toolchain)}`,
+            `${cyan('━'.repeat(count))}${muted('━'.repeat(barLength - count))}  ${complete}/${this.steps.length} ready${needsFix.length ? ` · ${needsFix.length} ${needsFix.length === 1 ? 'step' : 'steps'} to fix` : ''}`,
         ];
 
         if (this.prompt?.lines) {
@@ -241,7 +240,7 @@ export class Terminal {
         const logo = this.logoLines(width, budget - main.length);
         const header = logo ?? [
             cyan('ANTALMANAC') + muted('  /  developer setup'),
-            `  ${this.color('38;5;215', '●')} ${this.title}`,
+            `${this.color('38;5;215', '●')} ${this.title}`,
         ];
         const keepTail = Boolean(this.prompt?.instructions?.length || this.prompt?.options);
         return this.fit([...header, ...main], width, height, muted(footer), keepTail);
