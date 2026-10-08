@@ -1,4 +1,5 @@
 import {
+    CourseTiming,
     GEName,
     GETitle,
     MajorProgram,
@@ -78,6 +79,23 @@ export function parseQuarterString(quarter: string | null | undefined): CurrentQ
     const startYear = quarterName === 'fall' ? calendarYear : calendarYear - 1;
 
     return { startYear, quarterName };
+}
+
+export function getQuarterTiming(
+    startYear: number,
+    quarterName: string,
+    currentQuarter: CurrentQuarter | null | undefined
+): CourseTiming {
+    if (!currentQuarter) return 'future';
+    /* TODO: what should happen when we don't know the current quarter? */ const quarter = quarterOrdinal(
+        startYear,
+        quarterName
+    );
+    const current = quarterOrdinal(currentQuarter.startYear, currentQuarter.quarterName);
+
+    if (quarter < current) return 'past';
+    if (quarter === current) return 'current';
+    else return 'future';
 }
 
 /** Turns a quarter (fall, winter, etc) into a sortable number */
@@ -258,6 +276,7 @@ export interface CompletedCourseSet {
     [k: string]: {
         units: number;
         transferType?: TransferredCourseWithType['transferType'];
+        timing: CourseTiming;
     };
 }
 

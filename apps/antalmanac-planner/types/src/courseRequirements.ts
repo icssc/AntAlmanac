@@ -29,6 +29,8 @@ type RequirementSchema = components['schemas']['programRequirement'];
 type ReqType = RequirementSchema['requirementType'];
 export type ProgramRequirement<T extends ReqType = ReqType> = RequirementSchema & { requirementType: T };
 
+export type CourseTiming = 'past' | 'current' | 'future';
+
 export interface SavedMajorProgram {
     majorId: string;
     specializationId?: string;
