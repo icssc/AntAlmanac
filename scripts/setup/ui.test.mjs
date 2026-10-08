@@ -53,8 +53,9 @@ test('a large terminal shows the logo traced from logo.svg without hiding the me
     assert.ok(cols / LOGO.length > 12, 'logo keeps the wide banner proportion');
     ui.animated = true;
     const colored = ui.screen(140, 64);
-    assert.match(colored, /\x1b\[38;5;15m/);
-    assert.doesNotMatch(colored, /\x1b\[38;5;39m/);
+    const escape = String.fromCharCode(27);
+    assert.ok(colored.includes(`${escape}[38;5;15m`));
+    assert.equal(colored.includes(`${escape}[38;5;39m`), false);
 });
 
 test('masked input never renders the key and Ctrl+U clears it', async () => {
