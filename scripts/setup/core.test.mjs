@@ -193,8 +193,11 @@ test('retry keeps expensive completed work but rechecks tools and services', asy
 
 test('missing Docker points Windows, macOS, and Linux at the right install', () => {
     assert.match(dockerSetupAdvice('win32').steps.join('\n'), /Docker Desktop/);
+    assert.equal(dockerSetupAdvice('win32').url, 'https://www.docker.com/products/docker-desktop/');
     assert.match(dockerSetupAdvice('darwin').steps.join('\n'), /OrbStack/);
+    assert.equal(dockerSetupAdvice('darwin').url, 'https://orbstack.dev/');
     assert.match(dockerSetupAdvice('linux').steps.join('\n'), /curl -fsSL https:\/\/get\.docker\.com \| sudo sh/);
+    assert.equal(dockerSetupAdvice('linux').url, undefined);
     assert.match(dockerStartAdvice('win32').headline, /Docker Desktop/);
     assert.match(dockerStartAdvice('darwin').headline, /OrbStack/);
     assert.match(dockerStartAdvice('linux').steps.join('\n'), /systemctl start docker/);

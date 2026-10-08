@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
@@ -87,6 +87,137 @@ test('missing Docker explains the install and does not start a database', async 
     assert.match(result.output, /Docker is not installed/);
     assert.match(result.output, /curl -fsSL https:\/\/get\.docker\.com \| sudo sh/);
     assert.doesNotMatch(readFileSync(join(root, 'commands.log'), 'utf8'), /compose up/);
+});
+
+function driveSetup(root, respond) {
+    const transcript = join(root, 'pty.log');
+    writeFileSync(
+        join(root, 'drive.py'),
+        `
+import os, pty, select, time
+root = os.environ["FIXTURE_ROOT"]
+node = os.environ["NODE"]
+log_path = os.environ["PTY_LOG"]
+script = os.path.join(root, "scripts", "setup.mjs")
+env = os.environ.copy()
+env["PATH"] = os.environ["FIXTURE_PATH"]
+env["TERM"] = "xterm-256color"
+pid, fd = pty.fork()
+if pid == 0:
+    os.execvpe(node, [node, script, "--plain"], env)
+data = b""
+sent = {}
+deadline = time.time() + 25
+code = 1
+exited = False
+
+def drain():
+    global data
+    while True:
+        readable, _, _ = select.select([fd], [], [], 0)
+        if not readable:
+            return
+        try:
+            chunk = os.read(fd, 8192)
+        except OSError:
+            return
+        if not chunk:
+            return
+        data += chunk
+
+def once(name, ready):
+    if sent.get(name) or not ready:
+        return False
+    sent[name] = True
+    return True
+
+while time.time() < deadline:
+    readable, _, _ = select.select([fd], [], [], 0.2)
+    if readable:
+        drain()
+    text = data.decode("utf-8", "replace")
+${respond}
+    result = os.waitpid(pid, os.WNOHANG)
+    if result[0] == pid:
+        code = os.waitstatus_to_exitcode(result[1])
+        drain()
+        exited = True
+        break
+if not exited:
+    os.kill(pid, 15)
+    _, status = os.waitpid(pid, 0)
+    code = os.waitstatus_to_exitcode(status)
+    drain()
+open(log_path, "w").write(data.decode("utf-8", "replace"))
+open(log_path + ".sent", "w").write(repr(sent))
+raise SystemExit(code)
+`
+    );
+    return { transcript };
+}
+
+test('missing Docker asks for the install command before the final report', async (t) => {
+    const { root, env } = fixture(t);
+    rmSync(join(root, 'bin', 'docker'));
+    const { transcript } = driveSetup(
+        root,
+        `
+    if once("start", "Make yourself at home." in text):
+        os.write(fd, bytes([13]))
+    elif once("skip", "Continue without Docker" in text):
+        os.write(fd, b"2" + bytes([13]))
+    elif once("finish", "What would you like to do next?" in text):
+        os.write(fd, b"3" + bytes([13]))
+`
+    );
+    const result = await run('python3', [join(root, 'drive.py')], {
+        env: {
+            ...env,
+            FIXTURE_ROOT: root,
+            FIXTURE_PATH: join(root, 'bin'),
+            NODE: process.execPath,
+            PTY_LOG: transcript,
+        },
+        timeout: 30_000,
+    });
+    const output = existsSync(transcript) ? readFileSync(transcript, 'utf8') : result.output;
+    assert.equal(result.code, 1, output);
+    const promptAt = output.indexOf('Continue without Docker');
+    const menuAt = output.indexOf('What would you like to do next?');
+    assert.ok(promptAt !== -1 && menuAt !== -1 && promptAt < menuAt, output);
+    assert.match(output, /curl -fsSL https:\/\/get\.docker\.com \| sudo sh/);
+    assert.doesNotMatch(readFileSync(join(root, 'commands.log'), 'utf8'), /compose up/);
+});
+
+test('checking again after Docker is installed continues setup', async (t) => {
+    const { root, env } = fixture(t);
+    renameSync(join(root, 'bin', 'docker'), join(root, 'bin', 'docker.real'));
+    const { transcript } = driveSetup(
+        root,
+        `
+    if once("start", "Make yourself at home." in text):
+        os.write(fd, bytes([13]))
+    elif once("check", "Continue without Docker" in text):
+        os.rename(os.path.join(root, "bin", "docker.real"), os.path.join(root, "bin", "docker"))
+        os.write(fd, b"1" + bytes([13]))
+    elif once("finish", "What would you like to do next?" in text):
+        os.write(fd, b"3" + bytes([13]))
+`
+    );
+    const result = await run('python3', [join(root, 'drive.py')], {
+        env: {
+            ...env,
+            FIXTURE_ROOT: root,
+            FIXTURE_PATH: join(root, 'bin'),
+            NODE: process.execPath,
+            PTY_LOG: transcript,
+        },
+        timeout: 30_000,
+    });
+    const output = existsSync(transcript) ? readFileSync(transcript, 'utf8') : result.output;
+    assert.equal(result.code, 0, output);
+    assert.match(output, /workspace ready/);
+    assert.match(readFileSync(join(root, 'commands.log'), 'utf8'), /compose up/);
 });
 
 test('read-only diagnosis never creates env files or invokes mutating commands', async (t) => {

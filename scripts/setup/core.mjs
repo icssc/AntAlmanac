@@ -31,6 +31,7 @@ export function dockerSetupAdvice(platform = process.platform) {
     if (platform === 'win32') {
         return {
             headline: 'Docker is not installed.',
+            url: 'https://www.docker.com/products/docker-desktop/',
             steps: [
                 'Install Docker Desktop from https://www.docker.com/products/docker-desktop/',
                 'Open Docker Desktop and wait until it is running, then rerun setup.',
@@ -40,6 +41,7 @@ export function dockerSetupAdvice(platform = process.platform) {
     if (platform === 'darwin') {
         return {
             headline: 'Docker is not installed.',
+            url: 'https://orbstack.dev/',
             steps: [
                 'Install OrbStack from https://orbstack.dev/',
                 'Open OrbStack and wait until Docker is running, then rerun setup.',

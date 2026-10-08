@@ -115,6 +115,43 @@ function canAsk() {
     return ui.interactive && !args.has('--yes');
 }
 
+async function confirmReady({ title, lead, check, url }) {
+    let note = '';
+    for (;;) {
+        if (interrupted) throw new Error('Setup cancelled.');
+        const options = [];
+        const descriptions = [];
+        if (url) {
+            options.push('Open the install page in my browser');
+            descriptions.push(`Opens ${url}`);
+        }
+        options.push('Check again');
+        descriptions.push(lead.join('\n'));
+        options.push('Continue without Docker');
+        descriptions.push('Skip Postgres for now. Install Docker, then retry setup.');
+        const choice = await ui.choose(
+            typeof title === 'function' ? title() : title,
+            options,
+            descriptions,
+            note ? [...lead, note] : lead
+        );
+        if (url && choice === 0) {
+            const opened = await openBrowser(url);
+            note = opened ? 'Opened the install page in your browser.' : `Could not open a browser. Visit ${url}`;
+            continue;
+        }
+        if (choice !== (url ? 1 : 0)) return false;
+        if (await check()) return true;
+        note = '';
+    }
+}
+
+function dockerInstallAdvice(docker) {
+    const advice = dockerSetupAdvice();
+    if (docker.installed && !docker.compose) return { ...advice, headline: 'Docker Compose is not installed.' };
+    return advice;
+}
+
 function rememberApiKey(key) {
     secrets.push(key);
     const saved = saveApiKey(root, key);
@@ -317,16 +354,16 @@ async function runChecks() {
     if (previousEnvironment) prepareRetry(steps, previousEnvironment, { app, db }, doctor);
     if (process.env.ANTEATER_API_KEY) secrets.push(process.env.ANTEATER_API_KEY);
 
-    const docker = await dockerInstallation();
-    const dockerReady = docker.installed && docker.compose;
+    let docker = await dockerInstallation();
+    let dockerReady = docker.installed && docker.compose;
+    const installAdvice = dockerInstallAdvice(docker);
     if (!dockerReady) {
-        const advice = dockerSetupAdvice();
         report(
             'database',
             'blocked',
-            docker.installed ? 'Docker Compose is not installed.' : advice.headline,
+            installAdvice.headline,
             ['Setup needs both Docker and Docker Compose before it can start Postgres.'],
-            advice.steps
+            installAdvice.steps
         );
     }
 
@@ -412,45 +449,74 @@ async function runChecks() {
                         'For any other database, run pnpm sched:db:migrate yourself once that database is ready.',
                     ];
         report('database', 'blocked', headlineFor('database', issue), issue.split('\n'), advice);
-    } else if (dockerReady)
-        await task('database', async () => {
-            await command('docker', ['compose', 'version'], { timeout: 15_000 });
-            try {
-                await command('docker', ['info'], { timeout: 15_000 });
-            } catch {
-                const start = dockerStartAdvice();
-                report('database', 'blocked', start.headline, ['`docker info` failed.'], start.steps);
-                return;
-            }
-            if (!doctor) {
-                let startupError;
-                try {
-                    await command('docker', ['compose', 'up', '-d', '--wait', '--wait-timeout', '120', 'db'], {
-                        timeout: 5 * 60_000,
-                    });
-                } catch (error) {
-                    startupError = error;
+    } else {
+        if (!dockerReady && canAsk()) {
+            const installed = await confirmReady({
+                title: () => installAdvice.headline,
+                lead: installAdvice.steps,
+                url: installAdvice.url,
+                check: async () => {
+                    docker = await dockerInstallation();
+                    dockerReady = docker.installed && docker.compose;
+                    if (dockerReady) return true;
+                    const latest = dockerInstallAdvice(docker);
+                    installAdvice.headline = latest.headline;
+                    report(
+                        'database',
+                        'blocked',
+                        latest.headline,
+                        ['Setup needs both Docker and Docker Compose before it can start Postgres.'],
+                        latest.steps
+                    );
+                    return false;
+                },
+            });
+            if (installed) mark('database', 'pending');
+        }
+        if (dockerReady)
+            await task('database', async () => {
+                await command('docker', ['compose', 'version'], { timeout: 15_000 });
+                let engine = false;
+                while (!engine) {
+                    try {
+                        await command('docker', ['info'], { timeout: 15_000 });
+                        engine = true;
+                    } catch {
+                        const start = dockerStartAdvice();
+                        report('database', 'blocked', start.headline, ['`docker info` failed.'], start.steps);
+                        if (!canAsk()) return;
+                        const started = await confirmReady({
+                            title: start.headline,
+                            lead: start.steps,
+                            check: async () => {
+                                const info = await run('docker', ['info'], {
+                                    cwd: root,
+                                    signal: abort.signal,
+                                    timeout: 15_000,
+                                });
+                                return info.ok;
+                            },
+                        });
+                        if (!started) return;
+                        mark('database', 'running', 'Docker is running. Starting Postgres.');
+                    }
                 }
-                try {
-                    await waitForPostgres();
-                } catch (error) {
-                    throw startupError ?? error;
+                if (!doctor) {
+                    let startupError;
+                    try {
+                        await command('docker', ['compose', 'up', '-d', '--wait', '--wait-timeout', '120', 'db'], {
+                            timeout: 5 * 60_000,
+                        });
+                    } catch (error) {
+                        startupError = error;
+                    }
+                    try {
+                        await waitForPostgres();
+                    } catch (error) {
+                        throw startupError ?? error;
+                    }
+                    if (!plannerDatabaseProblem(app)) await ensurePlannerDatabase();
                 }
-                if (!plannerDatabaseProblem(app)) await ensurePlannerDatabase();
-            }
-            await command('docker', [
-                'compose',
-                'exec',
-                '-T',
-                'db',
-                'pg_isready',
-                '-U',
-                'postgres',
-                '-d',
-                'antalmanac',
-            ]);
-            const plannerIssue = plannerDatabaseProblem(app);
-            if (!plannerIssue) {
                 await command('docker', [
                     'compose',
                     'exec',
@@ -460,27 +526,41 @@ async function runChecks() {
                     '-U',
                     'postgres',
                     '-d',
-                    'planner',
+                    'antalmanac',
                 ]);
-                mark(
-                    'database',
-                    'done',
-                    'PostgreSQL is accepting connections for the scheduler and planner databases.'
-                );
-            } else if (plannerIssue.startsWith('Planner is using a custom')) {
-                mark('database', 'done', `Scheduler Postgres is accepting connections. ${plannerIssue}`);
-            } else {
-                report(
-                    'database',
-                    'blocked',
-                    plannerIssue,
-                    [],
-                    [
-                        `Set PLANNER_DATABASE_URL in ${APP_ENV} to the local planner database, then rerun ${setupCommand}.`,
-                    ]
-                );
-            }
-        });
+                const plannerIssue = plannerDatabaseProblem(app);
+                if (!plannerIssue) {
+                    await command('docker', [
+                        'compose',
+                        'exec',
+                        '-T',
+                        'db',
+                        'pg_isready',
+                        '-U',
+                        'postgres',
+                        '-d',
+                        'planner',
+                    ]);
+                    mark(
+                        'database',
+                        'done',
+                        'PostgreSQL is accepting connections for the scheduler and planner databases.'
+                    );
+                } else if (plannerIssue.startsWith('Planner is using a custom')) {
+                    mark('database', 'done', `Scheduler Postgres is accepting connections. ${plannerIssue}`);
+                } else {
+                    report(
+                        'database',
+                        'blocked',
+                        plannerIssue,
+                        [],
+                        [
+                            `Set PLANNER_DATABASE_URL in ${APP_ENV} to the local planner database, then rerun ${setupCommand}.`,
+                        ]
+                    );
+                }
+            });
+    }
 
     if (okay('database') && okay('dependencies'))
         await task('migrations', async () => {
