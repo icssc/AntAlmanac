@@ -26,14 +26,17 @@ Install Docker:
 
 Install Mise:
 
-- Follow [Mise documentation](https://mise.jdx.dev/getting-started.html), run `mise doctor` to verify your install.
+- Windows: `winget install jdx.mise`
+- macOS/Linux: `curl https://mise.run | sh`
 
 If you are a contributor outside of ICSSC, fork this repository and clone the fork's URL instead.
 
 ```bash
-git clone https://github.com/icssc/AntAlmanac && cd AntAlmanac
+git clone https://github.com/icssc/AntAlmanac
+cd AntAlmanac
 
-mise trust && mise install
+mise trust
+mise install
 mise run setup
 ```
 
