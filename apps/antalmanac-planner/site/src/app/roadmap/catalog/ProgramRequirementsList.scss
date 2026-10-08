@@ -71,6 +71,16 @@
         cursor: pointer;
     }
 
+    .group-header-title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .group-header-title .completed-icon {
+        flex-shrink: 0;
+    }
+
     .group-header-btns {
         display: flex;
         gap: 10px;
@@ -96,8 +106,9 @@
 
         > .group-header {
             color: var(--mui-palette-success-main);
-            text-decoration: line-through;
-            text-decoration-thickness: 2px;
+            // @TODO figure out if remove strike-through
+            // text-decoration: line-through;
+            // text-decoration-thickness: 2px;
         }
 
         .menu-tile {

@@ -4,6 +4,7 @@ import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { Badge, Checkbox, Collapse } from '@mui/material';
 import { ProgramRequirement, TransferredGE } from '@peterportal/types';
+import Image from 'next/image';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
@@ -318,19 +319,40 @@ const ConfirmOverrideModal = ({ showOverrideModal, setShowOverrideModal, setOver
 
 interface GroupHeaderProps {
     title: string;
+    complete?: boolean;
     open: boolean;
     setOpen: React.Dispatch<boolean>;
     requirementId: string;
     overridden: boolean;
     setOverride: (override: boolean) => void;
 }
-const GroupHeader: FC<GroupHeaderProps> = ({ title, open, setOpen, requirementId, overridden, setOverride }) => {
+const GroupHeader: FC<GroupHeaderProps> = ({
+    title,
+    complete = false,
+    open,
+    setOpen,
+    requirementId,
+    overridden,
+    setOverride,
+}) => {
     const className = `group-header ${open ? 'open' : ''}`;
     const [showOverrideModal, setShowOverrideModal] = useState(false);
 
     return (
         <ClickableDiv className={className} onClick={() => setOpen(!open)}>
-            <b>{title}</b>
+            {/* @TODO doesn't work with ICS 30 series. Works with other series */}
+            <span className="group-header-title">
+                {complete && (
+                    <Image
+                        className="completed-icon"
+                        src="/requirement-status/completed.png"
+                        alt="Completed"
+                        width={20}
+                        height={20}
+                    />
+                )}
+                <b>{title}</b>
+            </span>
             <div className="group-header-btns">
                 {open && (
                     <Checkbox
@@ -463,6 +485,7 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
             <div className={className}>
                 <GroupHeader
                     title={data.label}
+                    complete={complete}
                     requirementId={data.requirementId}
                     open={open}
                     setOpen={setOpen}
