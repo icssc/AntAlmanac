@@ -12,7 +12,7 @@ Features include:
 | **Preview** class times on the _integrated calendar_.             | **View completion** of your _major_, _specialization_, _minor_, and _GE_ requirements                                                             |
 | **Quickly access** course statistics, reviews, and prerequisites. | **Import** your unofficial transcript via [StudentAccess](https://www.reg.uci.edu/access/student/transcript/?seg=U) to populate previous courses. |
 | **Locate** your class locations on the _interactive map_.         | **Add credits** from any _transferred courses_, _AP exams_, and _GE/Elective credits_                                                             |
-| ![Scheduler screenshot](assets/scheduler.jpeg)                    | ![Planner screenshot](assets/planner.jpeg)                       
+| ![Scheduler screenshot](assets/scheduler.jpeg)                    | ![Planner screenshot](assets/planner.jpeg)                                                                                                        |
 
 ## Development
 
