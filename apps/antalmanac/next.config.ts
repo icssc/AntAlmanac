@@ -1,6 +1,14 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+    logging: {
+        // Dev logs include the full tRPC input. Page navigations stay visible.
+        incomingRequests: {
+            ignore: [/^\/api\//, /^\/planner\/api\//],
+        },
+        // Browser warnings stay in the browser console. Errors still reach the terminal.
+        browserToTerminal: 'error',
+    },
     images: {
         remotePatterns: [
             {
