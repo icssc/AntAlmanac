@@ -10,13 +10,21 @@ AntAlmanac is UC Irvine’s course-planning platform: **Scheduler** for quarterl
 
 ## Start here
 
-You need [mise](https://mise.jdx.dev/installing-mise.html), a running Docker engine, and an Anteater API key (ask a project lead). From the repository root:
+You need [mise](https://mise.jdx.dev/installing-mise.html) and a running Docker engine. From the repository root:
 
 ```bash
 mise trust
 mise install
 mise run setup
 ```
+
+The wizard asks for an [Anteater API](https://docs.icssc.club/docs/developer/anteaterapi) key and stores it in `apps/antalmanac/.env`. Create one at the [Anteater API dashboard](https://dashboard.anteaterapi.com/):
+
+1. Open https://dashboard.anteaterapi.com/
+2. If you are not signed in, sign in with your UCI Google account at https://antalmanac.com, then return to the dashboard.
+3. Choose **Sign in with ICSSC**.
+4. Create a secret API key.
+5. Paste the key into the wizard. Enter skips the course fetch so you can add the key later.
 
 `mise install` provides Node 22 and pnpm 10.22.0. The setup wizard then:
 

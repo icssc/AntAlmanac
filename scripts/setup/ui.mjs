@@ -126,7 +126,7 @@ export class Terminal {
             return this.fit([...header, ...main], width, height, muted(footer));
         }
 
-        if (!this.prompt || height >= 28) {
+        if ((!this.prompt || height >= 28) && !this.prompt?.instructions?.length) {
             main.push('');
             this.steps.forEach((step, index) => {
                 const glyph = step.status === 'running' ? frames[this.frame % frames.length] : symbols[step.status];
@@ -152,6 +152,9 @@ export class Terminal {
                 const hint = this.prompt.descriptions?.[this.prompt.selected];
                 if (hint) main.push('', ...wrapText(hint, width).slice(0, 3).map(muted));
             } else {
+                if (this.prompt.instructions?.length) {
+                    for (const line of this.prompt.instructions) main.push(...wrapText(line, width).map(muted));
+                }
                 main.push(
                     cyan('› ') +
                         (this.prompt.value
@@ -172,12 +175,13 @@ export class Terminal {
             cyan('ANTALMANAC') + muted('  /  developer setup'),
             `  ${this.color('38;5;215', '●')} ${this.title}`,
         ];
-        return this.fit([...header, ...main], width, height, muted(footer));
+        const keepTail = Boolean(this.prompt?.instructions?.length);
+        return this.fit([...header, ...main], width, height, muted(footer), keepTail);
     }
 
-    fit(lines, width, height, footer) {
+    fit(lines, width, height, footer, keepTail = false) {
         const budget = Math.max(1, height - 2);
-        const visible = lines.slice(0, budget);
+        const visible = keepTail && lines.length > budget ? lines.slice(-budget) : lines.slice(0, budget);
         return [...visible, '', footer]
             .slice(0, height)
             .map((line) => {
@@ -266,9 +270,12 @@ export class Terminal {
         });
     }
 
-    secret(title) {
-        this.prompt = { title, value: '' };
-        if (!this.animated) process.stdout.write(`${title} (input hidden; Enter to skip)\n`);
+    secret(title, instructions = []) {
+        this.prompt = { title, value: '', instructions };
+        if (!this.animated)
+            process.stdout.write(
+                `${title}\n${instructions.length ? `${instructions.join('\n')}\n` : ''}(input hidden; Enter to skip)\n`
+            );
         this.render();
         return new Promise((resolve) => {
             this.input = (text, key) => {

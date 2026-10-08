@@ -10,6 +10,7 @@ import {
     configureEnvironment,
     databaseProblem,
     environmentProblems,
+    formatApiKeyInstructions,
     generatedDataProblems,
     isPlaceholder,
     plannerDatabaseProblem,
@@ -25,7 +26,7 @@ const args = new Set(process.argv.slice(2));
 const allowed = new Set(['--yes', '--check', '--plain', '--help']);
 if (args.has('--help')) {
     console.log(
-        `AntAlmanac developer setup\n\n  mise run setup                  Recommended: managed toolchain + TUI\n  node scripts/setup.mjs           Interactive setup wizard\n  node scripts/setup.mjs --yes     Run setup without prompts\n  node scripts/setup.mjs --check   Read-only environment diagnosis\n  node scripts/setup.mjs --plain   Disable animation and color\n\nRequires Node ${readFileSync(join(root, '.nvmrc'), 'utf8').trim()}. Run from any directory.\nSetup installs pinned dependencies, prepares .env files, starts the local\nDocker database (scheduler + planner), applies migrations, and fetches course data.\nProvide ANTEATER_API_KEY through the environment, .env, or the masked prompt.\nExisting credentials are preserved. Missing prerequisites exit with code 1.\nCtrl+C exits with code 130; completed steps are safe to rerun.`
+        `AntAlmanac developer setup\n\n  mise run setup                  Recommended: managed toolchain + TUI\n  node scripts/setup.mjs           Interactive setup wizard\n  node scripts/setup.mjs --yes     Run setup without prompts\n  node scripts/setup.mjs --check   Read-only environment diagnosis\n  node scripts/setup.mjs --plain   Disable animation and color\n\nRequires Node ${readFileSync(join(root, '.nvmrc'), 'utf8').trim()}. Run from any directory.\nSetup installs pinned dependencies, prepares .env files, starts the local\nDocker database (scheduler + planner), applies migrations, and fetches course data.\nProvide ANTEATER_API_KEY through the environment, .env, or the masked prompt.\n${formatApiKeyInstructions('Paste the key at the masked prompt, or set ANTEATER_API_KEY before running setup.').join('\n')}\nExisting credentials are preserved. Missing prerequisites exit with code 1.\nCtrl+C exits with code 130; completed steps are safe to rerun.`
     );
     process.exit(0);
 }
@@ -116,7 +117,7 @@ async function task(id, action) {
             environment: 'Review apps/antalmanac/.env and apps/antalmanac-scheduler/db/.env, then retry.',
             database: 'Start Docker Desktop or your Docker daemon. Check port 5432, then retry.',
             migrations: 'Inspect the migration error above. Fix the local database and retry; do not delete its data.',
-            data: 'Check ANTEATER_API_KEY in apps/antalmanac/.env and your network connection, then retry.',
+            data: 'Create a secret key at https://dashboard.anteaterapi.com/ (sign in at https://antalmanac.com if needed, then choose Sign in with ICSSC). Save it in apps/antalmanac/.env and retry.',
         };
         mark(id, 'failed', `${error.message}\n\nNext: ${recovery[id] || 'Fix the reported issue and retry.'}`);
     }
@@ -207,7 +208,12 @@ async function runChecks() {
         if (!doctor) {
             let key = process.env.ANTEATER_API_KEY || app.ANTEATER_API_KEY;
             if (isPlaceholder(key) && ui.interactive && !args.has('--yes')) {
-                key = await ui.secret('Anteater API key · ask a project lead if you need one');
+                key = await ui.secret(
+                    'Anteater API key',
+                    formatApiKeyInstructions(
+                        'Paste the key below. Enter skips. It is stored only in apps/antalmanac/.env.'
+                    )
+                );
             }
             if (key) secrets.push(key);
             ({ app, db } = configureEnvironment(root, key));
@@ -313,7 +319,7 @@ async function runChecks() {
         mark(
             'data',
             'blocked',
-            `Requires dependencies and a valid ANTEATER_API_KEY in ${APP_ENV}. Ask a project lead for a key, then rerun setup.`
+            `Requires dependencies and a valid ANTEATER_API_KEY in ${APP_ENV}.\n${formatApiKeyInstructions('Paste the key into the wizard or that file, then rerun setup.').join('\n')}`
         );
     } else
         await task('data', async () => {

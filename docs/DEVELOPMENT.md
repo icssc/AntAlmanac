@@ -45,7 +45,15 @@ Use ↑/↓ or j/k, then Enter. Number keys select a menu item. Ctrl+C cancels. 
 | Course & term data              | `pnpm get-data` using `ANTEATER_API_KEY`.                                                                                                     |
 | Development readiness           | Continues only when the required steps passed.                                                                                                |
 
-Paste the Anteater API key when asked. Input is masked. Ctrl+U clears it. Enter with an empty key skips the fetch and lets you add the key later in `apps/antalmanac/.env`. Ask a project lead for a key. Do not put the key in issues, chat, or command-line arguments.
+Paste the Anteater API key when asked. Input is masked. Ctrl+U clears it. Enter with an empty key skips the fetch and lets you add the key later in `apps/antalmanac/.env`. Do not put the key in issues, chat, or command-line arguments.
+
+Create the key at the [Anteater API dashboard](https://dashboard.anteaterapi.com/). The API itself is documented at [docs.icssc.club](https://docs.icssc.club/docs/developer/anteaterapi).
+
+1. Open https://dashboard.anteaterapi.com/
+2. If you are not signed in, sign in with your UCI Google account at https://antalmanac.com, then return to the dashboard.
+3. Choose **Sign in with ICSSC**.
+4. Create a secret API key.
+5. Paste the key into the wizard.
 
 A shell variable that disagrees with `.env` is reported by name. The wizard does not print the value.
 
@@ -73,7 +81,7 @@ Within one session, a successful install, migration, and course fetch are kept. 
 | What you see                        | What to do                                                                                                     |
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | Docker is unavailable               | Start the Docker daemon and retry. The CLI alone is not enough.                                                |
-| Missing API key or failed fetch     | Set `ANTEATER_API_KEY` in `apps/antalmanac/.env` and retry.                                                    |
+| Missing API key or failed fetch     | Create a secret key at https://dashboard.anteaterapi.com/ (UCI Google at https://antalmanac.com, then Sign in with ICSSC). Save it in `apps/antalmanac/.env` and retry. |
 | Port 5432 is taken                  | Stop the other service, or use a custom database and migrate it yourself.                                      |
 | `apps/antalmanac/.env.local` exists | Next.js prefers that file. Move the settings into `.env` or stop using the wizard for those values.            |
 | Custom database URL                 | Run `pnpm sched:db:migrate` or `pnpm plan:db:migrate` yourself. The wizard will not migrate a remote database. |

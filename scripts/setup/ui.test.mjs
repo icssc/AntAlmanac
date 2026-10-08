@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { formatApiKeyInstructions } from './core.mjs';
 import { LOGO, LOGO_SMALL } from './logo.mjs';
 import { Terminal } from './ui.mjs';
 
@@ -61,6 +62,36 @@ test('masked input never renders the key and Ctrl+U clears it', async () => {
     ui.input('', { ctrl: true, name: 'u' });
     ui.input('', { name: 'return' });
     assert.equal(await pending, '');
+});
+
+test('API key instructions stay visible and the pasted key stays masked', async () => {
+    const ui = terminal();
+    ui.animated = true;
+    ui.render = () => {};
+    const instructions = formatApiKeyInstructions(
+        'Paste the key below. Enter skips. It is stored only in apps/antalmanac/.env.'
+    );
+    const pending = ui.secret('Anteater API key', instructions);
+    ui.input('sensitive-api-key', {});
+    for (const [columns, rows] of [
+        [100, 40],
+        [80, 24],
+    ]) {
+        const screen = ui.screen(columns, rows);
+        assert.match(screen, /https:\/\/dashboard\.anteaterapi\.com\//);
+        assert.match(screen, /https:\/\/antalmanac\.com/);
+        assert.match(screen, /Sign in with ICSSC/);
+        assert.match(screen, /•/);
+        assert.doesNotMatch(screen, /sensitive-api-key/);
+        assert.ok(screen.split('\n').length < rows);
+    }
+    const cramped = ui.screen(40, 16);
+    assert.match(cramped, /https:\/\/dashboard\.anteaterapi\.com\//);
+    assert.match(cramped, /•/);
+    assert.match(cramped, /Enter continue/);
+    assert.doesNotMatch(cramped, /sensitive-api-key/);
+    ui.input('', { name: 'return' });
+    assert.equal(await pending, 'sensitive-api-key');
 });
 
 test('long failure reports scroll and return to the menu', async () => {
