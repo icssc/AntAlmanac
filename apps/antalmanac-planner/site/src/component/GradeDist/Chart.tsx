@@ -29,11 +29,9 @@ export default function Chart({ gradeData, quarter, professor, course }: ChartPr
         { grade: 'NP', count: aggregateGradeData.gradeNPCount, fill: getCssVariable('--mui-palette-chart-noPass') },
     ];
 
-    const totalCount = data.reduce((sum, { count }) => sum + count, 0);
-
     function formatAsPercent(count: number) {
-        if (totalCount === 0) return '0.0%';
-        return `${((count / totalCount) * 100).toFixed(1)}%`;
+        if (aggregateGradeData.total === 0) return '0.0%';
+        return `${((count / aggregateGradeData.total) * 100).toFixed(1)}%`;
     }
 
     return (
