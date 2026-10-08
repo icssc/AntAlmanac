@@ -31,6 +31,8 @@ export type ProgramRequirement<T extends ReqType = ReqType> = RequirementSchema 
 
 export type CourseTiming = 'past' | 'current' | 'future';
 
+export type RequirementStatus = 'completed' | 'in progress' | 'added' | 'not added';
+
 export interface SavedMajorProgram {
     majorId: string;
     specializationId?: string;

@@ -3,7 +3,7 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { Badge, Checkbox, Collapse, Divider, Typography } from '@mui/material';
-import { ProgramRequirement, TransferredGE } from '@peterportal/types';
+import { ProgramRequirement, RequirementStatus, TransferredGE } from '@peterportal/types';
 import Image from 'next/image';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { ReactSortable, SortableEvent } from 'react-sortablejs';
@@ -20,9 +20,10 @@ import {
     CompletedCourseSet,
     useMatchingGETransfers,
     saveOverriddenRequirement,
-    isQuarterIsPast,
     parseQuarterString,
     getQuarterTiming,
+    filterCourseByTiming,
+    getRequirementStatus,
 } from '../../../helpers/courseRequirements';
 import { isCustomCourse } from '../../../helpers/customCourses';
 import { getMissingPrerequisites } from '../../../helpers/planner';
@@ -47,7 +48,7 @@ import {
 } from '../../../store/slices/roadmapSlice';
 import { setShowMobileCreditsMenu } from '../../../store/slices/transferCreditsSlice';
 import trpc from '../../../trpc';
-import { CourseGQLData, PlannerCourseData } from '../../../types/types';
+import { CourseGQLData } from '../../../types/types';
 import { CourseNameAndInfo } from '../planner/Course';
 import MenuTile from '../transfers/MenuTile';
 
@@ -321,7 +322,7 @@ const ConfirmOverrideModal = ({ showOverrideModal, setShowOverrideModal, setOver
 
 interface GroupHeaderProps {
     title: string;
-    complete?: boolean;
+    status: RequirementStatus;
     open: boolean;
     setOpen: React.Dispatch<boolean>;
     requirementId: string;
@@ -330,7 +331,7 @@ interface GroupHeaderProps {
 }
 const GroupHeader: FC<GroupHeaderProps> = ({
     title,
-    complete = false,
+    status,
     open,
     setOpen,
     requirementId,
@@ -344,7 +345,7 @@ const GroupHeader: FC<GroupHeaderProps> = ({
         <ClickableDiv className={className} onClick={() => setOpen(!open)}>
             {/* @TODO doesn't work with ICS 30 series. Works with other series */}
             <span className="group-header-title">
-                {complete && (
+                {status === 'completed' && (
                     <Image
                         className="completed-icon"
                         src="/requirement-status/completed.png"
@@ -353,6 +354,34 @@ const GroupHeader: FC<GroupHeaderProps> = ({
                         height={20}
                     />
                 )}
+                {status === 'in progress' && (
+                    <Image
+                        className="completed-icon"
+                        src="/requirement-status/in-progress.png"
+                        alt="In Progress"
+                        width={20}
+                        height={20}
+                    />
+                )}
+                {status === 'added' && (
+                    <Image
+                        className="completed-icon"
+                        src="/requirement-status/added.png"
+                        alt="Added"
+                        width={20}
+                        height={20}
+                    />
+                )}
+                {status === 'not added' && (
+                    <Image
+                        className="completed-icon"
+                        src="/requirement-status/not-taken.png"
+                        alt="Not Added"
+                        width={20}
+                        height={20}
+                    />
+                )}
+
                 <b>{title}</b>
             </span>
             <div className="group-header-btns">
@@ -445,7 +474,8 @@ interface CourseRequirementProps {
     storeKey: string;
 }
 const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
-    const complete = useCompletionCheck(takenCourseIDs, data).done;
+    const pastCourses = filterCourseByTiming(takenCourseIDs, 'past');
+    const complete = useCompletionCheck(pastCourses, data).done;
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
 
@@ -469,6 +499,8 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
         dispatch(setGroupExpanded({ storeKey: storeKey, expanded: isOpen }));
     };
 
+    const status = getRequirementStatus(takenCourseIDs, data, complete || overridden);
+
     let label: string | number;
     if ('courseCount' in data) {
         label = data.courseCount === data.courses.length ? 'all' : data.courseCount;
@@ -487,7 +519,7 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
             <div className={className}>
                 <GroupHeader
                     title={data.label}
-                    complete={complete}
+                    status={status}
                     requirementId={data.requirementId}
                     open={open}
                     setOpen={setOpen}
@@ -552,7 +584,8 @@ interface GroupedCourseRequirementProps {
     storeKey: string;
 }
 const GroupedCourseRequirement: FC<GroupedCourseRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
-    const complete = useCompletionCheck(takenCourseIDs, data).done;
+    const pastCourses = filterCourseByTiming(takenCourseIDs, 'past');
+    const complete = useCompletionCheck(pastCourses, data).done;
     const className = `course-requirement${complete ? ' completed' : ''}`;
 
     return (
@@ -580,7 +613,8 @@ interface GroupRequirementProps {
     storeKey: string;
 }
 const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
-    const complete = useCompletionCheck(takenCourseIDs, data).done;
+    const pastCourses = filterCourseByTiming(takenCourseIDs, 'past');
+    const complete = useCompletionCheck(pastCourses, data).done;
     const open = useAppSelector((state) => state.courseRequirements.expandedGroups[storeKey] ?? false);
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
@@ -604,6 +638,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
     };
 
     const className = `group-requirement${complete || overridden ? ' completed' : ''}`;
+    const status = getRequirementStatus(takenCourseIDs, data, complete || overridden);
 
     const geTransfers = useMatchingGETransfers(data);
     const multipleApplicableTransfers = geTransfers.length > 1;
@@ -614,6 +649,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
                 <GroupHeader
                     title={data.label}
                     requirementId={data.requirementId}
+                    status={status}
                     open={open}
                     setOpen={setOpen}
                     overridden={overridden}
@@ -748,14 +784,14 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
     const cutoff = parseQuarterString(currentQuarter);
 
     //     // @TODO different lists between already-completed courses and courses not taken?
-    const roadmapCourseMap = yearPlans
-        .flatMap((year) =>
-            year.quarters
-                .filter((quarter) => isQuarterIsPast(year.startYear, quarter.name, cutoff))
-                .flatMap((quarter) => quarter.courses)
-        )
-        .filter((course): course is PlannerCourseData => !isCustomCourse(course))
-        .map((course) => [course.id, { units: course.minUnits }]);
+    // const roadmapCourseMap = yearPlans
+    //     .flatMap((year) =>
+    //         year.quarters
+    //             .filter((quarter) => isQuarterIsPast(year.startYear, quarter.name, cutoff))
+    //             .flatMap((quarter) => quarter.courses)
+    //     )
+    //     .filter((course): course is PlannerCourseData => !isCustomCourse(course))
+    //     .map((course) => [course.id, { units: course.minUnits }]);
 
     const newRoadmapCourseMap: [string, CompletedCourseSet[string]][] = [];
 
@@ -783,7 +819,7 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
 
     const takenCourseSet: CompletedCourseSet = Object.assign(
         {},
-        Object.fromEntries(roadmapCourseMap),
+        Object.fromEntries(newRoadmapCourseMap),
         Object.fromEntries(transferCourseMap)
     );
 
