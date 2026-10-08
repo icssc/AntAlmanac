@@ -44,9 +44,8 @@ packages/
 ## Contributing
 
 1. Find or open an [issue](https://github.com/icssc/AntAlmanac/issues), comment that you want it, and wait to be assigned.
-2. [Fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo) or
-   create a branch if you have the permission to do so.
-3. [Setup your development environment](#development)
+2. [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the repository or create a branch if you have the permission to do so.
+3. Setup your [development environment](#development)
 4. Make any desired changes, commit, and push them.
 5. Create a PR and mark it ready for review. A maintainer merges it.
 6. Wait for your pull request to get reviewed and address any requested changes.
@@ -74,7 +73,7 @@ AntAlmanac started in 2018 with @the-rango. PeterPortal, now Planner, started on
 | 2025–2026    | @alexespejo                  | @CadenLee2   |
 | 2026–present | @sicn4rf                     | @anthonyj33  |
 
-# Where Does the Data Come From?
+## Where Does the Data Come From?
 
 We consolidate our data directly from official UCI sources such as: UCI Catalogue, UCI Public Records Office, and UCI WebReg (courtesy of [Anteater API](https://github.com/icssc/anteater-api)).
 
@@ -82,7 +81,7 @@ Although we consolidate our data directly from official UCI sources, this applic
 We strive to keep our data as accurate as possible with the limited support we receive from UCI.
 Please take this into consideration while using the website.
 
-# Terms & Conditions
+## Terms & Conditions
 
 There are no hard policies at the moment for utilizing this tool.
 However, please refrain from abusing the website by methods such as: sending excessive amount of requests in a small period of time or purposely looking to exploit the system.
