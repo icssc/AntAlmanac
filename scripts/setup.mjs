@@ -553,7 +553,9 @@ function printSummary(ready) {
 
 async function startDevelopment() {
     close();
-    console.log('\n  Starting AntAlmanac. Open the URL printed below. Ctrl+C stops the server.\n');
+    console.log(
+        '\n  Starting AntAlmanac. Open the URL printed below. Ctrl+C stops the server.\n\n  You can run the development server again in the future with pnpm dev.\n'
+    );
     const result = await run(pnpm[0], [...pnpm[1], 'dev'], {
         cwd: root,
         signal: abort.signal,
@@ -616,7 +618,7 @@ async function main() {
                 ],
                 [
                     ready && !doctor
-                        ? 'Hand the terminal to Next.js. Ctrl+C stops the server.'
+                        ? 'Starts Next.js now. Next time, run pnpm dev. Ctrl+C stops the server.'
                         : doctor
                           ? 'Install dependencies and apply the local configuration.'
                           : outstanding.length
