@@ -161,6 +161,8 @@ If you ever need help, feel free to get in touch on the [ICSSC Projects Discord 
 
 3. Start the local PostgreSQL database using Docker Compose.
 
+    Make sure [Docker Desktop](https://www.docker.com/products/docker-desktop/) is installed and running, then run:
+
     ```bash
     docker compose up -d --build
     ```
