@@ -16,9 +16,17 @@ Features include:
 
 ## Development
 
-You will only need two things to run AntAlmanac: Docker and [Mise](https://mise.jdx.dev/).
+You only need two things to run AntAlmanac: Docker and [Mise](https://mise.jdx.dev/).
 
-If you are a contributor outside of ICSSC, fork this repository and clone the respective URL.
+Install Docker:
+- Windows: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- macOS: [OrbStack](https://orbstack.dev/)
+- Linux: `curl -fsSL https://get.docker.com | sudo sh`
+
+Install Mise:
+- Follow [Mise documentation](https://mise.jdx.dev/getting-started.html).
+
+If you are a contributor outside of ICSSC, fork this repository and clone the fork's URL instead.
 
 ```bash
 git clone https://github.com/icssc/AntAlmanac && cd AntAlmanac
