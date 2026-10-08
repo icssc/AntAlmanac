@@ -11,14 +11,12 @@ export const LOCAL_PLANNER_DB = 'postgres://postgres:postgres@localhost:5432/pla
 export const GENERATED_DIR = 'apps/antalmanac-scheduler/site/src/generated';
 
 const API_KEY_STEPS = [
-    'Open https://dashboard.anteaterapi.com/',
-    'If you are not signed in, sign in with your UCI Google account at https://antalmanac.com, then return to the dashboard.',
-    'Choose Sign in with ICSSC.',
-    'Create a secret API key.',
+    'Create a secret key at https://dashboard.anteaterapi.com/',
+    'Sign in with ICSSC. If you are not signed in, use your UCI Google account at https://antalmanac.com first.',
 ];
 
 export function formatApiKeyInstructions(lastStep) {
-    return [...API_KEY_STEPS, lastStep].map((step, index) => `${index + 1}. ${step}`);
+    return [...API_KEY_STEPS, lastStep];
 }
 
 export function readEnv(path) {

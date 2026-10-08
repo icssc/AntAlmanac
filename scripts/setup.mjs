@@ -19,7 +19,7 @@ import {
     redact,
     run,
 } from './setup/core.mjs';
-import { Terminal } from './setup/ui.mjs';
+import { Terminal, openBrowser } from './setup/ui.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const args = new Set(process.argv.slice(2));
@@ -310,12 +310,35 @@ async function runChecks() {
         if (!doctor) {
             let key = process.env.ANTEATER_API_KEY || app.ANTEATER_API_KEY;
             if (isPlaceholder(key) && ui.interactive && !args.has('--yes')) {
-                key = await ui.secret(
+                const dashboard = 'https://dashboard.anteaterapi.com/';
+                const how =
+                    'Sign in with ICSSC and create a secret key. If you are not signed in, use your UCI Google account at https://antalmanac.com first.';
+                const choice = await ui.choose(
                     'Anteater API key',
-                    formatApiKeyInstructions(
-                        'Paste the key below. Enter skips. It is stored only in apps/antalmanac/.env.'
-                    )
+                    ['Open the dashboard in my browser', 'Paste a key I already have', 'Skip for now'],
+                    [
+                        `Opens ${dashboard}, then you paste the key here.`,
+                        'Paste a secret key you already created. It is stored only in apps/antalmanac/.env.',
+                        'Continue without a key. Course data waits until you add one.',
+                    ],
+                    ['Create a secret key on the Anteater API dashboard.', how]
                 );
+                if (choice === 2) key = '';
+                else {
+                    const opened = choice === 0 ? await openBrowser(dashboard) : false;
+                    key = await ui.secret(
+                        'Paste your secret key',
+                        [
+                            choice === 0
+                                ? opened
+                                    ? 'Opened the dashboard in your browser.'
+                                    : `Could not open a browser. Visit ${dashboard}`
+                                : '',
+                            how,
+                        ].filter(Boolean),
+                        { url: dashboard }
+                    );
+                }
             }
             if (key) secrets.push(key);
             ({ app, db } = configureEnvironment(root, key));

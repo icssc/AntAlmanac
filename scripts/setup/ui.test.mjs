@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { formatApiKeyInstructions } from './core.mjs';
 import { LOGO, LOGO_SMALL } from './logo.mjs';
-import { Terminal } from './ui.mjs';
+import { Terminal, openBrowser } from './ui.mjs';
 
 function terminal() {
     const ui = new Terminal({ plain: true });
@@ -95,6 +95,83 @@ test('masked input never renders the key and Ctrl+U clears it', async () => {
     ui.input('', { ctrl: true, name: 'u' });
     ui.input('', { name: 'return' });
     assert.equal(await pending, '');
+});
+
+test('Ctrl+O opens the dashboard and does not become part of the key', async () => {
+    const ui = terminal();
+    ui.animated = true;
+    ui.render = () => {};
+    const opened = [];
+    const pending = ui.secret(
+        'Paste your secret key',
+        ['Sign in with ICSSC. If you are not signed in, use your UCI Google account at https://antalmanac.com first.'],
+        {
+            url: 'https://dashboard.anteaterapi.com/',
+            open: async (url) => {
+                opened.push(url);
+                return true;
+            },
+        }
+    );
+    const screen = ui.screen(80, 24).replaceAll(/\s+/g, ' ');
+    assert.match(screen, /Ctrl\+O opens https:\/\/dashboard\.anteaterapi\.com\//);
+    assert.match(screen, /Sign in with ICSSC/);
+    assert.match(screen, /https:\/\/antalmanac\.com/);
+    await ui.input('', { ctrl: true, name: 'o' });
+    assert.deepEqual(opened, ['https://dashboard.anteaterapi.com/']);
+    assert.match(ui.screen(80, 24), /Opened the dashboard in your browser/);
+    assert.equal(ui.prompt.value, '');
+    ui.input('key-with-o', {});
+    assert.doesNotMatch(ui.screen(80, 24), /key-with-o/);
+    ui.input('', { name: 'return' });
+    assert.equal(await pending, 'key-with-o');
+});
+
+test('a failed browser open tells the user where to go', async () => {
+    const ui = terminal();
+    ui.animated = true;
+    ui.render = () => {};
+    const pending = ui.secret('Paste your secret key', [], {
+        url: 'https://dashboard.anteaterapi.com/',
+        open: async () => false,
+    });
+    await ui.input('', { ctrl: true, name: 'o' });
+    assert.match(ui.screen(80, 24), /Could not open a browser/);
+    assert.match(ui.screen(80, 24), /https:\/\/dashboard\.anteaterapi\.com\//);
+    ui.input('', { name: 'return' });
+    assert.equal(await pending, '');
+});
+
+test('the API key choices name the dashboard on a short screen', () => {
+    const ui = terminal();
+    ui.prompt = {
+        title: 'Anteater API key',
+        options: ['Open the dashboard in my browser', 'Paste a key I already have', 'Skip for now'],
+        descriptions: ['Opens https://dashboard.anteaterapi.com/, then you paste the key here.'],
+        lead: [
+            'Create a secret key on the Anteater API dashboard.',
+            'Sign in with ICSSC. If you are not signed in, use your UCI Google account at https://antalmanac.com first.',
+        ],
+        selected: 0,
+    };
+    for (const [columns, rows] of [
+        [40, 16],
+        [80, 24],
+        [120, 40],
+    ]) {
+        const screen = ui.screen(columns, rows);
+        const text = screen.replaceAll(/\s+/g, ' ');
+        assert.match(text, /Open the dashboard in my browser/);
+        assert.match(text, /dashboard\.anteaterapi\.com/);
+        assert.match(screen, /Enter/);
+        assert.ok(screen.split('\n').length < rows);
+        assert.ok(screen.split('\n').every((line) => line.length < columns));
+    }
+});
+
+test('openBrowser ignores anything other than an https URL', async () => {
+    assert.equal(await openBrowser('file:///etc/passwd'), false);
+    assert.equal(await openBrowser('http://example.com'), false);
 });
 
 test('API key instructions stay visible and the pasted key stays masked', async () => {

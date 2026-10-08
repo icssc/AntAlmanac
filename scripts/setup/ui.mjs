@@ -1,3 +1,4 @@
+import { spawn } from 'node:child_process';
 import { emitKeypressEvents } from 'node:readline';
 import { stripVTControlCharacters } from 'node:util';
 
@@ -23,6 +24,37 @@ const symbols = { pending: '○', running: '◌', done: '✓', blocked: '!', fai
 
 function widest(lines) {
     return Math.max(...lines.map((line) => line.length));
+}
+
+export function openBrowser(url) {
+    if (!/^https:\/\/\S+$/.test(url)) return Promise.resolve(false);
+    const [command, args] =
+        process.platform === 'darwin'
+            ? ['open', [url]]
+            : process.platform === 'win32'
+              ? ['cmd', ['/c', 'start', '', url]]
+              : ['xdg-open', [url]];
+    return new Promise((resolve) => {
+        let child;
+        try {
+            child = spawn(command, args, { stdio: 'ignore', windowsHide: true });
+        } catch {
+            resolve(false);
+            return;
+        }
+        let settled = false;
+        let timer;
+        const finish = (ok) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            child.unref();
+            resolve(ok);
+        };
+        timer = setTimeout(() => finish(true), 3000);
+        child.once('error', () => finish(false));
+        child.once('exit', (code) => finish(code === 0));
+    });
 }
 
 export class Terminal {
@@ -108,7 +140,9 @@ export class Terminal {
             : this.prompt
               ? this.prompt.options
                   ? '↑/↓ or j/k choose · Enter continue · Ctrl+C exit'
-                  : 'Input hidden · Enter continue · Ctrl+U clear · Ctrl+C exit'
+                  : this.prompt.url
+                    ? 'Ctrl+O open dashboard · Enter continue · Ctrl+U clear · Ctrl+C exit'
+                    : 'Input hidden · Enter continue · Ctrl+U clear · Ctrl+C exit'
               : 'Ctrl+C stops setup · Completed work is kept';
         const budget = Math.max(1, height - 2);
         const main = [
@@ -172,6 +206,10 @@ export class Terminal {
             }
             main.push('', this.color('1', this.prompt.title));
             if (this.prompt.options) {
+                if (this.prompt.lead?.length) {
+                    for (const line of this.prompt.lead) main.push(...wrapText(line, width));
+                    main.push('');
+                }
                 this.prompt.options.forEach((option, index) =>
                     main.push(index === this.prompt.selected ? cyan(`❯ ${option}`) : muted(`  ${option}`))
                 );
@@ -179,8 +217,12 @@ export class Terminal {
                 if (hint) main.push('', ...wrapText(hint, width).slice(0, 3).map(muted));
             } else {
                 if (this.prompt.instructions?.length) {
-                    for (const line of this.prompt.instructions) main.push(...wrapText(line, width).map(muted));
+                    for (const line of this.prompt.instructions) main.push(...wrapText(line, width));
                 }
+                if (this.prompt.url) {
+                    main.push(...wrapText(`Ctrl+O opens ${this.prompt.url}`, width).map(cyan));
+                }
+                if (this.prompt.notice) main.push(...wrapText(this.prompt.notice, width));
                 main.push(
                     cyan('› ') +
                         (this.prompt.value
@@ -259,11 +301,11 @@ export class Terminal {
         this.render();
     }
 
-    choose(title, options, descriptions = []) {
-        this.prompt = { title, options, descriptions, selected: 0 };
+    choose(title, options, descriptions = [], lead = []) {
+        this.prompt = { title, options, descriptions, lead, selected: 0 };
         if (!this.animated)
             process.stdout.write(
-                `${title}\n${options.map((value, index) => `  ${index + 1}. ${value}`).join('\n')}\nUse ↑/↓ or a number, then Enter.\n`
+                `${title}\n${lead.length ? `${lead.join('\n')}\n` : ''}${options.map((value, index) => `  ${index + 1}. ${value}`).join('\n')}\nUse ↑/↓ or a number, then Enter.\n`
             );
         this.render();
         return new Promise((resolve) => {
@@ -306,20 +348,38 @@ export class Terminal {
         });
     }
 
-    secret(title, instructions = []) {
-        this.prompt = { title, value: '', instructions };
+    secret(title, instructions = [], { url, open = openBrowser } = {}) {
+        this.prompt = { title, value: '', instructions, url, notice: '' };
         if (!this.animated)
             process.stdout.write(
-                `${title}\n${instructions.length ? `${instructions.join('\n')}\n` : ''}(input hidden; Enter to skip)\n`
+                `${title}\n${instructions.length ? `${instructions.join('\n')}\n` : ''}${url ? `Ctrl+O opens ${url}\n` : ''}(input hidden; Enter to skip)\n`
             );
         this.render();
         return new Promise((resolve) => {
-            this.input = (text, key) => {
+            this.input = async (text, key) => {
+                if (!this.prompt) return;
                 if (key?.name === 'return') {
                     const value = this.prompt.value.trim();
                     this.prompt = null;
                     this.input = null;
                     resolve(value);
+                } else if (key?.ctrl && key.name === 'o' && url && !this.prompt.opening) {
+                    this.prompt.opening = true;
+                    this.prompt.notice = 'Opening the dashboard…';
+                    this.render();
+                    let opened = false;
+                    try {
+                        opened = await open(url);
+                    } catch {
+                        opened = false;
+                    }
+                    if (!this.prompt) return;
+                    this.prompt.opening = false;
+                    this.prompt.notice = opened
+                        ? 'Opened the dashboard in your browser.'
+                        : `Could not open a browser. Visit ${url}`;
+                    if (!this.animated) process.stdout.write(`${this.prompt.notice}\n`);
+                    this.render();
                 } else if (key?.ctrl && key.name === 'u') this.prompt.value = '';
                 else if (key?.name === 'backspace') this.prompt.value = this.prompt.value.slice(0, -1);
                 else if (
