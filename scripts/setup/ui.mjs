@@ -95,7 +95,9 @@ export class Terminal {
         const cyan = (text) => this.color('38;5;81', text);
         const muted = (text) => this.color('38;5;245', text);
         const complete = this.steps.filter((step) => step.status === 'done').length;
-        const blocked = this.steps.filter((step) => ['blocked', 'failed'].includes(step.status)).length;
+        const needsFix = this.steps.filter(
+            (step) => ['blocked', 'failed'].includes(step.status) && step.id !== 'ready'
+        );
         const active = this.steps.find((step) => step.status === 'running');
         const barLength = Math.min(24, Math.max(8, width - 30));
         const count = this.steps.length ? Math.round((complete / this.steps.length) * barLength) : 0;
@@ -110,7 +112,7 @@ export class Terminal {
               : 'Ctrl+C stops setup · Completed work is kept';
         const budget = Math.max(1, height - 2);
         const main = [
-            `${cyan('━'.repeat(count))}${muted('━'.repeat(barLength - count))}  ${complete}/${this.steps.length} ready${blocked ? ` · ${blocked} need attention` : ''}  ${muted(toolchain)}`,
+            `${cyan('━'.repeat(count))}${muted('━'.repeat(barLength - count))}  ${complete}/${this.steps.length} ready${needsFix.length ? ` · ${needsFix.length} ${needsFix.length === 1 ? 'step' : 'steps'} to fix` : ''}  ${muted(toolchain)}`,
         ];
 
         if (this.prompt?.lines) {
@@ -140,10 +142,34 @@ export class Terminal {
                             : '38;5;245';
                 const label = `${glyph}  ${String(index + 1).padStart(2, '0')}  ${step.label}`;
                 main.push(this.color(tone, label) + (step.status === 'running' ? muted(`  ${elapsed}`) : ''));
+                if (!this.prompt && step.summary && ['failed', 'blocked', 'skipped'].includes(step.status)) {
+                    main.push(
+                        ...wrapText(step.summary, Math.max(8, width - 6))
+                            .slice(0, 2)
+                            .map((line) => muted(`     ${line}`))
+                    );
+                }
             });
         }
 
         if (this.prompt) {
+            if (this.prompt.options && needsFix.length) {
+                main.push(
+                    '',
+                    this.color(
+                        '38;5;203',
+                        needsFix.length === 1 ? 'Fix this before continuing' : 'Fix these before continuing'
+                    )
+                );
+                for (const step of needsFix) {
+                    const text = `${symbols[step.status]}  ${step.label} — ${step.summary || 'Open the full report for the cause and the fix.'}`;
+                    main.push(
+                        ...wrapText(text, width)
+                            .slice(0, 2)
+                            .map((line) => this.color('38;5;203', line))
+                    );
+                }
+            }
             main.push('', this.color('1', this.prompt.title));
             if (this.prompt.options) {
                 this.prompt.options.forEach((option, index) =>
@@ -175,7 +201,7 @@ export class Terminal {
             cyan('ANTALMANAC') + muted('  /  developer setup'),
             `  ${this.color('38;5;215', '●')} ${this.title}`,
         ];
-        const keepTail = Boolean(this.prompt?.instructions?.length);
+        const keepTail = Boolean(this.prompt?.instructions?.length || this.prompt?.options);
         return this.fit([...header, ...main], width, height, muted(footer), keepTail);
     }
 
@@ -206,7 +232,17 @@ export class Terminal {
             this.command = '';
         }
         step.detail = detail;
-        if (!this.animated) process.stdout.write(`  ${symbols[status]} ${step.label}${detail ? ` — ${detail}` : ''}\n`);
+        step.summary = ['failed', 'blocked', 'skipped'].includes(status)
+            ? detail
+                  ?.split('\n')
+                  .find((line) => line.trim())
+                  ?.trim() || ''
+            : '';
+        if (!this.animated) {
+            const [first, ...rest] = (detail || '').split('\n');
+            process.stdout.write(`  ${symbols[status]} ${step.label}${first ? ` — ${first}` : ''}\n`);
+            for (const line of rest) process.stdout.write(`    ${line}\n`);
+        }
         if (detail) this.logs = detail.split('\n');
         this.render();
     }
@@ -249,7 +285,7 @@ export class Terminal {
     }
 
     details(lines) {
-        this.prompt = { title: 'Results & recovery steps', lines, offset: 0 };
+        this.prompt = { title: 'What happened, and how to fix it', lines, offset: 0 };
         if (!this.animated) process.stdout.write(`${lines.join('\n')}\nPress Enter to return.\n`);
         this.render();
         return new Promise((resolve) => {

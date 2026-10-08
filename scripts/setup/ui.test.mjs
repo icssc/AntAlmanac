@@ -22,6 +22,32 @@ function menu(ui) {
     };
 }
 
+test('a failed step states the cause on the menu and in the step list', () => {
+    const ui = terminal();
+    ui.steps[3].id = 'database';
+    ui.steps[3].status = 'failed';
+    ui.steps[3].summary = 'Postgres is not running.';
+    menu(ui);
+    for (const [columns, rows] of [
+        [40, 16],
+        [80, 24],
+        [120, 40],
+    ]) {
+        const screen = ui.screen(columns, rows);
+        const text = screen.replaceAll(/\s+/g, ' ');
+        assert.match(text, /Fix this before continuing/);
+        assert.match(text, /Postgres is not running/);
+        assert.match(text, /Retry unfinished steps/);
+        assert.match(screen, /Enter/);
+        assert.ok(screen.split('\n').length < rows);
+        assert.ok(screen.split('\n').every((line) => line.length < columns));
+    }
+    ui.prompt = null;
+    const running = ui.screen(100, 40);
+    assert.match(running, /Postgres is not running/);
+    assert.match(running, /1 step to fix/);
+});
+
 test('menus and keyboard controls remain visible at small terminal sizes', () => {
     const ui = terminal();
     menu(ui);

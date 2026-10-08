@@ -96,12 +96,91 @@ async function command(cmd, argv, options = {}) {
         ...options,
     });
     if (!result.ok) {
-        const reason = result.timedOut ? 'Command timed out.' : result.error || `Command exited ${result.code}.`;
-        throw new Error(`${reason}\n${redact(result.output, secrets).trim().split('\n').slice(-8).join('\n')}`);
+        const reason = result.timedOut
+            ? 'The command timed out and was stopped.'
+            : result.error
+              ? `The command could not start (${result.error}).`
+              : `Command exited ${result.code}.`;
+        const output = redact(result.output, secrets)
+            .trim()
+            .split('\n')
+            .map((line) => line.trimEnd())
+            .filter(Boolean)
+            .slice(-8);
+        throw new Error(
+            [[cmd, ...argv].join(' '), reason, ...(output.length ? ['Last output:', ...output] : [])].join('\n')
+        );
     }
     return result.output.trim();
 }
 const pm = (argv, options) => command(pnpm[0], [...pnpm[1], ...argv], options);
+
+const ADVICE = {
+    tools: [
+        'Install the Node version listed in .nvmrc.',
+        'With Mise, run: mise install && mise run setup',
+        'Without Mise, run: nvm install && nvm use, then node scripts/setup.mjs',
+    ],
+    dependencies: [
+        'Check your network connection.',
+        `Retry with ${setupCommand}. Packages install from the lockfile with pnpm install --frozen-lockfile.`,
+    ],
+    environment: [
+        `Fill in every listed value in ${APP_ENV} and ${DB_ENV}.`,
+        'When a shell variable overrides .env, unset it or set it to the same value as the file.',
+        `Then rerun ${setupCommand}.`,
+    ],
+    database: [
+        'Start Docker and wait until `docker info` succeeds.',
+        'Free port 5432 if another Postgres is already listening there.',
+        `Rerun ${setupCommand}. The database volume stays in place.`,
+    ],
+    migrations: [
+        'Read the database error under What happened.',
+        'Fix that error and retry. Leave the Docker volume in place so local data is kept.',
+    ],
+    data: formatApiKeyInstructions(`Save the key as ANTEATER_API_KEY in ${APP_ENV}, then rerun ${setupCommand}.`),
+};
+
+function headlineFor(id, body) {
+    const lines = String(body)
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean);
+    const first = lines[0] || '';
+    if (first && !/^(pnpm|npm|docker|node|mise)\b/.test(first)) return first;
+    const command = lines.find((line) => /^(pnpm|npm|docker|node|mise)\b/.test(line));
+    const outcome = lines.find(
+        (line) =>
+            /^Command exited \d+/.test(line) ||
+            line.startsWith('The command timed out') ||
+            line.startsWith('The command could not start')
+    );
+    if (command && outcome) {
+        const short = command.length > 72 ? `${command.slice(0, 69)}…` : command;
+        return `${outcome.replace(/\.$/, '')} while running ${short}.`;
+    }
+    return lines[0] || `${step(id).label} failed.`;
+}
+
+function report(id, status, headline, extra = [], advice = ADVICE[id]) {
+    const lines = [headline];
+    const happened = extra
+        .flat()
+        .map((line) => String(line).trimEnd())
+        .filter((line, index, all) => line.trim() || (index > 0 && all[index - 1].trim()));
+    if (happened[0]?.trim() === headline) happened.shift();
+    if (happened.some((line) => line.trim())) lines.push('', 'What happened:', ...happened);
+    if (advice?.length) {
+        const numbered = advice.every((line, index) => line.startsWith(`${index + 1}. `));
+        lines.push('', 'What to do:', ...(numbered ? advice : advice.map((line) => `• ${line}`)));
+    }
+    mark(id, status, lines.join('\n'));
+}
+
+function problems() {
+    return steps.filter((item) => ['failed', 'blocked'].includes(item.status) && item.id !== 'ready');
+}
 
 async function task(id, action) {
     if (interrupted) throw new Error('Setup cancelled.');
@@ -111,15 +190,8 @@ async function task(id, action) {
         await action();
     } catch (error) {
         if (interrupted) throw error;
-        const recovery = {
-            tools: 'Run mise install, then mise run setup.',
-            dependencies: 'Check your network connection, then retry the dependency install.',
-            environment: 'Review apps/antalmanac/.env and apps/antalmanac-scheduler/db/.env, then retry.',
-            database: 'Start Docker Desktop or your Docker daemon. Check port 5432, then retry.',
-            migrations: 'Inspect the migration error above. Fix the local database and retry; do not delete its data.',
-            data: 'Create a secret key at https://dashboard.anteaterapi.com/ (sign in at https://antalmanac.com if needed, then choose Sign in with ICSSC). Save it in apps/antalmanac/.env and retry.',
-        };
-        mark(id, 'failed', `${error.message}\n\nNext: ${recovery[id] || 'Fix the reported issue and retry.'}`);
+        const body = error.message?.trim() || 'The step stopped before it reported a reason.';
+        report(id, 'failed', headlineFor(id, body), body.split('\n'));
     }
 }
 
@@ -149,7 +221,9 @@ async function waitForPostgres() {
             await delay(1000);
         }
     }
-    throw lastError;
+    throw new Error(
+        `PostgreSQL did not accept connections within 60 seconds.\nSetup waits until the Postgres process itself is running, because the container can answer checks while it is still initializing.\nLast check:\n${lastError.message}`
+    );
 }
 
 async function ensurePlannerDatabase() {
@@ -194,10 +268,10 @@ async function runChecks() {
     await task('tools', async () => {
         const required = readFileSync(join(root, '.nvmrc'), 'utf8').trim();
         if (process.versions.node.split('.')[0] !== required) {
-            mark(
+            report(
                 'tools',
                 'blocked',
-                `Use Node ${required}: run mise install, then mise run setup. Without mise: nvm install && nvm use.`
+                `Node ${process.versions.node} is active, and this repo requires Node ${required}.`
             );
             return;
         }
@@ -206,10 +280,11 @@ async function runChecks() {
         const installed = await run('pnpm', ['--version'], { cwd: root, signal: abort.signal, timeout: 15_000 });
         if (!installed.ok || installed.output.trim() !== version) {
             if (doctor) {
-                mark(
+                report(
                     'tools',
                     'blocked',
-                    `Node ${required} is ready; pnpm ${version} is missing or differs. Run setup to use the pinned version via npm exec.`
+                    `pnpm ${version} is required, and this shell does not have that exact version.`,
+                    [`Node ${required} is already active.`]
                 );
                 return;
             }
@@ -224,14 +299,12 @@ async function runChecks() {
         await task('dependencies', async () => {
             if (!doctor) await pm(['install', '--frozen-lockfile'], { timeout: 15 * 60_000 });
             if (DEPENDENCY_MARKERS.some((file) => !existsSync(join(root, file)))) {
-                mark(
-                    'dependencies',
-                    'blocked',
-                    'Dependencies or generated API types are missing. Run setup with network access.'
-                );
+                report('dependencies', 'blocked', 'Workspace packages or generated API types are missing.', [
+                    'Setup looks for installed packages and the generated Anteater API types.',
+                ]);
             } else mark('dependencies', 'done', 'Workspace packages and generated API types are present.');
         });
-    else mark('dependencies', 'skipped', 'Resolve the toolchain first.');
+    else mark('dependencies', 'skipped', 'Waiting on Node and pnpm before installing packages.');
 
     await task('environment', async () => {
         if (!doctor) {
@@ -248,28 +321,42 @@ async function runChecks() {
             ({ app, db } = configureEnvironment(root, key));
             captureSecrets(app, db);
         }
-        const problems = environmentProblems(root, app, db);
-        mark(
-            'environment',
-            problems.length ? 'blocked' : 'done',
-            problems.length ? problems.join('\n') : 'Local .env files ready; credentials preserved.'
-        );
+        const issues = environmentProblems(root, app, db);
+        if (issues.length) {
+            report(
+                'environment',
+                'blocked',
+                issues.length === 1
+                    ? issues[0]
+                    : `${issues.length} local settings are missing or conflict with the shell.`,
+                issues.length === 1 ? [] : issues
+            );
+        } else mark('environment', 'done', 'Local .env files are ready, and existing credentials were kept.');
     });
 
     const dbIssue = databaseProblem(app, db);
     const overrides = environmentProblems(root, app, db).filter((issue) => issue.includes('overrides .env'));
-    if (dbIssue || overrides.length) mark('database', 'blocked', dbIssue || overrides.join('\n'));
-    else
+    if (dbIssue || overrides.length) {
+        const issue = dbIssue || overrides.join('\n');
+        const advice =
+            overrides.length && !dbIssue
+                ? ADVICE.environment
+                : dbIssue?.includes('STAGE')
+                  ? [`Set STAGE=local in ${APP_ENV}, then rerun ${setupCommand}.`]
+                  : [
+                        'Setup migrates only the local Docker database described in .env.example.',
+                        'For any other database, run pnpm sched:db:migrate yourself once that database is ready.',
+                    ];
+        report('database', 'blocked', headlineFor('database', issue), issue.split('\n'), advice);
+    } else
         await task('database', async () => {
             await command('docker', ['compose', 'version'], { timeout: 15_000 });
             try {
                 await command('docker', ['info'], { timeout: 15_000 });
             } catch {
-                mark(
-                    'database',
-                    'blocked',
-                    'Docker is unavailable. Start Docker Desktop or your Docker daemon, then rerun setup.'
-                );
+                report('database', 'blocked', 'Docker is not running, so PostgreSQL cannot start.', [
+                    '`docker info` failed. The daemon is stopped or this shell cannot reach it.',
+                ]);
                 return;
             }
             if (!doctor) {
@@ -320,7 +407,15 @@ async function runChecks() {
             } else if (plannerIssue.startsWith('Planner is using a custom')) {
                 mark('database', 'done', `Scheduler Postgres is accepting connections. ${plannerIssue}`);
             } else {
-                mark('database', 'blocked', plannerIssue);
+                report(
+                    'database',
+                    'blocked',
+                    plannerIssue,
+                    [],
+                    [
+                        `Set PLANNER_DATABASE_URL in ${APP_ENV} to the local planner database, then rerun ${setupCommand}.`,
+                    ]
+                );
             }
         });
 
@@ -330,7 +425,7 @@ async function runChecks() {
                 mark(
                     'migrations',
                     'skipped',
-                    'Read-only check: migrations are not applied. Run setup to bring both schemas up to date.'
+                    'This was a read-only check, so migrations were not applied. Run setup when you want both schemas updated.'
                 );
             } else {
                 await pm(['sched:db:migrate'], { env: { DB_URL: db.DB_URL } });
@@ -338,28 +433,39 @@ async function runChecks() {
                 if (plannerIssue?.startsWith('Planner is using a custom')) {
                     mark('migrations', 'done', `Scheduler schema migrated. ${plannerIssue}`);
                 } else if (plannerIssue) {
-                    mark('migrations', 'blocked', plannerIssue);
+                    report(
+                        'migrations',
+                        'blocked',
+                        plannerIssue,
+                        [],
+                        [
+                            `Set PLANNER_DATABASE_URL in ${APP_ENV}, then rerun ${setupCommand}. Scheduler migrations that already ran are kept.`,
+                        ]
+                    );
                 } else {
                     await pm(['plan:db:migrate'], { env: { PLANNER_DATABASE_URL: app.PLANNER_DATABASE_URL } });
                     mark('migrations', 'done', 'Scheduler and planner schemas are migrated.');
                 }
             }
         });
-    else mark('migrations', 'skipped', 'Requires dependencies and the local database.');
+    else mark('migrations', 'skipped', 'Waiting on installed packages and a running database before migrating.');
 
     if (doctor) {
         const issues = generatedDataProblems(root);
-        mark(
-            'data',
-            issues.length ? 'blocked' : 'done',
-            issues.length ? issues.join('\n') : 'Generated course and term data are present.'
-        );
+        if (issues.length) {
+            report('data', 'blocked', 'Generated course data is missing or empty.', issues, [
+                `Run ${setupCommand} to download it. A read-only check does not fetch courses.`,
+                `The download needs a real ANTEATER_API_KEY in ${APP_ENV}. Create one at https://dashboard.anteaterapi.com/ if you do not have it.`,
+            ]);
+        } else mark('data', 'done', 'Generated course and term data are present.');
     } else if (!okay('dependencies') || isPlaceholder(app.ANTEATER_API_KEY)) {
-        mark(
-            'data',
-            'blocked',
-            `Requires dependencies and a valid ANTEATER_API_KEY in ${APP_ENV}.\n${formatApiKeyInstructions('Paste the key into the wizard or that file, then rerun setup.').join('\n')}`
-        );
+        const missing = [
+            okay('dependencies') ? '' : 'Workspace dependencies are not installed yet.',
+            isPlaceholder(app.ANTEATER_API_KEY)
+                ? `ANTEATER_API_KEY in ${APP_ENV} is missing or still a placeholder.`
+                : '',
+        ].filter(Boolean);
+        report('data', 'blocked', 'Course data was not fetched.', missing);
     } else
         await task('data', async () => {
             await pm(['get-data'], {
@@ -367,20 +473,29 @@ async function runChecks() {
                 timeout: 15 * 60_000,
             });
             const issues = generatedDataProblems(root);
-            if (issues.length) throw new Error(issues.join('\n'));
+            if (issues.length) {
+                report('data', 'failed', 'Course data finished without usable files.', issues, [
+                    'Read the fetch output above, then run pnpm get-data again.',
+                    `If the API rejected the key, create a new secret at https://dashboard.anteaterapi.com/ and save it in ${APP_ENV}.`,
+                ]);
+                return;
+            }
             mark('data', 'done', 'Course search, departments, terms, and section caches generated.');
         });
 
     const required = steps.filter((item) => item.id !== 'ready' && !(doctor && item.id === 'migrations'));
     const ready = required.every((item) => item.status === 'done');
+    const outstanding = problems();
     mark(
         'ready',
         ready ? 'done' : 'blocked',
         ready
             ? doctor
-                ? 'Checks passed. Run setup to verify migrations before starting development.'
+                ? 'Checks passed. Run setup to apply migrations before starting development.'
                 : `Ready to start: ${devCommand} → http://localhost:3000`
-            : 'Finish the items below, then rerun setup.'
+            : outstanding.length
+              ? `${outstanding.map((item) => item.label).join(', ')} must succeed before AntAlmanac can start. Rerun ${setupCommand} after fixing them. Completed steps are kept.`
+              : `Finish the remaining steps, then rerun ${setupCommand}.`
     );
     previousEnvironment = { app, db };
     ui.command = '';
@@ -389,17 +504,26 @@ async function runChecks() {
 
 function printSummary(ready) {
     close();
+    const outstanding = problems();
     console.log(
         `\n  ANTALMANAC / ${ready ? (doctor ? 'checks passed' : 'workspace ready') : 'setup needs attention'}\n`
     );
-    for (const item of steps)
+    if (!ready && outstanding.length) {
         console.log(
-            `  ${item.status === 'done' ? '✓' : item.status === 'skipped' ? '–' : '!'} ${item.label}\n    ${(item.detail || item.status).replaceAll('\n', '\n    ')}`
+            `  ${outstanding.length === 1 ? 'This step needs a fix' : 'These steps need a fix'} before AntAlmanac can start:\n`
         );
+    }
+    for (const item of steps) {
+        const glyph =
+            item.status === 'done' ? '✓' : item.status === 'skipped' ? '–' : item.status === 'failed' ? '×' : '!';
+        console.log(`  ${glyph} ${item.label}`);
+        for (const line of (item.detail || item.status).split('\n')) console.log(`    ${line}`);
+        console.log('');
+    }
     console.log(
         ready && !doctor
-            ? `\n  Next: ${devCommand}\n  Open the URL printed by Next.js (usually http://localhost:3000).\n`
-            : `\n  Continue: ${setupCommand}\n`
+            ? `  Next: ${devCommand}\n  Open the URL printed by Next.js (usually http://localhost:3000).\n`
+            : `  Continue: ${setupCommand}\n`
     );
     process.exitCode = ready ? 0 : 1;
 }
@@ -432,7 +556,9 @@ async function main() {
         if (choice === 2) return;
         doctor = choice === 1;
     } else if (!ui.interactive && !args.has('--yes') && !doctor) {
-        throw new Error('No interactive terminal. Use --yes for setup or --check for read-only diagnosis.');
+        throw new Error(
+            'No interactive terminal, so setup did not change anything. Use --yes to set up the workspace, or --check for a read-only diagnosis.'
+        );
     }
     while (!interrupted) {
         const ready = await runChecks();
@@ -440,11 +566,16 @@ async function main() {
             printSummary(ready);
             return;
         }
+        const outstanding = problems();
         ui.title = ready
             ? doctor
                 ? 'Checks passed. Ready for the next step.'
                 : 'Your workspace is ready. Let’s build.'
-            : 'A few things need your attention.';
+            : outstanding.length === 1
+              ? `${outstanding[0].label} needs a fix.`
+              : outstanding.length
+                ? `${outstanding.length} steps need a fix.`
+                : 'A few things still need to be finished.';
         let retry = false;
         while (!retry) {
             const action =
@@ -455,15 +586,23 @@ async function main() {
                       : 'Retry unfinished steps';
             const choice = await ui.choose(
                 'What would you like to do next?',
-                [action, 'Inspect results & recovery steps', 'Finish and print summary'],
+                [
+                    action,
+                    outstanding.length ? 'See what failed and how to fix it' : 'Review the full results',
+                    'Finish and print the full report',
+                ],
                 [
                     ready && !doctor
                         ? 'Hand the terminal to Next.js. Ctrl+C stops the server.'
                         : doctor
                           ? 'Install dependencies and apply the local configuration.'
-                          : 'Fix the reported issues, then continue. Completed installs and fetches are kept in this session.',
-                    'Scroll through every result, including error details and recovery commands.',
-                    'Keep a readable report and the next command in your terminal.',
+                          : outstanding.length
+                            ? `Retries ${outstanding.map((item) => item.label).join(', ')}. Completed installs and downloads are kept.`
+                            : 'Continues setup. Completed installs and downloads are kept.',
+                    outstanding.length
+                        ? 'Shows the cause, the command output, and the exact next step for every step that failed.'
+                        : 'Scroll through every result.',
+                    'Prints the same report in your terminal, including how to fix each step.',
                 ]
             );
             if (choice === 2) {
@@ -471,7 +610,21 @@ async function main() {
                 return;
             }
             if (choice === 1) {
-                await ui.details(steps.flatMap((item) => [`${item.label} / ${item.status}`, item.detail || '', '']));
+                const names = {
+                    done: 'Done',
+                    running: 'Running',
+                    pending: 'Not started',
+                    skipped: 'Skipped',
+                    failed: 'Failed',
+                    blocked: 'Needs a fix',
+                };
+                await ui.details(
+                    steps.flatMap((item) => [
+                        `${item.label} — ${names[item.status] || item.status}`,
+                        ...(item.detail ? item.detail.split('\n') : ['No details yet.']),
+                        '',
+                    ])
+                );
             } else if (ready && !doctor) {
                 await startDevelopment();
                 return;
@@ -493,7 +646,10 @@ try {
     await main();
 } catch (error) {
     close();
-    if (!interrupted) console.error(`\nSetup could not finish: ${redact(error.message, secrets)}`);
+    if (!interrupted)
+        console.error(
+            `\nSetup stopped because of an unexpected error.\n\n${redact(error.message, secrets)}\n\nRerun ${setupCommand}. Steps that already finished are kept.\n`
+        );
     process.exitCode = interrupted ? 130 : 1;
 } finally {
     close();

@@ -92,7 +92,11 @@ test('failed data fetch remains a failure even when stale generated files exist'
     const { launch } = fixture(t);
     const result = await launch(['--yes'], { FAIL_FETCH: '1' });
     assert.equal(result.code, 1);
+    assert.match(result.output, /Downloading course data failed|Command exited 9 while running/);
     assert.match(result.output, /Command exited 9/);
+    assert.match(result.output, /What happened/);
+    assert.match(result.output, /What to do/);
+    assert.match(result.output, /dashboard\.anteaterapi\.com/);
     assert.doesNotMatch(result.output, /fixture-secret|workspace ready/);
 });
 

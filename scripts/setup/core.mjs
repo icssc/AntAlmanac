@@ -237,5 +237,6 @@ export function prepareRetry(steps, previous, current, doctor = false) {
         if (step.status === 'done' && keep.has(step.id)) continue;
         step.status = 'pending';
         step.detail = undefined;
+        step.summary = undefined;
     }
 }
