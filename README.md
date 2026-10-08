@@ -26,7 +26,7 @@ Install Docker:
 
 Install Mise:
 
-- Follow [Mise documentation](https://mise.jdx.dev/getting-started.html).
+- Follow [Mise documentation](https://mise.jdx.dev/getting-started.html), run `mise doctor` to verify your install.
 
 If you are a contributor outside of ICSSC, fork this repository and clone the fork's URL instead.
 
