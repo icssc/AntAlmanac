@@ -73,14 +73,14 @@ export class Terminal {
     }
 
     logoLines(width, budget) {
-        const blue = (text) => this.color('38;5;39', text);
+        const ink = (text) => this.color('38;5;15', text);
         for (const candidate of [LOGO, LOGO_SMALL]) {
             const size = widest(candidate);
             const block = candidate.length + 2;
             if (size <= width && block <= budget) {
                 const pad = ' '.repeat(Math.max(0, Math.floor((width - size) / 2)));
                 return [
-                    ...candidate.map((line) => blue(pad + line)),
+                    ...candidate.map((line) => ink(pad + line)),
                     '',
                     `  ${this.color('38;5;215', '●')} ${this.title}`,
                 ];
