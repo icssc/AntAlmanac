@@ -57,3 +57,7 @@ Desktop.ini
 
 # sst
 .sst
+
+# Local mise overrides
+mise.local.toml
+mise.*.local.toml

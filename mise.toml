@@ -1,0 +1,54 @@
+# Keep these aligned with .nvmrc and package.json; setup tests enforce this.
+[tools]
+node = "22"
+pnpm = "10.22.0"
+
+# App secrets stay in the app/package .env files, loaded by their own tooling.
+[env]
+ANTALMANAC_TOOLCHAIN = "mise"
+
+[tasks.setup]
+description = "Open the guided developer setup TUI"
+run = "node scripts/setup.mjs"
+raw = true
+quiet = true
+
+[tasks.doctor]
+description = "Check the development environment without changing app files or services"
+run = "node scripts/setup.mjs --check"
+raw = true
+quiet = true
+
+[tasks.dev]
+description = "Start the Next.js development server (after setup)"
+run = "pnpm dev"
+raw = true
+
+[tasks."db:up"]
+description = "Start local PostgreSQL and wait for it to be healthy"
+run = "docker compose up -d --build --wait --wait-timeout 90 db"
+
+[tasks."db:stop"]
+description = "Stop local PostgreSQL, keeping the container and data"
+run = "docker compose stop db"
+
+[tasks."db:studio"]
+description = "Browse the database with Drizzle Studio"
+run = "pnpm db:studio"
+raw = true
+
+[tasks.data]
+description = "Refresh course, department, and term caches (requires an API key)"
+run = "pnpm --dir apps/antalmanac get-data"
+
+[tasks.test]
+description = "Run application tests (requires generated term data)"
+run = "pnpm test run"
+
+[tasks."test:setup"]
+description = "Test the setup wizard without dependencies, Docker, or credentials"
+run = "node --test scripts/setup/*.test.mjs"
+
+[tasks.lint]
+description = "Lint the repository"
+run = "pnpm lint"

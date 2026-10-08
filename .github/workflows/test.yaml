@@ -28,6 +28,9 @@ jobs:
             - name: Setup Node.js and pnpm
               uses: ./.github/actions/setup-node-and-pnpm
 
+            - name: Test developer setup wizard
+              run: node --test scripts/setup/*.test.mjs
+
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 

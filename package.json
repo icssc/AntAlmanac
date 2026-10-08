@@ -16,7 +16,10 @@
         "test": "vitest",
         "deploy": "sst deploy --stage production",
         "format": "oxfmt",
-        "lint": "oxlint --deny-warnings"
+        "lint": "oxlint --deny-warnings",
+        "setup": "node scripts/setup.mjs",
+        "setup:check": "node scripts/setup.mjs --check",
+        "test:setup": "node --test scripts/setup/*.test.mjs"
     },
     "devDependencies": {
         "@total-typescript/tsconfig": "^1.0.4",

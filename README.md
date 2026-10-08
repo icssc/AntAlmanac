@@ -92,7 +92,7 @@ Here is a rough guide on how to contribute:
    or create your own that describes the problem you want to fix.
 2. [Fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo) or
    create a branch if you have the permission to do so.
-3. [Setup your development environment](#get-setup-to-develop-locally)
+3. [Setup your development environment](#guided-setup-recommended)
 4. Create a draft pull request with your new branch to track your progress.
 5. Make any desired changes, commit, and push them. Repeat until the selected issue has been addressed.
 6. Change the pull request from draft to open. If possible, request a review from a maintainer.
@@ -119,7 +119,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
     If none of those work for any reason, you can defer to your Operating System's
     package manager or [the downloads from the official website](https://nodejs.org/en/download).
 
-2. Install `pnpm`. This is our package manager of choice for this project. The exact version we use is pinned in the root `package.json` (the `packageManager` field).
+2. For manual setup, install `pnpm` (mise handles this for guided setup). This is our package manager of choice for this project. The exact version we use is pinned in the root `package.json` (the `packageManager` field).
    It's responsible for installing, uninstalling, and keeping track of the app's dependencies.
 
     ```bash
@@ -131,7 +131,37 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 ## Developing
 
-### Quick Start
+### Guided Setup (recommended)
+
+Install [mise](https://mise.jdx.dev/installing-mise.html), clone this repository, then run from its root:
+
+```bash
+mise trust
+mise install
+mise run setup
+```
+
+Mise supplies Node 22 and pnpm 10.22.0 from `mise.toml`. No global Node/pnpm installation or shell activation is needed for `mise run`. Review the configuration before trusting it. Docker Desktop (or a Docker daemon with Compose v2) and an Anteater API key are needed to finish setup; ask a project lead for a key.
+
+Choose **Set up my workspace**, then follow the terminal wizard. It installs dependencies, preserves existing credentials, generates a local auth secret, starts PostgreSQL and waits for it to be healthy, applies migrations, and fetches course data. API-key input is masked. At the end, inspect results, retry unfinished steps, or start the development server. Menus support arrow keys or `j`/`k`; Enter selects. Ctrl+C stops setup. Retry keeps successful installs and fetches within the current session while checking tools, configuration, and services again.
+
+Follow the [complete walkthrough](docs/DEVELOPMENT.md) for installation, screens, credentials, recovery, and daily workflows.
+
+```bash
+mise run                          # Mise's searchable project task picker
+mise run setup                    # Guided setup and recovery TUI
+mise run doctor                   # Diagnose app files/services without changing them
+mise run dev                      # Start Next.js after setup
+mise run db:stop                   # Stop PostgreSQL, preserving the container/data
+mise run setup -- --yes --plain    # Setup without prompts or animation
+mise run test:setup                # Setup regression tests; no app credentials needed
+```
+
+Mise can install missing tools before running a task, including `doctor`. The doctor's application checks are read-only and do not apply migrations or authenticate API keys. `NO_COLOR=1` or `--plain` disables animation and color. Noninteractive terminals require `--yes` or `--check`; unresolved issues exit with code 1.
+
+If you already manage Node 22 yourself, `node scripts/setup.mjs` and `pnpm run setup` still work. The wizard uses the pinned pnpm via `npm exec` when needed. Do not use `pnpm setup`, which is pnpm's own shell-setup command.
+
+### Manual Setup
 
 1. Clone the AntAlmanac repository or your fork.
 
