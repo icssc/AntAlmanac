@@ -1,17 +1,24 @@
 ![AntAlmanac](apps/antalmanac/public/banner.png)
 
-AntAlmanac is UC Irvine’s course-planning platform: **Scheduler** for quarterly schedules and **Planner** for multi-year roadmaps. Both run from this repository as one Next.js app at [antalmanac.com](https://antalmanac.com).
+# About
 
-| Scheduler                                             | Planner                                             |
-| ----------------------------------------------------- | --------------------------------------------------- |
-| Search classes and preview them on a calendar         | Track majors, minors, and GE requirements           |
-| Jump to prerequisites, grades, and enrollment history | Import an unofficial transcript and transfer credit |
-| See class locations on a map                          | Build a multi-year roadmap                          |
-| ![Scheduler screenshot](assets/scheduler.jpeg)        | ![Planner screenshot](assets/planner.jpeg)          |
+AntAlmanac is a course-planning platform for courses at UC Irvine.
+It includes two powerful planning tools: AntAlmanac Scheduler, for quarterly schedules, and AntAlmanac Planner, for multi-year roadmaps and course discovery.
+Features include:
+
+| AntAlmanac Scheduler                                              | AntAlmanac Planner                                                                                                                                |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Search** for classes by department, section code, and keywords. | **Show requirements** for multiple majors and minors                                                                                              |
+| **Preview** class times on the _integrated calendar_.             | **View completion** of your _major_, _specialization_, _minor_, and _GE_ requirements                                                             |
+| **Quickly access** course statistics, reviews, and prerequisites. | **Import** your unofficial transcript via [StudentAccess](https://www.reg.uci.edu/access/student/transcript/?seg=U) to populate previous courses. |
+| **Locate** your class locations on the _interactive map_.         | **Add credits** from any _transferred courses_, _AP exams_, and _GE/Elective credits_                                                             |
+| ![Scheduler screenshot](assets/scheduler.jpeg)                    | ![Planner screenshot](assets/planner.jpeg)                       
 
 ## Development
 
 You will only need two things to run AntAlmanac: Docker and [Mise](https://mise.jdx.dev/).
+
+If you are a contributor outside of ICSSC, fork this repository and clone the respective URL.
 
 ```bash
 git clone https://github.com/icssc/AntAlmanac && cd AntAlmanac
@@ -34,15 +41,16 @@ packages/
   anteater-api/           Anteater API client and types
 ```
 
-Local configuration lives in `apps/antalmanac/.env.example`. The wizard fills local database URLs and auth secrets. Maps, analytics, admin emails, and `PLANNER_CLIENT_API_KEY` can stay unset while you work locally.
-
 ## Contributing
 
-1. Find or open an issue, comment that you want it, and wait to be assigned.
-2. Branch from the repository (or your fork).
-3. Run `mise run setup`.
-4. Open a draft pull request and keep pushing until the issue is done.
-5. Mark it ready for review. A maintainer merges it.
+1. Find or open an [issue](https://github.com/icssc/AntAlmanac/issues), comment that you want it, and wait to be assigned.
+2. [Fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo) or
+   create a branch if you have the permission to do so.
+3. [Setup your development environment](#development)
+4. Make any desired changes, commit, and push them.
+5. Create a PR and mark it ready for review. A maintainer merges it.
+6. Wait for your pull request to get reviewed and address any requested changes.
+7. Once your PR is approved, a member of our team will merge it and your changes will appear on the live website shortly! 🥳
 
 Read [ICSSC’s contributor guidelines](https://docs.icssc.club/docs/contributor/common/guidelines) before you start. Questions go to the [Projects Discord](https://discord.gg/Zu8KZHERtJ).
 
@@ -66,10 +74,15 @@ AntAlmanac started in 2018 with @the-rango. PeterPortal, now Planner, started on
 | 2025–2026    | @alexespejo                  | @CadenLee2   |
 | 2026–present | @sicn4rf                     | @anthonyj33  |
 
-## Deployment
+# Where Does the Data Come From?
 
-Maintainers deploy with SST. Production is `antalmanac.com`. Pull requests get `staging-{number}.antalmanac.com`. `staging-shared.antalmanac.com` is the long-lived Scheduler/Planner integration environment. Production secrets live in AWS and CI, not in the setup wizard.
+We consolidate our data directly from official UCI sources such as: UCI Catalogue, UCI Public Records Office, and UCI WebReg (courtesy of [Anteater API](https://github.com/icssc/anteater-api)).
 
-## Data and disclaimer
+Although we consolidate our data directly from official UCI sources, this application is by no means an official UCI tool.
+We strive to keep our data as accurate as possible with the limited support we receive from UCI.
+Please take this into consideration while using the website.
 
-Course data comes from UCI Catalogue, UCI Public Records, and WebReg via the Anteater API. AntAlmanac is not an official UCI service. Please don’t flood it with requests or try to break it.
+# Terms & Conditions
+
+There are no hard policies at the moment for utilizing this tool.
+However, please refrain from abusing the website by methods such as: sending excessive amount of requests in a small period of time or purposely looking to exploit the system.
