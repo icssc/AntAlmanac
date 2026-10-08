@@ -19,11 +19,13 @@ Features include:
 You only need two things to run AntAlmanac: Docker and [Mise](https://mise.jdx.dev/).
 
 Install Docker:
+
 - Windows: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - macOS: [OrbStack](https://orbstack.dev/)
 - Linux: `curl -fsSL https://get.docker.com | sudo sh`
 
 Install Mise:
+
 - Follow [Mise documentation](https://mise.jdx.dev/getting-started.html).
 
 If you are a contributor outside of ICSSC, fork this repository and clone the fork's URL instead.
