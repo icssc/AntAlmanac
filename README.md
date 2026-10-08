@@ -31,8 +31,7 @@ If you are a contributor outside of ICSSC, fork this repository and clone the fo
 ```bash
 git clone https://github.com/icssc/AntAlmanac && cd AntAlmanac
 
-mise trust
-mise install
+mise trust && mise install
 mise run setup
 ```
 
