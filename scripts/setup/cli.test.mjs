@@ -79,6 +79,16 @@ test('an existing volume without the planner database gets one created', async (
     assert.match(readFileSync(join(root, 'commands.log'), 'utf8'), /CREATE DATABASE planner/);
 });
 
+test('missing Docker explains the install and does not start a database', async (t) => {
+    const { root, launch } = fixture(t);
+    rmSync(join(root, 'bin', 'docker'));
+    const result = await launch(['--yes', '--plain'], { PATH: join(root, 'bin') });
+    assert.equal(result.code, 1);
+    assert.match(result.output, /Docker is not installed/);
+    assert.match(result.output, /curl -fsSL https:\/\/get\.docker\.com \| sudo sh/);
+    assert.doesNotMatch(readFileSync(join(root, 'commands.log'), 'utf8'), /compose up/);
+});
+
 test('read-only diagnosis never creates env files or invokes mutating commands', async (t) => {
     const { root, launch } = fixture(t);
     const result = await launch(['--check']);

@@ -27,6 +27,54 @@ export function isPlaceholder(value) {
     return !value?.trim() || /^(replace-me|changeme|your[-_].*|url)$/i.test(value.trim());
 }
 
+export function dockerSetupAdvice(platform = process.platform) {
+    if (platform === 'win32') {
+        return {
+            headline: 'Docker is not installed.',
+            steps: [
+                'Install Docker Desktop from https://www.docker.com/products/docker-desktop/',
+                'Open Docker Desktop and wait until it is running, then rerun setup.',
+            ],
+        };
+    }
+    if (platform === 'darwin') {
+        return {
+            headline: 'Docker is not installed.',
+            steps: [
+                'Install OrbStack from https://orbstack.dev/',
+                'Open OrbStack and wait until Docker is running, then rerun setup.',
+            ],
+        };
+    }
+    return {
+        headline: 'Docker is not installed.',
+        steps: [
+            'Install Docker and docker-compose with:',
+            'curl -fsSL https://get.docker.com | sudo sh',
+            'Open a new terminal and rerun setup.',
+        ],
+    };
+}
+
+export function dockerStartAdvice(platform = process.platform) {
+    if (platform === 'win32') {
+        return {
+            headline: 'Docker Desktop is not running.',
+            steps: ['Open Docker Desktop and wait until it says Docker is running, then rerun setup.'],
+        };
+    }
+    if (platform === 'darwin') {
+        return {
+            headline: 'OrbStack is not running.',
+            steps: ['Open OrbStack and wait until Docker is running, then rerun setup.'],
+        };
+    }
+    return {
+        headline: 'Docker is installed, but the engine is not running.',
+        steps: ['Start it with: sudo systemctl start docker', 'Then rerun setup.'],
+    };
+}
+
 export function isLocalDatabase(value, databaseName = 'antalmanac') {
     try {
         const url = new URL(value);

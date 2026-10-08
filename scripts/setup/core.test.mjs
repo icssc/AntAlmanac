@@ -12,6 +12,8 @@ import {
     LOCAL_PLANNER_DB,
     configureEnvironment,
     databaseProblem,
+    dockerSetupAdvice,
+    dockerStartAdvice,
     environmentProblems,
     generatedDataProblems,
     isLocalDatabase,
@@ -171,4 +173,13 @@ test('retry keeps expensive completed work but rechecks tools and services', asy
     );
     prepareRetry(steps, config, config, true);
     assert.ok(steps.every((item) => item.status === 'pending'));
+});
+
+test('missing Docker points Windows, macOS, and Linux at the right install', () => {
+    assert.match(dockerSetupAdvice('win32').steps.join('\n'), /Docker Desktop/);
+    assert.match(dockerSetupAdvice('darwin').steps.join('\n'), /OrbStack/);
+    assert.match(dockerSetupAdvice('linux').steps.join('\n'), /curl -fsSL https:\/\/get\.docker\.com \| sudo sh/);
+    assert.match(dockerStartAdvice('win32').headline, /Docker Desktop/);
+    assert.match(dockerStartAdvice('darwin').headline, /OrbStack/);
+    assert.match(dockerStartAdvice('linux').steps.join('\n'), /systemctl start docker/);
 });

@@ -9,6 +9,8 @@ import {
     DEPENDENCY_MARKERS,
     configureEnvironment,
     databaseProblem,
+    dockerSetupAdvice,
+    dockerStartAdvice,
     environmentProblems,
     formatApiKeyInstructions,
     generatedDataProblems,
@@ -257,6 +259,13 @@ async function ensurePlannerDatabase() {
     }
 }
 
+async function dockerInstallation() {
+    const binary = await run('docker', ['--version'], { cwd: root, signal: abort.signal, timeout: 15_000 });
+    if (!binary.ok) return { installed: false, compose: false };
+    const compose = await run('docker', ['compose', 'version'], { cwd: root, signal: abort.signal, timeout: 15_000 });
+    return { installed: true, compose: compose.ok };
+}
+
 async function runChecks() {
     ui.title = doctor ? 'A quick health check for your workspace.' : 'Let’s get the monorepo ready to build.';
     let app = readEnv(join(root, APP_ENV));
@@ -264,6 +273,19 @@ async function runChecks() {
     captureSecrets(app, db);
     if (previousEnvironment) prepareRetry(steps, previousEnvironment, { app, db }, doctor);
     if (process.env.ANTEATER_API_KEY) secrets.push(process.env.ANTEATER_API_KEY);
+
+    const docker = await dockerInstallation();
+    const dockerReady = docker.installed && docker.compose;
+    if (!dockerReady) {
+        const advice = dockerSetupAdvice();
+        report(
+            'database',
+            'blocked',
+            docker.installed ? 'Docker Compose is not installed.' : advice.headline,
+            ['Setup needs both Docker and Docker Compose before it can start Postgres.'],
+            advice.steps
+        );
+    }
 
     await task('tools', async () => {
         const required = readFileSync(join(root, '.nvmrc'), 'utf8').trim();
@@ -371,15 +393,14 @@ async function runChecks() {
                         'For any other database, run pnpm sched:db:migrate yourself once that database is ready.',
                     ];
         report('database', 'blocked', headlineFor('database', issue), issue.split('\n'), advice);
-    } else
+    } else if (dockerReady)
         await task('database', async () => {
             await command('docker', ['compose', 'version'], { timeout: 15_000 });
             try {
                 await command('docker', ['info'], { timeout: 15_000 });
             } catch {
-                report('database', 'blocked', 'Docker is not running, so PostgreSQL cannot start.', [
-                    '`docker info` failed. The daemon is stopped or this shell cannot reach it.',
-                ]);
+                const start = dockerStartAdvice();
+                report('database', 'blocked', start.headline, ['`docker info` failed.'], start.steps);
                 return;
             }
             if (!doctor) {
