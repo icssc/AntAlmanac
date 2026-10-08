@@ -1,13 +1,28 @@
 name: antalmanac
 
+# One Postgres server, two databases:
+#   antalmanac  scheduler  localhost:5432/antalmanac
+#   planner     planner    localhost:5432/planner
+# `planner` is created on first boot by docker/postgres/init. The setup wizard
+# also creates it if this volume already existed from an older scheduler-only container.
 services:
     db:
-        build:
-            context: apps/antalmanac-scheduler/db
-            dockerfile: Dockerfile
+        image: postgres:16.8-alpine3.21
         ports:
             - '5432:5432'
         environment:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
             POSTGRES_DB: antalmanac
+        volumes:
+            - antalmanac-db:/var/lib/postgresql/data
+            - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U postgres -d antalmanac']
+            interval: 2s
+            timeout: 5s
+            retries: 30
+            start_period: 10s
+
+volumes:
+    antalmanac-db:
