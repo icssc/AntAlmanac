@@ -61,6 +61,41 @@ export const GE_TITLE_MAP: Record<GEName, GETitle> = {
     'GE-8': 'GE VIII: International/Global Issues',
 };
 
+const QUARTER_ORDER = ['fall', 'winter', 'spring', 'summer1', 'summer10wk', 'summer2'];
+
+export interface CurrentQuarter {
+    startYear: number;
+    quarterName: string;
+}
+
+export function parseQuarterString(quarter: string | null | undefined): CurrentQuarter | null {
+    const match = quarter?.trim().match(/^(\d{4})\s+(.+)$/);
+    if (!match) return null;
+
+    const calendarYear = parseInt(match[1]);
+    const quarterName = match[2].toLowerCase().replace(/[\s-]/g, '');
+
+    const startYear = quarterName === 'fall' ? calendarYear : calendarYear - 1;
+
+    return { startYear, quarterName };
+}
+
+/** Turns a quarter (fall, winter, etc) into a sortable number */
+function quarterOrdinal(startYear: number, quarterName: string): number {
+    const idx = QUARTER_ORDER.indexOf(quarterName.toLowerCase());
+    return startYear * QUARTER_ORDER.length + (idx === -1 ? 0 : idx);
+}
+
+/** True if the quarter is on or before the current quarter (inclusive) */
+export function isQuarterIsPast(
+    startYear: number,
+    quarterName: string,
+    cutoff: CurrentQuarter | null | undefined
+): boolean {
+    if (!cutoff) return true;
+    return quarterOrdinal(startYear, quarterName) <= quarterOrdinal(cutoff.startYear, cutoff.quarterName);
+}
+
 export const formatCatalogYear = (year: string) => `${year.slice(0, 4)}-${year.slice(4)}`;
 
 export function getCatalogYearDefaults() {
