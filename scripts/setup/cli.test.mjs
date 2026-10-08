@@ -33,6 +33,7 @@ fs.appendFileSync(process.env.COMMAND_LOG, process.argv[1] + ' ' + args + '\\n')
 if (process.env.MISSING_PNPM && process.argv[1].endsWith('/pnpm')) process.exit(127);
 if (args.endsWith('--version')) console.log('10.22.0');
 if (args.includes("datname = 'planner'")) console.log('1');
+if (args.includes('/proc/1/comm')) console.log('postgres');
 if (process.env.FAIL_FETCH && args.includes('get-data')) { console.error(process.env.ANTEATER_API_KEY); process.exit(9); }
 `;
     for (const cmd of ['pnpm', 'npm', 'docker']) writeFileSync(join(root, 'bin', cmd), fake, { mode: 0o755 });
@@ -57,6 +58,7 @@ test('full setup orchestrates installation, healthy database, both migrations, a
     const calls = readFileSync(join(root, 'commands.log'), 'utf8');
     assert.match(calls, /install --frozen-lockfile/);
     assert.match(calls, /compose up -d --wait --wait-timeout 120 db/);
+    assert.match(calls, /\/proc\/1\/comm/);
     assert.match(calls, /datname = 'planner'/);
     assert.doesNotMatch(calls, /CREATE DATABASE planner/);
     assert.match(calls, /sched:db:migrate/);

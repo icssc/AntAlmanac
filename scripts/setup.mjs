@@ -123,6 +123,35 @@ async function task(id, action) {
     }
 }
 
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function waitForPostgres() {
+    let lastError = new Error('PostgreSQL did not finish starting.');
+    for (let attempt = 0; attempt < 60; attempt++) {
+        try {
+            // pid 1 is the entrypoint shell until init finishes and execs postgres.
+            const leader = await command('docker', ['compose', 'exec', '-T', 'db', 'cat', '/proc/1/comm']);
+            if (leader.trim() !== 'postgres') throw new Error('PostgreSQL is still initializing.');
+            await command('docker', [
+                'compose',
+                'exec',
+                '-T',
+                'db',
+                'pg_isready',
+                '-U',
+                'postgres',
+                '-d',
+                'antalmanac',
+            ]);
+            return;
+        } catch (error) {
+            lastError = error;
+            await delay(1000);
+        }
+    }
+    throw lastError;
+}
+
 async function ensurePlannerDatabase() {
     const listed = await command('docker', [
         'compose',
@@ -244,9 +273,19 @@ async function runChecks() {
                 return;
             }
             if (!doctor) {
-                await command('docker', ['compose', 'up', '-d', '--wait', '--wait-timeout', '120', 'db'], {
-                    timeout: 5 * 60_000,
-                });
+                let startupError;
+                try {
+                    await command('docker', ['compose', 'up', '-d', '--wait', '--wait-timeout', '120', 'db'], {
+                        timeout: 5 * 60_000,
+                    });
+                } catch (error) {
+                    startupError = error;
+                }
+                try {
+                    await waitForPostgres();
+                } catch (error) {
+                    throw startupError ?? error;
+                }
                 if (!plannerDatabaseProblem(app)) await ensurePlannerDatabase();
             }
             await command('docker', [
