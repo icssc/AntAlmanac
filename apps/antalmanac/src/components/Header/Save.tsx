@@ -8,7 +8,7 @@ import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
+import { useIsLoggedIn } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { Alert, Button, IconButton, Link, Snackbar, Stack } from '@mui/material';
@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
-    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
+    const isLoggedIn = useIsLoggedIn();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [autoSaving, setAutoSaving] = useState(false);
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -118,7 +118,7 @@ export const Save = () => {
                 color="inherit"
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
-                onClick={sessionIsValid ? saveScheduleData : handleClickSignIn}
+                onClick={isLoggedIn ? saveScheduleData : handleClickSignIn}
                 sx={{ fontSize: 'inherit' }}
                 disabled={fallbackMode || saving}
                 loading={saving}

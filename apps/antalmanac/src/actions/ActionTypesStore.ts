@@ -4,7 +4,7 @@ import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
 import { postHog } from '$providers/AppPostHogProvider';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
+import { getIsLoggedIn } from '$stores/SessionStore';
 import type {
     AACourseWithTerm,
     AASection,
@@ -121,10 +121,9 @@ type ActionType =
 
 class ActionTypesStore extends EventEmitter {
     async autoSaveSchedule(_action: ActionType) {
-        const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
 
-        if (!sessionStore.sessionIsValid || !sessionStore.userId) {
+        if (!getIsLoggedIn()) {
             if (autoSave) {
                 useScheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }

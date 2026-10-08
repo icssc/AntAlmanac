@@ -2,7 +2,7 @@ import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { signOut } from '$lib/auth/authClient';
-import { useSessionStore } from '$stores/SessionStore';
+import { useIsLoggedIn, useSessionStore } from '$stores/SessionStore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
 import type { UserProfile } from '@packages/db/src/schema/auth/user';
@@ -16,9 +16,9 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const { sessionIsValid, name, avatar, email } = useSessionStore(
+    const isLoggedIn = useIsLoggedIn();
+    const { name, avatar, email } = useSessionStore(
         useShallow((store) => ({
-            sessionIsValid: store.sessionIsValid,
             name: store.name,
             avatar: store.avatar,
             email: store.email,
@@ -28,14 +28,14 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
 
     const user = useMemo<UserProfile | null>(
         () =>
-            sessionIsValid
+            isLoggedIn
                 ? {
                       name: name ?? null,
                       avatar: avatar ?? null,
                       email: email ?? null,
                   }
                 : null,
-        [sessionIsValid, name, avatar, email]
+        [isLoggedIn, name, avatar, email]
     );
 
     const handleClick = (event: MouseEvent<HTMLElement>) => {

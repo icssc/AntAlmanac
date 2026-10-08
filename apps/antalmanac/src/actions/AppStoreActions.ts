@@ -10,7 +10,7 @@ import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
+import { getIsLoggedIn } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import {
     type AACourseWithTerm,
@@ -203,8 +203,7 @@ export const mergeShortCourseSchedules = (
 };
 
 const handleScheduleImport = async (username: string, skipImportedCheck = false, postHog?: PostHog) => {
-    const sessionStore = useSessionStore.getState();
-    if (!sessionStore.sessionIsValid) {
+    if (!getIsLoggedIn()) {
         throw new Error("Invalid session: User isn't logged in.");
     }
 

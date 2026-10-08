@@ -19,7 +19,7 @@ import { warnMultipleTerms } from '$lib/helpers';
 import { processZotcourseResponse } from '$lib/zotcourse';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { useSessionStore } from '$stores/SessionStore';
+import { useIsLoggedIn } from '$stores/SessionStore';
 import { useDevModeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import {
@@ -62,7 +62,7 @@ export function ImportDialog({ open, onClose, onAlertDialog, autoImportUsername 
     const [importedSchedules, setImportedSchedules] = useState<ShortCourseSchedule[]>([]);
     const [selectedScheduleIndices, setSelectedScheduleIndices] = useState<Set<number>>(new Set());
 
-    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const isLoggedIn = useIsLoggedIn();
     const devMode = useDevModeStore((store) => store.devMode);
     const postHog = usePostHog();
     const { mutateAsync: fetchZotcourse } = trpcReact.zotcourse.getUserData.useMutation();
@@ -381,7 +381,7 @@ export function ImportDialog({ open, onClose, onAlertDialog, autoImportUsername 
                                         value={ImportSource.AA_USERNAME_IMPORT}
                                         control={<Radio color="secondary" />}
                                         label="From AntAlmanac unique user ID"
-                                        disabled={!sessionIsValid}
+                                        disabled={!isLoggedIn}
                                     />
                                 </Tooltip>
                                 {devMode && (
