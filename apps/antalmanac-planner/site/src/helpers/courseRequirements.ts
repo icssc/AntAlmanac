@@ -6,6 +6,7 @@ import {
     MajorSpecialization,
     MinorProgram,
     ProgramRequirement,
+    RequirementStatus,
     TransferredGE,
 } from '@peterportal/types';
 
@@ -96,6 +97,42 @@ export function getQuarterTiming(
     if (quarter < current) return 'past';
     if (quarter === current) return 'current';
     else return 'future';
+}
+
+/** Filter courses in the given timings **/
+export function filterCourseByTiming(set: CompletedCourseSet, ...timings: CourseTiming[]): CompletedCourseSet {
+    return Object.fromEntries(Object.entries(set).filter(([, course]) => timings.includes(course.timing)));
+}
+
+export function getRequirementCourses(requirement: ProgramRequirement): string[] {
+    switch (requirement.requirementType) {
+        case 'Group':
+            return requirement.requirements.flatMap(getRequirementCourses);
+        case 'Course':
+        case 'Unit':
+            return requirement.courses;
+        case 'Marker':
+            return [];
+    }
+}
+
+/**
+ * @param taken The full set (past, current, and future courses)
+ * @param complete Whether the requirement is already satisfied, computed from the past-only set
+ */
+export function getRequirementStatus(
+    taken: CompletedCourseSet,
+    requirement: ProgramRequirement,
+    complete: boolean
+): RequirementStatus {
+    const timings = getRequirementCourses(requirement)
+        .filter((id) => id in taken)
+        .map((id) => taken[id].timing);
+
+    if (complete) return 'completed';
+    if (timings.includes('current')) return 'in progress';
+    if (timings.length > 0) return 'added';
+    return 'not added';
 }
 
 /** Turns a quarter (fall, winter, etc) into a sortable number */
