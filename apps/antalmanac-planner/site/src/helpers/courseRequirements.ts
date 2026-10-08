@@ -88,10 +88,8 @@ export function getQuarterTiming(
     currentQuarter: CurrentQuarter | null | undefined
 ): CourseTiming {
     if (!currentQuarter) return 'future';
-    /* TODO: what should happen when we don't know the current quarter? */ const quarter = quarterOrdinal(
-        startYear,
-        quarterName
-    );
+
+    const quarter = quarterOrdinal(startYear, quarterName);
     const current = quarterOrdinal(currentQuarter.startYear, currentQuarter.quarterName);
 
     if (quarter < current) return 'past';
@@ -139,16 +137,6 @@ export function getRequirementStatus(
 function quarterOrdinal(startYear: number, quarterName: string): number {
     const idx = QUARTER_ORDER.indexOf(quarterName.toLowerCase());
     return startYear * QUARTER_ORDER.length + (idx === -1 ? 0 : idx);
-}
-
-/** True if the quarter is on or before the current quarter (inclusive) */
-export function isQuarterIsPast(
-    startYear: number,
-    quarterName: string,
-    cutoff: CurrentQuarter | null | undefined
-): boolean {
-    if (!cutoff) return true;
-    return quarterOrdinal(startYear, quarterName) <= quarterOrdinal(cutoff.startYear, cutoff.quarterName);
 }
 
 export const formatCatalogYear = (year: string) => `${year.slice(0, 4)}-${year.slice(4)}`;
