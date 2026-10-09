@@ -16,12 +16,14 @@ import actionTypesStore, {
     type ReorderAddedCoursesAction,
     type ReorderScheduleAction,
     type UndoRedoAction,
+    type UpdateScheduleNoteAction,
 } from '$actions/ActionTypesStore';
 import { courseColorKey } from '$lib/sectionThemes';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
+import { debounce } from '@mui/material';
 import type {
     AACourseWithTerm,
     AASection,
@@ -31,12 +33,31 @@ import type {
     ScheduleSaveState,
 } from '@packages/antalmanac-types';
 
+const NOTE_AUTOSAVE_DELAY_MS = 1000;
+
 class AppStore extends EventEmitter {
     schedule: Schedules;
 
     colorPickers: Record<string, EventEmitter>;
 
-    unsavedChanges: boolean;
+    private _unsavedChanges = false;
+
+    /** Bumped every time unsavedChanges is set true, so a save can tell if anything changed after it captured its data. */
+    editVersion = 0;
+
+    /** Bumped whenever a different schedule is loaded, so a save from before the load can't be applied after it. */
+    loadEpoch = 0;
+
+    get unsavedChanges() {
+        return this._unsavedChanges;
+    }
+
+    set unsavedChanges(value: boolean) {
+        this._unsavedChanges = value;
+        if (value) {
+            this.editVersion += 1;
+        }
+    }
 
     constructor() {
         super();
@@ -295,8 +316,17 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNamesChange');
     }
 
-    saveSchedule() {
-        this.unsavedChanges = false;
+    /**
+     * `editVersion`/`noteEditVersion` are what those fields were when this save's data was captured.
+     * The dirty flag only clears if nothing changed anywhere since then; a stale save can still tell
+     * the notes box its own text was captured accurately, via the emitted event, without wrongly
+     * clearing the leave-page warning for some other, still-unsaved edit.
+     */
+    saveSchedule({ editVersion, noteEditVersion }: { editVersion: number; noteEditVersion: number }) {
+        if (editVersion === this.editVersion) {
+            this._unsavedChanges = false;
+        }
+        this.emit('scheduleSaved', noteEditVersion === this.noteEditVersion);
     }
 
     copySchedule(scheduleIndex: number, newScheduleName: string) {
@@ -358,6 +388,7 @@ class AppStore extends EventEmitter {
         if (!loadSuccess) {
             return false;
         }
+        this.loadEpoch += 1;
         this.unsavedChanges = false;
 
         this.schedule.clearPreviousStates();
@@ -440,8 +471,24 @@ class AppStore extends EventEmitter {
         this.emit('colorChange', false);
     }
 
+    /** Bumped on every note edit. A save only counts as "current" if this hasn't moved since it captured its data. */
+    noteEditVersion = 0;
+
+    debouncedNoteAutoSave = debounce(async (action: UpdateScheduleNoteAction) => {
+        const version = this.noteEditVersion;
+        const saved = await actionTypesStore.autoSaveSchedule(action);
+
+        // A newer note edit arrived while saving; its own debounced save reports instead.
+        if (version === this.noteEditVersion) {
+            this.emit('noteAutoSaveEnd', saved);
+        }
+    }, NOTE_AUTOSAVE_DELAY_MS);
+
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
+        this.noteEditVersion += 1;
+        this.unsavedChanges = true;
+        this.debouncedNoteAutoSave({ type: 'updateScheduleNote', scheduleNote: newScheduleNote, scheduleIndex });
         this.emit('scheduleNotesChange');
     }
 

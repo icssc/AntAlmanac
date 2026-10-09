@@ -1,18 +1,12 @@
 import actionTypesStore from '$actions/ActionTypesStore';
-import { isEmptySchedule } from '$actions/AppStoreActions';
+import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { trpcReact } from '$lib/api/trpc';
-import { getErrorMessage } from '$lib/utils';
-import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
-import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { Alert, Button, IconButton, Link, Snackbar, Stack } from '@mui/material';
-import { TRPCClientError } from '@trpc/client';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -29,41 +23,7 @@ export const Save = () => {
         }))
     );
     const postHog = usePostHog();
-
-    const { mutate: saveSchedule, isPending: isSaving } = trpcReact.schedule.save.useMutation({
-        onSuccess: ({ scheduleIdMap }) => {
-            if (scheduleIdMap) {
-                AppStore.schedule.updateScheduleIds(scheduleIdMap);
-            }
-
-            openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
-            deleteTempSaveData();
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
-                customProps: {
-                    autoSave: false,
-                },
-            });
-            AppStore.saveSchedule();
-        },
-        onError: (e) => {
-            if (e instanceof TRPCClientError) {
-                openSnackbar('error', `Schedule could not be saved`);
-            } else {
-                openSnackbar('error', 'Network error or server is down.');
-            }
-
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SAVE_SCHEDULE_FAIL,
-                error: getErrorMessage(e),
-                customProps: {
-                    autoSave: false,
-                },
-            });
-        },
-    });
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleClickSignIn = () => {
         if (!openSignInDialog) {
@@ -79,21 +39,10 @@ export const Save = () => {
         setOpenAutoSaveWarning(false);
     };
 
-    const saveScheduleData = () => {
-        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-
-        if (
-            isEmptySchedule(scheduleSaveState.schedules) &&
-            !confirm(
-                "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
-            )
-        ) {
-            return;
-        }
-
-        saveSchedule({
-            userData: scheduleSaveState,
-        });
+    const saveScheduleData = async () => {
+        setIsSaving(true);
+        await saveSchedule({ postHog });
+        setIsSaving(false);
     };
 
     useEffect(() => {
