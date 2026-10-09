@@ -13,6 +13,7 @@ export function NoResults({ formData }: NoResultsProps) {
     const isDark = useIsDarkMode();
 
     const courseNumber = formData.courseNumber.trim().toUpperCase();
+    const termLabel = formData.term.isSummerTerm ? formData.term.longName : formData.term.shortName;
 
     return (
         <Box
@@ -24,7 +25,7 @@ export function NoResults({ formData }: NoResultsProps) {
                 gap: 1,
             }}
         >
-            <PlannerCourseLinkBanner deptValue={formData.deptValue} courseNumber={courseNumber} />
+            <PlannerCourseLinkBanner deptValue={formData.deptValue} courseNumber={courseNumber} termName={termLabel} />
             <CourseRenamedBanner deptValue={formData.deptValue} courseNumber={courseNumber} />
 
             <Image
