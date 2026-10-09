@@ -1,13 +1,30 @@
 name: antalmanac
 
+# One Postgres server, two databases:
+#   antalmanac  scheduler  localhost:5432/antalmanac
+#   planner     planner    localhost:5432/planner
+# The setup wizard creates `planner` after Postgres is healthy, including when
+# this volume already existed from an older scheduler-only container.
 services:
     db:
-        build:
-            context: apps/antalmanac-scheduler/db
-            dockerfile: Dockerfile
+        image: postgres:16.8-alpine3.21
         ports:
             - '5432:5432'
         environment:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
             POSTGRES_DB: antalmanac
+        volumes:
+            - antalmanac-db:/var/lib/postgresql/data
+        # The entrypoint answers pg_isready from a temporary server, then stops it
+        # and starts the real one. Require pid 1 to be postgres so Compose does
+        # not report healthy during that initialization.
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U postgres -d antalmanac && [ "$(cat /proc/1/comm)" = postgres ]']
+            interval: 2s
+            timeout: 5s
+            retries: 30
+            start_period: 20s
+
+volumes:
+    antalmanac-db:
