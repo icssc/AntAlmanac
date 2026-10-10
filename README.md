@@ -249,7 +249,7 @@ anything tagged _(optional locally)_ - maps, analytics, and the Planner integrat
     - `PLANNER_OIDC_CLIENT_ID` - OAuth client ID for Google authentication
     - `PLANNER_DATABASE_URL` _(optional locally)_ - Database connection string
     - `ADMIN_EMAILS` _(optional locally)_ - List of emails with access to administrative actions
-    - `PLANNER_SESSION_SECRET` _(optional locally)_ - Secret key for session management
+    - `PLANNER_SESSION_SECRET` - Secret key for session management
 
 If you need access to development credentials, please contact a project lead in [our Discord](https://discord.gg/Zu8KZHERtJ).
 
