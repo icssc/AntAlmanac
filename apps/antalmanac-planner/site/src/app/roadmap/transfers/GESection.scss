@@ -1,0 +1,22 @@
+.ge-inputs {
+    display: flex;
+    gap: 8px;
+    height: 20px;
+}
+
+.ge-input-container {
+    display: flex;
+    gap: 4px;
+}
+
+.ge-input {
+    .MuiInputBase-root {
+        width: 30px;
+        height: 20px;
+        font-size: 12px;
+    }
+
+    .MuiInputBase-input {
+        margin-right: 0;
+    }
+}

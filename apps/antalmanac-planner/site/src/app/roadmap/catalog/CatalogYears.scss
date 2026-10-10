@@ -1,0 +1,63 @@
+div.catalog-years {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-bottom: 8px;
+    padding-top: 4px;
+
+    .MuiInputBase-root {
+        font-size: 13px;
+    }
+}
+
+.catalog-year-title {
+    display: inline-block;
+    width: fit-content;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--mui-palette-text-secondary);
+}
+
+.catalog-year-tooltip {
+    &#{&} {
+        font-size: 0.75rem;
+        padding: 8px;
+        max-width: 260px;
+    }
+}
+
+.catalog-year-warning {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: -6px;
+    margin-bottom: 8px;
+
+    .warning-icon {
+        color: var(--mui-palette-warning-main);
+        font-size: 1.4rem;
+    }
+
+    .catalog-year-warning-text {
+        color: var(--mui-palette-warning-main);
+        font-size: 0.85rem;
+        margin: 0;
+    }
+}
+
+.edit-btn.MuiIconButton-root,
+.confirm-btn.MuiIconButton-root {
+    width: 24px;
+    height: 24px;
+    margin: -8px 0;
+    margin-right: -4px;
+    color: var(--mui-palette-text-secondary);
+
+    &.confirm-btn {
+        color: var(--mui-palette-secondary-main);
+    }
+
+    .MuiSvgIcon-root {
+        font-size: 20px;
+    }
+}

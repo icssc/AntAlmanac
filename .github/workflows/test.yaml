@@ -36,7 +36,7 @@ jobs:
                   HUSKY: 0
                   NODE_ENV: staging
                   ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
-              run: pnpm --filter=antalmanac fetch-term-data
+              run: pnpm --filter=@antalmanac-scheduler fetch-term-data
 
             - name: Test
               run: pnpm test run
