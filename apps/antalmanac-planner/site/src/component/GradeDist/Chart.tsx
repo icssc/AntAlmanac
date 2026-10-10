@@ -29,6 +29,11 @@ export default function Chart({ gradeData, quarter, professor, course }: ChartPr
         { grade: 'NP', count: aggregateGradeData.gradeNPCount, fill: getCssVariable('--mui-palette-chart-noPass') },
     ];
 
+    function formatAsPercent(count: number) {
+        if (aggregateGradeData.total === 0) return '0.0%';
+        return `${((count / aggregateGradeData.total) * 100).toFixed(1)}%`;
+    }
+
     return (
         <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 24, right: 8, left: 8, bottom: 0 }}>
@@ -43,7 +48,12 @@ export default function Chart({ gradeData, quarter, professor, course }: ChartPr
                     isAnimationActive={false}
                 />
                 <Bar dataKey="count" radius={[8, 8, 0, 0]}>
-                    <LabelList dataKey="count" position="top" fill={getCssVariable('--mui-palette-text-secondary')} />
+                    <LabelList
+                        dataKey="count"
+                        position="top"
+                        formatter={(count) => formatAsPercent(Number(count))}
+                        fill={getCssVariable('--mui-palette-text-secondary')}
+                    />
                 </Bar>
             </BarChart>
         </ResponsiveContainer>

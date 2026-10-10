@@ -73,6 +73,11 @@
         flex: 1;
         display: flex;
     }
+
+    .grade-dist-total {
+        align-self: flex-end;
+        white-space: nowrap;
+    }
 }
 
 .stat-card {
