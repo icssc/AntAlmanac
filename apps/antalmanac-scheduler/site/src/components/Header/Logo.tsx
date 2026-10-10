@@ -1,85 +1,91 @@
-import Image from 'next/image';
+import ChristmasLogo from '$assets/christmas-logo.png';
+import MobileChristmasLogo from '$assets/christmas-mobile-logo.png';
+import DefaultLogo from '$assets/default-logo.svg';
+import HalloweenLogo from '$assets/halloween-logo.png';
+import MobileHalloweenLogo from '$assets/halloween-mobile-logo.png';
+import ThanksgivingLogo from '$assets/thanksgiving-logo.png';
+import MobileThanksgivingLogo from '$assets/thanksgiving-mobile-logo.png';
+import { useIsMobile } from '$hooks/useIsMobile';
+import { endOfDay, isWithinInterval, parse } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+import Image, { type StaticImageData } from 'next/image';
 
 type Logo = {
     name: string;
-    logo: string;
-    mobileLogo: string;
-    desktopLogo: string;
-    startDay: number; // inclusive
-    startMonthIndex: number;
-    endDay: number; // inclusive
-    endMonthIndex: number;
+    desktopLogo: StaticImageData;
+    mobileLogo: StaticImageData;
     attribution?: string;
+};
+
+type SeasonalLogo = Logo & {
+    startDate: string; // inclusive, 'MMMM d'
+    endDate: string; // inclusive, 'MMMM d'
 };
 
 const defaultLogo: Logo = {
     name: 'Default',
-    logo: '/logos/mobile-logo-cropped.svg',
-    mobileLogo: '/logos/mobile-logo-cropped.svg',
-    desktopLogo: '/logos/logo.svg',
-    startDay: 0,
-    startMonthIndex: 0,
-    endDay: 31,
-    endMonthIndex: 12,
+    desktopLogo: DefaultLogo,
+    mobileLogo: DefaultLogo,
 };
 
-const logos: Logo[] = [
+// start date must come before end date for a given year
+const seasonalLogos: SeasonalLogo[] = [
     {
         name: 'Christmas',
-        logo: '/logos/christmas-logo.png',
-        mobileLogo: '/logos/christmas-mobile-logo.png',
-        desktopLogo: '/logos/christmas-logo.png',
-        startDay: 1,
-        startMonthIndex: 11,
-        endDay: 31,
-        endMonthIndex: 11,
+        desktopLogo: ChristmasLogo,
+        mobileLogo: MobileChristmasLogo,
+        startDate: 'December 1',
+        endDate: 'December 31',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
         name: 'Thanksgiving',
-        logo: '/logos/thanksgiving-mobile-logo.png',
-        mobileLogo: '/logos/thanksgiving-mobile-logo.png',
-        desktopLogo: '/logos/thanksgiving-logo.png',
-        startDay: 1,
-        startMonthIndex: 10,
-        endDay: 30,
-        endMonthIndex: 10,
+        desktopLogo: ThanksgivingLogo,
+        mobileLogo: MobileThanksgivingLogo,
+        startDate: 'November 1',
+        endDate: 'November 30',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
         name: 'Halloween',
-        logo: '/logos/halloween-mobile-logo.png',
-        mobileLogo: '/logos/halloween-mobile-logo.png',
-        desktopLogo: '/logos/halloween-logo.png',
-        startDay: 1,
-        startMonthIndex: 9,
-        endDay: 31,
-        endMonthIndex: 9,
+        desktopLogo: HalloweenLogo,
+        mobileLogo: MobileHalloweenLogo,
+        startDate: 'October 1',
+        endDate: 'October 31',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
-    defaultLogo,
 ];
 
-function logoIsForCurrentSeason(logo: Logo) {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const startDate = new Date(currentYear, logo.startMonthIndex, logo.startDay);
-    const endDate = new Date(currentYear, logo.endMonthIndex, logo.endDay);
+// server and browser may be in different timezones, pin to Irvine time
+const IRVINE_TIME_ZONE = 'America/Los_Angeles';
 
-    return currentDate >= startDate && currentDate <= endDate;
+function getCurrentLogo(): Logo {
+    const currentDate = new Date();
+    const referenceDate = toZonedTime(currentDate, IRVINE_TIME_ZONE);
+
+    return (
+        seasonalLogos.find(({ startDate, endDate }) =>
+            isWithinInterval(currentDate, {
+                start: fromZonedTime(parse(startDate, 'MMMM d', referenceDate), IRVINE_TIME_ZONE),
+                end: fromZonedTime(endOfDay(parse(endDate, 'MMMM d', referenceDate)), IRVINE_TIME_ZONE),
+            })
+        ) ?? defaultLogo
+    );
 }
 
-export function Logo({ width = 78 }: { width?: number }) {
-    const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
+export function Logo() {
+    const isMobile = useIsMobile();
+    const currentLogo = getCurrentLogo();
+    const logo = isMobile ? currentLogo.mobileLogo : currentLogo.desktopLogo;
 
     return (
         <Image
-            src={currentLogo?.logo}
-            height={32}
-            width={width}
-            title={currentLogo?.attribution}
-            loading="eager"
+            src={logo}
             alt="logo"
+            title={currentLogo.attribution}
+            width={logo.width}
+            height={logo.height}
+            style={{ height: 32, width: 'auto', maxWidth: '100%' }}
         />
     );
 }

@@ -2,7 +2,6 @@ import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import { Autocomplete, Card, CardContent, MenuItem, Select, Skeleton, TextField, Typography } from '@mui/material';
 
 import './GradeDist.scss';
-
 import { GradesRaw, QuarterName } from '@peterportal/types';
 import { FC, useState, useEffect, useCallback } from 'react';
 

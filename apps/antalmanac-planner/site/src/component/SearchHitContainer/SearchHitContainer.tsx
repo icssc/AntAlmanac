@@ -1,7 +1,6 @@
 import { useEffect, FC, useRef } from 'react';
 
 import './SearchHitContainer.scss';
-
 import CourseHitItem from '../../app/search/CourseHitItem';
 import ProfessorHitItem from '../../app/search/ProfessorHitItem';
 import { useAppSelector } from '../../store/hooks';
