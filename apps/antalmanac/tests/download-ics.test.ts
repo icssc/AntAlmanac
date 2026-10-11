@@ -96,7 +96,7 @@ describe('download-ics', () => {
             },
         ];
 
-        // Custom events use getDefaultTerm(events) — first non-custom course term (FALL_2023 here).
+        // Custom events use getDefaultTerm(events) — latest course term (FALL_2023 here).
         const result = getEventsFromCourses(courses);
 
         expect(result).toMatchSnapshot();

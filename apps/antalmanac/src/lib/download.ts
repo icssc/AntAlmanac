@@ -222,11 +222,11 @@ function getRRule(bydays: string[], quarter: Quarter) {
 
 export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCalendar()): EventAttributes[] {
     const customEventIDs = new Set();
+    // Custom events don't have a term, so use the latest term from the schedule's courses
+    const customEventTerm = getDefaultTerm(events);
     const calendarEvents = events.flatMap((event) => {
         if (isCustomEvent(event)) {
-            // FIXME: We don't have a way to get the term for custom events,
-            // so we just use the default term.
-            const term = getDefaultTerm(events);
+            const term = customEventTerm;
             const { title, start, end, building } = event;
             const days = getByDays(event.days.join(''));
             const rrule = getRRule(days, term.quarter);

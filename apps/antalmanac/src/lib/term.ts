@@ -14,15 +14,16 @@ const defaultTermIndex = termData.findIndex((term) => !term.isSummerTerm);
 /**
  * Get the default term (first non-summer term with SOC available).
  *
- * If an array of events is provided, returns the first term found in those events instead.
+ * If an array of events is provided, returns the latest term found in those events instead.
  */
 export function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): AATerm {
+    let latest: AATerm | undefined;
     for (const event of events) {
-        if (isCourseEvent(event)) {
-            return event.term;
+        if (isCourseEvent(event) && (!latest || event.term.instructionStart > latest.instructionStart)) {
+            latest = event.term;
         }
     }
-    return termData[defaultTermIndex];
+    return latest ?? termData[defaultTermIndex];
 }
 
 export function getTermByShortName(termShortName: string): AATerm | undefined {
