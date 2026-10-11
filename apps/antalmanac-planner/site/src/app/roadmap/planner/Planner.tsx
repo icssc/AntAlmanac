@@ -1,8 +1,8 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { FC } from 'react';
 
 import './Planner.scss';
-import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
 import { calculateTotalUnits } from '../../../helpers/planner';
 import { getTotalUnitsFromTransfers } from '../../../helpers/transferCredits';
 import { useTransferredCredits } from '../../../hooks/transferCredits';
@@ -14,6 +14,8 @@ import Disclaimer from '../Disclaimer/Disclaimer';
 import QuarterInfo from '../QuarterInfo/QuarterInfo';
 import Header from '../toolbar/Header';
 import Year from './Year';
+
+const PlannerSkeleton = dynamic(() => import('./PlannerSkeleton'), { ssr: false });
 
 const Planner: FC = () => {
     const currentPlanData = useAppSelector(selectYearPlans);
@@ -43,7 +45,7 @@ const Planner: FC = () => {
         <div className="planner">
             <Header courseCount={courseCount} unitCount={unitCount} missingPrerequisites={new Set()} />
             {roadmapLoading ? (
-                <LoadingSpinner />
+                <PlannerSkeleton />
             ) : (
                 <section className="years" data-max-quarter-count={maxQuarterCount}>
                     {currentPlanData.map((year, yearIndex) => {
