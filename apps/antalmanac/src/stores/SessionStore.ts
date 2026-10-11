@@ -54,3 +54,13 @@ export const useSessionStore = create<SessionState>((set) => {
         setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),
     };
 });
+
+/**
+ * Whether the user is signed in. Prefer this over reading `sessionIsValid` directly.
+ */
+export const useIsLoggedIn = () => useSessionStore((state) => state.sessionIsValid);
+
+/**
+ * Non-hook version of {@link useIsLoggedIn} for use outside of components.
+ */
+export const getIsLoggedIn = () => useSessionStore.getState().sessionIsValid;

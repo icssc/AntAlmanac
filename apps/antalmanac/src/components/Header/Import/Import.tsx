@@ -5,7 +5,7 @@ import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUser
 import { BLUE } from '$src/globals';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
+import { useIsLoggedIn, useSessionStore } from '$stores/SessionStore';
 import { useDevModeStore } from '$stores/SettingsStore';
 import { ContentPasteGo } from '@mui/icons-material';
 import { type AlertColor, Box, Button, Link as MuiLink, Stack, Tooltip } from '@mui/material';
@@ -28,9 +28,9 @@ export function Import() {
             setOpenImportDialog: state.setOpenImportDialog,
         }))
     );
-    const { sessionIsValid, isNewUser, setIsNewUser, areSchedulesLoaded } = useSessionStore(
+    const isLoggedIn = useIsLoggedIn();
+    const { isNewUser, setIsNewUser, areSchedulesLoaded } = useSessionStore(
         useShallow((state) => ({
-            sessionIsValid: state.sessionIsValid,
             isNewUser: state.isNewUser,
             setIsNewUser: state.setIsNewUser,
             areSchedulesLoaded: state.areSchedulesLoaded,
@@ -77,10 +77,10 @@ export function Import() {
     }, [isNewUser, setIsNewUser, areSchedulesLoaded, setOpenImportDialog]);
 
     useEffect(() => {
-        if (sessionIsValid && getLocalStorageDataCache() === null) {
+        if (isLoggedIn && getLocalStorageDataCache() === null) {
             handleFirstTimeSignin();
         }
-    }, [handleFirstTimeSignin, sessionIsValid]);
+    }, [handleFirstTimeSignin, isLoggedIn]);
 
     return (
         <>

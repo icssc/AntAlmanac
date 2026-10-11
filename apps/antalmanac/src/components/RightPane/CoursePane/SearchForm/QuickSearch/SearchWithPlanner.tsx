@@ -14,7 +14,7 @@ import {
 } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
 import { usePlannerStore } from '$stores/PlannerStore';
-import { useSessionStore } from '$stores/SessionStore';
+import { useIsLoggedIn } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { OpenInBrowser } from '@mui/icons-material';
 import { Box, IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
@@ -41,7 +41,7 @@ export const SearchWithPlanner = () => {
     const { setField } = useCourseSearchForm();
     const [termRoadmapGrouping, setTermRoadmapGrouping] = useState<TermRoadmapGrouping>(getDefaultTermRoadmapGrouping);
 
-    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const isLoggedIn = useIsLoggedIn();
 
     const { isPlannerLoading, plannerRoadmaps } = usePlannerStore(
         useShallow((state) => ({ isPlannerLoading: state.isPlannerLoading, plannerRoadmaps: state.plannerRoadmaps }))
@@ -168,7 +168,7 @@ export const SearchWithPlanner = () => {
     const searchComponent = (
         <LabeledAutocomplete
             label="Roadmap"
-            disabled={!sessionIsValid}
+            disabled={!isLoggedIn}
             autocompleteProps={{
                 options: sortedRoadmaps,
                 getOptionLabel: (roadmap) => roadmap.name.toString(),
@@ -191,7 +191,7 @@ export const SearchWithPlanner = () => {
         />
     );
 
-    if (!sessionIsValid) {
+    if (!isLoggedIn) {
         return (
             <Tooltip title="Sign in to search with Planner">
                 <span>{searchComponent}</span>
