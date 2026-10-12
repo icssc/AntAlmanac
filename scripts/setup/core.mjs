@@ -95,7 +95,6 @@ export function isLocalDatabase(value, databaseName = 'antalmanac') {
     }
 }
 
-// Update only absent values and obvious template placeholders. Preserve comments and real credentials.
 export function mergeEnv(source, values) {
     let result = source;
     const existing = parseEnv(source);
@@ -186,7 +185,6 @@ export function environmentProblems(
         }
     }
     if (isPlaceholder(db.DB_URL)) issues.push(`Set DB_URL in ${DB_ENV}.`);
-    // Next.js loads these ahead of .env. Do not claim that a different configuration is ready.
     for (const file of ['.env.local', '.env.development', '.env.development.local']) {
         if (existsSync(join(root, 'apps/antalmanac', file))) {
             issues.push(
@@ -230,9 +228,7 @@ export function run(command, args, { cwd, env, signal, onOutput, timeout = 120_0
                 try {
                     if (process.platform !== 'win32' && child.pid) process.kill(-child.pid, sig);
                     else child.kill(sig);
-                } catch {
-                    /* The process may already have exited. */
-                }
+                } catch {}
             };
             kill('SIGTERM');
             killTimer = setTimeout(() => kill('SIGKILL'), 2000);
@@ -286,7 +282,6 @@ export const DEPENDENCY_MARKERS = [
     'packages/anteater-api/src/types/generated/anteater-api-types.ts',
 ];
 
-// Only keep successful expensive work in this session. Always recheck live prerequisites.
 export function prepareRetry(steps, previous, current, doctor = false) {
     const keep = new Set(doctor ? [] : ['dependencies', 'migrations', 'data']);
     if (

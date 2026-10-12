@@ -73,7 +73,6 @@ function cancel() {
     abort.abort();
     close();
     console.log(`\nSetup stopped. Completed steps are kept; rerun ${setupCommand} to continue.`);
-    // Give the process runner time to terminate children, including its SIGKILL fallback.
     setTimeout(() => process.exit(130), 2500);
 }
 process.once('SIGINT', cancel);
@@ -283,7 +282,6 @@ async function waitForPostgres() {
     let lastError = new Error('PostgreSQL did not finish starting.');
     for (let attempt = 0; attempt < 60; attempt++) {
         try {
-            // pid 1 is the entrypoint shell until init finishes and execs postgres.
             const leader = await command('docker', ['compose', 'exec', '-T', 'db', 'cat', '/proc/1/comm']);
             if (leader.trim() !== 'postgres') throw new Error('PostgreSQL is still initializing.');
             await command('docker', [

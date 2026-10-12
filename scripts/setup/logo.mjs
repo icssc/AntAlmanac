@@ -1,7 +1,3 @@
-// Braille tracing of apps/antalmanac/public/logos/logo.svg.
-// The sample covers the full mark, including the anteater's lower edge.
-// Each A still keeps its crossbar and both feet on the wordmark baseline.
-
 export const LOGO = [
     '      ⢀⣠⣴⣾⣿⣿⣷⣤⡴⣢⣶⣶⣽⢿⣶⣶⣶⣤⣤⣤⣤⣤⣤⣄',
     '    ⢠⣶⣿⣿⣿⣿⣿⣿⣿⣷⣧⣿⣿⣿⡿⣹⣿⣿⣿⣿⣿⣿⣿⠿⠛⠋   ⢀                                                  ⡀    ⢀⡀',

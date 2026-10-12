@@ -1,9 +1,7 @@
-# Keep these aligned with .nvmrc and package.json; setup tests enforce this.
 [tools]
 node = "22"
 pnpm = "10.22.0"
 
-# App secrets stay in the app/package .env files, loaded by their own tooling.
 [env]
 ANTALMANAC_TOOLCHAIN = "mise"
 
@@ -49,10 +47,6 @@ run = "pnpm get-data"
 [tasks.test]
 description = "Run application tests (requires generated term data)"
 run = "pnpm test run"
-
-[tasks."test:setup"]
-description = "Test the setup wizard without dependencies, Docker, or credentials"
-run = "node --test scripts/setup/*.test.mjs"
 
 [tasks.lint]
 description = "Lint the repository"

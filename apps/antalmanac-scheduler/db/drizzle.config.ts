@@ -6,7 +6,6 @@ import { defineConfig } from 'drizzle-kit';
 import { createJiti } from 'jiti';
 
 const here = dirname(fileURLToPath(import.meta.url));
-// Package .env wins. The app .env is the fallback the setup wizard writes.
 config({ path: resolve(here, '.env') });
 config({ path: resolve(here, '../../antalmanac/.env') });
 

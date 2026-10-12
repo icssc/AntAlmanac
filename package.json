@@ -23,7 +23,6 @@
         "get-data": "pnpm --filter @antalmanac-scheduler get-data",
         "setup": "node scripts/setup.mjs",
         "setup:check": "node scripts/setup.mjs --check",
-        "test:setup": "node --test scripts/setup/*.test.mjs",
         "db:up": "docker compose up -d --wait --wait-timeout 120 db",
         "db:stop": "docker compose stop db"
     },
