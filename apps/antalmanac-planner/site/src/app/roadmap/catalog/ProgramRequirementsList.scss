@@ -74,11 +74,15 @@
     .group-header-title {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 9px;
     }
 
     .group-header-title .completed-icon {
         flex-shrink: 0;
+    }
+
+    .group-header-title .not-added-icon {
+        color: var(--mui-palette-divider);
     }
 
     .group-header-btns {
@@ -107,8 +111,8 @@
         > .group-header {
             color: var(--mui-palette-success-main);
             // @TODO figure out if remove strike-through
-            // text-decoration: line-through;
-            // text-decoration-thickness: 2px;
+            text-decoration: line-through;
+            text-decoration-thickness: 2px;
         }
 
         .menu-tile {

@@ -8,6 +8,10 @@ import Image from 'next/image';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
+import addedStatusIcon from '../../../../../assets/requirement-status/added.png';
+import completedStatusIcon from '../../../../../assets/requirement-status/completed.png';
+import inProgressStatusIcon from '../../../../../assets/requirement-status/in-progress.png';
+import notAddedStatusIcon from '../../../../../assets/requirement-status/not-taken.png';
 import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
 import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
@@ -342,12 +346,11 @@ const GroupHeader: FC<GroupHeaderProps> = ({
 
     return (
         <ClickableDiv className={className} onClick={() => setOpen(!open)}>
-            {/* @TODO doesn't work with ICS 30 series. Works with other series */}
             <span className="group-header-title">
                 {status === 'completed' && (
                     <Image
                         className="completed-icon"
-                        src="/requirement-status/completed.png"
+                        src={completedStatusIcon}
                         alt="Completed"
                         width={20}
                         height={20}
@@ -356,29 +359,17 @@ const GroupHeader: FC<GroupHeaderProps> = ({
                 {status === 'in progress' && (
                     <Image
                         className="completed-icon"
-                        src="/requirement-status/in-progress.png"
+                        src={inProgressStatusIcon}
                         alt="In Progress"
                         width={20}
                         height={20}
                     />
                 )}
                 {status === 'added' && (
-                    <Image
-                        className="completed-icon"
-                        src="/requirement-status/added.png"
-                        alt="Added"
-                        width={20}
-                        height={20}
-                    />
+                    <Image className="completed-icon" src={addedStatusIcon} alt="Added" width={20} height={20} />
                 )}
                 {status === 'not added' && (
-                    <Image
-                        className="completed-icon"
-                        src="/requirement-status/not-taken.png"
-                        alt="Not Added"
-                        width={20}
-                        height={20}
-                    />
+                    <Image className="completed-icon" src={notAddedStatusIcon} alt="Not Added" width={20} height={20} />
                 )}
 
                 <b>{title}</b>
