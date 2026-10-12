@@ -87,14 +87,14 @@ export function getQuarterTiming(
     quarterName: string,
     currentQuarter: CurrentQuarter | null | undefined
 ): CourseTiming {
-    if (!currentQuarter) return 'future';
+    if (!currentQuarter) return 'planned';
 
     const quarter = quarterOrdinal(startYear, quarterName);
     const current = quarterOrdinal(currentQuarter.startYear, currentQuarter.quarterName);
 
-    if (quarter < current) return 'past';
+    if (quarter < current) return 'taken';
     if (quarter === current) return 'current';
-    else return 'future';
+    else return 'planned';
 }
 
 /** Filter courses in the given timings **/

@@ -29,7 +29,7 @@ type RequirementSchema = components['schemas']['programRequirement'];
 type ReqType = RequirementSchema['requirementType'];
 export type ProgramRequirement<T extends ReqType = ReqType> = RequirementSchema & { requirementType: T };
 
-export type CourseTiming = 'past' | 'current' | 'future';
+export type CourseTiming = 'taken' | 'current' | 'planned';
 
 export type RequirementStatus = 'completed' | 'in progress' | 'added' | 'not added';
 
