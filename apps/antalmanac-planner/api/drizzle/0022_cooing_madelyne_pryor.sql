@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "user_major_unique" ON "user_major" USING btree ("user_id","major_id");--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "user_minor_unique" ON "user_minor" USING btree ("user_id","minor_id");

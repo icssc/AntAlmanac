@@ -19,8 +19,10 @@
         "**/.turbo/**",
         "**/coverage/**",
         "**/public/**",
-        "apps/antalmanac/src/generated/**",
-        "packages/db/migrations/**",
+        "apps/antalmanac-scheduler/site/src/generated/**",
+        "apps/antalmanac-scheduler/db/migrations/**",
+        "apps/antalmanac-planner/types/src/generated/**",
+        "packages/anteater-api/src/types/generated**",
         "apps/ios/**"
     ],
     "experimentalSortImports": {

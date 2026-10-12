@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Optional eslint cache
+.eslintcache
+
+# environment variables file
+.env
+
+# sst files
+.sst
+cdk.context.json
+sst-env.d.ts
+
+# IDE settings
+.idea
+.vscode
+
+# MacOS thing
+.DS_Store
+
+# build output
+dist/
+site/build/
+.open-next
+.next
+tsconfig.tsbuildinfo
+
+# Next.js
+site/next-env.d.ts
+
+# Jest
+site/coverage

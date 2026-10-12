@@ -1,0 +1,27 @@
+{
+    "name": "@antalmanac-planner/api",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "tsc --watch",
+        "build": "tsc",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:studio": "drizzle-kit studio"
+    },
+    "dependencies": {
+        "@trpc/server": "^11.17.0",
+        "arctic": "^3.7.0",
+        "dotenv-flow": "^4.1.0",
+        "drizzle-orm": "^0.45.2",
+        "pg": "^8.16.3",
+        "zod": "^3.24.3"
+    },
+    "devDependencies": {
+        "@peterportal/types": "workspace:*",
+        "@types/dotenv-flow": "^3.3.3",
+        "@types/pg": "^8.11.10",
+        "drizzle-kit": "^0.30.6",
+        "typescript": "^5.9.3"
+    }
+}

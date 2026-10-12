@@ -1,4 +1,3 @@
-import './src/env';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -16,12 +15,25 @@ const nextConfig: NextConfig = {
     experimental: {
         optimizePackageImports: ['@mui/material', '@mui/icons-material', '@mui/system', '@mui/x-date-pickers'],
     },
+    outputFileTracingIncludes: {
+        '/*': ['../antalmanac-scheduler/site/src/generated/**/*'],
+    },
     async redirects() {
         return [
             {
                 source: '/auth',
                 destination: '/api/auth/oauth2/callback/icssc',
                 permanent: false,
+            },
+            {
+                source: '/planner/roadmap',
+                destination: '/planner',
+                permanent: true,
+            },
+            {
+                source: '/planner/professor/:id',
+                destination: '/planner/instructor/:id',
+                permanent: true,
             },
         ];
     },
