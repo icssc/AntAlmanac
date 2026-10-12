@@ -473,7 +473,7 @@ interface CourseRequirementProps {
     storeKey: string;
 }
 const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
-    const pastCourses = filterCourseByTiming(takenCourseIDs, 'past');
+    const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
     const complete = useCompletionCheck(pastCourses, data).done;
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
@@ -583,7 +583,7 @@ interface GroupedCourseRequirementProps {
     storeKey: string;
 }
 const GroupedCourseRequirement: FC<GroupedCourseRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
-    const pastCourses = filterCourseByTiming(takenCourseIDs, 'past');
+    const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
     const complete = useCompletionCheck(pastCourses, data).done;
     const className = `course-requirement${complete ? ' completed' : ''}`;
 
@@ -612,7 +612,7 @@ interface GroupRequirementProps {
     storeKey: string;
 }
 const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
-    const pastCourses = filterCourseByTiming(takenCourseIDs, 'past');
+    const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
     const complete = useCompletionCheck(pastCourses, data).done;
     const open = useAppSelector((state) => state.courseRequirements.expandedGroups[storeKey] ?? false);
     const isLoggedIn = useIsLoggedIn();
@@ -773,7 +773,7 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
 
     const transferCourseMap = transferredCourses.map((t) => [
         t.courseName.replace(/\s/g, ''),
-        { units: t.units ?? 0, transferType: t.transferType, timing: 'past' as const },
+        { units: t.units ?? 0, transferType: t.transferType, timing: 'taken' as const },
     ]);
 
     const takenCourseSet: CompletedCourseSet = Object.assign(
