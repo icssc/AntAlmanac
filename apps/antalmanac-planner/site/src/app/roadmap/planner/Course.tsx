@@ -14,6 +14,7 @@ import { CourseBookmarkButton, CourseSynopsis } from '../../../component/CourseI
 import CoursePopover from '../../../component/CoursePopover/CoursePopover';
 import OverlayTrigger from '../../../component/OverlayTrigger/OverlayTrigger';
 import RecentOfferingsTooltip from '../../../component/RecentOfferingsTooltip/RecentOfferingsTooltip';
+import { wrapSkeleton } from '../../../helpers/skeleton';
 import { useIsMobile, pluralize, formatGEsTag, shortenCourseLevel } from '../../../helpers/util';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setActiveCourse, setShowAddCourse, setActiveMissingPrerequisites } from '../../../store/slices/roadmapSlice';
@@ -88,11 +89,12 @@ interface CourseProps {
     addMode?: 'tap' | 'drag';
     data: PlannerCourseData;
     onSetVariableUnits?: (units: number | undefined) => void;
+    skeleton?: boolean;
 }
 
 const Course: FC<CourseProps> = (props) => {
     const { title, courseLevel, minUnits, maxUnits, terms, geList, userChosenUnits } = props.data;
-    const { requiredCourses, termMismatch, onDelete, openPopoverLeft, onSetVariableUnits } = props;
+    const { requiredCourses, termMismatch, onDelete, openPopoverLeft, onSetVariableUnits, skeleton = false } = props;
 
     const isInRoadmap = !!onDelete;
     const isMobile = useIsMobile();
@@ -125,39 +127,51 @@ const Course: FC<CourseProps> = (props) => {
     return (
         <div className={`course ${isInRoadmap ? 'roadmap-course' : ''}`} {...tappableCourseProps}>
             {(!isMobile || isInRoadmap) && (
-                <div className="course-drag-handle">
-                    <DragIndicatorIcon />
-                </div>
+                <div className="course-drag-handle">{wrapSkeleton(<DragIndicatorIcon />, skeleton)}</div>
             )}
 
             <div className="course-card-top">
                 <div className="course-and-info">
                     <span className={`${requiredCourses ? 'missing-prereq' : ''}`}>
-                        <CourseNameAndInfo data={props.data} {...{ openPopoverLeft, requiredCourses, termMismatch }} />
+                        {wrapSkeleton(
+                            <CourseNameAndInfo
+                                data={props.data}
+                                {...{ openPopoverLeft, requiredCourses, termMismatch }}
+                            />,
+                            skeleton
+                        )}
                     </span>
-                    {isInRoadmap && minUnits === maxUnits && <span className="units">{defaultUnitsText}</span>}
+                    {isInRoadmap && minUnits === maxUnits && (
+                        <span className="units">{wrapSkeleton(<span>{defaultUnitsText}</span>, skeleton)}</span>
+                    )}
                     {isInRoadmap && minUnits !== maxUnits && (
                         <div className="custom-units">
-                            <UnitsContainer
-                                units={unit}
-                                setUnits={onSetVariableUnits}
-                                minUnits={minUnits}
-                                maxUnits={maxUnits}
-                                source="Course"
-                            />
+                            {wrapSkeleton(
+                                <UnitsContainer
+                                    units={unit}
+                                    setUnits={onSetVariableUnits}
+                                    minUnits={minUnits}
+                                    maxUnits={maxUnits}
+                                    source="Course"
+                                />,
+                                skeleton
+                            )}
                         </div>
                     )}
                 </div>
                 {isInRoadmap ? (
-                    <IconButton className="course-delete-btn" onClick={onDelete} aria-label="delete">
-                        <DeleteOutlineIcon className="course-delete-icon" />
-                    </IconButton>
+                    wrapSkeleton(
+                        <IconButton className="course-delete-btn" onClick={onDelete} aria-label="delete">
+                            <DeleteOutlineIcon className="course-delete-icon" />
+                        </IconButton>,
+                        skeleton
+                    )
                 ) : (
                     <CourseBookmarkButton course={props.data} />
                 )}
             </div>
             {isInRoadmap ? (
-                <div className="title">{title}</div>
+                <div className="title">{wrapSkeleton(<span>{title}</span>, skeleton)}</div>
             ) : (
                 <div className="course-info">
                     <CourseSynopsis course={props.data} clampDescription={3} />

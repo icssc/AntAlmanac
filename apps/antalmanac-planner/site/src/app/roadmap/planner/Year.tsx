@@ -21,6 +21,7 @@ import { FC, useRef, useState, useEffect } from 'react';
 import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import { calculateTotalUnits } from '../../../helpers/planner';
 import { deletePlannerYear, modifyPlannerYear } from '../../../helpers/roadmapEdits';
+import { wrapSkeleton } from '../../../helpers/skeleton';
 import { pluralize } from '../../../helpers/util';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
@@ -55,18 +56,24 @@ const YearTitle = ({ year, index }: YearTitleProps) => {
 
 interface YearStatsProps {
     year: PlannerYearData;
+    skeleton: boolean;
 }
-const YearStats = ({ year }: YearStatsProps) => {
+const YearStats = ({ year, skeleton }: YearStatsProps) => {
     const courses = year.quarters.flatMap((quarter) => quarter.courses);
 
     const { unitCount, courseCount } = calculateTotalUnits(courses);
 
     return (
-        <p className="year-stats">
-            <span className="course-count">{courseCount}</span> {pluralize(courseCount, 'courses', 'course')}
-            {' • '}
-            <span className="unit-count">{unitCount}</span> {pluralize(unitCount, 'units', 'unit')}
-        </p>
+        <div className="year-stats">
+            {wrapSkeleton(
+                <span>
+                    <span className="course-count">{courseCount}</span> {pluralize(courseCount, 'courses', 'course')}
+                    {' • '}
+                    <span className="unit-count">{unitCount}</span> {pluralize(unitCount, 'units', 'unit')}
+                </span>,
+                skeleton
+            )}
+        </div>
     );
 };
 
@@ -113,9 +120,10 @@ const DeleteYearModal = ({ show, setShow, yearName, yearIndex }: DeleteYearModal
 interface YearProps {
     yearIndex: number;
     data: PlannerYearData;
+    skeleton?: boolean;
 }
 
-const Year: FC<YearProps> = ({ yearIndex, data }) => {
+const Year: FC<YearProps> = ({ yearIndex, data, skeleton = false }) => {
     const dispatch = useAppDispatch();
     const [collapsed, setCollapsed] = useState(data.collapsed);
     const [showEditYear, setShowEditYear] = useState(false);
@@ -154,22 +162,30 @@ const Year: FC<YearProps> = ({ yearIndex, data }) => {
     return (
         <Card className="year" ref={yearContainerRef} variant="outlined">
             <div className="year-header">
-                <YearTitle year={data} index={yearIndex} />
-                <YearStats year={data} />
+                {wrapSkeleton(<YearTitle year={data} index={yearIndex} />, skeleton)}
+                <YearStats year={data} skeleton={skeleton} />
                 <div className="action-row">
-                    <IconButton onClick={handleEditYearClick}>
-                        <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => setShowDeleteYear(true)}>
-                        <DeleteOutlineIcon />
-                    </IconButton>
-
-                    <ExpandMore
-                        expanded={!collapsed}
-                        onClick={handleCollapseClick}
-                        aria-expanded={!collapsed}
-                        aria-label="expand planner"
-                    />
+                    {wrapSkeleton(
+                        <IconButton onClick={handleEditYearClick}>
+                            <EditIcon />
+                        </IconButton>,
+                        skeleton
+                    )}
+                    {wrapSkeleton(
+                        <IconButton onClick={() => setShowDeleteYear(true)}>
+                            <DeleteOutlineIcon />
+                        </IconButton>,
+                        skeleton
+                    )}
+                    {wrapSkeleton(
+                        <ExpandMore
+                            expanded={!collapsed}
+                            onClick={handleCollapseClick}
+                            aria-expanded={!collapsed}
+                            aria-label="expand planner"
+                        />,
+                        skeleton
+                    )}
                 </div>
             </div>
             <EditYearModal
@@ -236,7 +252,9 @@ const Year: FC<YearProps> = ({ yearIndex, data }) => {
                                 key={`year-quarter-${quarterIndex}`}
                                 yearIndex={yearIndex}
                                 quarterIndex={quarterIndex}
+                                startYear={data.startYear}
                                 data={quarter}
+                                skeleton={skeleton}
                             />
                         );
                     })}
