@@ -45,7 +45,11 @@ let closed = false;
 let pnpm = ['pnpm', []];
 const managed = process.env.ANTALMANAC_TOOLCHAIN === 'mise';
 const setupCommand = managed ? 'mise run setup' : 'node scripts/setup.mjs';
-let devCommand = managed ? 'mise run dev' : 'pnpm dev';
+const nextCommands = [
+    ['mise run dev', 'Start the development server'],
+    ['mise run db:up', 'Start the database'],
+    ['mise run db:stop', 'Stop the database'],
+].map(([command, description]) => `${command.padEnd(18)}${description}`);
 let previousEnvironment;
 let secrets = [];
 let doctor = args.has('--check');
@@ -389,7 +393,6 @@ async function runChecks() {
                 return;
             }
             pnpm = ['npm', ['exec', '--yes', `--package=${manager}`, '--', 'pnpm']];
-            devCommand = `npm exec --yes --package=${manager} -- pnpm dev`;
             await pm(['--version']);
         }
         mark('tools', 'done', `Node ${process.versions.node} · pnpm ${version}${managed ? ' · managed by mise' : ''}`);
@@ -668,7 +671,7 @@ async function runChecks() {
         ready
             ? doctor
                 ? 'Checks passed. Run setup to apply migrations before starting development.'
-                : `Ready to start: ${devCommand} → http://localhost:3000`
+                : 'Workspace is ready at http://localhost:3000.'
             : outstanding.length
               ? `${outstanding.map((item) => item.label).join(', ')} must succeed before AntAlmanac can start. Rerun ${setupCommand} after fixing them. Completed steps are kept.`
               : `Finish the remaining steps, then rerun ${setupCommand}.`
@@ -698,7 +701,7 @@ function printSummary(ready) {
     }
     console.log(
         ready && !doctor
-            ? `  Next: ${devCommand}\n  Open the URL printed by Next.js (usually http://localhost:3000).\n`
+            ? `  Next:\n${nextCommands.map((line) => `  ${line}`).join('\n')}\n  Open the URL printed by Next.js (usually http://localhost:3000).\n`
             : `  Continue: ${setupCommand}\n`
     );
     process.exitCode = ready ? 0 : 1;
@@ -707,7 +710,7 @@ function printSummary(ready) {
 async function startDevelopment() {
     close();
     console.log(
-        '\n  Starting AntAlmanac. Open the URL printed below. Ctrl+C stops the server.\n\n  You can run the development server again in the future with pnpm dev.\n'
+        `\n  Starting AntAlmanac. Open the URL printed below. Ctrl+C stops the server.\n\n  Next:\n${nextCommands.map((line) => `  ${line}`).join('\n')}\n`
     );
     const result = await run(pnpm[0], [...pnpm[1], 'dev'], {
         cwd: root,
@@ -771,7 +774,7 @@ async function main() {
                 ],
                 [
                     ready && !doctor
-                        ? 'Starts Next.js now. Next time, run pnpm dev. Ctrl+C stops the server.'
+                        ? 'Starts Next.js now. Ctrl+C stops the server.'
                         : doctor
                           ? 'Install dependencies and apply the local configuration.'
                           : outstanding.length
@@ -781,7 +784,8 @@ async function main() {
                         ? 'Shows the cause, the command output, and the exact next step for every step that failed.'
                         : 'Scroll through every result.',
                     'Prints the same report in your terminal, including how to fix each step.',
-                ]
+                ],
+                ready && !doctor ? nextCommands : []
             );
             if (choice === 2) {
                 printSummary(ready);
