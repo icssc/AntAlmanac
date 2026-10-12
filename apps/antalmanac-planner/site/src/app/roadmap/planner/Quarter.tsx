@@ -153,7 +153,7 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, startYear, data, s
             if (!isLoggedIn) {
                 return (
                     <div key={`custom-${course.id}-${index}`} className="quarter-custom-course-logged-out">
-                        {wrapSkeleton(<p>Log in to use custom cards!</p>, skeleton)}
+                        {wrapSkeleton(<p>Log in to use custom cards!</p>, skeleton, 'text')}
                     </div>
                 );
             }
@@ -232,14 +232,15 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, startYear, data, s
         <Card className="quarter" ref={quarterContainerRef} variant="outlined">
             <div className="quarter-header">
                 <h2 className="quarter-title">
-                    {wrapSkeleton(<span>{quarterTitle.replace('10 Week', '10wk')}</span>, skeleton)}
+                    {wrapSkeleton(<span>{quarterTitle.replace('10 Week', '10wk')}</span>, skeleton, 'text')}
                 </h2>
                 <div className="quarter-units">
                     {wrapSkeleton(
                         <span>
                             {unitCount} unit{pluralize(unitCount)}
                         </span>,
-                        skeleton
+                        skeleton,
+                        'text'
                     )}
                 </div>
                 {isMobile &&

@@ -3,6 +3,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 import './Year.scss';
 import EditIcon from '@mui/icons-material/Edit';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
     Button,
     Box,
@@ -71,7 +72,8 @@ const YearStats = ({ year, skeleton }: YearStatsProps) => {
                     {' • '}
                     <span className="unit-count">{unitCount}</span> {pluralize(unitCount, 'units', 'unit')}
                 </span>,
-                skeleton
+                skeleton,
+                'text'
             )}
         </div>
     );
@@ -162,30 +164,24 @@ const Year: FC<YearProps> = ({ yearIndex, data, skeleton = false }) => {
     return (
         <Card className="year" ref={yearContainerRef} variant="outlined">
             <div className="year-header">
-                {wrapSkeleton(<YearTitle year={data} index={yearIndex} />, skeleton)}
+                {wrapSkeleton(<YearTitle year={data} index={yearIndex} />, skeleton, 'text')}
                 <YearStats year={data} skeleton={skeleton} />
                 <div className="action-row">
-                    {wrapSkeleton(
-                        <IconButton onClick={handleEditYearClick}>
-                            <EditIcon />
-                        </IconButton>,
-                        skeleton
-                    )}
-                    {wrapSkeleton(
-                        <IconButton onClick={() => setShowDeleteYear(true)}>
-                            <DeleteOutlineIcon />
-                        </IconButton>,
-                        skeleton
-                    )}
-                    {wrapSkeleton(
-                        <ExpandMore
-                            expanded={!collapsed}
-                            onClick={handleCollapseClick}
-                            aria-expanded={!collapsed}
-                            aria-label="expand planner"
-                        />,
-                        skeleton
-                    )}
+                    <IconButton onClick={handleEditYearClick} disabled={skeleton}>
+                        {wrapSkeleton(<EditIcon />, skeleton, 'circular')}
+                    </IconButton>
+                    <IconButton onClick={() => setShowDeleteYear(true)} disabled={skeleton}>
+                        {wrapSkeleton(<DeleteOutlineIcon />, skeleton, 'circular')}
+                    </IconButton>
+                    <ExpandMore
+                        expanded={!collapsed}
+                        onClick={handleCollapseClick}
+                        aria-expanded={!collapsed}
+                        aria-label="expand planner"
+                        disabled={skeleton}
+                    >
+                        {wrapSkeleton(<ExpandMoreIcon />, skeleton, 'circular')}
+                    </ExpandMore>
                 </div>
             </div>
             <EditYearModal

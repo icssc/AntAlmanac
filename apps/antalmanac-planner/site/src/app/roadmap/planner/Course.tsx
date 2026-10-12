@@ -138,11 +138,12 @@ const Course: FC<CourseProps> = (props) => {
                                 data={props.data}
                                 {...{ openPopoverLeft, requiredCourses, termMismatch }}
                             />,
-                            skeleton
+                            skeleton,
+                            'text'
                         )}
                     </span>
                     {isInRoadmap && minUnits === maxUnits && (
-                        <span className="units">{wrapSkeleton(<span>{defaultUnitsText}</span>, skeleton)}</span>
+                        <span className="units">{wrapSkeleton(<span>{defaultUnitsText}</span>, skeleton, 'text')}</span>
                     )}
                     {isInRoadmap && minUnits !== maxUnits && (
                         <div className="custom-units">
@@ -160,18 +161,20 @@ const Course: FC<CourseProps> = (props) => {
                     )}
                 </div>
                 {isInRoadmap ? (
-                    wrapSkeleton(
-                        <IconButton className="course-delete-btn" onClick={onDelete} aria-label="delete">
-                            <DeleteOutlineIcon className="course-delete-icon" />
-                        </IconButton>,
-                        skeleton
-                    )
+                    <IconButton
+                        className="course-delete-btn"
+                        onClick={onDelete}
+                        aria-label="delete"
+                        disabled={skeleton}
+                    >
+                        {wrapSkeleton(<DeleteOutlineIcon className="course-delete-icon" />, skeleton, 'circular')}
+                    </IconButton>
                 ) : (
                     <CourseBookmarkButton course={props.data} />
                 )}
             </div>
             {isInRoadmap ? (
-                <div className="title">{wrapSkeleton(<span>{title}</span>, skeleton)}</div>
+                <div className="title">{wrapSkeleton(<span>{title}</span>, skeleton, 'text')}</div>
             ) : (
                 <div className="course-info">
                     <CourseSynopsis course={props.data} clampDescription={3} />

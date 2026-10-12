@@ -116,19 +116,23 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({
 
                 <div className="main">
                     <div className="course-card-top">
-                        <span className="name">{wrapSkeleton(<span>{course.courseName}</span>, skeleton)}</span>
+                        <span className="name">{wrapSkeleton(<span>{course.courseName}</span>, skeleton, 'text')}</span>
 
-                        <span className="units">{wrapSkeleton(<span>{course.units} units</span>, skeleton)}</span>
+                        <span className="units">
+                            {wrapSkeleton(<span>{course.units} units</span>, skeleton, 'text')}
+                        </span>
 
-                        {wrapSkeleton(
-                            <IconButton className="course-delete-btn" onClick={removeCourseAt} aria-label="delete">
-                                <DeleteOutlineIcon className="course-delete-icon" />
-                            </IconButton>,
-                            skeleton
-                        )}
+                        <IconButton
+                            className="course-delete-btn"
+                            onClick={removeCourseAt}
+                            aria-label="delete"
+                            disabled={skeleton}
+                        >
+                            {wrapSkeleton(<DeleteOutlineIcon className="course-delete-icon" />, skeleton, 'circular')}
+                        </IconButton>
                     </div>
                     <div className="course-description description-body">
-                        {wrapSkeleton(<span>{course.description}</span>, skeleton)}
+                        {wrapSkeleton(<span>{course.description}</span>, skeleton, 'text')}
                     </div>
                 </div>
             </div>
