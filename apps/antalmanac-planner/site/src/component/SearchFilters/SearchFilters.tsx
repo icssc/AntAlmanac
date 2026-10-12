@@ -1,7 +1,6 @@
 import CheckIcon from '@mui/icons-material/Check';
 
 import './SearchFilters.scss';
-
 import { Icon, MenuProps, TextField } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';

@@ -3,7 +3,6 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 
 import './Profile.scss';
-
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import FlagIcon from '@mui/icons-material/Flag';
 import InfoIcon from '@mui/icons-material/Info';

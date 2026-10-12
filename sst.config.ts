@@ -18,7 +18,7 @@ function getDomain() {
 }
 
 const isPermanentStage = ['production', 'scheduler', 'staging-shared'];
-const AANTS_STAGES = ['production', 'staging-1521', 'staging-1542'];
+const AANTS_STAGES = ['production', 'staging-1521', 'staging-1542', 'staging-1967'];
 const PETERPORTAL_LEGACY_STAGE = 'peterportal-legacy';
 
 const ANTALMANAC_WEBSITE_SERVER_CACHE_POLICY = '92d18877-845e-47e7-97e6-895382b1bf7c';

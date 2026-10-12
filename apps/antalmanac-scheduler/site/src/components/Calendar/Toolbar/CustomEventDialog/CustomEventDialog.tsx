@@ -182,7 +182,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             onChange={handleEventNameChange}
                             variant="outlined"
                             color="secondary"
-                            InputLabelProps={{ variant: 'outlined' }}
+                            slotProps={{ inputLabel: { variant: 'outlined' } }}
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ display: 'flex', flexDirection: 'row', gap: '12px' }}>
@@ -193,7 +193,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             defaultValue={start}
                             fullWidth
                             variant="outlined"
-                            InputLabelProps={{ variant: 'outlined' }}
+                            slotProps={{ inputLabel: { variant: 'outlined', shrink: true } }}
                             color="secondary"
                         />
                         <TextField
@@ -203,7 +203,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             defaultValue={end}
                             fullWidth
                             variant="outlined"
-                            InputLabelProps={{ variant: 'outlined' }}
+                            slotProps={{ inputLabel: { variant: 'outlined', shrink: true } }}
                             color="secondary"
                         />
                     </FormControl>

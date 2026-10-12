@@ -2,7 +2,6 @@
 import { Button, Chip, MenuItem, Select } from '@mui/material';
 
 import './SideInfo.scss';
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
