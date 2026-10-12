@@ -1,5 +1,5 @@
 import { loadSchedules } from '$backend/lib/rds/helpers';
-import type { DatabaseOrTransaction } from '$backend/lib/rds/types';
+import type { Database, DatabaseOrTransaction } from '$backend/lib/rds/types';
 import type { ScheduleSaveState } from '@packages/antalmanac-types';
 import { type User, accounts, schedules, users } from '@packages/db/src/schema';
 import { and, eq, sql } from 'drizzle-orm';
@@ -87,7 +87,7 @@ export async function getUserFriendDataByUid(
  *
  * @returns true if the user was successfully flagged, false if already flagged or not found.
  */
-export async function flagImportedUser(db: DatabaseOrTransaction, username: string) {
+export async function flagImportedUser(db: Database, username: string) {
     return db.transaction(async (tx) => {
         const row = await tx
             .select({ userId: users.id, imported: users.imported })
