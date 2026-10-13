@@ -230,9 +230,9 @@ export class Terminal {
                 );
                 main.push(muted('Stored only in your local .env. Never shown in logs.'));
             }
-        } else {
+        } else if (this.command || this.logs.length) {
             const room = 6;
-            main.push('', cyan(active ? `LIVE OUTPUT / ${active.label}` : 'WORKSPACE STATUS'));
+            main.push('');
             if (this.command) main.push(muted(`$ ${this.command}`));
             main.push(...this.logs.slice(-room).map(muted));
         }
