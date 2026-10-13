@@ -766,7 +766,7 @@ async function main() {
                       ? 'Set up my workspace'
                       : 'Retry unfinished steps';
             const choice = await ui.choose(
-                'What would you like to do next?',
+                ready && !doctor ? 'Development commands' : 'What would you like to do next?',
                 [
                     action,
                     outstanding.length ? 'See what failed and how to fix it' : 'Review the full results',
