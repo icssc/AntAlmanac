@@ -45,11 +45,13 @@ let closed = false;
 let pnpm = ['pnpm', []];
 const managed = process.env.ANTALMANAC_TOOLCHAIN === 'mise';
 const setupCommand = managed ? 'mise run setup' : 'node scripts/setup.mjs';
-const nextCommands = [
+const nextCommandRows = [
     ['mise run dev', 'Start the development server'],
     ['mise run db:start', 'Start the database'],
     ['mise run db:stop', 'Stop the database'],
-].map(([command, description]) => `${command.padEnd(18)}${description}`);
+];
+const commandColumn = Math.max(...nextCommandRows.map(([command]) => command.length)) + 6;
+const nextCommands = nextCommandRows.map(([command, description]) => `${command.padEnd(commandColumn)}${description}`);
 let setupSucceeded = false;
 let commandsPrinted = false;
 function printDevelopmentCommands() {
