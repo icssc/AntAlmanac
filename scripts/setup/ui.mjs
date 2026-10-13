@@ -246,7 +246,9 @@ export class Terminal {
             }
         } else if (this.command || this.logs.length) {
             const room = 6;
-            main.push('');
+            const label = 'Output';
+            const rule = '─'.repeat(Math.max(4, width - label.length - 1));
+            main.push('', muted(`${label} ${rule}`));
             if (this.command) main.push(muted(`$ ${this.command}`));
             main.push(...this.logs.slice(-room).map(muted));
         }
