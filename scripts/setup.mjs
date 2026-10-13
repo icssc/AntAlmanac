@@ -50,6 +50,13 @@ const nextCommands = [
     ['mise run db:up', 'Start the database'],
     ['mise run db:stop', 'Stop the database'],
 ].map(([command, description]) => `${command.padEnd(18)}${description}`);
+let setupSucceeded = false;
+let commandsPrinted = false;
+function printDevelopmentCommands() {
+    if (!setupSucceeded || commandsPrinted) return;
+    commandsPrinted = true;
+    console.log(`\n  Development commands\n${nextCommands.map((line) => `  ${line}`).join('\n')}\n`);
+}
 let previousEnvironment;
 let secrets = [];
 let doctor = args.has('--check');
@@ -77,6 +84,7 @@ function cancel() {
     abort.abort();
     close();
     console.log(`\nSetup stopped. Completed steps are kept; rerun ${setupCommand} to continue.`);
+    printDevelopmentCommands();
     setTimeout(() => process.exit(130), 2500);
 }
 process.once('SIGINT', cancel);
@@ -699,19 +707,19 @@ function printSummary(ready) {
         for (const line of (item.detail || item.status).split('\n')) console.log(`    ${line}`);
         console.log('');
     }
-    console.log(
-        ready && !doctor
-            ? `  Next:\n${nextCommands.map((line) => `  ${line}`).join('\n')}\n  Open the URL printed by Next.js (usually http://localhost:3000).\n`
-            : `  Continue: ${setupCommand}\n`
-    );
+    if (ready && !doctor) {
+        printDevelopmentCommands();
+        console.log('  Open the URL printed by Next.js (usually http://localhost:3000).\n');
+    } else {
+        console.log(`  Continue: ${setupCommand}\n`);
+    }
     process.exitCode = ready ? 0 : 1;
 }
 
 async function startDevelopment() {
     close();
-    console.log(
-        `\n  Starting AntAlmanac. Open the URL printed below. Ctrl+C stops the server.\n\n  Next:\n${nextCommands.map((line) => `  ${line}`).join('\n')}\n`
-    );
+    console.log('\n  Starting AntAlmanac. Open the URL printed below. Ctrl+C stops the server.');
+    printDevelopmentCommands();
     const result = await run(pnpm[0], [...pnpm[1], 'dev'], {
         cwd: root,
         signal: abort.signal,
@@ -743,6 +751,7 @@ async function main() {
     }
     while (!interrupted) {
         const ready = await runChecks();
+        if (ready && !doctor) setupSucceeded = true;
         if (!guided) {
             printSummary(ready);
             return;
