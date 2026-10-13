@@ -248,7 +248,7 @@ export class Terminal {
             const room = 6;
             const label = 'Output';
             const rule = '─'.repeat(Math.max(4, width - label.length - 1));
-            main.push('', muted(`${label} ${rule}`));
+            main.push('', `${cyan(label)} ${muted(rule)}`);
             if (this.command) main.push(muted(`$ ${this.command}`));
             main.push(...this.logs.slice(-room).map(muted));
         }
