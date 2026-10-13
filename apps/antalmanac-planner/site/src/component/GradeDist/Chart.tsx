@@ -30,7 +30,9 @@ export default function Chart({ gradeData, quarter, professor, course }: ChartPr
     ];
 
     function formatAsPercent(count: number) {
-        if (aggregateGradeData.total === 0) return '0.0%';
+        if (aggregateGradeData.total === 0) {
+            return '0.0%';
+        }
         const percent = (count / aggregateGradeData.total) * 100;
         return percent > 0 && percent < 0.05 ? '<0.1%' : `${percent.toFixed(1)}%`;
     }
