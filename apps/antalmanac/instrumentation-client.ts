@@ -1,4 +1,3 @@
-import { initSchedulerClient } from '@antalmanac-scheduler/src/lib/initClient';
 // @see https://posthog.com/docs/libraries/next-js
 import posthog from 'posthog-js';
 
@@ -12,5 +11,3 @@ if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
         external_scripts_inject_target: 'head',
     });
 }
-
-initSchedulerClient();
