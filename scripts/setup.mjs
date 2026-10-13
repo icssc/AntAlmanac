@@ -47,7 +47,7 @@ const managed = process.env.ANTALMANAC_TOOLCHAIN === 'mise';
 const setupCommand = managed ? 'mise run setup' : 'node scripts/setup.mjs';
 const nextCommands = [
     ['mise run dev', 'Start the development server'],
-    ['mise run db:up', 'Start the database'],
+    ['mise run db:start', 'Start the database'],
     ['mise run db:stop', 'Stop the database'],
 ].map(([command, description]) => `${command.padEnd(18)}${description}`);
 let setupSucceeded = false;

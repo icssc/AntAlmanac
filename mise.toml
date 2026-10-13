@@ -22,7 +22,7 @@ description = "Start the Next.js development server (after setup)"
 run = "pnpm dev"
 raw = true
 
-[tasks."db:up"]
+[tasks."db:start"]
 description = "Start local PostgreSQL and wait until it is healthy"
 run = "docker compose up -d --wait --wait-timeout 120 db"
 
