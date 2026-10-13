@@ -203,8 +203,8 @@ export class Terminal {
                     );
                 }
             }
-            main.push('', this.color('1', this.prompt.title));
             if (this.prompt.options) {
+                main.push('', this.color('1', this.prompt.title));
                 if (this.prompt.lead?.length) {
                     for (const line of this.prompt.lead) main.push(...wrapText(line, width));
                     main.push('');
@@ -215,20 +215,34 @@ export class Terminal {
                 const hint = this.prompt.descriptions?.[this.prompt.selected];
                 if (hint) main.push('', ...wrapText(hint, width).slice(0, 3).map(muted));
             } else {
+                const inset = 2;
+                const textWidth = Math.max(8, width - inset * 2);
+                const pad = (line) => `${' '.repeat(inset)}${line}`;
+                main.push('', this.color('1', pad(this.prompt.title)), '');
                 if (this.prompt.instructions?.length) {
-                    for (const line of this.prompt.instructions) main.push(...wrapText(line, width));
+                    this.prompt.instructions.forEach((line, index) => {
+                        if (index) main.push('');
+                        main.push(...wrapText(line, textWidth).map(pad));
+                    });
                 }
                 if (this.prompt.url) {
-                    main.push(...wrapText(`Ctrl+O opens ${this.prompt.url}`, width).map(cyan));
+                    main.push(
+                        '',
+                        ...wrapText(`Ctrl+O opens ${this.prompt.url}`, textWidth).map((line) => cyan(pad(line)))
+                    );
                 }
-                if (this.prompt.notice) main.push(...wrapText(this.prompt.notice, width));
+                if (this.prompt.notice) main.push('', ...wrapText(this.prompt.notice, textWidth).map(pad));
                 main.push(
-                    cyan('› ') +
-                        (this.prompt.value
-                            ? '•'.repeat(Math.min(this.prompt.value.length, 40))
-                            : muted('Paste your key, or Enter to skip'))
+                    '',
+                    pad(
+                        cyan('› ') +
+                            (this.prompt.value
+                                ? '•'.repeat(Math.min(this.prompt.value.length, 40))
+                                : muted('Paste your key, or Enter to skip'))
+                    ),
+                    '',
+                    pad(muted('Stored only in your local .env. Never shown in logs.'))
                 );
-                main.push(muted('Stored only in your local .env. Never shown in logs.'));
             }
         } else if (this.command || this.logs.length) {
             const room = 6;
@@ -351,7 +365,7 @@ export class Terminal {
         this.prompt = { title, value: '', instructions, url, notice: '' };
         if (!this.animated)
             process.stdout.write(
-                `${title}\n${instructions.length ? `${instructions.join('\n')}\n` : ''}${url ? `Ctrl+O opens ${url}\n` : ''}(input hidden; Enter to skip)\n`
+                `\n  ${title}\n\n${instructions.length ? `${instructions.map((line) => `  ${line}`).join('\n\n')}\n\n` : ''}${url ? `  Ctrl+O opens ${url}\n\n` : ''}  › Paste your key, or Enter to skip\n\n  Stored only in your local .env. Never shown in logs.\n`
             );
         this.render();
         return new Promise((resolve) => {
