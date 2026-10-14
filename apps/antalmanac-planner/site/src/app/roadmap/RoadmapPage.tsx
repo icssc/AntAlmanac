@@ -22,14 +22,14 @@ import {
     setSelectedSidebarTab,
     showMobileCatalog,
 } from '../../store/slices/roadmapSlice';
-import { setShowMobileCreditsMenu } from '../../store/slices/transferCreditsSlice';
+import { clearUnreadTransfers, setShowMobileCreditsMenu } from '../../store/slices/transferCreditsSlice';
 import MobileCourseCatalog from './catalog/MobileCourseCatalog';
 import MobileNavbar from './MobileNavbar';
 import MobilePopup from './MobilePopup';
 import AddCoursePopup from './planner/AddCoursePopup';
 import Planner from './planner/Planner';
 import DesktopRoadmapSidebar from './sidebar/DesktopRoadmapSidebar';
-import { MobileCreditsMenu } from './transfers/MobileCreditsMenu';
+import { TransferCreditsMenu } from './transfers/TransferCreditsMenu';
 
 const RoadmapPage: FC = () => {
     const isMobile = useIsMobile();
@@ -121,6 +121,10 @@ const RoadmapPage: FC = () => {
     );
 
     const handleMobileTabChange = (newValue: number) => {
+        if (selectedMobileIndex === 1 && newValue !== 1) {
+            dispatch(clearUnreadTransfers());
+        }
+
         dispatch(setSelectedMobileTab(newValue));
 
         switch (newValue) {
@@ -160,11 +164,16 @@ const RoadmapPage: FC = () => {
             />
             <AddCoursePopup />
             <MobileCourseCatalog />
-            <MobileCreditsMenu />
 
             {/* Main Planner View or Fullscreen Mobile Search */}
             <div className={`main-wrapper ${isMobile ? 'mobile' : ''}`} id="mobileScrollContainer">
-                {fullscreenActive ? <MobileSearchMenu /> : (!isMobile || selectedMobileIndex === 0) && <Planner />}
+                {fullscreenActive ? (
+                    <MobileSearchMenu />
+                ) : isMobile && selectedMobileIndex === 1 ? (
+                    <TransferCreditsMenu />
+                ) : (
+                    (!isMobile || selectedMobileIndex === 0) && <Planner />
+                )}
                 {isMobile ? (
                     <MobilePopup show={showPreview} onClose={handleClosePreview}>
                         {resultPreview}
