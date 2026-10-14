@@ -44,7 +44,9 @@ function createSsrMatchMedia(deviceType?: string) {
     return (query: string) => {
         const maxWidth = query.match(/max-width:\s*(\d+)px/)?.[1];
         const minWidth = query.match(/min-width:\s*(\d+)px/)?.[1];
-        if (!maxWidth && !minWidth) return { matches: false };
+        if (!maxWidth && !minWidth) {
+            return { matches: false };
+        }
 
         const matches =
             (!maxWidth || estimatedWidth <= Number(maxWidth)) && (!minWidth || estimatedWidth >= Number(minWidth));
