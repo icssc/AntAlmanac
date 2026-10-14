@@ -163,7 +163,6 @@ const RoadmapPage: FC = () => {
                 onClick={handleToastClick}
             />
             <AddCoursePopup />
-            <MobileCourseCatalog />
 
             {/* Main Planner View or Fullscreen Mobile Search */}
             <div className={`main-wrapper ${isMobile ? 'mobile' : ''}`} id="mobileScrollContainer">
@@ -171,6 +170,8 @@ const RoadmapPage: FC = () => {
                     <MobileSearchMenu />
                 ) : isMobile && selectedMobileIndex === 1 ? (
                     <TransferCreditsMenu />
+                ) : isMobile && selectedMobileIndex === 2 ? (
+                    <MobileCourseCatalog />
                 ) : (
                     (!isMobile || selectedMobileIndex === 0) && <Planner />
                 )}

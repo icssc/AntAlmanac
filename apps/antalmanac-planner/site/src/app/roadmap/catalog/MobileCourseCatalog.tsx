@@ -7,11 +7,9 @@ import { useIsMobile } from '../../../helpers/util';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setSelectedTab } from '../../../store/slices/courseRequirementsSlice';
 import { hideMobileCatalog } from '../../../store/slices/roadmapSlice';
-import MobilePopup from '../MobilePopup';
 import { CourseCatalog } from './CourseCatalog';
 
 const MobileCourseCatalog = () => {
-    const showSearch = useAppSelector((state) => state.roadmap.showMobileCatalog);
     const selectedCourseList = useAppSelector((state) => state.courseRequirements.selectedTab);
     const isMobile = useIsMobile();
     const dispatch = useAppDispatch();
@@ -31,10 +29,10 @@ const MobileCourseCatalog = () => {
     }, [isMobile, closeSearch]);
 
     return (
-        <MobilePopup show={showSearch} onClose={closeSearch} id="sidebarScrollContainer">
+        <>
             <CourseCatalog />
-            <ScrollToTopButton scrollableTarget="sidebarScrollContainer" raiseButton={true} />
-        </MobilePopup>
+            <ScrollToTopButton scrollableTarget="mobileScrollContainer" raiseButton={true} />
+        </>
     );
 };
 
