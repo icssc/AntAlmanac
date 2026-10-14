@@ -4,7 +4,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { CourseAAPIResponse } from '@peterportal/types';
-import { FC, useEffect, useMemo } from 'react';
+import { FC, Suspense, useEffect } from 'react';
 
 import GradeDist from '../../component/GradeDist/GradeDist';
 import PrereqTree from '../../component/PrereqTree/PrereqTree';
@@ -12,22 +12,48 @@ import ResultPageContent, { ResultPageSection } from '../../component/ResultPage
 import Review from '../../component/Review/Review';
 import Schedule from '../../component/Schedule/Schedule';
 import SideInfo from '../../component/SideInfo/SideInfo';
-import { getCourseTags, sortTerms, transformCourseGQL } from '../../helpers/util';
-import { useAppDispatch } from '../../store/hooks';
-import { setCourse } from '../../store/slices/courseCatalogSlice';
+import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
+import { getCourseTags, sortTerms } from '../../helpers/util';
+import { useCourseData } from '../../hooks/catalog';
+
+// typical lengths so the skeleton is about the size of a real course page
+const currentYear = new Date().getFullYear();
+const LOADING_SIDE_INFO = {
+    title: 'Design and Analysis of Algorithms',
+    description:
+        'Techniques for efficient algorithm design, including divide-and-conquer and dynamic programming, and time and space analysis of algorithms. Data structures, graph algorithms, and the theory of NP-completeness.',
+    tags: ['4 units', 'Upper Division'],
+    terms: [0, 1, 2, 3].map((yearsAgo) => `${currentYear - yearsAgo} Fall`),
+};
 
 interface CoursePageProps {
-    course: CourseAAPIResponse;
+    courseId: string;
+    coursePromise: Promise<CourseAAPIResponse | null>;
 }
 
-const CoursePage: FC<CoursePageProps> = ({ course }) => {
-    const dispatch = useAppDispatch();
-    const courseGQLData = useMemo(() => transformCourseGQL(course), [course]);
+const CourseSkeleton: FC<{ courseId: string }> = ({ courseId }) => (
+    <ResultPageContent sideInfo={<SideInfo skeleton searchType="course" name={courseId} {...LOADING_SIDE_INFO} />}>
+        <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
+            <GradeDist skeleton />
+        </ResultPageSection>
+        <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
+            <Schedule skeleton />
+        </ResultPageSection>
+        <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
+            <Review skeleton />
+        </ResultPageSection>
+    </ResultPageContent>
+);
+
+const CourseContent: FC<CoursePageProps> = ({ courseId, coursePromise }) => {
+    const courseGQLData = useCourseData(courseId, coursePromise);
 
     useEffect(() => {
-        dispatch(setCourse({ courseId: courseGQLData.id, data: courseGQLData }));
         document.title = `${courseGQLData.department + ' ' + courseGQLData.courseNumber} | AntAlmanac Planner`;
-    }, [courseGQLData, dispatch]);
+    }, [courseGQLData]);
+
+    // the server found no course and its not-found page replaces this
+    if (courseGQLData.id === LOADING_COURSE_PLACEHOLDER.id) return <CourseSkeleton courseId={courseId} />;
 
     const sideInfo = (
         <SideInfo
@@ -64,5 +90,11 @@ const CoursePage: FC<CoursePageProps> = ({ course }) => {
         </ResultPageContent>
     );
 };
+
+const CoursePage: FC<CoursePageProps> = (props) => (
+    <Suspense fallback={<CourseSkeleton courseId={props.courseId} />}>
+        <CourseContent {...props} />
+    </Suspense>
+);
 
 export default CoursePage;

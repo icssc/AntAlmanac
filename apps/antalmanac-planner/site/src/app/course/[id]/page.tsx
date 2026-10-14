@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { cache } from 'react';
+import { cache, Suspense } from 'react';
 
 import { createServerSideTrpcCaller } from '../../../trpc';
 import CoursePage from '../CoursePage';
@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: CoursePageParams): Promise<Me
 
     const course = await getCourse(id);
 
-    if (!course) return notFound();
+    // CourseNotFound shows the not-found page
+    if (!course) return {};
 
     const title = `${course.department} ${course.courseNumber} | ${course.title}`;
     const description = course.description;
@@ -33,10 +34,21 @@ export async function generateMetadata({ params }: CoursePageParams): Promise<Me
     };
 }
 
-const Page = async ({ params }: CoursePageParams) => {
-    const course = await getCourse(decodeURIComponent((await params).id));
-    if (!course) return notFound();
+const CourseNotFound = async ({ coursePromise }: { coursePromise: ReturnType<typeof getCourse> }) => {
+    if (!(await coursePromise)) notFound();
+    return null;
+};
 
-    return <CoursePage course={course} />;
+const Page = async ({ params }: CoursePageParams) => {
+    const id = decodeURIComponent((await params).id);
+    const coursePromise = getCourse(id);
+    return (
+        <>
+            <CoursePage courseId={id} coursePromise={coursePromise} />
+            <Suspense>
+                <CourseNotFound coursePromise={coursePromise} />
+            </Suspense>
+        </>
+    );
 };
 export default Page;

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { cache } from 'react';
+import { cache, Suspense } from 'react';
 
 import { createServerSideTrpcCaller } from '../../../trpc';
 import ProfessorPage from '../ProfessorPage';
@@ -22,7 +22,8 @@ export async function generateMetadata({ params }: ProfessorPageParams): Promise
 
     const professor = await getProfessor(id);
 
-    if (!professor) return notFound();
+    // ProfessorNotFound shows the not-found page
+    if (!professor) return {};
 
     const title = professor.name;
     const description = `${professor.title} in ${professor.department}`;
@@ -33,10 +34,21 @@ export async function generateMetadata({ params }: ProfessorPageParams): Promise
     };
 }
 
-const Page = async ({ params }: ProfessorPageParams) => {
-    const professor = await getProfessor(decodeURIComponent((await params).id));
-    if (!professor) return notFound();
+const ProfessorNotFound = async ({ professorPromise }: { professorPromise: ReturnType<typeof getProfessor> }) => {
+    if (!(await professorPromise)) notFound();
+    return null;
+};
 
-    return <ProfessorPage professor={professor} />;
+const Page = async ({ params }: ProfessorPageParams) => {
+    const id = decodeURIComponent((await params).id);
+    const professorPromise = getProfessor(id);
+    return (
+        <>
+            <ProfessorPage ucinetid={id} professorPromise={professorPromise} />
+            <Suspense>
+                <ProfessorNotFound professorPromise={professorPromise} />
+            </Suspense>
+        </>
+    );
 };
 export default Page;
