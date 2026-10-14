@@ -2,88 +2,60 @@
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import RateReviewIcon from '@mui/icons-material/RateReview';
-import { FC, useState, useEffect } from 'react';
+import { ProfessorAAPIResponse } from '@peterportal/types';
+import { FC, useEffect, useMemo } from 'react';
 
-import Error from '../../component/Error/Error';
 import GradeDist from '../../component/GradeDist/GradeDist';
 import ResultPageContent, { ResultPageSection } from '../../component/ResultPageContent/ResultPageContent';
 import Review from '../../component/Review/Review';
 import Schedule from '../../component/Schedule/Schedule';
 import SideInfo from '../../component/SideInfo/SideInfo';
 import { getProfessorTerms } from '../../helpers/reviews';
-import { unionTerms, sortTerms } from '../../helpers/util';
-import { useProfessorData } from '../../hooks/professorReviews';
-
-// typical lengths so the skeleton is about the size of a real professor page
-const LOADING_SIDE_INFO = {
-    name: 'Firstname Lastname',
-    title: 'Professor of Teaching',
-    description: 'Computer Science',
-};
+import { unionTerms, sortTerms, transformProfessorGQL } from '../../helpers/util';
+import { useAppDispatch } from '../../store/hooks';
+import { setProfessor } from '../../store/slices/professorSlice';
 
 interface ProfessorPageProps {
-    ucinetid: string;
+    professor: ProfessorAAPIResponse;
 }
 
-const ProfessorPage: FC<ProfessorPageProps> = ({ ucinetid: id }) => {
-    const professorGQLData = useProfessorData(id);
-    const [error, setError] = useState('');
+const ProfessorPage: FC<ProfessorPageProps> = ({ professor }) => {
+    const dispatch = useAppDispatch();
+    const professorGQLData = useMemo(() => transformProfessorGQL(professor), [professor]);
 
     useEffect(() => {
-        if (id === undefined) return;
-        if (professorGQLData) {
-            setError('');
-            document.title = `${professorGQLData.name} | AntAlmanac Planner`;
-        }
-    }, [id, professorGQLData]);
+        dispatch(setProfessor({ professorId: professorGQLData.ucinetid, data: professorGQLData }));
+        document.title = `${professorGQLData.name} | AntAlmanac Planner`;
+    }, [professorGQLData, dispatch]);
 
-    // if professor does not exists
-    if (error) {
-        return <Error message={error} />;
-    }
-    // loading results
-    else if (!professorGQLData) {
-        return (
-            <ResultPageContent
-                sideInfo={
-                    <SideInfo skeleton searchType="instructor" {...LOADING_SIDE_INFO} tags={[id, 'LASTNAME, F.']} />
-                }
-            >
-                <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
-                    <GradeDist skeleton />
-                </ResultPageSection>
-            </ResultPageContent>
-        );
-    } else {
-        const sideInfo = (
-            <SideInfo
-                searchType="instructor"
-                name={professorGQLData.name}
-                title={professorGQLData.title}
-                description={professorGQLData.department}
-                tags={[professorGQLData.ucinetid, ...professorGQLData.shortenedNames]}
-                professor={professorGQLData}
-            />
-        );
-        return (
-            <ResultPageContent sideInfo={sideInfo}>
-                <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
-                    <GradeDist professor={professorGQLData} />
-                </ResultPageSection>
+    const sideInfo = (
+        <SideInfo
+            searchType="instructor"
+            name={professorGQLData.name}
+            title={professorGQLData.title}
+            description={professorGQLData.department}
+            tags={[professorGQLData.ucinetid, ...professorGQLData.shortenedNames]}
+            professor={professorGQLData}
+        />
+    );
+    return (
+        <ResultPageContent sideInfo={sideInfo}>
+            <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
+                <GradeDist professor={professorGQLData} />
+            </ResultPageSection>
 
-                <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
-                    <Schedule
-                        professorIDs={professorGQLData.shortenedNames}
-                        termsOffered={unionTerms(professorGQLData.courses)}
-                    />
-                </ResultPageSection>
+            <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
+                <Schedule
+                    professorIDs={professorGQLData.shortenedNames}
+                    termsOffered={unionTerms(professorGQLData.courses)}
+                />
+            </ResultPageSection>
 
-                <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
-                    <Review professor={professorGQLData} terms={sortTerms(getProfessorTerms(professorGQLData))} />
-                </ResultPageSection>
-            </ResultPageContent>
-        );
-    }
+            <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
+                <Review professor={professorGQLData} terms={sortTerms(getProfessorTerms(professorGQLData))} />
+            </ResultPageSection>
+        </ResultPageContent>
+    );
 };
 
 export default ProfessorPage;
