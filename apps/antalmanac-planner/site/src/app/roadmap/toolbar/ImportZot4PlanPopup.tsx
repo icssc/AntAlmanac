@@ -38,11 +38,16 @@ import {
 import { setUserAPExams } from '../../../store/slices/transferCreditsSlice.ts';
 import trpc from '../../../trpc.ts';
 
-const ImportZot4PlanPopup: FC = () => {
+interface ImportZot4PlanPopupProps {
+    open: boolean;
+    onClose: () => void;
+    scheduleName: string;
+    onScheduleNameChange: (scheduleName: string) => void;
+}
+
+const ImportZot4PlanPopup: FC<ImportZot4PlanPopupProps> = ({ open, onClose, scheduleName, onScheduleNameChange }) => {
     const dispatch = useAppDispatch();
     const isLoggedIn = useIsLoggedIn();
-    const [showModal, setShowModal] = useState(false);
-    const [scheduleName, setScheduleName] = useState('');
     const [studentYear, setStudentYear] = useState('1');
     const [busy, setBusy] = useState(false);
     const allPlanData = useAppSelector(selectAllPlans);
@@ -127,7 +132,7 @@ const ImportZot4PlanPopup: FC = () => {
         try {
             // Use the backend route to try to obtain the formatted schedule
             await obtainImportedRoadmap(scheduleName, studentYear);
-            setShowModal(false);
+            onClose();
         } finally {
             setBusy(false);
         }
@@ -135,7 +140,7 @@ const ImportZot4PlanPopup: FC = () => {
 
     return (
         <>
-            <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="xs" fullWidth>
+            <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
                 <DialogTitle>Import Schedule from Zot4Plan</DialogTitle>
                 <DialogContent>
                     <Box component="form" noValidate>
@@ -162,7 +167,8 @@ const ImportZot4PlanPopup: FC = () => {
                                 variant="outlined"
                                 type="text"
                                 placeholder="Exact Zot4Plan schedule name"
-                                onChange={(e) => setScheduleName(e.target.value)}
+                                value={scheduleName}
+                                onChange={(e) => onScheduleNameChange(e.target.value)}
                                 onKeyDown={(e: React.KeyboardEvent) => {
                                     // prevent submitting form (reloads the page)
                                     if (e.key === 'Enter') {
@@ -191,7 +197,7 @@ const ImportZot4PlanPopup: FC = () => {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="text" color="inherit" onClick={() => setShowModal(false)}>
+                    <Button variant="text" color="inherit" onClick={onClose}>
                         Cancel
                     </Button>
                     <Button disabled={scheduleName.length < 8} loading={busy} onClick={handleImport}>
@@ -199,12 +205,15 @@ const ImportZot4PlanPopup: FC = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Button onClick={() => setShowModal(true)}>
-                <CloudDownloadIcon />
-                <span>Zot4Plan Schedule</span>
-            </Button>
         </>
     );
 };
+
+export const ImportZot4PlanButton: FC<{ onClick: () => void }> = ({ onClick }) => (
+    <Button onClick={onClick}>
+        <CloudDownloadIcon />
+        <span>Zot4Plan Schedule</span>
+    </Button>
+);
 
 export default ImportZot4PlanPopup;
