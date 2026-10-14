@@ -4,8 +4,9 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { CourseAAPIResponse } from '@peterportal/types';
-import { FC, Suspense, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 
+import Error from '../../component/Error/Error';
 import GradeDist from '../../component/GradeDist/GradeDist';
 import PrereqTree from '../../component/PrereqTree/PrereqTree';
 import ResultPageContent, { ResultPageSection } from '../../component/ResultPageContent/ResultPageContent';
@@ -15,8 +16,9 @@ import SideInfo from '../../component/SideInfo/SideInfo';
 import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
 import { getCourseTags, sortTerms } from '../../helpers/util';
 import { useCourseData } from '../../hooks/catalog';
+import { useAppDispatch } from '../../store/hooks';
 
-// typical lengths so the skeleton is about the size of a real course page
+// typical lengths so the skeleton is about the size of a real professor page
 const currentYear = new Date().getFullYear();
 const LOADING_SIDE_INFO = {
     title: 'Design and Analysis of Algorithms',
@@ -31,70 +33,74 @@ interface CoursePageProps {
     coursePromise: Promise<CourseAAPIResponse | null>;
 }
 
-const CourseSkeleton: FC<{ courseId: string }> = ({ courseId }) => (
-    <ResultPageContent sideInfo={<SideInfo skeleton searchType="course" name={courseId} {...LOADING_SIDE_INFO} />}>
-        <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
-            <GradeDist skeleton />
-        </ResultPageSection>
-        <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
-            <Schedule skeleton />
-        </ResultPageSection>
-        <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
-            <Review skeleton />
-        </ResultPageSection>
-    </ResultPageContent>
-);
-
-const CourseContent: FC<CoursePageProps> = ({ courseId, coursePromise }) => {
-    const courseGQLData = useCourseData(courseId, coursePromise);
+const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
+    const dispatch = useAppDispatch();
+    const courseGQLData = useCourseData(id, coursePromise);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        document.title = `${courseGQLData.department + ' ' + courseGQLData.courseNumber} | AntAlmanac Planner`;
-    }, [courseGQLData]);
+        if (id === undefined) return;
+        if (courseGQLData) {
+            setError('');
+            document.title = `${courseGQLData.department + ' ' + courseGQLData.courseNumber} | AntAlmanac Planner`;
+        }
+    }, [courseGQLData, dispatch, id]);
 
-    // the server found no course and its not-found page replaces this
-    if (courseGQLData.id === LOADING_COURSE_PLACEHOLDER.id) return <CourseSkeleton courseId={courseId} />;
+    // if course does not exists
+    if (error) {
+        return <Error message={error} />;
+    }
+    // loading results
+    else if (courseGQLData.id === LOADING_COURSE_PLACEHOLDER.id) {
+        return (
+            <ResultPageContent sideInfo={<SideInfo skeleton searchType="course" name={id} {...LOADING_SIDE_INFO} />}>
+                <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
+                    <GradeDist skeleton />
+                </ResultPageSection>
+                <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
+                    <Schedule skeleton />
+                </ResultPageSection>
+                <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
+                    <Review skeleton />
+                </ResultPageSection>
+            </ResultPageContent>
+        );
+    } else {
+        const sideInfo = (
+            <SideInfo
+                searchType="course"
+                name={courseGQLData.department + ' ' + courseGQLData.courseNumber}
+                title={courseGQLData.title}
+                description={courseGQLData.description}
+                tags={getCourseTags(courseGQLData)}
+                course={courseGQLData}
+                terms={courseGQLData.terms}
+            />
+        );
+        return (
+            <ResultPageContent sideInfo={sideInfo}>
+                <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
+                    <GradeDist course={courseGQLData} />
+                </ResultPageSection>
 
-    const sideInfo = (
-        <SideInfo
-            searchType="course"
-            name={courseGQLData.department + ' ' + courseGQLData.courseNumber}
-            title={courseGQLData.title}
-            description={courseGQLData.description}
-            tags={getCourseTags(courseGQLData)}
-            course={courseGQLData}
-            terms={courseGQLData.terms}
-        />
-    );
-    return (
-        <ResultPageContent sideInfo={sideInfo}>
-            <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
-                <GradeDist course={courseGQLData} />
-            </ResultPageSection>
+                <ResultPageSection icon={<AccountTreeIcon />} title="Prerequisite Tree">
+                    <PrereqTree key={courseGQLData.id} {...courseGQLData} />
+                </ResultPageSection>
 
-            <ResultPageSection icon={<AccountTreeIcon />} title="Prerequisite Tree">
-                <PrereqTree key={courseGQLData.id} {...courseGQLData} />
-            </ResultPageSection>
+                <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
+                    <Schedule
+                        key={courseGQLData.id}
+                        courseID={courseGQLData.department + ' ' + courseGQLData.courseNumber}
+                        termsOffered={sortTerms(courseGQLData.terms)}
+                    />
+                </ResultPageSection>
 
-            <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
-                <Schedule
-                    key={courseGQLData.id}
-                    courseID={courseGQLData.department + ' ' + courseGQLData.courseNumber}
-                    termsOffered={sortTerms(courseGQLData.terms)}
-                />
-            </ResultPageSection>
-
-            <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
-                <Review key={courseGQLData.id} course={courseGQLData} terms={sortTerms(courseGQLData.terms)} />
-            </ResultPageSection>
-        </ResultPageContent>
-    );
+                <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
+                    <Review key={courseGQLData.id} course={courseGQLData} terms={sortTerms(courseGQLData.terms)} />
+                </ResultPageSection>
+            </ResultPageContent>
+        );
+    }
 };
-
-const CoursePage: FC<CoursePageProps> = (props) => (
-    <Suspense fallback={<CourseSkeleton courseId={props.courseId} />}>
-        <CourseContent {...props} />
-    </Suspense>
-);
 
 export default CoursePage;
