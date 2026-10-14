@@ -26,6 +26,7 @@ import {
     selectCurrentPlan,
     setActiveCourse,
     setActiveCustomCourse,
+    setSelectedMobileTab,
     showMobileCatalog,
 } from '../../../store/slices/roadmapSlice';
 import { CourseIdentifier, PlannerQuarterData } from '../../../types/types';
@@ -155,7 +156,10 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
                 {isMobile && (
                     <Button
                         startIcon={<PlaylistAddIcon />}
-                        onClick={() => dispatch(showMobileCatalog({ year: yearIndex, quarter: quarterIndex }))}
+                        onClick={() => {
+                            dispatch(showMobileCatalog({ year: yearIndex, quarter: quarterIndex }));
+                            dispatch(setSelectedMobileTab(2));
+                        }}
                         size="small"
                         variant="contained"
                         color="inherit"
