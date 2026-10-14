@@ -6,8 +6,9 @@ import './SideInfo.scss';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { FC, useEffect, useState } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 
+import { wrapSkeleton } from '../../helpers/skeleton';
 import Toast from '../../helpers/toast';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { toggleFormStatus, setShowToast } from '../../store/slices/reviewSlice';
@@ -77,6 +78,7 @@ interface SideInfoProps {
     terms?: string[];
     className?: string;
     id?: string;
+    skeleton?: boolean;
 }
 
 interface AverageReview {
@@ -87,6 +89,7 @@ interface AverageReview {
 }
 
 const SideInfo: FC<SideInfoProps> = (props) => {
+    const { skeleton = false } = props;
     const dispatch = useAppDispatch();
     const allToken = 'All ' + (props.searchType == 'course' ? 'Instructors' : 'Courses');
     const reviews = useAppSelector((state) => state.review.reviews);
@@ -165,18 +168,21 @@ const SideInfo: FC<SideInfoProps> = (props) => {
     sortedReviews.sort((a, b) => averageReviews[b].count - averageReviews[a].count);
 
     const { count, rating, difficulty, takeAgain } = averageReviews[selectedReview] ?? {};
-    const hasReviews = Object.keys(averageReviews).length > 1; // always has "All Instructors"
+    // reviews in the store may still belong to the previous page while loading
+    const hasReviews = !skeleton && Object.keys(averageReviews).length > 1; // always has "All Instructors"
 
     return (
         <div className="side-content-wrapper">
             <div className={`side-info ${props.className ?? ''}`} id={props.id}>
                 <div className="side-info-overview">
-                    <h2>{props.name}</h2>
-                    <h3>{props.title}</h3>
-                    <p>{props.description}</p>
+                    <h2>{wrapSkeleton(<span>{props.name}</span>, skeleton, 'text')}</h2>
+                    <h3>{wrapSkeleton(<span>{props.title}</span>, skeleton, 'text')}</h3>
+                    {wrapSkeleton(<p>{props.description}</p>, skeleton, 'text')}
                     <div className="course-tags">
                         {props.tags.map((tag, i) => (
-                            <Chip color="primary" size="small" key={`side-info-badge-${i}`} label={tag} />
+                            <Fragment key={`side-info-badge-${i}`}>
+                                {wrapSkeleton(<Chip color="primary" size="small" label={tag} />, skeleton)}
+                            </Fragment>
                         ))}
                     </div>
                 </div>
@@ -184,40 +190,48 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                 {props.terms && props.terms.length > 0 && (
                     <>
                         <h2>Recent Offerings</h2>
-                        <RecentOfferingsTable terms={props.terms} size="wide" />
+                        {wrapSkeleton(<RecentOfferingsTable terms={props.terms} size="wide" />, skeleton)}
                     </>
                 )}
 
                 <div className="side-info-ratings">
                     <h2>Average Rating</h2>
                     <div className="side-info-buttons">
-                        <Select
-                            value={selectedReview}
-                            onChange={(e) => {
-                                setSelectedReview(e.target.value as string);
-                            }}
-                        >
-                            {sortedReviews.map((key, index) => (
-                                <MenuItem key={`side-info-dropdown-${index}`} value={key}>
-                                    {props.searchType == 'course' &&
-                                        (props.course?.instructors[key] ? props.course?.instructors[key].name : key)}
-                                    {props.searchType == 'instructor' &&
-                                        (props.professor?.courses[key]
-                                            ? props.professor?.courses[key].department +
-                                              ' ' +
-                                              props.professor?.courses[key].courseNumber
-                                            : key)}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                        {wrapSkeleton(
+                            <Select
+                                value={selectedReview}
+                                onChange={(e) => {
+                                    setSelectedReview(e.target.value as string);
+                                }}
+                            >
+                                {sortedReviews.map((key, index) => (
+                                    <MenuItem key={`side-info-dropdown-${index}`} value={key}>
+                                        {props.searchType == 'course' &&
+                                            (props.course?.instructors[key]
+                                                ? props.course?.instructors[key].name
+                                                : key)}
+                                        {props.searchType == 'instructor' &&
+                                            (props.professor?.courses[key]
+                                                ? props.professor?.courses[key].department +
+                                                  ' ' +
+                                                  props.professor?.courses[key].courseNumber
+                                                : key)}
+                                    </MenuItem>
+                                ))}
+                            </Select>,
+                            skeleton
+                        )}
 
-                        <Button
-                            onClick={() => {
-                                dispatch(toggleFormStatus());
-                            }}
-                        >
-                            Rate {props.searchType}
-                        </Button>
+                        {wrapSkeleton(
+                            <Button
+                                onClick={() => {
+                                    dispatch(toggleFormStatus());
+                                }}
+                            >
+                                Rate {props.searchType}
+                            </Button>,
+                            skeleton
+                        )}
                     </div>
                     {hasReviews && (
                         <>
@@ -253,7 +267,9 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                         </>
                     )}
                     {!hasReviews && (
-                        <span className="side-info-selected-based">No reviews found for this {props.searchType}!</span>
+                        <span className="side-info-selected-based">
+                            {wrapSkeleton(<span>No reviews found for this {props.searchType}!</span>, skeleton, 'text')}
+                        </span>
                     )}
                 </div>
 

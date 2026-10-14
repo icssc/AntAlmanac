@@ -7,15 +7,25 @@ import { FC, useState, useEffect } from 'react';
 
 import Error from '../../component/Error/Error';
 import GradeDist from '../../component/GradeDist/GradeDist';
-import LoadingSpinner from '../../component/LoadingSpinner/LoadingSpinner';
 import PrereqTree from '../../component/PrereqTree/PrereqTree';
 import ResultPageContent, { ResultPageSection } from '../../component/ResultPageContent/ResultPageContent';
 import Review from '../../component/Review/Review';
 import Schedule from '../../component/Schedule/Schedule';
 import SideInfo from '../../component/SideInfo/SideInfo';
+import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
 import { getCourseTags, sortTerms } from '../../helpers/util';
 import { useCourseData } from '../../hooks/catalog';
 import { useAppDispatch } from '../../store/hooks';
+
+// typical lengths so the skeleton is about the size of a real professor page
+const currentYear = new Date().getFullYear();
+const LOADING_SIDE_INFO = {
+    title: 'Design and Analysis of Algorithms',
+    description:
+        'Techniques for efficient algorithm design, including divide-and-conquer and dynamic programming, and time and space analysis of algorithms. Data structures, graph algorithms, and the theory of NP-completeness.',
+    tags: ['4 units', 'Upper Division'],
+    terms: [0, 1, 2, 3].map((yearsAgo) => `${currentYear - yearsAgo} Fall`),
+};
 
 interface CoursePageProps {
     courseId: string;
@@ -39,8 +49,14 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id }) => {
         return <Error message={error} />;
     }
     // loading results
-    else if (!courseGQLData) {
-        return <LoadingSpinner />;
+    else if (courseGQLData.id === LOADING_COURSE_PLACEHOLDER.id) {
+        return (
+            <ResultPageContent sideInfo={<SideInfo skeleton searchType="course" name={id} {...LOADING_SIDE_INFO} />}>
+                <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
+                    <GradeDist skeleton />
+                </ResultPageSection>
+            </ResultPageContent>
+        );
     } else {
         const sideInfo = (
             <SideInfo
