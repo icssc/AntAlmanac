@@ -1,4 +1,11 @@
-import { type CalendarEvent, type CourseEvent, type FinalExam, type Location, isCourseEvent, isCustomEvent } from '$components/Calendar/types';
+import {
+    type CalendarEvent,
+    type CourseEvent,
+    type FinalExam,
+    type Location,
+    isCourseEvent,
+    isCustomEvent,
+} from '$components/Calendar/types';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm } from '$lib/term';
 import { notNull, saveAs } from '$lib/utils';
@@ -219,24 +226,27 @@ function getRRule(bydays: string[], quarter: Quarter) {
 
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
+
 function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
     const meetings = new Map<string, { event: CourseEvent; days: string }>();
     const result: CalendarEvent[] = [];
 
     for (const event of events) {
+
         if (!isCourseEvent(event) || event.sectionType === 'Fin') {
             result.push(event);
         } else {
-            const location = event.locations[0];
 
-            if (location?.days === undefined) {
+            const location = event.locations[0];
+            const days = location?.days
+            if (days === undefined) {
                 result.push(event);
                 continue;
-            } 
-
+            }
+            
             const existing = meetings.get(event.sectionCode);
             if (existing === undefined) {
-                meetings.set(event.sectionCode, { event, days: location.days });
+                meetings.set(event.sectionCode, { event, days });
             } else {
                 existing.days += location.days;
             }
