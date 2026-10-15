@@ -232,25 +232,25 @@ function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
     const result: CalendarEvent[] = [];
 
     for (const event of events) {
-
         if (!isCourseEvent(event) || event.sectionType === 'Fin') {
             result.push(event);
-        } else {
+            continue 
+        } 
 
-            const location = event.locations[0];
-            const days = location?.days
-            if (days === undefined) {
-                result.push(event);
-                continue;
-            }
-            
-            const existing = meetings.get(event.sectionCode);
-            if (existing === undefined) {
-                meetings.set(event.sectionCode, { event, days });
-            } else {
-                existing.days += location.days;
-            }
+        const location = event.locations[0];
+        const days = location?.days
+        if (days === undefined) {
+            result.push(event);
+            continue;
         }
+        
+        const existing = meetings.get(event.sectionCode);
+        if (existing === undefined) {
+            meetings.set(event.sectionCode, { event, days });
+        } else {
+            existing.days += location.days;
+        }
+        
     }
 
     for (const meeting of meetings.values()) {
@@ -265,16 +265,14 @@ function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
                 days: days,
             });
         }
-
         result.push({ ...event, locations: newLocations });
     }
-
     return result;
 }
 
 export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCalendar()): EventAttributes[] {
     const customEventIDs = new Set();
-    const calendarEvents = events.flatMap((event) => {
+    const calendarEvents = (events).flatMap((event) => {
         if (isCustomEvent(event)) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
