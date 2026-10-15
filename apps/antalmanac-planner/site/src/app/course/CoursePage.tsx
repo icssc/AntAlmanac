@@ -39,6 +39,12 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        Promise.resolve(coursePromise).then((course) => {
+            if (!course) setError('Course not found');
+        });
+    }, [coursePromise]);
+
+    useEffect(() => {
         if (id === undefined) return;
         if (courseGQLData) {
             setError('');

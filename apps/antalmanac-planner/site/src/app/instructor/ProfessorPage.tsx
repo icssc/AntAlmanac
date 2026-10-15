@@ -32,6 +32,12 @@ const ProfessorPage: FC<ProfessorPageProps> = ({ ucinetid: id, professorPromise 
     const [error, setError] = useState('');
 
     useEffect(() => {
+        Promise.resolve(professorPromise).then((professor) => {
+            if (!professor) setError('Instructor not found');
+        });
+    }, [professorPromise]);
+
+    useEffect(() => {
         if (id === undefined) return;
         if (professorGQLData) {
             setError('');
