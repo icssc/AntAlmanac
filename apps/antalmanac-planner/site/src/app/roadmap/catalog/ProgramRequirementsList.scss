@@ -77,7 +77,9 @@
         gap: 9px;
     }
 
-    .group-header-title .completed-icon {
+    .group-header-title .MuiSvgIcon-root {
+        width: 22px;
+        height: 22px;
         flex-shrink: 0;
     }
 
@@ -110,7 +112,6 @@
 
         > .group-header {
             color: var(--mui-palette-success-main);
-            // @TODO figure out if remove strike-through
             text-decoration: line-through;
             text-decoration-thickness: 2px;
         }
