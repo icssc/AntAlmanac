@@ -326,6 +326,7 @@ interface GroupHeaderProps {
     setOpen: React.Dispatch<boolean>;
     requirementId: string;
     overridden: boolean;
+    canOverride: boolean; // whether a requirement has already been fulfilled by courses taken
     setOverride: (override: boolean) => void;
 }
 const GroupHeader: FC<GroupHeaderProps> = ({
@@ -335,44 +336,69 @@ const GroupHeader: FC<GroupHeaderProps> = ({
     setOpen,
     requirementId,
     overridden,
+    canOverride,
     setOverride,
 }) => {
     const className = `group-header ${open ? 'open' : ''}`;
     const [showOverrideModal, setShowOverrideModal] = useState(false);
 
-    return (
-        <ClickableDiv className={className} onClick={() => setOpen(!open)}>
-            <span className="group-header-title">
-                {status === 'completed' && <CompletedIcon />}
-                {status === 'in progress' && <InProgressIcon />}
-                {status === 'added' && <AddedIcon />}
-                {status === 'not added' && <NotAddedIcon className="not-added-icon" />}
+    const statusIcon = (
+        <>
+            {status === 'completed' && <CompletedIcon />}
+            {status === 'in progress' && <InProgressIcon />}
+            {status === 'added' && <AddedIcon />}
+            {status === 'not added' && <NotAddedIcon className="not-added-icon" />}
+        </>
+    );
 
-                <b>{title}</b>
-            </span>
-            <div className="group-header-btns">
-                {open && (
-                    <Checkbox
-                        name={'override-' + requirementId}
-                        checked={overridden}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (!overridden) {
-                                setShowOverrideModal(true);
-                            } else {
-                                setOverride(false);
-                            }
-                        }}
-                    />
-                )}
-                <ConfirmOverrideModal
-                    showOverrideModal={showOverrideModal}
-                    setShowOverrideModal={setShowOverrideModal}
-                    setOverride={setOverride}
-                />
-                <ExpandMore className="expand-requirements" expanded={open} onClick={() => setOpen(!open)} />
-            </div>
-        </ClickableDiv>
+    const toggleOverride = (e: React.SyntheticEvent) => {
+        e.stopPropagation();
+        if (!overridden) {
+            setShowOverrideModal(true);
+        } else {
+            setOverride(false);
+        }
+    };
+
+    return (
+        <>
+            <ClickableDiv className={className} onClick={() => setOpen(!open)}>
+                <span className="group-header-title">
+                    {canOverride ? (
+                        <span
+                            role="button"
+                            tabIndex={0}
+                            className="override-icon-btn"
+                            data-testid={'override-' + requirementId}
+                            aria-label={`Force complete ${title}`}
+                            aria-pressed={overridden}
+                            onClick={toggleOverride}
+                            onKeyDown={(e) => {
+                                if (e.key !== 'Enter' && e.key !== ' ') return;
+                                e.preventDefault();
+                                toggleOverride(e);
+                            }}
+                        >
+                            {statusIcon}
+                        </span>
+                    ) : (
+                        <span className="override-icon-inert" aria-disabled="true" title="Already completed">
+                            {statusIcon}
+                        </span>
+                    )}
+
+                    <b>{title}</b>
+                </span>
+                <div className="group-header-btns">
+                    <ExpandMore className="expand-requirements" expanded={open} onClick={() => setOpen(!open)} />
+                </div>
+            </ClickableDiv>
+            <ConfirmOverrideModal
+                showOverrideModal={showOverrideModal}
+                setShowOverrideModal={setShowOverrideModal}
+                setOverride={setOverride}
+            />
+        </>
     );
 };
 
@@ -490,6 +516,7 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
                     open={open}
                     setOpen={setOpen}
                     overridden={overridden}
+                    canOverride={!complete}
                     setOverride={setOverride}
                 />
                 <Collapse in={open} unmountOnExit>
@@ -619,6 +646,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
                     open={open}
                     setOpen={setOpen}
                     overridden={overridden}
+                    canOverride={!complete}
                     setOverride={setOverride}
                 />
                 <Collapse in={open} unmountOnExit>
