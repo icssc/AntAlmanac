@@ -4,14 +4,9 @@ import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { Badge, Checkbox, Collapse } from '@mui/material';
 import { ProgramRequirement, RequirementStatus, TransferredGE } from '@peterportal/types';
-import Image from 'next/image';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
-import addedStatusIcon from '../../../../../assets/requirement-status/added.png';
-import completedStatusIcon from '../../../../../assets/requirement-status/completed.png';
-import inProgressStatusIcon from '../../../../../assets/requirement-status/in-progress.png';
-import notAddedStatusIcon from '../../../../../assets/requirement-status/not-taken.png';
 import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
 import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
@@ -55,6 +50,7 @@ import trpc from '../../../trpc';
 import { CourseGQLData } from '../../../types/types';
 import { CourseNameAndInfo } from '../planner/Course';
 import MenuTile from '../transfers/MenuTile';
+import { AddedIcon, CompletedIcon, InProgressIcon, NotAddedIcon } from './RequirementStatusButton';
 
 const DEPARTMENT_GROUPING_COURSE_THRESHOLD = 30;
 const COURSE_ID_DEPARTMENT_OVERRIDES = ['IN4MATX'];
@@ -347,30 +343,10 @@ const GroupHeader: FC<GroupHeaderProps> = ({
     return (
         <ClickableDiv className={className} onClick={() => setOpen(!open)}>
             <span className="group-header-title">
-                {status === 'completed' && (
-                    <Image
-                        className="completed-icon"
-                        src={completedStatusIcon}
-                        alt="Completed"
-                        width={20}
-                        height={20}
-                    />
-                )}
-                {status === 'in progress' && (
-                    <Image
-                        className="completed-icon"
-                        src={inProgressStatusIcon}
-                        alt="In Progress"
-                        width={20}
-                        height={20}
-                    />
-                )}
-                {status === 'added' && (
-                    <Image className="completed-icon" src={addedStatusIcon} alt="Added" width={20} height={20} />
-                )}
-                {status === 'not added' && (
-                    <Image className="completed-icon" src={notAddedStatusIcon} alt="Not Added" width={20} height={20} />
-                )}
+                {status === 'completed' && <CompletedIcon />}
+                {status === 'in progress' && <InProgressIcon />}
+                {status === 'added' && <AddedIcon />}
+                {status === 'not added' && <NotAddedIcon className="not-added-icon" />}
 
                 <b>{title}</b>
             </span>
