@@ -1,10 +1,12 @@
 import {
+    CourseTiming,
     GEName,
     GETitle,
     MajorProgram,
     MajorSpecialization,
     MinorProgram,
     ProgramRequirement,
+    RequirementStatus,
     TransferredGE,
 } from '@peterportal/types';
 
@@ -60,6 +62,82 @@ export const GE_TITLE_MAP: Record<GEName, GETitle> = {
     'GE-7': 'GE VII: Multicultural Studies',
     'GE-8': 'GE VIII: International/Global Issues',
 };
+
+const QUARTER_ORDER = ['fall', 'winter', 'spring', 'summer1', 'summer10wk', 'summer2'];
+
+export interface CurrentQuarter {
+    startYear: number;
+    quarterName: string;
+}
+
+export function parseQuarterString(quarter: string | null | undefined): CurrentQuarter | null {
+    const match = quarter?.trim().match(/^(\d{4})\s+(.+)$/);
+    if (!match) return null;
+
+    const calendarYear = parseInt(match[1]);
+    const quarterName = match[2].toLowerCase().replace(/[\s-]/g, '');
+
+    const startYear = quarterName === 'fall' ? calendarYear : calendarYear - 1;
+
+    return { startYear, quarterName };
+}
+
+export function getQuarterTiming(
+    startYear: number,
+    quarterName: string,
+    currentQuarter: CurrentQuarter | null | undefined
+): CourseTiming {
+    if (!currentQuarter) return 'planned';
+
+    const quarter = quarterOrdinal(startYear, quarterName);
+    const current = quarterOrdinal(currentQuarter.startYear, currentQuarter.quarterName);
+
+    if (quarter < current) return 'taken';
+    if (quarter === current) return 'current';
+    else return 'planned';
+}
+
+/** Filter courses in the given timings **/
+export function filterCourseByTiming(set: CompletedCourseSet, ...timings: CourseTiming[]): CompletedCourseSet {
+    return Object.fromEntries(Object.entries(set).filter(([, course]) => timings.includes(course.timing)));
+}
+
+export function getRequirementCourses(requirement: ProgramRequirement): string[] {
+    switch (requirement.requirementType) {
+        case 'Group':
+            return requirement.requirements.flatMap(getRequirementCourses);
+        case 'Course':
+        case 'Unit':
+            return requirement.courses;
+        case 'Marker':
+            return [];
+    }
+}
+
+/**
+ * @param taken The full set (past, current, and future courses)
+ * @param complete Whether the requirement is already satisfied, computed from the past-only set
+ */
+export function getRequirementStatus(
+    taken: CompletedCourseSet,
+    requirement: ProgramRequirement,
+    complete: boolean
+): RequirementStatus {
+    const timings = getRequirementCourses(requirement)
+        .filter((id) => id in taken)
+        .map((id) => taken[id].timing);
+
+    if (complete) return 'completed';
+    if (timings.includes('current')) return 'in progress';
+    if (timings.length > 0) return 'added';
+    return 'not added';
+}
+
+/** Turns a quarter (fall, winter, etc) into a sortable number */
+function quarterOrdinal(startYear: number, quarterName: string): number {
+    const idx = QUARTER_ORDER.indexOf(quarterName.toLowerCase());
+    return startYear * QUARTER_ORDER.length + (idx === -1 ? 0 : idx);
+}
 
 export const formatCatalogYear = (year: string) => `${year.slice(0, 4)}-${year.slice(4)}`;
 
@@ -223,6 +301,7 @@ export interface CompletedCourseSet {
     [k: string]: {
         units: number;
         transferType?: TransferredCourseWithType['transferType'];
+        timing: CourseTiming;
     };
 }
 
