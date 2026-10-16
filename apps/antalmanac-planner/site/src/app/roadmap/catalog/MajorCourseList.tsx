@@ -244,14 +244,14 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
                 )}
                 {hasSpecs && !majorWithSpec.selectedSpec ? (
                     <p className="unselected-spec-notice">Please select a specialization to view requirements</p>
-                ) : resultsLoading ? (
+                ) : specsLoading || resultsLoading ? (
                     <LoadingSpinner />
-                ) : (
+                ) : majorWithSpec.requirements.length > 0 ? (
                     <ProgramRequirementsList
                         requirements={majorWithSpec.requirements}
                         storeKeyPrefix={storeKeyPrefix}
                     />
-                )}
+                ) : null}
             </Collapse>
         </div>
     );
