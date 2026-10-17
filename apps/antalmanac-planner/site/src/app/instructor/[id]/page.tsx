@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { notFound } from 'next/navigation';
 
 import { createServerSideTrpcCaller } from '../../../trpc';
 import ProfessorPage from '../ProfessorPage';
@@ -9,14 +8,19 @@ interface ProfessorPageParams {
     params: Promise<{ id: string }>;
 }
 
+const getProfessor = async (id: string) => {
+    const reqHeaders = await headers().then((h) => Object.fromEntries(h.entries()));
+    const serverTrpc = createServerSideTrpcCaller(reqHeaders);
+    return serverTrpc.professors.get.query({ ucinetid: id });
+};
+
 export async function generateMetadata({ params }: ProfessorPageParams): Promise<Metadata> {
     const id = decodeURIComponent((await params).id);
 
-    const reqHeaders = await headers().then((h) => Object.fromEntries(h.entries()));
-    const serverTrpc = createServerSideTrpcCaller(reqHeaders);
-    const professor = await serverTrpc.professors.get.query({ ucinetid: id });
+    const professor = await getProfessor(id);
 
-    if (!professor) return notFound();
+    // ProfessorPage shows the not-found message
+    if (!professor) return {};
 
     const title = professor.name;
     const description = `${professor.title} in ${professor.department}`;
@@ -28,6 +32,7 @@ export async function generateMetadata({ params }: ProfessorPageParams): Promise
 }
 
 const Page = async ({ params }: ProfessorPageParams) => {
-    return <ProfessorPage ucinetid={decodeURIComponent((await params).id)} />;
+    const id = decodeURIComponent((await params).id);
+    return <ProfessorPage ucinetid={id} professorPromise={getProfessor(id)} />;
 };
 export default Page;

@@ -1,3 +1,4 @@
+import { CourseAAPIResponse } from '@peterportal/types';
 import { useEffect, useState } from 'react';
 
 import { LOADING_COURSE_PLACEHOLDER } from '../helpers/courseRequirements';
@@ -7,7 +8,8 @@ import { setCourse } from '../store/slices/courseCatalogSlice';
 import { setToastMsg, setToastSeverity, setShowToast } from '../store/slices/roadmapSlice';
 import trpc from '../trpc';
 
-export function useCourseData(courseId: string) {
+/** `coursePromise` is the server's fetch of this course, used instead of fetching it again in the browser */
+export function useCourseData(courseId: string, coursePromise?: Promise<CourseAAPIResponse | null>) {
     const courseCache = useAppSelector((state) => state.courseCatalog.courses);
     const [fullCourseData, setFullCourseData] = useState(courseCache[courseId] ?? LOADING_COURSE_PLACEHOLDER);
     const [loadTrigger, setLoadTrigger] = useState(false);
@@ -31,9 +33,10 @@ export function useCourseData(courseId: string) {
         }
 
         setFullCourseData(LOADING_COURSE_PLACEHOLDER);
-        trpc.courses.get
-            .query({ courseID: courseId })
+        Promise.resolve(coursePromise ?? trpc.courses.get.query({ courseID: courseId }))
             .then((course) => {
+                // an unknown course stays a placeholder; the page shows not-found from the server
+                if (!course) return;
                 const transformedCourse = transformCourseGQL(course);
                 setFullCourseData(transformedCourse);
                 dispatch(setCourse({ courseId, data: transformedCourse }));
@@ -43,7 +46,7 @@ export function useCourseData(courseId: string) {
                 dispatch(setToastSeverity('success'));
                 dispatch(setShowToast(true));
             });
-    }, [courseId, dispatch, loadTrigger, courseCache]);
+    }, [courseId, dispatch, loadTrigger, courseCache, coursePromise]);
 
     return fullCourseData;
 }

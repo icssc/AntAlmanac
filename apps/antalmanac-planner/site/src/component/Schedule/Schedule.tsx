@@ -1,7 +1,7 @@
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
 import './Schedule.scss';
-import { Chip, LinearProgress, Tooltip } from '@mui/material';
+import { Chip, LinearProgress, Skeleton, Tooltip } from '@mui/material';
 import { MenuItem, Select } from '@mui/material';
 import {
     WebsocAPIResponse,
@@ -14,6 +14,7 @@ import { FC, useState, useEffect, useCallback } from 'react';
 
 import MaterialsIcon from '../../helpers/courseMaterials';
 import { parseRestrictions } from '../../helpers/schedule';
+import { wrapSkeleton } from '../../helpers/skeleton';
 import Toast, { ToastSeverity } from '../../helpers/toast';
 import { hourMinuteTo12HourString } from '../../helpers/util';
 import { useAppSelector } from '../../store/hooks';
@@ -23,6 +24,8 @@ interface ScheduleProps {
     courseID?: string;
     professorIDs?: string[];
     termsOffered?: string[];
+    /** Shows the loading placeholders without fetching */
+    skeleton?: boolean;
 }
 
 interface ScheduleData {
@@ -116,10 +119,10 @@ const Schedule: FC<ScheduleProps> = (props) => {
     }, [props.courseID, props.professorIDs, selectedQuarter]);
 
     useEffect(() => {
-        if (selectedQuarter !== '') {
+        if (!props.skeleton && selectedQuarter !== '') {
             fetchScheduleDataFromAPI();
         }
-    }, [selectedQuarter, fetchScheduleDataFromAPI]);
+    }, [props.skeleton, selectedQuarter, fetchScheduleDataFromAPI]);
 
     const materialsMsg = 'Low-cost materials';
 
@@ -218,40 +221,54 @@ const Schedule: FC<ScheduleProps> = (props) => {
         );
     };
 
-    if (!scheduleData) {
-        return <p> Loading Schedule..</p>;
-    } else {
-        const sectionElements: React.JSX.Element[] = [];
-        Object.keys(scheduleData).forEach((courseID) => {
-            const sortedSections = [...scheduleData[courseID]].sort((a, b) =>
-                a.sectionCode.localeCompare(b.sectionCode)
-            );
+    const loading = !scheduleData;
 
-            sortedSections.forEach((section, i) => {
-                sectionElements.push(renderData(courseID, section, i));
-            });
+    const sectionElements: React.JSX.Element[] = [];
+    Object.keys(scheduleData ?? {}).forEach((courseID) => {
+        const sortedSections = [...scheduleData[courseID]].sort((a, b) => a.sectionCode.localeCompare(b.sectionCode));
+
+        sortedSections.forEach((section, i) => {
+            sectionElements.push(renderData(courseID, section, i));
         });
+    });
 
-        const termOptions =
-            props.termsOffered?.map((term) => {
-                return { text: term, value: term };
-            }) ?? [];
+    const termOptions =
+        props.termsOffered?.map((term) => {
+            return { text: term, value: term };
+        }) ?? [];
 
-        const isOffered = termOptions[0].text === currentQuarter;
+    const isOffered = termOptions[0]?.text === currentQuarter;
 
-        return (
-            <div>
-                {!isOffered && (
-                    <div className="offering-alert">
-                        <InfoOutlineIcon fontSize="small" />
-                        <p>
-                            <i>Not offered in {currentQuarter}.</i>
-                        </p>
-                    </div>
-                )}
-                <Toast text={toastMsg} severity={toastSeverity} showToast={showToast} onClose={handleClose} />
+    const columns = [
+        ...(props.professorIDs?.length ? ['Course'] : []),
+        'Code',
+        'Type',
+        'Section',
+        'Instructor',
+        ...(materialsData?.size > 0 ? [''] : []),
+        'Time',
+        'Place',
+        'Enrollment',
+        'WL',
+        'Rstr',
+        'Status',
+        'Syllabus',
+    ];
 
-                {props.termsOffered ? (
+    return (
+        <div>
+            {!loading && !isOffered && (
+                <div className="offering-alert">
+                    <InfoOutlineIcon fontSize="small" />
+                    <p>
+                        <i>Not offered in {currentQuarter}.</i>
+                    </p>
+                </div>
+            )}
+            <Toast text={toastMsg} severity={toastSeverity} showToast={showToast} onClose={handleClose} />
+
+            {wrapSkeleton(
+                props.termsOffered ? (
                     <Select
                         value={selectedQuarter ?? currentQuarter}
                         onChange={(e) => setSelectedQuarter(e.target.value)}
@@ -267,32 +284,37 @@ const Schedule: FC<ScheduleProps> = (props) => {
                     </Select>
                 ) : (
                     <div className="schedule-quarter">Showing results for {selectedQuarter}</div>
-                )}
-                <div className="table-wrapper">
-                    <table className="ppc-table schedule-table">
-                        <thead>
-                            <tr>
-                                {props.professorIDs?.length && <th>Course</th>}
-                                <th>Code</th>
-                                <th>Type</th>
-                                <th>Section</th>
-                                <th>Instructor</th>
-                                {materialsData.size > 0 && <th></th>}
-                                <th>Time</th>
-                                <th>Place</th>
-                                <th className="enrollment-col">Enrollment</th>
-                                <th>WL</th>
-                                <th>Rstr</th>
-                                <th>Status</th>
-                                <th>Syllabus</th>
-                            </tr>
-                        </thead>
-                        <tbody>{sectionElements}</tbody>
-                    </table>
-                </div>
+                ),
+                loading
+            )}
+            <div className="table-wrapper">
+                <table className="ppc-table schedule-table">
+                    <thead>
+                        <tr>
+                            {columns.map((column, i) => (
+                                <th key={i} className={column === 'Enrollment' ? 'enrollment-col' : undefined}>
+                                    {column}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading
+                            ? [0, 1, 2].map((row) => (
+                                  <tr key={row}>
+                                      {columns.map((_, i) => (
+                                          <td key={i} className="data-col">
+                                              <Skeleton />
+                                          </td>
+                                      ))}
+                                  </tr>
+                              ))
+                            : sectionElements}
+                    </tbody>
+                </table>
             </div>
-        );
-    }
+        </div>
+    );
 };
 
 export default Schedule;

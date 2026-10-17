@@ -1,11 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Button, MenuItem, Select, Tooltip } from '@mui/material';
+import { Button, MenuItem, Select, Skeleton, Tooltip } from '@mui/material';
 
 import './Review.scss';
 import { Checkbox, FormControlLabel } from '@mui/material';
 import { ReviewData } from '@peterportal/types';
 import { FC, useState, useEffect, useCallback } from 'react';
 
+import { wrapSkeleton } from '../../helpers/skeleton';
 import { useIsLoggedIn } from '../../hooks/isLoggedIn';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import {
@@ -24,6 +25,8 @@ export interface ReviewProps {
     course?: CourseGQLData;
     professor?: ProfessorGQLData;
     terms?: string[];
+    /** Shows the loading placeholders without fetching */
+    skeleton?: boolean;
 }
 
 enum SortingOption {
@@ -39,6 +42,7 @@ const Review: FC<ReviewProps> = (props) => {
     const [sortingOption, setSortingOption] = useState<SortingOption>(SortingOption.TOP_REVIEWS);
     const [filterOption, setFilterOption] = useState('');
     const [showOnlyVerifiedReviews, setShowOnlyVerifiedReviews] = useState(false);
+    const [loaded, setLoaded] = useState(false);
     const showForm = useAppSelector((state) => state.review.formOpen);
     const isLoggedIn = useIsLoggedIn();
 
@@ -58,8 +62,10 @@ const Review: FC<ReviewProps> = (props) => {
     useEffect(() => {
         // prevent reviews from carrying over
         dispatch(setReviews([]));
-        getReviews();
-    }, [dispatch, getReviews]);
+        setLoaded(false);
+        if (props.skeleton) return;
+        getReviews().then(() => setLoaded(true));
+    }, [dispatch, getReviews, props.skeleton]);
 
     let sortedReviews: ReviewData[];
     // filter verified if option is set
@@ -121,42 +127,40 @@ const Review: FC<ReviewProps> = (props) => {
         document.body.style.overflow = 'visible';
     };
 
-    if (!reviewData) {
-        return <p>Loading reviews..</p>;
-    } else {
-        /** @todo refactor. last change was just pulling this out of semantic */
-        const reviewSortOptions = [
-            { text: 'Most Recent', value: SortingOption.MOST_RECENT },
-            { text: 'Top Reviews', value: SortingOption.TOP_REVIEWS },
-            { text: 'Controversial', value: SortingOption.CONTROVERSIAL },
-        ];
+    /** @todo refactor. last change was just pulling this out of semantic */
+    const reviewSortOptions = [
+        { text: 'Most Recent', value: SortingOption.MOST_RECENT },
+        { text: 'Top Reviews', value: SortingOption.TOP_REVIEWS },
+        { text: 'Controversial', value: SortingOption.CONTROVERSIAL },
+    ];
 
-        const professorOptions = [{ text: 'All Instructors', value: '' }].concat(
-            Object.keys(props.course?.instructors ?? {})
-                .map((profID) => {
-                    const name = `${props.course?.instructors[profID].name} (${reviewFreq.get(profID) || 0})`;
-                    return { text: name, value: profID };
-                })
-                .filter(({ value }) => reviewFreq.get(value))
-                .sort((a, b) => a.text.localeCompare(b.text))
-        );
-        const courseOptions = [{ text: 'All Courses', value: '' }].concat(
-            Object.keys(props.professor?.courses ?? {})
-                .map((courseID) => {
-                    const { department, courseNumber } = props.professor!.courses[courseID];
-                    const reviewCt = reviewFreq.get(courseID) || 0;
-                    const name = `${department} ${courseNumber} (${reviewCt})`;
-                    return { text: name, value: courseID };
-                })
-                .filter(({ value }) => reviewFreq.get(value))
-                .sort((a, b) => a.text.localeCompare(b.text))
-        );
+    const professorOptions = [{ text: 'All Instructors', value: '' }].concat(
+        Object.keys(props.course?.instructors ?? {})
+            .map((profID) => {
+                const name = `${props.course?.instructors[profID].name} (${reviewFreq.get(profID) || 0})`;
+                return { text: name, value: profID };
+            })
+            .filter(({ value }) => reviewFreq.get(value))
+            .sort((a, b) => a.text.localeCompare(b.text))
+    );
+    const courseOptions = [{ text: 'All Courses', value: '' }].concat(
+        Object.keys(props.professor?.courses ?? {})
+            .map((courseID) => {
+                const { department, courseNumber } = props.professor!.courses[courseID];
+                const reviewCt = reviewFreq.get(courseID) || 0;
+                const name = `${department} ${courseNumber} (${reviewCt})`;
+                return { text: name, value: courseID };
+            })
+            .filter(({ value }) => reviewFreq.get(value))
+            .sort((a, b) => a.text.localeCompare(b.text))
+    );
 
-        return (
-            <>
-                <div className="reviews">
-                    <div className="sort-filter-menu">
-                        <div className="sort-dropdown">
+    return (
+        <>
+            <div className="reviews">
+                <div className="sort-filter-menu">
+                    <div className="sort-dropdown">
+                        {wrapSkeleton(
                             <Select
                                 value={sortingOption.toString()}
                                 onChange={(e) => setSortingOption(parseInt(e.target.value as string) as SortingOption)}
@@ -166,10 +170,13 @@ const Review: FC<ReviewProps> = (props) => {
                                         {opt.text}
                                     </MenuItem>
                                 ))}
-                            </Select>
-                        </div>
-                        {props.course && (
-                            <div className="filter-dropdown">
+                            </Select>,
+                            !loaded
+                        )}
+                    </div>
+                    {props.course && (
+                        <div className="filter-dropdown">
+                            {wrapSkeleton(
                                 <Select
                                     value={filterOption}
                                     onChange={(e) => setFilterOption(e.target.value)}
@@ -180,11 +187,14 @@ const Review: FC<ReviewProps> = (props) => {
                                             {opt.text}
                                         </MenuItem>
                                     ))}
-                                </Select>
-                            </div>
-                        )}
-                        {props.professor && (
-                            <div className="filter-dropdown">
+                                </Select>,
+                                !loaded
+                            )}
+                        </div>
+                    )}
+                    {props.professor && (
+                        <div className="filter-dropdown">
+                            {wrapSkeleton(
                                 <Select
                                     value={filterOption}
                                     onChange={(e) => setFilterOption(e.target.value)}
@@ -195,11 +205,14 @@ const Review: FC<ReviewProps> = (props) => {
                                             {opt.text}
                                         </MenuItem>
                                     ))}
-                                </Select>
-                            </div>
-                        )}
+                                </Select>,
+                                !loaded
+                            )}
+                        </div>
+                    )}
 
-                        <div className="verified-only-checkbox">
+                    <div className="verified-only-checkbox">
+                        {wrapSkeleton(
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -208,41 +221,52 @@ const Review: FC<ReviewProps> = (props) => {
                                     />
                                 }
                                 label="Show verified reviews only"
-                            />
-                        </div>
-
-                        <span className="add-review-button">
-                            <Tooltip
-                                title="You must be logged in to leave a review"
-                                placement="top"
-                                open={isLoggedIn ? false : undefined}
-                            >
-                                <span>
-                                    <Button onClick={openReviewForm} disabled={!isLoggedIn}>
-                                        <AddIcon /> Add Review
-                                    </Button>
-                                </span>
-                            </Tooltip>
-                        </span>
+                            />,
+                            !loaded
+                        )}
                     </div>
 
-                    {sortedReviews.length !== 0 && (
-                        <div className="reviewcards">
-                            {sortedReviews.map((review) => (
-                                <ReviewCard
-                                    review={review}
-                                    key={review.id}
-                                    course={props.course}
-                                    professor={props.professor}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    <span className="add-review-button">
+                        <Tooltip
+                            title="You must be logged in to leave a review"
+                            placement="top"
+                            open={isLoggedIn ? false : undefined}
+                        >
+                            <span>
+                                {wrapSkeleton(
+                                    <Button onClick={openReviewForm} disabled={!isLoggedIn}>
+                                        <AddIcon /> Add Review
+                                    </Button>,
+                                    !loaded
+                                )}
+                            </span>
+                        </Tooltip>
+                    </span>
                 </div>
-                <ReviewForm open={showForm} handleClose={closeForm} {...props} />
-            </>
-        );
-    }
+
+                {!loaded && (
+                    <div className="reviewcards">
+                        {[0, 1].map((i) => (
+                            <Skeleton key={i} variant="rounded" height={280} />
+                        ))}
+                    </div>
+                )}
+                {loaded && sortedReviews.length !== 0 && (
+                    <div className="reviewcards">
+                        {sortedReviews.map((review) => (
+                            <ReviewCard
+                                review={review}
+                                key={review.id}
+                                course={props.course}
+                                professor={props.professor}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+            {!props.skeleton && <ReviewForm open={showForm} handleClose={closeForm} {...props} />}
+        </>
+    );
 };
 
 export default Review;
