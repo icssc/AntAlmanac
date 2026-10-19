@@ -1,0 +1,82 @@
+// Fills the popover, so mascot offsets are measured from the popover's inner edge.
+.tutorial-step {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+}
+
+.tutorial-title,
+.tutorial-description,
+.tutorial-buttons {
+    position: relative;
+    z-index: 1;
+}
+
+.tutorial-title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.tutorial-description {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.2;
+    flex-grow: 1;
+    // Lines break only at the <br />s, as in Figma, whose text boxes can overhang the padding slightly.
+    white-space: nowrap;
+}
+
+.tutorial-step--welcome .tutorial-description {
+    color: var(--mui-palette-text-secondary);
+}
+
+.tutorial-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+}
+
+.tutorial-step--step .tutorial-buttons {
+    gap: 40px;
+}
+
+.tutorial-progress {
+    height: 2px;
+    margin: 11px 5px 0;
+    border-radius: 1px;
+    background: rgba(184, 184, 184, 0.5);
+}
+
+.tutorial-progress-fill {
+    height: 100%;
+    border-radius: 1px;
+    background: var(--mui-palette-text-primary);
+}
+
+.tutorial-mascot {
+    position: absolute;
+    z-index: 2;
+    height: auto;
+    pointer-events: none;
+}
+
+// Some steps need part of the page usable outside the highlighted cutout. These lift it above the
+// tour's overlay (z-index 99999) while the step is showing.
+.tutorial-raise-major-options .MuiAutocomplete-popper {
+    z-index: 100001;
+}
+
+// The sidebar's own z-index would cap its content's, so drop it while the content is lifted.
+.tutorial-raise-sidebar [data-tour='sidebar'] {
+    z-index: auto;
+}
+
+.tutorial-raise-sidebar [data-tour='sidebar-content'] {
+    position: relative;
+    z-index: 100001;
+}
