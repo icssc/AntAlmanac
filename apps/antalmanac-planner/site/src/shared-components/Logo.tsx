@@ -1,93 +1,80 @@
+import ChristmasLogo from '$assets/christmas-logo.png';
+import DefaultLogo from '$assets/default-logo.svg';
+import HalloweenLogo from '$assets/halloween-logo.png';
+import ThanksgivingLogo from '$assets/thanksgiving-logo.png';
+import { endOfDay, isWithinInterval, parse } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import Image, { type StaticImageData } from 'next/image';
-
-import ChristmasLogo from '../asset/christmas-logo.png';
-import MobileChristmasLogo from '../asset/christmas-mobile-logo.png';
-import HalloweenLogo from '../asset/halloween-logo.png';
-import MobileHalloweenLogo from '../asset/halloween-mobile-logo.png';
-import NewDefaultLogo from '../asset/mobile-logo-cropped.svg'; // @TODO rename when done
-import MobileDefaultLogo from '../asset/mobile-logo.svg';
-import ThanksgivingLogo from '../asset/thanksgiving-logo.png';
-import MobileThanksgivingLogo from '../asset/thanksgiving-mobile-logo.png';
-import { useIsMobile } from '../helpers/util';
 
 type Logo = {
     name: string;
-    desktopLogo: StaticImageData;
-    mobileLogo: StaticImageData;
-    startDay: number;
-    startMonthIndex: number;
-    endDay: number;
-    endMonthIndex: number;
+    logo: StaticImageData;
     attribution?: string;
+};
+
+type SeasonalLogo = Logo & {
+    startDate: string; // inclusive, 'MMMM d'
+    endDate: string; // inclusive, 'MMMM d'
 };
 
 const defaultLogo: Logo = {
     name: 'Default',
-    desktopLogo: NewDefaultLogo,
-    mobileLogo: MobileDefaultLogo,
-    startDay: 0,
-    startMonthIndex: 0,
-    endDay: 31,
-    endMonthIndex: 11,
+    logo: DefaultLogo,
 };
 
-const logos: Logo[] = [
+// start date must come before end date for a given year
+const seasonalLogos: SeasonalLogo[] = [
     {
         name: 'Christmas',
-        desktopLogo: ChristmasLogo,
-        mobileLogo: MobileChristmasLogo,
-        startDay: 1,
-        startMonthIndex: 11,
-        endDay: 31,
-        endMonthIndex: 11,
+        logo: ChristmasLogo,
+        startDate: 'December 1',
+        endDate: 'December 31',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
         name: 'Thanksgiving',
-        desktopLogo: ThanksgivingLogo,
-        mobileLogo: MobileThanksgivingLogo,
-        startDay: 1,
-        startMonthIndex: 10,
-        endDay: 30,
-        endMonthIndex: 10,
+        logo: ThanksgivingLogo,
+        startDate: 'November 1',
+        endDate: 'November 30',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
         name: 'Halloween',
-        desktopLogo: HalloweenLogo,
-        mobileLogo: MobileHalloweenLogo,
-        startDay: 1,
-        startMonthIndex: 9,
-        endDay: 31,
-        endMonthIndex: 9,
+        logo: HalloweenLogo,
+        startDate: 'October 1',
+        endDate: 'October 31',
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
-    defaultLogo,
 ];
 
-function isCurrentSeason(logo: Logo) {
-    const now = new Date();
-    const year = now.getFullYear();
+// server and browser may be in different timezones, pin to Irvine time
+const IRVINE_TIME_ZONE = 'America/Los_Angeles';
 
-    const start = new Date(year, logo.startMonthIndex, logo.startDay);
-    const end = new Date(year, logo.endMonthIndex, logo.endDay);
+function getCurrentLogo(): Logo {
+    const currentDate = new Date();
+    const referenceDate = toZonedTime(currentDate, IRVINE_TIME_ZONE);
 
-    return now >= start && now <= end;
+    return (
+        seasonalLogos.find(({ startDate, endDate }) =>
+            isWithinInterval(currentDate, {
+                start: fromZonedTime(parse(startDate, 'MMMM d', referenceDate), IRVINE_TIME_ZONE),
+                end: fromZonedTime(endOfDay(parse(endDate, 'MMMM d', referenceDate)), IRVINE_TIME_ZONE),
+            })
+        ) ?? defaultLogo
+    );
 }
 
 export function Logo() {
-    const isMobile = useIsMobile();
-    const currentLogo = logos.find(isCurrentSeason) ?? defaultLogo;
-    const logo = isMobile ? currentLogo.mobileLogo : currentLogo.desktopLogo;
+    const currentLogo = getCurrentLogo();
 
     return (
         <Image
-            src={logo}
+            src={currentLogo.logo}
+            height={32}
+            width={72}
             alt="logo"
-            title={currentLogo?.attribution}
-            width={logo.width}
-            height={logo.height}
-            style={{ height: 32, width: 'auto', maxWidth: '100%' }}
+            title={currentLogo.attribution}
+            style={{ objectFit: 'contain' }}
         />
     );
 }
