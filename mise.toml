@@ -16,38 +16,3 @@ description = "Check the development environment without changing app files or s
 run = "node scripts/setup.mjs --check"
 raw = true
 quiet = true
-
-[tasks.dev]
-description = "Start the Next.js development server (after setup)"
-run = "pnpm dev"
-raw = true
-
-[tasks."db:start"]
-description = "Start local PostgreSQL and wait until it is healthy"
-run = "docker compose up -d --wait --wait-timeout 120 db"
-
-[tasks."db:stop"]
-description = "Stop local PostgreSQL, keeping the container and data"
-run = "docker compose stop db"
-
-[tasks."sched:db:studio"]
-description = "Browse the scheduler database with Drizzle Studio"
-run = "pnpm sched:db:studio"
-raw = true
-
-[tasks."plan:db:studio"]
-description = "Browse the planner database with Drizzle Studio"
-run = "pnpm plan:db:studio"
-raw = true
-
-[tasks.data]
-description = "Refresh course, department, and term caches (requires an API key)"
-run = "pnpm get-data"
-
-[tasks.test]
-description = "Run application tests (requires generated term data)"
-run = "pnpm test run"
-
-[tasks.lint]
-description = "Lint the repository"
-run = "pnpm lint"
