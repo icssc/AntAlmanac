@@ -25,7 +25,7 @@ export function checkNotRecentlyOffered(quarters: string[], course: CourseGQLDat
 
     quarters.forEach((quarter) => {
         const termYear = quarter === 'Fall' ? startYear : startYear + 1;
-        for (let i = 0; i <= recentYears; i++) {
+        for (let i = 0; i < recentYears; i++) {
             const term = `${termYear - i} ${quarter}`;
             if (course.terms.includes(term)) {
                 notRecentlyOffered = false;
