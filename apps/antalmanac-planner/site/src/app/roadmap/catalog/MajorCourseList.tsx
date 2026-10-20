@@ -6,6 +6,7 @@ import { FC, useCallback, useEffect, useState, useMemo } from 'react';
 import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
 import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
+import QuarterFilters from '../../../component/QuarterFilters/QuarterFilters';
 import { normalizeMajorName, getCatalogYearDefaults } from '../../../helpers/courseRequirements';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
@@ -210,6 +211,7 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
     );
     return (
         <div className="major-section">
+            <QuarterFilters />
             <ClickableDiv className="header-tab" onClick={toggleExpand}>
                 <h4 className="major-name">{major.name}</h4>
                 <ExpandMore className="expand-requirements" expanded={open} onClick={toggleExpand} />

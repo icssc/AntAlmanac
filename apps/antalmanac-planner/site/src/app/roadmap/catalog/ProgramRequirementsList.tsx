@@ -22,6 +22,7 @@ import {
 } from '../../../helpers/courseRequirements';
 import { isCustomCourse } from '../../../helpers/customCourses';
 import { getMissingPrerequisites } from '../../../helpers/planner';
+import { checkNotRecentlyOffered } from '../../../helpers/QuarterFilters';
 import { programRequirementsSortable } from '../../../helpers/sortable';
 import { pluralize, useIsMobile } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
@@ -41,6 +42,7 @@ import {
     setShowAddCourse,
     selectCurrentPlan,
 } from '../../../store/slices/roadmapSlice';
+import { selectQuarters } from '../../../store/slices/searchSlice.ts';
 import { setShowMobileCreditsMenu } from '../../../store/slices/transferCreditsSlice';
 import trpc from '../../../trpc';
 import { CourseGQLData, PlannerCourseData } from '../../../types/types';
@@ -73,6 +75,8 @@ interface CourseTileProps {
 }
 const CourseTile: FC<CourseTileProps> = ({ courseID, completedBy, dragTimestamp = 0 }) => {
     const [courseData, setCourseData] = useState<string | CourseGQLData>(courseID);
+    const selectedQuarters = useAppSelector(selectQuarters);
+    const [hidden, setHidden] = useState(false);
     const [loading, setLoading] = useState(false);
     const isMobile = useIsMobile();
     const clearedCourses = useClearedCourses();
@@ -86,6 +90,12 @@ const CourseTile: FC<CourseTileProps> = ({ courseID, completedBy, dragTimestamp 
         setLoading(false);
         return response;
     }, [courseData, courseID]);
+
+    useEffect(() => {
+        loadFullData().then((res) => {
+            setHidden(checkNotRecentlyOffered(selectedQuarters, res));
+        });
+    }, [loadFullData, selectedQuarters]);
 
     // Allows for dragging to trigger a data-load & setting active course
     useEffect(() => {
@@ -122,6 +132,8 @@ const CourseTile: FC<CourseTileProps> = ({ courseID, completedBy, dragTimestamp 
         const computedSize = 13 - charsExtra;
         fontSize = computedSize + 'px';
     }
+
+    if (hidden) return null;
 
     return (
         <div className={className} {...tappableCourseProps} style={{ fontSize }}>
