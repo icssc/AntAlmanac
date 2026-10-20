@@ -1,7 +1,7 @@
 Scheduler:
     - changed-files:
-          - any-glob-to-any-file: 'apps/antalmanac-scheduler/*'
+          - any-glob-to-any-file: 'apps/antalmanac-scheduler/**'
 
 Planner:
     - changed-files:
-          - any-glob-to-any-file: 'apps/antalmanac-planner/*'
+          - any-glob-to-any-file: 'apps/antalmanac-planner/**'
