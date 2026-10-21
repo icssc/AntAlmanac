@@ -1,0 +1,18 @@
+[tools]
+node = "22"
+pnpm = "10.22.0"
+
+[env]
+ANTALMANAC_TOOLCHAIN = "mise"
+
+[tasks.setup]
+description = "Open the guided developer setup TUI"
+run = "node scripts/setup.mjs"
+raw = true
+quiet = true
+
+[tasks.doctor]
+description = "Check the development environment without changing app files or services"
+run = "node scripts/setup.mjs --check"
+raw = true
+quiet = true

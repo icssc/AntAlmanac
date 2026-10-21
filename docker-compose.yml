@@ -2,12 +2,21 @@ name: antalmanac
 
 services:
     db:
-        build:
-            context: apps/antalmanac-scheduler/db
-            dockerfile: Dockerfile
+        image: postgres:16.8-alpine3.21
         ports:
             - '5432:5432'
         environment:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
             POSTGRES_DB: antalmanac
+        volumes:
+            - antalmanac-db:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U postgres -d antalmanac && [ "$(cat /proc/1/comm)" = postgres ]']
+            interval: 2s
+            timeout: 5s
+            retries: 30
+            start_period: 20s
+
+volumes:
+    antalmanac-db:
