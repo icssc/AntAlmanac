@@ -1,5 +1,5 @@
 'use client';
-import { Button, Chip, MenuItem, Select } from '@mui/material';
+import { Button, Chip, MenuItem, Select, Skeleton } from '@mui/material';
 
 import './SideInfo.scss';
 
@@ -79,6 +79,7 @@ interface SideInfoProps {
     className?: string;
     id?: string;
     skeleton?: boolean;
+    reviewsSkeleton?: boolean;
 }
 
 interface AverageReview {
@@ -89,7 +90,8 @@ interface AverageReview {
 }
 
 const SideInfo: FC<SideInfoProps> = (props) => {
-    const { skeleton = false } = props;
+    const { skeleton = false, reviewsSkeleton = false } = props;
+    const reviewsLoading = skeleton || reviewsSkeleton;
     const dispatch = useAppDispatch();
     const allToken = 'All ' + (props.searchType == 'course' ? 'Instructors' : 'Courses');
     const reviews = useAppSelector((state) => state.review.reviews);
@@ -169,7 +171,7 @@ const SideInfo: FC<SideInfoProps> = (props) => {
 
     const { count, rating, difficulty, takeAgain } = averageReviews[selectedReview] ?? {};
     // reviews in the store may still belong to the previous page while loading
-    const hasReviews = !skeleton && Object.keys(averageReviews).length > 1; // always has "All Instructors"
+    const hasReviews = !reviewsLoading && Object.keys(averageReviews).length > 1; // always has "All Instructors"
 
     return (
         <div className="side-content-wrapper">
@@ -219,7 +221,7 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                                     </MenuItem>
                                 ))}
                             </Select>,
-                            skeleton
+                            reviewsLoading
                         )}
 
                         {wrapSkeleton(
@@ -230,93 +232,124 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                             >
                                 Rate {props.searchType}
                             </Button>,
-                            skeleton
+                            reviewsLoading
                         )}
                     </div>
-                    {hasReviews && (
+                    {reviewsLoading ? (
                         <>
-                            {selectedReview && (
-                                <>
-                                    <div className="side-info-selected-based">Based on {count} reviews</div>
-                                    <div className="side-info-selected-rating">
-                                        <div className="side-info-stat">
-                                            <div className="side-info-stat-label">
-                                                {props.searchType.replace(/./, (x) => x.toUpperCase())} Rating
-                                            </div>
-                                            <div className="side-info-stat-value">
-                                                {count > 0 ? (rating / count).toFixed(2) : '\u2013'}
-                                            </div>
-                                        </div>
-
-                                        <div className="side-info-stat">
-                                            <div className="side-info-stat-label">Would Take Again</div>
-                                            <div className="side-info-stat-value">
-                                                {count > 0 ? ((takeAgain / count) * 100).toFixed(0) + '%' : '\u2013'}
-                                            </div>
-                                        </div>
-
-                                        <div className="side-info-stat">
-                                            <div className="side-info-stat-label">Difficulty Level</div>
-                                            <div className="side-info-stat-value">
-                                                {count > 0 ? (difficulty / count).toFixed(2) : '\u2013'}
-                                            </div>
-                                        </div>
+                            <Skeleton variant="text" width={140} />
+                            <div className="side-info-selected-rating">
+                                {[0, 1, 2].map((index) => (
+                                    <div className="side-info-stat" key={index}>
+                                        <Skeleton variant="text" width={90} />
+                                        <Skeleton variant="text" width={58} height={38} />
                                     </div>
-                                </>
-                            )}
+                                ))}
+                            </div>
                         </>
+                    ) : (
+                        hasReviews && (
+                            <>
+                                {selectedReview && (
+                                    <>
+                                        <div className="side-info-selected-based">Based on {count} reviews</div>
+                                        <div className="side-info-selected-rating">
+                                            <div className="side-info-stat">
+                                                <div className="side-info-stat-label">
+                                                    {props.searchType.replace(/./, (x) => x.toUpperCase())} Rating
+                                                </div>
+                                                <div className="side-info-stat-value">
+                                                    {count > 0 ? (rating / count).toFixed(2) : '\u2013'}
+                                                </div>
+                                            </div>
+
+                                            <div className="side-info-stat">
+                                                <div className="side-info-stat-label">Would Take Again</div>
+                                                <div className="side-info-stat-value">
+                                                    {count > 0
+                                                        ? ((takeAgain / count) * 100).toFixed(0) + '%'
+                                                        : '\u2013'}
+                                                </div>
+                                            </div>
+
+                                            <div className="side-info-stat">
+                                                <div className="side-info-stat-label">Difficulty Level</div>
+                                                <div className="side-info-stat-value">
+                                                    {count > 0 ? (difficulty / count).toFixed(2) : '\u2013'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        )
                     )}
                     {!hasReviews && (
                         <span className="side-info-selected-based">
-                            {wrapSkeleton(<span>No reviews found for this {props.searchType}!</span>, skeleton, 'text')}
+                            {wrapSkeleton(
+                                <span>No reviews found for this {props.searchType}!</span>,
+                                reviewsLoading,
+                                'text'
+                            )}
                         </span>
                     )}
                 </div>
 
-                {hasReviews && (
+                {reviewsLoading ? (
                     <div className="side-info-featured">
-                        <h2>{props.searchType == 'course' ? 'Instructors' : 'Courses'}</h2>
+                        <h2> {props.searchType == 'course' ? 'Instructors' : 'Courses'}</h2>
                         <div className="featured-items">
-                            {highestReview && (
-                                <FeaturedInfo
-                                    searchType={props.searchType}
-                                    featureType="Highest"
-                                    averageReviews={averageReviews}
-                                    reviewKey={highestReview}
-                                    displayName={
-                                        props.searchType == 'course'
-                                            ? (Object.values(props.course?.instructors ?? {})?.find(
-                                                  ({ ucinetid }) => ucinetid === highestReview
-                                              )?.name ?? '')
-                                            : props.professor?.courses[highestReview]
-                                              ? props.professor?.courses[highestReview].department +
-                                                ' ' +
-                                                props.professor?.courses[highestReview].courseNumber
-                                              : highestReview
-                                    }
-                                />
-                            )}
-                            {lowestReview && (
-                                <FeaturedInfo
-                                    searchType={props.searchType}
-                                    featureType="Lowest"
-                                    averageReviews={averageReviews}
-                                    reviewKey={lowestReview}
-                                    displayName={
-                                        props.searchType == 'course'
-                                            ? (Object.values(props.course?.instructors ?? {})?.find(
-                                                  ({ ucinetid }) => ucinetid === lowestReview
-                                              )?.name ?? '')
-                                            : props.professor?.courses[lowestReview]
-                                              ? props.professor?.courses[lowestReview].department +
-                                                ' ' +
-                                                props.professor?.courses[lowestReview].courseNumber
-                                              : lowestReview
-                                    }
-                                />
-                            )}
+                            {[0, 1].map((index) => (
+                                <Skeleton variant="rounded" height={120} key={index} />
+                            ))}
                         </div>
                     </div>
+                ) : (
+                    hasReviews && (
+                        <div className="side-info-featured">
+                            <h2>{props.searchType == 'course' ? 'Instructors' : 'Courses'}</h2>
+                            <div className="featured-items">
+                                {highestReview && (
+                                    <FeaturedInfo
+                                        searchType={props.searchType}
+                                        featureType="Highest"
+                                        averageReviews={averageReviews}
+                                        reviewKey={highestReview}
+                                        displayName={
+                                            props.searchType == 'course'
+                                                ? (Object.values(props.course?.instructors ?? {})?.find(
+                                                      ({ ucinetid }) => ucinetid === highestReview
+                                                  )?.name ?? '')
+                                                : props.professor?.courses[highestReview]
+                                                  ? props.professor?.courses[highestReview].department +
+                                                    ' ' +
+                                                    props.professor?.courses[highestReview].courseNumber
+                                                  : highestReview
+                                        }
+                                    />
+                                )}
+                                {lowestReview && (
+                                    <FeaturedInfo
+                                        searchType={props.searchType}
+                                        featureType="Lowest"
+                                        averageReviews={averageReviews}
+                                        reviewKey={lowestReview}
+                                        displayName={
+                                            props.searchType == 'course'
+                                                ? (Object.values(props.course?.instructors ?? {})?.find(
+                                                      ({ ucinetid }) => ucinetid === lowestReview
+                                                  )?.name ?? '')
+                                                : props.professor?.courses[lowestReview]
+                                                  ? props.professor?.courses[lowestReview].department +
+                                                    ' ' +
+                                                    props.professor?.courses[lowestReview].courseNumber
+                                                  : lowestReview
+                                        }
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    )
                 )}
             </div>
             <Toast text={toastMsg} severity={toastSeverity} showToast={showToast} onClose={handleClose} />

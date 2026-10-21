@@ -28,6 +28,7 @@ export interface ReviewProps {
     terms?: string[];
     /** Shows the loading placeholders without fetching */
     skeleton?: boolean;
+    onLoaded?: () => void;
 }
 
 enum SortingOption {
@@ -38,6 +39,7 @@ enum SortingOption {
 
 const Review: FC<ReviewProps> = (props) => {
     const dispatch = useAppDispatch();
+    const { onLoaded } = props;
     const reviewData = useAppSelector(selectReviews);
     const reviewOrder = useAppSelector(selectReviewOrder);
     const [sortingOption, setSortingOption] = useState<SortingOption>(SortingOption.TOP_REVIEWS);
@@ -65,8 +67,11 @@ const Review: FC<ReviewProps> = (props) => {
         dispatch(setReviews([]));
         setLoaded(false);
         if (props.skeleton) return;
-        getReviews().then(() => setLoaded(true));
-    }, [dispatch, getReviews, props.skeleton]);
+        getReviews().then(() => {
+            setLoaded(true);
+            onLoaded?.();
+        });
+    }, [dispatch, getReviews, onLoaded, props.skeleton]);
 
     let sortedReviews: ReviewData[];
     // filter verified if option is set
