@@ -9,12 +9,16 @@ interface CoursePageParams {
     params: Promise<{ id: string }>;
 }
 
+const getCourse = async (id: string) => {
+    const reqHeaders = await headers().then((h) => Object.fromEntries(h.entries()));
+    const serverTrpc = createServerSideTrpcCaller(reqHeaders);
+    return serverTrpc.courses.get.query({ courseID: id });
+};
+
 export async function generateMetadata({ params }: CoursePageParams): Promise<Metadata> {
     const id = decodeURIComponent((await params).id);
 
-    const reqHeaders = await headers().then((h) => Object.fromEntries(h.entries()));
-    const serverTrpc = createServerSideTrpcCaller(reqHeaders);
-    const course = await serverTrpc.courses.get.query({ courseID: id });
+    const course = await getCourse(id);
 
     if (!course) return notFound();
 
@@ -28,6 +32,7 @@ export async function generateMetadata({ params }: CoursePageParams): Promise<Me
 }
 
 const Page = async ({ params }: CoursePageParams) => {
-    return <CoursePage courseId={decodeURIComponent((await params).id)} />;
+    const id = decodeURIComponent((await params).id);
+    return <CoursePage courseId={id} coursePromise={getCourse(id)} />;
 };
 export default Page;

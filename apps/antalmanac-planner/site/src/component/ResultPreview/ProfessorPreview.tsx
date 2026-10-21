@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { Button, IconButton, Paper, Tooltip, useMediaQuery } from '@mui/material';
-import { FC, ReactNode, useEffect } from 'react';
+import { FC, ReactNode, useCallback, useEffect, useState } from 'react';
 
 import { getProfessorTerms } from '../../helpers/reviews';
 import { checkModalOpen, sortTerms, unionTerms } from '../../helpers/util';
@@ -14,12 +14,17 @@ import { useAppDispatch } from '../../store/hooks';
 import { setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/roadmapSlice';
 import { ProfessorGQLData } from '../../types/types';
 import GradeDist from '../GradeDist/GradeDist';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { ResultPageSection } from '../ResultPageContent/ResultPageContent';
 import Review from '../Review/Review';
 import Schedule from '../Schedule/Schedule';
 import SideInfo from '../SideInfo/SideInfo';
 import PreviewNavBar from './PreviewNavBar';
+
+const LOADING_SIDE_INFO = {
+    name: 'Firstname Lastname',
+    title: 'Professor of Teaching',
+    description: 'Computer Science',
+};
 
 interface PreviewTitleProps {
     isLoading: boolean;
@@ -43,9 +48,39 @@ const PreviewTitle: FC<PreviewTitleProps> = ({ isLoading, netId, professorData }
     return wrapContent(<>Previewing {formattedCourseId}</>);
 };
 
-const ProfessorPreviewContent: FC<{ data: ProfessorGQLData | null }> = ({ data }) => {
+const ProfessorPreviewContent: FC<{ data: ProfessorGQLData | null; netid: string }> = ({ data, netid }) => {
+    const [reviewsLoaded, setReviewsLoaded] = useState(false);
+    const handleReviewsLoaded = useCallback(() => setReviewsLoaded(true), []);
+
+    useEffect(() => {
+        setReviewsLoaded(false);
+    }, [netid]);
+
     if (!data) {
-        return <LoadingSpinner />;
+        return (
+            <div className="preview-body">
+                <SideInfo
+                    id="preview-details"
+                    className="professor-summary"
+                    searchType="instructor"
+                    {...LOADING_SIDE_INFO}
+                    tags={[netid, 'LASTNAME, F.']}
+                    skeleton
+                />
+
+                <ResultPageSection id="preview-grades" icon={<BarChartIcon />} title="Grade Distribution">
+                    <GradeDist skeleton />
+                </ResultPageSection>
+
+                <ResultPageSection id="preview-schedule" icon={<CalendarTodayIcon />} title="Schedule of Classes">
+                    <Schedule skeleton />
+                </ResultPageSection>
+
+                <ResultPageSection id="preview-reviews" icon={<RateReviewIcon />} title="Reviews">
+                    <Review skeleton />
+                </ResultPageSection>
+            </div>
+        );
     }
 
     return (
@@ -59,6 +94,7 @@ const ProfessorPreviewContent: FC<{ data: ProfessorGQLData | null }> = ({ data }
                 description={data.department}
                 tags={[data.ucinetid, ...data.shortenedNames]}
                 professor={data}
+                reviewsSkeleton={!reviewsLoaded}
             />
 
             <ResultPageSection id="preview-grades" icon={<BarChartIcon />} title="Grade Distribution">
@@ -70,7 +106,7 @@ const ProfessorPreviewContent: FC<{ data: ProfessorGQLData | null }> = ({ data }
             </ResultPageSection>
 
             <ResultPageSection id="preview-reviews" icon={<RateReviewIcon />} title="Reviews">
-                <Review professor={data} terms={sortTerms(getProfessorTerms(data))} />
+                <Review professor={data} terms={sortTerms(getProfessorTerms(data))} onLoaded={handleReviewsLoaded} />
             </ResultPageSection>
         </div>
     );
@@ -84,7 +120,7 @@ const ProfessorPreview: FC<{ netid: string; onClose: () => void; onBack: () => v
 }) => {
     netid = netid.replace(/\s/g, '');
     const professorData = useProfessorData(netid);
-    const isLoading = false;
+    const isLoading = !professorData;
     const dispatch = useAppDispatch();
 
     const copyProfLink = () => {
@@ -136,7 +172,7 @@ const ProfessorPreview: FC<{ netid: string; onClose: () => void; onBack: () => v
                 </Button>
             </Paper>
             <div className="popup-scroll">
-                <ProfessorPreviewContent data={professorData} />
+                <ProfessorPreviewContent data={professorData} netid={netid} />
             </div>
         </div>
     );

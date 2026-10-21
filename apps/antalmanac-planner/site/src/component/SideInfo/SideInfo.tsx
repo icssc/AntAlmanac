@@ -1,12 +1,13 @@
 'use client';
-import { Button, Chip, MenuItem, Select } from '@mui/material';
+import { Button, Chip, MenuItem, Select, Skeleton } from '@mui/material';
 
 import './SideInfo.scss';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { FC, useEffect, useState } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 
+import { wrapSkeleton } from '../../helpers/skeleton';
 import Toast from '../../helpers/toast';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { toggleFormStatus, setShowToast } from '../../store/slices/reviewSlice';
@@ -76,6 +77,8 @@ interface SideInfoProps {
     terms?: string[];
     className?: string;
     id?: string;
+    skeleton?: boolean;
+    reviewsSkeleton?: boolean;
 }
 
 interface AverageReview {
@@ -86,6 +89,8 @@ interface AverageReview {
 }
 
 const SideInfo: FC<SideInfoProps> = (props) => {
+    const { skeleton = false, reviewsSkeleton = false } = props;
+    const reviewsLoading = skeleton || reviewsSkeleton;
     const dispatch = useAppDispatch();
     const allToken = 'All ' + (props.searchType == 'course' ? 'Instructors' : 'Courses');
     const reviews = useAppSelector((state) => state.review.reviews);
@@ -164,18 +169,21 @@ const SideInfo: FC<SideInfoProps> = (props) => {
     sortedReviews.sort((a, b) => averageReviews[b].count - averageReviews[a].count);
 
     const { count, rating, difficulty, takeAgain } = averageReviews[selectedReview] ?? {};
-    const hasReviews = Object.keys(averageReviews).length > 1; // always has "All Instructors"
+    // reviews in the store may still belong to the previous page while loading
+    const hasReviews = !reviewsLoading && Object.keys(averageReviews).length > 1; // always has "All Instructors"
 
     return (
         <div className="side-content-wrapper">
             <div className={`side-info ${props.className ?? ''}`} id={props.id}>
                 <div className="side-info-overview">
-                    <h2>{props.name}</h2>
-                    <h3>{props.title}</h3>
-                    <p>{props.description}</p>
+                    <h2>{wrapSkeleton(<span>{props.name}</span>, skeleton, 'text')}</h2>
+                    <h3>{wrapSkeleton(<span>{props.title}</span>, skeleton, 'text')}</h3>
+                    {wrapSkeleton(<p>{props.description}</p>, skeleton, 'text')}
                     <div className="course-tags">
                         {props.tags.map((tag, i) => (
-                            <Chip color="primary" size="small" key={`side-info-badge-${i}`} label={tag} />
+                            <Fragment key={`side-info-badge-${i}`}>
+                                {wrapSkeleton(<Chip color="primary" size="small" label={tag} />, skeleton)}
+                            </Fragment>
                         ))}
                     </div>
                 </div>
@@ -183,123 +191,160 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                 {props.terms && props.terms.length > 0 && (
                     <>
                         <h2>Recent Offerings</h2>
-                        <RecentOfferingsTable terms={props.terms} size="wide" />
+                        {wrapSkeleton(<RecentOfferingsTable terms={props.terms} size="wide" />, skeleton)}
                     </>
                 )}
 
                 <div className="side-info-ratings">
                     <h2>Average Rating</h2>
                     <div className="side-info-buttons">
-                        <Select
-                            value={selectedReview}
-                            onChange={(e) => {
-                                setSelectedReview(e.target.value as string);
-                            }}
-                        >
-                            {sortedReviews.map((key, index) => (
-                                <MenuItem key={`side-info-dropdown-${index}`} value={key}>
-                                    {props.searchType == 'course' &&
-                                        (props.course?.instructors[key] ? props.course?.instructors[key].name : key)}
-                                    {props.searchType == 'instructor' &&
-                                        (props.professor?.courses[key]
-                                            ? props.professor?.courses[key].department +
-                                              ' ' +
-                                              props.professor?.courses[key].courseNumber
-                                            : key)}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                        {wrapSkeleton(
+                            <Select
+                                value={selectedReview}
+                                onChange={(e) => {
+                                    setSelectedReview(e.target.value as string);
+                                }}
+                            >
+                                {sortedReviews.map((key, index) => (
+                                    <MenuItem key={`side-info-dropdown-${index}`} value={key}>
+                                        {props.searchType == 'course' &&
+                                            (props.course?.instructors[key]
+                                                ? props.course?.instructors[key].name
+                                                : key)}
+                                        {props.searchType == 'instructor' &&
+                                            (props.professor?.courses[key]
+                                                ? props.professor?.courses[key].department +
+                                                  ' ' +
+                                                  props.professor?.courses[key].courseNumber
+                                                : key)}
+                                    </MenuItem>
+                                ))}
+                            </Select>,
+                            reviewsLoading
+                        )}
 
-                        <Button
-                            onClick={() => {
-                                dispatch(toggleFormStatus());
-                            }}
-                        >
-                            Rate {props.searchType}
-                        </Button>
+                        {wrapSkeleton(
+                            <Button
+                                onClick={() => {
+                                    dispatch(toggleFormStatus());
+                                }}
+                            >
+                                Rate {props.searchType}
+                            </Button>,
+                            reviewsLoading
+                        )}
                     </div>
-                    {hasReviews && (
+                    {reviewsLoading ? (
                         <>
-                            {selectedReview && (
-                                <>
-                                    <div className="side-info-selected-based">Based on {count} reviews</div>
-                                    <div className="side-info-selected-rating">
-                                        <div className="side-info-stat">
-                                            <div className="side-info-stat-label">
-                                                {props.searchType.replace(/./, (x) => x.toUpperCase())} Rating
-                                            </div>
-                                            <div className="side-info-stat-value">
-                                                {count > 0 ? (rating / count).toFixed(2) : '\u2013'}
-                                            </div>
-                                        </div>
-
-                                        <div className="side-info-stat">
-                                            <div className="side-info-stat-label">Would Take Again</div>
-                                            <div className="side-info-stat-value">
-                                                {count > 0 ? ((takeAgain / count) * 100).toFixed(0) + '%' : '\u2013'}
-                                            </div>
-                                        </div>
-
-                                        <div className="side-info-stat">
-                                            <div className="side-info-stat-label">Difficulty Level</div>
-                                            <div className="side-info-stat-value">
-                                                {count > 0 ? (difficulty / count).toFixed(2) : '\u2013'}
-                                            </div>
-                                        </div>
+                            <Skeleton variant="text" width={140} />
+                            <div className="side-info-selected-rating">
+                                {[0, 1, 2].map((index) => (
+                                    <div className="side-info-stat" key={index}>
+                                        <Skeleton variant="text" width={90} />
+                                        <Skeleton variant="rounded" width={64} height={36} />
                                     </div>
-                                </>
-                            )}
+                                ))}
+                            </div>
                         </>
+                    ) : (
+                        hasReviews && (
+                            <>
+                                {selectedReview && (
+                                    <>
+                                        <div className="side-info-selected-based">Based on {count} reviews</div>
+                                        <div className="side-info-selected-rating">
+                                            <div className="side-info-stat">
+                                                <div className="side-info-stat-label">
+                                                    {props.searchType.replace(/./, (x) => x.toUpperCase())} Rating
+                                                </div>
+                                                <div className="side-info-stat-value">
+                                                    {count > 0 ? (rating / count).toFixed(2) : '\u2013'}
+                                                </div>
+                                            </div>
+
+                                            <div className="side-info-stat">
+                                                <div className="side-info-stat-label">Would Take Again</div>
+                                                <div className="side-info-stat-value">
+                                                    {count > 0
+                                                        ? ((takeAgain / count) * 100).toFixed(0) + '%'
+                                                        : '\u2013'}
+                                                </div>
+                                            </div>
+
+                                            <div className="side-info-stat">
+                                                <div className="side-info-stat-label">Difficulty Level</div>
+                                                <div className="side-info-stat-value">
+                                                    {count > 0 ? (difficulty / count).toFixed(2) : '\u2013'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        )
                     )}
-                    {!hasReviews && (
-                        <span className="side-info-selected-based">No reviews found for this {props.searchType}!</span>
+                    {!reviewsLoading && !hasReviews && (
+                        <span className="side-info-selected-based">
+                            <span>No reviews found for this {props.searchType}!</span>
+                        </span>
                     )}
                 </div>
 
-                {hasReviews && (
+                {reviewsLoading ? (
                     <div className="side-info-featured">
-                        <h2>{props.searchType == 'course' ? 'Instructors' : 'Courses'}</h2>
+                        <h2> {props.searchType == 'course' ? 'Instructors' : 'Courses'}</h2>
                         <div className="featured-items">
-                            {highestReview && (
-                                <FeaturedInfo
-                                    searchType={props.searchType}
-                                    featureType="Highest"
-                                    averageReviews={averageReviews}
-                                    reviewKey={highestReview}
-                                    displayName={
-                                        props.searchType == 'course'
-                                            ? (Object.values(props.course?.instructors ?? {})?.find(
-                                                  ({ ucinetid }) => ucinetid === highestReview
-                                              )?.name ?? '')
-                                            : props.professor?.courses[highestReview]
-                                              ? props.professor?.courses[highestReview].department +
-                                                ' ' +
-                                                props.professor?.courses[highestReview].courseNumber
-                                              : highestReview
-                                    }
-                                />
-                            )}
-                            {lowestReview && (
-                                <FeaturedInfo
-                                    searchType={props.searchType}
-                                    featureType="Lowest"
-                                    averageReviews={averageReviews}
-                                    reviewKey={lowestReview}
-                                    displayName={
-                                        props.searchType == 'course'
-                                            ? (Object.values(props.course?.instructors ?? {})?.find(
-                                                  ({ ucinetid }) => ucinetid === lowestReview
-                                              )?.name ?? '')
-                                            : props.professor?.courses[lowestReview]
-                                              ? props.professor?.courses[lowestReview].department +
-                                                ' ' +
-                                                props.professor?.courses[lowestReview].courseNumber
-                                              : lowestReview
-                                    }
-                                />
-                            )}
+                            {[0, 1].map((index) => (
+                                <Skeleton variant="rounded" height={80} key={index} />
+                            ))}
                         </div>
                     </div>
+                ) : (
+                    hasReviews && (
+                        <div className="side-info-featured">
+                            <h2>{props.searchType == 'course' ? 'Instructors' : 'Courses'}</h2>
+                            <div className="featured-items">
+                                {highestReview && (
+                                    <FeaturedInfo
+                                        searchType={props.searchType}
+                                        featureType="Highest"
+                                        averageReviews={averageReviews}
+                                        reviewKey={highestReview}
+                                        displayName={
+                                            props.searchType == 'course'
+                                                ? (Object.values(props.course?.instructors ?? {})?.find(
+                                                      ({ ucinetid }) => ucinetid === highestReview
+                                                  )?.name ?? '')
+                                                : props.professor?.courses[highestReview]
+                                                  ? props.professor?.courses[highestReview].department +
+                                                    ' ' +
+                                                    props.professor?.courses[highestReview].courseNumber
+                                                  : highestReview
+                                        }
+                                    />
+                                )}
+                                {lowestReview && (
+                                    <FeaturedInfo
+                                        searchType={props.searchType}
+                                        featureType="Lowest"
+                                        averageReviews={averageReviews}
+                                        reviewKey={lowestReview}
+                                        displayName={
+                                            props.searchType == 'course'
+                                                ? (Object.values(props.course?.instructors ?? {})?.find(
+                                                      ({ ucinetid }) => ucinetid === lowestReview
+                                                  )?.name ?? '')
+                                                : props.professor?.courses[lowestReview]
+                                                  ? props.professor?.courses[lowestReview].department +
+                                                    ' ' +
+                                                    props.professor?.courses[lowestReview].courseNumber
+                                                  : lowestReview
+                                        }
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    )
                 )}
             </div>
             <Toast text={toastMsg} severity={toastSeverity} showToast={showToast} onClose={handleClose} />
