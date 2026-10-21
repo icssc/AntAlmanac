@@ -242,7 +242,7 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                                 {[0, 1, 2].map((index) => (
                                     <div className="side-info-stat" key={index}>
                                         <Skeleton variant="text" width={90} />
-                                        <Skeleton variant="text" width={58} height={38} />
+                                        <Skeleton variant="rounded" width={64} height={36} />
                                     </div>
                                 ))}
                             </div>
@@ -284,13 +284,9 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                             </>
                         )
                     )}
-                    {!hasReviews && (
+                    {!reviewsLoading && !hasReviews && (
                         <span className="side-info-selected-based">
-                            {wrapSkeleton(
-                                <span>No reviews found for this {props.searchType}!</span>,
-                                reviewsLoading,
-                                'text'
-                            )}
+                            <span>No reviews found for this {props.searchType}!</span>
                         </span>
                     )}
                 </div>
@@ -300,7 +296,7 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                         <h2> {props.searchType == 'course' ? 'Instructors' : 'Courses'}</h2>
                         <div className="featured-items">
                             {[0, 1].map((index) => (
-                                <Skeleton variant="rounded" height={120} key={index} />
+                                <Skeleton variant="rounded" height={80} key={index} />
                             ))}
                         </div>
                     </div>
