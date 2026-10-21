@@ -35,6 +35,14 @@ export const users = pgTable('users', {
     emailVerified: boolean('email_verified').default(false).notNull(),
 
     /**
+     * User's major and school information
+     *
+     * Used to generate warning about course restrictions
+     */
+    major: text('major'),
+    school: text('school'),
+
+    /**
      * Imported User Flag.
      *
      * Indicates if the user was imported into an account.
