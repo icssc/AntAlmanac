@@ -174,6 +174,7 @@ const MajorSelector: FC = () => {
                 disabled={majorsLoading}
                 disableClearable
                 className="major-select"
+                data-tour="major-select"
                 renderInput={(params) => (
                     <TextField
                         {...params}

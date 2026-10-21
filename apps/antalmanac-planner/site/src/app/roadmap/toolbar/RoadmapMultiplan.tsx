@@ -13,6 +13,7 @@ import {
     Dialog,
     IconButton,
     Popover,
+    type PaperProps,
     TextField,
     DialogTitle,
     DialogContent,
@@ -114,6 +115,7 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
         <div ref={containerRef}>
             <Button
                 className="dropdown-button"
+                data-tour="roadmap-name"
                 variant="outlined"
                 color="inherit"
                 onClick={() => setShowDropdown(!showDropdown)}
@@ -129,6 +131,7 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
                 anchorReference="anchorEl"
                 anchorEl={containerRef.current}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                slotProps={{ paper: { 'data-tour': 'roadmap-menu' } as PaperProps }}
                 onClose={() => {
                     if (!isDragging) setShowDropdown(false);
                 }}

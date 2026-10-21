@@ -30,7 +30,7 @@ const DesktopRoadmapSidebar = () => {
     }, [dispatch, hasSeenCredits, selectedIndex]);
 
     return (
-        <div className="roadmap-sidebar">
+        <div className="roadmap-sidebar" data-tour="sidebar">
             <Tabs
                 className="sidebar-tabs"
                 value={selectedIndex}
@@ -38,6 +38,7 @@ const DesktopRoadmapSidebar = () => {
                 variant="fullWidth"
             >
                 <Tab
+                    data-tour="credits-tab"
                     icon={<SwapHorizOutlinedIcon />}
                     iconPosition="start"
                     label={
@@ -46,11 +47,11 @@ const DesktopRoadmapSidebar = () => {
                         </Badge>
                     }
                 />
-                <Tab icon={<FormatListBulletedIcon />} iconPosition="start" label="Catalog" />
+                <Tab data-tour="catalog-tab" icon={<FormatListBulletedIcon />} iconPosition="start" label="Catalog" />
                 <Tab icon={<SearchIcon />} iconPosition="start" label="Search" />
             </Tabs>
 
-            <div className="sidebar-content" id="sidebarScrollContainer">
+            <div className="sidebar-content" id="sidebarScrollContainer" data-tour="sidebar-content">
                 {selectedIndex === 0 && <TransferCreditsMenu />}
                 {selectedIndex === 1 && <CourseCatalog />}
                 {selectedIndex === 2 && <SavedAndSearch autoFocusSearch />}

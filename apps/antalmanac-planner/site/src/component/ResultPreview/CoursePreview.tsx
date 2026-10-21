@@ -140,10 +140,10 @@ const CoursePreview: FC<{ courseId: string; onClose: () => void; onBack: () => v
     });
 
     return (
-        <div className="result-preview">
+        <div className="result-preview" data-tour="course-preview">
             <Paper className="preview-header" variant="outlined">
                 <Tooltip title="Exit Preview (Esc)">
-                    <IconButton onClick={onClose}>
+                    <IconButton onClick={onClose} data-tour="preview-close">
                         <CloseIcon />
                     </IconButton>
                 </Tooltip>
