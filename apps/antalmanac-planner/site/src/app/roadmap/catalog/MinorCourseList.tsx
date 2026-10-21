@@ -5,7 +5,6 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
 import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
-import QuarterFilters from '../../../component/QuarterFilters/QuarterFilters';
 import { getCatalogYearDefaults } from '../../../helpers/courseRequirements';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
@@ -86,7 +85,6 @@ const MinorCourseList: FC<MinorCourseListProps> = ({ minorReqs, onCatalogYearCha
 
     return (
         <div className="major-section">
-            <QuarterFilters />
             <ClickableDiv className="header-tab" onClick={toggleExpand}>
                 <h4 className="major-name">{minorReqs.minor.name}</h4>
                 <ExpandMore className="expand-requirements" expanded={open} onClick={toggleExpand} />
