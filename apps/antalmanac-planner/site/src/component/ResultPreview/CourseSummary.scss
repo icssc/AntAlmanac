@@ -11,6 +11,7 @@
     }
 
     .summary-column:first-child {
+        width: 100%;
         max-width: 400px;
     }
 
@@ -64,7 +65,13 @@
     }
 
     .summary-description-skeleton {
-        margin-block: 16px;
+        margin-bottom: 8px;
+    }
+
+    .summary-skeleton-lines {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
     }
 
     .materials-alert {

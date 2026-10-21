@@ -14,8 +14,13 @@ import { CourseGQLData } from '../../types/types';
 import PrereqTree from '../PrereqTree/PrereqTree';
 import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
 
-const currentYear = new Date().getFullYear();
-const SKELETON_TERMS = [0, 1, 2, 3].map((yearsAgo) => `${currentYear - yearsAgo} Fall`);
+const SummarySkeletonLines: FC<{ widths: string[] }> = ({ widths }) => (
+    <div className="summary-skeleton-lines">
+        {widths.map((width, index) => (
+            <Skeleton variant="text" width={width} key={index} />
+        ))}
+    </div>
+);
 
 const CourseTags: FC<{ course: CourseGQLData; skeleton: boolean }> = ({ course, skeleton }) => {
     const tags = getCourseTags(course);
@@ -42,12 +47,12 @@ const CourseRestriction: FC<{ restriction: string; skeleton: boolean }> = ({ res
     return (
         <>
             <h4>Restrictions</h4>
-            {wrapSkeleton(
+            {skeleton ? (
+                <SummarySkeletonLines widths={['92%', '68%']} />
+            ) : (
                 <p>
                     <i>{restriction || 'There are no restrictions for this course.'}</i>
-                </p>,
-                skeleton,
-                'text'
+                </p>
             )}
             {/* Restriction Tags are term-specific and needs a WebSoC query */}
         </>
@@ -133,7 +138,9 @@ const CoursePrerequisiteListView: FC<{
     return (
         <>
             <h4>Prerequisites</h4>
-            {wrapSkeleton(
+            {skeleton ? (
+                <SummarySkeletonLines widths={['88%', '76%', '94%', '61%']} />
+            ) : (
                 <>
                     <p className="summary-prerequisite-type">
                         {items.length > 0 ? <b>{listLabel}</b> : 'This course has no prerequisites.'}
@@ -143,9 +150,7 @@ const CoursePrerequisiteListView: FC<{
                             <CoursePrequisiteLine key={idx} item={requirement} clearedCourses={clearedCourses} />
                         ))}
                     </ul>
-                </>,
-                skeleton,
-                'text'
+                </>
             )}
         </>
     );
@@ -162,7 +167,11 @@ const CourseDependentText: FC<{ courseName: string; dependents: CoursePreview[];
         return (
             <>
                 {header}
-                {wrapSkeleton(<p>{`There are no courses that have ${courseName} as a prerequisite.`}</p>, skeleton)}
+                {skeleton ? (
+                    <SummarySkeletonLines widths={['96%', '84%', '54%']} />
+                ) : (
+                    <p>{`There are no courses that have ${courseName} as a prerequisite.`}</p>
+                )}
             </>
         );
     }
@@ -174,7 +183,9 @@ const CourseDependentText: FC<{ courseName: string; dependents: CoursePreview[];
     return (
         <>
             {header}
-            {wrapSkeleton(
+            {skeleton ? (
+                <SummarySkeletonLines widths={['98%', '91%', '83%', '64%']} />
+            ) : (
                 <>
                     <p>
                         <i>You must take {courseName} before taking any of the following courses.</i>
@@ -187,8 +198,7 @@ const CourseDependentText: FC<{ courseName: string; dependents: CoursePreview[];
                             </>
                         )}
                     </p>
-                </>,
-                skeleton
+                </>
             )}
         </>
     );
@@ -239,9 +249,10 @@ const CourseSummary: FC<{ course: CourseGQLData; skeleton?: boolean }> = ({ cour
             <CourseTags course={course} skeleton={skeleton} />
             <div className="summary-columns">
                 <div className="summary-column">
-                    {wrapSkeleton(
-                        <RecentOfferingsTable terms={skeleton ? SKELETON_TERMS : course.terms} size="wide" />,
-                        skeleton
+                    {skeleton ? (
+                        <Skeleton variant="rounded" width="100%" height={180} />
+                    ) : (
+                        <RecentOfferingsTable terms={course.terms} size="wide" />
                     )}
                     <br />
                     <CourseRestriction restriction={course.restriction} skeleton={skeleton} />
