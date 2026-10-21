@@ -136,3 +136,16 @@ export async function fetchUserDataByUserId(db: DatabaseOrTransaction, userId: s
         },
     };
 }
+
+/**
+ * Updates user's major and school
+ */
+export async function updateUserMajor(db: DatabaseOrTransaction, userId: string, major: string, school: string) {
+    await db
+        .update(users)
+        .set({
+            major: major,
+            school: school,
+        })
+        .where(eq(users.id, userId));
+}
