@@ -149,3 +149,24 @@ export async function updateUserMajor(db: DatabaseOrTransaction, userId: string,
         })
         .where(eq(users.id, userId));
 }
+
+/**
+ * Get user's major and school
+ */
+export async function getUserMajor(db: DatabaseOrTransaction, userId: string) {
+    const user = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .then((res) => res[0] ?? null);
+
+    if (!user) {
+        return null;
+    }
+
+    return {
+        id: user.id,
+        major: user.major,
+        school: user.school,
+    };
+}
