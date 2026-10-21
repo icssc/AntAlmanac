@@ -5,7 +5,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CloseIcon from '@mui/icons-material/Close';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import RateReviewIcon from '@mui/icons-material/RateReview';
-import { Button, IconButton, Paper, Tooltip, useMediaQuery } from '@mui/material';
+import { Button, IconButton, Paper, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
 import { FC, ReactNode, useEffect, useCallback, useState } from 'react';
 
 import MaterialsIcon from '../../helpers/courseMaterials';
@@ -18,7 +18,6 @@ import trpc from '../../trpc';
 import { CourseGQLData } from '../../types/types';
 import { CourseBookmarkButton } from '../CourseInfo/CourseInfo';
 import GradeDist from '../GradeDist/GradeDist';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { ResultPageSection } from '../ResultPageContent/ResultPageContent';
 import Review from '../Review/Review';
 import Schedule from '../Schedule/Schedule';
@@ -73,13 +72,35 @@ const CoursePreviewContent: FC<{ data: CourseGQLData }> = ({ data }) => {
         fetchMaterialsDataFromAPI();
     }, [fetchMaterialsDataFromAPI, data.id]);
 
-    if (data.id === LOADING_COURSE_PLACEHOLDER.id) {
-        return <LoadingSpinner />;
-    }
-
     let materialsComponent = null;
     if (hasMaterials) {
         materialsComponent = <MaterialsIcon showLabel={true} />;
+    }
+
+    if (data.id === LOADING_COURSE_PLACEHOLDER.id) {
+        return (
+            <div className="preview-body">
+                <ResultPageSection
+                    id="preview-details"
+                    title={<Skeleton variant="text" width={320} />}
+                    indicator={materialsComponent}
+                >
+                    <CourseSummary course={LOADING_COURSE_PLACEHOLDER} skeleton />
+                </ResultPageSection>
+
+                <ResultPageSection id="preview-grades" icon={<BarChartIcon />} title="Grade Distribution">
+                    <GradeDist skeleton />
+                </ResultPageSection>
+
+                <ResultPageSection id="preview-schedule" icon={<CalendarTodayIcon />} title="Schedule of Classes">
+                    <Schedule skeleton />
+                </ResultPageSection>
+
+                <ResultPageSection id="preview-reviews" icon={<RateReviewIcon />} title="Reviews">
+                    <Review skeleton />
+                </ResultPageSection>
+            </div>
+        );
     }
 
     return (
