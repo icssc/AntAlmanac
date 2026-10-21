@@ -3,6 +3,7 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import RateReviewIcon from '@mui/icons-material/RateReview';
+import { Skeleton } from '@mui/material';
 import { CourseAAPIResponse } from '@peterportal/types';
 import { FC, useState, useEffect } from 'react';
 
@@ -62,6 +63,9 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
             <ResultPageContent sideInfo={<SideInfo skeleton searchType="course" name={id} {...LOADING_SIDE_INFO} />}>
                 <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
                     <GradeDist skeleton />
+                </ResultPageSection>
+                <ResultPageSection icon={<AccountTreeIcon />} title="Prerequisite Tree">
+                    <Skeleton variant="rounded" height={400} />
                 </ResultPageSection>
                 <ResultPageSection icon={<CalendarTodayIcon />} title="Schedule of Classes">
                     <Schedule skeleton />

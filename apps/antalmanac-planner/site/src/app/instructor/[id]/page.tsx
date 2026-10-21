@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { notFound } from 'next/navigation';
 
 import { createServerSideTrpcCaller } from '../../../trpc';
 import ProfessorPage from '../ProfessorPage';
@@ -19,8 +20,7 @@ export async function generateMetadata({ params }: ProfessorPageParams): Promise
 
     const professor = await getProfessor(id);
 
-    // ProfessorPage shows the not-found message
-    if (!professor) return {};
+    if (!professor) return notFound();
 
     const title = professor.name;
     const description = `${professor.title} in ${professor.department}`;

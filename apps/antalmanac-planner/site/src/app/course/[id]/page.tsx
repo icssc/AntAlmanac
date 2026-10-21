@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { notFound } from 'next/navigation';
 
 import { createServerSideTrpcCaller } from '../../../trpc';
 import CoursePage from '../CoursePage';
@@ -19,8 +20,7 @@ export async function generateMetadata({ params }: CoursePageParams): Promise<Me
 
     const course = await getCourse(id);
 
-    // CoursePage shows the not-found message
-    if (!course) return {};
+    if (!course) return notFound();
 
     const title = `${course.department} ${course.courseNumber} | ${course.title}`;
     const description = course.description;
