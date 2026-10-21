@@ -244,7 +244,7 @@ const CourseSummary: FC<{ course: CourseGQLData; skeleton?: boolean }> = ({ cour
                         skeleton
                     )}
                     <br />
-                    <CourseRestriction restriction={course.restriction} skeleton />
+                    <CourseRestriction restriction={course.restriction} skeleton={skeleton} />
                 </div>
                 <div className="summary-column">
                     <CoursePrerequisiteListView
