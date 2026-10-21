@@ -235,7 +235,7 @@ function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
     for (const event of events) {
         if (!isCourseEvent(event) || event.sectionType === 'Fin') {
             result.push(event);
-            continue
+            continue;
         } 
 
         const location = event.locations[0];
