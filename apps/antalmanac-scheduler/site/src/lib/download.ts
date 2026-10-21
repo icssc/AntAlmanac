@@ -5,6 +5,7 @@ import {
     type Location,
     isCourseEvent,
     isCustomEvent,
+    isSkeletonEvent,
 } from '$components/Calendar/types';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm } from '$lib/term';
@@ -227,9 +228,9 @@ function getRRule(bydays: string[], quarter: Quarter) {
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
 
-function mergeCourseEvents(events: (CourseEvent | CustomEvent)[]): (CourseEvent | CustomEvent)[] {
+function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
     const meetings = new Map<string, { event: CourseEvent; days: string }>();
-    const result: (CourseEvent | CustomEvent)[] = [];
+    const result: CalendarEvent[] = [];
 
     for (const event of events) {
         if (!isCourseEvent(event) || event.sectionType === 'Fin') {
@@ -273,6 +274,9 @@ function mergeCourseEvents(events: (CourseEvent | CustomEvent)[]): (CourseEvent 
 export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCalendar()): EventAttributes[] {
     const customEventIDs = new Set();
     const calendarEvents = mergeCourseEvents(events).flatMap((event) => {
+        if (isSkeletonEvent(event)) { 
+            return [];
+        }
         if (isCustomEvent(event)) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
@@ -302,7 +306,7 @@ export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCale
                 recurrenceRule: rrule,
             };
             return customEvent;
-        } else if (isCourseEvent(event)) {
+        } else { 
             const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
             const year = parseInt(term.year);
             const courseEvents: EventAttributes[] = event.locations
