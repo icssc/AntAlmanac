@@ -236,23 +236,21 @@ function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
         if (!isCourseEvent(event) || event.sectionType === 'Fin') {
             result.push(event);
             continue;
-        } 
+        }
 
         const location = event.locations[0];
-        const days = location?.days
+        const days = location?.days;
         if (days === undefined) {
             result.push(event);
             continue;
         }
-        
-        
+
         const existing = meetings.get(event.sectionCode);
         if (existing === undefined) {
             meetings.set(event.sectionCode, { event, days });
         } else {
             existing.days += days;
         }
-        
     }
 
     for (const meeting of meetings.values()) {
@@ -275,7 +273,7 @@ function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
 export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCalendar()): EventAttributes[] {
     const customEventIDs = new Set();
     const calendarEvents = mergeCourseEvents(events).flatMap((event) => {
-        if (isSkeletonEvent(event)) { 
+        if (isSkeletonEvent(event)) {
             return [];
         }
         if (isCustomEvent(event)) {
@@ -307,7 +305,7 @@ export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCale
                 recurrenceRule: rrule,
             };
             return customEvent;
-        } else { 
+        } else {
             const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
             const year = parseInt(term.year);
             const courseEvents: EventAttributes[] = event.locations
