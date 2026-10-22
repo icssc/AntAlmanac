@@ -367,6 +367,9 @@ const GradeDist: FC<GradeDistProps> = (props) => {
                     {((props.minify && chartType == 'bar') || !props.minify) && (
                         <Card variant="outlined" className="grade-dist-chart-card">
                             <CardContent>
+                                <Typography color="textSecondary" className="grade-dist-total">
+                                    Total Students: {aggregateGradeData.total.toLocaleString('en-US')}
+                                </Typography>
                                 <div className="grade-dist-chart-container">
                                     <Chart {...graphProps} />
                                 </div>
