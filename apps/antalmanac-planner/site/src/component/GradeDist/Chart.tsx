@@ -29,13 +29,13 @@ export default function Chart({ gradeData, quarter, professor, course }: ChartPr
         { grade: 'NP', count: aggregateGradeData.gradeNPCount, fill: getCssVariable('--mui-palette-chart-noPass') },
     ];
 
-    function formatAsPercent(count: number) {
+    const formatAsPercent = (count: number) => {
         if (aggregateGradeData.total === 0) {
             return '0.0%';
         }
         const percent = (count / aggregateGradeData.total) * 100;
         return percent > 0 && percent < 0.05 ? '<0.1%' : `${percent.toFixed(1)}%`;
-    }
+    };
 
     return (
         <ResponsiveContainer width="100%" height="100%">
