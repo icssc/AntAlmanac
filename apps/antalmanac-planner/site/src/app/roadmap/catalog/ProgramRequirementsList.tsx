@@ -2,7 +2,7 @@ import './ProgramRequirementsList.scss';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { Badge, Checkbox, Collapse } from '@mui/material';
+import { Badge, Checkbox, Collapse, Divider, Typography } from '@mui/material';
 import { ProgramRequirement, TransferredGE } from '@peterportal/types';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { ReactSortable, SortableEvent } from 'react-sortablejs';
@@ -677,21 +677,45 @@ const ProgramRequirementDisplay: FC<ProgramRequirementDisplayProps> = ({
     }
 };
 
+const SectionDivider: FC<{ label: string }> = ({ label }) => (
+    <Divider>
+        <Typography variant="caption" color="textSecondary">
+            {label}
+        </Typography>
+    </Divider>
+);
+
 interface RequireCourseListProps {
     requirements: ProgramRequirement[];
+    schoolRequirements?: ProgramRequirement[];
     storeKeyPrefix: string;
     skipCollapseSingletons?: boolean;
 }
 const ProgramRequirementsList: FC<RequireCourseListProps> = ({
     requirements,
+    schoolRequirements,
     storeKeyPrefix,
     skipCollapseSingletons,
 }) => {
-    const formattedRequirements = formatRequirements(requirements, skipCollapseSingletons);
     const transferredCourses = useTransferredCredits().courses;
     const roadmapPlans = useAppSelector((state) => state.roadmap.plans);
     const roadmapPlanIndex = useAppSelector((state) => state.roadmap.currentPlanIndex);
     const yearPlans = roadmapPlans[roadmapPlanIndex].content.yearPlans;
+
+    const formattedMajor = formatRequirements(requirements, skipCollapseSingletons);
+    const formattedSchool = schoolRequirements ? formatRequirements(schoolRequirements, skipCollapseSingletons) : [];
+
+    const showDividers = formattedSchool.length > 0 && formattedMajor.length > 0;
+
+    const renderSection = (items: ProgramRequirement[], keyPrefix: string) =>
+        items.map((r, i) => (
+            <ProgramRequirementDisplay
+                requirement={r}
+                key={`${keyPrefix}-${i}`}
+                storeKey={`${storeKeyPrefix}-${keyPrefix}-${i}`}
+                takenCourseIDs={takenCourseSet}
+            />
+        ));
 
     const roadmapCourseMap = yearPlans
         .flatMap((year) => year.quarters)
@@ -711,15 +735,23 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
 
     return (
         <div className="program-requirements">
-            {/* key is ok because we don't reorder these */}
-            {formattedRequirements.map((r, i) => (
-                <ProgramRequirementDisplay
-                    requirement={r}
-                    key={i}
-                    storeKey={`${storeKeyPrefix}-${i}`}
-                    takenCourseIDs={takenCourseSet}
-                />
-            ))}
+            {showDividers ? (
+                <>
+                    <SectionDivider label="School Requirements" />
+                    {renderSection(formattedSchool, 'school')}
+                    <SectionDivider label="Major Requirements" />
+                    {renderSection(formattedMajor, 'major')}
+                </>
+            ) : (
+                [...formattedSchool, ...formattedMajor].map((r, i) => (
+                    <ProgramRequirementDisplay
+                        requirement={r}
+                        key={i}
+                        storeKey={`${storeKeyPrefix}-${i}`}
+                        takenCourseIDs={takenCourseSet}
+                    />
+                ))
+            )}
         </div>
     );
 };
