@@ -5,6 +5,7 @@ import { AuthInitializer } from '$components/AuthInitializer';
 import { AutoSignIn } from '$components/AutoSignIn';
 import { CalendarPane } from '$components/Calendar/CalendarPane';
 import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
+import { LocalStorageInitializer } from '$components/LocalStorageInitializer';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import { PatchNotes } from '$components/PatchNotes';
 import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
@@ -112,6 +113,7 @@ export default function Client() {
             <AutoSignIn />
             <TutorialInitializer />
             <AuthInitializer />
+            <LocalStorageInitializer />
             <PatchNotes />
 
             <Stack component="main" height="calc(100svh - 52px - env(safe-area-inset-top))">
