@@ -128,9 +128,9 @@ export function getRequirementStatus(
         .map((id) => taken[id].timing);
 
     if (complete) return 'completed';
+    if (!checkCompletion(taken, requirement).done) return 'not added';
     if (timings.includes('current')) return 'in progress';
-    if (timings.length > 0) return 'added';
-    return 'not added';
+    return 'added';
 }
 
 /** Turns a quarter (fall, winter, etc) into a sortable number */
