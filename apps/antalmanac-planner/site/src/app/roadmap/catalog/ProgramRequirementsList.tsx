@@ -3,7 +3,7 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { Badge, Checkbox, Collapse } from '@mui/material';
-import { ProgramRequirement, TransferredGE } from '@peterportal/types';
+import { ProgramRequirement, RequirementStatus, TransferredGE } from '@peterportal/types';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
@@ -19,6 +19,10 @@ import {
     CompletedCourseSet,
     useMatchingGETransfers,
     saveOverriddenRequirement,
+    parseQuarterString,
+    getQuarterTiming,
+    filterCourseByTiming,
+    getRequirementStatus,
 } from '../../../helpers/courseRequirements';
 import { isCustomCourse } from '../../../helpers/customCourses';
 import { getMissingPrerequisites } from '../../../helpers/planner';
@@ -43,9 +47,10 @@ import {
 } from '../../../store/slices/roadmapSlice';
 import { setShowMobileCreditsMenu } from '../../../store/slices/transferCreditsSlice';
 import trpc from '../../../trpc';
-import { CourseGQLData, PlannerCourseData } from '../../../types/types';
+import { CourseGQLData } from '../../../types/types';
 import { CourseNameAndInfo } from '../planner/Course';
 import MenuTile from '../transfers/MenuTile';
+import { ProgressIcon, CompletedIcon, NotAddedIcon } from './RequirementStatusButton';
 
 const DEPARTMENT_GROUPING_COURSE_THRESHOLD = 30;
 const COURSE_ID_DEPARTMENT_OVERRIDES = ['IN4MATX'];
@@ -316,42 +321,85 @@ const ConfirmOverrideModal = ({ showOverrideModal, setShowOverrideModal, setOver
 
 interface GroupHeaderProps {
     title: string;
+    status: RequirementStatus;
+    percent_taken: number;
     open: boolean;
     setOpen: React.Dispatch<boolean>;
     requirementId: string;
     overridden: boolean;
+    canOverride: boolean; // whether a requirement has already been fulfilled by courses taken
     setOverride: (override: boolean) => void;
 }
-const GroupHeader: FC<GroupHeaderProps> = ({ title, open, setOpen, requirementId, overridden, setOverride }) => {
+const GroupHeader: FC<GroupHeaderProps> = ({
+    title,
+    status,
+    percent_taken,
+    open,
+    setOpen,
+    requirementId,
+    overridden,
+    canOverride,
+    setOverride,
+}) => {
     const className = `group-header ${open ? 'open' : ''}`;
     const [showOverrideModal, setShowOverrideModal] = useState(false);
 
+    const statusIcon = (
+        <>
+            {status === 'completed' && <CompletedIcon />}
+            {status === 'added' && <ProgressIcon percentage={percent_taken} />}
+            {status === 'not added' && <NotAddedIcon className="not-added-icon" />}
+        </>
+    );
+
+    const toggleOverride = (e: React.SyntheticEvent) => {
+        e.stopPropagation();
+        if (!overridden) {
+            setShowOverrideModal(true);
+        } else {
+            setOverride(false);
+        }
+    };
+
     return (
-        <ClickableDiv className={className} onClick={() => setOpen(!open)}>
-            <b>{title}</b>
-            <div className="group-header-btns">
-                {open && (
-                    <Checkbox
-                        name={'override-' + requirementId}
-                        checked={overridden}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (!overridden) {
-                                setShowOverrideModal(true);
-                            } else {
-                                setOverride(false);
-                            }
-                        }}
-                    />
-                )}
-                <ConfirmOverrideModal
-                    showOverrideModal={showOverrideModal}
-                    setShowOverrideModal={setShowOverrideModal}
-                    setOverride={setOverride}
-                />
-                <ExpandMore className="expand-requirements" expanded={open} onClick={() => setOpen(!open)} />
-            </div>
-        </ClickableDiv>
+        <>
+            <ClickableDiv className={className} onClick={() => setOpen(!open)}>
+                <span className="group-header-title">
+                    {canOverride ? (
+                        <span
+                            role="button"
+                            tabIndex={0}
+                            className="override-icon-btn"
+                            data-testid={'override-' + requirementId}
+                            aria-label={`Force complete ${title}`}
+                            aria-pressed={overridden}
+                            onClick={toggleOverride}
+                            onKeyDown={(e) => {
+                                if (e.key !== 'Enter' && e.key !== ' ') return;
+                                e.preventDefault();
+                                toggleOverride(e);
+                            }}
+                        >
+                            {statusIcon}
+                        </span>
+                    ) : (
+                        <span className="override-icon-inert" aria-disabled="true" title="Already completed">
+                            {statusIcon}
+                        </span>
+                    )}
+
+                    <b>{title}</b>
+                </span>
+                <div className="group-header-btns">
+                    <ExpandMore className="expand-requirements" expanded={open} onClick={() => setOpen(!open)} />
+                </div>
+            </ClickableDiv>
+            <ConfirmOverrideModal
+                showOverrideModal={showOverrideModal}
+                setShowOverrideModal={setShowOverrideModal}
+                setOverride={setOverride}
+            />
+        </>
     );
 };
 
@@ -419,7 +467,11 @@ interface CourseRequirementProps {
     storeKey: string;
 }
 const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
-    const complete = useCompletionCheck(takenCourseIDs, data).done;
+    const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
+    const pastCompletion = useCompletionCheck(pastCourses, data);
+    const complete = pastCompletion.done;
+    const completionPercentage =
+        pastCompletion.required > 0 ? (pastCompletion.completed / pastCompletion.required) * 100 : 0;
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
 
@@ -443,6 +495,8 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
         dispatch(setGroupExpanded({ storeKey: storeKey, expanded: isOpen }));
     };
 
+    const status = getRequirementStatus(takenCourseIDs, data, complete || overridden);
+
     let label: string | number;
     if ('courseCount' in data) {
         label = data.courseCount === data.courses.length ? 'all' : data.courseCount;
@@ -461,10 +515,13 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
             <div className={className}>
                 <GroupHeader
                     title={data.label}
+                    status={status}
+                    percent_taken={completionPercentage}
                     requirementId={data.requirementId}
                     open={open}
                     setOpen={setOpen}
                     overridden={overridden}
+                    canOverride={!complete}
                     setOverride={setOverride}
                 />
                 <Collapse in={open} unmountOnExit>
@@ -525,7 +582,8 @@ interface GroupedCourseRequirementProps {
     storeKey: string;
 }
 const GroupedCourseRequirement: FC<GroupedCourseRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
-    const complete = useCompletionCheck(takenCourseIDs, data).done;
+    const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
+    const complete = useCompletionCheck(pastCourses, data).done;
     const className = `course-requirement${complete ? ' completed' : ''}`;
 
     return (
@@ -553,7 +611,11 @@ interface GroupRequirementProps {
     storeKey: string;
 }
 const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
-    const complete = useCompletionCheck(takenCourseIDs, data).done;
+    const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
+    const pastCompletion = useCompletionCheck(pastCourses, data);
+    const complete = pastCompletion.done;
+    const completionPercentage =
+        pastCompletion.required > 0 ? (pastCompletion.completed / pastCompletion.required) * 100 : 0;
     const open = useAppSelector((state) => state.courseRequirements.expandedGroups[storeKey] ?? false);
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
@@ -577,6 +639,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
     };
 
     const className = `group-requirement${complete || overridden ? ' completed' : ''}`;
+    const status = getRequirementStatus(takenCourseIDs, data, complete || overridden);
 
     const geTransfers = useMatchingGETransfers(data);
     const multipleApplicableTransfers = geTransfers.length > 1;
@@ -587,9 +650,12 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
                 <GroupHeader
                     title={data.label}
                     requirementId={data.requirementId}
+                    status={status}
+                    percent_taken={completionPercentage}
                     open={open}
                     setOpen={setOpen}
                     overridden={overridden}
+                    canOverride={!complete}
                     setOverride={setOverride}
                 />
                 <Collapse in={open} unmountOnExit>
@@ -693,14 +759,25 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
     const roadmapPlanIndex = useAppSelector((state) => state.roadmap.currentPlanIndex);
     const yearPlans = roadmapPlans[roadmapPlanIndex].content.yearPlans;
 
-    const roadmapCourseMap = yearPlans
-        .flatMap((year) => year.quarters)
-        .flatMap((quarter) => quarter.courses)
-        .filter((course): course is PlannerCourseData => !isCustomCourse(course))
-        .map((course) => [course.id, { units: course.minUnits }]);
+    const currentQuarter = useAppSelector((state) => state.schedule.currentQuarter);
+
+    const cutoff = parseQuarterString(currentQuarter);
+
+    const roadmapCourseMap: [string, CompletedCourseSet[string]][] = [];
+
+    for (const year of yearPlans) {
+        for (const quarter of year.quarters) {
+            const timing = getQuarterTiming(year.startYear, quarter.name, cutoff);
+            for (const course of quarter.courses) {
+                if (isCustomCourse(course)) continue;
+                roadmapCourseMap.push([course.id, { units: course.minUnits, timing }]);
+            }
+        }
+    }
+
     const transferCourseMap = transferredCourses.map((t) => [
         t.courseName.replace(/\s/g, ''),
-        { units: t.units ?? 0, transferType: t.transferType },
+        { units: t.units ?? 0, transferType: t.transferType, timing: 'taken' as const },
     ]);
 
     const takenCourseSet: CompletedCourseSet = Object.assign(
