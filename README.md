@@ -91,7 +91,7 @@ Since then, the project has continued to evolve and grow with successive generat
 | 2023 - 2024    | @EricPedley, @ap0nia          | @js0mmer                     |
 | 2024 - 2025    | @MinhxNguyen7, @adcockdalton  | @Awesome-E                   |
 | 2025 - 2026    | @alexespejo                   | @CadenLee2                   |
-| 2026 - Present | @sicn4rf                      | @anthonyj33                  |
+| 2026 - Present | @sicn4rf, @Choollol           | @anthonyj33                  |
 
 # Contributing
 
