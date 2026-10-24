@@ -323,6 +323,7 @@ const ConfirmOverrideModal = ({ showOverrideModal, setShowOverrideModal, setOver
 interface GroupHeaderProps {
     title: string;
     status: RequirementStatus;
+    percent_taken: number;
     open: boolean;
     setOpen: React.Dispatch<boolean>;
     requirementId: string;
@@ -333,6 +334,7 @@ interface GroupHeaderProps {
 const GroupHeader: FC<GroupHeaderProps> = ({
     title,
     status,
+    percent_taken,
     open,
     setOpen,
     requirementId,
@@ -346,7 +348,7 @@ const GroupHeader: FC<GroupHeaderProps> = ({
     const statusIcon = (
         <>
             {status === 'completed' && <CompletedIcon />}
-            {status === 'added' && <ProgressIcon percentage={50} />}
+            {status === 'added' && <ProgressIcon percentage={percent_taken} />}
             {status === 'not added' && <NotAddedIcon className="not-added-icon" />}
         </>
     );
@@ -467,7 +469,10 @@ interface CourseRequirementProps {
 }
 const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
     const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
-    const complete = useCompletionCheck(pastCourses, data).done;
+    const pastCompletion = useCompletionCheck(pastCourses, data);
+    const complete = pastCompletion.done;
+    const completionPercentage =
+        pastCompletion.required > 0 ? (pastCompletion.completed / pastCompletion.required) * 100 : 0;
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
 
@@ -512,6 +517,7 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
                 <GroupHeader
                     title={data.label}
                     status={status}
+                    percent_taken={completionPercentage}
                     requirementId={data.requirementId}
                     open={open}
                     setOpen={setOpen}
@@ -607,7 +613,10 @@ interface GroupRequirementProps {
 }
 const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
     const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
-    const complete = useCompletionCheck(pastCourses, data).done;
+    const pastCompletion = useCompletionCheck(pastCourses, data);
+    const complete = pastCompletion.done;
+    const completionPercentage =
+        pastCompletion.required > 0 ? (pastCompletion.completed / pastCompletion.required) * 100 : 0;
     const open = useAppSelector((state) => state.courseRequirements.expandedGroups[storeKey] ?? false);
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
@@ -643,6 +652,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
                     title={data.label}
                     requirementId={data.requirementId}
                     status={status}
+                    percent_taken={completionPercentage}
                     open={open}
                     setOpen={setOpen}
                     overridden={overridden}
