@@ -50,7 +50,7 @@ import trpc from '../../../trpc';
 import { CourseGQLData } from '../../../types/types';
 import { CourseNameAndInfo } from '../planner/Course';
 import MenuTile from '../transfers/MenuTile';
-import { AddedIcon, CompletedIcon, InProgressIcon, NotAddedIcon } from './RequirementStatusButton';
+import { ProgressIcon, CompletedIcon, NotAddedIcon } from './RequirementStatusButton';
 
 const DEPARTMENT_GROUPING_COURSE_THRESHOLD = 30;
 const COURSE_ID_DEPARTMENT_OVERRIDES = ['IN4MATX'];
@@ -345,8 +345,7 @@ const GroupHeader: FC<GroupHeaderProps> = ({
     const statusIcon = (
         <>
             {status === 'completed' && <CompletedIcon />}
-            {status === 'in progress' && <InProgressIcon />}
-            {status === 'added' && <AddedIcon />}
+            {status === 'added' && <ProgressIcon percentage={50} />}
             {status === 'not added' && <NotAddedIcon className="not-added-icon" />}
         </>
     );

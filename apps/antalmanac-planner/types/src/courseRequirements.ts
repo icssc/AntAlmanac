@@ -31,7 +31,7 @@ export type ProgramRequirement<T extends ReqType = ReqType> = RequirementSchema 
 
 export type CourseTiming = 'taken' | 'current' | 'planned';
 
-export type RequirementStatus = 'completed' | 'in progress' | 'added' | 'not added';
+export type RequirementStatus = 'completed' | 'added' | 'not added';
 
 export interface SavedMajorProgram {
     majorId: string;
