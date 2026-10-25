@@ -122,7 +122,7 @@ function namedStepsFactory(
 
     return {
         welcome: {
-            selector: '#root',
+            selector: 'body',
             position: 'center',
             styles: {
                 maskArea: (base) => ({
@@ -134,6 +134,16 @@ function namedStepsFactory(
                     ...base,
                     width: 0,
                     height: 0,
+                }),
+                // The clip-path hole is derived from the target's size (here: the
+                // whole viewport), not from the styles above. Without this, the
+                // clickArea rect paints nowhere, so the welcome step only gets
+                // one of the mask's two dim layers and looks brighter than the
+                // other steps. Removing the clip makes both layers cover the
+                // full screen, matching the dimness of the remaining steps.
+                clickArea: (base) => ({
+                    ...base,
+                    clipPath: 'none',
                 }),
             },
 
