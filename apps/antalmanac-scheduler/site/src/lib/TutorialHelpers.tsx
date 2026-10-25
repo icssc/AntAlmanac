@@ -124,6 +124,19 @@ function namedStepsFactory(
         welcome: {
             selector: '#root',
             position: 'center',
+            styles: {
+                maskArea: (base) => ({
+                    ...base,
+                    width: 0,
+                    height: 0,
+                }),
+                highlightedArea: (base) => ({
+                    ...base,
+                    width: 0,
+                    height: 0,
+                }),
+            },
+
             content: (
                 <>
                     Welcome to AntAlmanac!
