@@ -122,30 +122,13 @@ function namedStepsFactory(
 
     return {
         welcome: {
-            selector: 'body',
+            // This step selects/highlights nothing: it targets the 0-sized
+            // anchor element in AppTourProvider with no mask padding, so
+            // Reactour has nothing to highlight. For more info, please see: 
+            // https://github.com/icssc/AntAlmanac/pull/2063
+            selector: '#tour-no-highlight-anchor',
             position: 'center',
-            styles: {
-                maskArea: (base) => ({
-                    ...base,
-                    width: 0,
-                    height: 0,
-                }),
-                highlightedArea: (base) => ({
-                    ...base,
-                    width: 0,
-                    height: 0,
-                }),
-                // The clip-path hole is derived from the target's size (here: the
-                // whole viewport), not from the styles above. Without this, the
-                // clickArea rect paints nowhere, so the welcome step only gets
-                // one of the mask's two dim layers and looks brighter than the
-                // other steps. Removing the clip makes both layers cover the
-                // full screen, matching the dimness of the remaining steps.
-                clickArea: (base) => ({
-                    ...base,
-                    clipPath: 'none',
-                }),
-            },
+            padding: 0,
 
             content: (
                 <>

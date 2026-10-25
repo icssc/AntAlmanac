@@ -34,6 +34,8 @@ export function AppTourProvider({ children }: Props) {
                 }),
             }}
         >
+            {/* 0-sized anchor for tour steps that highlight nothing*/}
+            <div id="tour-no-highlight-anchor" aria-hidden style={{ position: 'absolute', width: 0, height: 0 }} />
             {children}
         </TourProvider>
     );
