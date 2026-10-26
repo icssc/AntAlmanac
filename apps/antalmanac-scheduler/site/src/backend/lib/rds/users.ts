@@ -153,7 +153,7 @@ export async function updateUserMajor(db: DatabaseOrTransaction, userId: string,
 /**
  * Get user's major and school
  */
-export async function getUserMajor(db: DatabaseOrTransaction, userId: string) {
+export async function getUserMajorSchool(db: DatabaseOrTransaction, userId: string) {
     const user = await db
         .select()
         .from(users)
