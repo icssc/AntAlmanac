@@ -48,7 +48,7 @@ interface ImportZot4PlanPopupProps {
 const ImportZot4PlanPopup: FC<ImportZot4PlanPopupProps> = ({ open, onClose, scheduleName, onScheduleNameChange }) => {
     const dispatch = useAppDispatch();
     const isLoggedIn = useIsLoggedIn();
-    const [studentYear, setStudentYear] = useState('1');
+    const [studentYear, setStudentYear] = useState('');
     const [busy, setBusy] = useState(false);
     const allPlanData = useAppSelector(selectAllPlans);
     const apExams = useTransferredCredits().ap;
@@ -187,7 +187,10 @@ const ImportZot4PlanPopup: FC<ImportZot4PlanPopupProps> = ({ open, onClose, sche
 
                         <FormControl>
                             <FormLabel>I am currently a...</FormLabel>
-                            <Select onChange={(ev) => setStudentYear(ev.target.value)} value={studentYear}>
+                            <Select displayEmpty onChange={(ev) => setStudentYear(ev.target.value)} value={studentYear}>
+                                <MenuItem disabled value="">
+                                    Select year
+                                </MenuItem>
                                 <MenuItem value="1">1st year</MenuItem>
                                 <MenuItem value="2">2nd year</MenuItem>
                                 <MenuItem value="3">3rd year</MenuItem>
@@ -200,7 +203,11 @@ const ImportZot4PlanPopup: FC<ImportZot4PlanPopupProps> = ({ open, onClose, sche
                     <Button variant="text" color="inherit" onClick={onClose}>
                         Cancel
                     </Button>
-                    <Button disabled={scheduleName.length < 8} loading={busy} onClick={handleImport}>
+                    <Button
+                        disabled={scheduleName.length < 8 || studentYear === ''}
+                        loading={busy}
+                        onClick={handleImport}
+                    >
                         Import and Save
                     </Button>
                 </DialogActions>
