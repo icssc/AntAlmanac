@@ -122,10 +122,7 @@ function namedStepsFactory(
 
     return {
         welcome: {
-            // This step selects/highlights nothing: it targets the 0-sized
-            // anchor element in AppTourProvider with no mask padding, so
-            // Reactour has nothing to highlight. For more info, please see: 
-            // https://github.com/icssc/AntAlmanac/pull/2063
+            // For more info, please see: https://github.com/icssc/AntAlmanac/pull/2063
             selector: '#tour-no-highlight-anchor',
             position: 'center',
             padding: 0,
