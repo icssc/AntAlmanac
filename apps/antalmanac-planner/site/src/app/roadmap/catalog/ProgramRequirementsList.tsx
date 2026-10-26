@@ -707,12 +707,12 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
 
     const showDividers = formattedSchool.length > 0 && formattedMajor.length > 0;
 
-    const renderSection = (items: ProgramRequirement[], keyPrefix: string) =>
+    const renderSection = (items: ProgramRequirement[], section: 'school' | 'major') =>
         items.map((r, i) => (
             <ProgramRequirementDisplay
                 requirement={r}
-                key={`${keyPrefix}-${i}`}
-                storeKey={`${storeKeyPrefix}-${keyPrefix}-${i}`}
+                key={`${section}-${i}`}
+                storeKey={section === 'school' ? `${storeKeyPrefix}-school-${i}` : `${storeKeyPrefix}-${i}`}
                 takenCourseIDs={takenCourseSet}
             />
         ));
@@ -735,23 +735,10 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
 
     return (
         <div className="program-requirements">
-            {showDividers ? (
-                <>
-                    <SectionDivider label="School Requirements" />
-                    {renderSection(formattedSchool, 'school')}
-                    <SectionDivider label="Major Requirements" />
-                    {renderSection(formattedMajor, 'major')}
-                </>
-            ) : (
-                [...formattedSchool, ...formattedMajor].map((r, i) => (
-                    <ProgramRequirementDisplay
-                        requirement={r}
-                        key={i}
-                        storeKey={`${storeKeyPrefix}-${i}`}
-                        takenCourseIDs={takenCourseSet}
-                    />
-                ))
-            )}
+            {showDividers && <SectionDivider label="School Requirements" />}
+            {renderSection(formattedSchool, 'school')}
+            {showDividers && <SectionDivider label="Major Requirements" />}
+            {renderSection(formattedMajor, 'major')}
         </div>
     );
 };
