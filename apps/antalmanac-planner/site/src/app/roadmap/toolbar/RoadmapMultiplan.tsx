@@ -214,6 +214,7 @@ const RoadmapMultiplan: FC = () => {
 
     const closeZot4Plan = () => {
         setShowZot4Plan(false);
+        setZot4PlanName('');
 
         // clear param so the modal doesn't unnecessarily reopen after we've completed the flow (either importing or closing)
         if (searchParams.has('z4p-import')) {
