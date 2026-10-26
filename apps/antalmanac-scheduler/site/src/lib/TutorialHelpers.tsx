@@ -122,8 +122,11 @@ function namedStepsFactory(
 
     return {
         welcome: {
-            selector: '#root',
+            // For more info, please see: https://github.com/icssc/AntAlmanac/pull/2063
+            selector: '#tour-no-highlight-anchor',
             position: 'center',
+            padding: 0,
+
             content: (
                 <>
                     Welcome to AntAlmanac!
