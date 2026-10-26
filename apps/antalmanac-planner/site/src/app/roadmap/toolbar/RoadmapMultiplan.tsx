@@ -19,7 +19,7 @@ import {
     DialogActions,
     DialogContentText,
 } from '@mui/material';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
@@ -190,6 +190,8 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
 
 const RoadmapMultiplan: FC = () => {
     const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
     const dispatch = useAppDispatch();
     const allPlans = useAppSelector((state) => state.roadmap.plans);
     const currentPlanIndex = useAppSelector((state) => state.roadmap.currentPlanIndex);
@@ -209,6 +211,18 @@ const RoadmapMultiplan: FC = () => {
         setZot4PlanName(importedScheduleName);
         setShowZot4Plan(true);
     }, [searchParams]);
+
+    const closeZot4Plan = () => {
+        setShowZot4Plan(false);
+
+        // clear param so the modal doesn't unnecessarily reopen after we've completed the flow (either importing or closing)
+        if (searchParams.has('z4p-import')) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete('z4p-import');
+            const query = params.toString();
+            router.replace(query ? `${pathname}?${query}` : pathname);
+        }
+    };
 
     const addNewPlan = (name: string) => {
         const yearPlans = deepCopy(initialPlanState.yearPlans);
@@ -391,7 +405,7 @@ const RoadmapMultiplan: FC = () => {
             </MultiplanDropdown>
             <ImportZot4PlanPopup
                 open={showZot4Plan}
-                onClose={() => setShowZot4Plan(false)}
+                onClose={closeZot4Plan}
                 scheduleName={zot4PlanName}
                 onScheduleNameChange={setZot4PlanName}
             />
