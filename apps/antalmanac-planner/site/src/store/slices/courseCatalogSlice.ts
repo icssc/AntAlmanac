@@ -11,9 +11,12 @@ export const courseCatalogSlice = createSlice({
         setCourse(state, action: PayloadAction<{ courseId: string; data: CourseGQLData }>) {
             state.courses[action.payload.courseId] = action.payload.data;
         },
+        setCourses(state, action: PayloadAction<Record<string, CourseGQLData>>) {
+            Object.assign(state.courses, action.payload);
+        },
     },
 });
 
-export const { setCourse } = courseCatalogSlice.actions;
+export const { setCourse, setCourses } = courseCatalogSlice.actions;
 
 export default courseCatalogSlice.reducer;
