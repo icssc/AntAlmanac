@@ -123,6 +123,10 @@
         align-items: center;
     }
 
+    &[data-status='added'] {
+        border-color: var(--mui-palette-secondary-main);
+    }
+
     .group-header svg.bi {
         flex-shrink: 0;
     }
