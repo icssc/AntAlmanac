@@ -13,6 +13,7 @@ import ResultPageContent, { ResultPageSection } from '../../component/ResultPage
 import Review from '../../component/Review/Review';
 import Schedule from '../../component/Schedule/Schedule';
 import SideInfo from '../../component/SideInfo/SideInfo';
+import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
 import { getCourseTags, sortTerms } from '../../helpers/util';
 import { useCourseData } from '../../hooks/catalog';
 import { useAppDispatch } from '../../store/hooks';
@@ -39,7 +40,7 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id }) => {
         return <Error message={error} />;
     }
     // loading results
-    else if (!courseGQLData) {
+    else if (!courseGQLData || courseGQLData.id === LOADING_COURSE_PLACEHOLDER.id) {
         return <LoadingSpinner />;
     } else {
         const sideInfo = (
