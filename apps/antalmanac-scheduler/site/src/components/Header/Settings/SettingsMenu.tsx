@@ -8,6 +8,8 @@ import { Box, Divider, Stack, Typography } from '@mui/material';
 import type { UserProfile } from '@packages/db/src/schema/auth/user';
 import Image from 'next/image';
 
+import { MajorSelector } from './MajorSelector';
+
 interface UserProfileSectionProps {
     user: UserProfile | null;
 }
@@ -76,6 +78,7 @@ export function SettingsMenu({ user, onClose }: SettingsMenuProps) {
             <ThemeSelector />
             <SectionColorSelector />
             <TimeSelector />
+            <MajorSelector />
 
             <Stack>
                 <Divider>
