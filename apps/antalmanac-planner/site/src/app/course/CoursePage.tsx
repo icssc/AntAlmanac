@@ -58,7 +58,7 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
         return <Error message={error} />;
     }
     // loading results
-    else if (courseGQLData.id === LOADING_COURSE_PLACEHOLDER.id) {
+    else if (!courseGQLData || courseGQLData.id === LOADING_COURSE_PLACEHOLDER.id) {
         return (
             <ResultPageContent sideInfo={<SideInfo skeleton searchType="course" name={id} {...LOADING_SIDE_INFO} />}>
                 <ResultPageSection icon={<BarChartIcon />} title="Grade Distribution">
