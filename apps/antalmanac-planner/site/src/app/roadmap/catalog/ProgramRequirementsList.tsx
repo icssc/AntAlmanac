@@ -473,6 +473,7 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
     const complete = pastCompletion.done;
     const completionPercentage =
         pastCompletion.required > 0 ? (pastCompletion.completed / pastCompletion.required) * 100 : 0;
+    const addedCompletion = useCompletionCheck(takenCourseIDs, data);
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
 
@@ -496,7 +497,7 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
         dispatch(setGroupExpanded({ storeKey: storeKey, expanded: isOpen }));
     };
 
-    const status = getRequirementStatus(takenCourseIDs, data, complete || overridden);
+    const status = getRequirementStatus(takenCourseIDs, data, addedCompletion, complete || overridden);
 
     let label: string | number;
     if ('courseCount' in data) {
@@ -617,6 +618,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
     const complete = pastCompletion.done;
     const completionPercentage =
         pastCompletion.required > 0 ? (pastCompletion.completed / pastCompletion.required) * 100 : 0;
+    const addedCompletion = useCompletionCheck(takenCourseIDs, data);
     const open = useAppSelector((state) => state.courseRequirements.expandedGroups[storeKey] ?? false);
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
@@ -640,7 +642,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
     };
 
     const className = `group-requirement${complete || overridden ? ' completed' : ''}`;
-    const status = getRequirementStatus(takenCourseIDs, data, complete || overridden);
+    const status = getRequirementStatus(takenCourseIDs, data, addedCompletion, complete || overridden);
 
     const geTransfers = useMatchingGETransfers(data);
     const multipleApplicableTransfers = geTransfers.length > 1;
