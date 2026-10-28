@@ -71,9 +71,60 @@
         cursor: pointer;
     }
 
+    .group-header-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .group-header-title .MuiSvgIcon-root {
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+    }
+
+    .group-header-title .not-added-icon {
+        color: var(--mui-palette-divider);
+    }
+
+    .group-header-title .override-icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        margin: 0;
+        border: none;
+        border-radius: 50%;
+        background: none;
+        color: inherit;
+        flex-shrink: 0;
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            background: var(--mui-palette-action-hover);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--mui-palette-primary-main);
+            outline-offset: 1px;
+        }
+    }
+
+    // status icon for requirements already satisfied
+    .group-header-title .override-icon-inert {
+        display: inline-flex;
+        align-items: center;
+        cursor: default;
+    }
+
     .group-header-btns {
         display: flex;
-        gap: 10px;
+        align-items: center;
+    }
+
+    &[data-status='added'] {
+        border-color: var(--mui-palette-secondary-main);
     }
 
     .group-header svg.bi {
