@@ -507,13 +507,13 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
     const showLabel = data.courses.length > 1 && data.label !== COMPLETE_ALL_TEXT;
     const groupByDepartment = data.courses.length > DEPARTMENT_GROUPING_COURSE_THRESHOLD;
 
-    const className = `group-requirement${complete || overridden ? ' completed' : ''}`;
+    const className = `group-requirement${status === 'completed' ? ' completed' : ''}`;
 
     const geTransfers = useMatchingGETransfers(data);
 
     return (
         <GETransferBadge transferredGEs={geTransfers} complete={complete}>
-            <div className={className}>
+            <div className={className} data-status={status}>
                 <GroupHeader
                     title={data.label}
                     status={status}
@@ -640,15 +640,15 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
         dispatch(setGroupExpanded({ storeKey: storeKey, expanded: isOpen }));
     };
 
-    const className = `group-requirement${complete || overridden ? ' completed' : ''}`;
     const status = getRequirementStatus(takenCourseIDs, data, addedCompletion, complete || overridden);
+    const className = `group-requirement${status === 'completed' ? ' completed' : ''}`;
 
     const geTransfers = useMatchingGETransfers(data);
     const multipleApplicableTransfers = geTransfers.length > 1;
 
     return (
         <GETransferBadge transferredGEs={geTransfers} complete={complete}>
-            <div className={className}>
+            <div className={className} data-status={status}>
                 <GroupHeader
                     title={data.label}
                     requirementId={data.requirementId}
