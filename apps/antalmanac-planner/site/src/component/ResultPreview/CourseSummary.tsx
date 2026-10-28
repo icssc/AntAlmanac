@@ -14,12 +14,8 @@ import { CourseGQLData } from '../../types/types';
 import PrereqTree from '../PrereqTree/PrereqTree';
 import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
 
-const SummarySkeletonLines: FC<{ widths: string[] }> = ({ widths }) => (
-    <div className="summary-skeleton-lines">
-        {widths.map((width, index) => (
-            <Skeleton variant="text" width={width} key={index} />
-        ))}
-    </div>
+const SummarySkeletonBlock: FC<{ height: number }> = ({ height }) => (
+    <Skeleton variant="rounded" width="100%" height={height} />
 );
 
 const CourseTags: FC<{ course: CourseGQLData; skeleton: boolean }> = ({ course, skeleton }) => {
@@ -48,7 +44,7 @@ const CourseRestriction: FC<{ restriction: string; skeleton: boolean }> = ({ res
         <>
             <h4>Restrictions</h4>
             {skeleton ? (
-                <SummarySkeletonLines widths={['92%', '68%']} />
+                <SummarySkeletonBlock height={60} />
             ) : (
                 <p>
                     <i>{restriction || 'There are no restrictions for this course.'}</i>
@@ -139,7 +135,7 @@ const CoursePrerequisiteListView: FC<{
         <>
             <h4>Prerequisites</h4>
             {skeleton ? (
-                <SummarySkeletonLines widths={['88%', '76%', '94%', '61%']} />
+                <SummarySkeletonBlock height={96} />
             ) : (
                 <>
                     <p className="summary-prerequisite-type">
@@ -168,7 +164,7 @@ const CourseDependentText: FC<{ courseName: string; dependents: CoursePreview[];
             <>
                 {header}
                 {skeleton ? (
-                    <SummarySkeletonLines widths={['96%', '84%', '54%']} />
+                    <SummarySkeletonBlock height={116} />
                 ) : (
                     <p>{`There are no courses that have ${courseName} as a prerequisite.`}</p>
                 )}
@@ -184,7 +180,7 @@ const CourseDependentText: FC<{ courseName: string; dependents: CoursePreview[];
         <>
             {header}
             {skeleton ? (
-                <SummarySkeletonLines widths={['98%', '91%', '83%', '64%']} />
+                <SummarySkeletonBlock height={116} />
             ) : (
                 <>
                     <p>
