@@ -102,15 +102,15 @@ export function filterCourseByTiming(set: CompletedCourseSet, ...timings: Course
     return Object.fromEntries(Object.entries(set).filter(([, course]) => timings.includes(course.timing)));
 }
 
-export function getRequirementCourses(requirement: ProgramRequirement): string[] {
+function hasRequirementCourse(added: CompletedCourseSet, requirement: ProgramRequirement): boolean {
     switch (requirement.requirementType) {
         case 'Group':
-            return requirement.requirements.flatMap(getRequirementCourses);
+            return requirement.requirements.some((r) => hasRequirementCourse(added, r));
         case 'Course':
         case 'Unit':
-            return requirement.courses;
+            return requirement.courses.some((c) => c in added);
         case 'Marker':
-            return [];
+            return false;
     }
 }
 
@@ -122,12 +122,12 @@ export function getRequirementCourses(requirement: ProgramRequirement): string[]
 export function getRequirementStatus(
     added: CompletedCourseSet,
     requirement: ProgramRequirement,
-    completion: CompletionStatus,
+    pastCompletion: CompletionStatus,
     complete: boolean
 ): RequirementStatus {
     if (complete) return 'completed';
     // completion includes transfer credits
-    if (completion.completed > 0 || getRequirementCourses(requirement).some((course) => course in added)) {
+    if (pastCompletion.completed > 0 || hasRequirementCourse(added, requirement)) {
         return 'added';
     }
     return 'not added';
