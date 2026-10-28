@@ -3,6 +3,7 @@ import { ProgramRequirement } from '@peterportal/types';
 import { FC, useEffect, useState } from 'react';
 
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
+import QuarterFilters from '../../../component/QuarterFilters/QuarterFilters';
 import { normalizeTitleLabels } from '../../../helpers/substitutions';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setGERequirements } from '../../../store/slices/courseRequirementsSlice';
@@ -110,6 +111,7 @@ const GERequiredCourseList: FC = () => {
 
     return (
         <div className="program-requirements">
+            <QuarterFilters />
             <ProgramRequirementsList requirements={requirements} storeKeyPrefix="ge" />
             <Divider />
             <CHCRequirements />
