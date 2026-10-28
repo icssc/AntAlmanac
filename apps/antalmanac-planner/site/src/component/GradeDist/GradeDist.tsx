@@ -2,7 +2,6 @@ import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import { Autocomplete, Card, CardContent, MenuItem, Select, Skeleton, TextField, Typography } from '@mui/material';
 
 import './GradeDist.scss';
-
 import { GradesRaw, QuarterName } from '@peterportal/types';
 import { FC, useState, useEffect, useCallback } from 'react';
 
@@ -378,6 +377,9 @@ const GradeDist: FC<GradeDistProps> = (props) => {
                     {((props.minify && chartType == 'bar') || !props.minify) && (
                         <Card variant="outlined" className="grade-dist-chart-card">
                             <CardContent>
+                                <Typography color="textSecondary" className="grade-dist-total">
+                                    Total Students: {aggregateGradeData.total.toLocaleString('en-US')}
+                                </Typography>
                                 <div className="grade-dist-chart-container">
                                     <Chart {...graphProps} />
                                 </div>

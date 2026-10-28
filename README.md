@@ -91,7 +91,7 @@ Since then, the project has continued to evolve and grow with successive generat
 | 2023 - 2024    | @EricPedley, @ap0nia          | @js0mmer                     |
 | 2024 - 2025    | @MinhxNguyen7, @adcockdalton  | @Awesome-E                   |
 | 2025 - 2026    | @alexespejo                   | @CadenLee2                   |
-| 2026 - Present | @sicn4rf                      | @anthonyj33                  |
+| 2026 - Present | @sicn4rf, @Choollol           | @anthonyj33                  |
 
 # Contributing
 
@@ -160,6 +160,8 @@ If you ever need help, feel free to get in touch on the [ICSSC Projects Discord 
     ```
 
 3. Start the local PostgreSQL database using Docker Compose.
+
+    Make sure Docker or [Docker Desktop](https://www.docker.com/products/docker-desktop/) is installed and its daemon is running, then run:
 
     ```bash
     docker compose up -d --build
@@ -247,7 +249,7 @@ anything tagged _(optional locally)_ - maps, analytics, and the Planner integrat
     - `PLANNER_OIDC_CLIENT_ID` - OAuth client ID for Google authentication
     - `PLANNER_DATABASE_URL` _(optional locally)_ - Database connection string
     - `ADMIN_EMAILS` _(optional locally)_ - List of emails with access to administrative actions
-    - `PLANNER_SESSION_SECRET` _(optional locally)_ - Secret key for session management
+    - `PLANNER_SESSION_SECRET` - Secret key for session management
 
 If you need access to development credentials, please contact a project lead in [our Discord](https://discord.gg/Zu8KZHERtJ).
 

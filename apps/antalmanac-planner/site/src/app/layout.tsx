@@ -2,7 +2,6 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 import '../globals.scss';
 import '../App.scss';
-
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import { headers } from 'next/headers';

@@ -17,7 +17,6 @@ import { wrapSkeleton } from '../../../helpers/skeleton';
 import { quarterSortable } from '../../../helpers/sortable';
 
 import './Quarter.scss';
-
 import { deepCopy, useIsMobile, pluralize } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
 import { useAnimatedHeight } from '../../../hooks/useAnimatedHeight';

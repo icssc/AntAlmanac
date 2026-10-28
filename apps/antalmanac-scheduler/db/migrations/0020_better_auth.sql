@@ -1,3 +1,5 @@
+COMMIT;--> statement-breakpoint
+BEGIN;--> statement-breakpoint
 CREATE TABLE "verifications" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"identifier" text NOT NULL,
