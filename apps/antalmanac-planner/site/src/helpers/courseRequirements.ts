@@ -115,16 +115,21 @@ export function getRequirementCourses(requirement: ProgramRequirement): string[]
 }
 
 /**
- * @param taken The full set (past, current, and future courses)
+ * @param added The full set of courses added to the roadmap (past, current, and future)
+ * @param completion The requirement's completion using `added`
  * @param complete Whether the requirement is already satisfied, computed from the past-only set
  */
 export function getRequirementStatus(
-    taken: CompletedCourseSet,
+    added: CompletedCourseSet,
     requirement: ProgramRequirement,
+    completion: CompletionStatus,
     complete: boolean
 ): RequirementStatus {
     if (complete) return 'completed';
-    if (checkCompletion(taken, requirement).done) return 'added';
+    // completion includes transfer credits
+    if (completion.completed > 0 || getRequirementCourses(requirement).some((course) => course in added)) {
+        return 'added';
+    }
     return 'not added';
 }
 
