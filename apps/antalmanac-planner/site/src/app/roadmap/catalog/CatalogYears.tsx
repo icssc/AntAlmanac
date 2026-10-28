@@ -32,10 +32,10 @@ const CatalogYears: FC<CatalogYearsProps> = ({ catalogYear, tab, onChange }) => 
         }
     };
 
-    const handleSelectChange = (event: SelectChangeEvent) => {
+    const handleSelectChange = async (event: SelectChangeEvent) => {
         const newValue = event.target.value;
         setSelected(newValue);
-        onChange(newValue);
+        await onChange(newValue);
         setEditing(false);
     };
 
@@ -58,7 +58,9 @@ const CatalogYears: FC<CatalogYearsProps> = ({ catalogYear, tab, onChange }) => 
             )}
             {editing && (
                 <>
-                    <span className="catalog-year-title">Catalog Year: </span>
+                    <span className="catalog-year-title" id="catalog-year-select-label">
+                        Catalog Year:
+                    </span>
                     <Select
                         size="xsmall"
                         IconComponent={KeyboardArrowDownIcon}
