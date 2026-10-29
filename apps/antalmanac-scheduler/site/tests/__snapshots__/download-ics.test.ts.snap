@@ -3,30 +3,6 @@
 exports[`download-ics > converts schedule courses to events for the ics library 1`] = `
 [
   {
-    "description": "placeholderCourseTitle
-Taught by placeholderInstructor1/placeholderInstructor2",
-    "end": [
-      2023,
-      9,
-      29,
-      3,
-      4,
-    ],
-    "endOutputType": "local",
-    "location": "placeholderLocation placeholderRoom",
-    "productId": "antalmanac/ics",
-    "recurrenceRule": "FREQ=WEEKLY;BYDAY=FR,MO,WE;INTERVAL=1;COUNT=31",
-    "start": [
-      2023,
-      9,
-      29,
-      1,
-      2,
-    ],
-    "startOutputType": "local",
-    "title": "placeholderDeptCode placeholderCourseNumber placeholderSectionType",
-  },
-  {
     "description": "Final Exam for placeholderCourseTitle",
     "end": [
       2023,
@@ -68,6 +44,30 @@ Taught by placeholderInstructor1/placeholderInstructor2",
     ],
     "startOutputType": "local",
     "title": "placeholderCustomEventTitle",
+  },
+  {
+    "description": "placeholderCourseTitle
+Taught by placeholderInstructor1/placeholderInstructor2",
+    "end": [
+      2023,
+      9,
+      29,
+      3,
+      4,
+    ],
+    "endOutputType": "local",
+    "location": "placeholderLocation placeholderRoom",
+    "productId": "antalmanac/ics",
+    "recurrenceRule": "FREQ=WEEKLY;BYDAY=FR,MO,WE;INTERVAL=1;COUNT=31",
+    "start": [
+      2023,
+      9,
+      29,
+      1,
+      2,
+    ],
+    "startOutputType": "local",
+    "title": "placeholderDeptCode placeholderCourseNumber placeholderSectionType",
   },
 ]
 `;
