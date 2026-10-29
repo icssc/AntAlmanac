@@ -252,7 +252,7 @@ function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
             continue;
         }
 
-        const key = getMeetingKey(event)
+        const key = getMeetingKey(event);
         const existing = meetings.get(key);
         if (existing === undefined) {
             meetings.set(key, { event, days });
