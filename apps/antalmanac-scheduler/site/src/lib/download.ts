@@ -228,6 +228,13 @@ function getRRule(bydays: string[], quarter: Quarter) {
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
 
+function getMeetingKey(event: CourseEvent): string { 
+    const locations = event.locations.map((location) => `${location.building} ${location.room}`).join(',');
+    const start = `${event.start.getHours()}:${event.start.getMinutes()}`;
+    const end = `${event.end.getHours()}:${event.end.getMinutes()}`;
+    return [event.term.shortName, event.sectionCode, start, end, locations].join('|');
+}
+
 function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
     const meetings = new Map<string, { event: CourseEvent; days: string }>();
     const result: CalendarEvent[] = [];
@@ -245,7 +252,8 @@ function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
             continue;
         }
 
-        const existing = meetings.get(event.sectionCode);
+        const key = getMeetingKey(event)
+        const existing = meetings.get(key);
         if (existing === undefined) {
             meetings.set(event.sectionCode, { event, days });
         } else {
