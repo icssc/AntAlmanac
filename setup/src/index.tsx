@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { ThemeProvider } from '@inkjs/ui';
 import { render } from 'ink';
 
-import { App } from './components/App';
+import { App } from './App';
 import { STEPS } from './steps';
 import { theme } from './theme';
 

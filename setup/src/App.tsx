@@ -1,16 +1,16 @@
 import { Box, Text, useApp, useStdin } from 'ink';
 import { useEffect, useState } from 'react';
 
-import { SetupError } from '../helpers';
-import type { SetupStep, StepResult, StepStatus } from '../types';
-import { CommandOutput } from './CommandOutput';
-import { ConfirmPrompt } from './ConfirmPrompt';
-import { ErrorMessage } from './ErrorMessage';
-import { Header } from './Header';
-import { InputPrompt } from './InputPrompt';
-import { SkipPrompt } from './SkipPrompt';
-import { StepItem } from './StepItem';
-import { Summary } from './Summary';
+import { CommandOutput } from './components/CommandOutput';
+import { ConfirmPrompt } from './components/ConfirmPrompt';
+import { ErrorMessage } from './components/ErrorMessage';
+import { Header } from './components/Header';
+import { InputPrompt } from './components/InputPrompt';
+import { SkipPrompt } from './components/SkipPrompt';
+import { StepItem } from './components/StepItem';
+import { Summary } from './components/Summary';
+import { SetupError } from './helpers';
+import type { SetupStep, StepResult, StepStatus } from './types';
 
 type Confirmation = 'pending' | 'confirmed' | 'cancelled';
 

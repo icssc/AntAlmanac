@@ -51,6 +51,7 @@ apps/
   ios/                    iOS wrapper
 packages/
   anteater-api/           Anteater API client and types
+setup/                    Developer setup TUI (mise run setup)
 ```
 
 ## Contributing

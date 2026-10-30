@@ -1,11 +1,11 @@
 {
-    "name": "@scripts/setup",
+    "name": "setup",
     "version": "0.0.1",
     "private": true,
     "description": "Guided developer setup for the AntAlmanac monorepo",
     "type": "module",
     "scripts": {
-        "start": "tsx index.tsx",
+        "start": "tsx src/index.tsx",
         "check-tsc": "tsc"
     },
     "dependencies": {

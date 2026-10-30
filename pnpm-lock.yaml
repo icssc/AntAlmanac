@@ -554,14 +554,14 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  scripts/setup:
+  setup:
     dependencies:
       '@inkjs/ui':
         specifier: ^2.0.0
         version: 2.0.0(ink@7.1.1(@types/react@19.2.14)(react@19.2.6))
       '@packages/anteater-api':
         specifier: workspace:*
-        version: link:../../packages/anteater-api
+        version: link:../packages/anteater-api
       dotenv:
         specifier: ^16.0.3
         version: 16.4.5
