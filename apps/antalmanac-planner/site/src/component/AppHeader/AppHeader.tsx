@@ -10,7 +10,6 @@ import { useIsMobile } from '../../helpers/util';
 import { LogoAndSwitcher } from '../../shared-components/LogoAndSwitcher';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setSelectedMobileTab, setShowMobileFullscreenSearch } from '../../store/slices/roadmapSlice';
-import { setShowMobileCreditsMenu } from '../../store/slices/transferCreditsSlice';
 import SearchModule from '../SearchModule/SearchModule';
 import ExportButton from './Export';
 import Profile from './Profile';
@@ -25,7 +24,6 @@ const AppHeader: FC = () => {
     const closeFullscreenSearch = () => {
         dispatch(setShowMobileFullscreenSearch(false));
         dispatch(setSelectedMobileTab(0));
-        dispatch(setShowMobileCreditsMenu(false));
     };
 
     if (isMobile && isShowFullscreenSearch && isRoadmapPage)

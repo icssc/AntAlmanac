@@ -22,7 +22,7 @@ import {
     setSelectedSidebarTab,
     showMobileCatalog,
 } from '../../store/slices/roadmapSlice';
-import { clearUnreadTransfers, setShowMobileCreditsMenu } from '../../store/slices/transferCreditsSlice';
+import { clearUnreadTransfers } from '../../store/slices/transferCreditsSlice';
 import MobileCourseCatalog from './catalog/MobileCourseCatalog';
 import MobileNavbar from './MobileNavbar';
 import MobilePopup from './MobilePopup';
@@ -128,23 +128,15 @@ const RoadmapPage: FC = () => {
         dispatch(setSelectedMobileTab(newValue));
 
         switch (newValue) {
-            case 1:
-                dispatch(setShowMobileCreditsMenu(true));
-                dispatch(hideMobileCatalog());
-                dispatch(setShowMobileFullscreenSearch(false));
-                break;
             case 2:
-                dispatch(setShowMobileCreditsMenu(false));
                 dispatch(showMobileCatalog({ year: 0, quarter: 0 }));
                 dispatch(setShowMobileFullscreenSearch(false));
                 break;
             case 3:
-                dispatch(setShowMobileCreditsMenu(false));
                 dispatch(hideMobileCatalog());
                 dispatch(setShowMobileFullscreenSearch(true));
                 break;
             default:
-                dispatch(setShowMobileCreditsMenu(false));
                 dispatch(hideMobileCatalog());
                 dispatch(setShowMobileFullscreenSearch(false));
         }
