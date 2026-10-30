@@ -6,20 +6,17 @@ import type { SetupStep, StepResult, StepStatus } from '../types';
 import { ErrorMessage } from './ErrorMessage';
 import { InputPrompt } from './InputPrompt';
 import { Logo } from './Logo';
+import { ProgressBar } from './ProgressBar';
 import { SkipPrompt } from './SkipPrompt';
 import { StepItem } from './StepItem';
-
-const DEV_COMMANDS = [
-    { command: 'pnpm dev', description: 'Start the development server' },
-    { command: 'pnpm db:start', description: 'Start the database' },
-    { command: 'pnpm db:stop', description: 'Stop the database' },
-];
+import { Summary } from './Summary';
 
 interface AppProps {
+    title: string;
     steps: SetupStep[];
 }
 
-export function App({ steps }: AppProps) {
+export function App({ title, steps }: AppProps) {
     const { exit } = useApp();
     const { isRawModeSupported } = useStdin();
 
@@ -29,11 +26,13 @@ export function App({ steps }: AppProps) {
     const currentIndex = results.length;
     const currentStep = steps.at(currentIndex);
     const isFinished = !currentStep;
-    const hasSkipped = results.some((result) => result.status === 'skipped');
+    const doneCount = results.filter((result) => result.status === 'done').length;
+    const skippedCount = results.length - doneCount;
 
     const canAsk = error !== undefined && isRawModeSupported;
     const prompt = canAsk ? currentStep?.prompt : undefined;
     const canSkip = canAsk && currentStep?.skippable === true;
+    const isStopped = error !== undefined && !prompt && !canSkip;
 
     useEffect(() => {
         if (!currentStep || error) {
@@ -53,10 +52,10 @@ export function App({ steps }: AppProps) {
     useEffect(() => {
         if (isFinished) {
             exit();
-        } else if (error && !prompt && !canSkip) {
+        } else if (isStopped) {
             exit(error);
         }
-    }, [isFinished, error, prompt, canSkip, exit]);
+    }, [isFinished, isStopped, error, exit]);
 
     function getStatus(index: number): StepStatus {
         if (index < currentIndex) {
@@ -66,6 +65,16 @@ export function App({ steps }: AppProps) {
             return 'pending';
         }
         return error ? 'failed' : 'running';
+    }
+
+    function getHint() {
+        if (prompt) {
+            return 'Input is hidden · Enter to submit · Ctrl+C to quit';
+        }
+        if (canSkip) {
+            return '↑/↓ to choose · Enter to confirm · Ctrl+C to quit';
+        }
+        return 'Ctrl+C stops setup · Finished steps are kept';
     }
 
     function handleSubmit(value: string) {
@@ -91,12 +100,20 @@ export function App({ steps }: AppProps) {
 
     return (
         <Box flexDirection="column" paddingX={2} paddingY={1} gap={1}>
-            <Logo />
+            <Box flexDirection="column" gap={1}>
+                <Logo />
+                <Text>
+                    <Text color="yellow">●</Text> {title}
+                </Text>
+            </Box>
+
+            <ProgressBar done={doneCount} skipped={skippedCount} total={steps.length} />
 
             <Box flexDirection="column">
                 {steps.map((step, index) => (
                     <StepItem
                         key={step.label}
+                        number={index + 1}
                         label={step.label}
                         status={getStatus(index)}
                         detail={results[index]?.detail}
@@ -106,30 +123,22 @@ export function App({ steps }: AppProps) {
 
             {error && <ErrorMessage error={error} />}
 
-            {prompt && <InputPrompt message={prompt.message} onSubmit={handleSubmit} />}
+            {prompt && <InputPrompt message={prompt.message} note={prompt.note} onSubmit={handleSubmit} />}
 
             {canSkip && (
-                <SkipPrompt onRetry={() => setError(undefined)} onSkip={handleSkip} onQuit={() => exit(error)} />
+                <SkipPrompt
+                    label={currentStep.label}
+                    onRetry={() => setError(undefined)}
+                    onSkip={handleSkip}
+                    onQuit={() => exit(error)}
+                />
             )}
 
-            {error && !prompt && !canSkip && <Text>Fix the problem above, then run this command again.</Text>}
+            {isFinished && <Summary hasSkipped={skippedCount > 0} />}
 
-            {isFinished && hasSkipped && (
-                <Text color="yellow">Some steps were skipped. Run this command again to finish them.</Text>
-            )}
+            {isStopped && <Text>Fix the problem above, then run this command again.</Text>}
 
-            {isFinished && (
-                <Box flexDirection="column">
-                    {DEV_COMMANDS.map(({ command, description }) => (
-                        <Box key={command} gap={2}>
-                            <Box width={14}>
-                                <Text color="cyan">{command}</Text>
-                            </Box>
-                            <Text dimColor>{description}</Text>
-                        </Box>
-                    ))}
-                </Box>
-            )}
+            {!isFinished && !isStopped && <Text dimColor>{getHint()}</Text>}
         </Box>
     );
 }

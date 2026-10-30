@@ -155,7 +155,15 @@ export const SETUP_STEPS: SetupStep[] = [
     { label: 'Docker', run: checkDocker, skippable: true },
     { label: 'Database', run: startDatabase, needsPreviousStep: true },
     { label: 'Migrations', run: migrateDatabases, needsPreviousStep: true },
-    { label: 'Anteater API key', run: checkApiKey, prompt: { message: 'Paste your key:', onSubmit: saveApiKey } },
+    {
+        label: 'Anteater API key',
+        run: checkApiKey,
+        prompt: {
+            message: 'Paste your Anteater API key',
+            note: `Stored only in ${APP_ENV}.`,
+            onSubmit: saveApiKey,
+        },
+    },
     { label: 'Course data', run: downloadCourseData },
 ];
 

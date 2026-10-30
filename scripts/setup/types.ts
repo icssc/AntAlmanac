@@ -12,6 +12,7 @@ export interface SetupStep {
     /** Lets the user fix a failed step by typing a value. The step runs again after `onSubmit`. */
     prompt?: {
         message: string;
+        note: string;
         onSubmit: (value: string) => void;
     };
     /** Lets the user skip the step when it fails. */

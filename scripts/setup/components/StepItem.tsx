@@ -1,28 +1,67 @@
 import { Spinner } from '@inkjs/ui';
 import { Box, Text } from 'ink';
+import { useEffect, useState } from 'react';
 
 import type { StepStatus } from '../types';
 
+const STATUS_COLORS: Record<StepStatus, string | undefined> = {
+    pending: undefined,
+    running: 'cyan',
+    done: 'green',
+    skipped: undefined,
+    failed: 'red',
+};
+
+const STATUS_SYMBOLS: Record<Exclude<StepStatus, 'running'>, string> = {
+    pending: '○',
+    done: '✓',
+    skipped: '–',
+    failed: '✗',
+};
+
 interface StepItemProps {
+    number: number;
     label: string;
     status: StepStatus;
     detail?: string;
 }
 
-export function StepItem({ label, status, detail }: StepItemProps) {
-    return (
-        <Box gap={1}>
-            <Box width={20} flexShrink={0} gap={1}>
-                {status === 'pending' && <Text dimColor>○</Text>}
-                {status === 'running' && <Spinner />}
-                {status === 'done' && <Text color="green">✓</Text>}
-                {status === 'skipped' && <Text color="yellow">−</Text>}
-                {status === 'failed' && <Text color="red">✗</Text>}
+export function StepItem({ number, label, status, detail }: StepItemProps) {
+    const color = STATUS_COLORS[status];
+    const isDim = status === 'pending' || status === 'skipped';
 
-                <Text dimColor={status === 'pending' || status === 'skipped'}>{label}</Text>
+    return (
+        <Box gap={2}>
+            <Box width={1}>
+                {status === 'running' ? (
+                    <Spinner />
+                ) : (
+                    <Text color={color} dimColor={isDim}>
+                        {STATUS_SYMBOLS[status]}
+                    </Text>
+                )}
             </Box>
 
-            {detail && <Text dimColor>{detail}</Text>}
+            <Text dimColor>{String(number).padStart(2, '0')}</Text>
+
+            <Box width={18} flexShrink={0}>
+                <Text color={color} dimColor={isDim}>
+                    {label}
+                </Text>
+            </Box>
+
+            {status === 'running' ? <ElapsedTime /> : detail && <Text dimColor>{detail}</Text>}
         </Box>
     );
+}
+
+function ElapsedTime() {
+    const [seconds, setSeconds] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => setSeconds((previous) => previous + 1), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    return <Text dimColor>{seconds > 0 && `${seconds}s`}</Text>;
 }
