@@ -2,11 +2,11 @@ import { PasswordInput } from '@inkjs/ui';
 import { Box, Text, useApp, useStdin } from 'ink';
 import { useEffect, useState } from 'react';
 
+import { SetupError } from '../helpers';
+import type { SetupStep, StepStatus } from '../types';
 import { ErrorMessage } from './ErrorMessage';
-import { SetupError } from './helpers';
 import { Logo } from './Logo';
 import { StepItem } from './StepItem';
-import type { SetupStep, StepStatus } from './types';
 
 const DEV_COMMANDS = [
     { command: 'pnpm dev', description: 'Start the development server' },

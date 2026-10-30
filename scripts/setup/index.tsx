@@ -1,6 +1,6 @@
 import { render } from 'ink';
 
-import { App } from './App';
+import { App } from './components/App';
 import { CHECK_STEPS, SETUP_STEPS } from './steps';
 
 const steps = process.argv.includes('--check') ? CHECK_STEPS : SETUP_STEPS;

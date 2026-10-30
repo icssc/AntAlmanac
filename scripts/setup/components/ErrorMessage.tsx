@@ -1,6 +1,6 @@
 import { Box, Text } from 'ink';
 
-import type { SetupError } from './helpers';
+import type { SetupError } from '../helpers';
 
 const MAX_OUTPUT_LINES = 8;
 

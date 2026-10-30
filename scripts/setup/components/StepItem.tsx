@@ -1,7 +1,7 @@
 import { Spinner } from '@inkjs/ui';
 import { Box, Text } from 'ink';
 
-import type { StepStatus } from './types';
+import type { StepStatus } from '../types';
 
 interface StepItemProps {
     label: string;
