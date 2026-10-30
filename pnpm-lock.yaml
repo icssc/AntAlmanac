@@ -17,6 +17,9 @@ importers:
       '@inkjs/ui':
         specifier: ^2.0.0
         version: 2.0.0(ink@7.1.1(@types/react@19.2.14)(react@19.2.6))
+      '@packages/anteater-api':
+        specifier: workspace:*
+        version: link:packages/anteater-api
       '@total-typescript/tsconfig':
         specifier: ^1.0.4
         version: 1.0.4
