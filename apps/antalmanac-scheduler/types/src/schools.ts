@@ -17,3 +17,5 @@ export const SchoolSchema = z.enum([
     'School of Social Sciences',
     'Sue & Bill Gross School of Nursing',
 ] as const);
+
+export type School = z.infer<typeof SchoolSchema>;
