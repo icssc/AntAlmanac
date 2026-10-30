@@ -3,7 +3,7 @@ import { stripVTControlCharacters } from 'node:util';
 import { Box, Text } from 'ink';
 import { useEffect, useState } from 'react';
 
-import { commandEvents } from '../helpers';
+import { commandEvents } from '@/helpers';
 
 const MAX_LINES = 6;
 
