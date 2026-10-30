@@ -74,10 +74,7 @@ export function App({ steps }: AppProps) {
     }
 
     function getHint() {
-        if (confirmation === 'pending') {
-            return 'Y to start · N to cancel';
-        }
-        if (canSkip) {
+        if (confirmation === 'pending' || canSkip) {
             return '↑/↓ to choose · Enter to confirm · Ctrl+C to quit';
         }
         if (isRunning) {
