@@ -32,9 +32,7 @@ export function Header() {
                 ))}
             </Box>
 
-            <Text>
-                Made with <Text color="red">♡</Text> by ICSSC Projects
-            </Text>
+            <Text>Made with 🩷 by ICSSC Projects</Text>
         </Box>
     );
 }

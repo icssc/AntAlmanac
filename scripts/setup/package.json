@@ -13,6 +13,7 @@
         "@packages/anteater-api": "workspace:*",
         "dotenv": "^16.0.3",
         "ink": "^7.1.1",
+        "open": "^11.0.4",
         "react": "19.2.6",
         "tsx": "^4.21.0"
     },

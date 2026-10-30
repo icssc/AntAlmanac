@@ -15,7 +15,8 @@ const COURSE_DATA_FILES = [
     'apps/antalmanac-scheduler/site/src/generated/searchData.json',
 ];
 
-const API_KEY_HELP = 'Create a secret key at https://dashboard.anteaterapi.com (sign in with your UCI Google account).';
+const API_DASHBOARD = 'https://dashboard.anteaterapi.com';
+const API_KEY_HELP = `Create a secret key at ${API_DASHBOARD} (sign in with your UCI Google account).`;
 
 const DOCKER_INSTALL_HELP: Partial<Record<NodeJS.Platform, string>> = {
     darwin: 'Install OrbStack from https://orbstack.dev and open it.',
@@ -149,6 +150,7 @@ export const STEPS: SetupStep[] = [
         prompt: {
             message: 'Paste your Anteater API key',
             note: `Stored only in ${APP_ENV}.`,
+            url: API_DASHBOARD,
             onSubmit: saveApiKey,
         },
     },

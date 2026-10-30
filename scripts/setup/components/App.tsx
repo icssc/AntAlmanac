@@ -31,7 +31,9 @@ export function App({ steps }: AppProps) {
     const currentStep = steps.at(currentIndex);
     const isFinished = !currentStep;
     const isRunning = isConfirmed && !isFinished && !error;
-    const hasSkipped = results.some((result) => result.status === 'skipped');
+    const skippedLabels = steps
+        .filter((step, index) => step.skippable && results[index]?.status === 'skipped')
+        .map((step) => step.label);
 
     const canAsk = error !== undefined && isRawModeSupported;
     const prompt = canAsk ? currentStep?.prompt : undefined;
@@ -75,22 +77,16 @@ export function App({ steps }: AppProps) {
         if (confirmation === 'pending') {
             return 'Y to start · N to cancel';
         }
-        if (prompt) {
-            return 'Input is hidden · Enter to submit · Ctrl+C to quit';
-        }
         if (canSkip) {
             return '↑/↓ to choose · Enter to confirm · Ctrl+C to quit';
         }
-        return 'Ctrl+C stops setup · Finished steps are kept';
+        if (isRunning) {
+            return 'Ctrl+C stops setup · Finished steps are kept';
+        }
     }
 
     function handleSubmit(value: string) {
-        if (!value.trim()) {
-            exit(error);
-            return;
-        }
-
-        prompt?.onSubmit(value.trim());
+        prompt?.onSubmit(value);
         setError(undefined);
     }
 
@@ -104,6 +100,8 @@ export function App({ steps }: AppProps) {
         setResults((previous) => [...previous, ...skipped]);
         setError(undefined);
     }
+
+    const hint = getHint();
 
     return (
         <Box flexDirection="column" paddingX={2} paddingY={1} gap={1}>
@@ -134,7 +132,15 @@ export function App({ steps }: AppProps) {
 
             {error && <ErrorMessage error={error} />}
 
-            {prompt && <InputPrompt message={prompt.message} note={prompt.note} onSubmit={handleSubmit} />}
+            {prompt && (
+                <InputPrompt
+                    message={prompt.message}
+                    note={prompt.note}
+                    url={prompt.url}
+                    onSubmit={handleSubmit}
+                    onQuit={() => exit(error)}
+                />
+            )}
 
             {canSkip && (
                 <SkipPrompt
@@ -145,11 +151,11 @@ export function App({ steps }: AppProps) {
                 />
             )}
 
-            {isFinished && <Summary hasSkipped={hasSkipped} />}
+            {isFinished && <Summary skippedLabels={skippedLabels} />}
 
             {isStopped && <Text>Fix the problem above, then run this command again.</Text>}
 
-            {!isFinished && !isStopped && confirmation !== 'cancelled' && <Text dimColor>{getHint()}</Text>}
+            {hint && <Text dimColor>{hint}</Text>}
         </Box>
     );
 }

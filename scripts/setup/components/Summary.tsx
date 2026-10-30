@@ -8,16 +8,20 @@ const DEV_COMMANDS = [
 ];
 
 interface SummaryProps {
-    hasSkipped: boolean;
+    skippedLabels: string[];
 }
 
-export function Summary({ hasSkipped }: SummaryProps) {
-    const color = hasSkipped ? 'yellow' : 'green';
+export function Summary({ skippedLabels }: SummaryProps) {
+    const isPartial = skippedLabels.length > 0;
+    const color = isPartial ? 'yellow' : 'green';
 
     return (
         <Box flexDirection="column" alignSelf="flex-start" borderStyle="round" borderColor={color} paddingX={1} gap={1}>
-            {hasSkipped ? (
-                <Text bold>Almost there. Run this command again to finish the skipped steps.</Text>
+            {isPartial ? (
+                <Box flexDirection="column">
+                    <Text bold>Partially set up without {skippedLabels.join(' or ')}.</Text>
+                    <Text>Start {skippedLabels.join(' and ')}, then run this command again to finish setting up.</Text>
+                </Box>
             ) : (
                 <Text bold color={color}>
                     ✓ You’re all set. Let’s build.

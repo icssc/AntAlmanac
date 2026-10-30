@@ -39,8 +39,8 @@ export async function run(command: string, message: string, fix?: string) {
         const { stdout } = await promise;
         return stdout;
     } catch (error) {
-        const { stdout, stderr } = error as ExecException;
-        throw new SetupError(message, fix, stderr || stdout);
+        const { stdout, stderr, message: reason } = error as ExecException;
+        throw new SetupError(message, fix, stderr || stdout || reason);
     }
 }
 

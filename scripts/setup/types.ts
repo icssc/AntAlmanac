@@ -13,6 +13,8 @@ export interface SetupStep {
     prompt?: {
         message: string;
         note: string;
+        /** A page where the user can get the value, which they can open in their browser first. */
+        url?: string;
         onSubmit: (value: string) => void;
     };
     /** Lets the user skip the step when it fails. */
