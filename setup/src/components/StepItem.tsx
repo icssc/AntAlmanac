@@ -1,8 +1,7 @@
+import type { StepStatus } from '$src/types';
 import { Spinner } from '@inkjs/ui';
 import { Box, Text } from 'ink';
 import { useEffect, useState } from 'react';
-
-import type { StepStatus } from '@/types';
 
 const STATUS_COLORS: Record<StepStatus, string | undefined> = {
     pending: undefined,

@@ -4,7 +4,8 @@
         "jsx": "react-jsx",
         "types": ["node"],
         "paths": {
-            "@/*": ["./src/*"]
+            "$components/*": ["./src/components/*"],
+            "$src/*": ["./src/*"]
         }
     },
     "include": ["src"]

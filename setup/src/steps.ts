@@ -1,10 +1,9 @@
 import { randomBytes } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
+import { SetupError, readEnv, run } from '$src/helpers';
+import type { SetupStep } from '$src/types';
 import { AAPIError, createClient } from '@packages/anteater-api/client';
-
-import { SetupError, readEnv, run } from '@/helpers';
-import type { SetupStep } from '@/types';
 
 const APP_ENV = 'apps/antalmanac/.env';
 const DB_ENV = 'apps/antalmanac-scheduler/db/.env';
