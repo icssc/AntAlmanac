@@ -83,7 +83,7 @@ AntAlmanac started in 2018 with @the-rango. PeterPortal, now Planner, started on
 | 2023–2024    | @EricPedley, @ap0nia         | @js0mmer     |
 | 2024–2025    | @MinhxNguyen7, @adcockdalton | @Awesome-E   |
 | 2025–2026    | @alexespejo                  | @CadenLee2   |
-| 2026–present | @sicn4rf                     | @anthonyj33  |
+| 2026–present | @sicn4rf, @Choollol          | @anthonyj33  |
 
 ## Where Does the Data Come From?
 
