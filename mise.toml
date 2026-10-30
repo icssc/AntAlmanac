@@ -7,12 +7,12 @@ ANTALMANAC_TOOLCHAIN = "mise"
 
 [tasks.setup]
 description = "Open the guided developer setup TUI"
-run = "node scripts/setup.mjs"
+run = "pnpm run setup"
 raw = true
 quiet = true
 
 [tasks.doctor]
 description = "Check the development environment without changing app files or services"
-run = "node scripts/setup.mjs --check"
+run = "pnpm run setup:check"
 raw = true
 quiet = true
