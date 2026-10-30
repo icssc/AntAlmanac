@@ -224,6 +224,9 @@ export const roadmapSlice = createSlice({
             state.showMobileCatalog = true;
             state.currentYearAndQuarter = action.payload;
         },
+        setCurrentYearAndQuarter: (state, action: PayloadAction<{ year: number; quarter: number }>) => {
+            state.currentYearAndQuarter = action.payload;
+        },
         setShowMobileFullscreenSearch: (state, action: PayloadAction<boolean>) => {
             state.showMobileFullscreenSearch = action.payload;
         },
@@ -281,6 +284,7 @@ export const {
     setInvalidCourses,
     hideMobileCatalog,
     showMobileCatalog,
+    setCurrentYearAndQuarter,
     setShowMobileFullscreenSearch,
     setShowAddCourse,
     setPlanIndex,
