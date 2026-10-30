@@ -76,6 +76,10 @@ const RoadmapPage: FC = () => {
         else setShowPreview(false);
     }, [currentPreview]);
 
+    useEffect(() => {
+        if (!isMobile) dispatch(hideMobileCatalog());
+    }, [isMobile, dispatch]);
+
     const previewDepth = usePreviewDepth();
     const handleCloseToast = () => dispatch(setShowToast(false));
 
