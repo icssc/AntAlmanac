@@ -20,6 +20,7 @@ import {
     hideMobileCatalog,
     reviseRoadmap,
     selectCurrentPlan,
+    setSelectedMobileTab,
     setShowAddCourse,
 } from '../../../store/slices/roadmapSlice';
 
@@ -52,6 +53,7 @@ const AddCoursePopup: FC = () => {
 
         // hide the search bar to view the roadmap
         dispatch(hideMobileCatalog());
+        dispatch(setSelectedMobileTab(0));
         closePopup();
     };
 

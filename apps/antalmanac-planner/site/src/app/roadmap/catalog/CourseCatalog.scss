@@ -13,4 +13,9 @@
     .loading-spinner {
         margin-top: 24px;
     }
+
+    @media (max-width: globals.$mobile-cutoff) {
+        padding-inline: 16px;
+        padding-block: 24px;
+    }
 }

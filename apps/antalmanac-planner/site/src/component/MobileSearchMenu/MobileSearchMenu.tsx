@@ -26,7 +26,7 @@ const MobileSearchMenu: FC = () => {
                 {hasCompletedQuery && <ResultsHeader />}
             </div>
             <SearchHitContainer />
-            <ScrollToTopButton scrollableTarget="mobileScrollContainer" />
+            <ScrollToTopButton scrollableTarget="mobileScrollContainer" raiseButton={true} />
         </div>
     );
 };

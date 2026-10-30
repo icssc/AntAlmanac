@@ -25,6 +25,12 @@ export const metadata: Metadata = {
         'A web application for course discovery and planning at UCI, featuring an enhanced catalogue and a 4-year planner.',
 };
 
+export const viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover',
+};
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
     const reqHeaders = await headers().then((h) => Object.fromEntries(h.entries()));
     const serverTrpc = createServerSideTrpcCaller(reqHeaders);

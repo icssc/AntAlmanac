@@ -34,14 +34,15 @@ import {
     setRequirementOverride,
 } from '../../../store/slices/courseRequirementsSlice';
 import {
+    hideMobileCatalog,
     setActiveCourse,
     setActiveCourseLoading,
     setActiveMissingPrerequisites,
+    setSelectedMobileTab,
     setSelectedSidebarTab,
     setShowAddCourse,
     selectCurrentPlan,
 } from '../../../store/slices/roadmapSlice';
-import { setShowMobileCreditsMenu } from '../../../store/slices/transferCreditsSlice';
 import trpc from '../../../trpc';
 import { CourseGQLData, PlannerCourseData } from '../../../types/types';
 import { CourseNameAndInfo } from '../planner/Course';
@@ -395,7 +396,8 @@ const TransferCreditsTile = ({ transferredGE, showGETitle = false }: TransferCre
             title={title}
             onClick={() => {
                 if (isMobile) {
-                    dispatch(setShowMobileCreditsMenu(true));
+                    dispatch(hideMobileCatalog());
+                    dispatch(setSelectedMobileTab(1));
                 } else {
                     dispatch(setSelectedSidebarTab(0));
                 }
