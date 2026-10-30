@@ -3,6 +3,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { useUserInfoStore } from '$stores/UserInfoStore';
 import { Autocomplete, Box, TextField, Typography } from '@mui/material';
 import { SchoolSchema } from '@packages/antalmanac-types';
+import { MAJOR_SCHOOLS_MAP } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { type z } from 'zod';
 import { useShallow } from 'zustand/react/shallow';
@@ -94,10 +95,11 @@ export function MajorSelector() {
     }, [savedMajor, savedSchool]);
 
     const handleMajorChange = useCallback(
-        (nextMajor: string | null) => {
-            setMajor(nextMajor);
-            if (nextMajor && school) {
-                void setMajorSchool(nextMajor, school);
+        (newMajor: string | null) => {
+            setMajor(newMajor);
+            const newSchool = (newMajor && MAJOR_SCHOOLS_MAP[newMajor]) || school;
+            if (newMajor && newSchool) {
+                void setMajorSchool(newMajor, newSchool);
             }
         },
         [school, setMajorSchool]
