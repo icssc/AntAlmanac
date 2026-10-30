@@ -4,6 +4,7 @@ const DEV_COMMANDS = [
     { command: 'pnpm dev', description: 'Start the development server' },
     { command: 'pnpm db:start', description: 'Start the database' },
     { command: 'pnpm db:stop', description: 'Stop the database' },
+    { command: 'pnpm get-data', description: 'Download the latest course data' },
 ];
 
 interface SummaryProps {

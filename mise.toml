@@ -2,17 +2,8 @@
 node = "22"
 pnpm = "10.22.0"
 
-[env]
-ANTALMANAC_TOOLCHAIN = "mise"
-
 [tasks.setup]
-description = "Open the guided developer setup TUI"
+description = "Set up or verify the development environment"
 run = "pnpm run setup"
-raw = true
-quiet = true
-
-[tasks.doctor]
-description = "Check the development environment without changing app files or services"
-run = "pnpm run setup:check"
 raw = true
 quiet = true

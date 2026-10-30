@@ -1,0 +1,25 @@
+{
+    "name": "@scripts/setup",
+    "version": "0.0.1",
+    "private": true,
+    "description": "Guided developer setup for the AntAlmanac monorepo",
+    "type": "module",
+    "scripts": {
+        "start": "tsx index.tsx",
+        "check-tsc": "tsc"
+    },
+    "dependencies": {
+        "@inkjs/ui": "^2.0.0",
+        "@packages/anteater-api": "workspace:*",
+        "dotenv": "^16.0.3",
+        "ink": "^7.1.1",
+        "react": "19.2.6",
+        "tsx": "^4.21.0"
+    },
+    "devDependencies": {
+        "@total-typescript/tsconfig": "^1.0.4",
+        "@types/node": "22.19.17",
+        "@types/react": "19.2.14",
+        "typescript": "^5.9.3"
+    }
+}

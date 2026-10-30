@@ -3,6 +3,7 @@ packages:
     - apps/antalmanac-planner/*
     - apps/antalmanac-scheduler/*
     - packages/*
+    - scripts/setup
     - .github/actions/*
 
 minimumReleaseAge: 720

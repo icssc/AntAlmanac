@@ -1,24 +1,20 @@
+import { fileURLToPath } from 'node:url';
+
 import { ThemeProvider } from '@inkjs/ui';
 import { render } from 'ink';
 
 import { App } from './components/App';
-import { CHECK_STEPS, SETUP_STEPS } from './steps';
+import { STEPS } from './steps';
 import { theme } from './theme';
 
-// tsx passes its --tsconfig to child processes, which breaks commands like `pnpm get-data` that need their own.
-delete process.env.TSX_TSCONFIG_PATH;
-
-const isCheck = process.argv.includes('--check');
+// Steps use paths relative to the repository root, but pnpm starts this package in its own folder.
+process.chdir(fileURLToPath(new URL('../..', import.meta.url)));
 
 console.clear();
 
 const { waitUntilExit } = render(
     <ThemeProvider theme={theme}>
-        {isCheck ? (
-            <App title="A quick health check for your workspace." steps={CHECK_STEPS} />
-        ) : (
-            <App title="Let’s get the monorepo ready to build." steps={SETUP_STEPS} />
-        )}
+        <App steps={STEPS} />
     </ThemeProvider>
 );
 

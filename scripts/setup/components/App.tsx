@@ -3,31 +3,35 @@ import { useEffect, useState } from 'react';
 
 import { SetupError } from '../helpers';
 import type { SetupStep, StepResult, StepStatus } from '../types';
+import { CommandOutput } from './CommandOutput';
+import { ConfirmPrompt } from './ConfirmPrompt';
 import { ErrorMessage } from './ErrorMessage';
+import { Header } from './Header';
 import { InputPrompt } from './InputPrompt';
-import { Logo } from './Logo';
-import { ProgressBar } from './ProgressBar';
 import { SkipPrompt } from './SkipPrompt';
 import { StepItem } from './StepItem';
 import { Summary } from './Summary';
 
+type Confirmation = 'pending' | 'confirmed' | 'cancelled';
+
 interface AppProps {
-    title: string;
     steps: SetupStep[];
 }
 
-export function App({ title, steps }: AppProps) {
+export function App({ steps }: AppProps) {
     const { exit } = useApp();
     const { isRawModeSupported } = useStdin();
 
+    const [confirmation, setConfirmation] = useState<Confirmation>(isRawModeSupported ? 'pending' : 'confirmed');
     const [results, setResults] = useState<StepResult[]>([]);
     const [error, setError] = useState<SetupError>();
 
+    const isConfirmed = confirmation === 'confirmed';
     const currentIndex = results.length;
     const currentStep = steps.at(currentIndex);
     const isFinished = !currentStep;
-    const doneCount = results.filter((result) => result.status === 'done').length;
-    const skippedCount = results.length - doneCount;
+    const isRunning = isConfirmed && !isFinished && !error;
+    const hasSkipped = results.some((result) => result.status === 'skipped');
 
     const canAsk = error !== undefined && isRawModeSupported;
     const prompt = canAsk ? currentStep?.prompt : undefined;
@@ -35,7 +39,7 @@ export function App({ title, steps }: AppProps) {
     const isStopped = error !== undefined && !prompt && !canSkip;
 
     useEffect(() => {
-        if (!currentStep || error) {
+        if (!isConfirmed || !currentStep || error) {
             return;
         }
 
@@ -47,27 +51,30 @@ export function App({ title, steps }: AppProps) {
             .catch((error: unknown) => {
                 setError(error instanceof SetupError ? error : new SetupError(String(error)));
             });
-    }, [currentStep, error]);
+    }, [isConfirmed, currentStep, error]);
 
     useEffect(() => {
-        if (isFinished) {
+        if (isFinished || confirmation === 'cancelled') {
             exit();
         } else if (isStopped) {
             exit(error);
         }
-    }, [isFinished, isStopped, error, exit]);
+    }, [isFinished, isStopped, confirmation, error, exit]);
 
     function getStatus(index: number): StepStatus {
         if (index < currentIndex) {
             return results[index].status;
         }
-        if (index > currentIndex) {
+        if (index > currentIndex || !isConfirmed) {
             return 'pending';
         }
         return error ? 'failed' : 'running';
     }
 
     function getHint() {
+        if (confirmation === 'pending') {
+            return 'Y to start · N to cancel';
+        }
         if (prompt) {
             return 'Input is hidden · Enter to submit · Ctrl+C to quit';
         }
@@ -100,14 +107,7 @@ export function App({ title, steps }: AppProps) {
 
     return (
         <Box flexDirection="column" paddingX={2} paddingY={1} gap={1}>
-            <Box flexDirection="column" gap={1}>
-                <Logo />
-                <Text>
-                    <Text color="yellow">●</Text> {title}
-                </Text>
-            </Box>
-
-            <ProgressBar done={doneCount} skipped={skippedCount} total={steps.length} />
+            <Header />
 
             <Box flexDirection="column">
                 {steps.map((step, index) => (
@@ -120,6 +120,17 @@ export function App({ title, steps }: AppProps) {
                     />
                 ))}
             </Box>
+
+            {confirmation === 'pending' && (
+                <ConfirmPrompt
+                    onConfirm={() => setConfirmation('confirmed')}
+                    onCancel={() => setConfirmation('cancelled')}
+                />
+            )}
+
+            {confirmation === 'cancelled' && <Text>Setup cancelled. Nothing was changed.</Text>}
+
+            {isRunning && <CommandOutput key={currentIndex} />}
 
             {error && <ErrorMessage error={error} />}
 
@@ -134,11 +145,11 @@ export function App({ title, steps }: AppProps) {
                 />
             )}
 
-            {isFinished && <Summary hasSkipped={skippedCount > 0} />}
+            {isFinished && <Summary hasSkipped={hasSkipped} />}
 
             {isStopped && <Text>Fix the problem above, then run this command again.</Text>}
 
-            {!isFinished && !isStopped && <Text dimColor>{getHint()}</Text>}
+            {!isFinished && !isStopped && confirmation !== 'cancelled' && <Text dimColor>{getHint()}</Text>}
         </Box>
     );
 }

@@ -42,24 +42,21 @@ async function checkNode() {
     return `Node ${process.version}`;
 }
 
-async function createEnvFiles() {
-    for (const path of [APP_ENV, DB_ENV]) {
-        if (existsSync(path)) {
-            continue;
-        }
+async function installDependencies() {
+    await run('pnpm install --frozen-lockfile', 'Dependencies could not be installed.');
 
-        const example = readFileSync(`${path}.example`, 'utf8');
-        const env = example.replaceAll(`_SECRET=${PLACEHOLDER}`, () => `_SECRET=${randomBytes(32).toString('hex')}`);
-        writeFileSync(path, env);
-    }
-
-    return checkEnvFiles();
+    return 'Dependencies are installed.';
 }
 
-async function checkEnvFiles() {
+async function createEnvFiles() {
     for (const path of [APP_ENV, DB_ENV]) {
         if (!existsSync(path)) {
-            throw new SetupError(`${path} does not exist.`, 'Run mise run setup to create it.');
+            const example = readFileSync(`${path}.example`, 'utf8');
+            const env = example.replaceAll(
+                `_SECRET=${PLACEHOLDER}`,
+                () => `_SECRET=${randomBytes(32).toString('hex')}`
+            );
+            writeFileSync(path, env);
         }
 
         const env = readEnv(path);
@@ -91,12 +88,6 @@ async function startDatabase() {
     if (!databases.split('\n').includes('planner')) {
         await run('docker compose exec -T db createdb -U postgres planner', 'Could not create the planner database.');
     }
-
-    return 'PostgreSQL is running.';
-}
-
-async function checkDatabase() {
-    await run('docker compose exec -T db pg_isready -U postgres', 'The database is not running.', 'Run pnpm db:start.');
 
     return 'PostgreSQL is running.';
 }
@@ -136,21 +127,18 @@ function saveApiKey(key: string) {
 }
 
 async function downloadCourseData() {
+    if (COURSE_DATA_FILES.every((file) => existsSync(file))) {
+        return 'Course data is already downloaded.';
+    }
+
     await run('pnpm get-data', 'Course data could not be downloaded.', `Check ANTEATER_API_KEY in ${APP_ENV}.`);
 
     return 'Course data is downloaded.';
 }
 
-async function checkCourseData() {
-    if (!COURSE_DATA_FILES.every((file) => existsSync(file))) {
-        throw new SetupError('Course data has not been downloaded.', 'Run mise run setup to download it.');
-    }
-
-    return 'Course data is downloaded.';
-}
-
-export const SETUP_STEPS: SetupStep[] = [
+export const STEPS: SetupStep[] = [
     { label: 'Node.js', run: checkNode },
+    { label: 'Dependencies', run: installDependencies },
     { label: 'Environment files', run: createEnvFiles },
     { label: 'Docker', run: checkDocker, skippable: true },
     { label: 'Database', run: startDatabase, needsPreviousStep: true },
@@ -165,13 +153,4 @@ export const SETUP_STEPS: SetupStep[] = [
         },
     },
     { label: 'Course data', run: downloadCourseData },
-];
-
-export const CHECK_STEPS: SetupStep[] = [
-    { label: 'Node.js', run: checkNode },
-    { label: 'Environment files', run: checkEnvFiles },
-    { label: 'Docker', run: checkDocker, skippable: true },
-    { label: 'Database', run: checkDatabase, needsPreviousStep: true },
-    { label: 'Anteater API key', run: checkApiKey },
-    { label: 'Course data', run: checkCourseData },
 ];
