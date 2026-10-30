@@ -8,6 +8,8 @@ delete process.env.TSX_TSCONFIG_PATH;
 
 const steps = process.argv.includes('--check') ? CHECK_STEPS : SETUP_STEPS;
 
+console.clear();
+
 const { waitUntilExit } = render(<App steps={steps} />);
 
 await waitUntilExit().catch(() => {

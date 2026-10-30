@@ -152,9 +152,9 @@ async function checkCourseData() {
 export const SETUP_STEPS: SetupStep[] = [
     { label: 'Node.js', run: checkNode },
     { label: 'Environment files', run: createEnvFiles },
-    { label: 'Docker', run: checkDocker },
-    { label: 'Database', run: startDatabase },
-    { label: 'Migrations', run: migrateDatabases },
+    { label: 'Docker', run: checkDocker, skippable: true },
+    { label: 'Database', run: startDatabase, needsPreviousStep: true },
+    { label: 'Migrations', run: migrateDatabases, needsPreviousStep: true },
     { label: 'Anteater API key', run: checkApiKey, prompt: { message: 'Paste your key:', onSubmit: saveApiKey } },
     { label: 'Course data', run: downloadCourseData },
 ];
@@ -162,8 +162,8 @@ export const SETUP_STEPS: SetupStep[] = [
 export const CHECK_STEPS: SetupStep[] = [
     { label: 'Node.js', run: checkNode },
     { label: 'Environment files', run: checkEnvFiles },
-    { label: 'Docker', run: checkDocker },
-    { label: 'Database', run: checkDatabase },
+    { label: 'Docker', run: checkDocker, skippable: true },
+    { label: 'Database', run: checkDatabase, needsPreviousStep: true },
     { label: 'Anteater API key', run: checkApiKey },
     { label: 'Course data', run: checkCourseData },
 ];

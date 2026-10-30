@@ -1,11 +1,12 @@
-import { PasswordInput } from '@inkjs/ui';
 import { Box, Text, useApp, useStdin } from 'ink';
 import { useEffect, useState } from 'react';
 
 import { SetupError } from '../helpers';
-import type { SetupStep, StepStatus } from '../types';
+import type { SetupStep, StepResult, StepStatus } from '../types';
 import { ErrorMessage } from './ErrorMessage';
+import { InputPrompt } from './InputPrompt';
 import { Logo } from './Logo';
+import { SkipPrompt } from './SkipPrompt';
 import { StepItem } from './StepItem';
 
 const DEV_COMMANDS = [
@@ -22,13 +23,17 @@ export function App({ steps }: AppProps) {
     const { exit } = useApp();
     const { isRawModeSupported } = useStdin();
 
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [details, setDetails] = useState<string[]>([]);
+    const [results, setResults] = useState<StepResult[]>([]);
     const [error, setError] = useState<SetupError>();
 
+    const currentIndex = results.length;
     const currentStep = steps.at(currentIndex);
     const isFinished = !currentStep;
-    const prompt = error && isRawModeSupported ? currentStep?.prompt : undefined;
+    const hasSkipped = results.some((result) => result.status === 'skipped');
+
+    const canAsk = error !== undefined && isRawModeSupported;
+    const prompt = canAsk ? currentStep?.prompt : undefined;
+    const canSkip = canAsk && currentStep?.skippable === true;
 
     useEffect(() => {
         if (!currentStep || error) {
@@ -38,8 +43,7 @@ export function App({ steps }: AppProps) {
         currentStep
             .run()
             .then((detail) => {
-                setDetails((previous) => [...previous, detail]);
-                setCurrentIndex((previous) => previous + 1);
+                setResults((previous) => [...previous, { status: 'done', detail }]);
             })
             .catch((error: unknown) => {
                 setError(error instanceof SetupError ? error : new SetupError(String(error)));
@@ -49,14 +53,14 @@ export function App({ steps }: AppProps) {
     useEffect(() => {
         if (isFinished) {
             exit();
-        } else if (error && !prompt) {
+        } else if (error && !prompt && !canSkip) {
             exit(error);
         }
-    }, [isFinished, error, prompt, exit]);
+    }, [isFinished, error, prompt, canSkip, exit]);
 
     function getStatus(index: number): StepStatus {
         if (index < currentIndex) {
-            return 'done';
+            return results[index].status;
         }
         if (index > currentIndex) {
             return 'pending';
@@ -74,26 +78,45 @@ export function App({ steps }: AppProps) {
         setError(undefined);
     }
 
+    function handleSkip() {
+        let count = 1;
+        while (steps[currentIndex + count]?.needsPreviousStep) {
+            count++;
+        }
+
+        const skipped: StepResult[] = Array.from({ length: count }, () => ({ status: 'skipped', detail: 'Skipped' }));
+        setResults((previous) => [...previous, ...skipped]);
+        setError(undefined);
+    }
+
     return (
         <Box flexDirection="column" paddingX={2} paddingY={1} gap={1}>
             <Logo />
 
             <Box flexDirection="column">
                 {steps.map((step, index) => (
-                    <StepItem key={step.label} label={step.label} status={getStatus(index)} detail={details[index]} />
+                    <StepItem
+                        key={step.label}
+                        label={step.label}
+                        status={getStatus(index)}
+                        detail={results[index]?.detail}
+                    />
                 ))}
             </Box>
 
             {error && <ErrorMessage error={error} />}
 
-            {prompt && (
-                <Box gap={1}>
-                    <Text bold>{prompt.message}</Text>
-                    <PasswordInput placeholder="or press Enter to quit" onSubmit={handleSubmit} />
-                </Box>
+            {prompt && <InputPrompt message={prompt.message} onSubmit={handleSubmit} />}
+
+            {canSkip && (
+                <SkipPrompt onRetry={() => setError(undefined)} onSkip={handleSkip} onQuit={() => exit(error)} />
             )}
 
-            {error && !prompt && <Text>Fix the problem above, then run this command again.</Text>}
+            {error && !prompt && !canSkip && <Text>Fix the problem above, then run this command again.</Text>}
+
+            {isFinished && hasSkipped && (
+                <Text color="yellow">Some steps were skipped. Run this command again to finish them.</Text>
+            )}
 
             {isFinished && (
                 <Box flexDirection="column">

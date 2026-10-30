@@ -16,9 +16,10 @@ export function StepItem({ label, status, detail }: StepItemProps) {
                 {status === 'pending' && <Text dimColor>○</Text>}
                 {status === 'running' && <Spinner />}
                 {status === 'done' && <Text color="green">✓</Text>}
+                {status === 'skipped' && <Text color="yellow">−</Text>}
                 {status === 'failed' && <Text color="red">✗</Text>}
 
-                <Text dimColor={status === 'pending'}>{label}</Text>
+                <Text dimColor={status === 'pending' || status === 'skipped'}>{label}</Text>
             </Box>
 
             {detail && <Text dimColor>{detail}</Text>}

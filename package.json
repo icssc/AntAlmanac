@@ -21,7 +21,7 @@
         "lint": "oxfmt --check && oxlint --deny-warnings",
         "check-tsc": "pnpm --filter antalmanac check-tsc && tsc -p scripts",
         "get-data": "pnpm --filter @antalmanac-scheduler get-data",
-        "setup": "pnpm install --frozen-lockfile && tsx --tsconfig scripts/tsconfig.json scripts/setup/index.tsx",
+        "setup": "echo Installing dependencies... && pnpm install --frozen-lockfile --loglevel error && tsx --tsconfig scripts/tsconfig.json scripts/setup/index.tsx",
         "setup:check": "pnpm run setup --check",
         "db:start": "docker compose up -d --wait --wait-timeout 120 db",
         "db:stop": "docker compose stop db"

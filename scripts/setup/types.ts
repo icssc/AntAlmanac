@@ -1,4 +1,9 @@
-export type StepStatus = 'pending' | 'running' | 'done' | 'failed';
+export type StepStatus = 'pending' | 'running' | 'done' | 'skipped' | 'failed';
+
+export interface StepResult {
+    status: 'done' | 'skipped';
+    detail: string;
+}
 
 export interface SetupStep {
     label: string;
@@ -9,4 +14,8 @@ export interface SetupStep {
         message: string;
         onSubmit: (value: string) => void;
     };
+    /** Lets the user skip the step when it fails. */
+    skippable?: boolean;
+    /** Skips this step too when the step before it is skipped. */
+    needsPreviousStep?: boolean;
 }
