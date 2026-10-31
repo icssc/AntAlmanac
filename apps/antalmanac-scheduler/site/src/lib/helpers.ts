@@ -7,15 +7,18 @@ import { type MouseEvent } from 'react';
 
 type MajorSchoolRestrictionCode = Extract<WebsocRestrictionCodeOption, 'L' | 'M' | 'N' | 'O'>;
 
-const enrollmentRestrictionWarningMessages: Record<MajorSchoolRestrictionCode, string> = {
-    L: 'Major-only. This course is restricted to certain majors.',
-    M: 'Non-major only. This course is restricted for your major.',
-    N: 'School major only. This course is restricted for majors in a specific school.',
-    O: 'Non-school major only. This course is restricted for majors in your school.',
+const enrollmentRestrictionWarningMessages: Record<MajorSchoolRestrictionCode, (school: string) => string> = {
+    N: (school) => `This section is limited to students in the ${school}. Check Webreg before enrolling.`,
+    O: (school) => `This section is not open to students in the ${school}. Check Webreg before enrolling.`,
+    L: () => 'This section may be limited to certain majors. Check Webreg before enrolling.',
+    M: (school) => `This section may not be open to some majors in the ${school}. Check Webreg before enrolling.`,
 };
 
-function getEnrollmentRestrictionWarningMessage(restriction_code: MajorSchoolRestrictionCode): string {
-    return enrollmentRestrictionWarningMessages[restriction_code];
+function getEnrollmentRestrictionWarningMessage(
+    restriction_code: MajorSchoolRestrictionCode,
+    courseSchool: string
+): string {
+    return enrollmentRestrictionWarningMessages[restriction_code](courseSchool);
 }
 
 export const warnMultipleTerms = (terms: Set<AATerm>) => {
@@ -27,10 +30,19 @@ export const warnMultipleTerms = (terms: Set<AATerm>) => {
     );
 };
 
-export const warnEnrollmentRestriction = (restriction_code: WebsocRestrictionCodeOption) => {
-    openSnackbar('warning', getEnrollmentRestrictionWarningMessage(restriction_code as MajorSchoolRestrictionCode), {
-        style: { whiteSpace: 'pre-line' },
-    });
+export const warnEnrollmentRestriction = (restriction_code: WebsocRestrictionCodeOption, courseSchool: string) => {
+    openSnackbar(
+        'warning',
+        getEnrollmentRestrictionWarningMessage(restriction_code as MajorSchoolRestrictionCode, courseSchool),
+        {
+            style: {
+                whiteSpace: 'pre-line',
+                '& .MuiAlert-message': { fontSize: '1.25rem' },
+            },
+            position: { vertical: 'top', horizontal: 'center' },
+            durationSeconds: 8,
+        }
+    );
 };
 
 export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: string) {
