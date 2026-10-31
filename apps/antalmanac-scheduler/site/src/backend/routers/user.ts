@@ -1,21 +1,21 @@
-import { getUserMajorSchool, updateUserMajor } from '$backend/lib/rds/users';
+import { getUserMajorSchools, updateUserMajorSchools } from '$backend/lib/rds/users';
 import { protectedProcedure, router } from '$backend/trpc';
 import { SchoolSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { z } from 'zod';
 
-const UpdateUserMajorSchoolSchema = z.object({
+const UpdateUserMajorSchoolsSchema = z.object({
     major: z.string(),
-    school: SchoolSchema,
+    schools: z.array(SchoolSchema).min(1).max(SchoolSchema.options.length),
 });
 
 const userRouter = router({
     get: protectedProcedure.query(async ({ ctx }) => {
-        return await getUserMajorSchool(db, ctx.userId);
+        return await getUserMajorSchools(db, ctx.userId);
     }),
 
-    updateMajorSchool: protectedProcedure.input(UpdateUserMajorSchoolSchema).mutation(async ({ input, ctx }) => {
-        await updateUserMajor(db, ctx.userId, input.major, input.school);
+    updateMajorSchools: protectedProcedure.input(UpdateUserMajorSchoolsSchema).mutation(async ({ input, ctx }) => {
+        await updateUserMajorSchools(db, ctx.userId, input.major, input.schools);
     }),
 });
 
