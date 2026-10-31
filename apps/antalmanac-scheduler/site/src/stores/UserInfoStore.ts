@@ -2,37 +2,37 @@ import { trpc } from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { SchoolSchema } from '@packages/antalmanac-types';
-import { type z } from 'zod';
+import type { School } from '@packages/antalmanac-types';
 import { create } from 'zustand';
-
-type School = z.infer<typeof SchoolSchema>;
 
 interface UserInfoStore {
     initialized: boolean;
     major: string | null;
-    school: School | null;
+    schools: School[];
     loadUserInfo: () => Promise<void>;
-    setMajorSchool: (major: string, school: School) => Promise<void>;
+    setMajorSchools: (major: string, schools: School[]) => Promise<void>;
 }
 
 export const useUserInfoStore = create<UserInfoStore>((set, get) => ({
     initialized: false,
     major: null,
-    school: null,
+    schools: [],
 
     loadUserInfo: async () => {
         const { sessionIsValid } = useSessionStore.getState();
         if (!sessionIsValid) {
-            set({ major: null, school: null, initialized: true });
+            set({ major: null, schools: [], initialized: true });
             return;
         }
 
         try {
             const userInfo = await trpc.user.get.query();
-            const school = SchoolSchema.safeParse(userInfo?.school);
+            const schools = (userInfo?.schools ?? []).filter(
+                (school): school is School => SchoolSchema.safeParse(school).success
+            );
             set({
                 major: userInfo?.major ?? null,
-                school: school.success ? school.data : null,
+                schools,
                 initialized: true,
             });
         } catch (error) {
@@ -41,12 +41,12 @@ export const useUserInfoStore = create<UserInfoStore>((set, get) => ({
         }
     },
 
-    setMajorSchool: async (major, school) => {
-        const previous = { major: get().major, school: get().school };
-        set({ major, school });
+    setMajorSchools: async (major, schools) => {
+        const previous = { major: get().major, schools: get().schools };
+        set({ major, schools });
 
         try {
-            await trpc.user.updateMajorSchool.mutate({ major, school });
+            await trpc.user.updateMajorSchools.mutate({ major, schools });
         } catch (error) {
             console.error('Failed to save major and school:', error);
             set(previous);

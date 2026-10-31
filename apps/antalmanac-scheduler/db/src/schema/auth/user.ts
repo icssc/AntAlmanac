@@ -1,4 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
+import { sql } from 'drizzle-orm';
 import { type AnyPgColumn, boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { schedules } from '../schedule';
@@ -40,7 +41,10 @@ export const users = pgTable('users', {
      * Used to generate warning about course restrictions
      */
     major: text('major'),
-    school: text('school'),
+    schools: text('schools')
+        .array()
+        .notNull()
+        .default(sql`'{}'::text[]`),
 
     /**
      * Imported User Flag.
