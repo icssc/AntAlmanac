@@ -2,7 +2,9 @@ import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analyti
 import { trpc } from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
+import { getRestrictionToWarn } from '$lib/enrollmentRestrictions';
 import { warnMultipleTerms } from '$lib/helpers';
+import { warnEnrollmentRestriction } from '$lib/helpers';
 import { shouldIgnoreShortcutTarget } from '$lib/keyboardShortcuts';
 import { setLocalStorageDataCache, setLocalStorageUserId } from '$lib/localStorage';
 import { getErrorMessage } from '$lib/utils';
@@ -12,6 +14,7 @@ import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { useUserInfoStore } from '$stores/UserInfoStore';
 import {
     type AACourseWithTerm,
     type AASection,
@@ -60,8 +63,18 @@ export const addCourse = (
         },
     });
     const terms = AppStore.termsInSchedule(course.term);
+    const userSchools = useUserInfoStore.getState().schools;
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
+
+    if (!quiet) {
+        const code = getRestrictionToWarn({
+            restrictions: section.restrictions,
+            courseSchool: course.schoolName,
+            userSchools,
+        });
+        if (code && course.schoolName) warnEnrollmentRestriction(code, course.schoolName);
+    }
 
     AppStore.addCourse(section, course, scheduleIndex);
 };
