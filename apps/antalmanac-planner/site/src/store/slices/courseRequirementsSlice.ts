@@ -1,7 +1,7 @@
 import { MajorProgram, MajorSpecialization, ProgramRequirement, MinorProgram } from '@peterportal/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type RequirementsTabName = 'Major' | 'Minor' | 'GE' | 'Library' | 'Search';
+export type RequirementsTabName = 'Major' | 'Minor' | 'GE' | 'Library';
 
 export interface MajorWithSpecialization {
     major: MajorProgram;

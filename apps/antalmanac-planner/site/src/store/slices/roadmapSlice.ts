@@ -94,6 +94,7 @@ export const roadmapSlice = createSlice({
         showToast: false,
         toastAction: null as 'library' | null,
         selectedSidebarTab: 1,
+        selectedMobileTab: 0,
     },
     reducers: {
         // Roadmap Window State
@@ -223,6 +224,9 @@ export const roadmapSlice = createSlice({
             state.showMobileCatalog = true;
             state.currentYearAndQuarter = action.payload;
         },
+        setCurrentYearAndQuarter: (state, action: PayloadAction<{ year: number; quarter: number }>) => {
+            state.currentYearAndQuarter = action.payload;
+        },
         setShowMobileFullscreenSearch: (state, action: PayloadAction<boolean>) => {
             state.showMobileFullscreenSearch = action.payload;
         },
@@ -265,6 +269,9 @@ export const roadmapSlice = createSlice({
         setSelectedSidebarTab: (state, action: PayloadAction<number>) => {
             state.selectedSidebarTab = action.payload;
         },
+        setSelectedMobileTab: (state, action: PayloadAction<number>) => {
+            state.selectedMobileTab = action.payload;
+        },
     },
 });
 
@@ -277,6 +284,7 @@ export const {
     setInvalidCourses,
     hideMobileCatalog,
     showMobileCatalog,
+    setCurrentYearAndQuarter,
     setShowMobileFullscreenSearch,
     setShowAddCourse,
     setPlanIndex,
@@ -296,6 +304,7 @@ export const {
     updateRoadmapCustomCourse,
     removeCustomCourseFromRoadmap,
     setSelectedSidebarTab,
+    setSelectedMobileTab,
     setToastAction,
 } = roadmapSlice.actions;
 
