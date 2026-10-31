@@ -19,6 +19,7 @@ import {
     setSelectedMobileTab,
     setShowMobileFullscreenSearch,
     setShowToast,
+    setCurrentYearAndQuarter,
     setSelectedSidebarTab,
     showMobileCatalog,
 } from '../../store/slices/roadmapSlice';
@@ -137,6 +138,7 @@ const RoadmapPage: FC = () => {
                 dispatch(setShowMobileFullscreenSearch(false));
                 break;
             case 3:
+                dispatch(setCurrentYearAndQuarter({ year: 0, quarter: 0 }));
                 dispatch(hideMobileCatalog());
                 dispatch(setShowMobileFullscreenSearch(true));
                 break;

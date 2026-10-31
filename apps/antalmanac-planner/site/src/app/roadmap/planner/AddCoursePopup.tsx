@@ -22,6 +22,7 @@ import {
     selectCurrentPlan,
     setSelectedMobileTab,
     setShowAddCourse,
+    setShowMobileFullscreenSearch,
 } from '../../../store/slices/roadmapSlice';
 
 const AddCoursePopup: FC = () => {
@@ -53,6 +54,7 @@ const AddCoursePopup: FC = () => {
 
         // hide the search bar to view the roadmap
         dispatch(hideMobileCatalog());
+        dispatch(setShowMobileFullscreenSearch(false));
         dispatch(setSelectedMobileTab(0));
         closePopup();
     };
