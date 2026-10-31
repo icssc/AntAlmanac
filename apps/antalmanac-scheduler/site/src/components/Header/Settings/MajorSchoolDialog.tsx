@@ -8,6 +8,8 @@ import { MAJOR_SCHOOLS_MAP } from '@packages/antalmanac-types';
 import { memo, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+const MAX_MAJORS = 3;
+
 interface MajorSchoolDialogProps {
     open: boolean;
     onClose: () => void;
@@ -33,8 +35,10 @@ const MajorField = memo(({ value, onChange }: MajorFieldProps) => {
     return (
         <Autocomplete
             multiple
+            sx={{ '& .MuiChip-label': { fontSize: '1rem' } }}
             value={value}
             options={options}
+            getOptionDisabled={(option) => value.length >= MAX_MAJORS && !value.includes(option)}
             autoHighlight
             openOnFocus
             getOptionLabel={(option) => ALL_MAJORS[option] ?? option}
@@ -66,6 +70,7 @@ const SchoolField = memo(({ value, onChange }: SchoolFieldProps) => {
     return (
         <Autocomplete
             multiple
+            sx={{ '& .MuiChip-label': { fontSize: '1rem' } }}
             value={value}
             options={options}
             autoHighlight
