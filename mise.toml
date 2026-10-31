@@ -1,0 +1,9 @@
+[tools]
+node = "22"
+pnpm = "10.22.0"
+
+[tasks.setup]
+description = "Set up or verify the development environment"
+run = "pnpm run setup"
+raw = true
+quiet = true

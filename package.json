@@ -19,8 +19,11 @@
         "test": "pnpm --filter @antalmanac-planner test && vitest",
         "format": "oxfmt",
         "lint": "oxfmt --check && oxlint --deny-warnings",
-        "check-tsc": "pnpm --filter antalmanac check-tsc",
-        "get-data": "pnpm --filter @antalmanac-scheduler get-data"
+        "check-tsc": "pnpm --filter antalmanac check-tsc && pnpm --filter setup check-tsc",
+        "get-data": "pnpm --filter @antalmanac-scheduler get-data",
+        "setup": "pnpm install --frozen-lockfile --filter setup... --loglevel error && pnpm --dir setup --silent start",
+        "db:start": "docker compose up -d --wait --wait-timeout 120 db",
+        "db:stop": "docker compose stop db"
     },
     "devDependencies": {
         "@total-typescript/tsconfig": "^1.0.4",
