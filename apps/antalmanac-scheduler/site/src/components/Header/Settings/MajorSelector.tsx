@@ -12,7 +12,7 @@ const ALL_MAJORS: Record<string, string> = generatedMajors;
 
 export function MajorSelector() {
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
-    const [major, schools] = useUserInfoStore(useShallow((state) => [state.major, state.schools]));
+    const [majors, schools] = useUserInfoStore(useShallow((state) => [state.majors, state.schools]));
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => setOpen(true), []);
@@ -29,13 +29,15 @@ export function MajorSelector() {
                     Major & School
                 </Typography>
                 <Button size="small" startIcon={<Edit />} onClick={handleOpen}>
-                    {major ? 'Edit' : 'Add'}
+                    {majors ? 'Edit' : 'Add'}
                 </Button>
             </Stack>
 
-            {major && schools ? (
+            {majors && schools ? (
                 <>
-                    <Typography variant="body2">{ALL_MAJORS[major] ?? major}</Typography>
+                    <Typography variant="body2">
+                        {majors.map((major) => ALL_MAJORS[major] ?? major).join(', ')}
+                    </Typography>
                     <Typography variant="body2" color="text.secondary">
                         {schools.join(', ')}
                     </Typography>
