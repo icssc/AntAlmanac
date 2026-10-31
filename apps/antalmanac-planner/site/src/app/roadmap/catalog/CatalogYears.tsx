@@ -4,6 +4,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { MenuItem, Select, Tooltip, IconButton } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { FC, useState } from 'react';
 
 import { getCatalogYearDefaults, formatCatalogYear } from '../../../helpers/courseRequirements';
@@ -31,6 +32,13 @@ const CatalogYears: FC<CatalogYearsProps> = ({ catalogYear, tab, onChange }) => 
         }
     };
 
+    const handleSelectChange = async (event: SelectChangeEvent) => {
+        const newValue = event.target.value;
+        setSelected(newValue);
+        await onChange(newValue);
+        setEditing(false);
+    };
+
     return (
         <div className="catalog-years">
             {!editing && (
@@ -45,24 +53,29 @@ const CatalogYears: FC<CatalogYearsProps> = ({ catalogYear, tab, onChange }) => 
                     }}
                     disableInteractive
                 >
-                    <span className="catalog-year-title">{selectedDisp}</span>
+                    <span className="catalog-year-title">Catalog Year: {selectedDisp}</span>
                 </Tooltip>
             )}
             {editing && (
-                <Select
-                    size="xsmall"
-                    IconComponent={KeyboardArrowDownIcon}
-                    labelId="catalog-year-select-label"
-                    id="catalog-year-select"
-                    value={selected}
-                    onChange={(event) => setSelected(event.target.value)}
-                >
-                    {catalogYearOptions.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </Select>
+                <>
+                    <span className="catalog-year-title" id="catalog-year-select-label">
+                        Catalog Year:
+                    </span>
+                    <Select
+                        size="xsmall"
+                        IconComponent={KeyboardArrowDownIcon}
+                        labelId="catalog-year-select-label"
+                        id="catalog-year-select"
+                        value={selected}
+                        onChange={handleSelectChange}
+                    >
+                        {catalogYearOptions.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </>
             )}
             <IconButton
                 className={editing ? 'confirm-btn' : 'edit-btn'}
