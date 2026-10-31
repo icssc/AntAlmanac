@@ -18,6 +18,7 @@ import { usePlannerStore } from '$stores/PlannerStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { useUserInfoStore } from '$stores/UserInfoStore';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -41,6 +42,8 @@ export const AuthInitializer = () => {
 
     const loadNotifications = useNotificationStore((state) => state.loadNotifications);
 
+    const loadUserInfo = useUserInfoStore((state) => state.loadUserInfo);
+
     const { data: sessionData, isPending: isSessionPending } = authClient.useSession();
 
     const postHog = usePostHog();
@@ -53,6 +56,7 @@ export const AuthInitializer = () => {
     const handleInitialized = () => {
         setOpenLoadingSchedule(false);
         loadNotifications();
+        loadUserInfo();
         if (useSessionStore.getState().areSchedulesLoaded) {
             void loadPlannerRoadmaps();
         }
