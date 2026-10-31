@@ -140,7 +140,7 @@ export async function fetchUserDataByUserId(db: DatabaseOrTransaction, userId: s
 /**
  * Updates user's major and school
  */
-export async function updateUserMajorSchools(
+export async function updateUserMajorsSchools(
     db: DatabaseOrTransaction,
     userId: string,
     majors: string[],
@@ -158,7 +158,7 @@ export async function updateUserMajorSchools(
 /**
  * Get user's major and school
  */
-export async function getUserMajorSchools(db: DatabaseOrTransaction, userId: string) {
+export async function getUserMajorsSchools(db: DatabaseOrTransaction, userId: string) {
     const user = await db
         .select()
         .from(users)
