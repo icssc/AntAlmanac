@@ -143,13 +143,13 @@ export async function fetchUserDataByUserId(db: DatabaseOrTransaction, userId: s
 export async function updateUserMajorSchools(
     db: DatabaseOrTransaction,
     userId: string,
-    major: string,
+    majors: string[],
     schools: string[]
 ) {
     await db
         .update(users)
         .set({
-            major: major,
+            majors: majors,
             schools: schools,
         })
         .where(eq(users.id, userId));
@@ -171,7 +171,7 @@ export async function getUserMajorSchools(db: DatabaseOrTransaction, userId: str
 
     return {
         id: user.id,
-        major: user.major,
+        majors: user.majors,
         schools: user.schools,
     };
 }
