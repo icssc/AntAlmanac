@@ -40,7 +40,10 @@ export const users = pgTable('users', {
      *
      * Used to generate warning about course restrictions
      */
-    major: text('major'),
+    majors: text('majors')
+        .array()
+        .notNull()
+        .default(sql`'{}'::text[]`),
     schools: text('schools')
         .array()
         .notNull()
