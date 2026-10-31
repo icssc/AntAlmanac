@@ -16,15 +16,15 @@ interface MajorSchoolDialogProps {
 const ALL_MAJORS: Record<string, string> = generatedMajors;
 
 interface MajorFieldProps {
-    value: string | null;
-    onChange: (major: string | null) => void;
+    value: string[];
+    onChange: (major: string[]) => void;
 }
 
 const MajorField = memo(({ value, onChange }: MajorFieldProps) => {
     const options = Object.keys(ALL_MAJORS);
 
     const handleChange = useCallback(
-        (_: unknown, option: string | null) => {
+        (_: unknown, option: string[]) => {
             onChange(option);
         },
         [onChange]
@@ -32,7 +32,8 @@ const MajorField = memo(({ value, onChange }: MajorFieldProps) => {
 
     return (
         <Autocomplete
-            value={value && value in ALL_MAJORS ? value : null}
+            multiple
+            value={value}
             options={options}
             autoHighlight
             openOnFocus
@@ -80,27 +81,27 @@ const SchoolField = memo(({ value, onChange }: SchoolFieldProps) => {
 SchoolField.displayName = 'SchoolField';
 
 export function MajorSchoolDialog({ open, onClose }: MajorSchoolDialogProps) {
-    const [savedMajor, savedSchools, setMajorSchools] = useUserInfoStore(
-        useShallow((state) => [state.major, state.schools, state.setMajorSchools])
+    const [savedMajors, savedSchools, setMajorSchools] = useUserInfoStore(
+        useShallow((state) => [state.majors, state.schools, state.setMajorSchools])
     );
 
-    const [major, setMajor] = useState<string | null>(savedMajor);
+    const [majors, setMajor] = useState<string[]>(savedMajors);
     const [schools, setSchools] = useState<School[]>(savedSchools);
 
-    const handleMajorChange = useCallback((newMajor: string | null) => {
-        setMajor(newMajor);
-        const majorSchools = newMajor ? MAJOR_SCHOOLS_MAP[newMajor] : undefined;
+    const handleMajorChange = useCallback((newMajors: string[]) => {
+        setMajor(newMajors);
+        const majorSchools = newMajors.flatMap((major) => MAJOR_SCHOOLS_MAP[major] ?? []);
         if (majorSchools) {
             setSchools([...majorSchools]);
         }
     }, []);
 
     const handleSave = useCallback(() => {
-        if (major && schools) {
-            void setMajorSchools(major, schools);
+        if (majors && schools) {
+            void setMajorSchools(majors, schools);
             onClose();
         }
-    }, [major, schools, setMajorSchools, onClose]);
+    }, [majors, schools, setMajorSchools, onClose]);
 
     return (
         <Dialog
@@ -116,7 +117,7 @@ export function MajorSchoolDialog({ open, onClose }: MajorSchoolDialogProps) {
                     <DialogContentText>
                         Used to warn you when a section may be restricted. Check Webreg to be sure.
                     </DialogContentText>
-                    <MajorField value={major} onChange={handleMajorChange} />
+                    <MajorField value={majors} onChange={handleMajorChange} />
                     <SchoolField value={schools} onChange={setSchools} />
                 </Stack>
             </DialogContent>
@@ -124,7 +125,7 @@ export function MajorSchoolDialog({ open, onClose }: MajorSchoolDialogProps) {
                 <Button onClick={onClose} color="inherit">
                     Cancel
                 </Button>
-                <Button onClick={handleSave} variant="contained" disabled={!major || schools.length === 0}>
+                <Button onClick={handleSave} variant="contained" disabled={majors.length === 0 || schools.length === 0}>
                     Save
                 </Button>
             </DialogActions>
