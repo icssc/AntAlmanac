@@ -140,12 +140,17 @@ export async function fetchUserDataByUserId(db: DatabaseOrTransaction, userId: s
 /**
  * Updates user's major and school
  */
-export async function updateUserMajor(db: DatabaseOrTransaction, userId: string, major: string, school: string) {
+export async function updateUserMajorSchools(
+    db: DatabaseOrTransaction,
+    userId: string,
+    major: string,
+    schools: string[]
+) {
     await db
         .update(users)
         .set({
             major: major,
-            school: school,
+            schools: schools,
         })
         .where(eq(users.id, userId));
 }
@@ -153,7 +158,7 @@ export async function updateUserMajor(db: DatabaseOrTransaction, userId: string,
 /**
  * Get user's major and school
  */
-export async function getUserMajorSchool(db: DatabaseOrTransaction, userId: string) {
+export async function getUserMajorSchools(db: DatabaseOrTransaction, userId: string) {
     const user = await db
         .select()
         .from(users)
@@ -167,6 +172,6 @@ export async function getUserMajorSchool(db: DatabaseOrTransaction, userId: stri
     return {
         id: user.id,
         major: user.major,
-        school: user.school,
+        schools: user.schools,
     };
 }
