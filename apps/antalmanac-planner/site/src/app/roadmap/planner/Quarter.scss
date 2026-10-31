@@ -130,6 +130,10 @@ div.quarter {
             }
         }
 
+        &.skeleton:empty::before {
+            visibility: hidden;
+        }
+
         .program-course-tile {
             border-radius: 0;
         }
