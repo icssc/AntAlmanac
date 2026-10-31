@@ -14,7 +14,10 @@ async function main() {
     console.log(`Fetched ${majors.length} majors.`);
 
     const majorMap = Object.fromEntries(
-        majors.map((major: MajorsAPIResponse[number]) => [major.id, `${major.id}: ${major.name}`])
+        majors.map((major: MajorsAPIResponse[number]) => [
+            major.id,
+            `${major.name.includes('Psychology') ? major.name.slice(9, -7) : major.name.slice(9)}, ${major.id.slice(0, 2)}`,
+        ])
     );
 
     await mkdir(GENERATED_DIR, { recursive: true });
