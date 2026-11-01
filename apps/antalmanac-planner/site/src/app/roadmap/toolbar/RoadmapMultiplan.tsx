@@ -19,8 +19,7 @@ import {
     DialogActions,
     DialogContentText,
 } from '@mui/material';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { FC, ReactNode, useRef, useState } from 'react';
 import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
 import { makeUniquePlanName } from '../../../helpers/planner';
@@ -41,7 +40,7 @@ import {
 import { theme } from '../../../style/theme';
 import { RoadmapPlan } from '../../../types/roadmap';
 import ImportTranscriptPopup from './ImportTranscriptPopup';
-import ImportZot4PlanPopup, { ImportZot4PlanButton } from './ImportZot4PlanPopup';
+import ImportZot4PlanPopup from './ImportZot4PlanPopup';
 
 interface RoadmapSelectableItemProps {
     plan: RoadmapPlan;
@@ -83,7 +82,6 @@ interface MultiplanDropdownProps {
     setDeleteIndex: (index: number) => void;
     handleCreate: () => void;
     setNewPlanName: (name: string) => void;
-    onOpenZot4Plan: () => void;
     children?: ReactNode;
 }
 const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
@@ -92,7 +90,6 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
     setDeleteIndex,
     setNewPlanName,
     handleCreate,
-    onOpenZot4Plan,
 }) => {
     const dispatch = useAppDispatch();
     const allPlans = useAppSelector((state) => state.roadmap.plans);
@@ -180,7 +177,7 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
                         <span>Blank Roadmap</span>
                     </Button>
                     <ImportTranscriptPopup />
-                    <ImportZot4PlanButton onClick={onOpenZot4Plan} />
+                    <ImportZot4PlanPopup />
                 </div>
                 {children}
             </Popover>
@@ -189,41 +186,15 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
 };
 
 const RoadmapMultiplan: FC = () => {
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-    const router = useRouter();
     const dispatch = useAppDispatch();
     const allPlans = useAppSelector((state) => state.roadmap.plans);
     const currentPlanIndex = useAppSelector((state) => state.roadmap.currentPlanIndex);
     const [showAddPlan, setShowAddPlan] = useState(false);
     const [editIdx, setEditIdx] = useState(-1);
     const [delIdx, setDelIdx] = useState(-1);
-    const [showZot4Plan, setShowZot4Plan] = useState(false);
-    const [zot4PlanName, setZot4PlanName] = useState('');
     const [newPlanName, setNewPlanName] = useState(allPlans[currentPlanIndex].name);
     const nextPlanTempId = useAppSelector(getNextPlannerTempId);
     const isDuplicateName = () => allPlans.find((p) => p.name === newPlanName);
-
-    useEffect(() => {
-        const importedScheduleName = searchParams.get('z4p-import');
-        if (!importedScheduleName) return;
-
-        setZot4PlanName(importedScheduleName);
-        setShowZot4Plan(true);
-    }, [searchParams]);
-
-    const closeZot4Plan = () => {
-        setShowZot4Plan(false);
-        setZot4PlanName('');
-
-        // clear param so the modal doesn't unnecessarily reopen after we've completed the flow (either importing or closing)
-        if (searchParams.has('z4p-import')) {
-            const params = new URLSearchParams(searchParams.toString());
-            params.delete('z4p-import');
-            const query = params.toString();
-            router.replace(query ? `${pathname}?${query}` : pathname);
-        }
-    };
 
     const addNewPlan = (name: string) => {
         const yearPlans = deepCopy(initialPlanState.yearPlans);
@@ -301,116 +272,107 @@ const RoadmapMultiplan: FC = () => {
     };
 
     return (
-        <>
-            <MultiplanDropdown
-                handleCreate={openHandler}
-                setEditIndex={setEditIdx}
-                setDeleteIndex={setDelIdx}
-                setNewPlanName={setNewPlanName}
-                onOpenZot4Plan={() => setShowZot4Plan(true)}
-            >
-                {/* Create Roadmap Modal */}
-                <Dialog open={showAddPlan} onClose={() => setShowAddPlan(false)} fullWidth>
-                    <DialogTitle>New Roadmap</DialogTitle>
-                    <DialogContent>
-                        <Box
-                            component="form"
-                            noValidate
-                            onSubmit={(e) => {
-                                e.preventDefault(); // prevent submitting form (reloads the page)
-                                handleSubmitNewPlan();
+        <MultiplanDropdown
+            handleCreate={openHandler}
+            setEditIndex={setEditIdx}
+            setDeleteIndex={setDelIdx}
+            setNewPlanName={setNewPlanName}
+        >
+            {/* Create Roadmap Modal */}
+            <Dialog open={showAddPlan} onClose={() => setShowAddPlan(false)} fullWidth>
+                <DialogTitle>New Roadmap</DialogTitle>
+                <DialogContent>
+                    <Box
+                        component="form"
+                        noValidate
+                        onSubmit={(e) => {
+                            e.preventDefault(); // prevent submitting form (reloads the page)
+                            handleSubmitNewPlan();
+                        }}
+                    >
+                        <TextField
+                            variant="standard"
+                            label="Roadmap Name"
+                            type="text"
+                            value={newPlanName}
+                            onChange={(e) => setNewPlanName(e.target.value)}
+                            slotProps={{
+                                htmlInput: {
+                                    maxLength: 35,
+                                },
                             }}
-                        >
-                            <TextField
-                                variant="standard"
-                                label="Roadmap Name"
-                                type="text"
-                                value={newPlanName}
-                                onChange={(e) => setNewPlanName(e.target.value)}
-                                slotProps={{
-                                    htmlInput: {
-                                        maxLength: 35,
-                                    },
-                                }}
-                                placeholder={defaultPlan.name}
-                            />
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button variant="text" color="inherit" onClick={() => setShowAddPlan(false)}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" onClick={() => handleSubmitNewPlan()}>
-                            Create Roadmap
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                            placeholder={defaultPlan.name}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="text" color="inherit" onClick={() => setShowAddPlan(false)}>
+                        Cancel
+                    </Button>
+                    <Button type="submit" onClick={() => handleSubmitNewPlan()}>
+                        Create Roadmap
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
-                {/* Edit Roadmap Modal */}
-                <Dialog open={editIdx !== -1} onClose={() => setEditIdx(-1)} fullWidth>
-                    <DialogTitle>Edit Roadmap</DialogTitle>
-                    <DialogContent>
-                        <Box
-                            component="form"
-                            noValidate
-                            onSubmit={(e) => {
-                                e.preventDefault(); // prevent submitting form (reloads the page)
-                                modifyPlanName();
+            {/* Edit Roadmap Modal */}
+            <Dialog open={editIdx !== -1} onClose={() => setEditIdx(-1)} fullWidth>
+                <DialogTitle>Edit Roadmap</DialogTitle>
+                <DialogContent>
+                    <Box
+                        component="form"
+                        noValidate
+                        onSubmit={(e) => {
+                            e.preventDefault(); // prevent submitting form (reloads the page)
+                            modifyPlanName();
+                        }}
+                    >
+                        <TextField
+                            variant="standard"
+                            label="Roadmap Name"
+                            type="text"
+                            value={newPlanName}
+                            onChange={(e) => setNewPlanName(e.target.value)}
+                            slotProps={{
+                                htmlInput: {
+                                    maxLength: 35,
+                                },
                             }}
-                        >
-                            <TextField
-                                variant="standard"
-                                label="Roadmap Name"
-                                type="text"
-                                value={newPlanName}
-                                onChange={(e) => setNewPlanName(e.target.value)}
-                                slotProps={{
-                                    htmlInput: {
-                                        maxLength: 35,
-                                    },
-                                }}
-                                placeholder={defaultPlan.name}
-                            />
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button variant="text" color="inherit" onClick={() => setEditIdx(-1)}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" onClick={() => modifyPlanName()}>
-                            Save Roadmap
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                            placeholder={defaultPlan.name}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="text" color="inherit" onClick={() => setEditIdx(-1)}>
+                        Cancel
+                    </Button>
+                    <Button type="submit" onClick={() => modifyPlanName()}>
+                        Save Roadmap
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
-                {/* Delete Roadmap Modal */}
-                <Dialog open={delIdx !== -1} onClose={() => setDelIdx(-1)} fullWidth>
-                    <DialogTitle>{allPlans.length === 1 ? 'Clear Roadmap' : 'Delete Roadmap'}</DialogTitle>
-                    <DialogContent>
-                        <Box component="form" noValidate>
-                            <DialogContentText>
-                                Are you sure you want to {allPlans.length === 1 ? 'clear' : 'delete'} the roadmap "
-                                {newPlanName}"?
-                            </DialogContentText>
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button variant="text" color="inherit" onClick={() => setDelIdx(-1)}>
-                            Cancel
-                        </Button>
-                        <Button color="error" onClick={() => deleteCurrentPlan()}>
-                            I am sure
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </MultiplanDropdown>
-            <ImportZot4PlanPopup
-                open={showZot4Plan}
-                onClose={closeZot4Plan}
-                scheduleName={zot4PlanName}
-                onScheduleNameChange={setZot4PlanName}
-            />
-        </>
+            {/* Delete Roadmap Modal */}
+            <Dialog open={delIdx !== -1} onClose={() => setDelIdx(-1)} fullWidth>
+                <DialogTitle>{allPlans.length === 1 ? 'Clear Roadmap' : 'Delete Roadmap'}</DialogTitle>
+                <DialogContent>
+                    <Box component="form" noValidate>
+                        <DialogContentText>
+                            Are you sure you want to {allPlans.length === 1 ? 'clear' : 'delete'} the roadmap "
+                            {newPlanName}"?
+                        </DialogContentText>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="text" color="inherit" onClick={() => setDelIdx(-1)}>
+                        Cancel
+                    </Button>
+                    <Button color="error" onClick={() => deleteCurrentPlan()}>
+                        I am sure
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </MultiplanDropdown>
     );
 };
 
