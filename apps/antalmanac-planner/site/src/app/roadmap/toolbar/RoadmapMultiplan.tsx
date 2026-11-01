@@ -27,6 +27,7 @@ import { addPlanner, deletePlanner, reorderPlannersRevision, updatePlannerName }
 import { planSortable } from '../../../helpers/sortable';
 import { deepCopy } from '../../../helpers/util';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { setCHCRequirements } from '../../../store/slices/courseRequirementsSlice';
 import {
     defaultPlan,
     getNextPlannerTempId,
@@ -152,6 +153,7 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
                             plan={plan}
                             index={index}
                             clickHandler={() => {
+                                dispatch(setCHCRequirements([]));
                                 dispatch(setPlanIndex(index));
                                 setShowDropdown(false);
                             }}
