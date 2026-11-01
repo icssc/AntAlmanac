@@ -8,6 +8,7 @@ export interface MajorWithSpecialization {
     selectedSpec: MajorSpecialization | null;
     specializations: MajorSpecialization[];
     requirements: ProgramRequirement[];
+    schoolRequirementCount?: number;
     catalogYear: string | null;
     fallbackCatalogYear: string | null;
 }
@@ -74,10 +75,18 @@ const courseRequirementsSlice = createSlice({
                 major.specializations = action.payload.specializations;
             }
         },
-        setRequirements: (state, action: PayloadAction<{ majorId: string; requirements: ProgramRequirement[] }>) => {
+        setRequirements: (
+            state,
+            action: PayloadAction<{
+                majorId: string;
+                requirements: ProgramRequirement[];
+                schoolRequirementCount?: number;
+            }>
+        ) => {
             const major = state.selectedMajors.find((m) => m.major.id === action.payload.majorId);
             if (major) {
                 major.requirements = action.payload.requirements;
+                major.schoolRequirementCount = action.payload.schoolRequirementCount ?? 0;
             }
         },
         setMajorCatalogYear: (state, action: PayloadAction<{ majorId: string; catalogYear: string | null }>) => {

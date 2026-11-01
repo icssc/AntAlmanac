@@ -72,13 +72,12 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
     const setOpen = (isOpen: boolean) => {
         dispatch(setGroupExpanded({ storeKey: storeKeyPrefix, expanded: isOpen }));
     };
-
     const { major, selectedSpec, specializations } = majorWithSpec;
     const hasSpecs = major.specializationRequired || major.specializations.length > 0 || specializations.length > 0;
     const specOptions = specializations.map((s) => ({ value: s, label: s.name }));
     const noSpec = useMemo(() => ({ id: noSpecId, majorId: major.id, name: 'No Specialization' }), [major.id]);
     const fallbackCatalogYear = majorWithSpec.fallbackCatalogYear ?? null;
-
+    const schoolCount = majorWithSpec.schoolRequirementCount ?? 0;
     if (specOptions.length > 0 && !major.specializationRequired) {
         specOptions.unshift({ value: noSpec, label: noSpec.name });
     }
@@ -109,7 +108,7 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
 
             try {
                 const result = await getCoursesForMajor(majorId, specId, effectiveCatalogYear);
-                const { requirements, catalogYear: returnedYear } = result;
+                const { requirements, schoolRequirementCount, catalogYear: returnedYear } = result;
 
                 // If API resolved to a different year than requested, set fallback
                 if (returnedYear && returnedYear !== effectiveCatalogYear) {
@@ -118,7 +117,7 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
 
                 const specRequirements = await getCoursesForSpecialization(specId, effectiveCatalogYear);
                 requirements.push(...specRequirements);
-                dispatch(setRequirements({ majorId, requirements }));
+                dispatch(setRequirements({ majorId, requirements, schoolRequirementCount }));
             } finally {
                 setResultsLoading(false);
             }
@@ -248,7 +247,8 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
                     <LoadingSpinner />
                 ) : (
                     <ProgramRequirementsList
-                        requirements={majorWithSpec.requirements}
+                        requirements={majorWithSpec.requirements.slice(schoolCount)}
+                        schoolRequirements={majorWithSpec.requirements.slice(0, schoolCount)}
                         storeKeyPrefix={storeKeyPrefix}
                     />
                 )}
