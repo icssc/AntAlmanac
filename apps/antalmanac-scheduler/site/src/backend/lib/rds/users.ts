@@ -136,3 +136,42 @@ export async function fetchUserDataByUserId(db: DatabaseOrTransaction, userId: s
         },
     };
 }
+
+/**
+ * Updates user's major and school
+ */
+export async function updateUserMajorsSchools(
+    db: DatabaseOrTransaction,
+    userId: string,
+    majors: string[],
+    schools: string[]
+) {
+    await db
+        .update(users)
+        .set({
+            majors: majors,
+            schools: schools,
+        })
+        .where(eq(users.id, userId));
+}
+
+/**
+ * Get user's major and school
+ */
+export async function getUserMajorsSchools(db: DatabaseOrTransaction, userId: string) {
+    const user = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .then((res) => res[0] ?? null);
+
+    if (!user) {
+        return null;
+    }
+
+    return {
+        id: user.id,
+        majors: user.majors,
+        schools: user.schools,
+    };
+}
