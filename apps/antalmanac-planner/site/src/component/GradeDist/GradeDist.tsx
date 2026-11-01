@@ -7,6 +7,7 @@ import { FC, useState, useEffect, useCallback } from 'react';
 
 import { getAggregateGradeData, getDiffAndColor } from '../../helpers/gradeDist';
 import { getAvgDifficulty, getAvgRating } from '../../helpers/reviews';
+import { wrapSkeleton } from '../../helpers/skeleton';
 import { shortenQuarter } from '../../helpers/util';
 import { useAppSelector } from '../../store/hooks';
 import trpc from '../../trpc';
@@ -18,6 +19,7 @@ interface GradeDistProps {
     course?: CourseGQLData;
     professor?: ProfessorGQLData;
     minify?: boolean;
+    skeleton?: boolean;
 }
 
 interface Entry {
@@ -55,6 +57,7 @@ const GradeDist: FC<GradeDistProps> = (props) => {
      * Initialize a GradeDist block on the webpage.
      * @param props attributes received from the parent element
      */
+    const { skeleton = false } = props;
 
     const [gradeDistData, setGradeDistData] = useState<GradesRaw>();
     const [chartType, setChartType] = useState<ChartTypes>('bar');
@@ -68,20 +71,21 @@ const GradeDist: FC<GradeDistProps> = (props) => {
 
     const reviews = useAppSelector((state) => state.review.reviews);
 
+    const { course, professor } = props;
     const fetchGradeData = useCallback(() => {
-        fetchGradeDistData(props)
+        fetchGradeDistData({ course, professor })
             .then(setGradeDistData)
             .catch((error) => {
                 setGradeDistData([]);
                 console.error(error.response);
             });
-    }, [props]);
+    }, [course, professor]);
 
     // reset any data from a previous course or professor, get new data for course or professor
     useEffect(() => {
         setGradeDistData(null!);
-        fetchGradeData();
-    }, [fetchGradeData]);
+        if (!skeleton) fetchGradeData();
+    }, [fetchGradeData, skeleton]);
 
     /*
      * Create an array of objects to feed into the professor dropdown menu.
@@ -212,36 +216,42 @@ const GradeDist: FC<GradeDistProps> = (props) => {
             )}
 
             <div className="gradedist-filter">
-                <Autocomplete
-                    disableClearable
-                    options={profCourseOptions ?? [ALL_INSTRUCTORS]}
-                    value={profCourseOptions?.find((q) => q.value === profCourseSelectedValue) ?? ALL_INSTRUCTORS}
-                    onChange={(_, newValue) => updateProfCourse(newValue?.value ?? null)}
-                    getOptionLabel={(option) => option.text}
-                    isOptionEqualToValue={(option, value) => option.value === value.value}
-                    renderInput={(params) => (
-                        <TextField {...params} size="small" placeholder={props.course ? 'Instructor' : 'Course'} />
-                    )}
-                />
+                {wrapSkeleton(
+                    <Autocomplete
+                        disableClearable
+                        options={profCourseOptions ?? [ALL_INSTRUCTORS]}
+                        value={profCourseOptions?.find((q) => q.value === profCourseSelectedValue) ?? ALL_INSTRUCTORS}
+                        onChange={(_, newValue) => updateProfCourse(newValue?.value ?? null)}
+                        getOptionLabel={(option) => option.text}
+                        isOptionEqualToValue={(option, value) => option.value === value.value}
+                        renderInput={(params) => (
+                            <TextField {...params} size="small" placeholder={props.course ? 'Instructor' : 'Course'} />
+                        )}
+                    />,
+                    skeleton
+                )}
             </div>
 
             <div className="gradedist-filter">
-                <Select
-                    value={selectedQuarter}
-                    onChange={(e) => setSelectedQuarter(e.target.value)}
-                    renderValue={() => {
-                        return selectedQuarterName;
-                    }}
-                    displayEmpty
-                >
-                    {quarterEntries?.map((q) => {
-                        return (
-                            <MenuItem key={q.value} value={q.value}>
-                                {q.text}
-                            </MenuItem>
-                        );
-                    })}
-                </Select>
+                {wrapSkeleton(
+                    <Select
+                        value={selectedQuarter}
+                        onChange={(e) => setSelectedQuarter(e.target.value)}
+                        renderValue={() => {
+                            return selectedQuarterName;
+                        }}
+                        displayEmpty
+                    >
+                        {quarterEntries?.map((q) => {
+                            return (
+                                <MenuItem key={q.value} value={q.value}>
+                                    {q.text}
+                                </MenuItem>
+                            );
+                        })}
+                    </Select>,
+                    skeleton
+                )}
             </div>
         </div>
     );
