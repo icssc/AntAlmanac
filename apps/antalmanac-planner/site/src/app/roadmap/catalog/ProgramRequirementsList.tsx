@@ -330,6 +330,7 @@ interface GroupHeaderProps {
     overridden: boolean;
     canOverride: boolean; // whether a requirement has already been fulfilled by courses taken
     setOverride: (override: boolean) => void;
+    showStatusIcon?: boolean;
 }
 const GroupHeader: FC<GroupHeaderProps> = ({
     title,
@@ -341,6 +342,7 @@ const GroupHeader: FC<GroupHeaderProps> = ({
     overridden,
     canOverride,
     setOverride,
+    showStatusIcon = true,
 }) => {
     const className = `group-header ${open ? 'open' : ''}`;
     const [showOverrideModal, setShowOverrideModal] = useState(false);
@@ -366,28 +368,29 @@ const GroupHeader: FC<GroupHeaderProps> = ({
         <>
             <ClickableDiv className={className} onClick={() => setOpen(!open)}>
                 <span className="group-header-title">
-                    {canOverride ? (
-                        <span
-                            role="button"
-                            tabIndex={0}
-                            className="override-icon-btn"
-                            data-testid={'override-' + requirementId}
-                            aria-label={`Force complete ${title}`}
-                            aria-pressed={overridden}
-                            onClick={toggleOverride}
-                            onKeyDown={(e) => {
-                                if (e.key !== 'Enter' && e.key !== ' ') return;
-                                e.preventDefault();
-                                toggleOverride(e);
-                            }}
-                        >
-                            {statusIcon}
-                        </span>
-                    ) : (
-                        <span className="override-icon-inert" aria-disabled="true" title="Already completed">
-                            {statusIcon}
-                        </span>
-                    )}
+                    {showStatusIcon &&
+                        (canOverride ? (
+                            <span
+                                role="button"
+                                tabIndex={0}
+                                className="override-icon-btn"
+                                data-testid={'override-' + requirementId}
+                                aria-label={`Force complete ${title}`}
+                                aria-pressed={overridden}
+                                onClick={toggleOverride}
+                                onKeyDown={(e) => {
+                                    if (e.key !== 'Enter' && e.key !== ' ') return;
+                                    e.preventDefault();
+                                    toggleOverride(e);
+                                }}
+                            >
+                                {statusIcon}
+                            </span>
+                        ) : (
+                            <span className="override-icon-inert" aria-disabled="true" title="Already completed">
+                                {statusIcon}
+                            </span>
+                        ))}
 
                     <b>{title}</b>
                 </span>
@@ -466,8 +469,9 @@ interface CourseRequirementProps {
     data: ProgramRequirement<'Course' | 'Unit'>;
     takenCourseIDs: CompletedCourseSet;
     storeKey: string;
+    showStatusIcon?: boolean;
 }
-const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
+const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, storeKey, showStatusIcon }) => {
     const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
     const pastCompletion = useCompletionCheck(pastCourses, data);
     const complete = pastCompletion.done;
@@ -524,6 +528,7 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
                     overridden={overridden}
                     canOverride={!complete}
                     setOverride={setOverride}
+                    showStatusIcon={showStatusIcon}
                 />
                 <Collapse in={open} unmountOnExit>
                     {showLabel && (
@@ -610,8 +615,9 @@ interface GroupRequirementProps {
     data: ProgramRequirement<'Group'>;
     takenCourseIDs: CompletedCourseSet;
     storeKey: string;
+    showStatusIcon?: boolean;
 }
-const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
+const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, storeKey, showStatusIcon }) => {
     const pastCourses = filterCourseByTiming(takenCourseIDs, 'taken');
     const pastCompletion = useCompletionCheck(pastCourses, data);
     const complete = pastCompletion.done;
@@ -658,6 +664,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
                     overridden={overridden}
                     canOverride={!complete}
                     setOverride={setOverride}
+                    showStatusIcon={showStatusIcon}
                 />
                 <Collapse in={open} unmountOnExit>
                     <p className="requirement-label">
@@ -678,6 +685,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
                             requirement={r}
                             nested
                             takenCourseIDs={takenCourseIDs}
+                            showStatusIcon={showStatusIcon}
                         />
                     ))}
                 </Collapse>
@@ -721,12 +729,14 @@ interface ProgramRequirementDisplayProps {
     nested?: boolean;
     takenCourseIDs: CompletedCourseSet;
     storeKey: string;
+    showStatusIcon?: boolean;
 }
 const ProgramRequirementDisplay: FC<ProgramRequirementDisplayProps> = ({
     requirement,
     nested,
     takenCourseIDs,
     storeKey,
+    showStatusIcon,
 }) => {
     switch (requirement.requirementType) {
         case 'Unit':
@@ -734,11 +744,23 @@ const ProgramRequirementDisplay: FC<ProgramRequirementDisplayProps> = ({
             return nested ? (
                 <GroupedCourseRequirement data={requirement} storeKey={storeKey} takenCourseIDs={takenCourseIDs} />
             ) : (
-                <CourseRequirement data={requirement} storeKey={storeKey} takenCourseIDs={takenCourseIDs} />
+                <CourseRequirement
+                    data={requirement}
+                    storeKey={storeKey}
+                    takenCourseIDs={takenCourseIDs}
+                    showStatusIcon={showStatusIcon}
+                />
             );
         }
         case 'Group':
-            return <GroupRequirement data={requirement} storeKey={storeKey} takenCourseIDs={takenCourseIDs} />;
+            return (
+                <GroupRequirement
+                    data={requirement}
+                    storeKey={storeKey}
+                    takenCourseIDs={takenCourseIDs}
+                    showStatusIcon={showStatusIcon}
+                />
+            );
         case 'Marker':
             return <MarkerRequirement data={requirement} storeKey={storeKey} />;
     }
@@ -757,12 +779,14 @@ interface RequireCourseListProps {
     schoolRequirements?: ProgramRequirement[];
     storeKeyPrefix: string;
     skipCollapseSingletons?: boolean;
+    showStatusIcon?: boolean;
 }
 const ProgramRequirementsList: FC<RequireCourseListProps> = ({
     requirements,
     schoolRequirements,
     storeKeyPrefix,
     skipCollapseSingletons,
+    showStatusIcon = true,
 }) => {
     const transferredCourses = useTransferredCredits().courses;
     const roadmapPlans = useAppSelector((state) => state.roadmap.plans);
@@ -781,6 +805,7 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
                 key={`${section}-${i}`}
                 storeKey={section === 'school' ? `${storeKeyPrefix}-school-${i}` : `${storeKeyPrefix}-${i}`}
                 takenCourseIDs={takenCourseSet}
+                showStatusIcon={showStatusIcon}
             />
         ));
     const currentQuarter = useAppSelector((state) => state.schedule.currentQuarter);
