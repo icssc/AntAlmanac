@@ -33,7 +33,6 @@ const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
     color: '#551a8b',
     days: [false, false, false, false, false, false, false],
     building: undefined,
-    notes: '',
 };
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
@@ -59,7 +58,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const [building, setBuilding] = useState<string | undefined>(
         props.customEvent?.building ?? defaultCustomEventValues.building
     );
-    const [notes, setNotes] = useState(props.customEvent?.notes ?? defaultCustomEventValues.notes);
+    const [notes, setNotes] = useState(props.customEvent?.notes ?? '');
 
     const postHog = usePostHog();
 
@@ -82,7 +81,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(props.customEvent.title);
             setDays(props.customEvent.days);
             setBuilding(props.customEvent.building);
-            setNotes(props.customEvent.notes ?? defaultCustomEventValues.notes);
+            setNotes(props.customEvent.notes ?? '');
             setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent.customEventID));
         } else {
             setStart(defaultCustomEventValues.start);
@@ -90,7 +89,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(defaultCustomEventValues.title);
             setDays(defaultCustomEventValues.days);
             setBuilding(defaultCustomEventValues.building);
-            setNotes(defaultCustomEventValues.notes);
+            setNotes('');
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
         }
         setOpen(true);
@@ -144,7 +143,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             end: end,
             customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
-            notes: notes?.trim() || undefined,
+            notes: notes.trim() || undefined,
         };
 
         if (props.customEvent) {
