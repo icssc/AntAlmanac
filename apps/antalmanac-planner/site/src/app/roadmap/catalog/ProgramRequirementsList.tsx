@@ -46,6 +46,7 @@ import trpc from '../../../trpc';
 import { CourseGQLData, PlannerCourseData } from '../../../types/types';
 import { CourseNameAndInfo } from '../planner/Course';
 import MenuTile from '../transfers/MenuTile';
+import CatalogOfferingFilter, { useCatalogOfferingStatus } from './CatalogOfferingFilter';
 
 const DEPARTMENT_GROUPING_COURSE_THRESHOLD = 30;
 const COURSE_ID_DEPARTMENT_OVERRIDES = ['IN4MATX'];
@@ -72,6 +73,7 @@ interface CourseTileProps {
     dragTimestamp?: number;
 }
 const CourseTile: FC<CourseTileProps> = ({ courseID, completedBy, dragTimestamp = 0 }) => {
+    const offeringStatus = useCatalogOfferingStatus(courseID);
     const [courseData, setCourseData] = useState<string | CourseGQLData>(courseID);
     const [loading, setLoading] = useState(false);
     const isMobile = useIsMobile();
@@ -124,7 +126,11 @@ const CourseTile: FC<CourseTileProps> = ({ courseID, completedBy, dragTimestamp 
     }
 
     return (
-        <div className={className} {...tappableCourseProps} style={{ fontSize }}>
+        <div
+            className={className}
+            {...tappableCourseProps}
+            style={{ fontSize, ...(offeringStatus === 'not-offered' ? { opacity: 0.4, filter: 'grayscale(1)' } : {}) }}
+        >
             <SourceOverlay completedBy={completedBy} />
             <CourseNameAndInfo data={courseData} popupListener={handlePopoverStateChange} alwaysCollapse />
             {isMobile && loading && (
@@ -710,17 +716,19 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
     );
 
     return (
-        <div className="program-requirements">
-            {/* key is ok because we don't reorder these */}
-            {formattedRequirements.map((r, i) => (
-                <ProgramRequirementDisplay
-                    requirement={r}
-                    key={i}
-                    storeKey={`${storeKeyPrefix}-${i}`}
-                    takenCourseIDs={takenCourseSet}
-                />
-            ))}
-        </div>
+        <CatalogOfferingFilter requirements={requirements}>
+            <div className="program-requirements">
+                {/* key is ok because we don't reorder these */}
+                {formattedRequirements.map((r, i) => (
+                    <ProgramRequirementDisplay
+                        requirement={r}
+                        key={i}
+                        storeKey={`${storeKeyPrefix}-${i}`}
+                        takenCourseIDs={takenCourseSet}
+                    />
+                ))}
+            </div>
+        </CatalogOfferingFilter>
     );
 };
 
