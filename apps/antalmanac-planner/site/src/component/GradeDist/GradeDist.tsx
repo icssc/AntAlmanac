@@ -84,7 +84,9 @@ const GradeDist: FC<GradeDistProps> = (props) => {
     // reset any data from a previous course or professor, get new data for course or professor
     useEffect(() => {
         setGradeDistData(null!);
-        if (!skeleton) fetchGradeData();
+        if (!skeleton) {
+            fetchGradeData();
+        }
     }, [fetchGradeData, skeleton]);
 
     /*
