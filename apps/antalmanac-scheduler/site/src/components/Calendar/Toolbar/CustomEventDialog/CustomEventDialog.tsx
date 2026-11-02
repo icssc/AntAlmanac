@@ -33,6 +33,7 @@ const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
     color: '#551a8b',
     days: [false, false, false, false, false, false, false],
     building: undefined,
+    notes: '',
 };
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
@@ -58,6 +59,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const [building, setBuilding] = useState<string | undefined>(
         props.customEvent?.building ?? defaultCustomEventValues.building
     );
+    const [notes, setNotes] = useState(props.customEvent?.notes ?? defaultCustomEventValues.notes);
 
     const postHog = usePostHog();
 
@@ -80,6 +82,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(props.customEvent.title);
             setDays(props.customEvent.days);
             setBuilding(props.customEvent.building);
+            setNotes(props.customEvent.notes ?? defaultCustomEventValues.notes);
             setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent.customEventID));
         } else {
             setStart(defaultCustomEventValues.start);
@@ -87,6 +90,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(defaultCustomEventValues.title);
             setDays(defaultCustomEventValues.days);
             setBuilding(defaultCustomEventValues.building);
+            setNotes(defaultCustomEventValues.notes);
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
         }
         setOpen(true);
@@ -125,6 +129,10 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         setBuilding(building?.id);
     };
 
+    const handleNotesChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setNotes(event.target.value);
+    }, []);
+
     const handleAddToCalendar = () => {
         if (!days.some((day) => day) || scheduleIndices.length === 0) return;
 
@@ -136,6 +144,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             end: end,
             customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
+            notes: notes || undefined,
         };
 
         if (props.customEvent) {
@@ -209,6 +218,18 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={days} />
                     <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
+                    <FormControl fullWidth>
+                        <TextField
+                            label="Notes"
+                            fullWidth
+                            multiline
+                            value={notes}
+                            onChange={handleNotesChange}
+                            variant="outlined"
+                            color="secondary"
+                            slotProps={{ inputLabel: { variant: 'outlined' } }}
+                        />
+                    </FormControl>
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}

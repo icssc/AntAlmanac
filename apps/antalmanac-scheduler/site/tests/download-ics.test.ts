@@ -93,6 +93,7 @@ describe('download-ics', () => {
                 eventKind: 'custom',
                 days: ['M', 'W', 'F'],
                 building: 'placeholderCustomEventBuilding',
+                notes: '',
             },
         ];
 

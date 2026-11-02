@@ -152,7 +152,7 @@ export function CalendarEventDetail({ selectedEvent, closePopover }: CalendarEve
         );
     }
 
-    const { title, customEventID, building } = selectedEvent;
+    const { title, customEventID, building, notes } = selectedEvent;
     return (
         <Paper sx={{ padding: '0.5rem' }} ref={paperRef}>
             <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
@@ -162,6 +162,7 @@ export function CalendarEventDetail({ selectedEvent, closePopover }: CalendarEve
                     <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
                 </Box>
             )}
+            {notes && <Box sx={{ fontSize: '0.9rem', whiteSpace: 'pre-wrap' }}>{notes}</Box>}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <ColorPicker
                     color={selectedEvent.color}

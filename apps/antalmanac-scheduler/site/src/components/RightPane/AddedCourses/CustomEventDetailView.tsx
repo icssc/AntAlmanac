@@ -8,7 +8,7 @@ import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete } from '@mui/icons-material';
-import { Card, CardActions, CardContent, CardHeader, IconButton, Skeleton, Tooltip } from '@mui/material';
+import { Card, CardActions, CardContent, CardHeader, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { format, isValid, set } from 'date-fns';
 
@@ -77,6 +77,11 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
                     buildingId={Number(customEvent.building) || 0}
                     room={(customEvent.building && buildingCatalogue[+customEvent.building]?.name) || ''}
                 />
+                {customEvent.notes && (
+                    <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                        {customEvent.notes}
+                    </Typography>
+                )}
             </CardContent>
 
             {!fallbackMode && (
