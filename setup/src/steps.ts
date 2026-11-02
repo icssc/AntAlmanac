@@ -136,6 +136,11 @@ async function downloadCourseData() {
     }
 
     await run('pnpm get-data', 'Course data could not be downloaded.', `Check ANTEATER_API_KEY in ${APP_ENV}.`);
+    await run(
+        'git restore apps/antalmanac-scheduler/site/src/generated/departments.json',
+        'departments.json restore failed.',
+        'Check Git status.'
+    );
 
     return 'Course data is downloaded.';
 }
