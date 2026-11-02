@@ -8,7 +8,7 @@ export const RepeatingCustomEventSchema = z.object({
     customEventID: z.union([z.string(), z.number()]), // Unique only within the schedule.
     color: z.string().optional(),
     building: z.string().optional(),
-    notes: z.string().optional(),
+    notes: z.string().trim().optional(),
 });
 
 export type RepeatingCustomEvent = z.infer<typeof RepeatingCustomEventSchema>;

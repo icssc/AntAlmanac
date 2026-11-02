@@ -144,7 +144,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             end: end,
             customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
-            notes: notes || undefined,
+            notes: notes?.trim() || undefined,
         };
 
         if (props.customEvent) {
