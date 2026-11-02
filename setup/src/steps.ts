@@ -78,7 +78,11 @@ async function checkDocker() {
 }
 
 async function startDatabase() {
-    await run('docker compose up --detach --wait db', 'The database did not start.', 'Make sure port 5432 is free.');
+    await run(
+        'docker compose up --detach --wait --force-recreate db',
+        'The database did not start.',
+        'Make sure port 5432 is free.'
+    );
 
     const databases = await run(
         'docker compose exec -T db psql -U postgres -tAc "SELECT datname FROM pg_database"',
