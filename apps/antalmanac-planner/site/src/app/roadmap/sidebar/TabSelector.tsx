@@ -23,6 +23,7 @@ const TabSelector: FC<TabSelectorProps> = ({ tabs, selectedTab, onTabChange }) =
                     <Button
                         key={tab.value}
                         onClick={() => onTabChange(tab.value)}
+                        data-tab={tab.value}
                         className={isSelected ? 'tab-button selected' : 'tab-button'}
                     >
                         {tab.icon && <span className="tab-icon">{tab.icon}</span>}

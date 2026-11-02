@@ -55,7 +55,7 @@ const CustomCourses = () => {
     };
 
     return (
-        <div className="custom-courses">
+        <div className="custom-courses" data-tour="custom-cards">
             <ClickableDiv className="header-tab" onClick={toggleExpand}>
                 <h4>Custom Cards</h4>
                 <ExpandMore expanded={open} onClick={toggleExpand} />
@@ -88,7 +88,12 @@ const CustomCourses = () => {
                                 ))}
                             </ReactSortable>
 
-                            <button className="add-card-button" type="button" onClick={addCard}>
+                            <button
+                                className="add-card-button"
+                                type="button"
+                                onClick={addCard}
+                                data-tour="add-custom-card"
+                            >
                                 <AddIcon />
                             </button>
                         </>
