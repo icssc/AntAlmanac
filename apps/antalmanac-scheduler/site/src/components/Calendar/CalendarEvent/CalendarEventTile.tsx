@@ -32,6 +32,7 @@ export const CalendarEventTile = memo(({ event }: { event: CalendarEvent }) => {
                         style={{
                             fontSize: '0.7rem',
                             whiteSpace: 'pre-wrap',
+                            overflowWrap: 'anywhere',
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',

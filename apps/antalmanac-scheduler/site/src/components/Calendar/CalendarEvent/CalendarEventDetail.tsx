@@ -162,7 +162,7 @@ export function CalendarEventDetail({ selectedEvent, closePopover }: CalendarEve
                     <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
                 </Box>
             )}
-            {notes && <Box sx={{ fontSize: '0.9rem', whiteSpace: 'pre-wrap' }}>{notes}</Box>}
+            {notes && <Box sx={{ fontSize: '0.9rem', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{notes}</Box>}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <ColorPicker
                     color={selectedEvent.color}

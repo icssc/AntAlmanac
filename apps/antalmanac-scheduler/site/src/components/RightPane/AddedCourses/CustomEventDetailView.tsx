@@ -78,7 +78,7 @@ export function CustomEventDetailView(props: CustomEventDetailViewProps) {
                     room={(customEvent.building && buildingCatalogue[+customEvent.building]?.name) || ''}
                 />
                 {customEvent.notes && (
-                    <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                    <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
                         {customEvent.notes}
                     </Typography>
                 )}
