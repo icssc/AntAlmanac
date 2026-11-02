@@ -17,7 +17,7 @@ import {
     TextField,
     Tooltip,
 } from '@mui/material';
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { CUSTOM_EVENT_NOTES_MAX_LENGTH, type RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -227,7 +227,10 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             onChange={handleNotesChange}
                             variant="outlined"
                             color="secondary"
-                            slotProps={{ inputLabel: { variant: 'outlined' } }}
+                            slotProps={{
+                                inputLabel: { variant: 'outlined' },
+                                htmlInput: { maxLength: CUSTOM_EVENT_NOTES_MAX_LENGTH },
+                            }}
                         />
                     </FormControl>
                     <ScheduleSelector
