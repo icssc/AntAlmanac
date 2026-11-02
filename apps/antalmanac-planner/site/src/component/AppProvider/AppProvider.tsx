@@ -39,14 +39,15 @@ const UserDataLoader: FC = () => {
 
 interface AppProviderProps extends PropsWithChildren {
     user: UserData | null;
+    deviceType?: string;
 }
 
-const AppProvider: FC<AppProviderProps> = ({ children, user }) => {
+const AppProvider: FC<AppProviderProps> = ({ children, user, deviceType }) => {
     const appContent = (
         <>
             <UserDataLoader />
             <AutoSignIn />
-            <AppThemeProvider>
+            <AppThemeProvider deviceType={deviceType}>
                 <PlannerLoader />
                 {children}
             </AppThemeProvider>
