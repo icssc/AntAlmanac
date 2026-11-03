@@ -10,6 +10,8 @@ import { getMissingPrerequisites } from '../../helpers/planner';
 import { addDelimiter, getCourseTags } from '../../helpers/util';
 import { useClearedCoursesUntil } from '../../hooks/planner';
 import { CourseGQLData } from '../../types/types';
+import RepeatabilityText from '../CourseInfo/RepeatabilityText';
+import RestrictionText from '../CourseInfo/RestrictionText';
 import PrereqTree from '../PrereqTree/PrereqTree';
 import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
 
@@ -21,18 +23,6 @@ const CourseTags: FC<{ course: CourseGQLData }> = ({ course }) => {
                 <Chip label={tag} key={tag} />
             ))}
         </div>
-    );
-};
-
-const CourseRestriction: FC<{ restriction: string }> = ({ restriction }) => {
-    return (
-        <>
-            <h4>Restrictions</h4>
-            <p>
-                <i>{restriction || 'There are no restrictions for this course.'}</i>
-            </p>
-            {/* Restriction Tags are term-specific and needs a WebSoC query */}
-        </>
     );
 };
 
@@ -202,7 +192,8 @@ const CourseSummary: FC<{ course: CourseGQLData }> = ({ course }) => {
                 <div className="summary-column">
                     <RecentOfferingsTable terms={course.terms} size="wide" />
                     <br />
-                    <CourseRestriction restriction={course.restriction} />
+                    <RestrictionText restriction={course.restriction} />
+                    <RepeatabilityText course={course} />
                 </div>
                 <div className="summary-column">
                     <CoursePrerequisiteListView tree={course.prerequisiteTree} clearedCourses={clearedCourses} />
