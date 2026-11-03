@@ -108,7 +108,7 @@ export function collapseSingletonRequirements(requirements: ProgramRequirement[]
     };
 
     for (const r of requirements) {
-        if (r.requirementType !== 'Course' || r.courses.length !== 1) {
+        if (r.requirementType !== 'Course' || r.courses.length !== 1 || r.courseCount !== 1) {
             addBuiltGroup();
             builtGroup = null;
 
@@ -222,6 +222,8 @@ export function normalizeMajorName(program: MajorProgram | MinorProgram | MajorS
 export interface CompletedCourseSet {
     [k: string]: {
         units: number;
+        /** Eligible enrollment count; omitted legacy entries represent one enrollment. */
+        count?: number;
         transferType?: TransferredCourseWithType['transferType'];
     };
 }
@@ -274,87 +276,73 @@ export function useMatchingGETransfers(requirement: ProgramRequirement): Transfe
     return findMatchingGETransfers(requirement, transferredGEs);
 }
 
+export interface CompletionCheckOptions {
+    completedMarkers?: Record<string, boolean>;
+    geCredits?: TransferredGE[];
+}
+
 function checkCourseListCompletion(
     completed: CompletedCourseSet,
     requirement: ProgramRequirement<'Course'>
 ): CompletionStatus {
-    const completedCount = requirement.courses.filter((c) => c in completed).length;
     const required = requirement.courseCount;
-
-    return { required, completed: completedCount, done: completedCount >= required };
-}
-
-function useCourseListCompletionCheck(
-    completed: CompletedCourseSet,
-    requirement: ProgramRequirement
-): CompletionStatus {
-    const geCredits = useTransferredCredits().ge;
-    if (requirement.requirementType !== 'Course') return { required: 0, completed: 0, done: false };
-
-    const required = requirement.courseCount;
-    const applicableGE = getMatchingGECategory(requirement.label.trim());
-    const transferCompleted = geCredits.find((ge) => ge.geName === applicableGE)?.numberOfCourses ?? 0;
-    const roadmapCompleted = requirement.courses.filter((c) => c in completed).length;
-
-    const completedCount = roadmapCompleted + transferCompleted;
-
-    return { required, completed: completedCount, done: completedCount >= required };
-}
-
-function checkGroupCompletion(
-    completed: CompletedCourseSet,
-    requirement: ProgramRequirement<'Group'>
-): CompletionStatus {
-    const checkIsDone = (req: ProgramRequirement) => checkCompletion(completed, req).done;
-    const completedGroups = requirement.requirements.filter(checkIsDone).length;
-    const required = requirement.requirementCount;
-    return { required, completed: completedGroups, done: completedGroups >= required };
-}
-
-function useGroupCompletionCheck(completed: CompletedCourseSet, requirement: ProgramRequirement): CompletionStatus {
-    const useIsDone = (req: ProgramRequirement) => useCompletionCheck(completed, req).done;
-    if (requirement.requirementType !== 'Group') return { required: 0, completed: 0, done: false };
-
-    const completedGroups = requirement.requirements.filter(useIsDone).length;
-    const required = requirement.requirementCount;
-    return { required, completed: completedGroups, done: completedGroups >= required };
-}
-
-function checkUnitCompletion(completed: CompletedCourseSet, requirement: ProgramRequirement<'Unit'>): CompletionStatus {
-    const required = requirement.unitCount;
-    const completedCourses = requirement.courses.filter((c) => c in completed);
-    const completedUnits = completedCourses.map((c) => completed[c]).reduce((a, b) => a + b.units, 0);
-    return { required, completed: completedUnits, done: completedUnits >= required };
-}
-
-export function checkCompletion(completed: CompletedCourseSet, requirement: ProgramRequirement): CompletionStatus {
-    switch (requirement.requirementType) {
-        case 'Group':
-            return checkGroupCompletion(completed, requirement);
-        case 'Course':
-            return checkCourseListCompletion(completed, requirement);
-        case 'Unit':
-            return checkUnitCompletion(completed, requirement);
-        case 'Marker':
-            return { completed: 0, done: false, required: 0 };
+    let completedCount = 0;
+    if (required === requirement.courses.length) {
+        // Each listed mandatory course needs its own eligible enrollment. Repeating A cannot replace B.
+        const remaining = new Map(Object.entries(completed).map(([id, course]) => [id, course.count ?? 1]));
+        for (const id of requirement.courses) {
+            const count = remaining.get(id) ?? 0;
+            if (count > 0) {
+                completedCount++;
+                remaining.set(id, count - 1);
+            }
+        }
+    } else {
+        completedCount = [...new Set(requirement.courses)].reduce(
+            (sum, id) => sum + (completed[id] ? (completed[id].count ?? 1) : 0),
+            0
+        );
     }
+    return { required, completed: completedCount, done: completedCount >= required };
+}
+
+export function checkCompletion(
+    completed: CompletedCourseSet,
+    requirement: ProgramRequirement,
+    options: CompletionCheckOptions = {}
+): CompletionStatus {
+    if (requirement.requirementType === 'Marker')
+        return {
+            required: 0,
+            completed: 0,
+            done: !!options.completedMarkers?.[requirement.label],
+        };
+    if (requirement.requirementType === 'Group') {
+        const count = requirement.requirements.filter(
+            (child) => checkCompletion(completed, child, options).done
+        ).length;
+        return {
+            required: requirement.requirementCount,
+            completed: count,
+            done: count >= requirement.requirementCount,
+        };
+    }
+    const ge = options.geCredits?.find((credit) => credit.geName === getMatchingGECategory(requirement.label.trim()));
+    if (requirement.requirementType === 'Course') {
+        const result = checkCourseListCompletion(completed, requirement);
+        const count = result.completed + (ge?.numberOfCourses ?? 0);
+        return { required: result.required, completed: count, done: count >= result.required };
+    }
+    const required = requirement.unitCount;
+    const units =
+        [...new Set(requirement.courses)].reduce((sum, id) => sum + (completed[id]?.units ?? 0), 0) + (ge?.units ?? 0);
+    return { required, completed: units, done: units >= required };
 }
 
 export function useCompletionCheck(completed: CompletedCourseSet, requirement: ProgramRequirement): CompletionStatus {
     const completedMarkers = useAppSelector((state) => state.courseRequirements.completedMarkers);
-    const groupComplete = useGroupCompletionCheck(completed, requirement);
-    const courseComplete = useCourseListCompletionCheck(completed, requirement);
-
-    switch (requirement.requirementType) {
-        case 'Group':
-            return groupComplete;
-        case 'Course':
-            return courseComplete;
-        case 'Unit':
-            return checkUnitCompletion(completed, requirement);
-        case 'Marker':
-            return { completed: 0, done: completedMarkers[requirement.label], required: 0 };
-    }
+    const geCredits = useTransferredCredits().ge;
+    return checkCompletion(completed, requirement, { completedMarkers, geCredits });
 }
 
 export async function loadMarkerCompletion(isLoggedIn: boolean): Promise<string[]> {

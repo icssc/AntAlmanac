@@ -52,7 +52,10 @@ const Header: FC<HeaderProps> = ({ courseCount, unitCount }) => {
         <Paper className="roadmap-header" variant="outlined">
             <div className="planner-left">
                 <RoadmapMultiplan />
-                <span id="planner-stats">
+                <span
+                    id="planner-stats"
+                    title="Courses and units counted for credit. Quarter totals include all scheduled coursework."
+                >
                     <span id="course-count">{courseCount}</span> course{pluralize(courseCount)},{' '}
                     <span id="unit-count">{unitCount}</span> unit{pluralize(unitCount)}
                 </span>

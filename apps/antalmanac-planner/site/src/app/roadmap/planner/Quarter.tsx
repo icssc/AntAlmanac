@@ -7,6 +7,7 @@ import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
 import { isCustomCourse } from '../../../helpers/customCourses';
 import { quarterDisplayNames, calculateTotalUnits } from '../../../helpers/planner';
+import { roadmapEnrollmentId } from '../../../helpers/repeatability';
 import {
     ModifiedQuarter,
     modifyQuarterCourse,
@@ -14,10 +15,11 @@ import {
     modifyVariableCourseUnit,
     modifyCourseEnrollmentState,
 } from '../../../helpers/roadmapEdits';
-import { quarterSortable } from '../../../helpers/sortable';
 
 import './Quarter.scss';
+import { quarterSortable } from '../../../helpers/sortable';
 import { deepCopy, useIsMobile, pluralize } from '../../../helpers/util';
+import { useCourseCredits } from '../../../hooks/courseCredits';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
 import { useAnimatedHeight } from '../../../hooks/useAnimatedHeight';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -41,6 +43,7 @@ interface QuarterProps {
 
 const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
     const dispatch = useAppDispatch();
+    const credits = useCourseCredits();
     const quarterTitle = quarterDisplayNames[data.name];
     const invalidCourses = useAppSelector(
         (state) => state.roadmap.plans[state.roadmap.currentPlanIndex].content.invalidCourses
@@ -241,6 +244,7 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
                         <Course
                             key={index}
                             data={course}
+                            enrollmentCredit={credits.byId.get(roadmapEnrollmentId(yearIndex, quarterIndex, index))}
                             onSetEnrollmentState={(changes) => {
                                 const revision = modifyCourseEnrollmentState(
                                     currentPlan.id,

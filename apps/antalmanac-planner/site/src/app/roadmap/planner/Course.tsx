@@ -11,9 +11,11 @@ import React, { FC, useEffect, useState } from 'react';
 
 import { CourseBookmarkButton, CourseSynopsis } from '../../../component/CourseInfo/CourseInfo';
 import EnrollmentStateControls from '../../../component/CourseInfo/EnrollmentStateControls';
+import RepeatabilityWarning from '../../../component/CourseInfo/RepeatabilityWarning';
 import CoursePopover from '../../../component/CoursePopover/CoursePopover';
 import OverlayTrigger from '../../../component/OverlayTrigger/OverlayTrigger';
 import RecentOfferingsTooltip from '../../../component/RecentOfferingsTooltip/RecentOfferingsTooltip';
+import type { EnrollmentCredit } from '../../../helpers/repeatability';
 import { useIsMobile, pluralize, formatGEsTag, shortenCourseLevel } from '../../../helpers/util';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setActiveCourse, setShowAddCourse, setActiveMissingPrerequisites } from '../../../store/slices/roadmapSlice';
@@ -89,6 +91,7 @@ interface CourseProps {
     data: PlannerCourseData;
     onSetVariableUnits?: (units: number | undefined) => void;
     onSetEnrollmentState?: (changes: CourseEnrollmentState) => void;
+    enrollmentCredit?: EnrollmentCredit;
 }
 
 const Course: FC<CourseProps> = (props) => {
@@ -160,8 +163,13 @@ const Course: FC<CourseProps> = (props) => {
             {isInRoadmap ? (
                 <>
                     <div className="title">{title}</div>
+                    {props.enrollmentCredit && <RepeatabilityWarning credit={props.enrollmentCredit} />}
                     {props.onSetEnrollmentState && (
-                        <EnrollmentStateControls state={props.data} onChange={props.onSetEnrollmentState} />
+                        <EnrollmentStateControls
+                            state={props.data}
+                            onChange={props.onSetEnrollmentState}
+                            automaticCountsForCredit={props.enrollmentCredit?.automaticallyCountsForCredit}
+                        />
                     )}
                 </>
             ) : (

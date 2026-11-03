@@ -589,7 +589,7 @@ export function calculateTotalUnits(courses: (PlannerCourseData | CustomCourse)[
     let courseCount = 0;
 
     courses.forEach((course) => {
-        if ('userChosenUnits' in course && course.userChosenUnits) {
+        if ('userChosenUnits' in course && course.userChosenUnits !== undefined) {
             unitCount += course.userChosenUnits;
         } else if (isCustomCourse(course)) {
             unitCount += course.units;

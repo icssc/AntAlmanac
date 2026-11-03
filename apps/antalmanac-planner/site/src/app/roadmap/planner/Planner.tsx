@@ -3,13 +3,13 @@ import { FC } from 'react';
 
 import './Planner.scss';
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
-import { calculateTotalUnits } from '../../../helpers/planner';
+import { totalEnrollmentCredit } from '../../../helpers/repeatability';
 import { getTotalUnitsFromTransfers } from '../../../helpers/transferCredits';
+import { useCourseCredits } from '../../../hooks/courseCredits';
 import { useTransferredCredits } from '../../../hooks/transferCredits';
 import Footer from '../../../shared-components/Footer';
 import { useAppSelector } from '../../../store/hooks';
 import { selectYearPlans } from '../../../store/slices/roadmapSlice';
-import { PlannerQuarterCourse } from '../../../types/types';
 import Disclaimer from '../Disclaimer/Disclaimer';
 import QuarterInfo from '../QuarterInfo/QuarterInfo';
 import Header from '../toolbar/Header';
@@ -20,21 +20,17 @@ const Planner: FC = () => {
     const roadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
     const transferred = useTransferredCredits();
 
-    const calculatePlannerOverviewStats = () => {
-        // sum up all courses
-        const courses: PlannerQuarterCourse[] = currentPlanData
-            .flatMap((year) => year.quarters)
-            .flatMap((q) => q.courses);
-
-        let { unitCount, courseCount } = calculateTotalUnits(courses);
-
-        // add in transfer courses
-        courseCount += transferred.courses.length;
-        unitCount += getTotalUnitsFromTransfers(transferred.courses, transferred.ap, transferred.ge, transferred.other);
-        return { unitCount, courseCount };
-    };
-
-    const { unitCount, courseCount } = calculatePlannerOverviewStats();
+    const credits = useCourseCredits().enrollments;
+    const customCourses = currentPlanData
+        .flatMap((year) => year.quarters)
+        .flatMap((quarter) => quarter.courses)
+        .filter((course) => 'courseName' in course);
+    const credited = totalEnrollmentCredit(credits);
+    const courseCount = credited.courseCount + customCourses.length;
+    const unitCount =
+        credited.unitCount +
+        customCourses.reduce((sum, course) => sum + course.units, 0) +
+        getTotalUnitsFromTransfers([], transferred.ap, transferred.ge, transferred.other);
 
     const quarterCounts = currentPlanData.map((years) => years.quarters.length);
     const maxQuarterCount = Math.max(...quarterCounts);

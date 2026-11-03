@@ -10,6 +10,7 @@ import CoursePreview from '../../component/ResultPreview/CoursePreview';
 import ProfessorPreview from '../../component/ResultPreview/ProfessorPreview';
 import Toast from '../../helpers/toast';
 import { useIsMobile } from '../../helpers/util';
+import { CourseCreditsProvider } from '../../hooks/courseCredits';
 import { useSaveRoadmap } from '../../hooks/planner';
 import { usePreviewDepth } from '../../hooks/usePreviewDepth';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -111,35 +112,37 @@ const RoadmapPage: FC = () => {
     );
 
     return (
-        <div className="roadmap-page">
-            {!isMobile && <DesktopRoadmapSidebar />}
+        <CourseCreditsProvider>
+            <div className="roadmap-page">
+                {!isMobile && <DesktopRoadmapSidebar />}
 
-            {/* Mobile Popup Menus */}
-            <Toast
-                text={toastMsg}
-                severity={toastSeverity}
-                showToast={showToast}
-                onClose={handleCloseToast}
-                onClick={handleToastClick}
-            />
-            <AddCoursePopup />
-            <MobileCourseCatalog />
-            <MobileCreditsMenu />
+                {/* Mobile Popup Menus */}
+                <Toast
+                    text={toastMsg}
+                    severity={toastSeverity}
+                    showToast={showToast}
+                    onClose={handleCloseToast}
+                    onClick={handleToastClick}
+                />
+                <AddCoursePopup />
+                <MobileCourseCatalog />
+                <MobileCreditsMenu />
 
-            {/* Main Planner View or Fullscreen Mobile Search */}
-            <div className={`main-wrapper ${isMobile ? 'mobile' : ''}`} id="mobileScrollContainer">
-                {fullscreenActive ? <MobileSearchMenu /> : <Planner />}
-                {isMobile ? (
-                    <MobilePopup show={showPreview} onClose={handleClosePreview}>
-                        {resultPreview}
-                    </MobilePopup>
-                ) : (
-                    <Fade in={showPreview} timeout={{ enter: 0, exit: transitionTime }}>
-                        {resultPreview}
-                    </Fade>
-                )}
+                {/* Main Planner View or Fullscreen Mobile Search */}
+                <div className={`main-wrapper ${isMobile ? 'mobile' : ''}`} id="mobileScrollContainer">
+                    {fullscreenActive ? <MobileSearchMenu /> : <Planner />}
+                    {isMobile ? (
+                        <MobilePopup show={showPreview} onClose={handleClosePreview}>
+                            {resultPreview}
+                        </MobilePopup>
+                    ) : (
+                        <Fade in={showPreview} timeout={{ enter: 0, exit: transitionTime }}>
+                            {resultPreview}
+                        </Fade>
+                    )}
+                </div>
             </div>
-        </div>
+        </CourseCreditsProvider>
     );
 };
 
