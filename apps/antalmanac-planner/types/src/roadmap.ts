@@ -9,7 +9,13 @@ export const latestRoadmapVersion = 5;
 
 export const chcVariant = z.enum(['', 'CHC4', 'CHC2']);
 
-const savedPlannerCourseData = z.object({
+/** Unset follows course rules; false excludes credit; true explicitly counts this enrollment. */
+export const courseEnrollmentState = z.object({
+    countsForCredit: z.boolean().optional(),
+});
+export type CourseEnrollmentState = z.infer<typeof courseEnrollmentState>;
+
+const savedPlannerCourseData = courseEnrollmentState.extend({
     courseId: z.string(),
     userChosenUnits: z.number().optional(),
 });

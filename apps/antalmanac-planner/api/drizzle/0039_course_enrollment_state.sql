@@ -1,0 +1,1 @@
+ALTER TABLE "planner_course" ADD COLUMN "counts_for_credit" boolean;
