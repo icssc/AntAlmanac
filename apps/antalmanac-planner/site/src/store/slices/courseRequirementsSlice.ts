@@ -32,6 +32,7 @@ const courseRequirementsSlice = createSlice({
         selectedMinors: [] as MinorRequirements[],
         MinorRequirements: [] as ProgramRequirement[],
         geRequirements: [] as ProgramRequirement[],
+        chcRequirements: [] as ProgramRequirement[],
         completedMarkers: {} as Record<string, boolean>,
         expandedGroups: {} as ExpandedGroupsList,
         overriddenRequirements: {} as Record<number, Record<string, boolean>>,
@@ -139,6 +140,9 @@ const courseRequirementsSlice = createSlice({
         setGERequirements: (state, action: PayloadAction<ProgramRequirement[]>) => {
             state.geRequirements = action.payload;
         },
+        setCHCRequirements: (state, action: PayloadAction<ProgramRequirement[]>) => {
+            state.chcRequirements = action.payload;
+        },
         setMarkerComplete: (state, action: PayloadAction<{ markerName: string; complete: boolean }>) => {
             state.completedMarkers[action.payload.markerName] = action.payload.complete;
         },
@@ -193,6 +197,7 @@ export const {
     setMinorFallbackCatalogYear,
     setMinorRequirements,
     setGERequirements,
+    setCHCRequirements,
     setMarkerComplete,
     initializeCompletedMarkers,
     setRequirementOverride,
