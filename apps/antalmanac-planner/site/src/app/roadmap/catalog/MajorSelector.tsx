@@ -2,6 +2,7 @@ import { Autocomplete, FilterOptionsState, TextField } from '@mui/material';
 import { MajorProgram, MajorSpecialization, SavedMajorProgram } from '@peterportal/types';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import QuarterFilters from '../../../component/QuarterFilters/QuarterFilters';
 import { normalizeMajorName } from '../../../helpers/courseRequirements';
 import { filterOptionsWithAbbreviations, mapAbbreviations } from '../../../helpers/selector';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
@@ -183,6 +184,7 @@ const MajorSelector: FC = () => {
                     />
                 )}
             />
+            <QuarterFilters />
             {selectedMajors.map((data) => (
                 <MajorCourseList
                     key={data.major.id}
