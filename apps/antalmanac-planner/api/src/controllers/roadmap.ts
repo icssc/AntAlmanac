@@ -70,7 +70,7 @@ async function performRoadmapDeletesAndUpdates(tx: TransactionType, input: Roadm
 
 async function applyRoadmapChanges(input: RoadmapDiffs, userId: number) {
     return await db.transaction(async (tx) => {
-        performRoadmapDeletesAndUpdates(tx, input, userId);
+        await performRoadmapDeletesAndUpdates(tx, input, userId);
 
         const plannerIdLookup = await createPlanners(tx, input.newPlanners, userId);
 
