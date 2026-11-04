@@ -10,7 +10,7 @@ import CoursePreview from '../../component/ResultPreview/CoursePreview';
 import ProfessorPreview from '../../component/ResultPreview/ProfessorPreview';
 import Toast from '../../helpers/toast';
 import { useIsMobile } from '../../helpers/util';
-import { useSaveRoadmap } from '../../hooks/planner';
+import { useIsReadOnly, useSaveRoadmap } from '../../hooks/planner';
 import { usePreviewDepth } from '../../hooks/usePreviewDepth';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setSelectedTab } from '../../store/slices/courseRequirementsSlice';
@@ -31,13 +31,23 @@ const RoadmapPage: FC = () => {
     const currentRevisionIndex = useAppSelector((state) => state.roadmap.currentRevisionIndex);
     const savedRevisionIndex = useAppSelector((state) => state.roadmap.savedRevisionIndex);
     const autosaveEnabled = useAppSelector((state) => state.user.autosaveEnabled);
+    const readOnly = useIsReadOnly();
     const { handler: saveRoadmap } = useSaveRoadmap();
 
     useEffect(() => {
-        if (!autosaveEnabled || roadmapLoading || saveInProgress || currentRevisionIndex === savedRevisionIndex) return;
+        if (readOnly || !autosaveEnabled || roadmapLoading || saveInProgress) return;
+        if (currentRevisionIndex === savedRevisionIndex) return;
         const timer = setTimeout(() => saveRoadmap({ silent: true }), 1000);
         return () => clearTimeout(timer);
-    }, [autosaveEnabled, currentRevisionIndex, savedRevisionIndex, roadmapLoading, saveInProgress, saveRoadmap]);
+    }, [
+        readOnly,
+        autosaveEnabled,
+        currentRevisionIndex,
+        savedRevisionIndex,
+        roadmapLoading,
+        saveInProgress,
+        saveRoadmap,
+    ]);
 
     const toastMsg = useAppSelector((state) => state.roadmap.toastMsg);
     const toastSeverity = useAppSelector((state) => state.roadmap.toastSeverity);
@@ -122,9 +132,9 @@ const RoadmapPage: FC = () => {
                 onClose={handleCloseToast}
                 onClick={handleToastClick}
             />
-            <AddCoursePopup />
+            {!readOnly && <AddCoursePopup />}
             <MobileCourseCatalog />
-            <MobileCreditsMenu />
+            {!readOnly && <MobileCreditsMenu />}
 
             {/* Main Planner View or Fullscreen Mobile Search */}
             <div className={`main-wrapper ${isMobile ? 'mobile' : ''}`} id="mobileScrollContainer">

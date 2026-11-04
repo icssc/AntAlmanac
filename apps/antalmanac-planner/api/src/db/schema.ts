@@ -120,6 +120,7 @@ export const planner = pgTable(
     (table) => [
         index('planners_user_id_idx').on(table.userId),
         unique('unique_planner_user_id_name').on(table.userId, table.name),
+        unique('unique_planner_share_id').on(table.shareId),
     ]
 );
 

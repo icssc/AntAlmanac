@@ -18,6 +18,7 @@ import { quarterSortable } from '../../../helpers/sortable';
 import './Quarter.scss';
 import { deepCopy, useIsMobile, pluralize } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAnimatedHeight } from '../../../hooks/useAnimatedHeight';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
@@ -40,6 +41,7 @@ interface QuarterProps {
 
 const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
     const dispatch = useAppDispatch();
+    const readOnly = useIsReadOnly();
     const quarterTitle = quarterDisplayNames[data.name];
     const invalidCourses = useAppSelector(
         (state) => state.roadmap.plans[state.roadmap.currentPlanIndex].content.invalidCourses
@@ -145,6 +147,84 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
         }
     };
 
+    const courseCards = courses.map((course, index) => {
+        if ('courseName' in course) {
+            if (!isLoggedIn && !readOnly) {
+                return (
+                    <div key={`custom-${course.id}-${index}`} className="quarter-custom-course-logged-out">
+                        <p>Log in to use custom cards!</p>
+                    </div>
+                );
+            }
+            return (
+                <CustomCourseCard
+                    key={`custom-${course.id}-${index}`}
+                    course={course}
+                    handleUpdate={() => {}}
+                    inRoadmap={true}
+                    removeCourseAt={() => removeCourseAt(index)}
+                />
+            );
+        }
+
+        let requiredCourses: string[] = null!;
+        // if this is an invalid course, set the required courses
+        invalidCourses.forEach((ic) => {
+            const loc = ic.location;
+            if (loc.courseIndex == index && loc.quarterIndex == quarterIndex && loc.yearIndex == yearIndex) {
+                requiredCourses = ic.required;
+            }
+        });
+
+        const searchPrevYears = 2;
+        const currentDate = new Date();
+        const currentStartYear =
+            currentDate.getMonth() >= 8 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
+        const useYear = Math.min(currentStartYear, startYear);
+        const termYear = data.name === 'Fall' ? useYear : useYear + 1;
+        let mismatch = true;
+        for (let i = 0; i <= searchPrevYears; i++) {
+            const term = `${termYear - i} ${data.name}`;
+            if (course.terms.includes(term)) {
+                mismatch = false;
+                break;
+            }
+        }
+        const notRecentlyOffered =
+            mismatch &&
+            !course.terms.some((term) => {
+                for (let i = 0; i <= searchPrevYears; i++) {
+                    if (term.startsWith(`${termYear - i} `)) return true;
+                }
+                return false;
+            });
+        const termMismatch = mismatch ? (notRecentlyOffered ? 'RecentYears' : data.name) : undefined;
+
+        return (
+            // addMode="drag" somehow fixes the issue with tapping a course after adding on mobile
+            <Course
+                key={index}
+                data={course}
+                onSetVariableUnits={(units) => {
+                    const revision = modifyVariableCourseUnit(
+                        currentPlan.id,
+                        startYear,
+                        data.name,
+                        index,
+                        course,
+                        units
+                    );
+                    if (revision.edits.length > 0) dispatch(reviseRoadmap(revision));
+                }}
+                requiredCourses={requiredCourses}
+                termMismatch={termMismatch}
+                onDelete={() => removeCourseAt(index)}
+                addMode="drag"
+                openPopoverLeft
+            />
+        );
+    });
+
     return (
         <Card className="quarter" ref={quarterContainerRef} variant="outlined">
             <div className="quarter-header">
@@ -152,7 +232,7 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
                 <div className="quarter-units">
                     {unitCount} unit{pluralize(unitCount)}
                 </div>
-                {isMobile && (
+                {isMobile && !readOnly && (
                     <Button
                         startIcon={<PlaylistAddIcon />}
                         onClick={() => dispatch(showMobileCatalog({ year: yearIndex, quarter: quarterIndex }))}
@@ -164,102 +244,26 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
                     </Button>
                 )}
             </div>
-            <ReactSortable
-                list={coursesCopy}
-                className={`quarter-course-list ${isDragging ? 'dropzone-active' : ''}`}
-                onStart={setDraggedItem}
-                onAdd={addCourse} // add course, drag from another quarter
-                onSort={sortCourse} // drag within a quarter
-                onEnd={() => {
-                    if (!activeCourseLoading) {
-                        dispatch(setActiveCourse(null));
-                        dispatch(setActiveCustomCourse(null));
-                    }
-                }}
-                {...quarterSortable}
-            >
-                {courses.map((course, index) => {
-                    if ('courseName' in course) {
-                        if (!isLoggedIn) {
-                            return (
-                                <div key={`custom-${course.id}-${index}`} className="quarter-custom-course-logged-out">
-                                    <p>Log in to use custom cards!</p>
-                                </div>
-                            );
+            {readOnly ? (
+                <div className="quarter-course-list">{courseCards}</div>
+            ) : (
+                <ReactSortable
+                    list={coursesCopy}
+                    className={`quarter-course-list ${isDragging ? 'dropzone-active' : ''}`}
+                    onStart={setDraggedItem}
+                    onAdd={addCourse} // add course, drag from another quarter
+                    onSort={sortCourse} // drag within a quarter
+                    onEnd={() => {
+                        if (!activeCourseLoading) {
+                            dispatch(setActiveCourse(null));
+                            dispatch(setActiveCustomCourse(null));
                         }
-                        return (
-                            <CustomCourseCard
-                                key={`custom-${course.id}-${index}`}
-                                course={course}
-                                handleUpdate={() => {}}
-                                inRoadmap={true}
-                                removeCourseAt={() => removeCourseAt(index)}
-                            />
-                        );
-                    }
-
-                    let requiredCourses: string[] = null!;
-                    // if this is an invalid course, set the required courses
-                    invalidCourses.forEach((ic) => {
-                        const loc = ic.location;
-                        if (
-                            loc.courseIndex == index &&
-                            loc.quarterIndex == quarterIndex &&
-                            loc.yearIndex == yearIndex
-                        ) {
-                            requiredCourses = ic.required;
-                        }
-                    });
-
-                    const searchPrevYears = 2;
-                    const currentDate = new Date();
-                    const currentStartYear =
-                        currentDate.getMonth() >= 8 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
-                    const useYear = Math.min(currentStartYear, startYear);
-                    const termYear = data.name === 'Fall' ? useYear : useYear + 1;
-                    let mismatch = true;
-                    for (let i = 0; i <= searchPrevYears; i++) {
-                        const term = `${termYear - i} ${data.name}`;
-                        if (course.terms.includes(term)) {
-                            mismatch = false;
-                            break;
-                        }
-                    }
-                    const notRecentlyOffered =
-                        mismatch &&
-                        !course.terms.some((term) => {
-                            for (let i = 0; i <= searchPrevYears; i++) {
-                                if (term.startsWith(`${termYear - i} `)) return true;
-                            }
-                            return false;
-                        });
-                    const termMismatch = mismatch ? (notRecentlyOffered ? 'RecentYears' : data.name) : undefined;
-
-                    return (
-                        // addMode="drag" somehow fixes the issue with tapping a course after adding on mobile
-                        <Course
-                            key={index}
-                            data={course}
-                            onSetVariableUnits={(units) => {
-                                const revision = modifyVariableCourseUnit(
-                                    currentPlan.id,
-                                    startYear,
-                                    data.name,
-                                    index,
-                                    course,
-                                    units
-                                );
-                                if (revision.edits.length > 0) dispatch(reviseRoadmap(revision));
-                            }}
-                            requiredCourses={requiredCourses}
-                            termMismatch={termMismatch}
-                            onDelete={() => removeCourseAt(index)}
-                            addMode="drag"
-                            openPopoverLeft
-                        />
-                    );
-                })}
-            </ReactSortable>
+                    }}
+                    {...quarterSortable}
+                >
+                    {courseCards}
+                </ReactSortable>
+            )}
         </Card>
     );
 };

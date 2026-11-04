@@ -208,7 +208,7 @@ export const expandAllPlanners = async (plans: SavedPlannerData[]): Promise<Road
         plans.map(async (p) => {
             const yearPlans = await expandPlanner(p.content);
             const planContent = { yearPlans, invalidCourses: [] };
-            return { id: p.id, name: p.name, content: planContent, chc: p.chc };
+            return { id: p.id, name: p.name, shareId: p.shareId, content: planContent, chc: p.chc };
         })
     );
 };

@@ -1,0 +1,1 @@
+ALTER TABLE "planner" ADD CONSTRAINT "unique_planner_share_id" UNIQUE("share_id");

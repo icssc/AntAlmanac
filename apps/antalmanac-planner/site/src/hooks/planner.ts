@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { isCustomCourse } from '../helpers/customCourses';
-import { collapseAllPlanners, getAllCoursesFromPlan, saveRoadmap } from '../helpers/planner';
+import { collapseAllPlanners, getAllCoursesFromPlan, saveRoadmap, validatePlanner } from '../helpers/planner';
 import { restoreRevision } from '../helpers/roadmap';
 import { getNamesOfTransfers } from '../helpers/transferCredits';
 import { deepCopy } from '../helpers/util';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
     reviseRoadmap,
+    selectYearPlans,
+    setInvalidCourses,
     setSavedRevisionIndex,
     setSaveInProgress,
     updateTempPlannerIds,
@@ -17,6 +19,24 @@ import { RoadmapRevision } from '../types/roadmap';
 import { PlannerCourseData } from '../types/types';
 import { useIsLoggedIn } from './isLoggedIn';
 import { useTransferredCredits } from './transferCredits';
+
+/** Whether the displayed roadmap is a shared roadmap that can't be edited */
+export function useIsReadOnly() {
+    return useAppSelector((state) => state.roadmap.readOnly);
+}
+
+/** Keep the current plan's prerequisite warnings up to date with its courses and transferred credits */
+export function useValidatePlanner() {
+    const dispatch = useAppDispatch();
+    const currentPlanData = useAppSelector(selectYearPlans);
+    const transferred = useTransferredCredits();
+
+    useEffect(() => {
+        const transferNames = getNamesOfTransfers(transferred.courses, transferred.ap, transferred.apInfo);
+        const { invalidCourses } = validatePlanner(transferNames, currentPlanData);
+        dispatch(setInvalidCourses(invalidCourses));
+    }, [dispatch, currentPlanData, transferred]);
+}
 
 export function useClearedCourses() {
     const { courses, ap, apInfo } = useTransferredCredits();

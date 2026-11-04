@@ -1,6 +1,7 @@
 import './CourseCatalog.scss';
 import { useIsMobile } from '../../../helpers/util';
 import { useNamedAcademicTerm } from '../../../hooks/namedAcademicTerm';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { hideMobileCatalog } from '../../../store/slices/roadmapSlice';
 import SavedAndSearch from '../search/SavedAndSearch';
@@ -12,10 +13,12 @@ import RequirementsListSelector from './RequirementsListSelector';
 
 const CloseRoadmapSearchButton = () => {
     const isMobile = useIsMobile();
+    const readOnly = useIsReadOnly();
     const dispatch = useAppDispatch();
     const { year, quarter } = useNamedAcademicTerm();
 
-    if (!isMobile) return <></>;
+    // A shared roadmap opens the catalog to view requirements, not to add a course to a quarter
+    if (!isMobile || readOnly) return <></>;
 
     const closeSearch = () => dispatch(hideMobileCatalog());
 

@@ -14,6 +14,7 @@ import CoursePopover from '../../../component/CoursePopover/CoursePopover';
 import OverlayTrigger from '../../../component/OverlayTrigger/OverlayTrigger';
 import RecentOfferingsTooltip from '../../../component/RecentOfferingsTooltip/RecentOfferingsTooltip';
 import { useIsMobile, pluralize, formatGEsTag, shortenCourseLevel } from '../../../helpers/util';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setActiveCourse, setShowAddCourse, setActiveMissingPrerequisites } from '../../../store/slices/roadmapSlice';
 import { CourseGQLData, PlannerCourseData } from '../../../types/types';
@@ -94,6 +95,8 @@ const Course: FC<CourseProps> = (props) => {
     const { requiredCourses, termMismatch, onDelete, openPopoverLeft, onSetVariableUnits } = props;
 
     const isInRoadmap = !!onDelete;
+    /** Roadmap courses in a shared roadmap are shown without any editing controls */
+    const readOnly = useIsReadOnly() && isInRoadmap;
     const isMobile = useIsMobile();
 
     const formattedCourseLevel = shortenCourseLevel(courseLevel);
@@ -122,8 +125,11 @@ const Course: FC<CourseProps> = (props) => {
     }, [userChosenUnits]);
 
     return (
-        <div className={`course ${isInRoadmap ? 'roadmap-course' : ''}`} {...tappableCourseProps}>
-            {(!isMobile || isInRoadmap) && (
+        <div
+            className={`course ${isInRoadmap ? 'roadmap-course' : ''}${readOnly ? ' read-only' : ''}`}
+            {...tappableCourseProps}
+        >
+            {(!isMobile || isInRoadmap) && !readOnly && (
                 <div className="course-drag-handle">
                     <DragIndicatorIcon />
                 </div>
@@ -134,8 +140,14 @@ const Course: FC<CourseProps> = (props) => {
                     <span className={`${requiredCourses ? 'missing-prereq' : ''}`}>
                         <CourseNameAndInfo data={props.data} {...{ openPopoverLeft, requiredCourses, termMismatch }} />
                     </span>
-                    {isInRoadmap && minUnits === maxUnits && <span className="units">{defaultUnitsText}</span>}
-                    {isInRoadmap && minUnits !== maxUnits && (
+                    {isInRoadmap && (minUnits === maxUnits || readOnly) && (
+                        <span className="units">
+                            {readOnly && userChosenUnits !== undefined
+                                ? `${userChosenUnits} unit${pluralize(userChosenUnits)}`
+                                : defaultUnitsText}
+                        </span>
+                    )}
+                    {isInRoadmap && minUnits !== maxUnits && !readOnly && (
                         <div className="custom-units">
                             <UnitsContainer
                                 units={unit}
@@ -147,7 +159,7 @@ const Course: FC<CourseProps> = (props) => {
                         </div>
                     )}
                 </div>
-                {isInRoadmap ? (
+                {readOnly ? null : isInRoadmap ? (
                     <IconButton className="course-delete-btn" onClick={onDelete} aria-label="delete">
                         <DeleteOutlineIcon className="course-delete-icon" />
                     </IconButton>

@@ -25,7 +25,7 @@ import { getMissingPrerequisites } from '../../../helpers/planner';
 import { programRequirementsSortable } from '../../../helpers/sortable';
 import { pluralize, useIsMobile } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
-import { useClearedCourses } from '../../../hooks/planner';
+import { useClearedCourses, useIsReadOnly } from '../../../hooks/planner';
 import { useTransferredCredits, TransferredCourseWithType } from '../../../hooks/transferCredits';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
@@ -75,6 +75,7 @@ const CourseTile: FC<CourseTileProps> = ({ courseID, completedBy, dragTimestamp 
     const [courseData, setCourseData] = useState<string | CourseGQLData>(courseID);
     const [loading, setLoading] = useState(false);
     const isMobile = useIsMobile();
+    const readOnly = useIsReadOnly();
     const clearedCourses = useClearedCourses();
     const dispatch = useAppDispatch();
 
@@ -113,7 +114,7 @@ const CourseTile: FC<CourseTileProps> = ({ courseID, completedBy, dragTimestamp 
     };
 
     const tapProps = { onClick: insertCourseOnClick, role: 'button', tabIndex: 0 };
-    const tappableCourseProps = isMobile ? tapProps : {};
+    const tappableCourseProps = isMobile && !readOnly ? tapProps : {};
     const className = `program-course-tile${isMobile ? ' mobile' : ''}${loading ? ' loading' : ''}${completedBy ? ' completed' : ''}`;
     let fontSize: string | undefined;
 
@@ -142,6 +143,8 @@ interface CourseListProps {
 }
 const CourseList: FC<CourseListProps> = ({ courses, takenCourseIDs }) => {
     const isMobile = useIsMobile();
+    const readOnly = useIsReadOnly();
+    const dragDisabled = isMobile || readOnly;
     const dispatch = useAppDispatch();
     const [timestamps, setTimestamps] = useState<number[]>(new Array(courses.length).fill(0));
 
@@ -157,8 +160,8 @@ const CourseList: FC<CourseListProps> = ({ courses, takenCourseIDs }) => {
             list={courseIDs}
             onStart={setDraggedItem}
             onEnd={() => dispatch(setActiveCourse(null))}
-            disabled={isMobile}
-            className={'group-courses' + (isMobile ? ' disabled' : '')}
+            disabled={dragDisabled}
+            className={'group-courses' + (dragDisabled ? ' disabled' : '')}
         >
             {courses.map((c, i) => (
                 <CourseTile
@@ -325,15 +328,18 @@ interface GroupHeaderProps {
 const GroupHeader: FC<GroupHeaderProps> = ({ title, open, setOpen, requirementId, overridden, setOverride }) => {
     const className = `group-header ${open ? 'open' : ''}`;
     const [showOverrideModal, setShowOverrideModal] = useState(false);
+    const readOnly = useIsReadOnly();
 
     return (
         <ClickableDiv className={className} onClick={() => setOpen(!open)}>
             <b>{title}</b>
             <div className="group-header-btns">
-                {open && (
+                {/* A shared roadmap only shows the owner's overrides */}
+                {open && (!readOnly || overridden) && (
                     <Checkbox
                         name={'override-' + requirementId}
                         checked={overridden}
+                        disabled={readOnly}
                         onClick={(e) => {
                             e.stopPropagation();
                             if (!overridden) {
@@ -388,12 +394,15 @@ interface TransferCreditsTileProps {
 const TransferCreditsTile = ({ transferredGE, showGETitle = false }: TransferCreditsTileProps) => {
     const dispatch = useAppDispatch();
     const isMobile = useIsMobile();
+    const readOnly = useIsReadOnly();
     const title = showGETitle ? `Transfer Credits • ${transferredGE.geName}` : 'Transfer Credits';
 
     return (
         <MenuTile
             title={title}
             onClick={() => {
+                // The credits menu edits transfers, which isn't possible in a shared roadmap
+                if (readOnly) return;
                 if (isMobile) {
                     dispatch(setShowMobileCreditsMenu(true));
                 } else {
@@ -421,6 +430,7 @@ interface CourseRequirementProps {
 const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, storeKey }) => {
     const complete = useCompletionCheck(takenCourseIDs, data).done;
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
     const dispatch = useAppDispatch();
 
     const activePlanID = useAppSelector(selectCurrentPlan)?.id;
@@ -430,7 +440,7 @@ const CourseRequirement: FC<CourseRequirementProps> = ({ data, takenCourseIDs, s
     );
 
     const setOverride = (override: boolean) => {
-        if (!activePlanID) return;
+        if (!activePlanID || readOnly) return;
         saveOverriddenRequirement(activePlanID, data.requirementId, override, isLoggedIn);
         dispatch(
             setRequirementOverride({ plannerId: activePlanID, requirement: data.requirementId, override: override })
@@ -556,6 +566,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
     const complete = useCompletionCheck(takenCourseIDs, data).done;
     const open = useAppSelector((state) => state.courseRequirements.expandedGroups[storeKey] ?? false);
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
     const dispatch = useAppDispatch();
 
     const activePlanID = useAppSelector(selectCurrentPlan)?.id;
@@ -565,7 +576,7 @@ const GroupRequirement: FC<GroupRequirementProps> = ({ data, takenCourseIDs, sto
     );
 
     const setOverride = (override: boolean) => {
-        if (!activePlanID) return;
+        if (!activePlanID || readOnly) return;
         saveOverriddenRequirement(activePlanID, data.requirementId, override, isLoggedIn);
         dispatch(
             setRequirementOverride({ plannerId: activePlanID, requirement: data.requirementId, override: override })
@@ -626,9 +637,11 @@ interface MarkerRequirementProps {
 const MarkerRequirement: FC<MarkerRequirementProps> = ({ data, storeKey }) => {
     const complete = useAppSelector((state) => state.courseRequirements.completedMarkers[data.label]) ?? false;
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
     const dispatch = useAppDispatch();
 
     const setComplete = (complete: boolean) => {
+        if (readOnly) return;
         saveMarkerCompletion(data.label, complete, isLoggedIn);
         return dispatch(setMarkerComplete({ markerName: data.label, complete }));
     };
@@ -642,6 +655,7 @@ const MarkerRequirement: FC<MarkerRequirementProps> = ({ data, storeKey }) => {
                 <Checkbox
                     name={'marker-' + storeKey}
                     checked={complete}
+                    disabled={readOnly}
                     onChange={(e) => setComplete(e.target.checked)}
                 />
             </label>
