@@ -6,7 +6,7 @@ export const SectionCodeField = memo(() => {
     const [sectionCode, setSectionCode] = useCourseSearchParam('sectionCode');
 
     const handleChange = (event: ChangeEvent<{ value: string }>) => {
-        setSectionCode(event.target.value.replace(/[^0-9]/g, ''));
+        setSectionCode(event.target.value.replace(/[^0-9,-]/g, ''));
     };
 
     return (
