@@ -135,7 +135,6 @@ export function LogoAndSwitcher() {
                             startIcon={<EventNote />}
                             sx={{
                                 color: 'white',
-                                bgcolor: BLUE,
                                 borderTopRightRadius: 0,
                                 borderBottomRightRadius: 0,
                                 ...desktopButtonSx,

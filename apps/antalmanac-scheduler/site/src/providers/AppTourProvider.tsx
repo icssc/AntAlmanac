@@ -34,6 +34,7 @@ export function AppTourProvider({ children }: Props) {
                 }),
             }}
         >
+            <div id="tour-no-highlight-anchor" aria-hidden style={{ position: 'absolute', width: 0, height: 0 }} />
             {children}
         </TourProvider>
     );
