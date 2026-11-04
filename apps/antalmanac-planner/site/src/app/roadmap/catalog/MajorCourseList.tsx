@@ -7,6 +7,7 @@ import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
 import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
 import { normalizeMajorName, getCatalogYearDefaults } from '../../../helpers/courseRequirements';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     MajorWithSpecialization,
@@ -83,6 +84,7 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
     }
 
     const dispatch = useAppDispatch();
+    const readOnly = useIsReadOnly();
     const { defaultCatalogYear } = getCatalogYearDefaults();
 
     const loadSpecs = useCallback(
@@ -229,7 +231,7 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
                         onChange={(_event, option) => handleSpecializationChange(option)}
                         getOptionLabel={(option) => option.label}
                         isOptionEqualToValue={(option, value) => option.value.id === value.value.id}
-                        disabled={specsLoading}
+                        disabled={specsLoading || readOnly}
                         loading={specsLoading}
                         renderInput={(params) => (
                             <TextField

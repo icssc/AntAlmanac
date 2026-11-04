@@ -8,6 +8,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import { FC, useState } from 'react';
 
 import { getCatalogYearDefaults, formatCatalogYear } from '../../../helpers/courseRequirements';
+import { useIsReadOnly } from '../../../hooks/planner';
 
 interface CatalogYearsProps {
     catalogYear: string | null;
@@ -17,6 +18,7 @@ interface CatalogYearsProps {
 
 const CatalogYears: FC<CatalogYearsProps> = ({ catalogYear, tab, onChange }) => {
     const { defaultCatalogYear, catalogYearOptions } = getCatalogYearDefaults();
+    const readOnly = useIsReadOnly();
 
     const [editing, setEditing] = useState(false);
     const [selected, setSelected] = useState(catalogYear ?? defaultCatalogYear);
@@ -77,13 +79,15 @@ const CatalogYears: FC<CatalogYearsProps> = ({ catalogYear, tab, onChange }) => 
                     </Select>
                 </>
             )}
-            <IconButton
-                className={editing ? 'confirm-btn' : 'edit-btn'}
-                onClick={pressEditButton}
-                aria-label="Edit catalog year"
-            >
-                {editing ? <CheckIcon /> : <ModeEditIcon />}
-            </IconButton>
+            {!readOnly && (
+                <IconButton
+                    className={editing ? 'confirm-btn' : 'edit-btn'}
+                    onClick={pressEditButton}
+                    aria-label="Edit catalog year"
+                >
+                    {editing ? <CheckIcon /> : <ModeEditIcon />}
+                </IconButton>
+            )}
         </div>
     );
 };

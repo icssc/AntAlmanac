@@ -5,6 +5,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { normalizeMajorName } from '../../../helpers/courseRequirements';
 import { filterOptionsWithAbbreviations, mapAbbreviations } from '../../../helpers/selector';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     addMajor,
@@ -27,6 +28,8 @@ interface MajorOption {
 
 const MajorSelector: FC = () => {
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
+    const sharedMajors = useAppSelector((state) => state.courseRequirements.sharedPrograms?.majors);
     const majors = useAppSelector((state) => state.courseRequirements.majorList);
     const selectedMajors = useAppSelector((state) => state.courseRequirements.selectedMajors);
     const hasFetchedSelectedMajors = useRef(false);
@@ -55,7 +58,7 @@ const MajorSelector: FC = () => {
 
     const saveMajors = useCallback(
         (majorsToSave: MajorWithSpecialization[]) => {
-            if (!isLoggedIn) return;
+            if (!isLoggedIn || readOnly) return;
             const majors: SavedMajorProgram[] = majorsToSave.map((m) => ({
                 majorId: m.major.id,
                 specializationId: m.selectedSpec?.id,
@@ -63,7 +66,7 @@ const MajorSelector: FC = () => {
             }));
             updateSelectedMajorAndSpecialization(majors);
         },
-        [isLoggedIn]
+        [isLoggedIn, readOnly]
     );
 
     const handleMajorChange = useCallback(
@@ -120,14 +123,15 @@ const MajorSelector: FC = () => {
     );
 
     useEffect(() => {
-        if (!majors.length || !isLoggedIn) return;
+        if (!majors.length || (!isLoggedIn && !readOnly)) return;
         if (hasFetchedSelectedMajors.current) return;
         hasFetchedSelectedMajors.current = true;
 
         setMajorsLoading(true);
 
-        trpc.programs.getSavedMajors
-            .query()
+        // A shared roadmap shows the owner's majors rather than the viewer's
+        const loadSavedMajors = readOnly ? Promise.resolve(sharedMajors ?? []) : trpc.programs.getSavedMajors.query();
+        loadSavedMajors
             .then((savedMajors) => {
                 for (const savedMajor of savedMajors) {
                     const foundMajor = majors.find((m) => m.id === savedMajor.majorId);
@@ -145,7 +149,7 @@ const MajorSelector: FC = () => {
             .finally(() => {
                 setMajorsLoading(false);
             });
-    }, [dispatch, majors, isLoggedIn]);
+    }, [dispatch, majors, isLoggedIn, readOnly, sharedMajors]);
 
     const majorSelectOptions: MajorOption[] = majors.map((m) => ({
         value: m,
@@ -171,7 +175,7 @@ const MajorSelector: FC = () => {
                 isOptionEqualToValue={(option, value) => option.value.id === value.value.id}
                 filterOptions={filterMajorOptions}
                 loading={majorsLoading}
-                disabled={majorsLoading}
+                disabled={majorsLoading || readOnly}
                 disableClearable
                 className="major-select"
                 renderInput={(params) => (

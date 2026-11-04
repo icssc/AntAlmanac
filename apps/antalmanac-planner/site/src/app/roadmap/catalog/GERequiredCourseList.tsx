@@ -3,6 +3,7 @@ import { FC, useEffect, useState } from 'react';
 
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
 import { normalizeTitleLabels } from '../../../helpers/substitutions';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setGERequirements, setCHCRequirements } from '../../../store/slices/courseRequirementsSlice';
 import { setCHCSelection } from '../../../store/slices/roadmapSlice';
@@ -22,6 +23,7 @@ type ChcTrackSelection = '' | 'CHC4' | 'CHC2';
 
 const CHCRequirements: FC = () => {
     const dispatch = useAppDispatch();
+    const readOnly = useIsReadOnly();
     const plans = useAppSelector((state) => state.roadmap.plans);
     const planIndex = useAppSelector((state) => state.roadmap.currentPlanIndex);
     const currentPlan = plans[planIndex];
@@ -54,6 +56,7 @@ const CHCRequirements: FC = () => {
     }, [dispatch, selection, requirements.length]);
 
     const handleSelectionChange = (newSelection: ChcTrackSelection) => {
+        if (readOnly) return;
         dispatch(setCHCSelection({ plannerId: currentPlan.id, chc: newSelection }));
         if (currentPlan.id > 0) {
             trpc.programs.saveCHCSelection.mutate({ plannerId: currentPlan.id, chc: newSelection });
@@ -68,6 +71,7 @@ const CHCRequirements: FC = () => {
             <Select
                 fullWidth
                 displayEmpty
+                disabled={readOnly}
                 value={selection}
                 onChange={(event) => handleSelectionChange(event.target.value as ChcTrackSelection)}
                 sx={{ marginBottom: '12px' }}

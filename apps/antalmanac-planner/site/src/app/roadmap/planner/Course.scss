@@ -31,6 +31,16 @@
         grid-area: B;
     }
 
+    // Shared roadmaps hide the drag handle, so drop its column instead of leaving the content in it
+    &.read-only {
+        grid-template-areas: 'B' 'C';
+        grid-template-columns: minmax(0, 1fr);
+
+        .course-card-top {
+            grid-area: B;
+        }
+    }
+
     .name {
         font-weight: bold;
         color: var(--mui-palette-secondary-main);

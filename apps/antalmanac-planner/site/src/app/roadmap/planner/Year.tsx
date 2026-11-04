@@ -22,6 +22,7 @@ import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import { calculateTotalUnits } from '../../../helpers/planner';
 import { deletePlannerYear, modifyPlannerYear } from '../../../helpers/roadmapEdits';
 import { pluralize } from '../../../helpers/util';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     selectCurrentPlan,
@@ -117,6 +118,7 @@ interface YearProps {
 
 const Year: FC<YearProps> = ({ yearIndex, data }) => {
     const dispatch = useAppDispatch();
+    const readOnly = useIsReadOnly();
     const [collapsed, setCollapsed] = useState(data.collapsed);
     const [showEditYear, setShowEditYear] = useState(false);
     const [showDeleteYear, setShowDeleteYear] = useState(false);
@@ -138,6 +140,8 @@ const Year: FC<YearProps> = ({ yearIndex, data }) => {
     const handleCollapseClick = () => {
         const newCollapsed = !collapsed;
         setCollapsed(!collapsed);
+        if (readOnly) return;
+
         const revision = modifyPlannerYear(currentPlan.id, data, {
             newName: data.name,
             newStartYear: data.startYear,
@@ -157,12 +161,16 @@ const Year: FC<YearProps> = ({ yearIndex, data }) => {
                 <YearTitle year={data} index={yearIndex} />
                 <YearStats year={data} />
                 <div className="action-row">
-                    <IconButton onClick={handleEditYearClick}>
-                        <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => setShowDeleteYear(true)}>
-                        <DeleteOutlineIcon />
-                    </IconButton>
+                    {!readOnly && (
+                        <>
+                            <IconButton onClick={handleEditYearClick}>
+                                <EditIcon />
+                            </IconButton>
+                            <IconButton onClick={() => setShowDeleteYear(true)}>
+                                <DeleteOutlineIcon />
+                            </IconButton>
+                        </>
+                    )}
 
                     <ExpandMore
                         expanded={!collapsed}
@@ -172,61 +180,67 @@ const Year: FC<YearProps> = ({ yearIndex, data }) => {
                     />
                 </div>
             </div>
-            <EditYearModal
-                key={`edit-year-${placeholderYear}-${placeholderName}`}
-                placeholderName={placeholderName ?? 'Year ' + (yearIndex + 1)}
-                placeholderYear={placeholderYear}
-                show={showEditYear}
-                setShow={setShowEditYear}
-                saveHandler={({ startYear, name, quarters }) => {
-                    const existing = data.quarters;
-                    const addedQuarters = quarters.filter(({ name }) => !existing.find((q) => q.name === name));
-                    const removedQuarters = existing.filter(({ name }) => !quarters.find((q) => q.name === name));
+            {!readOnly && (
+                <>
+                    <EditYearModal
+                        key={`edit-year-${placeholderYear}-${placeholderName}`}
+                        placeholderName={placeholderName ?? 'Year ' + (yearIndex + 1)}
+                        placeholderYear={placeholderYear}
+                        show={showEditYear}
+                        setShow={setShowEditYear}
+                        saveHandler={({ startYear, name, quarters }) => {
+                            const existing = data.quarters;
+                            const addedQuarters = quarters.filter(({ name }) => !existing.find((q) => q.name === name));
+                            const removedQuarters = existing.filter(
+                                ({ name }) => !quarters.find((q) => q.name === name)
+                            );
 
-                    const hasNameConflict = !!currentPlan.content.yearPlans.find((year) => {
-                        if (year === data || year.name !== name) return false;
-                        dispatch(
-                            setToastMsg(
-                                `The name "${name}" is already used for ${year.startYear}-${year.startYear + 1}!`
-                            )
-                        );
-                        dispatch(setToastSeverity('error'));
-                        dispatch(setShowToast(true));
-                        return true;
-                    });
+                            const hasNameConflict = !!currentPlan.content.yearPlans.find((year) => {
+                                if (year === data || year.name !== name) return false;
+                                dispatch(
+                                    setToastMsg(
+                                        `The name "${name}" is already used for ${year.startYear}-${year.startYear + 1}!`
+                                    )
+                                );
+                                dispatch(setToastSeverity('error'));
+                                dispatch(setShowToast(true));
+                                return true;
+                            });
 
-                    if (hasNameConflict) return;
+                            if (hasNameConflict) return;
 
-                    const hasStartYearConflict = !!currentPlan.content.yearPlans.find((year) => {
-                        if (year === data || year.startYear !== startYear) return false;
-                        dispatch(setToastMsg(`Start year ${startYear} is already used by ${year.name}!`));
-                        dispatch(setToastSeverity('error'));
-                        dispatch(setShowToast(true));
-                        return true;
-                    });
+                            const hasStartYearConflict = !!currentPlan.content.yearPlans.find((year) => {
+                                if (year === data || year.startYear !== startYear) return false;
+                                dispatch(setToastMsg(`Start year ${startYear} is already used by ${year.name}!`));
+                                dispatch(setToastSeverity('error'));
+                                dispatch(setShowToast(true));
+                                return true;
+                            });
 
-                    if (hasStartYearConflict) return;
+                            if (hasStartYearConflict) return;
 
-                    setShowEditYear(false);
+                            setShowEditYear(false);
 
-                    const revision = modifyPlannerYear(currentPlan.id, data, {
-                        newName: name,
-                        newStartYear: startYear,
-                        newCollapsed: data.collapsed,
-                        addedQuarters,
-                        removedQuarters,
-                    });
-                    if (revision.edits.length > 0) dispatch(reviseRoadmap(revision));
-                }}
-                currentQuarters={data.quarters.map((q) => q.name)}
-                type="edit"
-            />
-            <DeleteYearModal
-                show={showDeleteYear}
-                setShow={setShowDeleteYear}
-                yearName={data.name}
-                yearIndex={yearIndex}
-            />
+                            const revision = modifyPlannerYear(currentPlan.id, data, {
+                                newName: name,
+                                newStartYear: startYear,
+                                newCollapsed: data.collapsed,
+                                addedQuarters,
+                                removedQuarters,
+                            });
+                            if (revision.edits.length > 0) dispatch(reviseRoadmap(revision));
+                        }}
+                        currentQuarters={data.quarters.map((q) => q.name)}
+                        type="edit"
+                    />
+                    <DeleteYearModal
+                        show={showDeleteYear}
+                        setShow={setShowDeleteYear}
+                        yearName={data.name}
+                        yearIndex={yearIndex}
+                    />
+                </>
+            )}
             <Collapse in={!collapsed} timeout="auto" unmountOnExit>
                 <Divider />
                 <Card className="quarter-list" variant="outlined">

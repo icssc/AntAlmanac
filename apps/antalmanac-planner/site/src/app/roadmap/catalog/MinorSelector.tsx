@@ -5,6 +5,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { normalizeMajorName } from '../../../helpers/courseRequirements';
 import { filterOptionsWithAbbreviations, mapAbbreviations } from '../../../helpers/selector';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     addMinor,
@@ -32,6 +33,8 @@ interface MinorOption {
 
 const MinorSelector: FC = () => {
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
+    const sharedMinors = useAppSelector((state) => state.courseRequirements.sharedPrograms?.minors);
     const minors = useAppSelector((state) => state.courseRequirements.minorList);
     const selectedMinors = useAppSelector((state) => state.courseRequirements.selectedMinors);
     const hasFetchedSelectedMinors = useRef(false);
@@ -59,7 +62,7 @@ const MinorSelector: FC = () => {
 
     const saveMinors = useCallback(
         (minorsToSave: MinorRequirements[]) => {
-            if (!isLoggedIn) return;
+            if (!isLoggedIn || readOnly) return;
             const minors: SavedMinorProgram[] = minorsToSave.map((m) => ({
                 id: m.minor.id,
                 name: m.minor.name,
@@ -67,7 +70,7 @@ const MinorSelector: FC = () => {
             }));
             updateSelectedMinors(minors);
         },
-        [isLoggedIn]
+        [isLoggedIn, readOnly]
     );
 
     const handleMinorChange = useCallback(
@@ -102,14 +105,15 @@ const MinorSelector: FC = () => {
     );
 
     useEffect(() => {
-        if (!minors.length || !isLoggedIn) return;
+        if (!minors.length || (!isLoggedIn && !readOnly)) return;
         if (hasFetchedSelectedMinors.current) return;
         hasFetchedSelectedMinors.current = true;
 
         setMinorsLoading(true);
 
-        trpc.programs.getSavedMinors
-            .query()
+        // A shared roadmap shows the owner's minors rather than the viewer's
+        const loadSavedMinors = readOnly ? Promise.resolve(sharedMinors ?? []) : trpc.programs.getSavedMinors.query();
+        loadSavedMinors
             .then((savedMinors) => {
                 for (const savedMinor of savedMinors) {
                     const foundMinor = minors.find((m) => m.id === savedMinor.id);
@@ -123,7 +127,7 @@ const MinorSelector: FC = () => {
             .finally(() => {
                 setMinorsLoading(false);
             });
-    }, [dispatch, minors, isLoggedIn]);
+    }, [dispatch, minors, isLoggedIn, readOnly, sharedMinors]);
 
     const minorSelectOptions: MinorOption[] = minors.map((m) => ({
         value: m,
@@ -149,7 +153,7 @@ const MinorSelector: FC = () => {
                 isOptionEqualToValue={(option, value) => option.value.id === value.value.id}
                 filterOptions={filterMinorOptions}
                 loading={minorsLoading}
-                disabled={minorsLoading}
+                disabled={minorsLoading || readOnly}
                 disableClearable
                 className="minor-select"
                 renderInput={(params) => (

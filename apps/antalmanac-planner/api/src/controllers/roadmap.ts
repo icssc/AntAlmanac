@@ -1,3 +1,4 @@
+import { createId } from '@paralleldrive/cuid2';
 import {
     RoadmapDiffs,
     roadmapDiffs,
@@ -6,13 +7,33 @@ import {
     RoadmapItemDeletion,
     RoadmapSaveInfo,
     latestRoadmapVersion,
+    SavedMajorProgram,
+    SavedMinorProgram,
+    TransferredAPExam,
+    TransferredGE,
 } from '@peterportal/types';
 import { TRPCError } from '@trpc/server';
 import { and, count, eq, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { db, TransactionType } from '../db';
-import { planner, user } from '../db/schema';
+import {
+    completedMarkerRequirement,
+    customCard,
+    override,
+    planner,
+    plannerCourse,
+    selectedApReward,
+    transferredApExam,
+    transferredCourse,
+    transferredGe,
+    transferredMisc,
+    user,
+    userMajor,
+    userMajorCatalogYear,
+    userMinor,
+    userMinorCatalogYear,
+} from '../db/schema';
 import {
     createPlanners,
     createQuarters,
@@ -87,6 +108,133 @@ async function applyRoadmapChanges(input: RoadmapDiffs, userId: number) {
     });
 }
 
+const plannerIdInput = z.object({ plannerId: z.number().int().positive() });
+
+async function getOwnedPlanner(plannerId: number, userId: number) {
+    const [found] = await db
+        .select({ id: planner.id, shareId: planner.shareId })
+        .from(planner)
+        .where(and(eq(planner.id, plannerId), eq(planner.userId, userId)));
+    if (!found) throw new TRPCError({ code: 'NOT_FOUND', message: 'Roadmap not found' });
+    return found;
+}
+
+function isUniqueViolation(error: unknown) {
+    const cause = (error as { cause?: { code?: string } })?.cause ?? error;
+    return (cause as { code?: string })?.code === '23505';
+}
+
+const shareIdInput = z.object({ shareId: z.string().min(1).max(64) });
+
+/**
+ * Get everything the planner uses to check off degree requirements, as saved by the roadmap's owner
+ */
+async function getOwnerDegreeProgress(userId: number, plannerId: number) {
+    const [majors, minors, markers, overrides, courses, apExams, selectedApRewards, ges, other, customCards] =
+        await Promise.all([
+            db
+                .select({
+                    majorId: userMajor.majorId,
+                    specializationId: userMajor.specializationId,
+                    catalogYear: userMajorCatalogYear.catalogYear,
+                })
+                .from(userMajor)
+                .leftJoin(
+                    userMajorCatalogYear,
+                    and(
+                        eq(userMajorCatalogYear.userId, userMajor.userId),
+                        eq(userMajorCatalogYear.majorId, userMajor.majorId)
+                    )
+                )
+                .where(eq(userMajor.userId, userId)),
+            db
+                .select({ minorId: userMinor.minorId, catalogYear: userMinorCatalogYear.catalogYear })
+                .from(userMinor)
+                .leftJoin(
+                    userMinorCatalogYear,
+                    and(
+                        eq(userMinorCatalogYear.userId, userMinor.userId),
+                        eq(userMinorCatalogYear.minorId, userMinor.minorId)
+                    )
+                )
+                .where(eq(userMinor.userId, userId)),
+            db
+                .select({ markerName: completedMarkerRequirement.markerName })
+                .from(completedMarkerRequirement)
+                .where(eq(completedMarkerRequirement.userId, userId)),
+            db
+                .select({ requirement: override.requirement })
+                .from(override)
+                .where(and(eq(override.userId, userId), eq(override.plannerId, plannerId))),
+            db
+                .select({ courseName: transferredCourse.courseName, units: transferredCourse.units })
+                .from(transferredCourse)
+                .where(eq(transferredCourse.userId, userId)),
+            db
+                .select({
+                    examName: transferredApExam.examName,
+                    score: transferredApExam.score,
+                    units: transferredApExam.units,
+                })
+                .from(transferredApExam)
+                .where(eq(transferredApExam.userId, userId)),
+            db
+                .select({
+                    examName: selectedApReward.examName,
+                    path: selectedApReward.path,
+                    selectedIndex: selectedApReward.selectedIndex,
+                })
+                .from(selectedApReward)
+                .where(eq(selectedApReward.userId, userId)),
+            db
+                .select({
+                    geName: transferredGe.geName,
+                    numberOfCourses: transferredGe.numberOfCourses,
+                    units: transferredGe.units,
+                })
+                .from(transferredGe)
+                .where(eq(transferredGe.userId, userId)),
+            db
+                .select({ name: transferredMisc.courseName, units: transferredMisc.units })
+                .from(transferredMisc)
+                .where(eq(transferredMisc.userId, userId)),
+            // Only the custom cards used in this roadmap, not all of the owner's cards
+            db
+                .selectDistinct({
+                    id: customCard.id,
+                    name: customCard.name,
+                    description: customCard.description,
+                    units: customCard.units,
+                })
+                .from(plannerCourse)
+                .innerJoin(customCard, eq(customCard.id, plannerCourse.customCardId))
+                .where(eq(plannerCourse.plannerId, plannerId)),
+        ]);
+
+    return {
+        majors: majors.map(
+            (m): SavedMajorProgram => ({
+                majorId: m.majorId,
+                specializationId: m.specializationId ?? undefined,
+                catalogYear: m.catalogYear ?? undefined,
+            })
+        ),
+        minors: minors.map(
+            (m): SavedMinorProgram => ({ id: m.minorId, name: '', catalogYear: m.catalogYear ?? undefined })
+        ),
+        completedMarkers: markers.map((m) => m.markerName),
+        overriddenRequirements: overrides.map((o) => o.requirement),
+        transfers: {
+            courses,
+            apExams: apExams.map((exam) => ({ ...exam, score: exam.score ?? 0 })) as TransferredAPExam[],
+            selectedApRewards,
+            ges: ges as TransferredGE[],
+            other,
+        },
+        customCards,
+    };
+}
+
 const roadmapsRouter = router({
     /**
      * Get a user's roadmap
@@ -113,15 +261,32 @@ const roadmapsRouter = router({
     /**
      * Get a roadmap by its shareId
      */
-    getByShareId: publicProcedure.input(z.object({ shareId: z.string() })).query(async ({ input }) => {
+    getByShareId: publicProcedure.input(shareIdInput).query(async ({ input }) => {
         const planners = await queryGetPlanners(eq(planner.shareId, input.shareId));
         if (planners.length === 0) {
             throw new TRPCError({
-                code: 'BAD_REQUEST',
+                code: 'NOT_FOUND',
                 message: 'Shared planner not found',
             });
         }
         return planners[0];
+    }),
+    /**
+     * Get a shared roadmap along with its owner's degree progress (programs, transfer credits, completed
+     * markers, and overrides), so the read-only view can show which requirements the roadmap completes
+     */
+    getSharedView: publicProcedure.input(shareIdInput).query(async ({ input }) => {
+        const [found] = await db
+            .select({ id: planner.id, userId: planner.userId })
+            .from(planner)
+            .where(eq(planner.shareId, input.shareId));
+        if (!found) throw new TRPCError({ code: 'NOT_FOUND', message: 'Shared planner not found' });
+
+        const [[sharedPlanner], degreeProgress] = await Promise.all([
+            queryGetPlanners(eq(planner.id, found.id)),
+            getOwnerDegreeProgress(found.userId, found.id),
+        ]);
+        return { planner: sharedPlanner as SavedPlannerData, ...degreeProgress };
     }),
     /**
      * Save a user's roadmap
@@ -140,6 +305,26 @@ const roadmapsRouter = router({
             .where(eq(user.id, userId));
 
         return plannerIdLookup;
+    }),
+    /**
+     * Ensure one of the user's roadmaps has a share ID, creating one if needed (e.g. for planners
+     * created before share IDs were generated on insert)
+     */
+    ensureShareId: userProcedure.input(plannerIdInput).mutation(async ({ input, ctx }) => {
+        const found = await getOwnedPlanner(input.plannerId, ctx.session.userId!);
+        if (found.shareId) return { shareId: found.shareId };
+
+        // A collision is astronomically unlikely, but retry rather than surface a DB error
+        for (let attempt = 0; attempt < 3; attempt++) {
+            const shareId = createId();
+            try {
+                await db.update(planner).set({ shareId }).where(eq(planner.id, found.id));
+                return { shareId };
+            } catch (error) {
+                if (!isUniqueViolation(error)) throw error;
+            }
+        }
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Could not create share link' });
     }),
 });
 

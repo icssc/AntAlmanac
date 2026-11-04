@@ -94,10 +94,14 @@ export const roadmapSlice = createSlice({
         showToast: false,
         toastAction: null as 'library' | null,
         selectedSidebarTab: 1,
+        readOnly: false,
     },
     reducers: {
         // Roadmap Window State
 
+        setReadOnly: (state, action: PayloadAction<boolean>) => {
+            state.readOnly = action.payload;
+        },
         setInitialPlannerData: (
             state,
             action: PayloadAction<{ plans: RoadmapPlan[]; timestamp: number; currentPlanIndex?: number }>
@@ -219,9 +223,10 @@ export const roadmapSlice = createSlice({
         hideMobileCatalog: (state) => {
             state.showMobileCatalog = false;
         },
-        showMobileCatalog: (state, action: PayloadAction<{ year: number; quarter: number }>) => {
+        /** Opens the mobile catalog, optionally for adding a course to the given quarter */
+        showMobileCatalog: (state, action: PayloadAction<{ year: number; quarter: number } | undefined>) => {
             state.showMobileCatalog = true;
-            state.currentYearAndQuarter = action.payload;
+            state.currentYearAndQuarter = action.payload ?? null;
         },
         setShowMobileFullscreenSearch: (state, action: PayloadAction<boolean>) => {
             state.showMobileFullscreenSearch = action.payload;
@@ -297,6 +302,7 @@ export const {
     removeCustomCourseFromRoadmap,
     setSelectedSidebarTab,
     setToastAction,
+    setReadOnly,
 } = roadmapSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type

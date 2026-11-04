@@ -8,11 +8,9 @@ import {
     loadRoadmap,
     readLocalRoadmap,
     saveRoadmap,
-    validatePlanner,
 } from '../../../helpers/planner';
 import { compareRoadmaps, restoreRevision } from '../../../helpers/roadmap';
 import {
-    getNamesOfTransfers,
     loadTransferredAPs,
     loadTransferredCourses,
     loadTransferredGEs,
@@ -20,13 +18,11 @@ import {
 } from '../../../helpers/transferCredits';
 import { deepCopy } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
-import { useTransferredCredits } from '../../../hooks/transferCredits';
+import { useValidatePlanner } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setCustomCourses } from '../../../store/slices/customCourseSlice';
 import {
-    selectYearPlans,
     setInitialPlannerData,
-    setInvalidCourses,
     setRoadmapLoading,
     setToastMsg,
     setToastSeverity,
@@ -67,8 +63,6 @@ function useCheckUnsavedChanges() {
 const PlannerLoader: FC = () => {
     const [showSyncModal, setShowSyncModal] = useState(false);
     const userTransfersLoaded = useAppSelector((state) => state.transferCredits.dataLoadState === 'done');
-    const transferred = useTransferredCredits();
-    const currentPlanData = useAppSelector(selectYearPlans);
     const isRoadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
     const isLoggedIn = useIsLoggedIn();
     useCheckUnsavedChanges();
@@ -213,12 +207,7 @@ const PlannerLoader: FC = () => {
         dispatch,
     ]);
 
-    // Validate Courses on change
-    useEffect(() => {
-        const transferNames = getNamesOfTransfers(transferred.courses, transferred.ap, transferred.apInfo);
-        const { invalidCourses } = validatePlanner(transferNames, currentPlanData);
-        dispatch(setInvalidCourses(invalidCourses));
-    }, [dispatch, currentPlanData, transferred]);
+    useValidatePlanner();
 
     const [overrideLoading, setOverrideLoading] = useState(false);
 

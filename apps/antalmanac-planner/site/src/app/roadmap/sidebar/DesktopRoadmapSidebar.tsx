@@ -6,6 +6,7 @@ import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
 import { Badge, Tab, Tabs } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useHasUnreadTransfers } from '../../../hooks/transferCredits';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setSelectedSidebarTab } from '../../../store/slices/roadmapSlice';
@@ -18,6 +19,7 @@ const DesktopRoadmapSidebar = () => {
     const selectedIndex = useAppSelector((state) => state.roadmap.selectedSidebarTab);
     const [hasSeenCredits, setHasSeenCredits] = useState(false);
     const hasUnreadTransfers = useHasUnreadTransfers();
+    const readOnly = useIsReadOnly();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -37,23 +39,27 @@ const DesktopRoadmapSidebar = () => {
                 onChange={(_, newValue) => dispatch(setSelectedSidebarTab(newValue))}
                 variant="fullWidth"
             >
-                <Tab
-                    icon={<SwapHorizOutlinedIcon />}
-                    iconPosition="start"
-                    label={
-                        <Badge variant="dot" color="error" invisible={!hasUnreadTransfers} className="unread-badge">
-                            Credits
-                        </Badge>
-                    }
-                />
-                <Tab icon={<FormatListBulletedIcon />} iconPosition="start" label="Catalog" />
-                <Tab icon={<SearchIcon />} iconPosition="start" label="Search" />
+                {/* A shared roadmap only shows the catalog, since credits and search are for editing */}
+                {!readOnly && (
+                    <Tab
+                        value={0}
+                        icon={<SwapHorizOutlinedIcon />}
+                        iconPosition="start"
+                        label={
+                            <Badge variant="dot" color="error" invisible={!hasUnreadTransfers} className="unread-badge">
+                                Credits
+                            </Badge>
+                        }
+                    />
+                )}
+                <Tab value={1} icon={<FormatListBulletedIcon />} iconPosition="start" label="Catalog" />
+                {!readOnly && <Tab value={2} icon={<SearchIcon />} iconPosition="start" label="Search" />}
             </Tabs>
 
             <div className="sidebar-content" id="sidebarScrollContainer">
-                {selectedIndex === 0 && <TransferCreditsMenu />}
+                {selectedIndex === 0 && !readOnly && <TransferCreditsMenu />}
                 {selectedIndex === 1 && <CourseCatalog />}
-                {selectedIndex === 2 && <SavedAndSearch autoFocusSearch />}
+                {selectedIndex === 2 && !readOnly && <SavedAndSearch autoFocusSearch />}
             </div>
         </div>
     );

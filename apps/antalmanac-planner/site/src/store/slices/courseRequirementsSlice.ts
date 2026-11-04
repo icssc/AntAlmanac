@@ -1,4 +1,11 @@
-import { MajorProgram, MajorSpecialization, ProgramRequirement, MinorProgram } from '@peterportal/types';
+import {
+    MajorProgram,
+    MajorSpecialization,
+    ProgramRequirement,
+    MinorProgram,
+    SavedMajorProgram,
+    SavedMinorProgram,
+} from '@peterportal/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type RequirementsTabName = 'Major' | 'Minor' | 'GE' | 'Library' | 'Search';
@@ -37,8 +44,16 @@ const courseRequirementsSlice = createSlice({
         completedMarkers: {} as Record<string, boolean>,
         expandedGroups: {} as ExpandedGroupsList,
         overriddenRequirements: {} as Record<number, Record<string, boolean>>,
+        /** The owner's saved programs when viewing a shared roadmap, used instead of the viewer's */
+        sharedPrograms: null as { majors: SavedMajorProgram[]; minors: SavedMinorProgram[] } | null,
     },
     reducers: {
+        setSharedPrograms: (
+            state,
+            action: PayloadAction<{ majors: SavedMajorProgram[]; minors: SavedMinorProgram[] }>
+        ) => {
+            state.sharedPrograms = action.payload;
+        },
         setSelectedTab: (state, action: PayloadAction<RequirementsTabName>) => {
             state.selectedTab = action.payload;
         },
@@ -190,6 +205,7 @@ const courseRequirementsSlice = createSlice({
 });
 
 export const {
+    setSharedPrograms,
     setSelectedTab,
     setMajorList,
     addMajor,
