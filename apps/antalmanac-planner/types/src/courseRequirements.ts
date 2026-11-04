@@ -29,7 +29,8 @@ type RequirementSchema = components['schemas']['programRequirement'];
 type ReqType = RequirementSchema['requirementType'];
 export type ProgramRequirement<T extends ReqType = ReqType> = RequirementSchema & { requirementType: T };
 
-export type CourseTiming = 'taken' | 'current' | 'planned';
+// Separates between classes before current quarter (exclusive) and after (inclusive)
+export type CourseTiming = 'taken' | 'planned';
 
 export type RequirementStatus = 'completed' | 'added' | 'not added';
 

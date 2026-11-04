@@ -93,7 +93,6 @@ export function getQuarterTiming(
     const current = quarterOrdinal(currentQuarter.startYear, currentQuarter.quarterName);
 
     if (quarter < current) return 'taken';
-    if (quarter === current) return 'current';
     else return 'planned';
 }
 
