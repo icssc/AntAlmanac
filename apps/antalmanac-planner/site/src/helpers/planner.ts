@@ -415,7 +415,10 @@ export const saveRoadmap = async (
         let res = false;
         let plannerIdLookup: Record<number, number> = {};
 
-        const changes = compareRoadmaps(lastSavedPlanners ?? [], planners);
+        // Planners with temporary (negative) IDs have never been saved to the account, so they must be
+        // created rather than updated, even if they were already in the roadmap when it was loaded
+        const savedAccountPlanners = (lastSavedPlanners ?? []).filter((planner) => planner.id > 0);
+        const changes = compareRoadmaps(savedAccountPlanners, planners);
         changes.overwrite = !lastSavedPlanners;
         changes.currentPlanIndex = currentPlanIndex;
         await trpc.roadmaps.save
