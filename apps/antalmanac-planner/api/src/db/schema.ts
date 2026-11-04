@@ -175,6 +175,7 @@ export const plannerCourse = pgTable(
         courseId: text('course_id').notNull(),
         customCardId: integer('custom_card_id').references(() => customCard.id, { onDelete: 'set null' }),
         units: real('units'),
+        countsForCredit: boolean('counts_for_credit'),
     },
     (table) => [
         primaryKey({ columns: [table.plannerId, table.startYear, table.quarterName, table.index] }),

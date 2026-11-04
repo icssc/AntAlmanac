@@ -34,7 +34,8 @@ export async function queryGetPlanners(where: SQL) {
                     THEN jsonb_build_object('courseId', ('CUSTOM#' || pc.custom_card_id::text))
                   ELSE jsonb_build_object(
                     'courseId', pc.course_id,
-                    'userChosenUnits', pc.units
+                    'userChosenUnits', pc.units,
+                    'countsForCredit', pc.counts_for_credit
                   )
                 END
                 ORDER BY pc.index ASC
@@ -64,6 +65,7 @@ export async function queryGetPlanners(where: SQL) {
             year.quarters.forEach((quarter) => {
                 quarter.courses.forEach((course) => {
                     if (course.userChosenUnits === null) delete course.userChosenUnits;
+                    if (course.countsForCredit === null) delete course.countsForCredit;
                 });
             });
             year.quarters.sort((a, b) => quarters.indexOf(a.name) - quarters.indexOf(b.name));
@@ -134,6 +136,7 @@ export async function setQuarterCourses(tx: TransactionType, quarters: PlannerQu
                 courseId: customCardId !== null ? 'CUSTOM' : course.courseId,
                 customCardId,
                 units: course.userChosenUnits,
+                countsForCredit: course.countsForCredit ?? null,
             };
         });
         await tx.insert(plannerCourse).values(rows);

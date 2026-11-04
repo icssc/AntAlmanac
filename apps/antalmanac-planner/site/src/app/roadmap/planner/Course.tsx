@@ -4,12 +4,13 @@ import './Course.scss';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { IconButton } from '@mui/material';
-import { QuarterName } from '@peterportal/types';
+import { CourseEnrollmentState, QuarterName } from '@peterportal/types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { FC, useEffect, useState } from 'react';
 
 import { CourseBookmarkButton, CourseSynopsis } from '../../../component/CourseInfo/CourseInfo';
+import EnrollmentStateControls from '../../../component/CourseInfo/EnrollmentStateControls';
 import CoursePopover from '../../../component/CoursePopover/CoursePopover';
 import OverlayTrigger from '../../../component/OverlayTrigger/OverlayTrigger';
 import RecentOfferingsTooltip from '../../../component/RecentOfferingsTooltip/RecentOfferingsTooltip';
@@ -87,6 +88,7 @@ interface CourseProps {
     addMode?: 'tap' | 'drag';
     data: PlannerCourseData;
     onSetVariableUnits?: (units: number | undefined) => void;
+    onSetEnrollmentState?: (changes: CourseEnrollmentState) => void;
 }
 
 const Course: FC<CourseProps> = (props) => {
@@ -156,7 +158,12 @@ const Course: FC<CourseProps> = (props) => {
                 )}
             </div>
             {isInRoadmap ? (
-                <div className="title">{title}</div>
+                <>
+                    <div className="title">{title}</div>
+                    {props.onSetEnrollmentState && (
+                        <EnrollmentStateControls state={props.data} onChange={props.onSetEnrollmentState} />
+                    )}
+                </>
             ) : (
                 <div className="course-info">
                     <CourseSynopsis course={props.data} clampDescription={3} />

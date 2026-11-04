@@ -12,6 +12,7 @@ import {
     modifyQuarterCourse,
     reorderQuarterCourse,
     modifyVariableCourseUnit,
+    modifyCourseEnrollmentState,
 } from '../../../helpers/roadmapEdits';
 import { quarterSortable } from '../../../helpers/sortable';
 
@@ -240,6 +241,17 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
                         <Course
                             key={index}
                             data={course}
+                            onSetEnrollmentState={(changes) => {
+                                const revision = modifyCourseEnrollmentState(
+                                    currentPlan.id,
+                                    startYear,
+                                    data.name,
+                                    index,
+                                    course,
+                                    changes
+                                );
+                                if (revision.edits.length > 0) dispatch(reviseRoadmap(revision));
+                            }}
                             onSetVariableUnits={(units) => {
                                 const revision = modifyVariableCourseUnit(
                                     currentPlan.id,
