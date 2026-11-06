@@ -503,10 +503,16 @@ interface ValidationInput<PreqrequisiteType> {
 const validateCoursePrerequisite = (input: ValidationInput<Prerequisite>) => {
     const { prerequisite, taken, taking } = input;
 
-    //checking prereq type (coures and exam)
+    if (prerequisite.prereqType !== 'course' && prerequisite.prereqType !== 'exam') {
+        // TODO: handle "standing" and "affiliation" types
+        // for now, assume they are satisfied
+        return new Set();
+    }
+
+    // checking prereq type (course and exam)
     const prereqIsCourse = prerequisite.prereqType === 'course';
 
-    //decide whether coures or exam
+    // decide whether course or exam
     const id = prereqIsCourse ? prerequisite.courseId : prerequisite.examName;
 
     // check if already done
@@ -517,7 +523,7 @@ const validateCoursePrerequisite = (input: ValidationInput<Prerequisite>) => {
     const isCoreq = prereqIsCourse && prerequisite.coreq;
     if (isCoreq && taking.has(id)) return new Set<string>();
 
-    //the course hasn't been taken
+    // the course hasn't been taken
     return new Set([id]);
 };
 
