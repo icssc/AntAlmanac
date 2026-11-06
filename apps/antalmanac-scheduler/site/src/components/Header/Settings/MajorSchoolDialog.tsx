@@ -102,7 +102,7 @@ export function MajorSchoolDialog({ open, onClose }: MajorSchoolDialogProps) {
     }, []);
 
     const handleSave = useCallback(() => {
-        if (majors && schools) {
+        if (majors.length > 0 && schools.length > 0) {
             void setMajorSchools(majors, schools);
             onClose();
         }

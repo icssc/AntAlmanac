@@ -29,11 +29,11 @@ export function MajorSelector() {
                     Major & School
                 </Typography>
                 <Button size="small" startIcon={<Edit />} onClick={handleOpen}>
-                    {majors ? 'Edit' : 'Add'}
+                    {majors.length > 0 ? 'Edit' : 'Add'}
                 </Button>
             </Stack>
 
-            {majors && schools ? (
+            {majors.length > 0 && schools.length > 0 ? (
                 <>
                     <Typography variant="body2">
                         {majors.map((major) => ALL_MAJORS[major] ?? major).join(', ')}
