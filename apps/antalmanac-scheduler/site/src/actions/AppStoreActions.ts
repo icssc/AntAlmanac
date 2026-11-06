@@ -3,8 +3,7 @@ import { trpc } from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { Provider } from '$lib/auth/authTypes';
 import { getRestrictionToWarn } from '$lib/enrollmentRestrictions';
-import { warnMultipleTerms } from '$lib/helpers';
-import { warnEnrollmentRestriction } from '$lib/helpers';
+import { getEnrollmentRestrictionWarningMessage, getWarnMultipleTermsMessage, warnCourse } from '$lib/helpers';
 import { shouldIgnoreShortcutTarget } from '$lib/keyboardShortcuts';
 import { setLocalStorageDataCache, setLocalStorageUserId } from '$lib/localStorage';
 import { getErrorMessage } from '$lib/utils';
@@ -15,6 +14,7 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { useUserInfoStore } from '$stores/UserInfoStore';
+// import { Code, QueueMusicTwoTone } from '@mui/icons-material';
 import {
     type AACourseWithTerm,
     type AASection,
@@ -65,16 +65,21 @@ export const addCourse = (
     const terms = AppStore.termsInSchedule(course.term);
     const userSchools = useUserInfoStore.getState().schools;
 
-    if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
+    const restrictionCode = getRestrictionToWarn({
+        restrictions: section.restrictions,
+        courseSchool: course.schoolName,
+        userSchools,
+    });
 
+    // Get warning messages and warn if any
+    const msgs: string[] = [];
     if (!quiet) {
-        const code = getRestrictionToWarn({
-            restrictions: section.restrictions,
-            courseSchool: course.schoolName,
-            userSchools,
-        });
-        if (code && course.schoolName) warnEnrollmentRestriction(code, course.schoolName);
+        if (terms.size > 1) msgs.push(getWarnMultipleTermsMessage(terms));
+        if (restrictionCode && ['L', 'M', 'N', 'O'].includes(restrictionCode) && course.schoolName) {
+            msgs.push(getEnrollmentRestrictionWarningMessage(restrictionCode, course.schoolName));
+        }
     }
+    if (msgs.length > 0) warnCourse(msgs);
 
     AppStore.addCourse(section, course, scheduleIndex);
 };
