@@ -95,8 +95,8 @@ export function MajorSchoolDialog({ open, onClose }: MajorSchoolDialogProps) {
 
     const handleMajorChange = useCallback((newMajors: string[]) => {
         setMajor(newMajors);
-        const majorSchools = newMajors.flatMap((major) => MAJOR_SCHOOLS_MAP[major] ?? []);
-        if (majorSchools) {
+        const majorSchools = [...new Set(newMajors.flatMap((major) => MAJOR_SCHOOLS_MAP[major] ?? []))];
+        if (majorSchools.length > 0) {
             setSchools([...majorSchools]);
         }
     }, []);
