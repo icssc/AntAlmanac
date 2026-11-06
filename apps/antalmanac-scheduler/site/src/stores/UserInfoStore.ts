@@ -31,7 +31,7 @@ export const useUserInfoStore = create<UserInfoStore>((set, get) => ({
         try {
             const userInfo = await trpc.user.get.query();
 
-            const majors = (userInfo?.majors ?? []).filter((major) => major in ALL_MAJORS);
+            const majors = (userInfo?.majors ?? []).filter((major) => Object.hasOwn(ALL_MAJORS, major));
 
             const schools = (userInfo?.schools ?? []).filter(
                 (school): school is School => SchoolSchema.safeParse(school).success
@@ -48,7 +48,7 @@ export const useUserInfoStore = create<UserInfoStore>((set, get) => ({
     },
 
     setMajorSchools: async (majors, schools) => {
-        const previous = { major: get().majors, schools: get().schools };
+        const previous = { majors: get().majors, schools: get().schools };
         set({ majors, schools });
 
         try {
