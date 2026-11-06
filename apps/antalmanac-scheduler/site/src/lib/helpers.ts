@@ -38,18 +38,7 @@ export const warnCourse = (msgs: string[]) => {
 };
 
 export const warnMultipleTerms = (terms: Set<AATerm>) => {
-    const names = [...terms].map((t) => t.shortName).sort();
-    openSnackbar(
-        'warning',
-        `Course added from different term.\nSchedule now contains courses from ${names.join(', ')}.`,
-        {
-            style: {
-                whiteSpace: 'pre-line',
-                '& .MuiAlert-message': { fontSize: '1.10rem' },
-            },
-            position: { vertical: 'top', horizontal: 'center' },
-        }
-    );
+    warnCourse([getWarnMultipleTermsMessage(terms)]);
 };
 
 // export const warnEnrollmentRestriction = (restriction_code: WebsocRestrictionCodeOption, courseSchool: string) => {
