@@ -2,10 +2,8 @@ import { openSnackbar } from '$stores/SnackbarStore';
 import { type Theme } from '@mui/material/styles';
 import { type SxProps, type SystemStyleObject } from '@mui/system';
 import type { AATerm } from '@packages/antalmanac-types';
-import type { WebsocRestrictionCodeOption } from '@packages/antalmanac-types';
+import type { MajorSchoolRestrictionCode } from '@packages/antalmanac-types';
 import { type MouseEvent } from 'react';
-
-type MajorSchoolRestrictionCode = Extract<WebsocRestrictionCodeOption, 'L' | 'M' | 'N' | 'O'>;
 
 const enrollmentRestrictionWarningMessages: Record<MajorSchoolRestrictionCode, (school: string) => string> = {
     N: (school) => `This section is limited to students in the ${school}. Check Webreg before enrolling.`,
