@@ -14,36 +14,58 @@ const enrollmentRestrictionWarningMessages: Record<MajorSchoolRestrictionCode, (
     M: (school) => `This section may not be open to some majors in the ${school}. Check Webreg before enrolling.`,
 };
 
-function getEnrollmentRestrictionWarningMessage(
+export const getEnrollmentRestrictionWarningMessage = (
     restriction_code: MajorSchoolRestrictionCode,
     courseSchool: string
-): string {
+): string => {
     return enrollmentRestrictionWarningMessages[restriction_code](courseSchool);
-}
+};
+
+export const getWarnMultipleTermsMessage = (terms: Set<AATerm>): string => {
+    const names = [...terms].map((t) => t.shortName).sort();
+    return `Course added from different term. Schedule now contains courses from ${names.join(', ')}.`;
+};
+
+export const warnCourse = (msgs: string[]) => {
+    openSnackbar('warning', msgs.length > 1 ? msgs.join('\n') : msgs[0], {
+        style: {
+            whiteSpace: 'pre-line',
+            '& .MuiAlert-message': { fontSize: '1.10rem' },
+        },
+        position: { vertical: 'top', horizontal: 'center' },
+        durationSeconds: 4,
+    });
+};
 
 export const warnMultipleTerms = (terms: Set<AATerm>) => {
     const names = [...terms].map((t) => t.shortName).sort();
     openSnackbar(
         'warning',
         `Course added from different term.\nSchedule now contains courses from ${names.join(', ')}.`,
-        { style: { whiteSpace: 'pre-line' } }
-    );
-};
-
-export const warnEnrollmentRestriction = (restriction_code: WebsocRestrictionCodeOption, courseSchool: string) => {
-    openSnackbar(
-        'warning',
-        getEnrollmentRestrictionWarningMessage(restriction_code as MajorSchoolRestrictionCode, courseSchool),
         {
             style: {
                 whiteSpace: 'pre-line',
-                '& .MuiAlert-message': { fontSize: '1.25rem' },
+                '& .MuiAlert-message': { fontSize: '1.10rem' },
             },
             position: { vertical: 'top', horizontal: 'center' },
-            durationSeconds: 8,
         }
     );
 };
+
+// export const warnEnrollmentRestriction = (restriction_code: WebsocRestrictionCodeOption, courseSchool: string) => {
+//     openSnackbar(
+//         'warning',
+//         getEnrollmentRestrictionWarningMessage(restriction_code as MajorSchoolRestrictionCode, courseSchool),
+//         {
+//             style: {
+//                 whiteSpace: 'pre-line',
+//                 '& .MuiAlert-message': { fontSize: '1.25rem' },
+//             },
+//             position: { vertical: 'top', horizontal: 'center' },
+//             durationSeconds: 4,
+//         }
+//     );
+// };
 
 export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: string) {
     event.stopPropagation();
