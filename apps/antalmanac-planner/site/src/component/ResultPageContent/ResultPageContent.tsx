@@ -2,7 +2,7 @@ import './ResultPageContent.scss';
 import { FC, ReactNode } from 'react';
 
 interface ResultPageSectionProps {
-    title: string;
+    title: ReactNode;
     id?: string;
     children: ReactNode;
     indicator?: ReactNode;

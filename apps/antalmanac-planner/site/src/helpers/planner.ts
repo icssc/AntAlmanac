@@ -213,6 +213,16 @@ export const expandAllPlanners = async (plans: SavedPlannerData[]): Promise<Road
     );
 };
 
+const SKELETON_BLUEPRINT_KEY = 'roadmap__skeletonBlueprint';
+
+export function getLocalSkeletonBlueprint() {
+    return localStorage.getItem(SKELETON_BLUEPRINT_KEY);
+}
+
+export function setLocalSkeletonBlueprint(value: string) {
+    localStorage.setItem(SKELETON_BLUEPRINT_KEY, value);
+}
+
 type LocalStorageRoadmapType = SavedRoadmap | LegacyRoadmap | LegacySavedRoadmap;
 
 export function readLocalRoadmap<T extends LocalStorageRoadmapType>(): T {

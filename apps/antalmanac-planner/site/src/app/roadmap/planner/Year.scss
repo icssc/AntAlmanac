@@ -83,6 +83,11 @@ div.year {
             grid-area: A;
         }
 
+        // In skeleton mode the title is wrapped in a Skeleton, which becomes the grid item
+        .year-header > :has(> .year-title) {
+            grid-area: A;
+        }
+
         .year-stats {
             grid-area: C;
             margin-right: 0;

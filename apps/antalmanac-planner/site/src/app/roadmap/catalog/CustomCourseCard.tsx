@@ -6,6 +6,7 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import { IconButton, TextField } from '@mui/material';
 import { FC, useCallback, useEffect, useState } from 'react';
 
+import { wrapSkeleton } from '../../../helpers/skeleton';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
 import { useAppDispatch } from '../../../store/hooks';
 import { removeCustomCourse } from '../../../store/slices/customCourseSlice';
@@ -18,9 +19,16 @@ interface CustomCourseCardProps {
     handleUpdate: (customCourse: CustomCourse) => void;
     inRoadmap: boolean;
     removeCourseAt?: () => void;
+    skeleton?: boolean;
 }
 
-export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpdate, inRoadmap, removeCourseAt }) => {
+export const CustomCourseCard: FC<CustomCourseCardProps> = ({
+    course,
+    handleUpdate,
+    inRoadmap,
+    removeCourseAt,
+    skeleton = false,
+}) => {
     const dispatch = useAppDispatch();
     const isLoggedIn = useIsLoggedIn();
     const hasEmptyTitle = !course.courseName.trim();
@@ -104,23 +112,28 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpda
     if (inRoadmap) {
         return (
             <div className="custom-card">
-                <div className="course-drag-handle">
-                    <DragIndicatorIcon />
-                </div>
+                <div className="course-drag-handle">{wrapSkeleton(<DragIndicatorIcon />, skeleton)}</div>
 
                 <div className="main">
                     <div className="course-card-top">
-                        <span className="name">{course.courseName}</span>
+                        <span className="name">{wrapSkeleton(<span>{course.courseName}</span>, skeleton, 'text')}</span>
 
                         <span className="units">
-                            <>{course.units} units</>
+                            {wrapSkeleton(<span>{course.units} units</span>, skeleton, 'text')}
                         </span>
 
-                        <IconButton className="course-delete-btn" onClick={removeCourseAt} aria-label="delete">
-                            <DeleteOutlineIcon className="course-delete-icon" />
+                        <IconButton
+                            className="course-delete-btn"
+                            onClick={removeCourseAt}
+                            aria-label="delete"
+                            disabled={skeleton}
+                        >
+                            {wrapSkeleton(<DeleteOutlineIcon className="course-delete-icon" />, skeleton, 'circular')}
                         </IconButton>
                     </div>
-                    <div className="course-description description-body">{course.description}</div>
+                    <div className="course-description description-body">
+                        {wrapSkeleton(<span>{course.description}</span>, skeleton, 'text')}
+                    </div>
                 </div>
             </div>
         );
