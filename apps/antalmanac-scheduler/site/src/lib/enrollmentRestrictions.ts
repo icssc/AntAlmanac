@@ -20,7 +20,7 @@ export function getRestrictionToWarn({
 
     if (codes.has('N') && !inCourseSchool) return 'N';
     if (codes.has('O') && inCourseSchool) return 'O';
-    if (codes.has('L') && !inCourseSchool) return 'L';
+    if (codes.has('L')) return 'L';
     if (codes.has('M') && inCourseSchool) return 'M';
     return null;
 }
