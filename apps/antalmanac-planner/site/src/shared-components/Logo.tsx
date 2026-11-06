@@ -71,7 +71,7 @@ export function Logo() {
         <Image
             src={currentLogo.logo}
             height={32}
-            width={72}
+            width={54}
             alt="logo"
             title={currentLogo.attribution}
             style={{ objectFit: 'contain' }}
