@@ -1,6 +1,4 @@
-import type { School, WebsocRestrictionCodeOption } from '@packages/antalmanac-types';
-
-export type MajorSchoolRestrictionCode = Extract<WebsocRestrictionCodeOption, 'L' | 'M' | 'N' | 'O'>;
+import type { MajorSchoolRestrictionCode, School } from '@packages/antalmanac-types';
 
 interface RestrictionCheck {
     restrictions: string;
