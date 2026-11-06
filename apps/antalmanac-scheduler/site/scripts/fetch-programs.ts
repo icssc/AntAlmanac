@@ -16,7 +16,7 @@ async function main() {
     const majorMap = Object.fromEntries(
         majors.map((major: MajorsAPIResponse[number]) => [
             major.id,
-            `${major.name.includes('Psychology') ? major.name.slice(9, -7) : major.name.slice(9)}, ${major.id.slice(0, 2)}`,
+            `${major.name.includes('Psychology') ? major.name.slice(9, -7) : major.name.slice(9)}, ${major.id.split('-')[0]}`,
         ])
     );
 
