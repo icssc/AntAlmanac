@@ -6,10 +6,10 @@ import type { MajorSchoolRestrictionCode } from '@packages/antalmanac-types';
 import { type MouseEvent } from 'react';
 
 const enrollmentRestrictionWarningMessages: Record<MajorSchoolRestrictionCode, (school: string) => string> = {
-    N: (school) => `This section is limited to students in the ${school}. Check Webreg before enrolling.`,
-    O: (school) => `This section is not open to students in the ${school}. Check Webreg before enrolling.`,
-    L: () => 'This section may be limited to certain majors. Check Webreg before enrolling.',
-    M: (school) => `This section may not be open to some majors in the ${school}. Check Webreg before enrolling.`,
+    N: (school) => `May be limited to students in the ${school}. Check Webreg.`,
+    O: (school) => `May not be open to students in the ${school}. Check Webreg.`,
+    L: () => 'May be limited to certain majors. Check Webreg.',
+    M: () => 'May not be open to some majors. Check Webreg.',
 };
 
 export const getEnrollmentRestrictionWarningMessage = (
