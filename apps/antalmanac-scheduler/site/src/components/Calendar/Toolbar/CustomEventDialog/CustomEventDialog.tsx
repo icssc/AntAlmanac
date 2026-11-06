@@ -17,7 +17,7 @@ import {
     TextField,
     Tooltip,
 } from '@mui/material';
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { CUSTOM_EVENT_NOTES_MAX_LENGTH, type RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -58,6 +58,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const [building, setBuilding] = useState<string | undefined>(
         props.customEvent?.building ?? defaultCustomEventValues.building
     );
+    const [notes, setNotes] = useState(props.customEvent?.notes ?? '');
 
     const postHog = usePostHog();
 
@@ -80,6 +81,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(props.customEvent.title);
             setDays(props.customEvent.days);
             setBuilding(props.customEvent.building);
+            setNotes(props.customEvent.notes ?? '');
             setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent.customEventID));
         } else {
             setStart(defaultCustomEventValues.start);
@@ -87,6 +89,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(defaultCustomEventValues.title);
             setDays(defaultCustomEventValues.days);
             setBuilding(defaultCustomEventValues.building);
+            setNotes('');
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
         }
         setOpen(true);
@@ -125,6 +128,10 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         setBuilding(building?.id);
     };
 
+    const handleNotesChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setNotes(event.target.value);
+    }, []);
+
     const handleAddToCalendar = () => {
         if (!days.some((day) => day) || scheduleIndices.length === 0) return;
 
@@ -136,6 +143,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             end: end,
             customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
+            notes: notes.trim() || undefined,
         };
 
         if (props.customEvent) {
@@ -209,6 +217,21 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={days} />
                     <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
+                    <FormControl fullWidth>
+                        <TextField
+                            label="Notes"
+                            fullWidth
+                            multiline
+                            value={notes}
+                            onChange={handleNotesChange}
+                            variant="outlined"
+                            color="secondary"
+                            slotProps={{
+                                inputLabel: { variant: 'outlined' },
+                                htmlInput: { maxLength: CUSTOM_EVENT_NOTES_MAX_LENGTH },
+                            }}
+                        />
+                    </FormControl>
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}

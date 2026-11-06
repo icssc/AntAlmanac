@@ -26,6 +26,8 @@ export const customEvents = pgTable(
 
         building: text('building'),
 
+        notes: text('notes'),
+
         createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 
         lastUpdated: timestamp('last_updated', { withTimezone: true })

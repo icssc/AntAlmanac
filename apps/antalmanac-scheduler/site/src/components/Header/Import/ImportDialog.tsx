@@ -228,9 +228,15 @@ export function ImportDialog({ open, onClose, onAlertDialog, autoImportUsername 
                 }
 
                 try {
-                    const schedulesToImport = importedSchedules.filter((_, index) =>
-                        selectedScheduleIndices.has(index)
-                    );
+                    const schedulesToImport = importedSchedules
+                        .filter((_, index) => selectedScheduleIndices.has(index))
+                        .map((schedule) => ({
+                            ...schedule,
+                            customEvents: schedule.customEvents?.map((customEvent) => ({
+                                ...customEvent,
+                                notes: customEvent.notes?.trim() || undefined,
+                            })),
+                        }));
                     const currentScheduleState = AppStore.schedule.getScheduleAsSaveState();
 
                     mergeShortCourseSchedules(currentScheduleState.schedules, schedulesToImport, '');

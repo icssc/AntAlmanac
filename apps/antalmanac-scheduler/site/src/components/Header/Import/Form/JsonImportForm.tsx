@@ -2,7 +2,7 @@ import { ScheduleList } from '$components/Header/Import/Form/ScheduleList';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { CloudUpload } from '@mui/icons-material';
 import { Box, DialogContentText, InputLabel, Paper, Stack, Typography } from '@mui/material';
-import { type ShortCourseSchedule } from '@packages/antalmanac-types';
+import { CUSTOM_EVENT_NOTES_MAX_LENGTH, type ShortCourseSchedule } from '@packages/antalmanac-types';
 import { type RefObject, useCallback, useRef, useState } from 'react';
 
 interface JsonImportFormProps {
@@ -91,6 +91,18 @@ export function JsonImportForm({
                     error: `Schedule ${scheduleIndex + 1}, Custom Event ${
                         eventIndex + 1
                     } is missing required field: days (must be an array)`,
+                };
+            }
+            if (
+                customEvent.notes !== undefined &&
+                (typeof customEvent.notes !== 'string' ||
+                    customEvent.notes.trim().length > CUSTOM_EVENT_NOTES_MAX_LENGTH)
+            ) {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
+                        eventIndex + 1
+                    } has invalid notes (must be text up to ${CUSTOM_EVENT_NOTES_MAX_LENGTH} characters)`,
                 };
             }
             return { valid: true };

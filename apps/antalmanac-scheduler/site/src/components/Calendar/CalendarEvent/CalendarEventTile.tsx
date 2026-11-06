@@ -27,6 +27,21 @@ export const CalendarEventTile = memo(({ event }: { event: CalendarEvent }) => {
                 <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
                     <Box>{buildingCodeFromLocationNumericId(parseInt(event.building, 10))}</Box>
                 </Box>
+                {event.notes && (
+                    <Box
+                        style={{
+                            fontSize: '0.7rem',
+                            whiteSpace: 'pre-wrap',
+                            overflowWrap: 'anywhere',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                        }}
+                    >
+                        {event.notes}
+                    </Box>
+                )}
             </Box>
         );
     }
