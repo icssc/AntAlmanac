@@ -506,7 +506,7 @@ const validateCoursePrerequisite = (input: ValidationInput<Prerequisite>) => {
     if (prerequisite.prereqType !== 'course' && prerequisite.prereqType !== 'exam') {
         // TODO: handle "standing" and "affiliation" types
         // for now, assume they are satisfied
-        return new Set();
+        return new Set<string>();
     }
 
     // checking prereq type (course and exam)
