@@ -11,6 +11,8 @@ import AppHeader from '../component/AppHeader/AppHeader';
 import AppProvider from '../component/AppProvider/AppProvider';
 import ChangelogModal from '../component/ChangelogModal/ChangelogModal';
 import { createServerSideTrpcCaller } from '../trpc';
+import { ANTALMANAC_PLANNER_TITLE } from './seo-constants';
+import { SeoContent } from './seo-content';
 
 const roboto = Roboto({
     subsets: ['latin'],
@@ -20,7 +22,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-    title: 'AntAlmanac Planner',
+    title: ANTALMANAC_PLANNER_TITLE,
     description:
         'A web application for course discovery and planning at UCI, featuring an enhanced catalogue and a 4-year planner.',
 };
@@ -53,7 +55,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         <div id="root">
                             <AppHeader />
                             <div className="app-body">
-                                <div className="app-content">{children}</div>
+                                <div className="app-content">
+                                    <SeoContent />
+                                    {children}
+                                </div>
                                 <ChangelogModal />
                             </div>
                         </div>
