@@ -1,6 +1,6 @@
 import type { School } from './schools';
 
-export const MAJOR_SCHOOLS_MAP: Record<string, readonly [School, ...School[]]> = {
+export const MAJOR_SCHOOLS_MAP: Partial<Record<string, readonly [School, ...School[]]>> = {
     'BS-114': ['Charlie Dunlop School of Biological Sciences'], // Biochemistry and Molecular Biology
     'BS-120': ['Charlie Dunlop School of Biological Sciences'], // Biological Sciences
     'BS-05H': ['Charlie Dunlop School of Biological Sciences'], // Biology/Education
