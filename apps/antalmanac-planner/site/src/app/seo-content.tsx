@@ -7,60 +7,46 @@ import { ANTALMANAC_PLANNER_TITLE } from './seo-constants';
  */
 export function SeoContent() {
     return (
-        <div className="sr-only" role="complementary" aria-label="About AntAlmanac">
+        <div className="sr-only" role="complementary" aria-label="About AntAlmanac Planner">
             <h1>{ANTALMANAC_PLANNER_TITLE}</h1>
 
             <p>
-                AntAlmanac helps you find any UCI course and plan your UCI schedule in one place, a UCI course planner
-                and UCI schedule planner trusted by tens of thousands of UC Irvine students. Search UCI courses across
-                140+ departments, build your UCI schedule with conflict detection and unit counts, and explore grade
-                distributions and enrollment history before you enroll.
+                AntAlmanac Planner helps you find any UCI course and plan your UCI 4-year plan in one place, a UCI
+                course planner trusted by tens of thousands of UC Irvine students. Search UCI courses across 140+
+                departments, build your UCI 4-year roadmap with prerequisite detection and degree completion tracking,
+                and explore course grade distributions and historical offerings before you plan.
             </p>
 
-            <h2>UCI course search</h2>
+            <h2>Catalog</h2>
+            <p>
+                Search and select from 80+ majors and 70+ minors and view how your planned roadmap fulfills your major,
+                specialization, minor, and GE requirements.
+            </p>
+
+            <h2>Import Credits</h2>
+            <p>
+                Import any credits you have earned through exams or through another college. Specify any general
+                education credits you have earned in any category from other colleges and universities.
+            </p>
+
+            <h2>UCI Course Search</h2>
             <p>
                 Run a UCI course search across Computer Science, Informatics, Biological Sciences, Mathematics,
-                Economics, Engineering, Psychology, Political Science, and 130+ more departments. Filter by GE category:
-                Writing, Multicultural Studies, Science &amp; Technology, and more, or search by course number, title,
-                or instructor name.
+                Economics, Engineering, Psychology, Political Science, and 130+ more departments. View recent offerings,
+                grade distribution visualizations, visual prerequisite trees, historic scheduling data, and reviews from
+                UCI students.
             </p>
 
-            <h2>UCI class schedule &amp; weekly planner</h2>
+            <h2>UCI Instructor Search</h2>
             <p>
-                Add UCI courses to a weekly calendar to preview your UCI class schedule. AntAlmanac detects time
-                conflicts, tracks your unit count, and lets you save multiple schedule variations to compare before
-                enrolling. Use it as your UCI schedule planner to finalize your ideal UCI schedule before enrollment
-                opens.
+                Search through UCI faculty across 140+ departments. View grade distribution visualization, historic
+                scheduling data, and reviews from UCI students.
             </p>
 
-            <h2>Interactive UCI Campus Map</h2>
-            <p>
-                See where your UCI classes meet on an interactive campus map. Get walking directions between buildings
-                and plan your route between back-to-back classes.
-            </p>
-
-            <h2>Grade Distributions &amp; Enrollment History</h2>
-            <p>
-                View historical grade distributions for UCI courses and instructors. See past enrollment data and
-                waitlist trends to help decide which sections to take.
-            </p>
-
-            <nav aria-label="AntAlmanacPlanner sections">
+            <nav aria-label="AntAlmanac Planner sections">
                 <ul>
                     <li>
-                        <Link href="/">UCI Course Search</Link>
-                    </li>
-                    <li>
-                        <Link href="/calendar">Weekly Calendar</Link>
-                    </li>
-                    <li>
-                        <Link href="/added">My Schedule</Link>
-                    </li>
-                    <li>
-                        <Link href="/map">Campus Map</Link>
-                    </li>
-                    <li>
-                        <Link href="/feedback">Feedback</Link>
+                        <Link href="/planner">UCI Course Search</Link>
                     </li>
                 </ul>
             </nav>
