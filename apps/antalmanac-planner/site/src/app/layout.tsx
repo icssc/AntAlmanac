@@ -38,7 +38,6 @@ export const metadata: Metadata = {
         description: ANTALMANAC_PLANNER_DESCRIPTION,
         images: '/og-image.png',
     },
-    alternates: { canonical: '/planner' },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
