@@ -184,7 +184,7 @@ export const SearchWithPlanner = () => {
                 }),
             }}
             textFieldProps={{
-                placeholder: 'Select roadmap from Planner',
+                placeholder: 'Select from planner',
                 fullWidth: true,
             }}
             isAligned
