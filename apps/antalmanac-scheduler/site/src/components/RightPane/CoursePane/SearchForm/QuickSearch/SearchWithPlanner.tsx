@@ -184,7 +184,7 @@ export const SearchWithPlanner = () => {
                 }),
             }}
             textFieldProps={{
-                placeholder: 'Select from planner',
+                placeholder: 'Select from Planner',
                 fullWidth: true,
             }}
             isAligned
