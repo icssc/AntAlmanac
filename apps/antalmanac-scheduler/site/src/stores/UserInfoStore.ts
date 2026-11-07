@@ -16,6 +16,8 @@ interface UserInfoStore {
     setMajorSchools: (majors: string[], schools: School[]) => Promise<void>;
 }
 
+let latestSaveId = 0;
+
 export const useUserInfoStore = create<UserInfoStore>((set, get) => ({
     initialized: false,
     majors: [],
@@ -48,6 +50,7 @@ export const useUserInfoStore = create<UserInfoStore>((set, get) => ({
     },
 
     setMajorSchools: async (majors, schools) => {
+        const saveId = ++latestSaveId;
         const previous = { majors: get().majors, schools: get().schools };
         set({ majors, schools });
 
@@ -55,6 +58,7 @@ export const useUserInfoStore = create<UserInfoStore>((set, get) => ({
             await trpc.user.updateMajorSchools.mutate({ majors, schools });
         } catch (error) {
             console.error('Failed to save major and school:', error);
+            if (saveId !== latestSaveId) return;
             set(previous);
             openSnackbar('error', 'Could not save major and school. Please try again.');
         }
