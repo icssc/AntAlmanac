@@ -7,6 +7,13 @@ import type { MajorsAPIResponse } from '@packages/anteater-api/types';
 
 const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
 
+function normalizeMajorName(name: string): string {
+    return name
+        .replace(/^Major in\s+/i, '')
+        .replace(/\s*\([^)]*\)\s*$/, '')
+        .trim();
+}
+
 async function main() {
     console.log('Fetching majors from Anteater API...');
     const majors = await aapiClient.programs.getMajors();
@@ -16,7 +23,8 @@ async function main() {
     const majorMap = Object.fromEntries(
         majors.map((major: MajorsAPIResponse[number]) => [
             major.id,
-            `${major.name.includes('Psychology') ? major.name.slice(9, -7) : major.name.slice(9)}, ${major.id.split('-')[0]}`,
+            `${normalizeMajorName(major.name)}, ${major.id.split('-')[0]}`,
+            // `${major.name.includes('Psychology') ? major.name.slice(9, -7) : major.name.slice(9)}, ${major.id.split('-')[0]}`,
         ])
     );
 
