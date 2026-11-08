@@ -1,16 +1,24 @@
 import type { Prerequisite, PrerequisiteNode } from '@peterportal/types';
 
-type RoadmapVerifiablePrerequisite = Extract<Prerequisite, { prereqType: 'course' | 'exam' }>;
+type AffiliationPrerequisite = Extract<Prerequisite, { prereqType: 'affiliation' }>;
+type CHCPrerequisite = Omit<AffiliationPrerequisite, 'affiliation'> & {
+    affiliation: Extract<AffiliationPrerequisite['affiliation'], { type: 'CHC' }>;
+};
+type RoadmapVerifiablePrerequisite = Extract<Prerequisite, { prereqType: 'course' | 'exam' }> | CHCPrerequisite;
 
 export function isRoadmapVerifiablePrerequisite(
     prerequisite: Prerequisite
 ): prerequisite is RoadmapVerifiablePrerequisite;
 export function isRoadmapVerifiablePrerequisite(prerequisite: PrerequisiteNode): boolean;
 export function isRoadmapVerifiablePrerequisite(prerequisite: PrerequisiteNode): boolean {
-    // TODO: Validate these requirements once the roadmap stores the necessary student-profile data.
-    // Until then, treat them as satisfied intentionally to avoid false warnings.
+    // TODO: Validate standing, major, and school requirements once the roadmap stores the necessary profile data.
+    // Until then, treat those requirements as satisfied intentionally to avoid false warnings.
     if ('prereqType' in prerequisite) {
-        return prerequisite.prereqType === 'course' || prerequisite.prereqType === 'exam';
+        return (
+            prerequisite.prereqType === 'course' ||
+            prerequisite.prereqType === 'exam' ||
+            (prerequisite.prereqType === 'affiliation' && prerequisite.affiliation.type === 'CHC')
+        );
     }
 
     if (prerequisite.NOT?.length) return false;

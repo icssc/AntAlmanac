@@ -11,6 +11,8 @@ import { getMissingPrerequisites } from '../../helpers/planner';
 import { isRoadmapVerifiablePrerequisite } from '../../helpers/prerequisites';
 import { addDelimiter, getCourseTags } from '../../helpers/util';
 import { useClearedCoursesUntil } from '../../hooks/planner';
+import { useAppSelector } from '../../store/hooks';
+import { selectCurrentPlan } from '../../store/slices/roadmapSlice';
 import { CourseGQLData } from '../../types/types';
 import PrereqTree from '../PrereqTree/PrereqTree';
 import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
@@ -65,13 +67,14 @@ const PrereqItemText: FC<{ item: PrerequisiteNode; wrapInParens?: boolean }> = (
     return result;
 };
 
-const CoursePrequisiteLine: FC<{ item: PrerequisiteNode; clearedCourses: Set<string>; negated?: boolean }> = ({
-    item,
-    clearedCourses,
-    negated = false,
-}) => {
+const CoursePrequisiteLine: FC<{
+    item: PrerequisiteNode;
+    clearedCourses: Set<string>;
+    isCHC: boolean;
+    negated?: boolean;
+}> = ({ item, clearedCourses, isCHC, negated = false }) => {
     const verifiable = isRoadmapVerifiablePrerequisite(item);
-    const requirementMissing = Boolean(getMissingPrerequisites(clearedCourses, { AND: [item] }));
+    const requirementMissing = Boolean(getMissingPrerequisites(clearedCourses, { AND: [item] }, { isCHC }));
     const complete = negated ? requirementMissing : !requirementMissing;
 
     const title = complete
@@ -107,10 +110,11 @@ const CoursePrequisiteLine: FC<{ item: PrerequisiteNode; clearedCourses: Set<str
 /**
  * A list view of course prerequisites that also performs checks against the current planner
  */
-const CoursePrerequisiteListView: FC<{ tree: CourseGQLData['prerequisiteTree']; clearedCourses: Set<string> }> = ({
-    tree,
-    clearedCourses,
-}) => {
+const CoursePrerequisiteListView: FC<{
+    tree: CourseGQLData['prerequisiteTree'];
+    clearedCourses: Set<string>;
+    isCHC: boolean;
+}> = ({ tree, clearedCourses, isCHC }) => {
     const groups = [
         { type: 'AND' as const, label: 'All of the following:', items: tree.AND },
         { type: 'OR' as const, label: 'Any of the following:', items: tree.OR },
@@ -132,6 +136,7 @@ const CoursePrerequisiteListView: FC<{ tree: CourseGQLData['prerequisiteTree']; 
                                     key={idx}
                                     item={requirement}
                                     clearedCourses={clearedCourses}
+                                    isCHC={isCHC}
                                     negated={group.type === 'NOT'}
                                 />
                             ))}
@@ -213,6 +218,7 @@ const PrerequisiteTreeDialog: FC<{ course: CourseGQLData }> = ({ course }) => {
 const CourseSummary: FC<{ course: CourseGQLData }> = ({ course }) => {
     const courseId = `${course.department} ${course.courseNumber}`;
     const clearedCourses = useClearedCoursesUntil(courseId);
+    const isCHC = Boolean(useAppSelector(selectCurrentPlan)?.chc);
     return (
         <div className="course-summary">
             <p>{course.description}</p>
@@ -224,7 +230,11 @@ const CourseSummary: FC<{ course: CourseGQLData }> = ({ course }) => {
                     <CourseRestriction restriction={course.restriction} />
                 </div>
                 <div className="summary-column">
-                    <CoursePrerequisiteListView tree={course.prerequisiteTree} clearedCourses={clearedCourses} />
+                    <CoursePrerequisiteListView
+                        tree={course.prerequisiteTree}
+                        clearedCourses={clearedCourses}
+                        isCHC={isCHC}
+                    />
                     <br />
                     <CourseDependentText
                         courseName={`${course.department} ${course.courseNumber}`}

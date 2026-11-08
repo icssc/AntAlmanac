@@ -55,4 +55,13 @@ describe('getMissingPrerequisites', () => {
 
         expect(getMissingPrerequisites(new Set(), tree)).toBeUndefined();
     });
+
+    it('checks CHC affiliation against the current roadmap', () => {
+        const tree: PrerequisiteTree = {
+            AND: [{ prereqType: 'affiliation', affiliation: { type: 'CHC' } }],
+        };
+
+        expect(getMissingPrerequisites(new Set(), tree)).toEqual(['CAMPUSWIDE HONORS ONLY']);
+        expect(getMissingPrerequisites(new Set(), tree, { isCHC: true })).toBeUndefined();
+    });
 });

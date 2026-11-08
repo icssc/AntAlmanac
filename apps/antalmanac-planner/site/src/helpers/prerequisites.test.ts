@@ -39,7 +39,7 @@ describe('isRoadmapVerifiablePrerequisite', () => {
         expect(isRoadmapVerifiablePrerequisite({ prereqType: 'exam', examName: 'AP CALCULUS BC' })).toBe(true);
     });
 
-    it('recognizes standing and affiliation requirements as unverifiable', () => {
+    it('recognizes standing and non-CHC affiliation requirements as unverifiable', () => {
         expect(
             isRoadmapVerifiablePrerequisite({
                 prereqType: 'standing',
@@ -49,9 +49,18 @@ describe('isRoadmapVerifiablePrerequisite', () => {
         expect(
             isRoadmapVerifiablePrerequisite({
                 prereqType: 'affiliation',
-                affiliation: { type: 'CHC' },
+                affiliation: { type: 'school', value: 'I&C SCI' },
             })
         ).toBe(false);
+    });
+
+    it('recognizes CHC affiliation requirements as verifiable', () => {
+        expect(
+            isRoadmapVerifiablePrerequisite({
+                prereqType: 'affiliation',
+                affiliation: { type: 'CHC' },
+            })
+        ).toBe(true);
     });
 
     it('recognizes trees containing NOT groups as unverifiable', () => {
