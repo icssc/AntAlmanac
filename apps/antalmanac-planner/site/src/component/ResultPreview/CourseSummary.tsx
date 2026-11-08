@@ -95,7 +95,9 @@ const CoursePrequisiteLine: FC<{
             {complete ? <CheckIcon /> : <WarningAmberIcon />}
         </Tooltip>
     ) : (
-        <QuestionMarkIcon />
+        <Tooltip title="Planner cannot verify this prerequisite yet" placement="left" slotProps={slotProps}>
+            <QuestionMarkIcon />
+        </Tooltip>
     );
 
     const iconStatus = verifiable ? (complete ? 'complete' : 'incomplete') : 'unverifiable';
