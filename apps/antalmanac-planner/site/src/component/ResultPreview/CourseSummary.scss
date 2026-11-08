@@ -11,7 +11,13 @@
     }
 
     .summary-column:first-child {
+        width: 100%;
         max-width: 400px;
+    }
+
+    .summary-column:nth-child(2) {
+        flex: 1;
+        min-width: 0;
     }
 
     @container course-summary (width < 800px) {
@@ -61,6 +67,10 @@
         gap: 10px;
         margin-bottom: 16px;
         flex-wrap: wrap;
+    }
+
+    .summary-description-skeleton {
+        margin-bottom: 8px;
     }
 
     .materials-alert {

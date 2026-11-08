@@ -2,19 +2,34 @@ import './CourseSummary.scss';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CheckIcon from '@mui/icons-material/Check';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Tooltip } from '@mui/material';
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Skeleton, Tooltip } from '@mui/material';
 import { CoursePreview, PrerequisiteNode } from '@peterportal/types';
-import { FC, useState } from 'react';
+import { FC, Fragment, useState } from 'react';
 
 import { getMissingPrerequisites } from '../../helpers/planner';
+import { wrapSkeleton } from '../../helpers/skeleton';
 import { addDelimiter, getCourseTags } from '../../helpers/util';
 import { useClearedCoursesUntil } from '../../hooks/planner';
 import { CourseGQLData } from '../../types/types';
 import PrereqTree from '../PrereqTree/PrereqTree';
 import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
 
-const CourseTags: FC<{ course: CourseGQLData }> = ({ course }) => {
+const SummarySkeletonBlock: FC<{ height: number }> = ({ height }) => (
+    <Skeleton variant="rounded" width="100%" height={height} />
+);
+
+const CourseTags: FC<{ course: CourseGQLData; skeleton: boolean }> = ({ course, skeleton }) => {
     const tags = getCourseTags(course);
+    if (skeleton) {
+        return (
+            <div className="course-tags">
+                {['4 units', 'Upper Division'].map((tag) => (
+                    <Fragment key={tag}>{wrapSkeleton(<Chip label={tag} />, true)}</Fragment>
+                ))}
+            </div>
+        );
+    }
+
     return (
         <div className="course-tags">
             {tags.map((tag) => (
@@ -24,13 +39,17 @@ const CourseTags: FC<{ course: CourseGQLData }> = ({ course }) => {
     );
 };
 
-const CourseRestriction: FC<{ restriction: string }> = ({ restriction }) => {
+const CourseRestriction: FC<{ restriction: string; skeleton: boolean }> = ({ restriction, skeleton }) => {
     return (
         <>
             <h4>Restrictions</h4>
-            <p>
-                <i>{restriction || 'There are no restrictions for this course.'}</i>
-            </p>
+            {skeleton ? (
+                <SummarySkeletonBlock height={60} />
+            ) : (
+                <p>
+                    <i>{restriction || 'There are no restrictions for this course.'}</i>
+                </p>
+            )}
             {/* Restriction Tags are term-specific and needs a WebSoC query */}
         </>
     );
@@ -101,10 +120,11 @@ const CoursePrequisiteLine: FC<{ item: PrerequisiteNode; clearedCourses: Set<str
 /**
  * A list view of course prerequisites that also performs checks against the current planner
  */
-const CoursePrerequisiteListView: FC<{ tree: CourseGQLData['prerequisiteTree']; clearedCourses: Set<string> }> = ({
-    tree,
-    clearedCourses,
-}) => {
+const CoursePrerequisiteListView: FC<{
+    tree: CourseGQLData['prerequisiteTree'];
+    clearedCourses: Set<string>;
+    skeleton: boolean;
+}> = ({ tree, clearedCourses, skeleton }) => {
     let listLabel = 'All of the following:';
     if (tree.OR) listLabel = 'Any of the following:';
     else if (tree.NOT) listLabel = 'None of the following:';
@@ -114,28 +134,40 @@ const CoursePrerequisiteListView: FC<{ tree: CourseGQLData['prerequisiteTree']; 
     return (
         <>
             <h4>Prerequisites</h4>
-            <p className="summary-prerequisite-type">
-                {items.length > 0 ? <b>{listLabel}</b> : 'This course has no prerequisites.'}
-            </p>
-            <ul className="summary-prerequisites">
-                {items.map((requirement, idx) => (
-                    <CoursePrequisiteLine key={idx} item={requirement} clearedCourses={clearedCourses} />
-                ))}
-            </ul>
+            {skeleton ? (
+                <SummarySkeletonBlock height={96} />
+            ) : (
+                <>
+                    <p className="summary-prerequisite-type">
+                        {items.length > 0 ? <b>{listLabel}</b> : 'This course has no prerequisites.'}
+                    </p>
+                    <ul className="summary-prerequisites">
+                        {items.map((requirement, idx) => (
+                            <CoursePrequisiteLine key={idx} item={requirement} clearedCourses={clearedCourses} />
+                        ))}
+                    </ul>
+                </>
+            )}
         </>
     );
 };
 
-const CourseDependentText: FC<{ courseName: string; dependents: CoursePreview[] }> = ({ courseName, dependents }) => {
+const CourseDependentText: FC<{ courseName: string; dependents: CoursePreview[]; skeleton: boolean }> = ({
+    courseName,
+    dependents,
+    skeleton,
+}) => {
     const header = <h4>Required By</h4>;
 
     if (!dependents.length) {
         return (
             <>
                 {header}
-                <p>
-                    <i>There are no courses that have {courseName} as a prerequisite.</i>
-                </p>
+                {skeleton ? (
+                    <SummarySkeletonBlock height={116} />
+                ) : (
+                    <p>{`There are no courses that have ${courseName} as a prerequisite.`}</p>
+                )}
             </>
         );
     }
@@ -147,17 +179,23 @@ const CourseDependentText: FC<{ courseName: string; dependents: CoursePreview[] 
     return (
         <>
             {header}
-            <p>
-                <i>You must take {courseName} before taking any of the following courses.</i>
-            </p>
-            <p>
-                {shown.join(', ')}
-                {omitCount > 0 && (
-                    <>
-                        , <i>{omitCount} more...</i>
-                    </>
-                )}
-            </p>
+            {skeleton ? (
+                <SummarySkeletonBlock height={116} />
+            ) : (
+                <>
+                    <p>
+                        <i>You must take {courseName} before taking any of the following courses.</i>
+                    </p>
+                    <p>
+                        {shown.join(', ')}
+                        {omitCount > 0 && (
+                            <>
+                                , <i>{omitCount} more...</i>
+                            </>
+                        )}
+                    </p>
+                </>
+            )}
         </>
     );
 };
@@ -191,27 +229,43 @@ const PrerequisiteTreeDialog: FC<{ course: CourseGQLData }> = ({ course }) => {
     );
 };
 
-const CourseSummary: FC<{ course: CourseGQLData }> = ({ course }) => {
+const CourseSummary: FC<{ course: CourseGQLData; skeleton?: boolean }> = ({ course, skeleton = false }) => {
     const courseId = `${course.department} ${course.courseNumber}`;
     const clearedCourses = useClearedCoursesUntil(courseId);
     return (
         <div className="course-summary">
-            <p>{course.description}</p>
-            <CourseTags course={course} />
+            {skeleton ? (
+                <div className="summary-description-skeleton">
+                    <Skeleton variant="text" width="100%" />
+                    <Skeleton variant="text" width="92%" />
+                </div>
+            ) : (
+                <p>{course.description}</p>
+            )}
+            <CourseTags course={course} skeleton={skeleton} />
             <div className="summary-columns">
                 <div className="summary-column">
-                    <RecentOfferingsTable terms={course.terms} size="wide" />
+                    {skeleton ? (
+                        <Skeleton variant="rounded" width="100%" height={180} />
+                    ) : (
+                        <RecentOfferingsTable terms={course.terms} size="wide" />
+                    )}
                     <br />
-                    <CourseRestriction restriction={course.restriction} />
+                    <CourseRestriction restriction={course.restriction} skeleton={skeleton} />
                 </div>
                 <div className="summary-column">
-                    <CoursePrerequisiteListView tree={course.prerequisiteTree} clearedCourses={clearedCourses} />
+                    <CoursePrerequisiteListView
+                        tree={course.prerequisiteTree}
+                        clearedCourses={clearedCourses}
+                        skeleton={skeleton}
+                    />
                     <br />
                     <CourseDependentText
                         courseName={`${course.department} ${course.courseNumber}`}
                         dependents={Object.values(course.dependents)}
+                        skeleton={skeleton}
                     />
-                    <PrerequisiteTreeDialog course={course} />
+                    {wrapSkeleton(<PrerequisiteTreeDialog course={course} />, skeleton)}
                 </div>
             </div>
         </div>

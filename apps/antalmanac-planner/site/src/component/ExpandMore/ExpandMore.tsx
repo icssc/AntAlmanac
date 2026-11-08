@@ -7,10 +7,8 @@ interface ExpandMoreProps extends IconButtonProps {
 
 // `expand` must be passed for this component to be updated properly
 // oxlint-disable-next-line no-unused-vars
-export const ExpandMore = styled(({ expanded, ...props }: ExpandMoreProps) => (
-    <IconButton {...props}>
-        <ExpandMoreIcon />
-    </IconButton>
+export const ExpandMore = styled(({ expanded, children, ...props }: ExpandMoreProps) => (
+    <IconButton {...props}>{children ?? <ExpandMoreIcon />}</IconButton>
 ))(({ theme }) => ({
     marginLeft: 'auto',
     transition: theme.transitions.create('transform', {
