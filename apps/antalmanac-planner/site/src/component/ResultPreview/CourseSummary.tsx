@@ -1,6 +1,7 @@
 import './CourseSummary.scss';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CheckIcon from '@mui/icons-material/Check';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Tooltip } from '@mui/material';
 import { formatPrerequisite } from '@packages/anteater-api/utils';
@@ -93,16 +94,15 @@ const CoursePrequisiteLine: FC<{
         <Tooltip title={title} placement="left" slotProps={slotProps}>
             {complete ? <CheckIcon /> : <WarningAmberIcon />}
         </Tooltip>
-    ) : null;
+    ) : (
+        <QuestionMarkIcon />
+    );
+
+    const iconStatus = verifiable ? (complete ? 'complete' : 'incomplete') : 'unverifiable';
 
     return (
         <li className="prerequisite-line">
-            {icon && (
-                <>
-                    <span className={`icon ${complete ? 'icon-complete' : 'icon-incomplete'}`}>{icon}</span>{' '}
-                </>
-            )}
-            <PrereqItemText item={item} />
+            <span className={`icon icon-${iconStatus}`}>{icon}</span> <PrereqItemText item={item} />
         </li>
     );
 };
