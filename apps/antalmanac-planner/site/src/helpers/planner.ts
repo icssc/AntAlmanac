@@ -504,6 +504,7 @@ interface ValidationInput<PreqrequisiteType> {
 const validateCoursePrerequisite = (input: ValidationInput<Prerequisite>) => {
     const { prerequisite, taken, taking } = input;
 
+    // Affiliation and standing are currently treated as satisfied intentionally.
     if (!isRoadmapVerifiablePrerequisite(prerequisite)) {
         return new Set<string>();
     }
