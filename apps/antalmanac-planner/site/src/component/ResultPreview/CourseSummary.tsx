@@ -78,13 +78,14 @@ const CoursePrequisiteLine: FC<{
     const requirementMissing = Boolean(getMissingPrerequisites(clearedCourses, { AND: [item] }, { isCHC }));
     const complete = negated ? requirementMissing : !requirementMissing;
 
-    const title = complete
-        ? negated
+    let title: string;
+    if (negated) {
+        title = complete
             ? 'Your roadmap does not contain this antirequisite'
-            : 'You have completed this prerequisite'
-        : negated
-          ? 'Your roadmap contains this antirequisite'
-          : 'This prerequisite is incomplete';
+            : 'Your roadmap contains this antirequisite';
+    } else {
+        title = complete ? 'You have completed this prerequisite' : 'This prerequisite is incomplete';
+    }
 
     const offset = [0, -8];
     const modifiers = [{ name: 'offset', options: { offset } }];
