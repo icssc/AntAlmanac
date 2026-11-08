@@ -80,10 +80,10 @@ const CoursePrequisiteLine: FC<{
 
     const title = complete
         ? negated
-            ? 'Your roadmap does not contain this disallowed prerequisite'
+            ? 'Your roadmap does not contain this antirequisite'
             : 'You have completed this prerequisite'
         : negated
-          ? 'Your roadmap contains this disallowed prerequisite'
+          ? 'Your roadmap contains this antirequisite'
           : 'This prerequisite is incomplete';
 
     const offset = [0, -8];
