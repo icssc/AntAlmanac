@@ -8,8 +8,8 @@ type RoadmapVerifiablePrerequisite = Extract<Prerequisite, { prereqType: 'course
 
 export function isRoadmapVerifiablePrerequisite(
     prerequisite: Prerequisite
-): prerequisite is RoadmapVerifiablePrerequisite;
-export function isRoadmapVerifiablePrerequisite(prerequisite: PrerequisiteNode): boolean;
+): prerequisite is RoadmapVerifiablePrerequisite; // Only lead overload can provide narrowing
+export function isRoadmapVerifiablePrerequisite(prerequisite: PrerequisiteNode): boolean; // Recursive calls can't narrow type
 export function isRoadmapVerifiablePrerequisite(prerequisite: PrerequisiteNode): boolean {
     // TODO: Validate standing, major, and school requirements once the roadmap stores the necessary profile data.
     // Until then, treat those requirements as satisfied intentionally to avoid false warnings.
