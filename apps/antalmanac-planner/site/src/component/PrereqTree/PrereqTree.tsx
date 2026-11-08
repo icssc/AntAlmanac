@@ -1,6 +1,7 @@
 'use client';
 import './PrereqTree.scss';
 import { Box, Tooltip } from '@mui/material';
+import { formatPrerequisite } from '@packages/anteater-api/utils';
 import type { Prerequisite, PrerequisiteTree, PrerequisiteNode } from '@peterportal/types';
 import Link from 'next/link';
 import { FC } from 'react';
@@ -14,6 +15,7 @@ interface NodeProps {
     nodeType: PrerequisiteTreeNodeType;
     label: string;
     content: string;
+    courseId?: string;
     index?: number;
 }
 
@@ -22,6 +24,25 @@ const phraseMapping = {
     OR: 'one of',
     NOT: 'none of',
 };
+type PrerequisiteTreeOperator = keyof typeof phraseMapping;
+
+const getRenderableTreeGroup = (tree: PrerequisiteTree): [PrerequisiteTreeOperator, PrerequisiteNode[]] | undefined => {
+    const groups = (Object.keys(phraseMapping) as PrerequisiteTreeOperator[]).flatMap((operator) => {
+        const children = tree[operator];
+        return children?.length ? ([[operator, children]] as [PrerequisiteTreeOperator, PrerequisiteNode[]][]) : [];
+    });
+
+    if (groups.length === 0) return undefined;
+    if (groups.length === 1) return groups[0];
+
+    return [
+        'AND',
+        groups.flatMap(([operator, children]) =>
+            operator === 'AND' ? children : [{ [operator]: children } as PrerequisiteTree]
+        ),
+    ];
+};
+
 const Node: FC<NodeProps> = (props) => {
     const tooltipText = props.content || props.label;
     const wrapperClassName = `${props.nodeType}-node`;
@@ -30,12 +51,10 @@ const Node: FC<NodeProps> = (props) => {
         <div className={wrapperClassName} key={props.index}>
             <Tooltip title={tooltipText} placement="top" disableInteractive slotProps={createTooltipOffset(0, -8)}>
                 <Box>
-                    {!props.label.startsWith('AP ') ? (
+                    {props.courseId ? (
                         <Link
                             target="_blank"
-                            href={
-                                '/planner/course/' + encodeURIComponent(props.label.split('(')[0].replace(/\s+/g, ''))
-                            }
+                            href={'/planner/course/' + encodeURIComponent(props.courseId.replace(/\s+/g, ''))}
                             role="button"
                             className="node"
                         >
@@ -64,19 +83,13 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
     // if value is a string, render leaf node
     if (isValueNode) {
         const prereq = prerequisite as Prerequisite;
+        const courseId = prereq.prereqType === 'course' ? prereq.courseId : undefined;
         return (
             <li key={props.index} className="prerequisite-node">
                 <Node
-                    label={
-                        prereq.prereqType === 'course'
-                            ? `${prereq.courseId} ${prereq.coreq ? '(coreq)' : prereq.minGrade ? `(min grade = ${prereq.minGrade})` : ''}`
-                            : `${prereq.examName} ${prereq.minGrade ? `(min grade = ${prereq.minGrade})` : ''}`
-                    }
-                    content={
-                        props.prerequisiteNames[
-                            prereq.prereqType === 'course' ? prereq.courseId.replace(/ /g, '') : (prereq.examName ?? '')
-                        ]?.title ?? ''
-                    }
+                    label={formatPrerequisite(prereq)}
+                    content={courseId ? (props.prerequisiteNames[courseId.replace(/ /g, '')]?.title ?? '') : ''}
+                    courseId={courseId}
                     nodeType="prerequisite"
                 />
             </li>
@@ -85,10 +98,16 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
     // if value is an object, render the rest of the sub tree
     else {
         const prereqTree = prerequisite as PrerequisiteTree;
-        const prereqTreeType = Object.keys(prereqTree)[0] as keyof PrerequisiteTree;
-        const prereqChildren = prereqTree[prereqTreeType] as PrerequisiteTree[];
+        const renderableGroup = getRenderableTreeGroup(prereqTree);
+        if (!renderableGroup) return null;
+        const [prereqTreeType, prereqChildren] = renderableGroup;
 
-        if (prereqTree.AND && prereqChildren.length === 1 && prereqChildren[0].OR) {
+        if (
+            prereqTreeType === 'AND' &&
+            prereqChildren.length === 1 &&
+            'OR' in prereqChildren[0] &&
+            prereqChildren[0].OR
+        ) {
             return <PrereqTreeNode prerequisiteNames={props.prerequisiteNames} prerequisiteJSON={prereqChildren[0]} />;
         }
 
@@ -151,6 +170,7 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                                             <Node
                                                 label={`${dependent.department} ${dependent.courseNumber}`}
                                                 content={dependent.title}
+                                                courseId={`${dependent.department}${dependent.courseNumber}`}
                                                 nodeType="dependent"
                                             />
                                         </li>
@@ -167,7 +187,12 @@ const PrereqTree: FC<PrereqProps> = (props) => {
                     )}
 
                     {/* Display the class id */}
-                    <Node label={`${props.department} ${props.courseNumber}`} content={props.title} nodeType="course" />
+                    <Node
+                        label={`${props.department} ${props.courseNumber}`}
+                        content={props.title}
+                        courseId={`${props.department}${props.courseNumber}`}
+                        nodeType="course"
+                    />
 
                     {/* Spawns the root of the prerequisite tree */}
                     {hasPrereqs && (

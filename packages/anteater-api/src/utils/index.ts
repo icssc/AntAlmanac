@@ -1,4 +1,34 @@
-import type { WebsocAPIResponse, WebsocCourse, WebsocSection } from '@packages/anteater-api/types';
+import type { Prerequisite, WebsocAPIResponse, WebsocCourse, WebsocSection } from '@packages/anteater-api/types';
+
+export function formatPrerequisite(prerequisite: Prerequisite): string {
+    switch (prerequisite.prereqType) {
+        case 'course': {
+            const annotations = [
+                prerequisite.coreq ? '(coreq)' : undefined,
+                prerequisite.minGrade ? `(min grade = ${prerequisite.minGrade})` : undefined,
+            ].filter(Boolean);
+            return [prerequisite.courseId, ...annotations].join(' ');
+        }
+        case 'exam':
+            return prerequisite.minGrade
+                ? `${prerequisite.examName} (min score = ${prerequisite.minGrade})`
+                : prerequisite.examName;
+        case 'standing':
+            if (prerequisite.standing.type === 'writingRequirement') return prerequisite.standing.value;
+            return prerequisite.standing.value === 'NEW TRANSFERS'
+                ? 'NEW TRANSFERS ONLY'
+                : `${prerequisite.standing.value} STANDING`;
+        case 'affiliation':
+            switch (prerequisite.affiliation.type) {
+                case 'major':
+                    return `${prerequisite.affiliation.value} MAJORS ONLY`;
+                case 'school':
+                    return `SCHOOL OF ${prerequisite.affiliation.value} ONLY`;
+                case 'CHC':
+                    return 'CAMPUSWIDE HONORS ONLY';
+            }
+    }
+}
 
 function compareCourses(a: WebsocCourse, b: WebsocCourse) {
     const aNum = Number.parseInt(a.courseNumber.replaceAll(/\D/g, ''), 10);

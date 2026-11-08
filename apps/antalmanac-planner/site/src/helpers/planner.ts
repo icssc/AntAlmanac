@@ -503,7 +503,12 @@ interface ValidationInput<PreqrequisiteType> {
 const validateCoursePrerequisite = (input: ValidationInput<Prerequisite>) => {
     const { prerequisite, taken, taking } = input;
 
-    //checking prereq type (coures and exam)
+    // The roadmap does not have enough student-profile data to verify these requirements.
+    if (prerequisite.prereqType === 'standing' || prerequisite.prereqType === 'affiliation') {
+        return new Set<string>();
+    }
+
+    //checking prereq type (courses and exams)
     const prereqIsCourse = prerequisite.prereqType === 'course';
 
     //decide whether coures or exam

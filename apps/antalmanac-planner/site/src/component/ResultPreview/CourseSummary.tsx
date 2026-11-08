@@ -3,10 +3,12 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CheckIcon from '@mui/icons-material/Check';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Tooltip } from '@mui/material';
+import { formatPrerequisite } from '@packages/anteater-api/utils';
 import { CoursePreview, PrerequisiteNode } from '@peterportal/types';
 import { FC, useState } from 'react';
 
 import { getMissingPrerequisites } from '../../helpers/planner';
+import { isRoadmapVerifiablePrerequisite } from '../../helpers/prerequisites';
 import { addDelimiter, getCourseTags } from '../../helpers/util';
 import { useClearedCoursesUntil } from '../../hooks/planner';
 import { CourseGQLData } from '../../types/types';
@@ -37,7 +39,7 @@ const CourseRestriction: FC<{ restriction: string }> = ({ restriction }) => {
 };
 
 const PrereqItemText: FC<{ item: PrerequisiteNode; wrapInParens?: boolean }> = ({ item, wrapInParens }) => {
-    if ('prereqType' in item) return <b>{'courseId' in item ? item.courseId : item.examName}</b>;
+    if ('prereqType' in item) return <b>{formatPrerequisite(item)}</b>;
 
     let result = null;
     if (item.AND) {
@@ -63,36 +65,40 @@ const PrereqItemText: FC<{ item: PrerequisiteNode; wrapInParens?: boolean }> = (
     return result;
 };
 
-const CoursePrequisiteLine: FC<{ item: PrerequisiteNode; clearedCourses: Set<string> }> = ({
+const CoursePrequisiteLine: FC<{ item: PrerequisiteNode; clearedCourses: Set<string>; negated?: boolean }> = ({
     item,
     clearedCourses,
+    negated = false,
 }) => {
-    let complete = !getMissingPrerequisites(clearedCourses, { AND: [item] });
-    if ('NOT' in item) {
-        // if we are NOT missing any disallowed prerequisites, that means they are in the planner
-        const forbiddenCoursesPresent = !getMissingPrerequisites(clearedCourses, { OR: item.NOT });
-        complete = !forbiddenCoursesPresent;
-    }
+    const verifiable = isRoadmapVerifiablePrerequisite(item);
+    const requirementMissing = Boolean(getMissingPrerequisites(clearedCourses, { AND: [item] }));
+    const complete = negated ? requirementMissing : !requirementMissing;
 
-    let title = 'You have completed this prerequisite';
-    if (!complete) {
-        title =
-            'NOT' in item ? 'Your roadmap contains one of these disallowed courses' : 'This prerequisite is incomplete';
-    }
+    const title = complete
+        ? negated
+            ? 'Your roadmap does not contain this disallowed prerequisite'
+            : 'You have completed this prerequisite'
+        : negated
+          ? 'Your roadmap contains this disallowed prerequisite'
+          : 'This prerequisite is incomplete';
 
     const offset = [0, -8];
     const modifiers = [{ name: 'offset', options: { offset } }];
     const slotProps = { popper: { modifiers } };
 
-    const icon = (
+    const icon = verifiable ? (
         <Tooltip title={title} placement="left" slotProps={slotProps}>
             {complete ? <CheckIcon /> : <WarningAmberIcon />}
         </Tooltip>
-    );
+    ) : null;
 
     return (
         <li className="prerequisite-line">
-            <span className={'icon ' + (complete ? 'icon-complete' : 'icon-incomplete')}>{icon}</span>{' '}
+            {icon && (
+                <>
+                    <span className={`icon ${complete ? 'icon-complete' : 'icon-incomplete'}`}>{icon}</span>{' '}
+                </>
+            )}
             <PrereqItemText item={item} />
         </li>
     );
@@ -105,23 +111,36 @@ const CoursePrerequisiteListView: FC<{ tree: CourseGQLData['prerequisiteTree']; 
     tree,
     clearedCourses,
 }) => {
-    let listLabel = 'All of the following:';
-    if (tree.OR) listLabel = 'Any of the following:';
-    else if (tree.NOT) listLabel = 'None of the following:';
-
-    const items = tree.AND ?? tree.OR ?? tree.NOT ?? [];
+    const groups = [
+        { type: 'AND' as const, label: 'All of the following:', items: tree.AND },
+        { type: 'OR' as const, label: 'Any of the following:', items: tree.OR },
+        { type: 'NOT' as const, label: 'None of the following:', items: tree.NOT },
+    ].filter((group) => group.items?.length);
 
     return (
         <>
             <h4>Prerequisites</h4>
-            <p className="summary-prerequisite-type">
-                {items.length > 0 ? <b>{listLabel}</b> : 'This course has no prerequisites.'}
-            </p>
-            <ul className="summary-prerequisites">
-                {items.map((requirement, idx) => (
-                    <CoursePrequisiteLine key={idx} item={requirement} clearedCourses={clearedCourses} />
-                ))}
-            </ul>
+            {groups.length ? (
+                groups.map((group) => (
+                    <div key={group.type}>
+                        <p className="summary-prerequisite-type">
+                            <b>{group.label}</b>
+                        </p>
+                        <ul className="summary-prerequisites">
+                            {group.items?.map((requirement, idx) => (
+                                <CoursePrequisiteLine
+                                    key={idx}
+                                    item={requirement}
+                                    clearedCourses={clearedCourses}
+                                    negated={group.type === 'NOT'}
+                                />
+                            ))}
+                        </ul>
+                    </div>
+                ))
+            ) : (
+                <p className="summary-prerequisite-type">This course has no prerequisites.</p>
+            )}
         </>
     );
 };
