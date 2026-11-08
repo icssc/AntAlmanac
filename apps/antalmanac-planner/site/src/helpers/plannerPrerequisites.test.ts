@@ -41,4 +41,18 @@ describe('getMissingPrerequisites', () => {
 
         expect(getMissingPrerequisites(new Set(), tree)).toEqual(['I&C SCI 31']);
     });
+
+    it('intentionally treats an unverifiable OR branch as satisfied', () => {
+        const tree: PrerequisiteTree = {
+            OR: [
+                { prereqType: 'course', coreq: false, courseId: 'I&C SCI 31' },
+                {
+                    prereqType: 'standing',
+                    standing: { type: 'classLevel', value: 'UPPER DIVISION' },
+                },
+            ],
+        };
+
+        expect(getMissingPrerequisites(new Set(), tree)).toBeUndefined();
+    });
 });

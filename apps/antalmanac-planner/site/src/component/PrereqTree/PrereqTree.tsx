@@ -1,7 +1,7 @@
 'use client';
 import './PrereqTree.scss';
 import { Box, Tooltip } from '@mui/material';
-import { formatPrerequisite } from '@packages/anteater-api/utils';
+import { formatPrerequisite, getRenderablePrerequisiteTreeGroup } from '@packages/anteater-api/utils';
 import type { Prerequisite, PrerequisiteTree, PrerequisiteNode } from '@peterportal/types';
 import Link from 'next/link';
 import { FC } from 'react';
@@ -23,24 +23,6 @@ const phraseMapping = {
     AND: 'all of',
     OR: 'one of',
     NOT: 'none of',
-};
-type PrerequisiteTreeOperator = keyof typeof phraseMapping;
-
-const getRenderableTreeGroup = (tree: PrerequisiteTree): [PrerequisiteTreeOperator, PrerequisiteNode[]] | undefined => {
-    const groups = (Object.keys(phraseMapping) as PrerequisiteTreeOperator[]).flatMap((operator) => {
-        const children = tree[operator];
-        return children?.length ? ([[operator, children]] as [PrerequisiteTreeOperator, PrerequisiteNode[]][]) : [];
-    });
-
-    if (groups.length === 0) return undefined;
-    if (groups.length === 1) return groups[0];
-
-    return [
-        'AND',
-        groups.flatMap(([operator, children]) =>
-            operator === 'AND' ? children : [{ [operator]: children } as PrerequisiteTree]
-        ),
-    ];
 };
 
 const Node: FC<NodeProps> = (props) => {
@@ -98,7 +80,7 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
     // if value is an object, render the rest of the sub tree
     else {
         const prereqTree = prerequisite as PrerequisiteTree;
-        const renderableGroup = getRenderableTreeGroup(prereqTree);
+        const renderableGroup = getRenderablePrerequisiteTreeGroup(prereqTree);
         if (!renderableGroup) return null;
         const [prereqTreeType, prereqChildren] = renderableGroup;
 

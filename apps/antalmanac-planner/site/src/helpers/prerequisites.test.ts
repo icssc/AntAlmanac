@@ -53,4 +53,12 @@ describe('isRoadmapVerifiablePrerequisite', () => {
             })
         ).toBe(false);
     });
+
+    it('recognizes trees containing NOT groups as unverifiable', () => {
+        expect(
+            isRoadmapVerifiablePrerequisite({
+                NOT: [{ prereqType: 'course', coreq: false, courseId: 'I&C SCI 31' }],
+            })
+        ).toBe(false);
+    });
 });

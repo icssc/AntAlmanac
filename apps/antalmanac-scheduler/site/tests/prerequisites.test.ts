@@ -1,5 +1,5 @@
 import type { Prerequisite } from '@packages/anteater-api/types';
-import { formatPrerequisite } from '@packages/anteater-api/utils';
+import { formatPrerequisite, getRenderablePrerequisiteTreeGroup } from '@packages/anteater-api/utils';
 import { describe, expect, it } from 'vitest';
 
 describe('formatPrerequisite', () => {
@@ -25,5 +25,25 @@ describe('formatPrerequisite', () => {
         [{ prereqType: 'affiliation', affiliation: { type: 'CHC' } }, 'CAMPUSWIDE HONORS ONLY'],
     ] satisfies [Prerequisite, string][])('formats %#', (prerequisite, expected) => {
         expect(formatPrerequisite(prerequisite)).toBe(expected);
+    });
+});
+
+describe('getRenderablePrerequisiteTreeGroup', () => {
+    it('combines multiple root operators without dropping NOT groups', () => {
+        const requiredCourse: Prerequisite = {
+            prereqType: 'course',
+            coreq: false,
+            courseId: 'I&C SCI 31',
+        };
+        const forbiddenCourse: Prerequisite = {
+            prereqType: 'course',
+            coreq: false,
+            courseId: 'I&C SCI 32',
+        };
+
+        expect(getRenderablePrerequisiteTreeGroup({ AND: [requiredCourse], NOT: [forbiddenCourse] })).toEqual([
+            'AND',
+            [requiredCourse, { NOT: [forbiddenCourse] }],
+        ]);
     });
 });

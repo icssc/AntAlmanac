@@ -32,6 +32,7 @@ import {
     RoadmapPlan,
 } from '../types/types';
 import { isCustomCourse } from './customCourses';
+import { isRoadmapVerifiablePrerequisite } from './prerequisites';
 import { compareRoadmaps } from './roadmap';
 import { LocalTransferSaveKey, saveLocalTransfers } from './transferCredits';
 import { searchAPIResults } from './util';
@@ -503,8 +504,7 @@ interface ValidationInput<PreqrequisiteType> {
 const validateCoursePrerequisite = (input: ValidationInput<Prerequisite>) => {
     const { prerequisite, taken, taking } = input;
 
-    // The roadmap does not have enough student-profile data to verify these requirements.
-    if (prerequisite.prereqType === 'standing' || prerequisite.prereqType === 'affiliation') {
+    if (!isRoadmapVerifiablePrerequisite(prerequisite)) {
         return new Set<string>();
     }
 

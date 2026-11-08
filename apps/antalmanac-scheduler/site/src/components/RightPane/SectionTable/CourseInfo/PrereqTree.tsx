@@ -1,6 +1,6 @@
 import { Button, Popover, useTheme } from '@mui/material';
 import type { Course, Prerequisite, PrerequisiteTree } from '@packages/anteater-api/types';
-import { formatPrerequisite } from '@packages/anteater-api/utils';
+import { formatPrerequisite, getRenderablePrerequisiteTreeGroup } from '@packages/anteater-api/utils';
 import { type FC, useState } from 'react';
 
 import './PrereqTree.css';
@@ -11,24 +11,6 @@ const phraseMapping = {
     AND: 'all of',
     OR: 'one of',
     NOT: 'none of',
-};
-type PrerequisiteTreeOperator = keyof typeof phraseMapping;
-
-const getRenderableTreeGroup = (tree: PrerequisiteTree): [PrerequisiteTreeOperator, PrerequisiteNode[]] | undefined => {
-    const groups = (Object.keys(phraseMapping) as PrerequisiteTreeOperator[]).flatMap((operator) => {
-        const children = tree[operator];
-        return children?.length ? ([[operator, children]] as [PrerequisiteTreeOperator, PrerequisiteNode[]][]) : [];
-    });
-
-    if (groups.length === 0) return undefined;
-    if (groups.length === 1) return groups[0];
-
-    return [
-        'AND',
-        groups.flatMap(([operator, children]) =>
-            operator === 'AND' ? children : [{ [operator]: children } as PrerequisiteTree]
-        ),
-    ];
 };
 
 interface NodeProps {
@@ -71,7 +53,7 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
             </li>
         );
     } else {
-        const renderableGroup = getRenderableTreeGroup(prerequisite as PrerequisiteTree);
+        const renderableGroup = getRenderablePrerequisiteTreeGroup(prerequisite as PrerequisiteTree);
         if (!renderableGroup) return null;
         const [prereqTreeType, prereqChildren] = renderableGroup;
 

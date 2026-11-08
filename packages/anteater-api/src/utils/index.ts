@@ -1,4 +1,36 @@
-import type { Prerequisite, WebsocAPIResponse, WebsocCourse, WebsocSection } from '@packages/anteater-api/types';
+import type {
+    Prerequisite,
+    PrerequisiteTree,
+    WebsocAPIResponse,
+    WebsocCourse,
+    WebsocSection,
+} from '@packages/anteater-api/types';
+
+type PrerequisiteNode = Prerequisite | PrerequisiteTree;
+export type PrerequisiteTreeOperator = 'AND' | 'OR' | 'NOT';
+
+const prerequisiteTreeOperators: PrerequisiteTreeOperator[] = ['AND', 'OR', 'NOT'];
+
+export function getRenderablePrerequisiteTreeGroup(
+    tree: PrerequisiteTree
+): [PrerequisiteTreeOperator, PrerequisiteNode[]] | undefined {
+    const groups: [PrerequisiteTreeOperator, PrerequisiteNode[]][] = [];
+
+    for (const operator of prerequisiteTreeOperators) {
+        const children = tree[operator];
+        if (children?.length) groups.push([operator, children]);
+    }
+
+    if (groups.length === 0) return undefined;
+    if (groups.length === 1) return groups[0];
+
+    return [
+        'AND',
+        groups.flatMap(([operator, children]) =>
+            operator === 'AND' ? children : [{ [operator]: children } as PrerequisiteTree]
+        ),
+    ];
+}
 
 export function formatPrerequisite(prerequisite: Prerequisite): string {
     switch (prerequisite.prereqType) {
