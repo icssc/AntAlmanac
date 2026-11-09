@@ -117,9 +117,6 @@ importers:
       '@antalmanac-scheduler':
         specifier: workspace:^
         version: link:../antalmanac-scheduler/site
-      '@packages/antalmanac-types':
-        specifier: workspace:*
-        version: link:../antalmanac-scheduler/types
       '@t3-oss/env-nextjs':
         specifier: 0.13.11
         version: 0.13.11(typescript@7.0.2)(zod@3.24.3)
