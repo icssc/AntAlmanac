@@ -5,7 +5,7 @@
         "outDir": "./dist",
         "rootDir": "./src",
         "strict": true,
-        "moduleResolution": "nodenext",
+        "moduleResolution": "bundler",
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true
