@@ -1,7 +1,7 @@
 import { formatPrerequisite } from '@packages/anteater-api/utils';
 import type { Prerequisite } from '@peterportal/types';
 
-import { isRoadmapVerifiablePrerequisite } from './prerequisites';
+import { isRoadmapVerifiablePrerequisite, isRoadmapVerifiablePrerequisiteNode } from './prerequisites';
 
 describe('formatPrerequisite', () => {
     it.each([
@@ -65,7 +65,7 @@ describe('isRoadmapVerifiablePrerequisite', () => {
 
     it('recognizes trees containing NOT groups as unverifiable', () => {
         expect(
-            isRoadmapVerifiablePrerequisite({
+            isRoadmapVerifiablePrerequisiteNode({
                 NOT: [{ prereqType: 'course', coreq: false, courseId: 'I&C SCI 31' }],
             })
         ).toBe(false);

@@ -33,7 +33,7 @@ import {
     RoadmapPlan,
 } from '../types/types';
 import { isCustomCourse } from './customCourses';
-import { isRoadmapVerifiablePrerequisite } from './prerequisites';
+import { isPrerequisiteNodeLeaf, isRoadmapVerifiablePrerequisite } from './prerequisites';
 import { compareRoadmaps } from './roadmap';
 import { LocalTransferSaveKey, saveLocalTransfers } from './transferCredits';
 import { searchAPIResults } from './util';
@@ -525,10 +525,8 @@ const validateCoursePrerequisite = (input: ValidationInput<Prerequisite>) => {
         return isCHC ? new Set<string>() : new Set([formatPrerequisite(prerequisite)]);
     }
 
-    //checking prereq type (courses and exams)
     const prereqIsCourse = prerequisite.prereqType === 'course';
 
-    //decide whether coures or exam
     const id = prereqIsCourse ? prerequisite.courseId : prerequisite.examName;
 
     // check if already done
@@ -576,8 +574,7 @@ const isEmptyPrerequisiteTree = (prerequisite: PrerequisiteTree) => Object.keys(
  * @returns A set of all the prerequisites that are missing, with "or" groups seperated by '|'
  */
 const validatePrerequisites = ({ prerequisite, ...input }: ValidationInput<PrerequisiteNode>): Set<string> => {
-    // base case is just a course
-    if ('prereqType' in prerequisite) return validateCoursePrerequisite({ prerequisite, ...input });
+    if (isPrerequisiteNodeLeaf(prerequisite)) return validateCoursePrerequisite({ prerequisite, ...input });
 
     if (prerequisite.AND) return validateAndPrerequisite({ prerequisite, ...input });
     if (prerequisite.OR) return validateOrPrerequisite({ prerequisite, ...input });

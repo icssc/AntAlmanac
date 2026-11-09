@@ -9,7 +9,7 @@ import { CoursePreview, PrerequisiteNode } from '@peterportal/types';
 import { FC, useState } from 'react';
 
 import { getMissingPrerequisites } from '../../helpers/planner';
-import { isRoadmapVerifiablePrerequisite } from '../../helpers/prerequisites';
+import { isPrerequisiteNodeLeaf, isRoadmapVerifiablePrerequisiteNode } from '../../helpers/prerequisites';
 import { addDelimiter, getCourseTags } from '../../helpers/util';
 import { useClearedCoursesUntil } from '../../hooks/planner';
 import { useAppSelector } from '../../store/hooks';
@@ -42,7 +42,7 @@ const CourseRestriction: FC<{ restriction: string }> = ({ restriction }) => {
 };
 
 const PrereqItemText: FC<{ item: PrerequisiteNode; wrapInParens?: boolean }> = ({ item, wrapInParens }) => {
-    if ('prereqType' in item) return <b>{formatPrerequisite(item)}</b>;
+    if (isPrerequisiteNodeLeaf(item)) return <b>{formatPrerequisite(item)}</b>;
 
     let result = null;
     if (item.AND) {
@@ -74,7 +74,7 @@ const CoursePrequisiteLine: FC<{
     isCHC: boolean;
     negated?: boolean;
 }> = ({ item, clearedCourses, isCHC, negated = false }) => {
-    const verifiable = isRoadmapVerifiablePrerequisite(item);
+    const verifiable = isRoadmapVerifiablePrerequisiteNode(item);
     const requirementMissing = Boolean(getMissingPrerequisites(clearedCourses, { AND: [item] }, { isCHC }));
     const complete = negated ? requirementMissing : !requirementMissing;
 

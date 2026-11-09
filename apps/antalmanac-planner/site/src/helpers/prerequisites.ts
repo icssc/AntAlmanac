@@ -6,23 +6,27 @@ type CHCPrerequisite = Omit<AffiliationPrerequisite, 'affiliation'> & {
 };
 type RoadmapVerifiablePrerequisite = Extract<Prerequisite, { prereqType: 'course' | 'exam' }> | CHCPrerequisite;
 
+export function isPrerequisiteNodeLeaf(prerequisite: PrerequisiteNode): prerequisite is Prerequisite {
+    return 'prereqType' in prerequisite;
+}
+
 export function isRoadmapVerifiablePrerequisite(
     prerequisite: Prerequisite
-): prerequisite is RoadmapVerifiablePrerequisite; // Only leaf overload can provide narrowing
-export function isRoadmapVerifiablePrerequisite(prerequisite: PrerequisiteNode): boolean; // Recursive calls can't narrow type
-export function isRoadmapVerifiablePrerequisite(prerequisite: PrerequisiteNode): boolean {
+): prerequisite is RoadmapVerifiablePrerequisite {
     // TODO: Validate standing, major, and school requirements once the roadmap stores the necessary profile data.
     // Until then, treat those requirements as satisfied intentionally to avoid false warnings.
-    if ('prereqType' in prerequisite) {
-        return (
-            prerequisite.prereqType === 'course' ||
-            prerequisite.prereqType === 'exam' ||
-            (prerequisite.prereqType === 'affiliation' && prerequisite.affiliation.type === 'CHC')
-        );
-    }
+    return (
+        prerequisite.prereqType === 'course' ||
+        prerequisite.prereqType === 'exam' ||
+        (prerequisite.prereqType === 'affiliation' && prerequisite.affiliation.type === 'CHC')
+    );
+}
+
+export function isRoadmapVerifiablePrerequisiteNode(prerequisite: PrerequisiteNode): boolean {
+    if (isPrerequisiteNodeLeaf(prerequisite)) return isRoadmapVerifiablePrerequisite(prerequisite);
 
     if (prerequisite.NOT?.length) return false;
 
     const children = [prerequisite.AND, prerequisite.OR].flatMap((group) => group ?? []);
-    return children.length > 0 && children.every(isRoadmapVerifiablePrerequisite);
+    return children.length > 0 && children.every(isRoadmapVerifiablePrerequisiteNode);
 }
