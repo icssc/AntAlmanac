@@ -147,8 +147,9 @@ const CourseList: FC<CourseListProps> = ({ courses, takenCourseIDs }) => {
     const [timestamps, setTimestamps] = useState<number[]>(new Array(courses.length).fill(0));
 
     const setDraggedItem = async (event: SortableEvent) => {
-        timestamps[event.oldIndex!] = Date.now();
-        setTimestamps(timestamps.slice());
+        const newTimestamps = timestamps.slice();
+        newTimestamps[event.oldIndex!] = Date.now();
+        setTimestamps(newTimestamps);
     };
 
     const courseIDs = courses.map((c) => ({ id: c }));
