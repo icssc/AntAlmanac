@@ -1,11 +1,10 @@
 import { Select, MenuItem, Divider } from '@mui/material';
-import { ProgramRequirement } from '@peterportal/types';
 import { FC, useEffect, useState } from 'react';
 
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
 import { normalizeTitleLabels } from '../../../helpers/substitutions';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { setGERequirements } from '../../../store/slices/courseRequirementsSlice';
+import { setGERequirements, setCHCRequirements } from '../../../store/slices/courseRequirementsSlice';
 import { setCHCSelection } from '../../../store/slices/roadmapSlice';
 import trpc from '../../../trpc';
 import ProgramRequirementsList from './ProgramRequirementsList';
@@ -27,12 +26,14 @@ const CHCRequirements: FC = () => {
     const planIndex = useAppSelector((state) => state.roadmap.currentPlanIndex);
     const currentPlan = plans[planIndex];
     const selection = currentPlan.chc || '';
-    const [requirements, setRequirements] = useState<ProgramRequirement[]>([]);
+    const requirements = useAppSelector((state) => state.courseRequirements.chcRequirements);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        if (requirements.length) return;
+
         if (selection === '') {
-            setRequirements([]);
+            dispatch(setCHCRequirements([]));
             setLoading(false);
             return;
         }
@@ -47,17 +48,17 @@ const CHCRequirements: FC = () => {
                     formattedReqs.push(req);
                 }
             }
-            setRequirements(formattedReqs);
+            dispatch(setCHCRequirements(formattedReqs));
             setLoading(false);
         });
-    }, [selection, requirements.length]);
+    }, [dispatch, selection, requirements.length]);
 
     const handleSelectionChange = (newSelection: ChcTrackSelection) => {
         dispatch(setCHCSelection({ plannerId: currentPlan.id, chc: newSelection }));
         if (currentPlan.id > 0) {
             trpc.programs.saveCHCSelection.mutate({ plannerId: currentPlan.id, chc: newSelection });
         }
-        setRequirements([]);
+        dispatch(setCHCRequirements([]));
     };
 
     const storeKeyPrefix = selection ? selection.toLowerCase() : 'chc';
@@ -88,6 +89,7 @@ const CHCRequirements: FC = () => {
         </div>
     );
 };
+
 const GERequiredCourseList: FC = () => {
     const requirements = useAppSelector((state) => state.courseRequirements.geRequirements);
 
