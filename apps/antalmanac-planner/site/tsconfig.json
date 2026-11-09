@@ -21,7 +21,6 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "allowJs": true,
-        "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "incremental": true,
         /* Next.js */
