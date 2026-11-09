@@ -46,7 +46,7 @@ const activeColumnsInitial = SECTION_TABLE_COLUMNS.filter((_, index) => selected
 /**
  * Store of columns that are currently being displayed in the search results.
  */
-export const useColumnStore = create<ColumnStore>((set, _) => {
+export const useColumnStore = create<ColumnStore>((set) => {
     return {
         selectedColumns: selectedColumnsInitial,
         activeColumns: activeColumnsInitial,

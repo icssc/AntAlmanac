@@ -15,11 +15,11 @@ import { LocationMarker } from './Marker';
 const Routes = dynamic(() => import('./Routes').then((m) => ({ default: m.Routes })), { ssr: false });
 
 import {
-    isCourseEvent,
-    isCustomEvent,
     type CalendarEvent,
     type CourseEvent,
     type CustomEvent,
+    isCourseEvent,
+    isCustomEvent,
 } from '$components/Calendar/types';
 import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { UserLocator } from '$components/Map/UserLocator';
