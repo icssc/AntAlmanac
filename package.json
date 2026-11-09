@@ -25,16 +25,16 @@
     "devDependencies": {
         "@total-typescript/tsconfig": "^1.0.4",
         "@types/node": "22.19.17",
-        "dotenv": "^16.0.3",
+        "dotenv": "^16.6.1",
         "husky": "^8.0.3",
         "jsdom": "^22.1.0",
-        "lint-staged": "^13.1.1",
+        "lint-staged": "^13.3.0",
         "oxfmt": "^0.55.0",
-        "oxlint": "^1.70.0",
+        "oxlint": "^1.92.0",
         "sst": "3.19.3",
-        "tsx": "^4.21.0",
+        "tsx": "^4.23.15",
         "typescript": "^6.0.3",
-        "vitest": "^0.34.4"
+        "vitest": "^0.34.6"
     },
     "engines": {
         "node": ">=22",
