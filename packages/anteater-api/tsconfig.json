@@ -2,7 +2,6 @@
     "extends": ["@total-typescript/tsconfig/bundler/no-dom", "../../tsconfig.base.json"],
     "compilerOptions": {
         "experimentalDecorators": true,
-        "baseUrl": ".",
         "paths": {
             "@packages/anteater-api/types": ["./src/types/index.ts"],
             "@packages/anteater-api/client": ["./src/client/index.ts"],

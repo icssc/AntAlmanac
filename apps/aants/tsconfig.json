@@ -2,7 +2,6 @@
     "extends": ["@total-typescript/tsconfig/bundler/no-dom", "../../tsconfig.base.json"],
     "compilerOptions": {
         "jsx": "react-jsx",
-        "baseUrl": ".",
         "outDir": "dist"
     },
     "include": ["src/**/*", "drizzle.config.ts", "scripts"],
