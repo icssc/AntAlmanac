@@ -18,7 +18,7 @@ export const UnitsField = memo(() => {
                     } else if ('VAR'.startsWith(upper)) {
                         setUnits(upper);
                     } else {
-                        setUnits(upper.replace(/[^0-9]/g, ''));
+                        setUnits(upper.replace(/[^0-9.]/g, ''));
                     }
                 },
                 type: 'search',
