@@ -2,7 +2,9 @@ import type {
     AggregateGradesByOfferingResponse,
     AggregateGradesResponse,
     RawGradesData,
+    RawGradesResponse,
 } from '$generated/anteater-api-types';
+import type { AggregateGradesByCourseResponse } from '$generated/anteater-api-types/types.gen';
 
 export type GE = NonNullable<NonNullable<RawGradesData['query']>['ge']>;
 
@@ -16,9 +18,10 @@ export type AggregateGradesByOfferingAPIResult = AggregateGradesByOfferingRespon
 
 export type AggregateGradesByOffering = AggregateGradesByOfferingAPIResult['data'];
 
-export type AggregateGradesByCourseAPIResult =
-    paths['/v2/rest/grades/aggregateByCourse']['get']['responses']['200']['content']['application/json'];
+export type AggregateGradesByCourseAPIResult = AggregateGradesByCourseResponse;
 
 type AggregateGradesByCourse = AggregateGradesByCourseAPIResult['data'];
 
 export type CourseGradeDistribution = AggregateGradesByCourse[number];
+
+export type GradesRaw = RawGradesResponse['data'];
