@@ -9,9 +9,9 @@ interface RecentOfferingsTooltipProps {
 }
 
 const RecentOfferingsTooltip: FC<RecentOfferingsTooltipProps> = ({ terms }) => {
-    if (terms.length === 0) return null;
-
     const [currentDate] = useState(() => new Date());
+
+    if (terms.length === 0) return null;
 
     const prevYear = currentDate.getMonth() > 9 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
     const prevOfferings = [];

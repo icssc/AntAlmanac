@@ -23,7 +23,7 @@ const initialState: SnackbarOptions & { open: boolean } = {
     durationSeconds: DEFAULT_DURATION_SECONDS,
     position: DEFAULT_POSITION,
     style: DEFAULT_STYLE,
-    snackbarKey: Date.now(),
+    snackbarKey: 0,
 };
 
 export const useSnackbarStore = create(
@@ -55,6 +55,6 @@ export function openSnackbar(
         durationSeconds,
         position,
         style,
-        snackbarKey: Date.now(),
+        snackbarKey: useSnackbarStore.getState().snackbarKey + 1,
     });
 }
