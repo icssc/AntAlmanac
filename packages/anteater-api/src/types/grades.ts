@@ -1,10 +1,10 @@
 import type {
+    AggregateGradesByCourseResponse,
     AggregateGradesByOfferingResponse,
     AggregateGradesResponse,
     RawGradesData,
     RawGradesResponse,
-} from '$generated/anteater-api-types';
-import type { AggregateGradesByCourseResponse } from '$generated/anteater-api-types/types.gen';
+} from './generated/anteater-api-types';
 
 export type GE = NonNullable<NonNullable<RawGradesData['query']>['ge']>;
 

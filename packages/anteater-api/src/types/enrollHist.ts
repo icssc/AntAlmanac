@@ -1,4 +1,4 @@
-import type { EnrollmentHistoryResponse } from '$generated/anteater-api-types';
+import type { EnrollmentHistoryResponse } from './generated/anteater-api-types';
 
 export type EnrollmentHistoryAPIResult = EnrollmentHistoryResponse;
 

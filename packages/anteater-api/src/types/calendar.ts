@@ -1,4 +1,4 @@
-import type { AllCalendarTermsResponse, CalendarTermResponse } from '$generated/anteater-api-types';
+import type { AllCalendarTermsResponse, CalendarTermResponse } from './generated/anteater-api-types/index';
 
 export type CalendarAllAPIResult = AllCalendarTermsResponse;
 

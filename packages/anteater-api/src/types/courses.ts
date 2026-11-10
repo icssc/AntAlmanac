@@ -4,7 +4,7 @@ import type {
     CoursesByFiltersResponse,
     Prereq,
     PrereqTree,
-} from '$generated/anteater-api-types';
+} from './generated/anteater-api-types';
 
 export type CoursesBatchAPIResult = BatchCoursesResponse;
 

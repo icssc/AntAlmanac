@@ -1,6 +1,5 @@
-import type { InstructorByIdResponse } from '$generated/anteater-api-types';
-
 import type { Course } from './courses';
+import type { InstructorByIdResponse } from './generated/anteater-api-types';
 
 export type ProfessorAAPIResponse = InstructorByIdResponse['data'];
 

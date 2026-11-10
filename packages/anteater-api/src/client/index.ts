@@ -1,3 +1,18 @@
+import type {
+    AggregateGrades,
+    AggregateGradesByOffering,
+    CalendarAllAPIResult,
+    Course,
+    CourseGradeDistribution,
+    CoursesBatchAPIResult,
+    CoursesFilteredAPIResult,
+    EnrollmentHistory,
+    WebsocAPIDepartmentsResponse,
+    WebsocAPIResponse,
+    WebsocSyllabiResponse,
+    WebsocTerm,
+} from '@packages/anteater-api/types';
+
 import {
     type AggregateGradesByCourseData,
     type AggregateGradesByOfferingData,
@@ -19,22 +34,8 @@ import {
     websocDepartments,
     websocSyllabi,
     websocTerms,
-} from '$generated/anteater-api-types';
-import { client } from '$generated/anteater-api-types/client.gen';
-import type {
-    AggregateGrades,
-    AggregateGradesByOffering,
-    CalendarAllAPIResult,
-    Course,
-    CourseGradeDistribution,
-    CoursesBatchAPIResult,
-    CoursesFilteredAPIResult,
-    EnrollmentHistory,
-    WebsocAPIDepartmentsResponse,
-    WebsocAPIResponse,
-    WebsocSyllabiResponse,
-    WebsocTerm,
-} from '@packages/anteater-api/types';
+} from '../types/generated/anteater-api-types';
+import { client } from '../types/generated/anteater-api-types/client.gen';
 
 export class AAPIError extends Error {
     constructor(
@@ -152,7 +153,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                     query: params,
                 });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data[0] ?? null;
             },

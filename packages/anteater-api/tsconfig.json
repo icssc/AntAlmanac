@@ -5,8 +5,7 @@
         "paths": {
             "@packages/anteater-api/types": ["./src/types/index.ts"],
             "@packages/anteater-api/client": ["./src/client/index.ts"],
-            "@packages/anteater-api/utils": ["./src/utils/index.ts"],
-            "$generated/*": ["./src/types/generated/*"]
+            "@packages/anteater-api/utils": ["./src/utils/index.ts"]
         },
         "rootDir": "src",
         "outDir": "dist",
