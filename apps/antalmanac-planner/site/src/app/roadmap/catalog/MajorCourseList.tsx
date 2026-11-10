@@ -65,6 +65,8 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
     selectedSpecId,
     onCatalogYearChange,
 }) => {
+    const dispatch = useAppDispatch();
+
     const storeKeyPrefix = `major-${majorWithSpec.major.id}`;
     const [specsLoading, setSpecsLoading] = useState(false);
     const [resultsLoading, setResultsLoading] = useState(false);
@@ -82,7 +84,6 @@ const MajorCourseList: FC<MajorCourseListProps> = ({
         specOptions.unshift({ value: noSpec, label: noSpec.name });
     }
 
-    const dispatch = useAppDispatch();
     const { defaultCatalogYear } = getCatalogYearDefaults();
 
     const loadSpecs = useCallback(
