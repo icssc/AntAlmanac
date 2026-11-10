@@ -82,6 +82,7 @@ export function SectionColorSelector() {
     const postHog = usePostHog();
 
     const buttonRef = useRef<HTMLDivElement>(null);
+    const [menuAnchorElement, setMenuAnchorElement] = useState<HTMLDivElement | null>(null);
     const [menuOpen, setMenuOpen] = useState(false);
     // Synchronous mirror of `menuOpen` used to gate hover previews. MUI keeps menu items mounted
     // (and firing mouse events) during the close animation, so a stray `onMouseEnter` from a
@@ -114,6 +115,7 @@ export function SectionColorSelector() {
 
     const openMenu = useCallback(() => {
         menuOpenRef.current = true;
+        setMenuAnchorElement(buttonRef.current);
         setMenuOpen(true);
     }, []);
 
@@ -198,12 +200,12 @@ export function SectionColorSelector() {
             </Box>
 
             <Menu
-                anchorEl={buttonRef.current}
+                anchorEl={menuAnchorElement}
                 open={menuOpen}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                slotProps={{ paper: { sx: { width: buttonRef.current?.offsetWidth, maxHeight: 320 } } }}
+                slotProps={{ paper: { sx: { width: menuAnchorElement?.offsetWidth, maxHeight: 320 } } }}
             >
                 {options.map((option) => {
                     const isSelected = option.id === sectionColor;

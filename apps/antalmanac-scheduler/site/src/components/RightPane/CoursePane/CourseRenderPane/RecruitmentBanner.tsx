@@ -12,17 +12,19 @@ interface RecruitmentBannerProps {
 
 export function RecruitmentBanner({ deptValue }: RecruitmentBannerProps) {
     const [bannerVisibility, setBannerVisibility] = useState(true);
+    const [now, setNow] = useState(() => Date.now());
+
     const theme = useTheme();
 
     const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
     const dismissedRecently =
-        recruitmentDismissalTime !== null &&
-        Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
+        recruitmentDismissalTime !== null && now - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
     const isRelevantDept = RELEVANT_DEPARTMENTS.includes(deptValue.toUpperCase());
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isRelevantDept;
 
     const handleClick = () => {
         setLocalStorageRecruitmentDismissalTime(Date.now().toString());
+        setNow(Date.now());
         setBannerVisibility(false);
     };
 
