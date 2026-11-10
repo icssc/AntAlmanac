@@ -1,9 +1,8 @@
-import type { paths } from './generated/anteater-api-types';
+import type { AllCalendarTermsResponse, CalendarTermResponse } from '$generated/anteater-api-types';
 
-export type CalendarAllAPIResult =
-    paths['/v2/rest/calendar/all']['get']['responses'][200]['content']['application/json'];
+export type CalendarAllAPIResult = AllCalendarTermsResponse;
 
-export type CalendarTerm = paths['/v2/rest/calendar']['get']['responses'][200]['content']['application/json']['data'];
+export type CalendarTerm = CalendarTermResponse['data'];
 
 export type Year = CalendarTerm['year'];
 
