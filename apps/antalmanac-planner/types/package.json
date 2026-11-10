@@ -4,13 +4,8 @@
     "type": "module",
     "main": "src/index.ts",
     "types": "src/index.ts",
-    "scripts": {
-        "postinstall": "openapi-typesafe https://anteaterapi.com/openapi.json -o src/generated/anteater-api-types.ts"
-    },
     "dependencies": {
+        "@packages/anteater-api": "workspace:*",
         "zod": "^3.24.3"
-    },
-    "devDependencies": {
-        "openapi-typesafe": "^1.0.0-rc.3"
     }
 }

@@ -1,3 +1,24 @@
+import {
+    type AggregateGradesByOfferingData,
+    type AggregateGradesData,
+    type CoursesByFiltersData,
+    type EnrollmentHistoryData,
+    type WebsocData,
+    type WebsocDepartmentsData,
+    type WebsocSyllabiData,
+    aggregateGrades,
+    aggregateGradesByOffering,
+    allCalendarTerms,
+    batchCourses,
+    courseById,
+    coursesByFilters,
+    enrollmentHistory,
+    websoc,
+    websocDepartments,
+    websocSyllabi,
+    websocTerms,
+} from '$generated/anteater-api-types';
+import { client } from '$generated/anteater-api-types/client.gen';
 import type {
     AggregateGrades,
     AggregateGradesByOffering,
@@ -10,9 +31,7 @@ import type {
     WebsocAPIResponse,
     WebsocSyllabiResponse,
     WebsocTerm,
-    paths,
 } from '@packages/anteater-api/types';
-import createFetchClient, { type Middleware } from 'openapi-typesafe-fetch';
 
 export class AAPIError extends Error {
     constructor(
@@ -31,63 +50,48 @@ export interface AAPIClientOptions {
     apiKey?: string;
 }
 
+function getAapiError(error: { message: string }, response: Response | undefined) {
+    return new AAPIError(error.message ? JSON.stringify(error.message) : 'Received empty response', response?.status);
+}
+
 export function createClient({ apiKey }: AAPIClientOptions = {}) {
-    const http = createFetchClient<paths>({ baseUrl: BASE_URL });
-
-    const auth: Middleware = {
-        onRequest({ request }) {
-            request.headers.set('Origin', ORIGIN);
-            if (apiKey) {
-                request.headers.set('Authorization', `Bearer ${apiKey}`);
-            }
-
-            return request;
-        },
-    };
-    http.use(auth);
+    client.interceptors.request.use((request) => {
+        request.headers.set('Origin', ORIGIN);
+        if (apiKey) {
+            request.headers.set('Authorization', `Bearer ${apiKey}`);
+        }
+    });
 
     return {
         websoc: {
-            async query(
-                params: NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']>
-            ): Promise<WebsocAPIResponse> {
-                const { data, error, response } = await http.GET('/v2/rest/websoc', {
-                    params: { query: params as NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']> },
-                });
+            async query(params: WebsocData['query']): Promise<WebsocAPIResponse> {
+                const { data, error, response } = await websoc({ query: params });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
 
-            async getSyllabi(
-                params: NonNullable<paths['/v2/rest/websoc/syllabi']['get']['parameters']['query']>
-            ): Promise<WebsocSyllabiResponse> {
-                const { data, error, response } = await http.GET('/v2/rest/websoc/syllabi', {
-                    params: { query: params },
-                });
+            async getSyllabi(params: WebsocSyllabiData['query']): Promise<WebsocSyllabiResponse> {
+                const { data, error, response } = await websocSyllabi({ query: params });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
 
             async getTerms(): Promise<WebsocTerm[]> {
-                const { data, error, response } = await http.GET('/v2/rest/websoc/terms', {});
+                const { data, error, response } = await websocTerms();
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
 
-            async getDepartments(
-                params?: paths['/v2/rest/websoc/departments']['get']['parameters']['query']
-            ): Promise<WebsocAPIDepartmentsResponse> {
-                const { data, error, response } = await http.GET('/v2/rest/websoc/departments', {
-                    params: { query: params },
-                });
+            async getDepartments(params?: WebsocDepartmentsData['query']): Promise<WebsocAPIDepartmentsResponse> {
+                const { data, error, response } = await websocDepartments({ query: params });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
@@ -95,71 +99,55 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         courses: {
             async get(id: string): Promise<Course> {
-                const { data, error, response } = await http.GET('/v2/rest/courses/{id}', {
-                    params: { path: { id } },
-                });
+                const { data, error, response } = await courseById({ path: { id } });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
 
             async getBatch(ids: string[]): Promise<CoursesBatchAPIResult['data']> {
-                const { data, error, response } = await http.GET('/v2/rest/courses/batch', {
-                    params: { query: { ids: ids.join(',') } },
-                });
+                const { data, error, response } = await batchCourses({ query: { ids: ids.join(',') } });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
 
-            async list(
-                params: NonNullable<paths['/v2/rest/courses']['get']['parameters']['query']>
-            ): Promise<CoursesFilteredAPIResult['data']> {
-                const { data, error, response } = await http.GET('/v2/rest/courses', { params: { query: params } });
+            async list(params: NonNullable<CoursesByFiltersData['query']>): Promise<CoursesFilteredAPIResult['data']> {
+                const { data, error, response } = await coursesByFilters({ query: params });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
         },
 
         grades: {
-            async aggregate(
-                params: paths['/v2/rest/grades/aggregate']['get']['parameters']['query']
-            ): Promise<AggregateGrades> {
-                const { data, error, response } = await http.GET('/v2/rest/grades/aggregate', {
-                    params: { query: params },
-                });
+            async aggregate(params: AggregateGradesData['query']): Promise<AggregateGrades> {
+                const { data, error, response } = await aggregateGrades({ query: params });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
 
             async aggregateByOffering(
-                params: paths['/v2/rest/grades/aggregateByOffering']['get']['parameters']['query']
+                params: AggregateGradesByOfferingData['query']
             ): Promise<AggregateGradesByOffering> {
-                const { data, error, response } = await http.GET('/v2/rest/grades/aggregateByOffering', {
-                    params: { query: params },
-                });
+                const { data, error, response } = await aggregateGradesByOffering({ query: params });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
         },
 
         enrollmentHistory: {
-            async get(
-                params: paths['/v2/rest/enrollmentHistory']['get']['parameters']['query']
-            ): Promise<EnrollmentHistory> {
-                const { data, error, response } = await http.GET('/v2/rest/enrollmentHistory', {
-                    params: { query: params },
-                });
+            async get(params: EnrollmentHistoryData['query']): Promise<EnrollmentHistory> {
+                const { data, error, response } = await enrollmentHistory({ query: params });
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
@@ -167,9 +155,9 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         calendar: {
             async all(): Promise<CalendarAllAPIResult['data']> {
-                const { data, error, response } = await http.GET('/v2/rest/calendar/all', {});
+                const { data, error, response } = await allCalendarTerms();
                 if (error || !data) {
-                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                    throw getAapiError(error, response);
                 }
                 return data.data;
             },
