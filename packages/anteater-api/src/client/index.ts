@@ -60,7 +60,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
     const config = createConfig({
         baseUrl: BASE_URL,
     });
-    config.headers = { ...config.headers, Origin: ORIGIN, Authorization: `Bearer ${apiKey}` };
+    config.headers = { ...config.headers, Origin: ORIGIN, ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}) };
     const client = createApiClient(config);
 
     return {
