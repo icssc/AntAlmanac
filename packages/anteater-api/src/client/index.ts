@@ -52,7 +52,7 @@ export interface AAPIClientOptions {
     apiKey?: string;
 }
 
-function getAapiError(error: { message: string }, response: Response | undefined) {
+function getAapiError(error: { message: string } | undefined, response: Response | undefined) {
     return new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response?.status);
 }
 
