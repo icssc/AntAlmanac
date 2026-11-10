@@ -1,6 +1,6 @@
 'use client';
+import { CourseGrantedTreeItem } from '@packages/anteater-api/types';
 import { TransferredGE, TransferredCourse, TransferredUncategorized, TransferredAPExam } from '@peterportal/types';
-import { components } from '@peterportal/types/src/generated/anteater-api-types';
 import { useEffect, useMemo } from 'react';
 
 import {
@@ -24,11 +24,10 @@ import trpc from '../trpc';
 import { useIsLoggedIn } from './isLoggedIn';
 
 /** Returns the rewarded courses for an AP */
-type CourseTreeItem = components['schemas']['coursesGrantedTree'] | string;
-function selectedRewardCourses(courses: CourseTreeItem, selectedIndex: number): string[] {
+function selectedRewardCourses(courses: CourseGrantedTreeItem, selectedIndex: number): string[] {
     if (typeof courses === 'string') return [courses];
     if ('AND' in courses)
-        return (courses.AND as CourseTreeItem[]).flatMap((item) => {
+        return (courses.AND as CourseGrantedTreeItem[]).flatMap((item) => {
             return selectedRewardCourses(item, selectedIndex);
         });
     return selectedRewardCourses(courses.OR[selectedIndex], selectedIndex);

@@ -1,12 +1,10 @@
-import { components, paths } from './generated/anteater-api-types';
+import { Course, Prerequisite, PrerequisiteTree } from '@packages/anteater-api/types';
+
 import { ProfessorAAPIResponse } from './professor';
 
-export type CourseAAPIResponse =
-    paths['/v2/rest/courses/{id}']['get']['responses'][200]['content']['application/json']['data'];
+export type CourseAAPIResponse = Course;
 
-export type Prerequisite = components['schemas']['prereq'];
-
-export type PrerequisiteTree = components['schemas']['prereqTree'];
+export type { Prerequisite, PrerequisiteTree };
 
 export type PrerequisiteNode = Prerequisite | PrerequisiteTree;
 
