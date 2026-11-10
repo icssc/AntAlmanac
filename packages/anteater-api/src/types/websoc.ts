@@ -5,7 +5,7 @@ import type {
     WebsocSyllabiData,
     WebsocTermsResponse as WebsocSyllabiQueryParamsRaw,
     WebsocSyllabiResponse as WebsocSyllabiResponseRaw,
-} from '$generated/anteater-api-types';
+} from './generated/anteater-api-types';
 
 export type WebsocAPIResult = WebsocResponse;
 

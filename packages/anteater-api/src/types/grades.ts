@@ -3,7 +3,7 @@ import type {
     AggregateGradesResponse,
     RawGradesData,
     RawGradesResponse,
-} from '$generated/anteater-api-types';
+} from './generated/anteater-api-types';
 
 export type GE = NonNullable<NonNullable<RawGradesData['query']>['ge']>;
 

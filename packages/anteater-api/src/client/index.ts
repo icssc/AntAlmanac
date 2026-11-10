@@ -1,3 +1,17 @@
+import type {
+    AggregateGrades,
+    AggregateGradesByOffering,
+    CalendarAllAPIResult,
+    Course,
+    CoursesBatchAPIResult,
+    CoursesFilteredAPIResult,
+    EnrollmentHistory,
+    WebsocAPIDepartmentsResponse,
+    WebsocAPIResponse,
+    WebsocSyllabiResponse,
+    WebsocTerm,
+} from '@packages/anteater-api/types';
+
 import {
     type AggregateGradesByOfferingData,
     type AggregateGradesData,
@@ -17,21 +31,8 @@ import {
     websocDepartments,
     websocSyllabi,
     websocTerms,
-} from '$generated/anteater-api-types';
-import { client } from '$generated/anteater-api-types/client.gen';
-import type {
-    AggregateGrades,
-    AggregateGradesByOffering,
-    CalendarAllAPIResult,
-    Course,
-    CoursesBatchAPIResult,
-    CoursesFilteredAPIResult,
-    EnrollmentHistory,
-    WebsocAPIDepartmentsResponse,
-    WebsocAPIResponse,
-    WebsocSyllabiResponse,
-    WebsocTerm,
-} from '@packages/anteater-api/types';
+} from '../types/generated/anteater-api-types';
+import { client } from '../types/generated/anteater-api-types/client.gen';
 
 export class AAPIError extends Error {
     constructor(

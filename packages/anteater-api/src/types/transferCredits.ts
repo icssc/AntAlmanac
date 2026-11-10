@@ -1,4 +1,4 @@
-import type { ApExamsResponse, CoursesGrantedTree } from '$generated/anteater-api-types';
+import type { ApExamsResponse, CoursesGrantedTree } from './generated/anteater-api-types';
 
 export type APExam = ApExamsResponse['data'][number];
 

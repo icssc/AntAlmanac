@@ -5,7 +5,7 @@ import type {
     GetSpecializationsResponse,
     ProgramRequirement as ProgramRequirementRaw,
     RawGradesResponse,
-} from '$generated/anteater-api-types';
+} from './generated/anteater-api-types';
 
 export type GEName = RawGradesResponse['data'][number]['geCategories'][number];
 
