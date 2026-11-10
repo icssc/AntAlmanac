@@ -15,4 +15,9 @@ export const RepeatingCustomEventSchema = z.object({
 
 export type RepeatingCustomEvent = z.infer<typeof RepeatingCustomEventSchema>;
 
+/** Trims notes and collapses empty/whitespace-only notes to `undefined`. */
+export function normalizeCustomEventNotes(notes: string | undefined): string | undefined {
+    return notes?.trim() || undefined;
+}
+
 export type CustomEventId = RepeatingCustomEvent['customEventID'];

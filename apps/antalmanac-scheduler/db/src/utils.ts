@@ -11,27 +11,7 @@ const excludedColumn = (columnName: string) => sql.raw(`excluded."${columnName.r
  * Builds a `set` clause for `onConflictDoUpdate` from an exhaustive
  * per-column policy.
  *
- * @example
- * ```ts
- * await tx
- *     .insert(customEvents)
- *     .values(events)
- *     .onConflictDoUpdate({
- *         target: customEvents.id,
- *         set: buildConflictUpdateSet(customEvents, {
- *             id: 'keep',
- *             scheduleId: 'keep',
- *             title: 'update',
- *             start: 'update',
- *             end: 'update',
- *             days: 'update',
- *             color: 'update',
- *             building: 'update',
- *             createdAt: 'keep',
- *             lastUpdated: 'update',
- *         }),
- *     });
- * ```
+ * See `site/src/backend/lib/rds/schedules.ts` for usage examples.
  *
  * @see https://orm.drizzle.team/docs/guides/upsert#postgresql-and-sqlite
  */
