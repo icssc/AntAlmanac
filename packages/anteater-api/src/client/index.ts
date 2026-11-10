@@ -32,7 +32,8 @@ import {
     websocSyllabi,
     websocTerms,
 } from '../types/generated/anteater-api-types';
-import { client } from '../types/generated/anteater-api-types/client.gen';
+import { createConfig } from '../types/generated/anteater-api-types/client';
+import { createClient as createApiClient } from '../types/generated/anteater-api-types/client/client.gen';
 
 export class AAPIError extends Error {
     constructor(
@@ -52,21 +53,20 @@ export interface AAPIClientOptions {
 }
 
 function getAapiError(error: { message: string }, response: Response | undefined) {
-    return new AAPIError(error.message ? JSON.stringify(error.message) : 'Received empty response', response?.status);
+    return new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response?.status);
 }
 
 export function createClient({ apiKey }: AAPIClientOptions = {}) {
-    client.interceptors.request.use((request) => {
-        request.headers.set('Origin', ORIGIN);
-        if (apiKey) {
-            request.headers.set('Authorization', `Bearer ${apiKey}`);
-        }
+    const config = createConfig({
+        baseUrl: BASE_URL,
     });
+    config.headers = { ...config.headers, Origin: ORIGIN, Authorization: `Bearer ${apiKey}` };
+    const client = createApiClient(config);
 
     return {
         websoc: {
             async query(params: WebsocData['query']): Promise<WebsocAPIResponse> {
-                const { data, error, response } = await websoc({ query: params });
+                const { data, error, response } = await websoc({ client, query: params });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -74,7 +74,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async getSyllabi(params: WebsocSyllabiData['query']): Promise<WebsocSyllabiResponse> {
-                const { data, error, response } = await websocSyllabi({ query: params });
+                const { data, error, response } = await websocSyllabi({ client, query: params });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -82,7 +82,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async getTerms(): Promise<WebsocTerm[]> {
-                const { data, error, response } = await websocTerms();
+                const { data, error, response } = await websocTerms({ client });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -90,7 +90,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async getDepartments(params?: WebsocDepartmentsData['query']): Promise<WebsocAPIDepartmentsResponse> {
-                const { data, error, response } = await websocDepartments({ query: params });
+                const { data, error, response } = await websocDepartments({ client, query: params });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -100,7 +100,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         courses: {
             async get(id: string): Promise<Course> {
-                const { data, error, response } = await courseById({ path: { id } });
+                const { data, error, response } = await courseById({ client, path: { id } });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -108,7 +108,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async getBatch(ids: string[]): Promise<CoursesBatchAPIResult['data']> {
-                const { data, error, response } = await batchCourses({ query: { ids: ids.join(',') } });
+                const { data, error, response } = await batchCourses({ client, query: { ids: ids.join(',') } });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -116,7 +116,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async list(params: NonNullable<CoursesByFiltersData['query']>): Promise<CoursesFilteredAPIResult['data']> {
-                const { data, error, response } = await coursesByFilters({ query: params });
+                const { data, error, response } = await coursesByFilters({ client, query: params });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -126,7 +126,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         grades: {
             async aggregate(params: AggregateGradesData['query']): Promise<AggregateGrades> {
-                const { data, error, response } = await aggregateGrades({ query: params });
+                const { data, error, response } = await aggregateGrades({ client, query: params });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -136,7 +136,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             async aggregateByOffering(
                 params: AggregateGradesByOfferingData['query']
             ): Promise<AggregateGradesByOffering> {
-                const { data, error, response } = await aggregateGradesByOffering({ query: params });
+                const { data, error, response } = await aggregateGradesByOffering({ client, query: params });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -146,7 +146,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         enrollmentHistory: {
             async get(params: EnrollmentHistoryData['query']): Promise<EnrollmentHistory> {
-                const { data, error, response } = await enrollmentHistory({ query: params });
+                const { data, error, response } = await enrollmentHistory({ client, query: params });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -156,7 +156,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         calendar: {
             async all(): Promise<CalendarAllAPIResult['data']> {
-                const { data, error, response } = await allCalendarTerms();
+                const { data, error, response } = await allCalendarTerms({ client });
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
