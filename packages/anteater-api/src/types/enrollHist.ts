@@ -1,7 +1,6 @@
-import type { paths } from './generated/anteater-api-types';
+import type { EnrollmentHistoryResponse } from '$generated/anteater-api-types';
 
-export type EnrollmentHistoryAPIResult =
-    paths['/v2/rest/enrollmentHistory']['get']['responses'][200]['content']['application/json'];
+export type EnrollmentHistoryAPIResult = EnrollmentHistoryResponse;
 
 export type EnrollmentHistory = EnrollmentHistoryAPIResult['data'];
 
