@@ -22,7 +22,6 @@
         "typescript/triple-slash-reference": "off",
         // Temporary for TS v6 migration, fix asap: https://github.com/icssc/AntAlmanac/issues/2096
         "react/set-state-in-effect": "off",
-        "react/purity": "off",
         "react/preserve-manual-memoization": "off",
         "react/refs": "off"
     },

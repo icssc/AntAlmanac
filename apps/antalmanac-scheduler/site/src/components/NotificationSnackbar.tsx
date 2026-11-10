@@ -7,7 +7,7 @@ import { Alert, Snackbar, type SnackbarCloseReason } from '@mui/material';
 import { useShallow } from 'zustand/react/shallow';
 
 export const NotificationSnackbar = () => {
-    const { open, snackbarClosed, message, severity, durationSeconds, position, style } = useSnackbarStore(
+    const { open, snackbarClosed, message, severity, durationSeconds, position, style, snackbarKey } = useSnackbarStore(
         useShallow((store) => ({
             open: store.open,
             snackbarClosed: store.snackbarClosed,
@@ -16,12 +16,11 @@ export const NotificationSnackbar = () => {
             durationSeconds: store.durationSeconds,
             position: store.position,
             style: store.style,
+            snackbarKey: store.snackbarKey,
         }))
     );
 
     const isMobile = useIsMobile();
-
-    const snackbarKey = open ? Date.now() : null;
 
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
         if (reason === 'clickaway') {
@@ -31,9 +30,11 @@ export const NotificationSnackbar = () => {
         snackbarClosed();
     };
 
+    const key = open ? snackbarKey : null;
+
     return (
         <Snackbar
-            key={snackbarKey}
+            key={key}
             open={open}
             autoHideDuration={durationSeconds * 1000}
             anchorOrigin={position}

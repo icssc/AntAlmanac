@@ -1,6 +1,6 @@
 import './RecentOfferingsTooltip.scss';
 import { Tooltip } from '@mui/material';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
 
@@ -11,7 +11,9 @@ interface RecentOfferingsTooltipProps {
 const RecentOfferingsTooltip: FC<RecentOfferingsTooltipProps> = ({ terms }) => {
     if (terms.length === 0) return null;
 
-    const prevYear = new Date().getMonth() > 9 ? new Date().getFullYear() : new Date().getFullYear() - 1;
+    const [currentDate] = useState(() => new Date());
+
+    const prevYear = currentDate.getMonth() > 9 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
     const prevOfferings = [];
 
     // if the course was offered in the previous academic year, add the corresponding emoji to prevOfferings

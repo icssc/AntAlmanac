@@ -58,6 +58,8 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
     const startYear = currentPlan.content.yearPlans[yearIndex].startYear;
     const courses = data.courses;
 
+    const [currentDate] = useState(() => new Date());
+
     // Calculate Quarter Stats
     const unitCount = useMemo(() => {
         const courses = data.courses;
@@ -212,7 +214,6 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
                     });
 
                     const searchPrevYears = 2;
-                    const currentDate = new Date();
                     const currentStartYear =
                         currentDate.getMonth() >= 8 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
                     const useYear = Math.min(currentStartYear, startYear);

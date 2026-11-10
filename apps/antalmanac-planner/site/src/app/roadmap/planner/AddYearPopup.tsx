@@ -26,10 +26,11 @@ const AddYearPopup: FC<AddYearProps> = ({ buttonSize }) => {
     const currentPlan = useAppSelector(selectCurrentPlan);
     const plannerYears = currentPlan.content.yearPlans;
     const dispatch = useAppDispatch();
+    const [currentDate] = useState(() => new Date());
 
     const placeholderName = 'Year ' + (plannerYears.length + 1);
     const placeholderYear =
-        plannerYears.length === 0 ? new Date().getFullYear() : plannerYears[plannerYears.length - 1].startYear + 1;
+        plannerYears.length === 0 ? currentDate.getFullYear() : plannerYears[plannerYears.length - 1].startYear + 1;
 
     const saveHandler = (yearData: PlannerYearData) => {
         const { startYear, name, quarters } = yearData;
