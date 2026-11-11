@@ -60,8 +60,10 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     );
 
     const postHog = usePostHog();
-    const invalidTimeRange = start !== '' && end !== '' && start >= end;
-    const disabled = !(scheduleIndices.length && days.includes(true)) || invalidTimeRange;
+
+    const missingTime = start === '' || end === '';
+    const invalidTimeRange = !missingTime && start >= end;
+    const disabled = !(scheduleIndices.length && days.includes(true)) || invalidTimeRange || missingTime;
 
     const handleSubmit = () => {
         handleClose();
