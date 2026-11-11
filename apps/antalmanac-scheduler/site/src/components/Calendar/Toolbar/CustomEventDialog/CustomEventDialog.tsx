@@ -64,7 +64,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const isMissingScheduleOrDay = !(scheduleIndices.length && days.includes(true));
     // Missing start/end times are allowed on purpose (see #1971): users
     // can save events without time slots, and will be in the Added panel.
-    //Only check and validate when both times are filled in.
     const isTimeRangeInvalid = start !== '' && end !== '' && start >= end;
     const disabled = isMissingScheduleOrDay || isTimeRangeInvalid;
 
