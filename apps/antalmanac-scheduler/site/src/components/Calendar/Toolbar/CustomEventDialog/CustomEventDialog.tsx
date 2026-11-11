@@ -61,9 +61,12 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const postHog = usePostHog();
 
-    const missingTime = start === '' || end === '';
-    const invalidTimeRange = !missingTime && start >= end;
-    const disabled = !(scheduleIndices.length && days.includes(true)) || invalidTimeRange || missingTime;
+    const isMissingScheduleOrDay = !(scheduleIndices.length && days.includes(true));
+    // Missing start/end times are allowed on purpose (see #1971): users 
+    // can save events without time slots, and will be in the Added panel.
+    //Only check and validate when both times are filled in.
+    const isTimeRangeInvalid = start !== '' && end !== '' && start >= end;
+    const disabled = isMissingScheduleOrDay || isTimeRangeInvalid;
 
     const handleSubmit = () => {
         handleClose();
@@ -203,8 +206,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             label="End Time"
                             type="time"
                             defaultValue={end}
-                            error={invalidTimeRange}
-                            helperText={invalidTimeRange ? 'End time must be after start time' : undefined}
+                            error={isTimeRangeInvalid}
+                            helperText={isTimeRangeInvalid ? 'End time must be after start time' : undefined}
                             fullWidth
                             variant="outlined"
                             slotProps={{ inputLabel: { variant: 'outlined', shrink: true } }}
@@ -225,7 +228,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
-                        {!(scheduleIndices.length && days.includes(true))
+                        {isMissingScheduleOrDay
                             ? 'Specify schedule and day'
                             : props.customEvent
                               ? 'Save Changes'
