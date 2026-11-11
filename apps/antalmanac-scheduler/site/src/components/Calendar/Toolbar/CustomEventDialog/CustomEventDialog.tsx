@@ -60,8 +60,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     );
 
     const postHog = usePostHog();
-
-    const disabled = !(scheduleIndices.length && days.includes(true));
+    const invalidTimeRange = start !== '' && end !== '' && start >= end;
+    const disabled = !(scheduleIndices.length && days.includes(true)) || invalidTimeRange;
 
     const handleSubmit = () => {
         handleClose();
@@ -201,6 +201,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             label="End Time"
                             type="time"
                             defaultValue={end}
+                            error={invalidTimeRange}
+                            helperText={invalidTimeRange ? 'End time must be after start time' : undefined}
                             fullWidth
                             variant="outlined"
                             slotProps={{ inputLabel: { variant: 'outlined', shrink: true } }}
@@ -221,7 +223,11 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
-                        {disabled ? 'Specify schedule and day' : props.customEvent ? 'Save Changes' : 'Add Event'}
+                        {!(scheduleIndices.length && days.includes(true))
+                            ? 'Specify schedule and day'
+                            : props.customEvent
+                              ? 'Save Changes'
+                              : 'Add Event'}
                     </Button>
                 </DialogActions>
             </Dialog>
