@@ -1,5 +1,6 @@
 import { About } from '$components/Header/About';
 import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
+import { MajorSelector } from '$components/Header/Settings/MajorSelector';
 import { SectionColorSelector } from '$components/Header/Settings/SectionColorSelector';
 import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
 import { TimeSelector } from '$components/Header/Settings/TimeSelector';
@@ -7,8 +8,6 @@ import { AccountCircle } from '@mui/icons-material';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import type { UserProfile } from '@packages/db/src/schema/auth/user';
 import Image from 'next/image';
-
-import { MajorSelector } from './MajorSelector';
 
 interface UserProfileSectionProps {
     user: UserProfile | null;
