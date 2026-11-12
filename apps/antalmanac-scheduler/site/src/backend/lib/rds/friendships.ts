@@ -1,4 +1,4 @@
-import type { DatabaseOrTransaction } from '$backend/lib/rds/types';
+import type { Database, DatabaseOrTransaction } from '$backend/lib/rds/types';
 import { friendships, users } from '@packages/db/src/schema';
 import { and, eq, ne, or } from 'drizzle-orm';
 
@@ -147,7 +147,7 @@ export async function deleteFriendship(db: DatabaseOrTransaction, callerId: stri
  * Blocks a user. Preserves any incoming PENDING request as DECLINED, deletes all other
  * rows between the pair, then inserts the (userId→blockId, BLOCKED) row.
  */
-export async function blockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
+export async function blockUser(db: Database, userId: string, blockId: string) {
     return db.transaction(async (tx) => {
         await tx
             .update(friendships)
@@ -194,7 +194,7 @@ export async function getBlockedUsers(db: DatabaseOrTransaction, userId: string)
 /**
  * Removes a block placed by userId on blockId, restoring the original pending request if one existed.
  */
-export async function unblockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
+export async function unblockUser(db: Database, userId: string, blockId: string) {
     return db.transaction(async (tx) => {
         await tx
             .delete(friendships)

@@ -5,6 +5,7 @@ import '../App.scss';
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import { headers } from 'next/headers';
+import Script from 'next/script';
 
 import AppHeader from '../component/AppHeader/AppHeader';
 // Import Global Store
@@ -66,6 +67,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     </AppProvider>
                 </AppRouterCacheProvider>
             </body>
+            <Script id="console-promo-msg">
+                {`console.log(
+                    '%cInterested in improving AntAlmanac?\\n - Check out the project on GitHub: https://github.com/icssc/antalmanac\\n - Join our Discord: https://discord.gg/GzF76D7UhY\\n - Leave feedback: https://antalmanac.com/feedback',
+                    'color: #305db7; font-size: 15px'
+                );`}
+            </Script>
         </html>
     );
 }

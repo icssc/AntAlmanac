@@ -95,6 +95,7 @@ const programsRouter = router({
                     const majorRequirements = res.data.requirements as ProgramRequirement[];
                     return {
                         requirements: [...schoolRequirements, ...majorRequirements],
+                        schoolRequirementCount: schoolRequirements.length,
                         catalogYear: res.data.catalogYear as string | undefined,
                     };
                 });
