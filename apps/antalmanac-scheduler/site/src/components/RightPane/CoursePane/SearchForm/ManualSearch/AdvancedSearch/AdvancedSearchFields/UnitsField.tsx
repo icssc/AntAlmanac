@@ -17,6 +17,9 @@ export const UnitsField = memo(() => {
                         setUnits('VAR');
                     } else if ('VAR'.startsWith(upper)) {
                         setUnits(upper);
+                    } else if (units === 'V' || units === 'VA') {
+                        //ignore the keystroke if mid-VAR
+                        return;
                     } else {
                         const cleaned = upper.replace(/[^0-9.]/g, '');
                         const finalValue = cleaned.replace(/(\..*?)\./g, '$1');
