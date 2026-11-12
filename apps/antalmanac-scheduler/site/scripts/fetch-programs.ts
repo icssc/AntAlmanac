@@ -24,7 +24,6 @@ async function main() {
         majors.map((major: MajorsAPIResponse[number]) => [
             major.id,
             `${normalizeMajorName(major.name)}, ${major.id.split('-')[0]}`,
-            // `${major.name.includes('Psychology') ? major.name.slice(9, -7) : major.name.slice(9)}, ${major.id.split('-')[0]}`,
         ])
     );
 
