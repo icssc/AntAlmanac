@@ -1,4 +1,12 @@
-import { type FinalExam, isCustomEvent } from '$components/Calendar/types';
+import {
+    type CalendarEvent,
+    type CourseEvent,
+    type FinalExam,
+    type Location,
+    isCourseEvent,
+    isCustomEvent,
+    isSkeletonEvent,
+} from '$components/Calendar/types';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm } from '$lib/term';
 import { notNull, saveAs } from '$lib/utils';
@@ -220,9 +228,62 @@ function getRRule(bydays: string[], quarter: Quarter) {
     return `FREQ=WEEKLY;BYDAY=${bydays.toString()};INTERVAL=1;COUNT=${count}`;
 }
 
+function getMeetingKey(event: CourseEvent): string {
+    const locations = event.locations.map((location) => `${location.building} ${location.room}`).join(',');
+    const start = `${event.start.getHours()}:${event.start.getMinutes()}`;
+    const end = `${event.end.getHours()}:${event.end.getMinutes()}`;
+    return [event.term.shortName, event.sectionCode, start, end, locations].join('|');
+}
+
+function mergeCourseEvents(events: CalendarEvent[]): CalendarEvent[] {
+    const meetings = new Map<string, { event: CourseEvent; days: string }>();
+    const result: CalendarEvent[] = [];
+
+    for (const event of events) {
+        if (!isCourseEvent(event) || event.sectionType === 'Fin') {
+            result.push(event);
+            continue;
+        }
+
+        const location = event.locations[0];
+        const days = location?.days;
+        if (days === undefined) {
+            result.push(event);
+            continue;
+        }
+
+        const key = getMeetingKey(event);
+        const existing = meetings.get(key);
+        if (existing === undefined) {
+            meetings.set(key, { event, days });
+        } else {
+            existing.days += days;
+        }
+    }
+
+    for (const meeting of meetings.values()) {
+        const event = meeting.event;
+        const days = meeting.days;
+
+        const newLocations: Location[] = [];
+        for (const loc of event.locations) {
+            newLocations.push({
+                building: loc.building,
+                room: loc.room,
+                days: days,
+            });
+        }
+        result.push({ ...event, locations: newLocations });
+    }
+    return result;
+}
+
 export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCalendar()): EventAttributes[] {
     const customEventIDs = new Set();
-    const calendarEvents = events.flatMap((event) => {
+    const calendarEvents = mergeCourseEvents(events).flatMap((event) => {
+        if (isSkeletonEvent(event)) {
+            return [];
+        }
         if (isCustomEvent(event)) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.

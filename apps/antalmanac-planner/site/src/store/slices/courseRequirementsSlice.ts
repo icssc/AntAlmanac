@@ -8,6 +8,7 @@ export interface MajorWithSpecialization {
     selectedSpec: MajorSpecialization | null;
     specializations: MajorSpecialization[];
     requirements: ProgramRequirement[];
+    schoolRequirementCount?: number;
     catalogYear: string | null;
     fallbackCatalogYear: string | null;
 }
@@ -32,6 +33,7 @@ const courseRequirementsSlice = createSlice({
         selectedMinors: [] as MinorRequirements[],
         MinorRequirements: [] as ProgramRequirement[],
         geRequirements: [] as ProgramRequirement[],
+        chcRequirements: [] as ProgramRequirement[],
         completedMarkers: {} as Record<string, boolean>,
         expandedGroups: {} as ExpandedGroupsList,
         overriddenRequirements: {} as Record<number, Record<string, boolean>>,
@@ -74,10 +76,18 @@ const courseRequirementsSlice = createSlice({
                 major.specializations = action.payload.specializations;
             }
         },
-        setRequirements: (state, action: PayloadAction<{ majorId: string; requirements: ProgramRequirement[] }>) => {
+        setRequirements: (
+            state,
+            action: PayloadAction<{
+                majorId: string;
+                requirements: ProgramRequirement[];
+                schoolRequirementCount?: number;
+            }>
+        ) => {
             const major = state.selectedMajors.find((m) => m.major.id === action.payload.majorId);
             if (major) {
                 major.requirements = action.payload.requirements;
+                major.schoolRequirementCount = action.payload.schoolRequirementCount ?? 0;
             }
         },
         setMajorCatalogYear: (state, action: PayloadAction<{ majorId: string; catalogYear: string | null }>) => {
@@ -139,6 +149,9 @@ const courseRequirementsSlice = createSlice({
         setGERequirements: (state, action: PayloadAction<ProgramRequirement[]>) => {
             state.geRequirements = action.payload;
         },
+        setCHCRequirements: (state, action: PayloadAction<ProgramRequirement[]>) => {
+            state.chcRequirements = action.payload;
+        },
         setMarkerComplete: (state, action: PayloadAction<{ markerName: string; complete: boolean }>) => {
             state.completedMarkers[action.payload.markerName] = action.payload.complete;
         },
@@ -193,6 +206,7 @@ export const {
     setMinorFallbackCatalogYear,
     setMinorRequirements,
     setGERequirements,
+    setCHCRequirements,
     setMarkerComplete,
     initializeCompletedMarkers,
     setRequirementOverride,
