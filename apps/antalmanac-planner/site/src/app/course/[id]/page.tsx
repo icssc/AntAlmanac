@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 
 import { createServerSideTrpcCaller } from '../../../trpc';
 import CoursePage from '../CoursePage';
@@ -9,11 +10,11 @@ interface CoursePageParams {
     params: Promise<{ id: string }>;
 }
 
-const getCourse = async (id: string) => {
+const getCourse = cache(async (id: string) => {
     const reqHeaders = await headers().then((h) => Object.fromEntries(h.entries()));
     const serverTrpc = createServerSideTrpcCaller(reqHeaders);
     return serverTrpc.courses.get.query({ courseID: id });
-};
+});
 
 export async function generateMetadata({ params }: CoursePageParams): Promise<Metadata> {
     const id = decodeURIComponent((await params).id);

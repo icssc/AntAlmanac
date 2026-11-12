@@ -102,11 +102,20 @@ const ProfessorPreviewContent: FC<{ data: ProfessorGQLData | null; netid: string
             </ResultPageSection>
 
             <ResultPageSection id="preview-schedule" icon={<CalendarTodayIcon />} title="Schedule of Classes">
-                <Schedule professorIDs={data.shortenedNames} termsOffered={unionTerms(data.courses)} />
+                <Schedule
+                    key={data.ucinetid}
+                    professorIDs={data.shortenedNames}
+                    termsOffered={unionTerms(data.courses)}
+                />
             </ResultPageSection>
 
             <ResultPageSection id="preview-reviews" icon={<RateReviewIcon />} title="Reviews">
-                <Review professor={data} terms={sortTerms(getProfessorTerms(data))} onLoaded={handleReviewsLoaded} />
+                <Review
+                    key={data.ucinetid}
+                    professor={data}
+                    terms={sortTerms(getProfessorTerms(data))}
+                    onLoaded={handleReviewsLoaded}
+                />
             </ResultPageSection>
         </div>
     );
@@ -172,7 +181,7 @@ const ProfessorPreview: FC<{ netid: string; onClose: () => void; onBack: () => v
                 </Button>
             </Paper>
             <div className="popup-scroll">
-                <ProfessorPreviewContent data={professorData} netid={netid} />
+                <ProfessorPreviewContent key={netid} data={professorData} netid={netid} />
             </div>
         </div>
     );

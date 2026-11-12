@@ -83,7 +83,7 @@ const CoursePreviewContent: FC<{ data: CourseGQLData }> = ({ data }) => {
                 <ResultPageSection
                     id="preview-details"
                     title={<Skeleton variant="text" width={320} />}
-                    indicator={materialsComponent}
+                    indicator={null}
                 >
                     <CourseSummary course={LOADING_COURSE_PLACEHOLDER} skeleton />
                 </ResultPageSection>

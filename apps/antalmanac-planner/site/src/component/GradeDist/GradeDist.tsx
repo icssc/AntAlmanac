@@ -191,11 +191,12 @@ const GradeDist: FC<GradeDistProps> = (props) => {
 
     const selectedQuarterName = quarterEntries?.find((q) => q.value === selectedQuarter)?.text ?? 'Quarter';
     const gradeDistReady =
+        !skeleton &&
         !!gradeDistData?.length &&
         !!quarterEntries?.length &&
         !!selectedQuarter &&
         (selectedQuarter === 'ALL' || !!lastQuarter);
-    const failed = gradeDistData && gradeDistData.length === 0;
+    const failed = !skeleton && gradeDistData && gradeDistData.length === 0;
     const stillFetching = !gradeDistReady && !failed;
 
     const optionsRow = (

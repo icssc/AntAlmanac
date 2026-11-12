@@ -21,7 +21,7 @@ export function useProfessorData(netID: string, professorPromise?: Promise<Profe
     useEffect(() => {
         // Use a stateful trigger to avoid sending two requests as a result of double first render
         setLoadTrigger(true);
-    }, [netID]);
+    }, [netID, professorPromise]);
 
     useEffect(() => {
         if (!loadTrigger) return;

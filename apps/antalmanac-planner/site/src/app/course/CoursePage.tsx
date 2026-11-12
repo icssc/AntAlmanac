@@ -5,7 +5,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { Skeleton } from '@mui/material';
 import { CourseAAPIResponse } from '@peterportal/types';
-import { FC, useState, useEffect } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
 import Error from '../../component/Error/Error';
 import GradeDist from '../../component/GradeDist/GradeDist';
@@ -38,11 +38,23 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
     const dispatch = useAppDispatch();
     const courseGQLData = useCourseData(id, coursePromise);
     const [error, setError] = useState('');
+    const [reviewsLoadedFor, setReviewsLoadedFor] = useState<string | null>(null);
+
+    const reviewsLoaded = reviewsLoadedFor === courseGQLData.id;
+    const handleReviewsLoaded = useCallback(() => setReviewsLoadedFor(courseGQLData.id), [courseGQLData.id]);
 
     useEffect(() => {
-        Promise.resolve(coursePromise).then((course) => {
-            if (!course) setError('Course not found');
-        });
+        let active = true;
+        Promise.resolve(coursePromise)
+            .then((course) => {
+                if (active && !course) setError('Course not found');
+            })
+            .catch(() => {
+                if (active) setError('Unable to load course');
+            });
+        return () => {
+            active = false;
+        };
     }, [coursePromise]);
 
     useEffect(() => {
@@ -85,6 +97,7 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
                 tags={getCourseTags(courseGQLData)}
                 course={courseGQLData}
                 terms={courseGQLData.terms}
+                reviewsSkeleton={!reviewsLoaded}
             />
         );
         return (
@@ -106,7 +119,12 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
                 </ResultPageSection>
 
                 <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
-                    <Review key={courseGQLData.id} course={courseGQLData} terms={sortTerms(courseGQLData.terms)} />
+                    <Review
+                        key={courseGQLData.id}
+                        course={courseGQLData}
+                        terms={sortTerms(courseGQLData.terms)}
+                        onLoaded={handleReviewsLoaded}
+                    />
                 </ResultPageSection>
             </ResultPageContent>
         );

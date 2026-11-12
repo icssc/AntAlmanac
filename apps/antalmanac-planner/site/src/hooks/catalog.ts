@@ -19,7 +19,7 @@ export function useCourseData(courseId: string, coursePromise?: Promise<CourseAA
     useEffect(() => {
         // Use a stateful trigger to avoid sending two requests as a result of double first render
         setLoadTrigger(true);
-    }, [courseId]);
+    }, [courseId, coursePromise]);
 
     useEffect(() => {
         if (!loadTrigger) return;

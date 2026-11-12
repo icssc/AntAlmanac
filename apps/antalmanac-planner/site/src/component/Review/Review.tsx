@@ -44,33 +44,52 @@ const Review: FC<ReviewProps> = (props) => {
     const [sortingOption, setSortingOption] = useState<SortingOption>(SortingOption.TOP_REVIEWS);
     const [filterOption, setFilterOption] = useState('');
     const [showOnlyVerifiedReviews, setShowOnlyVerifiedReviews] = useState(false);
-    const [loaded, setLoaded] = useState(false);
+    const [loadedFor, setLoadedFor] = useState<string | null>(null);
     const showForm = useAppSelector((state) => state.review.formOpen);
     const isLoggedIn = useIsLoggedIn();
 
-    const getReviews = useCallback(async () => {
-        interface paramsProps {
-            courseId?: string;
-            professorId?: string;
-        }
-        const params: paramsProps = {};
-        if (props.course) params.courseId = props.course.id;
-        if (props.professor) params.professorId = props.professor.ucinetid;
-        const reviews = await trpc.reviews.get.query(params);
-        dispatch(setReviews(reviews));
-        dispatch(setReviewOrder(reviews.map((r) => r.id)));
-    }, [dispatch, props.course, props.professor]);
+    const reviewKey = props.course?.id ?? props.professor?.ucinetid ?? '';
+    const loaded = loadedFor === reviewKey;
+    const showSkeleton = props.skeleton || !loaded;
+
+    const getReviews = useCallback(
+        async (isCurrent: () => boolean) => {
+            interface paramsProps {
+                courseId?: string;
+                professorId?: string;
+            }
+            const params: paramsProps = {};
+            if (props.course) params.courseId = props.course.id;
+            if (props.professor) params.professorId = props.professor.ucinetid;
+            const reviews = await trpc.reviews.get.query(params);
+            if (!isCurrent()) return;
+            dispatch(setReviews(reviews));
+            dispatch(setReviewOrder(reviews.map((r) => r.id)));
+        },
+        [dispatch, props.course, props.professor]
+    );
 
     useEffect(() => {
         // prevent reviews from carrying over
         dispatch(setReviews([]));
-        setLoaded(false);
+        setLoadedFor(null);
         if (props.skeleton) return;
-        getReviews().then(() => {
-            setLoaded(true);
-            onLoaded?.();
-        });
-    }, [dispatch, getReviews, onLoaded, props.skeleton]);
+
+        let active = true;
+        getReviews(() => active)
+            .catch((error) => {
+                if (active) console.error('Failed to load reviews', error);
+            })
+            .finally(() => {
+                if (!active) return;
+                setLoadedFor(reviewKey);
+                onLoaded?.();
+            });
+
+        return () => {
+            active = false;
+        };
+    }, [dispatch, getReviews, onLoaded, props.skeleton, reviewKey]);
 
     let sortedReviews: ReviewData[];
     // filter verified if option is set
@@ -176,7 +195,7 @@ const Review: FC<ReviewProps> = (props) => {
                                     </MenuItem>
                                 ))}
                             </Select>,
-                            !loaded
+                            showSkeleton
                         )}
                     </div>
                     {props.course && (
@@ -193,7 +212,7 @@ const Review: FC<ReviewProps> = (props) => {
                                         </MenuItem>
                                     ))}
                                 </Select>,
-                                !loaded
+                                showSkeleton
                             )}
                         </div>
                     )}
@@ -211,7 +230,7 @@ const Review: FC<ReviewProps> = (props) => {
                                         </MenuItem>
                                     ))}
                                 </Select>,
-                                !loaded
+                                showSkeleton
                             )}
                         </div>
                     )}
@@ -227,7 +246,7 @@ const Review: FC<ReviewProps> = (props) => {
                                 }
                                 label="Show verified reviews only"
                             />,
-                            !loaded
+                            showSkeleton
                         )}
                     </div>
 
@@ -242,21 +261,21 @@ const Review: FC<ReviewProps> = (props) => {
                                     <Button onClick={openReviewForm} disabled={!isLoggedIn}>
                                         <AddIcon /> Add Review
                                     </Button>,
-                                    !loaded
+                                    showSkeleton
                                 )}
                             </span>
                         </Tooltip>
                     </span>
                 </div>
 
-                {!loaded && (
+                {showSkeleton && (
                     <div className="reviewcards">
                         {[0, 1].map((i) => (
                             <Skeleton key={i} variant="rounded" height={280} />
                         ))}
                     </div>
                 )}
-                {loaded && sortedReviews.length !== 0 && (
+                {!showSkeleton && sortedReviews.length !== 0 && (
                     <div className="reviewcards">
                         {sortedReviews.map((review) => (
                             <ReviewCard

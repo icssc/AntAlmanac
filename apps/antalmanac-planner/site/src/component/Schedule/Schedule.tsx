@@ -55,8 +55,8 @@ const Schedule: FC<ScheduleProps> = (props) => {
     const [scheduleData, setScheduleData] = useState<ScheduleData>(null!);
     const [materialsData, setMaterialsData] = useState<MaterialsData>(null!);
     const currentQuarter = useAppSelector((state) => state.schedule.currentQuarter);
-    const [selectedQuarter, setSelectedQuarter] = useState(
-        props?.termsOffered ? props?.termsOffered[0] : currentQuarter
+    const [selectedQuarter, setSelectedQuarter] = useState(() =>
+        props.termsOffered?.length ? props.termsOffered[0] : currentQuarter
     );
 
     const [showToast, setShowToast] = useState(false);
@@ -117,6 +117,13 @@ const Schedule: FC<ScheduleProps> = (props) => {
             }
         }
     }, [props.courseID, props.professorIDs, selectedQuarter]);
+
+    useEffect(() => {
+        // A reused schedule can start before termsOffered arrives; move to a term it actually offers.
+        if (props.termsOffered?.length && !props.termsOffered.includes(selectedQuarter)) {
+            setSelectedQuarter(props.termsOffered[0]);
+        }
+    }, [props.termsOffered, selectedQuarter]);
 
     useEffect(() => {
         if (!props.skeleton && selectedQuarter !== '') {
@@ -221,7 +228,7 @@ const Schedule: FC<ScheduleProps> = (props) => {
         );
     };
 
-    const loading = !scheduleData;
+    const loading = props.skeleton || !scheduleData;
 
     const sectionElements: React.JSX.Element[] = [];
     Object.keys(scheduleData ?? {}).forEach((courseID) => {

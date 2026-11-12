@@ -3,7 +3,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { ProfessorAAPIResponse } from '@peterportal/types';
-import { FC, useState, useEffect } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
 import Error from '../../component/Error/Error';
 import GradeDist from '../../component/GradeDist/GradeDist';
@@ -30,13 +30,26 @@ interface ProfessorPageProps {
 const ProfessorPage: FC<ProfessorPageProps> = ({ ucinetid: id, professorPromise }) => {
     const professorGQLData = useProfessorData(id, professorPromise);
     const [error, setError] = useState('');
+    const [reviewsLoadedFor, setReviewsLoadedFor] = useState<string | null>(null);
+
+    const reviewsLoaded = reviewsLoadedFor === professorGQLData?.ucinetid;
+    const handleReviewsLoaded = useCallback(
+        () => setReviewsLoadedFor(professorGQLData?.ucinetid ?? null),
+        [professorGQLData?.ucinetid]
+    );
 
     useEffect(() => {
-        Promise.resolve(professorPromise).then((professor) => {
-            if (!professor) {
-                setError('Instructor not found');
-            }
-        });
+        let active = true;
+        Promise.resolve(professorPromise)
+            .then((professor) => {
+                if (active && !professor) setError('Instructor not found');
+            })
+            .catch(() => {
+                if (active) setError('Unable to load instructor');
+            });
+        return () => {
+            active = false;
+        };
     }, [professorPromise]);
 
     useEffect(() => {
@@ -79,6 +92,7 @@ const ProfessorPage: FC<ProfessorPageProps> = ({ ucinetid: id, professorPromise 
                 description={professorGQLData.department}
                 tags={[professorGQLData.ucinetid, ...professorGQLData.shortenedNames]}
                 professor={professorGQLData}
+                reviewsSkeleton={!reviewsLoaded}
             />
         );
         return (
@@ -96,7 +110,12 @@ const ProfessorPage: FC<ProfessorPageProps> = ({ ucinetid: id, professorPromise 
                 </ResultPageSection>
 
                 <ResultPageSection icon={<RateReviewIcon />} title="Reviews">
-                    <Review professor={professorGQLData} terms={sortTerms(getProfessorTerms(professorGQLData))} />
+                    <Review
+                        key={professorGQLData.ucinetid}
+                        professor={professorGQLData}
+                        terms={sortTerms(getProfessorTerms(professorGQLData))}
+                        onLoaded={handleReviewsLoaded}
+                    />
                 </ResultPageSection>
             </ResultPageContent>
         );
