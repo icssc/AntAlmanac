@@ -189,6 +189,12 @@
         color: var(--mui-palette-text-secondary);
         font-size: 12px;
     }
+
+    &.taken-indicator {
+        outline: 1.5px solid var(--mui-palette-text-secondary);
+        outline-offset: -1.5px;
+        opacity: 0.75;
+    }
 }
 
 .marker-requirement {
@@ -288,7 +294,8 @@
         background: var(--mui-palette-overlay-overlay3);
     }
 
-    .program-course-tile.completed {
+    .program-course-tile.completed,
+    .department-course-group-header.taken-indicator {
         background-color: #343a40;
     }
 }
