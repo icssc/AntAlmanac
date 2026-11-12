@@ -1,4 +1,5 @@
 'use client';
+import { Skeleton } from '@mui/material';
 import dynamic from 'next/dynamic';
 import { FC, useEffect } from 'react';
 
@@ -16,7 +17,18 @@ import QuarterInfo from '../QuarterInfo/QuarterInfo';
 import Header from '../toolbar/Header';
 import Year from './Year';
 
-const RoadmapLoadingSkeleton = dynamic(() => import('./RoadmapLoadingSkeleton'), { ssr: false });
+/** Immediate placeholder while the cached-blueprint skeleton chunk loads. */
+const SkeletonFallback: FC = () => (
+    <section className="years" aria-busy="true" aria-label="Loading roadmap">
+        <Skeleton variant="rounded" height={360} />
+        <Skeleton variant="rounded" height={360} />
+    </section>
+);
+
+const RoadmapLoadingSkeleton = dynamic(() => import('./RoadmapLoadingSkeleton'), {
+    ssr: false,
+    loading: () => <SkeletonFallback />,
+});
 
 function slimCourse(course: PlannerQuarterCourse): PlannerQuarterCourse {
     if (isCustomCourse(course)) return course;

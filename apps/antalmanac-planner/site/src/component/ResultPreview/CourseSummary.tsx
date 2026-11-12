@@ -196,7 +196,9 @@ const CourseDependentText: FC<{ courseName: string; dependents: CoursePreview[];
                 {skeleton ? (
                     <SummarySkeletonBlock height={116} />
                 ) : (
-                    <p>{`There are no courses that have ${courseName} as a prerequisite.`}</p>
+                    <p>
+                        <i>There are no courses that have {courseName} as a prerequisite.</i>
+                    </p>
                 )}
             </>
         );

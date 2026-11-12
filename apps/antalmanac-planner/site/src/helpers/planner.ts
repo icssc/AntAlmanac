@@ -222,7 +222,11 @@ export function getLocalSkeletonBlueprint() {
 }
 
 export function setLocalSkeletonBlueprint(value: string) {
-    localStorage.setItem(SKELETON_BLUEPRINT_KEY, value);
+    try {
+        localStorage.setItem(SKELETON_BLUEPRINT_KEY, value);
+    } catch {
+        /* best effort: private mode or a full quota should not break the planner */
+    }
 }
 
 type LocalStorageRoadmapType = SavedRoadmap | LegacyRoadmap | LegacySavedRoadmap;

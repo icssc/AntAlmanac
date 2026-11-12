@@ -168,10 +168,10 @@ const Year: FC<YearProps> = ({ yearIndex, data, skeleton = false }) => {
                 <YearStats year={data} skeleton={skeleton} />
                 <div className="action-row">
                     <IconButton onClick={handleEditYearClick} disabled={skeleton}>
-                        {wrapSkeleton(<EditIcon />, skeleton, 'circular')}
+                        {wrapSkeleton(<EditIcon />, skeleton, 'circular', 'span')}
                     </IconButton>
                     <IconButton onClick={() => setShowDeleteYear(true)} disabled={skeleton}>
-                        {wrapSkeleton(<DeleteOutlineIcon />, skeleton, 'circular')}
+                        {wrapSkeleton(<DeleteOutlineIcon />, skeleton, 'circular', 'span')}
                     </IconButton>
                     <ExpandMore
                         expanded={!collapsed}
@@ -180,7 +180,7 @@ const Year: FC<YearProps> = ({ yearIndex, data, skeleton = false }) => {
                         aria-label="expand planner"
                         disabled={skeleton}
                     >
-                        {wrapSkeleton(<ExpandMoreIcon />, skeleton, 'circular')}
+                        {wrapSkeleton(<ExpandMoreIcon />, skeleton, 'circular', 'span')}
                     </ExpandMore>
                 </div>
             </div>

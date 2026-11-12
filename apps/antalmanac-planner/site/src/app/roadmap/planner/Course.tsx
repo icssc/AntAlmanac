@@ -138,11 +138,14 @@ const Course: FC<CourseProps> = (props) => {
                                 {...{ openPopoverLeft, requiredCourses, termMismatch }}
                             />,
                             skeleton,
-                            'text'
+                            'text',
+                            'span'
                         )}
                     </span>
                     {isInRoadmap && minUnits === maxUnits && (
-                        <span className="units">{wrapSkeleton(<span>{defaultUnitsText}</span>, skeleton, 'text')}</span>
+                        <span className="units">
+                            {wrapSkeleton(<span>{defaultUnitsText}</span>, skeleton, 'text', 'span')}
+                        </span>
                     )}
                     {isInRoadmap && minUnits !== maxUnits && (
                         <div className="custom-units">
@@ -166,7 +169,12 @@ const Course: FC<CourseProps> = (props) => {
                         aria-label="delete"
                         disabled={skeleton}
                     >
-                        {wrapSkeleton(<DeleteOutlineIcon className="course-delete-icon" />, skeleton, 'circular')}
+                        {wrapSkeleton(
+                            <DeleteOutlineIcon className="course-delete-icon" />,
+                            skeleton,
+                            'circular',
+                            'span'
+                        )}
                     </IconButton>
                 ) : (
                     <CourseBookmarkButton course={props.data} />

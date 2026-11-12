@@ -231,7 +231,7 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, startYear, data, s
         <Card className="quarter" ref={quarterContainerRef} variant="outlined">
             <div className="quarter-header">
                 <h2 className="quarter-title">
-                    {wrapSkeleton(<span>{quarterTitle.replace('10 Week', '10wk')}</span>, skeleton, 'text')}
+                    {wrapSkeleton(<span>{quarterTitle.replace('10 Week', '10wk')}</span>, skeleton, 'text', 'span')}
                 </h2>
                 <div className="quarter-units">
                     {wrapSkeleton(

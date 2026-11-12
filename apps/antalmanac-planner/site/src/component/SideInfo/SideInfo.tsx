@@ -176,8 +176,8 @@ const SideInfo: FC<SideInfoProps> = (props) => {
         <div className="side-content-wrapper">
             <div className={`side-info ${props.className ?? ''}`} id={props.id}>
                 <div className="side-info-overview">
-                    <h2>{wrapSkeleton(<span>{props.name}</span>, skeleton, 'text')}</h2>
-                    <h3>{wrapSkeleton(<span>{props.title}</span>, skeleton, 'text')}</h3>
+                    <h2>{wrapSkeleton(<span>{props.name}</span>, skeleton, 'text', 'span')}</h2>
+                    <h3>{wrapSkeleton(<span>{props.title}</span>, skeleton, 'text', 'span')}</h3>
                     {wrapSkeleton(<p>{props.description}</p>, skeleton, 'text')}
                     <div className="course-tags">
                         {props.tags.map((tag, i) => (

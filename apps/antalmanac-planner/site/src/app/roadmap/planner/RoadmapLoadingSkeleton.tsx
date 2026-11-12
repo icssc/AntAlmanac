@@ -29,7 +29,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isValidCachedCourse(value: unknown): value is PlannerQuarterCourse {
     if (!isRecord(value)) return false;
 
-    if ('courseName' in value) {
+    if (Object.hasOwn(value, 'courseName')) {
         return (
             typeof value.id === 'number' &&
             typeof value.courseName === 'string' &&
@@ -43,10 +43,13 @@ function isValidCachedCourse(value: unknown): value is PlannerQuarterCourse {
         typeof value.department === 'string' &&
         typeof value.courseNumber === 'string' &&
         typeof value.title === 'string' &&
+        typeof value.courseLevel === 'string' &&
         typeof value.minUnits === 'number' &&
         typeof value.maxUnits === 'number' &&
         Array.isArray(value.terms) &&
-        Array.isArray(value.geList)
+        value.terms.every((term) => typeof term === 'string') &&
+        Array.isArray(value.geList) &&
+        value.geList.every((ge) => typeof ge === 'string')
     );
 }
 
@@ -54,7 +57,7 @@ function isValidCachedQuarter(value: unknown): value is PlannerQuarterData {
     return (
         isRecord(value) &&
         typeof value.name === 'string' &&
-        value.name in quarterDisplayNames &&
+        Object.hasOwn(quarterDisplayNames, value.name) &&
         Array.isArray(value.courses) &&
         value.courses.every(isValidCachedCourse)
     );
