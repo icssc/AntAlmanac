@@ -23,8 +23,7 @@ function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<
     };
 
     for (let i = 0; i < COURSE_RENAMES_BY_CURRENT.size; i++) {
-        // searches n times to deal with chains (e.g. a prev name is b
-        // which also has a prev name c)
+        // searches n times to deal with multiple renames
         const entry = COURSE_RENAMES_BY_CURRENT.get(current.courseId);
         if (!entry) {
             break;
@@ -64,6 +63,8 @@ export function getLatestRenamedCourseIdentifier(deptCode: string, courseNumber:
     };
 
     for (let i = 0; i < COURSE_RENAMES_BY_PREVIOUS.size; i++) {
+        // iterates n times to deal with courses that are renamed more than once
+        // breaks once there isn't a new rename
         const entry = COURSE_RENAMES_BY_PREVIOUS.get(current.courseId);
         if (!entry) {
             break;
