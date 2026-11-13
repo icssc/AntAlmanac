@@ -1,3 +1,5 @@
+// @ts-ignore Suppress side-effect import type warning until
+// we migrate off dotenv-flow, which is no longer maintained
 import 'dotenv-flow/config';
 import { ExtractTablesWithRelations } from 'drizzle-orm';
 import { drizzle, NodePgQueryResultHKT } from 'drizzle-orm/node-postgres';

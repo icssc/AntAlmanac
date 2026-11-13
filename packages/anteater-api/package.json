@@ -9,13 +9,12 @@
         "./utils": "./src/utils/index.ts"
     },
     "scripts": {
-        "postinstall": "openapi-typescript https://anteaterapi.com/openapi.json -o src/types/generated/anteater-api-types.ts"
+        "postinstall": "openapi-typesafe https://anteaterapi.com/openapi.json -o src/types/generated/anteater-api-types.ts"
     },
     "dependencies": {
-        "openapi-fetch": "^0.17.0"
+        "openapi-typesafe-fetch": "^1.0.0-rc.3"
     },
     "devDependencies": {
-        "openapi-typescript": "7.13.0",
-        "typescript": "^5.9.3"
+        "openapi-typesafe": "1.0.0-rc.3"
     }
 }

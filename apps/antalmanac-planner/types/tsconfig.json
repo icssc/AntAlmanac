@@ -5,8 +5,7 @@
         "outDir": "./dist",
         "rootDir": "./src",
         "strict": true,
-        "moduleResolution": "node",
-        "esModuleInterop": true,
+        "moduleResolution": "bundler",
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true

@@ -7,7 +7,11 @@
             {
                 "ignoreDeclarationSort": true
             }
-        ]
+        ],
+        // Temporary for TS v6 migration, fix asap: https://github.com/icssc/AntAlmanac/issues/2096
+        "react/set-state-in-effect": "off",
+        "react/refs": "off",
+        "react/purity": "off"
     },
     "globals": {},
     "ignorePatterns": [
