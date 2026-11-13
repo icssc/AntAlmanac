@@ -12,7 +12,8 @@ export const UnitsField = memo(() => {
                 value: units,
                 onChange: (event) => {
                     const upper = event.target.value.toUpperCase();
-                    const varPrefix = upper.match(/^V(?:AR?)?/)?.[0];
+                    const sanitized = upper.replace(/[^0-9.VAR]/g, '');
+                    const varPrefix = sanitized.match(/^V(?:AR?)?/)?.[0];
 
                     if (varPrefix) {
                         setUnits(varPrefix);
