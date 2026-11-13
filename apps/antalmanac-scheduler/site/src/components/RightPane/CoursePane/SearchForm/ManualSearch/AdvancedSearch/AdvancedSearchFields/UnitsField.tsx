@@ -12,17 +12,15 @@ export const UnitsField = memo(() => {
                 value: units,
                 onChange: (event) => {
                     const upper = event.target.value.toUpperCase();
+                    const varPrefix = upper.match(/^V(?:AR?)?/)?.[0];
 
-                    if (upper.startsWith('VAR')) {
-                        setUnits('VAR');
-                    } else if ('VAR'.startsWith(upper)) {
-                        setUnits(upper);
-                    } else if (units === 'V' || units === 'VA') {
-                        //ignore the keystroke if mid-VAR
-                        return;
+                    if (varPrefix) {
+                        setUnits(varPrefix);
                     } else {
-                        const cleaned = upper.replace(/[^0-9.]/g, '');
-                        const finalValue = cleaned.replace(/(\..*?)\./g, '$1');
+                        const parts = upper.replace(/[^0-9.]/g, '').split('.');
+                        const whole = parts[0];
+                        const decimals = parts.slice(1);
+                        const finalValue = decimals.length > 0 ? `${whole}.${decimals.join('')}` : whole;
                         setUnits(finalValue);
                     }
                 },
