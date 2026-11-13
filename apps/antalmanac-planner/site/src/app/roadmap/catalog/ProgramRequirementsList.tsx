@@ -77,6 +77,7 @@ const CourseTile: FC<CourseTileProps> = ({ courseID, completedBy, dragTimestamp 
     const isMobile = useIsMobile();
     const readOnly = useIsReadOnly();
     const clearedCourses = useClearedCourses();
+    const isCHC = Boolean(useAppSelector(selectCurrentPlan)?.chc);
     const dispatch = useAppDispatch();
 
     const loadFullData = useCallback(async () => {
@@ -106,7 +107,7 @@ const CourseTile: FC<CourseTileProps> = ({ courseID, completedBy, dragTimestamp 
     const insertCourseOnClick = async () => {
         setLoading(true);
         const fullData = await loadFullData();
-        const missingPrerequisites = getMissingPrerequisites(clearedCourses, fullData.prerequisiteTree);
+        const missingPrerequisites = getMissingPrerequisites(clearedCourses, fullData.prerequisiteTree, { isCHC });
         dispatch(setActiveCourse({ course: fullData as CourseGQLData }));
         dispatch(setActiveMissingPrerequisites(missingPrerequisites));
         dispatch(setShowAddCourse(true));
