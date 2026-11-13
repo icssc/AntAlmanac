@@ -1,11 +1,17 @@
-import type { paths } from './generated/anteater-api-types';
+import type {
+    WebsocData,
+    WebsocDepartmentsResponse,
+    WebsocResponse,
+    WebsocSyllabiData,
+    WebsocTermsResponse as WebsocSyllabiQueryParamsRaw,
+    WebsocSyllabiResponse as WebsocSyllabiResponseRaw,
+} from './generated/anteater-api-types';
 
-export type WebsocAPIResult = paths['/v2/rest/websoc']['get']['responses'][200]['content']['application/json'];
+export type WebsocAPIResult = WebsocResponse;
 
 export type WebsocAPIResponse = WebsocAPIResult['data'];
 
-export type WebsocDepartmentsAPIResult =
-    paths['/v2/rest/websoc/departments']['get']['responses'][200]['content']['application/json'];
+export type WebsocDepartmentsAPIResult = WebsocDepartmentsResponse;
 
 export type WebsocAPIDepartmentsResponse = WebsocDepartmentsAPIResult['data'];
 
@@ -29,19 +35,17 @@ export type WebsocSectionType = WebsocCourse['sections'][number]['sectionType'];
 
 export type WebsocSectionStatus = WebsocCourse['sections'][number]['status'];
 
-export type WebsocTermsAPIResult =
-    paths['/v2/rest/websoc/terms']['get']['responses'][200]['content']['application/json'];
+export type WebsocTermsAPIResult = WebsocSyllabiQueryParamsRaw;
 
 export type WebsocTerm = WebsocTermsAPIResult['data'][number];
 
-export type WebsocSyllabiQueryParams = paths['/v2/rest/websoc/syllabi']['get']['parameters']['query'];
+export type WebsocSyllabiQueryParams = WebsocSyllabiData['query'];
 
-export type WebsocSyllabiAPIResult =
-    paths['/v2/rest/websoc/syllabi']['get']['responses'][200]['content']['application/json'];
+export type WebsocSyllabiAPIResult = WebsocSyllabiResponseRaw;
 
 export type WebsocSyllabiResponse = WebsocSyllabiAPIResult['data'];
 
-export type WebsocQueryParams = NonNullable<paths['/v2/rest/websoc']['get']['parameters']['query']>;
+export type WebsocQueryParams = WebsocData['query'];
 
 export type WebsocDivisionOption = NonNullable<WebsocQueryParams['division']>;
 

@@ -37,7 +37,7 @@
         "vitest": "^0.34.6"
     },
     "engines": {
-        "node": ">=22",
+        "node": ">=22.18.0",
         "pnpm": "^10.0.0"
     },
     "packageManager": "pnpm@10.22.0",
