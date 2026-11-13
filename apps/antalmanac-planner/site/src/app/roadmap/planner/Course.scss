@@ -176,3 +176,22 @@
     align-items: center;
     gap: 4px;
 }
+
+.course-enrollment-state {
+    grid-column: 2;
+    font-size: 12px;
+    margin-top: 4px;
+
+    summary {
+        cursor: pointer;
+    }
+
+    .MuiFormControlLabel-root {
+        display: flex;
+        margin-right: 0;
+    }
+
+    .MuiFormControlLabel-label {
+        font-size: inherit;
+    }
+}
