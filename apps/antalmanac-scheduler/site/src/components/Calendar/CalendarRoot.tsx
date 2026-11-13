@@ -329,7 +329,9 @@ export const CalendarGrid = memo(({ showFinalsSchedule }: CalendarGridProps) => 
                     data-html2canvas-ignore
                     sx={(theme) => ({
                         color: '#ffff',
-                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        ...theme.applyStyles('light', {
+                            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                        }),
                         zIndex: theme.zIndex.drawer + 1,
                         position: 'absolute',
                         padding: 0,
