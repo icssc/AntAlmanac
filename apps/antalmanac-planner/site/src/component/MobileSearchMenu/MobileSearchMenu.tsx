@@ -2,6 +2,7 @@
 import './MobileSearchMenu.scss';
 import { FC } from 'react';
 
+import DestinationSelector from '../../app/roadmap/catalog/DestinationSelector';
 import { ResultsHeader } from '../../app/roadmap/search/SavedAndSearch';
 import { getFiltersHint } from '../../helpers/search';
 import { useAppSelector } from '../../store/hooks';
@@ -22,11 +23,12 @@ const MobileSearchMenu: FC = () => {
     return (
         <div className="mobile-search-menu">
             <div className="result-info-container">
+                <DestinationSelector />
                 <SearchFilters dimmed={filtersDimmed} hint={filtersHint} addTopPadding={!hasCompletedQuery} />
                 {hasCompletedQuery && <ResultsHeader />}
             </div>
             <SearchHitContainer />
-            <ScrollToTopButton scrollableTarget="mobileScrollContainer" />
+            <ScrollToTopButton scrollableTarget="mobileScrollContainer" raiseButton={true} />
         </div>
     );
 };
