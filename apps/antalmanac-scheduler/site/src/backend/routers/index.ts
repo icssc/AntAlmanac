@@ -7,6 +7,7 @@ import reviewRouter from '$backend/routers/review';
 import roadmapRouter from '$backend/routers/roadmap';
 import scheduleRouter from '$backend/routers/schedule';
 import searchRouter from '$backend/routers/search';
+import userRouter from '$backend/routers/user';
 import websocRouter from '$backend/routers/websoc';
 import zotcourseRouter from '$backend/routers/zotcourse';
 import { router } from '$backend/trpc';
@@ -21,6 +22,7 @@ const appRouter = router({
     roadmap: roadmapRouter,
     schedule: scheduleRouter,
     search: searchRouter,
+    user: userRouter,
     websoc: websocRouter,
     zotcourse: zotcourseRouter,
 });
