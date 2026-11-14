@@ -7,11 +7,11 @@ import {
 import type { AggregateGrades } from '@packages/anteater-api/types';
 import { buildCourseId } from '@packages/anteater-api/utils';
 
-export function getCourseRenameByCurrentIdentifier(deptCode: string, courseNumber: string): CourseRename | undefined {
+export function getCourseRenameByCurrentId(deptCode: string, courseNumber: string): CourseRename | undefined {
     return COURSE_RENAMES_BY_CURRENT.get(buildCourseId(deptCode, courseNumber));
 }
 
-export function getCourseRenameByPreviousIdentifier(deptCode: string, courseNumber: string): CourseRename | undefined {
+export function getCourseRenameByPreviousId(deptCode: string, courseNumber: string): CourseRename | undefined {
     return COURSE_RENAMES_BY_PREVIOUS.get(buildCourseId(deptCode, courseNumber));
 }
 

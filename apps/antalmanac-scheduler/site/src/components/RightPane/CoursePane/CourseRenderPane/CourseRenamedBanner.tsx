@@ -1,6 +1,6 @@
 import { DEFAULT_MANUAL_SEARCH_VALUES } from '$components/RightPane/CoursePane/SearchParams/defaults';
 import { useCourseSearchParam } from '$components/RightPane/CoursePane/SearchParams/hooks';
-import { getCourseRenameByPreviousIdentifier } from '$lib/renames/utils';
+import { getCourseRenameByPreviousId } from '$lib/renames/utils';
 import { Button } from '@mui/material';
 
 import { BannerAlert } from './BannerAlert';
@@ -24,7 +24,7 @@ export function CourseRenamedBanner({ deptValue, courseNumber }: CourseRenamedBa
         return null;
     }
 
-    const courseRenameInfo = getCourseRenameByPreviousIdentifier(deptValue, courseNumber);
+    const courseRenameInfo = getCourseRenameByPreviousId(deptValue, courseNumber);
 
     if (!courseRenameInfo) {
         return null;

@@ -11,7 +11,7 @@ import {
 import type { CourseSearchParams } from '$components/RightPane/CoursePane/SearchParams/types';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { trpc } from '$lib/api/trpc';
-import { getCourseRenameByCurrentIdentifier } from '$lib/renames/utils';
+import { getCourseRenameByCurrentId } from '$lib/renames/utils';
 import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import { type AATerm, type SearchResult, WebsocGeOptionSchema } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -290,7 +290,7 @@ export function FuzzySearch() {
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
 
         const courseRenameInfo = isCourse
-            ? getCourseRenameByCurrentIdentifier(object.metadata.department, object.metadata.number)
+            ? getCourseRenameByCurrentId(object.metadata.department, object.metadata.number)
             : undefined;
 
         return (
