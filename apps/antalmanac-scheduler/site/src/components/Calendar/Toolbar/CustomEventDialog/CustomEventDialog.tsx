@@ -16,8 +16,9 @@ import {
     IconButton,
     TextField,
     Tooltip,
+    Typography,
 } from '@mui/material';
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { CUSTOM_EVENT_NOTES_MAX_LENGTH, type RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -26,13 +27,14 @@ interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
 }
 
-const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
+const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> & { notes: string } = {
     start: '10:30',
     end: '15:30',
     title: '',
     color: '#551a8b',
     days: [false, false, false, false, false, false, false],
     building: undefined,
+    notes: '',
 };
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
@@ -58,6 +60,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const [building, setBuilding] = useState<string | undefined>(
         props.customEvent?.building ?? defaultCustomEventValues.building
     );
+    const [notes, setNotes] = useState(props.customEvent?.notes ?? defaultCustomEventValues.notes);
+    const [notesFocused, setNotesFocused] = useState(false);
 
     const postHog = usePostHog();
 
@@ -84,6 +88,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(props.customEvent.title);
             setDays(props.customEvent.days);
             setBuilding(props.customEvent.building);
+            setNotes(props.customEvent.notes ?? defaultCustomEventValues.notes);
             setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent.customEventID));
         } else {
             setStart(defaultCustomEventValues.start);
@@ -91,6 +96,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(defaultCustomEventValues.title);
             setDays(defaultCustomEventValues.days);
             setBuilding(defaultCustomEventValues.building);
+            setNotes(defaultCustomEventValues.notes);
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
         }
         setOpen(true);
@@ -129,6 +135,10 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         setBuilding(building?.id);
     };
 
+    const handleNotesChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setNotes(event.target.value);
+    }, []);
+
     const handleAddToCalendar = () => {
         if (!days.some((day) => day) || scheduleIndices.length === 0) return;
 
@@ -140,6 +150,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             end: end,
             customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
+            notes: notes,
         };
 
         if (props.customEvent) {
@@ -215,6 +226,35 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={days} />
                     <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
+                    <FormControl fullWidth>
+                        <TextField
+                            label="Notes"
+                            fullWidth
+                            multiline
+                            value={notes}
+                            onChange={handleNotesChange}
+                            variant="outlined"
+                            color="secondary"
+                            onFocus={() => setNotesFocused(true)}
+                            onBlur={() => setNotesFocused(false)}
+                            slotProps={{
+                                inputLabel: { variant: 'outlined' },
+                                htmlInput: { maxLength: CUSTOM_EVENT_NOTES_MAX_LENGTH },
+                                input: {
+                                    sx: { paddingBottom: notesFocused ? 3.5 : undefined },
+                                    endAdornment: notesFocused ? (
+                                        <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                            sx={{ position: 'absolute', right: 14, bottom: 6, pointerEvents: 'none' }}
+                                        >
+                                            {notes.length}/{CUSTOM_EVENT_NOTES_MAX_LENGTH}
+                                        </Typography>
+                                    ) : null,
+                                },
+                            }}
+                        />
+                    </FormControl>
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}

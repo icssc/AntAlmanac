@@ -196,6 +196,7 @@ async function upsertCustomEvents(tx: Transaction, scheduleId: string, repeating
         days: 'update',
         color: 'update',
         building: 'update',
+        notes: 'update',
         createdAt: 'keep',
         lastUpdated: 'update',
     } satisfies ConflictUpdatePolicy<typeof customEvents>;
@@ -212,6 +213,7 @@ async function upsertCustomEvents(tx: Transaction, scheduleId: string, repeating
                 days: event.days.map((day) => (day ? '1' : '0')).join(''),
                 color: event.color,
                 building: event.building,
+                notes: event.notes,
             }))
         )
         .onConflictDoUpdate({
