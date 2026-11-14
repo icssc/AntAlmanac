@@ -23,11 +23,13 @@ function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<
     };
 
     let entry = COURSE_RENAMES_BY_CURRENT.get(current.courseId);
+    let i = 0;
 
-    while (entry) {
+    while (entry && i < COURSE_RENAMES_BY_CURRENT.size) {
         yield entry;
         current = entry.previously;
         entry = COURSE_RENAMES_BY_CURRENT.get(current.courseId);
+        i++;
     }
 }
 
@@ -61,10 +63,12 @@ export function getLatestRenamedCourseIdentifier(deptCode: string, courseNumber:
     };
 
     let entry = COURSE_RENAMES_BY_PREVIOUS.get(current.courseId);
+    let i = 0;
 
-    while (entry) {
+    while (entry && i < COURSE_RENAMES_BY_PREVIOUS.size) {
         current = entry.current;
         entry = COURSE_RENAMES_BY_PREVIOUS.get(current.courseId);
+        i++;
     }
 
     return current;
