@@ -10,7 +10,20 @@ export const UnitsField = memo(() => {
             label="Units"
             textFieldProps={{
                 value: units,
-                onChange: (event) => setUnits(event.target.value),
+                onChange: (event) => {
+                    const upper = event.target.value.toUpperCase();
+                    const varPrefix = upper.match(/^V(?:AR?)?/)?.[0];
+
+                    if (varPrefix) {
+                        setUnits(varPrefix);
+                    } else {
+                        const parts = upper.replace(/[^0-9.]/g, '').split('.');
+                        const whole = parts[0];
+                        const decimals = parts.slice(1);
+                        const finalValue = decimals.length > 0 ? `${whole}.${decimals.join('')}` : whole;
+                        setUnits(finalValue);
+                    }
+                },
                 type: 'search',
                 placeholder: 'ex. 4 or VAR',
                 fullWidth: true,
