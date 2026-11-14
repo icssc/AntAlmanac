@@ -1,6 +1,19 @@
-import { COURSE_RENAMES, type CourseRename, type CourseRenameKey } from '$lib/renames/renames';
+import {
+    COURSE_RENAMES_BY_CURRENT,
+    COURSE_RENAMES_BY_PREVIOUS,
+    type CourseRename,
+    type CourseRenameKey,
+} from '$lib/renames/renames';
 import type { AggregateGrades } from '@packages/anteater-api/types';
 import { buildCourseId } from '@packages/anteater-api/utils';
+
+export function getCourseRenameByCurrentId(deptCode: string, courseNumber: string): CourseRename | undefined {
+    return COURSE_RENAMES_BY_CURRENT.get(buildCourseId(deptCode, courseNumber));
+}
+
+export function getCourseRenameByPreviousId(deptCode: string, courseNumber: string): CourseRename | undefined {
+    return COURSE_RENAMES_BY_PREVIOUS.get(buildCourseId(deptCode, courseNumber));
+}
 
 function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<CourseRename> {
     let current: CourseRenameKey = {
@@ -9,13 +22,14 @@ function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<
         courseId: buildCourseId(deptCode, courseNumber),
     };
 
-    for (let i = 0; i < COURSE_RENAMES.length; i++) {
-        const entry = COURSE_RENAMES.find((r) => r.current.courseId === current.courseId);
-        if (!entry) {
-            break;
-        }
+    let entry = COURSE_RENAMES_BY_CURRENT.get(current.courseId);
+    let i = 0;
+
+    while (entry && i < COURSE_RENAMES_BY_CURRENT.size) {
         yield entry;
         current = entry.previously;
+        entry = COURSE_RENAMES_BY_CURRENT.get(current.courseId);
+        i++;
     }
 }
 
@@ -48,12 +62,13 @@ export function getLatestRenamedCourseIdentifier(deptCode: string, courseNumber:
         courseId: buildCourseId(deptCode, courseNumber),
     };
 
-    for (let i = 0; i < COURSE_RENAMES.length; i++) {
-        const entry = COURSE_RENAMES.find((r) => r.previously.courseId === current.courseId);
-        if (!entry) {
-            break;
-        }
+    let entry = COURSE_RENAMES_BY_PREVIOUS.get(current.courseId);
+    let i = 0;
+
+    while (entry && i < COURSE_RENAMES_BY_PREVIOUS.size) {
         current = entry.current;
+        entry = COURSE_RENAMES_BY_PREVIOUS.get(current.courseId);
+        i++;
     }
 
     return current;
