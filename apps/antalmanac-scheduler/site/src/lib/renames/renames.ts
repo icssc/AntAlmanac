@@ -48,9 +48,7 @@ function indexRenamesBy(getCourseId: (rename: CourseRename) => string): Map<stri
 
     for (const rename of COURSE_RENAMES) {
         const courseId = getCourseId(rename);
-        if (!index.has(courseId)) {
-            index.set(courseId, rename);
-        }
+        index.set(courseId, rename);
     }
 
     return index;
