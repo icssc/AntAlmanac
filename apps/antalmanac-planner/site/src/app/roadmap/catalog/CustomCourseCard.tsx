@@ -18,9 +18,16 @@ interface CustomCourseCardProps {
     handleUpdate: (customCourse: CustomCourse) => void;
     inRoadmap: boolean;
     removeCourseAt?: () => void;
+    creationPromise?: Promise<number>;
 }
 
-export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpdate, inRoadmap, removeCourseAt }) => {
+export const CustomCourseCard: FC<CustomCourseCardProps> = ({
+    course,
+    handleUpdate,
+    inRoadmap,
+    removeCourseAt,
+    creationPromise,
+}) => {
     const dispatch = useAppDispatch();
     const isLoggedIn = useIsLoggedIn();
     const hasEmptyTitle = !course.courseName.trim();
@@ -69,15 +76,17 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpda
             return;
         }
 
+        const id = creationPromise ? await creationPromise : updated.id;
+
         await trpc.customCourses.editCustomCard.mutate({
-            id: updated.id,
+            id,
             name: updated.courseName,
             description: updated.description,
             units: updated.units,
         });
 
-        handleUpdate(updated);
-    }, [course, newDescription, newName, newUnits, handleUpdate, isLoggedIn]);
+        handleUpdate({ ...updated, id });
+    }, [course, newDescription, newName, newUnits, handleUpdate, isLoggedIn, creationPromise]);
 
     const commitSave = async () => {
         if (saving) return;

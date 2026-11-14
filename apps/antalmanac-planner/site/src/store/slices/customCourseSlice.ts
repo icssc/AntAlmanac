@@ -27,9 +27,14 @@ export const customCoursesSlice = createSlice({
                 course.description = action.payload.description;
             }
         },
+        updateCustomCourseId: (state, action: PayloadAction<{ tempId: number; id: number }>) => {
+            const course = state.userCustomCourses.find((c) => c.id === action.payload.tempId);
+            if (course) course.id = action.payload.id;
+        },
     },
 });
 
-export const { setCustomCourses, addCustomCourse, removeCustomCourse, updateCustomCourse } = customCoursesSlice.actions;
+export const { setCustomCourses, addCustomCourse, removeCustomCourse, updateCustomCourse, updateCustomCourseId } =
+    customCoursesSlice.actions;
 
 export default customCoursesSlice.reducer;
