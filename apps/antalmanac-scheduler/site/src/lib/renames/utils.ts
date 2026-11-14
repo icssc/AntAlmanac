@@ -22,7 +22,7 @@ function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<
         courseId: buildCourseId(deptCode, courseNumber),
     };
 
-    let entry = COURSE_RENAMES_BY_CURRENT.get(current.courseId)
+    let entry = COURSE_RENAMES_BY_CURRENT.get(current.courseId);
 
     while (entry) {
         yield entry;
