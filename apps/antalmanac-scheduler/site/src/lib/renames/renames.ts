@@ -30,7 +30,7 @@ function courseRename(
     };
 }
 
-const courseRenames: CourseRename[] = [
+const COURSE_RENAMES: CourseRename[] = [
     courseRename({ deptCode: 'SWE', courseNumber: '43' }, { deptCode: 'IN4MATX', courseNumber: '43' }, 2026),
     courseRename({ deptCode: 'SWE', courseNumber: '113' }, { deptCode: 'IN4MATX', courseNumber: '113' }, 2026),
     courseRename({ deptCode: 'SWE', courseNumber: '115' }, { deptCode: 'IN4MATX', courseNumber: '115' }, 2026),
@@ -46,7 +46,7 @@ const courseRenames: CourseRename[] = [
 function indexRenamesBy(getCourseId: (rename: CourseRename) => string): Map<string, CourseRename> {
     const index = new Map<string, CourseRename>();
 
-    for (const rename of courseRenames) {
+    for (const rename of COURSE_RENAMES) {
         const courseId = getCourseId(rename);
         if (!index.has(courseId)) {
             index.set(courseId, rename);
