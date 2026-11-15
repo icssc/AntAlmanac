@@ -1,7 +1,7 @@
 import { loadSchedules } from '$backend/lib/rds/helpers';
 import type { Database, DatabaseOrTransaction } from '$backend/lib/rds/types';
 import type { ScheduleSaveState } from '@packages/antalmanac-types';
-import { type User, accounts, schedules, users } from '@packages/db/src/schema';
+import { type User, accounts, schedules, userMajors, users } from '@packages/db/src/schema';
 import { and, eq, sql } from 'drizzle-orm';
 
 export async function getUserByEmail(db: DatabaseOrTransaction, email: string) {
@@ -140,38 +140,21 @@ export async function fetchUserDataByUserId(db: DatabaseOrTransaction, userId: s
 /**
  * Updates user's major and school
  */
-export async function updateUserMajorsSchools(
-    db: DatabaseOrTransaction,
-    userId: string,
-    majors: string[],
-    schools: string[]
-) {
-    await db
-        .update(users)
-        .set({
-            majors: majors,
-            schools: schools,
-        })
-        .where(eq(users.id, userId));
+export async function setUserMajors(db: DatabaseOrTransaction, userId: string, majors: string[]) {
+    await db.transaction(async (tx) => {
+        await tx.delete(userMajors).where(eq(userMajors.userId, userId));
+
+        if (majors.length > 0) {
+            await tx.insert(userMajors).values(majors.map((majorId) => ({ userId: userId, majorId: majorId })));
+        }
+    });
 }
 
 /**
- * Get user's major and school
+ * Get user's major
  */
-export async function getUserMajorsSchools(db: DatabaseOrTransaction, userId: string) {
-    const user = await db
-        .select()
-        .from(users)
-        .where(eq(users.id, userId))
-        .then((res) => res[0] ?? null);
+export async function getUserMajors(db: DatabaseOrTransaction, userId: string) {
+    const rows = await db.select().from(userMajors).where(eq(userMajors.userId, userId));
 
-    if (!user) {
-        return null;
-    }
-
-    return {
-        id: user.id,
-        majors: user.majors,
-        schools: user.schools,
-    };
+    return rows.map((row) => row.majorId);
 }
