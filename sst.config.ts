@@ -155,6 +155,11 @@ export default $config({
                         resources: [emailQueue.arn],
                     },
                 ],
+                vpc: {
+                    id: 'vpc-1cc2f666',
+                    subnets: ['subnet-3e998159'],
+                    securityGroups: ['sg-227e8309'],
+                },
             });
 
             const emailProcessorLambda = new sst.aws.Function('EmailProcessorLambda', {
