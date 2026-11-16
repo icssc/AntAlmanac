@@ -55,7 +55,7 @@ jobs:
 
             - name: Migrate database
               env:
-                  DB_URL: ${{ secrets.DB_URL_PROXY }}
+                  DB_URL: ${{ secrets.PROD_DB_URL }}
               run: pnpm sched:db:migrate
 
             - name: Generate termData
