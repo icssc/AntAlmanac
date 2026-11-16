@@ -2,8 +2,6 @@ import generatedMajors from '$generated/majors.json';
 import { trpc } from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { SchoolSchema } from '@packages/antalmanac-types';
-import type { School } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 const ALL_MAJORS: Record<string, string> = generatedMajors;
@@ -11,9 +9,8 @@ const ALL_MAJORS: Record<string, string> = generatedMajors;
 interface UserInfoStore {
     initialized: boolean;
     majors: string[];
-    schools: School[];
     loadUserInfo: () => Promise<void>;
-    setMajorSchools: (majors: string[], schools: School[]) => Promise<void>;
+    setMajors: (majors: string[]) => Promise<void>;
 }
 
 let latestSaveId = 0;
@@ -21,26 +18,21 @@ let latestSaveId = 0;
 export const useUserInfoStore = create<UserInfoStore>((set, get) => ({
     initialized: false,
     majors: [],
-    schools: [],
 
     loadUserInfo: async () => {
         const { sessionIsValid } = useSessionStore.getState();
         if (!sessionIsValid) {
-            set({ majors: [], schools: [], initialized: true });
+            set({ majors: [], initialized: true });
             return;
         }
 
         try {
             const userInfo = await trpc.user.get.query();
 
-            const majors = (userInfo?.majors ?? []).filter((major) => Object.hasOwn(ALL_MAJORS, major));
+            const majors = (userInfo ?? []).filter((major) => Object.hasOwn(ALL_MAJORS, major));
 
-            const schools = (userInfo?.schools ?? []).filter(
-                (school): school is School => SchoolSchema.safeParse(school).success
-            );
             set({
                 majors,
-                schools,
                 initialized: true,
             });
         } catch (error) {
@@ -49,18 +41,18 @@ export const useUserInfoStore = create<UserInfoStore>((set, get) => ({
         }
     },
 
-    setMajorSchools: async (majors, schools) => {
+    setMajors: async (majors) => {
         const saveId = ++latestSaveId;
-        const previous = { majors: get().majors, schools: get().schools };
-        set({ majors, schools });
+        const previous = { majors: get().majors };
+        set({ majors });
 
         try {
-            await trpc.user.updateMajorSchools.mutate({ majors, schools });
+            await trpc.user.updateMajors.mutate({ majors });
         } catch (error) {
-            console.error('Failed to save major and school:', error);
+            console.error('Failed to save majors:', error);
             if (saveId !== latestSaveId) return;
             set(previous);
-            openSnackbar('error', 'Could not save major and school. Please try again.');
+            openSnackbar('error', 'Could not save majors. Please try again.');
         }
     },
 }));
