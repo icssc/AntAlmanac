@@ -138,7 +138,7 @@ export async function fetchUserDataByUserId(db: DatabaseOrTransaction, userId: s
 }
 
 /**
- * Updates user's major and school
+ * Updates user's majors
  */
 export async function setUserMajors(db: DatabaseOrTransaction, userId: string, majors: string[]) {
     await db.transaction(async (tx) => {
@@ -153,7 +153,7 @@ export async function setUserMajors(db: DatabaseOrTransaction, userId: string, m
 }
 
 /**
- * Get user's major
+ * Get user's majors
  */
 export async function getUserMajors(db: DatabaseOrTransaction, userId: string) {
     const rows = await db.select().from(userMajors).where(eq(userMajors.userId, userId));
