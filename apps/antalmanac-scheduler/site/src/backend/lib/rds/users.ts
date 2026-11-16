@@ -145,7 +145,9 @@ export async function setUserMajors(db: DatabaseOrTransaction, userId: string, m
         await tx.delete(userMajors).where(eq(userMajors.userId, userId));
 
         if (majors.length > 0) {
-            await tx.insert(userMajors).values(majors.map((majorId) => ({ userId: userId, majorId: majorId })));
+            await tx
+                .insert(userMajors)
+                .values([...new Set(majors)].map((majorId) => ({ userId: userId, majorId: majorId })));
         }
     });
 }
