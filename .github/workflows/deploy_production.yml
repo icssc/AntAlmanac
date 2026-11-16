@@ -19,7 +19,7 @@ env:
     NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
 
     BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-    DB_URL_PROXY: ${{ secrets.PROD_DB_URL }}
+    DB_URL: ${{ secrets.DB_URL_PROXY }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     NEXT_PUBLIC_TILES_ENDPOINT: ${{ secrets.NEXT_PUBLIC_TILES_ENDPOINT }}
     OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
@@ -55,7 +55,7 @@ jobs:
 
             - name: Migrate database
               env:
-                  DB_URL: ${{ secrets.PROD_DB_URL }}
+                  DB_URL: ${{ secrets.DB_URL_PROXY }}
               run: pnpm sched:db:migrate
 
             - name: Generate termData
