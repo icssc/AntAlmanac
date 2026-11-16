@@ -117,6 +117,11 @@ export default $config({
                 PLANNER_OIDC_CLIENT_ID: process.env.PLANNER_OIDC_CLIENT_ID,
                 ADMIN_EMAILS: process.env.ADMIN_EMAILS,
             },
+            vpc: {
+                id: 'vpc-1cc2f666',
+                subnets: ['subnet-3e998159'],
+                securityGroups: ['sg-227e8309'],
+            },
         });
 
         if (AANTS_STAGES.includes($app.stage)) {
