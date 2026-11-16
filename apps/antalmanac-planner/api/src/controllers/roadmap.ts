@@ -141,7 +141,7 @@ const roadmapsRouter = router({
         return { ...sharedPlanner, customCards };
     }),
     /** Return the owner's existing share ID, generating one on the first share request. */
-    ensureShareId: userProcedure
+    createShareId: userProcedure
         .input(z.object({ plannerId: z.number().int().positive() }))
         .mutation(async ({ input, ctx }) => {
             const ownedPlanner = and(eq(planner.id, input.plannerId), eq(planner.userId, ctx.session.userId!));

@@ -35,7 +35,7 @@ const ExportButton = () => {
         }
 
         const shareId =
-            currentPlan.shareId ?? (await trpc.roadmaps.ensureShareId.mutate({ plannerId: resolvedPlanId })).shareId;
+            currentPlan.shareId ?? (await trpc.roadmaps.createShareId.mutate({ plannerId: resolvedPlanId })).shareId;
         const url = new URL(window.location.href);
         url.pathname = url.pathname.replace(/\/$/, '') + `/share/${shareId}`;
         await navigator.clipboard.writeText(url.toString());
