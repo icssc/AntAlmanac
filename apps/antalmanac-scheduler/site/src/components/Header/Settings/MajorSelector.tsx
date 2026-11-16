@@ -3,8 +3,8 @@ import { useSessionStore } from '$stores/SessionStore';
 import { useUserInfoStore } from '$stores/UserInfoStore';
 import { Edit } from '@mui/icons-material';
 import { Box, Button, Stack, Typography } from '@mui/material';
-import { useCallback, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { getSchoolsFromMajors } from '@packages/antalmanac-types';
+import { useCallback, useMemo, useState } from 'react';
 
 import { MajorSchoolDialog } from './MajorSchoolDialog';
 
@@ -12,7 +12,8 @@ const ALL_MAJORS: Record<string, string> = generatedMajors;
 
 export function MajorSelector() {
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
-    const [majors, schools] = useUserInfoStore(useShallow((state) => [state.majors, state.schools]));
+    const majors = useUserInfoStore((state) => state.majors);
+    const schools = useMemo(() => getSchoolsFromMajors(majors), [majors]);
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => setOpen(true), []);

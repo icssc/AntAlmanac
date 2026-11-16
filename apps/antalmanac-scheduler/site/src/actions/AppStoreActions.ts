@@ -14,7 +14,7 @@ import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsTogg
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { useUserInfoStore } from '$stores/UserInfoStore';
-// import { Code, QueueMusicTwoTone } from '@mui/icons-material';
+import { getSchoolsFromMajors } from '@packages/antalmanac-types';
 import {
     type AACourseWithTerm,
     type AASection,
@@ -63,7 +63,7 @@ export const addCourse = (
         },
     });
     const terms = AppStore.termsInSchedule(course.term);
-    const userSchools = useUserInfoStore.getState().schools;
+    const userSchools = getSchoolsFromMajors(useUserInfoStore.getState().majors);
 
     const restrictionCode = getRestrictionToWarn({
         restrictions: section.restrictions,

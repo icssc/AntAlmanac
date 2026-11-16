@@ -1,21 +1,27 @@
 import generatedMajors from '$generated/majors.json';
 import { useUserInfoStore } from '$stores/UserInfoStore';
 import { Autocomplete, TextField } from '@mui/material';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack } from '@mui/material';
-import type { School } from '@packages/antalmanac-types';
-import { SchoolSchema } from '@packages/antalmanac-types';
-import { MAJOR_SCHOOLS_MAP } from '@packages/antalmanac-types';
-import { memo, useCallback, useState } from 'react';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Stack,
+    Typography,
+} from '@mui/material';
+import { getSchoolsFromMajors } from '@packages/antalmanac-types';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 const MAX_MAJORS = 3;
+const ALL_MAJORS: Record<string, string> = generatedMajors;
 
 interface MajorSchoolDialogProps {
     open: boolean;
     onClose: () => void;
 }
-
-const ALL_MAJORS: Record<string, string> = generatedMajors;
 
 interface MajorFieldProps {
     value: string[];
@@ -52,61 +58,17 @@ const MajorField = memo(({ value, onChange }: MajorFieldProps) => {
 
 MajorField.displayName = 'MajorField';
 
-interface SchoolFieldProps {
-    value: School[];
-    onChange: (schools: School[]) => void;
-}
-
-const SchoolField = memo(({ value, onChange }: SchoolFieldProps) => {
-    const options = SchoolSchema.options;
-
-    const handleChange = useCallback(
-        (_: unknown, options: School[]) => {
-            onChange(options);
-        },
-        [onChange]
-    );
-
-    return (
-        <Autocomplete
-            multiple
-            sx={{ '& .MuiChip-label': { fontSize: '1rem' } }}
-            value={value}
-            options={options}
-            autoHighlight
-            openOnFocus
-            onChange={handleChange}
-            includeInputInList
-            noOptionsText="No schools match the search"
-            renderInput={(params) => <TextField {...params} fullWidth size="small" placeholder="School" />}
-        />
-    );
-});
-
-SchoolField.displayName = 'SchoolField';
-
 export function MajorSchoolDialog({ open, onClose }: MajorSchoolDialogProps) {
-    const [savedMajors, savedSchools, setMajorSchools] = useUserInfoStore(
-        useShallow((state) => [state.majors, state.schools, state.setMajorSchools])
-    );
+    const [savedMajors, setMajors] = useUserInfoStore(useShallow((state) => [state.majors, state.setMajors]));
 
-    const [majors, setMajor] = useState<string[]>(savedMajors);
-    const [schools, setSchools] = useState<School[]>(savedSchools);
-
-    const handleMajorChange = useCallback((newMajors: string[]) => {
-        setMajor(newMajors);
-        const majorSchools = [...new Set(newMajors.flatMap((major) => MAJOR_SCHOOLS_MAP[major] ?? []))];
-        if (majorSchools.length > 0) {
-            setSchools([...majorSchools]);
-        }
-    }, []);
+    const [selectedMajors, setSelectedMajors] = useState<string[]>(savedMajors);
+    const schools = useMemo(() => getSchoolsFromMajors(selectedMajors), [selectedMajors]);
 
     const handleSave = useCallback(() => {
-        if (majors.length > 0 && schools.length > 0) {
-            void setMajorSchools(majors, schools);
-            onClose();
-        }
-    }, [majors, schools, setMajorSchools, onClose]);
+        if (selectedMajors.length === 0) return;
+        void setMajors(selectedMajors);
+        onClose();
+    }, [selectedMajors, setMajors, onClose]);
 
     return (
         <Dialog
@@ -116,21 +78,25 @@ export function MajorSchoolDialog({ open, onClose }: MajorSchoolDialogProps) {
             maxWidth="sm"
             slotProps={{ paper: { sx: { borderRadius: 2 } } }}
         >
-            <DialogTitle sx={{ fontWeight: 600, fontSize: '1.75rem' }}>Major & School</DialogTitle>
+            <DialogTitle sx={{ fontWeight: 600, fontSize: '1.75rem' }}>Major</DialogTitle>
             <DialogContent>
                 <Stack sx={{ gap: 2, pt: 1 }}>
                     <DialogContentText>
                         Used to warn you when a section may be restricted. Check Webreg to be sure.
                     </DialogContentText>
-                    <MajorField value={majors} onChange={handleMajorChange} />
-                    <SchoolField value={schools} onChange={setSchools} />
+                    <MajorField value={selectedMajors} onChange={setSelectedMajors} />
+                    {schools.length > 0 && (
+                        <Typography variant="body2" color="text.secondary">
+                            {schools.join(', ')}
+                        </Typography>
+                    )}
                 </Stack>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="inherit">
                     Cancel
                 </Button>
-                <Button onClick={handleSave} variant="contained" disabled={majors.length === 0 || schools.length === 0}>
+                <Button onClick={handleSave} variant="contained" disabled={selectedMajors.length === 0}>
                     Save
                 </Button>
             </DialogActions>
