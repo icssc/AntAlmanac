@@ -1,10 +1,9 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePopover/GradesPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { trpcReact } from '$lib/api/trpc';
 import { ButtonBase, Popover } from '@mui/material';
 import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface GpaCellProps {
     section: AASection;
@@ -16,28 +15,6 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
     const { instructors } = section;
     const isMobile = useIsMobile();
     const [anchorEl, setAnchorEl] = useState<Element>();
-
-    const namedInstructors = useMemo(() => instructors.filter((i) => i !== 'STAFF'), [instructors]);
-
-    const instructorResults = trpcReact.useQueries((t) =>
-        namedInstructors.map((instructor) =>
-            t.grades.aggregateGrades(
-                { department: deptCode, courseNumber, instructor },
-                { select: (data) => data?.gradeDistribution ?? null }
-            )
-        )
-    );
-
-    const loading = instructorResults.some((r) => r.isLoading);
-
-    const { gpa, instructor } = useMemo(() => {
-        const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
-        if (idx >= 0) {
-            const avg = instructorResults[idx].data?.averageGPA;
-            return { gpa: avg || avg === 0 ? avg.toFixed(2) : '', instructor: namedInstructors[idx] };
-        }
-        return { gpa: '', instructor: namedInstructors[0] ?? '' };
-    }, [instructorResults, namedInstructors]);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl((current) => (current ? undefined : event.currentTarget));
@@ -58,7 +35,7 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
                 }}
                 onClick={handleClick}
             >
-                {loading ? null : gpa || 'GPA'}
+                GPA
             </ButtonBase>
 
             <Popover
@@ -70,7 +47,7 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
                 <GradesPopover
                     deptCode={deptCode}
                     courseNumber={courseNumber}
-                    instructor={instructor}
+                    instructors={instructors}
                     isMobile={isMobile}
                 />
             </Popover>
