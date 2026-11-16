@@ -1,3 +1,4 @@
+import { createId } from '@paralleldrive/cuid2';
 import {
     RoadmapDiffs,
     roadmapDiffs,
@@ -8,11 +9,11 @@ import {
     latestRoadmapVersion,
 } from '@peterportal/types';
 import { TRPCError } from '@trpc/server';
-import { and, count, eq, inArray } from 'drizzle-orm';
+import { and, count, eq, inArray, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { db, TransactionType } from '../db';
-import { planner, user } from '../db/schema';
+import { customCard, planner, plannerCourse, user } from '../db/schema';
 import {
     createPlanners,
     createQuarters,
@@ -70,7 +71,7 @@ async function performRoadmapDeletesAndUpdates(tx: TransactionType, input: Roadm
 
 async function applyRoadmapChanges(input: RoadmapDiffs, userId: number) {
     return await db.transaction(async (tx) => {
-        performRoadmapDeletesAndUpdates(tx, input, userId);
+        await performRoadmapDeletesAndUpdates(tx, input, userId);
 
         const plannerIdLookup = await createPlanners(tx, input.newPlanners, userId);
 
@@ -113,16 +114,45 @@ const roadmapsRouter = router({
     /**
      * Get a roadmap by its shareId
      */
-    getByShareId: publicProcedure.input(z.object({ shareId: z.string() })).query(async ({ input }) => {
+    getByShareId: publicProcedure.input(z.object({ shareId: z.string().min(1) })).query(async ({ input }) => {
         const planners = await queryGetPlanners(eq(planner.shareId, input.shareId));
         if (planners.length === 0) {
             throw new TRPCError({
-                code: 'BAD_REQUEST',
+                code: 'NOT_FOUND',
                 message: 'Shared planner not found',
             });
         }
-        return planners[0];
+        const sharedPlanner = planners[0];
+        // Only expose cards referenced by this planner and owned by its owner.
+        const customCards = await db
+            .selectDistinct({
+                id: customCard.id,
+                name: customCard.name,
+                description: customCard.description,
+                units: customCard.units,
+            })
+            .from(plannerCourse)
+            .innerJoin(planner, eq(plannerCourse.plannerId, planner.id))
+            .innerJoin(
+                customCard,
+                and(eq(plannerCourse.customCardId, customCard.id), eq(customCard.userId, planner.userId))
+            )
+            .where(eq(planner.id, sharedPlanner.id));
+        return { ...sharedPlanner, customCards };
     }),
+    /** Return the owner's existing share ID, generating one on the first share request. */
+    ensureShareId: userProcedure
+        .input(z.object({ plannerId: z.number().int().positive() }))
+        .mutation(async ({ input, ctx }) => {
+            const ownedPlanner = and(eq(planner.id, input.plannerId), eq(planner.userId, ctx.session.userId!));
+            await db
+                .update(planner)
+                .set({ shareId: createId() })
+                .where(and(ownedPlanner, isNull(planner.shareId)));
+            const [result] = await db.select({ shareId: planner.shareId }).from(planner).where(ownedPlanner);
+            if (!result?.shareId) throw new TRPCError({ code: 'NOT_FOUND', message: 'Planner not found' });
+            return { shareId: result.shareId };
+        }),
     /**
      * Save a user's roadmap
      */
