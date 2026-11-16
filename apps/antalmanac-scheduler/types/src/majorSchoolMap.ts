@@ -88,3 +88,7 @@ export const MAJOR_SCHOOLS_MAP: Partial<Record<string, readonly [School, ...Scho
     'BA-867': ['School of Social Sciences'], // Sociology
     'BS-598': ['Sue & Bill Gross School of Nursing'], // Nursing Science
 };
+
+export function getSchoolsFromMajors(majors: string[]) {
+    return [...new Set(majors.flatMap((major) => MAJOR_SCHOOLS_MAP[major] ?? []))];
+}
