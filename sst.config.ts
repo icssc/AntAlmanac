@@ -119,7 +119,7 @@ export default $config({
             },
             vpc: {
                 id: 'vpc-1cc2f666',
-                subnets: ['subnet-3e998159'],
+                privateSubnets: ['subnet-3e998159'],
                 securityGroups: ['sg-227e8309'],
             },
         });
@@ -157,7 +157,7 @@ export default $config({
                 ],
                 vpc: {
                     id: 'vpc-1cc2f666',
-                    subnets: ['subnet-3e998159'],
+                    privateSubnets: ['subnet-3e998159'],
                     securityGroups: ['sg-227e8309'],
                 },
             });
