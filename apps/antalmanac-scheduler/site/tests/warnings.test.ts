@@ -46,8 +46,8 @@ describe('getRestrictionToWarn', () => {
             expect(getRestrictionToWarn({ restrictions: 'L', courseSchool: ICS, userSchools: [ENG] })).toBe('L');
         });
 
-        test('does not warn when user is in the school', () => {
-            expect(getRestrictionToWarn({ restrictions: 'L', courseSchool: ICS, userSchools: [ICS] })).toBeNull();
+        test('warns even when user is in the school (major-level restriction)', () => {
+            expect(getRestrictionToWarn({ restrictions: 'L', courseSchool: ICS, userSchools: [ICS] })).toBe('L');
         });
     });
 
