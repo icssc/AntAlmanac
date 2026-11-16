@@ -142,6 +142,7 @@ export async function fetchUserDataByUserId(db: DatabaseOrTransaction, userId: s
  */
 export async function setUserMajors(db: DatabaseOrTransaction, userId: string, majors: string[]) {
     await db.transaction(async (tx) => {
+        await tx.select({ id: users.id }).from(users).where(eq(users.id, userId)).for('update');
         await tx.delete(userMajors).where(eq(userMajors.userId, userId));
 
         if (majors.length > 0) {
