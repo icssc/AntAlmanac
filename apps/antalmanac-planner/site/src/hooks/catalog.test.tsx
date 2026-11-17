@@ -8,6 +8,7 @@ import { LOADING_COURSE_PLACEHOLDER } from '../helpers/courseRequirements';
 import { transformCourseGQL, transformProfessorGQL } from '../helpers/util';
 import courseCatalogReducer, { setCourse } from '../store/slices/courseCatalogSlice';
 import professorReducer, { setProfessor } from '../store/slices/professorSlice';
+import roadmapReducer from '../store/slices/roadmapSlice';
 import trpc from '../trpc';
 import { useCourseData } from './catalog';
 import { useProfessorData } from './professorReviews';
@@ -40,17 +41,21 @@ const professor: ProfessorAAPIResponse = {
 };
 
 function setup() {
-    const store = configureStore({ reducer: { courseCatalog: courseCatalogReducer, professors: professorReducer } });
+    const store = configureStore({
+        reducer: { courseCatalog: courseCatalogReducer, professors: professorReducer, roadmap: roadmapReducer },
+    });
     const wrapper = ({ children }: PropsWithChildren) => <Provider store={store}>{children}</Provider>;
     return { store, wrapper };
 }
 
 function deferred<T>() {
     let resolve!: (value: T) => void;
-    const promise = new Promise<T>((resolvePromise) => {
+    let reject!: (error: Error) => void;
+    const promise = new Promise<T>((resolvePromise, rejectPromise) => {
         resolve = resolvePromise;
+        reject = rejectPromise;
     });
-    return { promise, resolve };
+    return { promise, resolve, reject };
 }
 
 describe('server-provided catalog data', () => {
@@ -145,5 +150,59 @@ describe('server-provided catalog data', () => {
 
         expect(result.current?.name).toBe('Original instructor name');
         expect(trpc.professors.get.query).not.toHaveBeenCalled();
+    });
+
+    it('leaves server course errors to the page without a copy-link success toast', async () => {
+        const { store, wrapper } = setup();
+        const request = deferred<CourseAAPIResponse>();
+        const pageError = request.promise.catch(() => {});
+        renderHook(() => useCourseData(course.id, request.promise), { wrapper });
+
+        await act(async () => {
+            request.reject(new Error('Course unavailable'));
+            await pageError;
+        });
+
+        expect(store.getState().roadmap.showToast).toBe(false);
+    });
+
+    it('shows a course loading error when the browser request fails', async () => {
+        const { store, wrapper } = setup();
+        jest.mocked(trpc.courses.get.query).mockRejectedValueOnce(new Error('Course unavailable'));
+
+        renderHook(() => useCourseData(course.id), { wrapper });
+        await act(async () => {});
+
+        expect(store.getState().roadmap.showToast).toBe(true);
+        expect(store.getState().roadmap.toastSeverity).toBe('error');
+        expect(store.getState().roadmap.toastMsg).toBe('Unable to load course');
+    });
+
+    it('handles server professor failures even when the page catches the original promise', async () => {
+        const { store, wrapper } = setup();
+        const request = deferred<ProfessorAAPIResponse>();
+        const pageError = request.promise.catch(() => {});
+        const { result } = renderHook(() => useProfessorData(professor.ucinetid, request.promise), { wrapper });
+
+        await act(async () => {
+            request.reject(new Error('Instructor unavailable'));
+            await pageError;
+            await new Promise((resolve) => setTimeout(resolve, 0));
+        });
+
+        expect(result.current).toBeNull();
+        expect(store.getState().roadmap.showToast).toBe(false);
+    });
+
+    it('shows an instructor loading error when the browser request fails', async () => {
+        const { store, wrapper } = setup();
+        jest.mocked(trpc.professors.get.query).mockRejectedValueOnce(new Error('Instructor unavailable'));
+
+        renderHook(() => useProfessorData(professor.ucinetid), { wrapper });
+        await act(async () => new Promise((resolve) => setTimeout(resolve, 0)));
+
+        expect(store.getState().roadmap.showToast).toBe(true);
+        expect(store.getState().roadmap.toastSeverity).toBe('error');
+        expect(store.getState().roadmap.toastMsg).toBe('Unable to load instructor');
     });
 });
