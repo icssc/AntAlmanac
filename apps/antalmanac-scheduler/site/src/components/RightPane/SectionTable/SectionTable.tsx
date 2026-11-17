@@ -12,6 +12,7 @@ import analyticsEnum, { type AnalyticsCategory } from '$lib/analytics/analytics'
 import { getCourseCancellationWarning } from '$lib/courseAlerts';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
+import { useFetchCourseGrades } from '$stores/CourseGradesStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import {
     Box,
@@ -91,6 +92,8 @@ export function SectionTable({
 
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const activeTab = useActiveTab();
+
+    useFetchCourseGrades(course);
 
     const handleToggleExpand = () => {
         setOpenContent(!openContent);

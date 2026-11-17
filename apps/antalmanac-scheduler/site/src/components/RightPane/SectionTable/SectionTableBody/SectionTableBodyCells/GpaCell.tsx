@@ -1,7 +1,8 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePopover/GradesPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { trpcReact } from '$lib/api/trpc';
+import { getCourseId } from '$lib/courseHelpers';
+import { getInstructorGradesFromSection, useSectionGrades } from '$stores/CourseGradesStore';
 import { ButtonBase, Popover } from '@mui/material';
 import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
@@ -13,31 +14,24 @@ interface GpaCellProps {
 
 export const GpaCell = ({ section, course }: GpaCellProps) => {
     const { deptCode, courseNumber } = course;
-    const { instructors } = section;
     const isMobile = useIsMobile();
     const [anchorEl, setAnchorEl] = useState<Element>();
 
-    const namedInstructors = useMemo(() => instructors.filter((i) => i !== 'STAFF'), [instructors]);
-
-    const instructorResults = trpcReact.useQueries((t) =>
-        namedInstructors.map((instructor) =>
-            t.grades.aggregateGrades(
-                { department: deptCode, courseNumber, instructor },
-                { select: (data) => data?.gradeDistribution ?? null }
-            )
-        )
+    const { sectionInstructorGrades, areSectionInstructorGradesLoading } = useSectionGrades(
+        getCourseId(course),
+        section.sectionCode
     );
 
-    const loading = instructorResults.some((r) => r.isLoading);
-
     const { gpa, instructor } = useMemo(() => {
-        const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
-        if (idx >= 0) {
-            const avg = instructorResults[idx].data?.averageGPA;
-            return { gpa: avg || avg === 0 ? avg.toFixed(2) : '', instructor: namedInstructors[idx] };
+        if (!sectionInstructorGrades) {
+            return { gpa: '', instructor: '' };
         }
-        return { gpa: '', instructor: namedInstructors[0] ?? '' };
-    }, [instructorResults, namedInstructors]);
+        const {
+            instructor,
+            instructorGrades: { averageGPA },
+        } = getInstructorGradesFromSection(sectionInstructorGrades);
+        return { gpa: averageGPA === null ? '' : averageGPA.toFixed(2), instructor };
+    }, [sectionInstructorGrades]);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl((current) => (current ? undefined : event.currentTarget));
@@ -58,7 +52,7 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
                 }}
                 onClick={handleClick}
             >
-                {loading ? null : gpa || 'GPA'}
+                {areSectionInstructorGradesLoading ? null : gpa || 'GPA'}
             </ButtonBase>
 
             <Popover
@@ -70,6 +64,7 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
                 <GradesPopover
                     deptCode={deptCode}
                     courseNumber={courseNumber}
+                    sectionCode={section.sectionCode}
                     instructor={instructor}
                     isMobile={isMobile}
                 />

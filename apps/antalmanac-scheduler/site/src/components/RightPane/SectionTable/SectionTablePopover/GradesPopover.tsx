@@ -1,6 +1,7 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
-import { trpcReact } from '$lib/api/trpc';
+import { getCourseIdFromParts } from '$lib/courseHelpers';
 import { getRenamedCoursesLabel } from '$lib/renames/utils';
+import { getInstructorGradesFromSection, useSectionGrades } from '$stores/CourseGradesStore';
 import {
     Box,
     Card,
@@ -58,24 +59,17 @@ function toGradeData(
 interface GradesPopoverProps {
     deptCode: string;
     courseNumber: string;
+    sectionCode: string;
     instructor?: string;
     isMobile: boolean;
 }
 
-export function GradesPopover(props: GradesPopoverProps) {
-    const { deptCode, courseNumber, instructor = '', isMobile } = props;
+export function GradesPopover({ deptCode, courseNumber, sectionCode, instructor = '', isMobile }: GradesPopoverProps) {
+    const { overallGrades, areOverallGradesLoading, sectionInstructorGrades, areSectionInstructorGradesLoading } =
+        useSectionGrades(getCourseIdFromParts(deptCode, courseNumber), sectionCode);
     const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
-    const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGrades.useQuery(
-        { department: deptCode, courseNumber, instructor: '' },
-        { select: (data) => data?.gradeDistribution ?? null }
-    );
-    const { data: instructorGrades, isLoading: instructorLoading } = trpcReact.grades.aggregateGrades.useQuery(
-        { department: deptCode, courseNumber, instructor },
-        { select: (data) => data?.gradeDistribution ?? null, enabled: !!instructor }
-    );
-
-    const loading = overallLoading || (!!instructor && instructorLoading);
+    const loading = areOverallGradesLoading || areSectionInstructorGradesLoading;
 
     const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
 
@@ -83,7 +77,13 @@ export function GradesPopover(props: GradesPopoverProps) {
     const height = isMobile ? 180 : 240;
 
     const overallData = useMemo(() => toGradeData(overallGrades), [overallGrades]);
-    const instructorData = useMemo(() => toGradeData(instructorGrades), [instructorGrades]);
+    const instructorData = useMemo(
+        () =>
+            sectionInstructorGrades
+                ? toGradeData(getInstructorGradesFromSection(sectionInstructorGrades).instructorGrades)
+                : null,
+        [sectionInstructorGrades]
+    );
 
     const activeData = view === 'instructor' ? instructorData : overallData;
     const hasData = activeData?.grades.some((g) => g.all > 0);
