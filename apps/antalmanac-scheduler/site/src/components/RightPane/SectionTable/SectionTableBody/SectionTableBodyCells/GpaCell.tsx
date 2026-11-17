@@ -17,20 +17,18 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
     const isMobile = useIsMobile();
     const [anchorEl, setAnchorEl] = useState<Element>();
 
-    const { sectionInstructorGrades, areSectionInstructorGradesLoading } = useSectionGrades(
-        getCourseId(course),
-        section.sectionCode
-    );
+    const { overallGrades, areOverallGradesLoading, sectionInstructorGrades, areSectionInstructorGradesLoading } =
+        useSectionGrades(getCourseId(course), section.sectionCode);
 
-    const { gpa, instructor } = useMemo(() => {
+    const { instructorGpa, instructor } = useMemo(() => {
         if (!sectionInstructorGrades) {
-            return { gpa: '', instructor: '' };
+            return { instructorGpa: '', instructor: '' };
         }
         const {
             instructor,
             instructorGrades: { averageGPA },
         } = getInstructorGradesFromSection(sectionInstructorGrades);
-        return { gpa: averageGPA === null ? '' : averageGPA.toFixed(2), instructor };
+        return { instructorGpa: averageGPA === null ? '' : averageGPA.toFixed(2), instructor };
     }, [sectionInstructorGrades]);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -40,6 +38,14 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
     const hideDistribution = useCallback(() => {
         setAnchorEl(undefined);
     }, []);
+
+    let gpa = null;
+    if (!areSectionInstructorGradesLoading) {
+        gpa = instructorGpa;
+    }
+    if (!gpa && !areOverallGradesLoading) {
+        gpa = overallGrades?.averageGPA?.toFixed(2);
+    }
 
     return (
         <TableBodyCellContainer>
