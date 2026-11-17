@@ -8,6 +8,12 @@
     }
 }
 
+.select-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .schedule-quarter {
     color: grey;
 }
