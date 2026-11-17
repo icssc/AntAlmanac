@@ -49,9 +49,9 @@ export function useCourseData(courseId: string, coursePromise?: Promise<CourseAA
                 dispatch(setCourse({ courseId, data: transformedCourse }));
             })
             .catch(() => {
-                if (currentRequestId !== requestId.current) return;
-                dispatch(setToastMsg('Copied course URL to clipboard!'));
-                dispatch(setToastSeverity('success'));
+                if (currentRequestId !== requestId.current || coursePromise) return;
+                dispatch(setToastMsg('Unable to load course'));
+                dispatch(setToastSeverity('error'));
                 dispatch(setShowToast(true));
             });
     }, [courseId, dispatch, loadTrigger, courseCache, coursePromise]);

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { transformProfessorGQL } from '../helpers/util.tsx';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setProfessor } from '../store/slices/professorSlice.ts';
+import { setToastMsg, setToastSeverity, setShowToast } from '../store/slices/roadmapSlice';
 import trpc from '../trpc';
 import { ProfessorGQLData } from '../types/types.ts';
 
@@ -41,15 +42,22 @@ export function useProfessorData(netID: string, professorPromise?: Promise<Profe
         }
 
         setFullProfessorData(null);
-        Promise.resolve(professorPromise ?? trpc.professors.get.query({ ucinetid: netID })).then((professor) => {
-            if (currentRequestId !== requestId.current) return;
-            // an unknown professor stays null; the page shows not-found from the server
-            if (!professor) return;
-            const transformedProfessor = transformProfessorGQL(professor);
-            setFullProfessorData(transformedProfessor);
+        Promise.resolve(professorPromise ?? trpc.professors.get.query({ ucinetid: netID }))
+            .then((professor) => {
+                if (currentRequestId !== requestId.current) return;
+                // an unknown professor stays null; the page shows not-found from the server
+                if (!professor) return;
+                const transformedProfessor = transformProfessorGQL(professor);
+                setFullProfessorData(transformedProfessor);
 
-            dispatch(setProfessor({ professorId: netID, data: transformedProfessor }));
-        });
+                dispatch(setProfessor({ professorId: netID, data: transformedProfessor }));
+            })
+            .catch(() => {
+                if (currentRequestId !== requestId.current || professorPromise) return;
+                dispatch(setToastMsg('Unable to load instructor'));
+                dispatch(setToastSeverity('error'));
+                dispatch(setShowToast(true));
+            });
     }, [netID, dispatch, loadTrigger, professorCache, professorPromise]);
 
     return fullProfessorData;

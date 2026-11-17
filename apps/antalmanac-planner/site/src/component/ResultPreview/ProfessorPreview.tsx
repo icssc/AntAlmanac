@@ -128,7 +128,8 @@ const ProfessorPreview: FC<{ netid: string; onClose: () => void; onBack: () => v
     showBack,
 }) => {
     netid = netid.replace(/\s/g, '');
-    const professorData = useProfessorData(netid);
+    const fetchedProfessorData = useProfessorData(netid);
+    const professorData = fetchedProfessorData?.ucinetid === netid ? fetchedProfessorData : null;
     const isLoading = !professorData;
     const dispatch = useAppDispatch();
 
