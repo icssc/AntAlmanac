@@ -1,0 +1,4 @@
+[mcp_servers.antalmanac-planner]
+url = "https://evidence-avid-untoasted.ngrok-free.dev/planner/api/mcp"
+http_headers = { "ngrok-skip-browser-warning" = "true" }
+enabled = true

@@ -2,7 +2,7 @@
  @module CoursesRoute
 */
 
-import { CourseAAPIResponse, CourseBatchAAPIResponse, GradesRaw } from '@peterportal/types';
+import { AggregateGradesByOffering, CourseAAPIResponse, CourseBatchAAPIResponse, GradesRaw } from '@peterportal/types';
 import { z } from 'zod';
 
 import { ANTEATER_API_REQUEST_HEADERS } from '../helpers/headers';
@@ -52,6 +52,34 @@ const coursesRouter = router({
 
         return r.then((response) => response.json()).then((data) => data.data as GradesRaw);
     }),
+
+    /**
+     * Anteater API proxy for grades pre-aggregated per instructor (averageGPA + grade counts).
+     * Far more compact than the raw per-section distribution and ideal for comparing professors.
+     * Optionally narrow by instructor, year, and/or quarter.
+     */
+    gradesByInstructor: publicProcedure
+        .input(
+            z.object({
+                department: z.string(),
+                number: z.string(),
+                instructor: z.string().optional(),
+                year: z.string().optional(),
+                quarter: z.string().optional(),
+            })
+        )
+        .query(async ({ input }) => {
+            const params = new URLSearchParams({ department: input.department, courseNumber: input.number });
+            if (input.instructor) params.set('instructor', input.instructor);
+            if (input.year) params.set('year', input.year);
+            if (input.quarter) params.set('quarter', input.quarter);
+
+            const r = fetch(`${process.env.PUBLIC_API_URL}grades/aggregateByOffering?${params}`, {
+                headers: ANTEATER_API_REQUEST_HEADERS,
+            });
+
+            return r.then((response) => response.json()).then((data) => data.data as AggregateGradesByOffering[]);
+        }),
 });
 
 export default coursesRouter;

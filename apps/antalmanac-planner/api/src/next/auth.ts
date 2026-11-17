@@ -1,10 +1,8 @@
 import { CodeChallengeMethod, generateCodeVerifier, generateState } from 'arctic';
-import { eq } from 'drizzle-orm';
 
 import { createOIDCClient } from '../config/oidc';
-import { db } from '../db';
-import { account, user, type providerEnum } from '../db/schema';
 import { isNativeIosApp } from '../helpers/platform';
+import { upsertOidcUser, type OidcUserInfo } from '../helpers/users';
 import {
     appendCookies,
     clearSessionCookie,
@@ -12,25 +10,6 @@ import {
     createSessionCookie,
     getSessionFromRequest,
 } from './session';
-
-interface OIDCUserInfo {
-    sub: string;
-    email: string;
-    name?: string;
-    picture?: string;
-}
-
-function providerFromSub(sub: string): (typeof providerEnum.enumValues)[number] {
-    const prefix = sub.split('_')[0];
-    switch (prefix) {
-        case 'google':
-            return 'GOOGLE';
-        case 'apple':
-            return 'APPLE';
-        default:
-            throw new Error(`Unknown provider prefix in sub: ${sub}`);
-    }
-}
 
 function responseWithCookies(location: string, cookies: string[]) {
     const headers = new Headers({ Location: location });
@@ -62,52 +41,8 @@ function buildRedirectUriFromRequest(request: Request, native = false) {
     return new URL(path, origin).toString();
 }
 
-async function successLogin(userInfo: OIDCUserInfo, request: Request) {
-    const { sub, email, name, picture } = userInfo;
-    const provider = providerFromSub(sub);
-
-    /**
-     * TODO: Some legacy user accounts do not have an email associated, but do have a google id.
-     *
-     * We would like to handle this case gracefully, by handling conflicts on google id OR email.
-     * At the time of writing (2025-12-07), Drizzle does not have such a mechanism.
-     * Possible methods include updating a user based on google id, then manually inserting if no such user exists,
-     * or using a raw SQL query
-     */
-    const userData = await db.transaction(async (tx) => {
-        let [dbUser] = await tx.select().from(user).where(eq(user.email, email));
-
-        if (dbUser) {
-            await tx
-                .update(user)
-                .set({
-                    name: name || dbUser.name,
-                    picture: picture || dbUser.picture,
-                })
-                .where(eq(user.id, dbUser.id));
-            dbUser = { ...dbUser, name: name || dbUser.name };
-        } else {
-            [dbUser] = await tx
-                .insert(user)
-                .values({
-                    name: name ?? '',
-                    email,
-                    picture: picture ?? '',
-                })
-                .returning();
-        }
-
-        await tx
-            .insert(account)
-            .values({
-                userId: dbUser.id,
-                provider,
-                providerAccountId: sub,
-            })
-            .onConflictDoNothing();
-
-        return dbUser;
-    });
+async function successLogin(userInfo: OidcUserInfo, request: Request) {
+    const userData = await upsertOidcUser(userInfo);
 
     const currentSession = getSessionFromRequest(request);
     const allowedUsers = JSON.parse(process.env.ADMIN_EMAILS ?? '[]');
@@ -206,7 +141,7 @@ async function handleGoogleCallback(request: Request, native = false) {
         ]);
     }
 
-    const userInfo = (await userInfoResponse.json()) as OIDCUserInfo;
+    const userInfo = (await userInfoResponse.json()) as OidcUserInfo;
 
     if (!userInfo.email) {
         return responseWithCookies(new URL('/?error=no_email', new URL(request.url).origin).toString(), [

@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
     boolean,
     check,
+    date,
     foreignKey,
     index,
     integer,
@@ -28,6 +29,14 @@ export const user = pgTable(
         currentPlanIndex: integer('current_plan_index').notNull().default(0),
         autoSaveEnabled: boolean('auto_save_enabled').notNull().default(false),
         createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+        /**
+         * MCP daily request quota. `mcpRequestCount` is the number of MCP tool calls the
+         * user has made on `mcpRequestDay` (a UTC calendar day). The counter resets implicitly
+         * the first time a request is seen on a new day, so no cleanup job is needed.
+         * See `controllers/mcp/rateLimit.ts`.
+         */
+        mcpRequestCount: integer('mcp_request_count').notNull().default(0),
+        mcpRequestDay: date('mcp_request_day'),
     },
     (table) => [unique('unique_email').on(table.email)]
 );
@@ -427,4 +436,70 @@ export const override = pgTable(
 
         index('override_user_planner_idx').on(table.userId, table.plannerId),
     ]
+);
+
+/**
+ * Tables backing the MCP server's OAuth 2.1 authorization server.
+ *
+ * The MCP server lets external AI agents authenticate a student (via the existing OIDC
+ * provider) and act on their behalf. These tables persist OAuth state across stateless
+ * invocations: registered clients, in-flight authorize requests, one-time authorization codes,
+ * and issued bearer tokens. Secrets (auth codes, access/refresh tokens) are stored only as
+ * SHA-256 hashes; the raw values live solely on the client. See `controllers/mcp/`.
+ */
+
+/** Dynamically-registered OAuth clients (RFC 7591). `info` holds the full client record. */
+export const mcpClient = pgTable('mcp_client', {
+    clientId: text('client_id').primaryKey(),
+    info: jsonb('info').$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+/**
+ * In-flight authorization requests. Created when a client hits `/authorize`; the browser is
+ * then bounced to the OIDC provider. The callback looks the row up by `state` to resume the flow.
+ */
+export const mcpAuthRequest = pgTable('mcp_auth_request', {
+    state: text('state').primaryKey(),
+    clientId: text('client_id').notNull(),
+    redirectUri: text('redirect_uri').notNull(),
+    clientState: text('client_state'),
+    codeChallenge: text('code_challenge').notNull(),
+    scopes: jsonb('scopes').$type<string[]>().notNull(),
+    googleCodeVerifier: text('google_code_verifier').notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+/** One-time authorization codes (hashed) issued after a successful @uci.edu login. */
+export const mcpAuthCode = pgTable('mcp_auth_code', {
+    codeHash: text('code_hash').primaryKey(),
+    userId: integer('user_id')
+        .references(() => user.id, { onDelete: 'cascade' })
+        .notNull(),
+    clientId: text('client_id').notNull(),
+    redirectUri: text('redirect_uri').notNull(),
+    codeChallenge: text('code_challenge').notNull(),
+    scopes: jsonb('scopes').$type<string[]>().notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const mcpTokenTypeEnum = pgEnum('mcp_token_type', ['access', 'refresh']);
+
+/** Issued access/refresh tokens (hashed). `verifyAccessToken` resolves these back to a user. */
+export const mcpToken = pgTable(
+    'mcp_token',
+    {
+        tokenHash: text('token_hash').primaryKey(),
+        type: mcpTokenTypeEnum('type').notNull(),
+        userId: integer('user_id')
+            .references(() => user.id, { onDelete: 'cascade' })
+            .notNull(),
+        clientId: text('client_id').notNull(),
+        scopes: jsonb('scopes').$type<string[]>().notNull(),
+        expiresAt: timestamp('expires_at', { withTimezone: true }),
+        createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    },
+    (table) => [index('mcp_token_user_id_idx').on(table.userId)]
 );

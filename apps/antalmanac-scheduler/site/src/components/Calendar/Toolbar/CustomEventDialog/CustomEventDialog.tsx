@@ -17,7 +17,7 @@ import {
     TextField,
     Tooltip,
 } from '@mui/material';
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { type RepeatingCustomEvent, isCustomEventTimeRangeInvalid } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -64,7 +64,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const isMissingScheduleOrDay = !(scheduleIndices.length && days.includes(true));
     // Missing start/end times are allowed on purpose (see #1971): users
     // can save events without time slots, and will be in the Added panel.
-    const isTimeRangeInvalid = start !== '' && end !== '' && start >= end;
+    const isTimeRangeInvalid = isCustomEventTimeRangeInvalid(start, end);
     const disabled = isMissingScheduleOrDay || isTimeRangeInvalid;
 
     const handleSubmit = () => {

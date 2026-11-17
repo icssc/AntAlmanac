@@ -7,42 +7,11 @@ import {
     type WebsocSearchInput,
     WebsocSearchInputKeysSchema,
     WebsocSearchInputSchema,
+    sanitizeWebsocParams,
 } from '@packages/antalmanac-types';
-import type {
-    WebsocAPIResponse,
-    WebsocQueryParams,
-    WebsocSectionType,
-    WebsocSyllabiResponse,
-} from '@packages/anteater-api/types';
+import type { WebsocAPIResponse, WebsocSectionType, WebsocSyllabiResponse } from '@packages/anteater-api/types';
 import { sortWebsocResponse } from '@packages/anteater-api/utils';
 import { z } from 'zod';
-
-function sanitizeWebsocParams(params: WebsocSearchInput): WebsocQueryParams {
-    const { department, courseNumber, excludeRestrictionCodes, days, ...rest } = params;
-    const sanitized = {
-        ...rest,
-        excludeRestrictionCodes: excludeRestrictionCodes.join(','),
-        days: days.join(','),
-    } as WebsocQueryParams;
-
-    const normalizedDepartment = department?.toUpperCase();
-    if (normalizedDepartment && normalizedDepartment !== 'ALL') {
-        sanitized.department = normalizedDepartment;
-    }
-
-    if (courseNumber) {
-        sanitized.courseNumber = courseNumber.toUpperCase();
-    }
-
-    for (const key of Object.keys(sanitized) as (keyof typeof sanitized)[]) {
-        const value = sanitized[key];
-        if (value === '' || value === null || value === undefined) {
-            delete sanitized[key];
-        }
-    }
-
-    return sanitized;
-}
 
 async function queryWebsoc(rawParams: WebsocSearchInput): Promise<WebsocAPIResponse> {
     return sortWebsocResponse(await aapiClient.websoc.query(sanitizeWebsocParams(rawParams)));
