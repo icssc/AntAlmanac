@@ -101,7 +101,7 @@ export const useCourseGradesStore = create(
     })
 );
 
-function useFetchOverallGrades(course: AACourse) {
+function useFetchOverallGrades(course: AACourse, courseId: CourseId) {
     const setOverallGrades = useCourseGradesStore((state) => state.setOverallGrades);
 
     const { data: overallGrades, isLoading: areOverallGradesLoading } = trpcReact.grades.aggregateGrades.useQuery(
@@ -116,12 +116,12 @@ function useFetchOverallGrades(course: AACourse) {
 
     useEffect(() => {
         if (!areOverallGradesLoading) {
-            setOverallGrades(getCourseId(course), overallGrades);
+            setOverallGrades(courseId, overallGrades);
         }
-    }, [overallGrades, areOverallGradesLoading, course, setOverallGrades]);
+    }, [overallGrades, areOverallGradesLoading, courseId, setOverallGrades]);
 }
 
-function useFetchSectionInstructorGrades(course: AACourse) {
+function useFetchSectionInstructorGrades(course: AACourse, courseId: CourseId) {
     const { setSectionGrades, doesSectionHaveGrades, setAreSectionGradesLoading } = useCourseGradesStore(
         useShallow((state) => ({
             setSectionGrades: state.setSectionGrades,
@@ -135,7 +135,7 @@ function useFetchSectionInstructorGrades(course: AACourse) {
     const instructorsToFetch = useMemo(() => {
         const instructorSections = new Map<string, string[]>();
         for (const section of course.sections) {
-            if (doesSectionHaveGrades(getCourseId(course), section.sectionCode)) {
+            if (doesSectionHaveGrades(courseId, section.sectionCode)) {
                 continue;
             }
             const seenInstructor = section.instructors.find((instructor) => instructorSections.has(instructor));
@@ -164,7 +164,7 @@ function useFetchSectionInstructorGrades(course: AACourse) {
             instructorSections.get(instructor)!.push(section.sectionCode);
         }
         return instructorSections;
-    }, [course, instructorsToIgnore, doesSectionHaveGrades]);
+    }, [course.sections, courseId, instructorsToIgnore, doesSectionHaveGrades]);
 
     const areInstructorGradesValid = useCallback((result: UseQueryResult<{ gradeDistribution: GradeDistribution }>) => {
         return !result.isError && result.data?.gradeDistribution.averageGPA;
@@ -204,7 +204,6 @@ function useFetchSectionInstructorGrades(course: AACourse) {
     }
 
     useEffect(() => {
-        const courseId = getCourseId(course);
         for (const result of sectionInstructorGrades) {
             if (!result.data) {
                 continue;
@@ -217,26 +216,28 @@ function useFetchSectionInstructorGrades(course: AACourse) {
                 );
             }
         }
-    }, [sectionInstructorGrades, instructorsToFetch, course, setSectionGrades, areInstructorGradesValid]);
+    }, [sectionInstructorGrades, instructorsToFetch, courseId, setSectionGrades, areInstructorGradesValid]);
 
     useEffect(() => {
-        setAreSectionGradesLoading(getCourseId(course), areSectionInstructorGradesLoading);
-    }, [areSectionInstructorGradesLoading, course, setAreSectionGradesLoading]);
+        setAreSectionGradesLoading(courseId, areSectionInstructorGradesLoading);
+    }, [areSectionInstructorGradesLoading, courseId, setAreSectionGradesLoading]);
 }
 
 export function useFetchCourseGrades(course: AACourse) {
     const removeCourse = useCourseGradesStore((state) => state.removeCourse);
     const addCourseIfNeeded = useCourseGradesStore((state) => state.addCourseIfNeeded);
 
-    useFetchOverallGrades(course);
-    useFetchSectionInstructorGrades(course);
+    const courseId = useMemo(() => getCourseId(course), [course]);
+
+    useFetchOverallGrades(course, courseId);
+    useFetchSectionInstructorGrades(course, courseId);
 
     useEffect(() => {
-        addCourseIfNeeded(getCourseId(course));
+        addCourseIfNeeded(courseId);
         return () => {
-            removeCourse(getCourseId(course));
+            removeCourse(courseId);
         };
-    }, [course, removeCourse, addCourseIfNeeded]);
+    }, [courseId, removeCourse, addCourseIfNeeded]);
 }
 
 /**
