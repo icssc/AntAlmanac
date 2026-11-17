@@ -1,4 +1,5 @@
 import { SortableList } from '$components/drag-and-drop/SortableList';
+import { CourseGradeFetcher } from '$components/RightPane/SectionTable/CourseGradeFetcher';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
@@ -12,7 +13,6 @@ import analyticsEnum, { type AnalyticsCategory } from '$lib/analytics/analytics'
 import { getCourseCancellationWarning } from '$lib/courseAlerts';
 import { useActiveTab } from '$lib/tabs/hooks';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
-import { useFetchCourseGrades } from '$stores/CourseGradesStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import {
     Box,
@@ -93,8 +93,6 @@ export function SectionTable({
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const activeTab = useActiveTab();
 
-    useFetchCourseGrades(course);
-
     const handleToggleExpand = () => {
         setOpenContent(!openContent);
     };
@@ -119,6 +117,7 @@ export function SectionTable({
 
     return (
         <Box sx={{ overflow: 'hidden' }}>
+            {activeColumns.includes('gpa') ? <CourseGradeFetcher course={course} /> : null}
             <Box
                 sx={{
                     display: 'flex',
