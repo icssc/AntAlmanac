@@ -167,40 +167,42 @@ function useFetchSectionInstructorGrades(course: AACourse, courseId: CourseId) {
     }, [course.sections, courseId, instructorsToIgnore, doesSectionHaveGrades]);
 
     const areInstructorGradesValid = useCallback((result: UseQueryResult<{ gradeDistribution: GradeDistribution }>) => {
-        return !result.isError && result.data?.gradeDistribution.averageGPA;
+        return Boolean(!result.isError && result.data?.gradeDistribution.averageGPA);
     }, []);
 
-    const { sectionInstructorGrades, invalidInstructorGrades, areSectionInstructorGradesLoading } =
-        trpcReact.useQueries(
-            (t) =>
-                Array.from(instructorsToFetch).map(([instructor]) =>
-                    t.grades.aggregateGrades(
-                        { department: course.deptCode, courseNumber: course.courseNumber, instructor },
-                        { select: (data) => ({ instructor, gradeDistribution: data?.gradeDistribution ?? null }) }
-                    )
-                ),
-            {
-                combine: (results) => ({
-                    sectionInstructorGrades: results.filter(areInstructorGradesValid),
-                    invalidInstructorGrades: results.filter((result) => !areInstructorGradesValid(result)),
+    const { sectionInstructorGrades, invalidInstructors, areSectionInstructorGradesLoading } = trpcReact.useQueries(
+        (t) =>
+            Array.from(instructorsToFetch).map(([instructor]) =>
+                t.grades.aggregateGrades(
+                    { department: course.deptCode, courseNumber: course.courseNumber, instructor },
+                    { select: (data) => ({ instructor, gradeDistribution: data?.gradeDistribution ?? null }) }
+                )
+            ),
+        {
+            combine: (results) => {
+                const allInstructors = Array.from(instructorsToFetch.keys());
+                const sectionInstructorGrades = results.filter(areInstructorGradesValid);
+                const validInstructors = new Set(sectionInstructorGrades.map((result) => result.data!.instructor));
+                return {
+                    sectionInstructorGrades: sectionInstructorGrades,
+                    invalidInstructors: allInstructors.filter((instructor) => !validInstructors.has(instructor)),
                     areSectionInstructorGradesLoading: results.some((result) => result.isLoading || result.isFetching),
-                }),
-            }
-        );
+                };
+            },
+        }
+    );
 
     const [prevInvalidInstructorGrades, setPrevInvalidInstructorGrades] =
-        useState<typeof invalidInstructorGrades>(invalidInstructorGrades);
-    if (invalidInstructorGrades !== prevInvalidInstructorGrades && !areSectionInstructorGradesLoading) {
+        useState<typeof invalidInstructors>(invalidInstructors);
+    if (invalidInstructors !== prevInvalidInstructorGrades && !areSectionInstructorGradesLoading) {
         const newInstructorsToIgnore = new Set(instructorsToIgnore);
 
-        for (const result of invalidInstructorGrades) {
-            if (result.data) {
-                newInstructorsToIgnore.add(result.data.instructor);
-            }
+        for (const instructor of invalidInstructors) {
+            newInstructorsToIgnore.add(instructor);
         }
 
         setInstructorsToIgnore(newInstructorsToIgnore);
-        setPrevInvalidInstructorGrades(invalidInstructorGrades);
+        setPrevInvalidInstructorGrades(invalidInstructors);
     }
 
     useEffect(() => {
