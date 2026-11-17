@@ -181,7 +181,15 @@ interface CourseInfoButtonProps {
 }
 
 export const CourseInfoButton = ({ text, icon, href }: CourseInfoButtonProps) => (
-    <Button variant="contained" size="small" color="primary" href={href} startIcon={icon}>
+    <Button
+        variant="contained"
+        size="small"
+        color="primary"
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        startIcon={icon}
+    >
         {text}
     </Button>
 );

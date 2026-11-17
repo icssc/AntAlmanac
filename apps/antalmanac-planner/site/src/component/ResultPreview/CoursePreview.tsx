@@ -3,6 +3,7 @@ import BackIcon from '@mui/icons-material/ArrowBack';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CloseIcon from '@mui/icons-material/Close';
+import EventNote from '@mui/icons-material/EventNote';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { Button, IconButton, Paper, Tooltip, useMediaQuery } from '@mui/material';
@@ -17,6 +18,7 @@ import { setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/
 import trpc from '../../trpc';
 import { CourseGQLData } from '../../types/types';
 import { CourseBookmarkButton } from '../CourseInfo/CourseInfo';
+import { CourseInfoButton } from '../CourseInfo/CourseInfo';
 import GradeDist from '../GradeDist/GradeDist';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { ResultPageSection } from '../ResultPageContent/ResultPageContent';
@@ -93,6 +95,11 @@ const CoursePreviewContent: FC<{ data: CourseGQLData }> = ({ data }) => {
             </ResultPageSection>
 
             <ResultPageSection id="preview-schedule" icon={<CalendarTodayIcon />} title="Schedule of Classes">
+                <CourseInfoButton
+                    text="View on Planner"
+                    icon={<EventNote />}
+                    href={`https://antalmanac.com/?courseIds=${encodeURIComponent(data.id)}`}
+                />
                 <Schedule
                     key={data.id}
                     courseID={data.department + ' ' + data.courseNumber}
