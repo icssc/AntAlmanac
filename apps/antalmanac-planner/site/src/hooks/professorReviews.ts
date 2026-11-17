@@ -14,7 +14,9 @@ import { ProfessorGQLData } from '../types/types.ts';
 /** `professorPromise` is the server's fetch of this professor, used instead of fetching it again in the browser */
 export function useProfessorData(netID: string, professorPromise?: Promise<ProfessorAAPIResponse | null>) {
     const professorCache = useAppSelector((state) => state.professors.professors);
-    const [fullProfessorData, setFullProfessorData] = useState<ProfessorGQLData | null>(professorCache[netID] ?? null);
+    const [fullProfessorData, setFullProfessorData] = useState<ProfessorGQLData | null>(
+        professorPromise ? null : (professorCache[netID] ?? null)
+    );
     const [loadTrigger, setLoadTrigger] = useState(false);
     const requestId = useRef(0);
 

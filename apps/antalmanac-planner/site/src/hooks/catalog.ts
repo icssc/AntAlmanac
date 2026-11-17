@@ -11,7 +11,9 @@ import trpc from '../trpc';
 /** `coursePromise` is the server's fetch of this course, used instead of fetching it again in the browser */
 export function useCourseData(courseId: string, coursePromise?: Promise<CourseAAPIResponse | null>) {
     const courseCache = useAppSelector((state) => state.courseCatalog.courses);
-    const [fullCourseData, setFullCourseData] = useState(courseCache[courseId] ?? LOADING_COURSE_PLACEHOLDER);
+    const [fullCourseData, setFullCourseData] = useState(
+        coursePromise ? LOADING_COURSE_PLACEHOLDER : (courseCache[courseId] ?? LOADING_COURSE_PLACEHOLDER)
+    );
     const [loadTrigger, setLoadTrigger] = useState(false);
     const requestId = useRef(0);
 

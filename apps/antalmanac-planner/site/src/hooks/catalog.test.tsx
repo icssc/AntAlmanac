@@ -59,6 +59,52 @@ function deferred<T>() {
 }
 
 describe('server-provided catalog data', () => {
+    it('does not render cached course data while awaiting the initial server promise', async () => {
+        const { store, wrapper } = setup();
+        store.dispatch(setCourse({ courseId: course.id, data: transformCourseGQL(course) }));
+        const request = deferred<CourseAAPIResponse>();
+        const renderedTitles: string[] = [];
+        const { result } = renderHook(
+            () => {
+                const data = useCourseData(course.id, request.promise);
+                renderedTitles.push(data.title);
+                return data;
+            },
+            { wrapper }
+        );
+
+        expect(result.current.id).toBe(LOADING_COURSE_PLACEHOLDER.id);
+        expect(renderedTitles).not.toContain('Original course title');
+
+        await act(async () => request.resolve({ ...course, title: 'Fresh course title' }));
+
+        expect(result.current.title).toBe('Fresh course title');
+        expect(renderedTitles).not.toContain('Original course title');
+    });
+
+    it('does not render cached professor data while awaiting the initial server promise', async () => {
+        const { store, wrapper } = setup();
+        store.dispatch(setProfessor({ professorId: professor.ucinetid, data: transformProfessorGQL(professor) }));
+        const request = deferred<ProfessorAAPIResponse>();
+        const renderedNames: Array<string | null> = [];
+        const { result } = renderHook(
+            () => {
+                const data = useProfessorData(professor.ucinetid, request.promise);
+                renderedNames.push(data?.name ?? null);
+                return data;
+            },
+            { wrapper }
+        );
+
+        expect(result.current).toBeNull();
+        expect(renderedNames).not.toContain('Original instructor name');
+
+        await act(async () => request.resolve({ ...professor, name: 'Fresh instructor name' }));
+
+        expect(result.current?.name).toBe('Fresh instructor name');
+        expect(renderedNames).not.toContain('Original instructor name');
+    });
+
     it('uses a replacement course promise after the same ID has been cached', async () => {
         const { store, wrapper } = setup();
         const { result, rerender } = renderHook(({ promise }) => useCourseData(course.id, promise), {
