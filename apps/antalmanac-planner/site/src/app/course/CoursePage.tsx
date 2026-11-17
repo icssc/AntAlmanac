@@ -11,7 +11,7 @@ import Error from '../../component/Error/Error';
 import GradeDist from '../../component/GradeDist/GradeDist';
 import PrereqTree from '../../component/PrereqTree/PrereqTree';
 import ResultPageContent, { ResultPageSection } from '../../component/ResultPageContent/ResultPageContent';
-import Review from '../../component/Review/Review';
+import Review, { ReviewLoadStatus } from '../../component/Review/Review';
 import Schedule from '../../component/Schedule/Schedule';
 import SideInfo from '../../component/SideInfo/SideInfo';
 import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
@@ -38,10 +38,13 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
     const dispatch = useAppDispatch();
     const courseGQLData = useCourseData(id, coursePromise);
     const [error, setError] = useState('');
-    const [reviewsLoadedFor, setReviewsLoadedFor] = useState<string | null>(null);
+    const [reviewsLoad, setReviewsLoad] = useState<{ target: string; status: ReviewLoadStatus } | null>(null);
 
-    const reviewsLoaded = reviewsLoadedFor === courseGQLData.id;
-    const handleReviewsLoaded = useCallback(() => setReviewsLoadedFor(courseGQLData.id), [courseGQLData.id]);
+    const reviewsStatus = reviewsLoad?.target === courseGQLData.id ? reviewsLoad.status : 'loading';
+    const handleReviewsLoadStatusChange = useCallback(
+        (status: ReviewLoadStatus) => setReviewsLoad({ target: courseGQLData.id, status }),
+        [courseGQLData.id]
+    );
 
     useEffect(() => {
         let active = true;
@@ -97,7 +100,7 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
                 tags={getCourseTags(courseGQLData)}
                 course={courseGQLData}
                 terms={courseGQLData.terms}
-                reviewsSkeleton={!reviewsLoaded}
+                reviewsStatus={reviewsStatus}
             />
         );
         return (
@@ -123,7 +126,7 @@ const CoursePage: FC<CoursePageProps> = ({ courseId: id, coursePromise }) => {
                         key={courseGQLData.id}
                         course={courseGQLData}
                         terms={sortTerms(courseGQLData.terms)}
-                        onLoaded={handleReviewsLoaded}
+                        onLoadStatusChange={handleReviewsLoadStatusChange}
                     />
                 </ResultPageSection>
             </ResultPageContent>

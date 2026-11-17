@@ -45,6 +45,14 @@ function setup() {
     return { store, wrapper };
 }
 
+function deferred<T>() {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((resolvePromise) => {
+        resolve = resolvePromise;
+    });
+    return { promise, resolve };
+}
+
 describe('server-provided catalog data', () => {
     it('uses a replacement course promise after the same ID has been cached', async () => {
         const { store, wrapper } = setup();
@@ -79,6 +87,44 @@ describe('server-provided catalog data', () => {
         expect(result.current?.name).toBe('Updated instructor name');
         expect(store.getState().professors.professors[professor.ucinetid].name).toBe('Updated instructor name');
         expect(trpc.professors.get.query).not.toHaveBeenCalled();
+    });
+
+    it('ignores a superseded course refresh in both returned and cached data', async () => {
+        const { store, wrapper } = setup();
+        store.dispatch(setCourse({ courseId: course.id, data: transformCourseGQL(course) }));
+        const older = deferred<CourseAAPIResponse>();
+        const newer = deferred<CourseAAPIResponse>();
+        const { result, rerender } = renderHook(({ promise }) => useCourseData(course.id, promise), {
+            initialProps: { promise: older.promise },
+            wrapper,
+        });
+
+        rerender({ promise: newer.promise });
+        await act(async () => newer.resolve({ ...course, title: 'Newest course title' }));
+        expect(result.current.title).toBe('Newest course title');
+        await act(async () => older.resolve({ ...course, title: 'Outdated course title' }));
+
+        expect(result.current.title).toBe('Newest course title');
+        expect(store.getState().courseCatalog.courses[course.id].title).toBe('Newest course title');
+    });
+
+    it('ignores a superseded professor refresh in both returned and cached data', async () => {
+        const { store, wrapper } = setup();
+        store.dispatch(setProfessor({ professorId: professor.ucinetid, data: transformProfessorGQL(professor) }));
+        const older = deferred<ProfessorAAPIResponse>();
+        const newer = deferred<ProfessorAAPIResponse>();
+        const { result, rerender } = renderHook(({ promise }) => useProfessorData(professor.ucinetid, promise), {
+            initialProps: { promise: older.promise },
+            wrapper,
+        });
+
+        rerender({ promise: newer.promise });
+        await act(async () => newer.resolve({ ...professor, name: 'Newest instructor name' }));
+        expect(result.current?.name).toBe('Newest instructor name');
+        await act(async () => older.resolve({ ...professor, name: 'Outdated instructor name' }));
+
+        expect(result.current?.name).toBe('Newest instructor name');
+        expect(store.getState().professors.professors[professor.ucinetid].name).toBe('Newest instructor name');
     });
 
     it('keeps using the course cache when no server promise is supplied', () => {

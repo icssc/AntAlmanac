@@ -13,6 +13,7 @@ import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { toggleFormStatus, setShowToast } from '../../store/slices/reviewSlice';
 import { CourseGQLData, ProfessorGQLData, SearchType } from '../../types/types';
 import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
+import type { ReviewLoadStatus } from '../Review/Review';
 
 interface FeaturedInfoData {
     searchType: SearchType;
@@ -78,7 +79,7 @@ interface SideInfoProps {
     className?: string;
     id?: string;
     skeleton?: boolean;
-    reviewsSkeleton?: boolean;
+    reviewsStatus?: ReviewLoadStatus;
 }
 
 interface AverageReview {
@@ -89,8 +90,9 @@ interface AverageReview {
 }
 
 const SideInfo: FC<SideInfoProps> = (props) => {
-    const { skeleton = false, reviewsSkeleton = false } = props;
-    const reviewsLoading = skeleton || reviewsSkeleton;
+    const { skeleton = false, reviewsStatus = 'loaded' } = props;
+    const reviewsLoading = skeleton || reviewsStatus === 'loading';
+    const reviewsFailed = !skeleton && reviewsStatus === 'error';
     const dispatch = useAppDispatch();
     const allToken = 'All ' + (props.searchType == 'course' ? 'Instructors' : 'Courses');
     const reviews = useAppSelector((state) => state.review.reviews);
@@ -170,7 +172,7 @@ const SideInfo: FC<SideInfoProps> = (props) => {
 
     const { count, rating, difficulty, takeAgain } = averageReviews[selectedReview] ?? {};
     // reviews in the store may still belong to the previous page while loading
-    const hasReviews = !reviewsLoading && Object.keys(averageReviews).length > 1; // always has "All Instructors"
+    const hasReviews = !reviewsLoading && !reviewsFailed && Object.keys(averageReviews).length > 1; // always has "All Instructors"
 
     return (
         <div className="side-content-wrapper">
@@ -283,7 +285,12 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                             </>
                         )
                     )}
-                    {!reviewsLoading && !hasReviews && (
+                    {reviewsFailed && (
+                        <span className="side-info-selected-based" role="status">
+                            Unable to load reviews for this {props.searchType}.
+                        </span>
+                    )}
+                    {!reviewsLoading && !reviewsFailed && !hasReviews && (
                         <span className="side-info-selected-based">
                             <span>No reviews found for this {props.searchType}!</span>
                         </span>

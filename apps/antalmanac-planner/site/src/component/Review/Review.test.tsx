@@ -7,6 +7,7 @@ import CoursePage from '../../app/course/CoursePage';
 import { LOADING_COURSE_PLACEHOLDER } from '../../helpers/courseRequirements';
 import courseCatalogReducer from '../../store/slices/courseCatalogSlice';
 import reviewReducer from '../../store/slices/reviewSlice';
+import scheduleReducer from '../../store/slices/scheduleSlice';
 import userReducer from '../../store/slices/userSlice';
 import trpc from '../../trpc';
 
@@ -38,7 +39,12 @@ const query = jest.mocked(trpc.reviews.get.query);
 
 function renderPage() {
     const store = configureStore({
-        reducer: { courseCatalog: courseCatalogReducer, review: reviewReducer, user: userReducer },
+        reducer: {
+            courseCatalog: courseCatalogReducer,
+            review: reviewReducer,
+            schedule: scheduleReducer,
+            user: userReducer,
+        },
         preloadedState: {
             courseCatalog: { courses: { [course.id]: course, [nextCourse.id]: nextCourse } },
         },
@@ -53,16 +59,16 @@ function renderPage() {
 }
 
 describe('review loading outcomes', () => {
-    afterEach(() => {
-        jest.restoreAllMocks();
+    beforeEach(() => {
+        query.mockReset();
     });
 
     it('shows a failed request instead of claiming that the course has no reviews', async () => {
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-        query.mockRejectedValueOnce(new Error('Network unavailable'));
+        query.mockRejectedValue(new Error('Network unavailable'));
 
         const { container } = renderPage();
 
+        expect(container.querySelector('.add-review-button div')).toBeNull();
         await waitFor(() => expect(container.querySelector('.reviews [role="alert"]')).not.toBeNull());
         expect(screen.queryByText('No reviews found for this course!')).toBeNull();
         expect(container.querySelector('.side-info-ratings')?.textContent).toContain('Unable to load reviews');
@@ -70,7 +76,7 @@ describe('review loading outcomes', () => {
     });
 
     it('keeps the empty state for a successful request with no reviews', async () => {
-        query.mockResolvedValueOnce([]);
+        query.mockResolvedValue([]);
 
         renderPage();
 
@@ -80,13 +86,10 @@ describe('review loading outcomes', () => {
 
     it('ignores a failed request after moving to another course', async () => {
         let rejectPrevious: (error: Error) => void = () => {};
-        query.mockReturnValueOnce(
-            new Promise<ReviewData[]>((_, reject) => {
-                rejectPrevious = reject;
-            })
-        );
-        query.mockResolvedValueOnce([]);
-
+        const previousRequest = new Promise<ReviewData[]>((_, reject) => {
+            rejectPrevious = reject;
+        });
+        query.mockImplementation(({ courseId }) => (courseId === course.id ? previousRequest : Promise.resolve([])));
         const { showCourse } = renderPage();
         await waitFor(() => expect(query).toHaveBeenCalledWith({ courseId: course.id }));
         showCourse(nextCourse.id);

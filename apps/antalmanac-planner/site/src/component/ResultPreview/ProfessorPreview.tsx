@@ -15,7 +15,7 @@ import { setToastMsg, setToastSeverity, setShowToast } from '../../store/slices/
 import { ProfessorGQLData } from '../../types/types';
 import GradeDist from '../GradeDist/GradeDist';
 import { ResultPageSection } from '../ResultPageContent/ResultPageContent';
-import Review from '../Review/Review';
+import Review, { ReviewLoadStatus } from '../Review/Review';
 import Schedule from '../Schedule/Schedule';
 import SideInfo from '../SideInfo/SideInfo';
 import PreviewNavBar from './PreviewNavBar';
@@ -49,12 +49,12 @@ const PreviewTitle: FC<PreviewTitleProps> = ({ isLoading, netId, professorData }
 };
 
 const ProfessorPreviewContent: FC<{ data: ProfessorGQLData | null; netid: string }> = ({ data, netid }) => {
-    const [reviewsLoaded, setReviewsLoaded] = useState(false);
-    const handleReviewsLoaded = useCallback(() => setReviewsLoaded(true), []);
-
-    useEffect(() => {
-        setReviewsLoaded(false);
-    }, [netid]);
+    const [reviewsLoad, setReviewsLoad] = useState<{ target: string; status: ReviewLoadStatus } | null>(null);
+    const reviewsStatus = reviewsLoad && reviewsLoad.target === data?.ucinetid ? reviewsLoad.status : 'loading';
+    const handleReviewsLoadStatusChange = useCallback(
+        (status: ReviewLoadStatus) => setReviewsLoad({ target: data?.ucinetid ?? netid, status }),
+        [data?.ucinetid, netid]
+    );
 
     if (!data) {
         return (
@@ -94,7 +94,7 @@ const ProfessorPreviewContent: FC<{ data: ProfessorGQLData | null; netid: string
                 description={data.department}
                 tags={[data.ucinetid, ...data.shortenedNames]}
                 professor={data}
-                reviewsSkeleton={!reviewsLoaded}
+                reviewsStatus={reviewsStatus}
             />
 
             <ResultPageSection id="preview-grades" icon={<BarChartIcon />} title="Grade Distribution">
@@ -114,7 +114,7 @@ const ProfessorPreviewContent: FC<{ data: ProfessorGQLData | null; netid: string
                     key={data.ucinetid}
                     professor={data}
                     terms={sortTerms(getProfessorTerms(data))}
-                    onLoaded={handleReviewsLoaded}
+                    onLoadStatusChange={handleReviewsLoadStatusChange}
                 />
             </ResultPageSection>
         </div>

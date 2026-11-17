@@ -8,7 +8,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import Error from '../../component/Error/Error';
 import GradeDist from '../../component/GradeDist/GradeDist';
 import ResultPageContent, { ResultPageSection } from '../../component/ResultPageContent/ResultPageContent';
-import Review from '../../component/Review/Review';
+import Review, { ReviewLoadStatus } from '../../component/Review/Review';
 import Schedule from '../../component/Schedule/Schedule';
 import SideInfo from '../../component/SideInfo/SideInfo';
 import { getProfessorTerms } from '../../helpers/reviews';
@@ -30,12 +30,13 @@ interface ProfessorPageProps {
 const ProfessorPage: FC<ProfessorPageProps> = ({ ucinetid: id, professorPromise }) => {
     const professorGQLData = useProfessorData(id, professorPromise);
     const [error, setError] = useState('');
-    const [reviewsLoadedFor, setReviewsLoadedFor] = useState<string | null>(null);
+    const [reviewsLoad, setReviewsLoad] = useState<{ target: string; status: ReviewLoadStatus } | null>(null);
 
-    const reviewsLoaded = reviewsLoadedFor === professorGQLData?.ucinetid;
-    const handleReviewsLoaded = useCallback(
-        () => setReviewsLoadedFor(professorGQLData?.ucinetid ?? null),
-        [professorGQLData?.ucinetid]
+    const reviewsStatus =
+        reviewsLoad && reviewsLoad.target === professorGQLData?.ucinetid ? reviewsLoad.status : 'loading';
+    const handleReviewsLoadStatusChange = useCallback(
+        (status: ReviewLoadStatus) => setReviewsLoad({ target: professorGQLData?.ucinetid ?? id, status }),
+        [professorGQLData?.ucinetid, id]
     );
 
     useEffect(() => {
@@ -92,7 +93,7 @@ const ProfessorPage: FC<ProfessorPageProps> = ({ ucinetid: id, professorPromise 
                 description={professorGQLData.department}
                 tags={[professorGQLData.ucinetid, ...professorGQLData.shortenedNames]}
                 professor={professorGQLData}
-                reviewsSkeleton={!reviewsLoaded}
+                reviewsStatus={reviewsStatus}
             />
         );
         return (
@@ -114,7 +115,7 @@ const ProfessorPage: FC<ProfessorPageProps> = ({ ucinetid: id, professorPromise 
                         key={professorGQLData.ucinetid}
                         professor={professorGQLData}
                         terms={sortTerms(getProfessorTerms(professorGQLData))}
-                        onLoaded={handleReviewsLoaded}
+                        onLoadStatusChange={handleReviewsLoadStatusChange}
                     />
                 </ResultPageSection>
             </ResultPageContent>

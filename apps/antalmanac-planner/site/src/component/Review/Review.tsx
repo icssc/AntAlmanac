@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Button, MenuItem, Select, Skeleton, Tooltip } from '@mui/material';
+import { Alert, Button, MenuItem, Select, Skeleton, Tooltip } from '@mui/material';
 
 import './Review.scss';
 import { Checkbox, FormControlLabel } from '@mui/material';
@@ -21,13 +21,15 @@ import { CourseGQLData, ProfessorGQLData } from '../../types/types';
 import ReviewForm from '../ReviewForm/ReviewForm';
 import ReviewCard from './ReviewCard';
 
+export type ReviewLoadStatus = 'loading' | 'loaded' | 'error';
+
 export interface ReviewProps {
     course?: CourseGQLData;
     professor?: ProfessorGQLData;
     terms?: string[];
     /** Shows the loading placeholders without fetching */
     skeleton?: boolean;
-    onLoaded?: () => void;
+    onLoadStatusChange?: (status: ReviewLoadStatus) => void;
 }
 
 enum SortingOption {
@@ -38,19 +40,19 @@ enum SortingOption {
 
 const Review: FC<ReviewProps> = (props) => {
     const dispatch = useAppDispatch();
-    const { onLoaded } = props;
+    const { onLoadStatusChange } = props;
     const reviewData = useAppSelector(selectReviews);
     const reviewOrder = useAppSelector(selectReviewOrder);
     const [sortingOption, setSortingOption] = useState<SortingOption>(SortingOption.TOP_REVIEWS);
     const [filterOption, setFilterOption] = useState('');
     const [showOnlyVerifiedReviews, setShowOnlyVerifiedReviews] = useState(false);
-    const [loadedFor, setLoadedFor] = useState<string | null>(null);
+    const [loadState, setLoadState] = useState<{ target: string; status: ReviewLoadStatus } | null>(null);
     const showForm = useAppSelector((state) => state.review.formOpen);
     const isLoggedIn = useIsLoggedIn();
 
     const reviewKey = props.course?.id ?? props.professor?.ucinetid ?? '';
-    const loaded = loadedFor === reviewKey;
-    const showSkeleton = props.skeleton || !loaded;
+    const loadStatus = props.skeleton || loadState?.target !== reviewKey ? 'loading' : loadState.status;
+    const showSkeleton = loadStatus === 'loading';
 
     const getReviews = useCallback(
         async (isCurrent: () => boolean) => {
@@ -72,24 +74,27 @@ const Review: FC<ReviewProps> = (props) => {
     useEffect(() => {
         // prevent reviews from carrying over
         dispatch(setReviews([]));
-        setLoadedFor(null);
+        setLoadState(null);
+        onLoadStatusChange?.('loading');
         if (props.skeleton) return;
 
         let active = true;
         getReviews(() => active)
-            .catch((error) => {
-                if (active) console.error('Failed to load reviews', error);
-            })
-            .finally(() => {
+            .then(() => {
                 if (!active) return;
-                setLoadedFor(reviewKey);
-                onLoaded?.();
+                setLoadState({ target: reviewKey, status: 'loaded' });
+                onLoadStatusChange?.('loaded');
+            })
+            .catch(() => {
+                if (!active) return;
+                setLoadState({ target: reviewKey, status: 'error' });
+                onLoadStatusChange?.('error');
             });
 
         return () => {
             active = false;
         };
-    }, [dispatch, getReviews, onLoaded, props.skeleton, reviewKey]);
+    }, [dispatch, getReviews, onLoadStatusChange, props.skeleton, reviewKey]);
 
     let sortedReviews: ReviewData[];
     // filter verified if option is set
@@ -261,7 +266,9 @@ const Review: FC<ReviewProps> = (props) => {
                                     <Button onClick={openReviewForm} disabled={!isLoggedIn}>
                                         <AddIcon /> Add Review
                                     </Button>,
-                                    showSkeleton
+                                    showSkeleton,
+                                    'rounded',
+                                    'span'
                                 )}
                             </span>
                         </Tooltip>
@@ -275,7 +282,10 @@ const Review: FC<ReviewProps> = (props) => {
                         ))}
                     </div>
                 )}
-                {!showSkeleton && sortedReviews.length !== 0 && (
+                {loadStatus === 'error' && (
+                    <Alert severity="error">Unable to load reviews. Please try again later.</Alert>
+                )}
+                {loadStatus === 'loaded' && sortedReviews.length !== 0 && (
                     <div className="reviewcards">
                         {sortedReviews.map((review) => (
                             <ReviewCard

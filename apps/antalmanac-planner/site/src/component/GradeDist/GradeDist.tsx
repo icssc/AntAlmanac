@@ -72,22 +72,25 @@ const GradeDist: FC<GradeDistProps> = (props) => {
     const reviews = useAppSelector((state) => state.review.reviews);
 
     const { course, professor } = props;
-    const fetchGradeData = useCallback(() => {
+    useEffect(() => {
+        setGradeDistData(null!);
+        if (skeleton) return;
+
+        let active = true;
         fetchGradeDistData({ course, professor })
-            .then(setGradeDistData)
+            .then((data) => {
+                if (active) setGradeDistData(data);
+            })
             .catch((error) => {
+                if (!active) return;
                 setGradeDistData([]);
                 console.error(error.response);
             });
-    }, [course, professor]);
 
-    // reset any data from a previous course or professor, get new data for course or professor
-    useEffect(() => {
-        setGradeDistData(null!);
-        if (!skeleton) {
-            fetchGradeData();
-        }
-    }, [fetchGradeData, skeleton]);
+        return () => {
+            active = false;
+        };
+    }, [course, professor, skeleton]);
 
     /*
      * Create an array of objects to feed into the professor dropdown menu.
