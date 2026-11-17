@@ -59,33 +59,12 @@ interface GradesPopoverProps {
     deptCode: string;
     courseNumber: string;
     instructor?: string;
-    instructors: string[];
     isMobile: boolean;
 }
 
 export function GradesPopover(props: GradesPopoverProps) {
-    const { deptCode, courseNumber, instructors, isMobile } = props;
+    const { deptCode, courseNumber, instructor = '', isMobile } = props;
     const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
-
-    const namedInstructors = useMemo(() => instructors.filter((i) => i !== 'STAFF'), [instructors]);
-
-    const instructorResults = trpcReact.useQueries((t) =>
-        namedInstructors.map((instructor) =>
-            t.grades.aggregateGrades(
-                { department: deptCode, courseNumber, instructor },
-                { select: (data) => data?.gradeDistribution ?? null }
-            )
-        )
-    );
-
-    const { instructor } = useMemo(() => {
-        const idx = instructorResults.findIndex((r) => r.data?.averageGPA != null);
-        if (idx >= 0) {
-            const avg = instructorResults[idx].data?.averageGPA;
-            return { gpa: avg || avg === 0 ? avg.toFixed(2) : '', instructor: namedInstructors[idx] };
-        }
-        return { gpa: '', instructor: namedInstructors[0] ?? '' };
-    }, [instructorResults, namedInstructors]);
 
     const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGrades.useQuery(
         { department: deptCode, courseNumber, instructor: '' },
@@ -96,7 +75,7 @@ export function GradesPopover(props: GradesPopoverProps) {
         { select: (data) => data?.gradeDistribution ?? null, enabled: !!instructor }
     );
 
-    const loading = overallLoading || (!!instructor && instructorLoading) || instructorResults.some((r) => r.isLoading);
+    const loading = overallLoading || (!!instructor && instructorLoading);
 
     const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
 
