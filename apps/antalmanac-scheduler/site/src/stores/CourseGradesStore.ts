@@ -1,9 +1,9 @@
-import { trpc } from '$lib/api/trpc';
+import { trpcReact } from '$lib/api/trpc';
 import { getCourseId } from '$lib/courseHelpers';
-import { openSnackbar } from '$stores/SnackbarStore';
 import type { AACourse, SectionCode } from '@packages/antalmanac-types';
 import type { GradeDistribution } from '@packages/anteater-api/types';
-import { useEffect } from 'react';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { create } from 'zustand';
 import { combine } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
@@ -18,186 +18,246 @@ interface CourseData {
     areSectionGradesLoading: boolean;
     sectionGrades: Map<SectionCode, SectionInstructorGrades>;
 }
-
 interface CourseGradesStore {
-    courses: Map<CourseId, CourseData>;
+    courseGrades: Map<CourseId, CourseData>;
 }
 
 const initialState: CourseGradesStore = {
-    courses: new Map(),
+    courseGrades: new Map(),
 };
+
+function getDefaultCourseGrades() {
+    return {
+        areOverallGradesLoading: true,
+        overallGrades: null,
+        areSectionGradesLoading: true,
+        sectionGrades: new Map(),
+    };
+}
 
 export const useCourseGradesStore = create(
     combine(initialState, (set, get) => {
-        const addCourse = (courseId: CourseId) => {
-            const courses = get().courses;
-            courses.set(courseId, {
-                areOverallGradesLoading: true,
-                overallGrades: null,
-                areSectionGradesLoading: true,
-                sectionGrades: new Map(),
-            });
-            set({ courses });
-        };
-
-        const setOverallGrades = (courseId: CourseId, overallGrades: GradeDistribution) => {
-            const courses = get().courses;
-
-            const courseData = get().courses.get(courseId)!;
-            courseData.overallGrades = overallGrades;
-            courseData.areOverallGradesLoading = false;
-
-            set({ courses });
-        };
-        const setSectionGrades = (
-            courseId: CourseId,
-            sectionCode: SectionCode,
-            instructorGrades: SectionInstructorGrades
-        ) => {
-            const courses = get().courses;
-
-            const courseData = get().courses.get(courseId)!;
-            courseData.sectionGrades.set(sectionCode, instructorGrades);
-            courseData.areSectionGradesLoading = false;
-
-            set({ courses });
-        };
-
-        const fetchOverallGrades = async (course: AACourse, abortController: AbortController) => {
-            const courseId = getCourseId(course);
-
-            try {
-                const { gradeDistribution: overallGrades } = await trpc.grades.aggregateGrades.query(
-                    { department: course.deptCode, courseNumber: course.courseNumber, instructor: '' },
-                    { signal: abortController.signal }
-                );
-
-                // Calling component may have unmounted
-                if (!get().courses.has(courseId)) {
-                    return;
-                }
-
-                setOverallGrades(courseId, overallGrades);
-            } catch (error) {
-                if (abortController.signal.aborted) {
-                    return;
-                }
-                openSnackbar('error', `Failed to fetch overall grades for ${courseId}`);
-                console.error(error);
+        /**
+         * Call at the beginning of any function that writes
+         */
+        const addCourseIfNeeded = (courseId: CourseId) => {
+            const courseGrades = get().courseGrades;
+            if (!courseGrades.has(courseId)) {
+                courseGrades.set(courseId, getDefaultCourseGrades());
             }
+            set({ courseGrades });
         };
-
-        const fetchSectionGrades = async (course: AACourse, abortController: AbortController) => {
-            const courseId = getCourseId(course);
-
-            const instructorGradesMap: SectionInstructorGrades = new Map();
-
-            for (const section of course.sections) {
-                const instructorWithGrades = section.instructors.find((instructor) =>
-                    instructorGradesMap.has(instructor)
-                );
-                if (instructorWithGrades) {
-                    setSectionGrades(
-                        courseId,
-                        section.sectionCode,
-                        new Map([[instructorWithGrades, instructorGradesMap.get(instructorWithGrades)!]])
-                    );
-                    continue;
-                }
-
-                for (const instructor of section.instructors) {
-                    if (instructor === 'STAFF') {
-                        continue;
-                    }
-
-                    try {
-                        const { gradeDistribution: instructorGrades } = await trpc.grades.aggregateGrades.query(
-                            {
-                                department: course.deptCode,
-                                courseNumber: course.courseNumber,
-                                instructor,
-                            },
-                            { signal: abortController.signal }
-                        );
-
-                        // Calling component may have unmounted
-                        if (!get().courses.has(courseId)) {
-                            return;
-                        }
-
-                        setSectionGrades(courseId, section.sectionCode, new Map([[instructor, instructorGrades]]));
-
-                        instructorGradesMap.set(instructor, instructorGrades);
-                    } catch (error) {
-                        if (abortController.signal.aborted) {
-                            return;
-                        }
-                        openSnackbar(
-                            'error',
-                            `Failed to fetch instructor grades for ${instructor} teaching ${courseId}`
-                        );
-                        console.error(error);
-                    }
-                }
-            }
-        };
-
         return {
+            addCourseIfNeeded,
             removeCourse: (courseId: CourseId) => {
-                const courses = get().courses;
-                courses.delete(courseId);
-                set({ courses });
+                const courseGrades = get().courseGrades;
+                courseGrades.delete(courseId);
+                set({ courseGrades });
             },
-            fetchCourseGrades: (course: AACourse, abortController: AbortController) => {
-                addCourse(getCourseId(course));
+            setOverallGrades: (courseId: CourseId, overallGrades: GradeDistribution | undefined) => {
+                addCourseIfNeeded(courseId);
+                const courseGrades = get().courseGrades;
+                const courseData = get().courseGrades.get(courseId)!;
 
-                fetchOverallGrades(course, abortController);
+                if (overallGrades) {
+                    courseData.overallGrades = overallGrades;
+                }
 
-                fetchSectionGrades(course, abortController);
+                // Overall grades are fetched only once, don't need loading-setter function
+                courseData.areOverallGradesLoading = false;
+
+                set({ courseGrades });
+            },
+            setSectionGrades: (
+                courseId: CourseId,
+                sectionCode: SectionCode,
+                instructorGrades: SectionInstructorGrades
+            ) => {
+                addCourseIfNeeded(courseId);
+                const courseGrades = get().courseGrades;
+                const courseData = get().courseGrades.get(courseId)!;
+
+                courseData.sectionGrades.set(sectionCode, instructorGrades);
+
+                set({ courseGrades });
+            },
+            doesSectionHaveGrades: (courseId: CourseId, sectionCode: SectionCode) => {
+                const courseGrades = get().courseGrades;
+                return Boolean(courseGrades.get(courseId)?.sectionGrades.get(sectionCode));
+            },
+            setAreSectionGradesLoading: (courseId: CourseId, loading: boolean) => {
+                addCourseIfNeeded(courseId);
+                const courseGrades = get().courseGrades;
+                const courseData = get().courseGrades.get(courseId);
+                if (!courseData) {
+                    return;
+                }
+
+                courseData.areSectionGradesLoading = loading;
+
+                set({ courseGrades });
             },
         };
     })
 );
 
-export function useFetchCourseGrades(course: AACourse) {
-    const { fetchCourseGrades, removeCourse } = useCourseGradesStore(
+function useFetchOverallGrades(course: AACourse) {
+    const setOverallGrades = useCourseGradesStore((state) => state.setOverallGrades);
+
+    const { data: overallGrades, isLoading: areOverallGradesLoading } = trpcReact.grades.aggregateGrades.useQuery(
+        { department: course.deptCode, courseNumber: course.courseNumber, instructor: '' },
+        { select: (data) => data?.gradeDistribution ?? null }
+    );
+
+    const [prevOverallGrades, setPrevOverallGrades] = useState<typeof overallGrades>(overallGrades);
+    if (prevOverallGrades !== overallGrades && !areOverallGradesLoading) {
+        setPrevOverallGrades(overallGrades);
+    }
+
+    useEffect(() => {
+        if (!areOverallGradesLoading) {
+            setOverallGrades(getCourseId(course), overallGrades);
+        }
+    }, [overallGrades, areOverallGradesLoading, course, setOverallGrades]);
+}
+
+function useFetchSectionInstructorGrades(course: AACourse) {
+    const { setSectionGrades, doesSectionHaveGrades, setAreSectionGradesLoading } = useCourseGradesStore(
         useShallow((state) => ({
-            fetchCourseGrades: state.fetchCourseGrades,
-            removeCourse: state.removeCourse,
+            setSectionGrades: state.setSectionGrades,
+            doesSectionHaveGrades: state.doesSectionHaveGrades,
+            setAreSectionGradesLoading: state.setAreSectionGradesLoading,
         }))
     );
 
+    const [instructorsToIgnore, setInstructorsToIgnore] = useState(new Set<string>());
+
+    const instructorsToFetch = useMemo(() => {
+        const instructorSections = new Map<string, string[]>();
+        for (const section of course.sections) {
+            if (doesSectionHaveGrades(getCourseId(course), section.sectionCode)) {
+                continue;
+            }
+            const seenInstructor = section.instructors.find((instructor) => instructorSections.has(instructor));
+            if (seenInstructor) {
+                instructorSections.get(seenInstructor)!.push(section.sectionCode);
+                continue;
+            }
+
+            let i = 0;
+            while (
+                i < section.instructors.length &&
+                (section.instructors[i] === 'STAFF' || instructorsToIgnore.has(section.instructors[i]))
+            ) {
+                i++;
+            }
+
+            if (i === section.instructors.length) {
+                continue;
+            }
+
+            const instructor = section.instructors[i];
+
+            if (!instructorSections.has(instructor)) {
+                instructorSections.set(instructor, []);
+            }
+            instructorSections.get(instructor)!.push(section.sectionCode);
+        }
+        return instructorSections;
+    }, [course, instructorsToIgnore, doesSectionHaveGrades]);
+
+    const areInstructorGradesValid = useCallback((result: UseQueryResult<{ gradeDistribution: GradeDistribution }>) => {
+        return !result.isError && result.data?.gradeDistribution.averageGPA;
+    }, []);
+
+    const { sectionInstructorGrades, invalidInstructorGrades, areSectionInstructorGradesLoading } =
+        trpcReact.useQueries(
+            (t) =>
+                Array.from(instructorsToFetch).map(([instructor]) =>
+                    t.grades.aggregateGrades(
+                        { department: course.deptCode, courseNumber: course.courseNumber, instructor },
+                        { select: (data) => ({ instructor, gradeDistribution: data?.gradeDistribution ?? null }) }
+                    )
+                ),
+            {
+                combine: (results) => ({
+                    sectionInstructorGrades: results.filter(areInstructorGradesValid),
+                    invalidInstructorGrades: results.filter((result) => !areInstructorGradesValid(result)),
+                    areSectionInstructorGradesLoading: results.some((result) => result.isLoading || result.isFetching),
+                }),
+            }
+        );
+
+    const [prevInvalidInstructorGrades, setPrevInvalidInstructorGrades] =
+        useState<typeof invalidInstructorGrades>(invalidInstructorGrades);
+    if (invalidInstructorGrades !== prevInvalidInstructorGrades && !areSectionInstructorGradesLoading) {
+        const newInstructorsToIgnore = new Set(instructorsToIgnore);
+
+        for (const result of invalidInstructorGrades) {
+            if (result.data) {
+                newInstructorsToIgnore.add(result.data.instructor);
+            }
+        }
+
+        setInstructorsToIgnore(newInstructorsToIgnore);
+        setPrevInvalidInstructorGrades(invalidInstructorGrades);
+    }
+
     useEffect(() => {
-        const abortController = new AbortController();
+        const courseId = getCourseId(course);
+        for (const result of sectionInstructorGrades) {
+            if (!result.data) {
+                continue;
+            }
+            for (const sectionCode of instructorsToFetch.get(result.data.instructor)!) {
+                setSectionGrades(
+                    courseId,
+                    sectionCode,
+                    new Map([[result.data.instructor, result.data.gradeDistribution]])
+                );
+            }
+        }
+    }, [sectionInstructorGrades, instructorsToFetch, course, setSectionGrades, areInstructorGradesValid]);
 
-        fetchCourseGrades(course, abortController);
+    useEffect(() => {
+        setAreSectionGradesLoading(getCourseId(course), areSectionInstructorGradesLoading);
+    }, [areSectionInstructorGradesLoading, course, setAreSectionGradesLoading]);
+}
 
+export function useFetchCourseGrades(course: AACourse) {
+    const removeCourse = useCourseGradesStore((state) => state.removeCourse);
+    const addCourseIfNeeded = useCourseGradesStore((state) => state.addCourseIfNeeded);
+
+    useFetchOverallGrades(course);
+    useFetchSectionInstructorGrades(course);
+
+    useEffect(() => {
+        addCourseIfNeeded(getCourseId(course));
         return () => {
             removeCourse(getCourseId(course));
-            abortController.abort();
         };
-    }, [fetchCourseGrades, removeCourse, course]);
+    }, [course, removeCourse, addCourseIfNeeded]);
 }
 
 /**
  * Currently we only support showing grades for one instructor per section
  */
 export function getInstructorGradesFromSection(sectionInstructorGrades: SectionInstructorGrades) {
-    const [instructor, instructorGrades] = Array.from(sectionInstructorGrades.entries())[0];
+    const [instructor, instructorGrades] = sectionInstructorGrades.entries().next().value!;
     return { instructor, instructorGrades };
 }
 
 export function useSectionGrades(courseId: CourseId, sectionCode: SectionCode) {
-    const overallGrades = useCourseGradesStore((state) => state.courses.get(courseId)?.overallGrades);
+    const overallGrades = useCourseGradesStore((state) => state.courseGrades.get(courseId)?.overallGrades);
     const areOverallGradesLoading = useCourseGradesStore(
-        (state) => state.courses.get(courseId)?.areOverallGradesLoading
+        (state) => state.courseGrades.get(courseId)?.areOverallGradesLoading ?? true
     );
 
     const sectionInstructorGrades = useCourseGradesStore((state) =>
-        state.courses.get(courseId)?.sectionGrades.get(sectionCode)
+        state.courseGrades.get(courseId)?.sectionGrades.get(sectionCode)
     );
     const areSectionInstructorGradesLoading = useCourseGradesStore(
-        (state) => state.courses.get(courseId)?.areSectionGradesLoading
+        (state) => state.courseGrades.get(courseId)?.areSectionGradesLoading ?? true
     );
     return {
         overallGrades,

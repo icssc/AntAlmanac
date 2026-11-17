@@ -1,7 +1,7 @@
 import type { AACourse } from '@packages/antalmanac-types';
 
 export function getCourseIdFromParts(deptCode: string, courseNumber: string) {
-    return `${deptCode} ${courseNumber}`;
+    return `${deptCode}${courseNumber}`;
 }
 
 export function getCourseId(course: AACourse) {
