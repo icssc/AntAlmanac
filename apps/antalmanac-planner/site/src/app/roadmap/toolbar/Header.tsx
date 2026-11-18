@@ -65,11 +65,17 @@ const Header: FC<HeaderProps> = ({ courseCount, unitCount }) => {
             <Paper className="roadmap-header" variant="outlined">
                 <div className="planner-left">
                     <h1 className="shared-plan-name">{planName}</h1>
-                    <Chip icon={<VisibilityOutlinedIcon />} label="View only" size="small" variant="outlined" />
                     <span id="planner-stats">
                         <span id="course-count">{courseCount}</span> course{pluralize(courseCount)},{' '}
                         <span id="unit-count">{unitCount}</span> unit{pluralize(unitCount)}
                     </span>
+                    <Chip
+                        className="view-only-chip"
+                        icon={<VisibilityOutlinedIcon />}
+                        label="View only"
+                        size="small"
+                        variant="outlined"
+                    />
                 </div>
                 <div className="planner-actions">
                     <ButtonGroup>

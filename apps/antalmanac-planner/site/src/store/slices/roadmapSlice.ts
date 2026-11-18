@@ -267,6 +267,10 @@ export const roadmapSlice = createSlice({
                 plan.id = action.payload[plan.id] ?? plan.id;
             });
         },
+        setPlannerShareId: (state, action: PayloadAction<{ plannerId: number; shareId: string }>) => {
+            const plan = state.plans.find((p) => p.id === action.payload.plannerId);
+            if (plan) plan.shareId = action.payload.shareId;
+        },
         setSelectedSidebarTab: (state, action: PayloadAction<number>) => {
             state.selectedSidebarTab = action.payload;
         },
@@ -303,6 +307,7 @@ export const {
     setSelectedSidebarTab,
     setToastAction,
     setReadOnly,
+    setPlannerShareId,
 } = roadmapSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type

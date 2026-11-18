@@ -74,6 +74,12 @@ export function markTransfersAsUnread<T>(transfer: T[]): TransferWithUnread<T>[]
     }));
 }
 
+/** Fetch info about every AP exam, such as which courses each score clears */
+export async function loadAPExamInfo(): Promise<APExam[]> {
+    const exams = await trpc.transferCredits.getAPExamInfo.query();
+    return exams.map((exam) => ({ ...exam, catalogueName: (exam.catalogueName as string) ?? null }));
+}
+
 export enum LocalTransferSaveKey {
     Course = 'transferredCourses',
     AP = 'transferredAPs',

@@ -6,6 +6,7 @@ import { Provider, useStore } from 'react-redux';
 import './SharedRoadmap.scss';
 import LoadingSpinner from '../../component/LoadingSpinner/LoadingSpinner';
 import { expandPlanner } from '../../helpers/planner';
+import { loadAPExamInfo } from '../../helpers/transferCredits';
 import { useValidatePlanner } from '../../hooks/planner';
 import {
     initializeCompletedMarkers,
@@ -46,10 +47,7 @@ export type SharedRoadmapData = SharedDegreeProgress & {
  * from the viewer's store means nothing on the shared page can read or overwrite the viewer's own data.
  */
 async function createSharedStore(data: SharedRoadmapData, viewerState: RootState) {
-    const [yearPlans, apExams] = await Promise.all([
-        expandPlanner(data.planner.content),
-        trpc.transferCredits.getAPExamInfo.query(),
-    ]);
+    const [yearPlans, apExams] = await Promise.all([expandPlanner(data.planner.content), loadAPExamInfo()]);
 
     // The viewer's account and saved courses still apply to things like course previews and bookmarks
     const store = generateStore(viewerState.user, {
@@ -76,8 +74,7 @@ async function createSharedStore(data: SharedRoadmapData, viewerState: RootState
     dispatch(initializeCompletedMarkers(data.completedMarkers));
     dispatch(initializeOverriddenRequirements({ plannerId: plan.id, requirements: data.overriddenRequirements }));
 
-    const parsedApExams = apExams.map((exam) => ({ ...exam, catalogueName: (exam.catalogueName as string) ?? null }));
-    dispatch(setAPExams(parsedApExams));
+    dispatch(setAPExams(apExams));
     dispatch(setTransferredCourses(data.transfers.courses));
     dispatch(setUserAPExams(data.transfers.apExams));
     dispatch(setSelectedApRewards(data.transfers.selectedApRewards));

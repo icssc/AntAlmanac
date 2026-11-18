@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useSaveRoadmap } from '../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setShowToast, setToastMsg, setToastSeverity } from '../../store/slices/roadmapSlice';
+import { setPlannerShareId, setShowToast, setToastMsg, setToastSeverity } from '../../store/slices/roadmapSlice';
 import trpc from '../../trpc';
 
 const ExportButton = () => {
@@ -34,8 +34,12 @@ const ExportButton = () => {
             return;
         }
 
-        const shareId =
-            currentPlan.shareId ?? (await trpc.roadmaps.createShareId.mutate({ plannerId: resolvedPlanId })).shareId;
+        let shareId = currentPlan.shareId;
+        if (!shareId) {
+            shareId = (await trpc.roadmaps.createShareId.mutate({ plannerId: resolvedPlanId })).shareId;
+            // Remember it so sharing this plan again doesn't need another request
+            dispatch(setPlannerShareId({ plannerId: resolvedPlanId, shareId }));
+        }
         // Export is available on every page, so build the link from the site root rather than the current path
         const url = new URL(`/planner/share/${shareId}`, window.location.origin);
         await navigator.clipboard.writeText(url.toString());
