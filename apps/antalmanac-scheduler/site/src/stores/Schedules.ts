@@ -3,7 +3,12 @@ import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { moveArrayElements } from '$lib/utils';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
-import { getColorForNewSection, scheduleOfferingKey, scheduleSectionKey } from '$stores/scheduleHelpers';
+import {
+    getColorForNewSection,
+    normalizeCustomEventNotes,
+    scheduleOfferingKey,
+    scheduleSectionKey,
+} from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     AACourse,
@@ -17,7 +22,6 @@ import type {
     ScheduleUndoState,
     ShortCourseSchedule,
 } from '@packages/antalmanac-types';
-import { normalizeCustomEventNotes } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 
 /**
@@ -445,8 +449,6 @@ export class Schedules {
         if (addUndoState) {
             this.addUndoState();
         }
-        // Mutate in place so the same object stays shared across schedules (editCustomEvent relies on this).
-        newCustomEvent.notes = normalizeCustomEventNotes(newCustomEvent.notes);
         for (const scheduleIndex of scheduleIndices) {
             if (!this.doesCustomEventExistInSchedule(newCustomEvent.customEventID, scheduleIndex)) {
                 this.schedules[scheduleIndex].customEvents.push(newCustomEvent);
@@ -495,9 +497,7 @@ export class Schedules {
         }
 
         // Modify the original custom event so all references are updated as well
-        Object.assign(customEvent, editedCustomEvent, {
-            notes: normalizeCustomEventNotes(editedCustomEvent.notes),
-        });
+        Object.assign(customEvent, editedCustomEvent);
 
         const currentIndices = this.getIndexesOfCustomEvent(editedCustomEvent.customEventID);
         // Equivalent to currentIndices set minus newIndices

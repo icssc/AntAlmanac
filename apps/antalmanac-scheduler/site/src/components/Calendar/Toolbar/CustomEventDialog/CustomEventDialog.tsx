@@ -5,6 +5,7 @@ import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/Buildi
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
+import { normalizeCustomEventNotes } from '$stores/scheduleHelpers';
 import { Add, Edit } from '@mui/icons-material';
 import {
     Button,
@@ -27,7 +28,7 @@ interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
 }
 
-const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> & { notes: string } = {
+const defaultCustomEventValues = {
     start: '10:30',
     end: '15:30',
     title: '',
@@ -35,7 +36,7 @@ const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> & { 
     days: [false, false, false, false, false, false, false],
     building: undefined,
     notes: '',
-};
+} satisfies Omit<RepeatingCustomEvent, 'customEventID'>;
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -150,7 +151,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             end: end,
             customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
-            notes: notes,
+            notes: normalizeCustomEventNotes(notes),
         };
 
         if (props.customEvent) {
@@ -241,7 +242,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                                 inputLabel: { variant: 'outlined' },
                                 htmlInput: { maxLength: CUSTOM_EVENT_NOTES_MAX_LENGTH },
                                 input: {
-                                    sx: { paddingBottom: notesFocused ? 3.5 : undefined },
+                                    // Constant padding keeps the field height stable when the counter toggles on focus.
+                                    sx: { paddingBottom: 3.5 },
                                     endAdornment: notesFocused ? (
                                         <Typography
                                             variant="caption"

@@ -1,10 +1,10 @@
 import { calendarizeCustomEvents } from '$stores/calendarizeHelpers';
+import { normalizeCustomEventNotes } from '$stores/scheduleHelpers';
 import { Schedules } from '$stores/Schedules';
 import {
     CUSTOM_EVENT_NOTES_MAX_LENGTH,
     type RepeatingCustomEvent,
     RepeatingCustomEventSchema,
-    normalizeCustomEventNotes,
 } from '@packages/antalmanac-types';
 import { describe, expect, test } from 'vitest';
 
@@ -44,12 +44,23 @@ describe('Custom Events', () => {
         expect(normalizeCustomEventNotes(undefined)).toBeUndefined();
     });
 
-    test('schedule store normalizes notes when adding and editing custom events', () => {
+    test('loading a saved schedule normalizes custom event notes', async () => {
         const store = new Schedules();
-        store.addCustomEvent({ ...customEvent, notes: '  ROOM 100\n' }, [0]);
-        expect(store.getExistingCustomEvent(customEvent.customEventID)?.notes).toBe('ROOM 100');
+        await store.fromScheduleSaveState({
+            scheduleIndex: 0,
+            schedules: [
+                {
+                    scheduleName: 'Schedule 1',
+                    courses: [],
+                    scheduleNote: '',
+                    customEvents: [
+                        { ...customEvent, customEventID: '1', notes: '  ROOM 100\n' },
+                        { ...customEvent, customEventID: '2', notes: ' \n ' },
+                    ],
+                },
+            ],
+        });
 
-        store.editCustomEvent({ ...customEvent, notes: '   ' }, [0]);
-        expect(store.getExistingCustomEvent(customEvent.customEventID)?.notes).toBeUndefined();
+        expect(store.getCurrentCustomEvents().map((event) => event.notes)).toEqual(['ROOM 100', undefined]);
     });
 });
