@@ -38,9 +38,7 @@ function isThemeMismatched(preference: Theme | null, isDark: boolean) {
     return trueSystemDark !== isDark;
 }
 
-function createSsrMatchMedia(deviceType?: string) {
-    const estimatedWidth = deviceType === 'mobile' ? 390 : deviceType === 'tablet' ? 768 : 1280;
-
+function createSsrMatchMedia(estimatedWidth: number) {
     return (query: string) => {
         const maxWidth = query.match(/max-width:\s*(\d+)px/)?.[1];
         const minWidth = query.match(/min-width:\s*(\d+)px/)?.[1];
@@ -55,10 +53,10 @@ function createSsrMatchMedia(deviceType?: string) {
 }
 
 interface AppThemeProviderProps extends PropsWithChildren {
-    deviceType?: string;
+    viewportWidth: number;
 }
 
-const AppThemeProvider: FC<AppThemeProviderProps> = ({ children, deviceType }) => {
+const AppThemeProvider: FC<AppThemeProviderProps> = ({ children, viewportWidth }) => {
     const preloadedPreference = useAppSelector((state) => state.user.theme);
 
     const isLoggedIn = useIsLoggedIn();
@@ -105,14 +103,23 @@ const AppThemeProvider: FC<AppThemeProviderProps> = ({ children, deviceType }) =
         }
     }, [isLoggedIn, setThemePreference]);
 
+    useEffect(() => {
+        const saveViewportWidth = () => {
+            document.cookie = `viewportWidth=${window.innerWidth}; path=/; max-age=31536000; samesite=lax`;
+        };
+        saveViewportWidth();
+        window.addEventListener('resize', saveViewportWidth);
+        return () => window.removeEventListener('resize', saveViewportWidth);
+    }, []);
+
     const themeWithSsrMediaQueries = useMemo(
         () =>
             createTheme(theme, {
                 components: {
-                    MuiUseMediaQuery: { defaultProps: { ssrMatchMedia: createSsrMatchMedia(deviceType) } },
+                    MuiUseMediaQuery: { defaultProps: { ssrMatchMedia: createSsrMatchMedia(viewportWidth) } },
                 },
             }),
-        [deviceType]
+        [viewportWidth]
     );
 
     return (

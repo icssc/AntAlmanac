@@ -5,7 +5,7 @@ import '../App.scss';
 
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { userAgent } from 'next/server';
 
 import AppHeader from '../component/AppHeader/AppHeader';
@@ -31,6 +31,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     const headerList = await headers();
     const reqHeaders = Object.fromEntries(headerList.entries());
     const deviceType = userAgent({ headers: headerList }).device.type;
+    const savedViewportWidth = Number((await cookies()).get('viewportWidth')?.value);
+    const viewportWidth = savedViewportWidth || (deviceType === 'mobile' ? 390 : deviceType === 'tablet' ? 768 : 1280);
     const serverTrpc = createServerSideTrpcCaller(reqHeaders);
     const user = await serverTrpc.users.get.query().catch(() => null);
 
@@ -53,7 +55,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </head>
             <body>
                 <AppRouterCacheProvider>
-                    <AppProvider user={user} deviceType={deviceType}>
+                    <AppProvider user={user} viewportWidth={viewportWidth}>
                         <div id="root">
                             <AppHeader />
                             <div className="app-body">
