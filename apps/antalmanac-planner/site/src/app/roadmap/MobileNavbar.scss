@@ -1,0 +1,18 @@
+.mobile-navbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 300;
+    width: 100%;
+    background-color: var(--mui-palette-background-paper);
+    border-top: 1px solid var(--mui-palette-divider);
+    height: calc(52px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    .MuiSvgIcon-root {
+        width: 21px;
+        height: 21px;
+        font-size: 21px;
+    }
+}

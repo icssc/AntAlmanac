@@ -10,8 +10,7 @@ import { FC } from 'react';
 import { pluralize, useIsMobile } from '../../../helpers/util';
 import { useHasUnreadTransfers } from '../../../hooks/transferCredits';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { redoRoadmapRevision, undoRoadmapRevision } from '../../../store/slices/roadmapSlice';
-import { setShowMobileCreditsMenu, clearUnreadTransfers } from '../../../store/slices/transferCreditsSlice';
+import { redoRoadmapRevision, setSelectedMobileTab, undoRoadmapRevision } from '../../../store/slices/roadmapSlice';
 import AddYearPopup from '../planner/AddYearPopup';
 import RoadmapMultiplan from './RoadmapMultiplan';
 
@@ -22,7 +21,6 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ courseCount, unitCount }) => {
-    const showTransfers = useAppSelector((state) => state.transferCredits.showMobileCreditsMenu);
     const isMobile = useIsMobile();
     const dispatch = useAppDispatch();
     const currentRevisionIndex = useAppSelector((state) => state.roadmap.currentRevisionIndex);
@@ -35,12 +33,8 @@ const Header: FC<HeaderProps> = ({ courseCount, unitCount }) => {
         dispatch(redoRoadmapRevision());
     };
 
-    const toggleTransfers = () => {
-        if (showTransfers) {
-            // After closing the menu, clear all the unread markers
-            dispatch(clearUnreadTransfers());
-        }
-        dispatch(setShowMobileCreditsMenu(!showTransfers));
+    const openTransfers = () => {
+        dispatch(setSelectedMobileTab(1));
     };
 
     const shrinkButtons = useMediaQuery('(max-width: 900px)');
@@ -81,7 +75,7 @@ const Header: FC<HeaderProps> = ({ courseCount, unitCount }) => {
                                 size={buttonSize}
                                 className="header-btn"
                                 startIcon={<SwapHorizOutlinedIcon />}
-                                onClick={toggleTransfers}
+                                onClick={openTransfers}
                             >
                                 Add Credits
                             </Button>

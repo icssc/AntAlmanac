@@ -10,19 +10,30 @@ import { FC } from 'react';
 import ClickableDiv from '../../component/ClickableDiv/ClickableDiv';
 import { CourseSynopsis } from '../../component/CourseInfo/CourseInfo';
 import RecentOfferingsTooltip from '../../component/RecentOfferingsTooltip/RecentOfferingsTooltip';
-import { getCourseTags } from '../../helpers/util';
+import { getCourseTags, useIsMobile } from '../../helpers/util';
 import { useSavedCourses } from '../../hooks/savedCourses';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setActiveCourse, setActiveMissingPrerequisites, setShowAddCourse } from '../../store/slices/roadmapSlice';
 import { CourseGQLData } from '../../types/types';
 
 interface CourseHitItemProps extends CourseGQLData {}
 
 const CourseHitItem: FC<CourseHitItemProps> = (props) => {
     const router = useRouter();
+    const dispatch = useAppDispatch();
+    const isMobile = useIsMobile();
+    const isFullscreenSearch = useAppSelector((state) => state.roadmap.showMobileFullscreenSearch);
     const { saveCourse, unsaveCourse, isCourseSaved } = useSavedCourses();
     const courseIsSaved = isCourseSaved(props);
     const pillData = getCourseTags(props); // data to be displayed in pills
 
     const onClickName = () => {
+        if (isMobile && isFullscreenSearch) {
+            dispatch(setActiveCourse({ course: props }));
+            dispatch(setActiveMissingPrerequisites(undefined));
+            dispatch(setShowAddCourse(true));
+            return;
+        }
         router.push(`?course=${encodeURIComponent(props.id)}`);
     };
 
