@@ -4,6 +4,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 
 function addEventWithNotes(notes: string) {
+    const countBefore = AppStore.schedule.getCurrentCustomEvents().length;
+
     const { unmount } = render(<CustomEventDialog />);
     fireEvent.click(screen.getByRole('button', { name: 'Add custom events' }));
     fireEvent.click(screen.getByRole('button', { name: 'M' }));
@@ -11,15 +13,22 @@ function addEventWithNotes(notes: string) {
     fireEvent.click(screen.getByRole('button', { name: 'Add Event' }));
     unmount();
 
-    return AppStore.schedule.getCurrentCustomEvents().at(-1);
+    const customEvents = AppStore.schedule.getCurrentCustomEvents();
+    expect(customEvents).toHaveLength(countBefore + 1);
+
+    const addedEvent = customEvents.at(-1);
+    if (!addedEvent) {
+        throw new Error('Expected the dialog to add a custom event');
+    }
+    return addedEvent;
 }
 
 describe('CustomEventDialog notes', () => {
     test('trims notes before saving', () => {
-        expect(addEventWithNotes('  ROOM 100\n')?.notes).toBe('ROOM 100');
+        expect(addEventWithNotes('  ROOM 100\n').notes).toBe('ROOM 100');
     });
 
     test('saves whitespace-only notes as undefined', () => {
-        expect(addEventWithNotes(' \n ')?.notes).toBeUndefined();
+        expect(addEventWithNotes(' \n ').notes).toBeUndefined();
     });
 });
