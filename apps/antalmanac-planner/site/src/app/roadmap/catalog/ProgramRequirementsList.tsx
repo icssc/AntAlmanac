@@ -20,13 +20,13 @@ import {
     useMatchingGETransfers,
     saveOverriddenRequirement,
 } from '../../../helpers/courseRequirements';
-import { isCustomCourse } from '../../../helpers/customCourses';
 import { getMissingPrerequisites } from '../../../helpers/planner';
 import { programRequirementsSortable } from '../../../helpers/sortable';
 import { pluralize, useIsMobile } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
 import { useClearedCourses } from '../../../hooks/planner';
-import { useTransferredCredits, TransferredCourseWithType } from '../../../hooks/transferCredits';
+import { TransferredCourseWithType } from '../../../hooks/transferCredits';
+import { useTakenCourseSet } from '../../../hooks/useTakenCourseSet';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     setGroupExpanded,
@@ -43,7 +43,7 @@ import {
 } from '../../../store/slices/roadmapSlice';
 import { setShowMobileCreditsMenu } from '../../../store/slices/transferCreditsSlice';
 import trpc from '../../../trpc';
-import { CourseGQLData, PlannerCourseData } from '../../../types/types';
+import { CourseGQLData } from '../../../types/types';
 import { CourseNameAndInfo } from '../planner/Course';
 import MenuTile from '../transfers/MenuTile';
 
@@ -209,7 +209,12 @@ interface DepartmentCourseGroupProps {
     takenCourseIDs: CompletedCourseSet;
     storeKey: string;
 }
-const DepartmentCourseGroup: FC<DepartmentCourseGroupProps> = ({ department, courses, takenCourseIDs, storeKey }) => {
+export const DepartmentCourseGroup: FC<DepartmentCourseGroupProps> = ({
+    department,
+    courses,
+    takenCourseIDs,
+    storeKey,
+}) => {
     const open = useAppSelector((state) => state.courseRequirements.expandedGroups[storeKey] ?? false);
     const dispatch = useAppDispatch();
 
@@ -698,10 +703,7 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
     storeKeyPrefix,
     skipCollapseSingletons,
 }) => {
-    const transferredCourses = useTransferredCredits().courses;
-    const roadmapPlans = useAppSelector((state) => state.roadmap.plans);
-    const roadmapPlanIndex = useAppSelector((state) => state.roadmap.currentPlanIndex);
-    const yearPlans = roadmapPlans[roadmapPlanIndex].content.yearPlans;
+    const takenCourseSet = useTakenCourseSet();
 
     const formattedMajor = formatRequirements(requirements, skipCollapseSingletons);
     const formattedSchool = schoolRequirements ? formatRequirements(schoolRequirements, skipCollapseSingletons) : [];
@@ -717,22 +719,6 @@ const ProgramRequirementsList: FC<RequireCourseListProps> = ({
                 takenCourseIDs={takenCourseSet}
             />
         ));
-
-    const roadmapCourseMap = yearPlans
-        .flatMap((year) => year.quarters)
-        .flatMap((quarter) => quarter.courses)
-        .filter((course): course is PlannerCourseData => !isCustomCourse(course))
-        .map((course) => [course.id, { units: course.minUnits }]);
-    const transferCourseMap = transferredCourses.map((t) => [
-        t.courseName.replace(/\s/g, ''),
-        { units: t.units ?? 0, transferType: t.transferType },
-    ]);
-
-    const takenCourseSet: CompletedCourseSet = Object.assign(
-        {},
-        Object.fromEntries(roadmapCourseMap),
-        Object.fromEntries(transferCourseMap)
-    );
 
     return (
         <div className="program-requirements">
