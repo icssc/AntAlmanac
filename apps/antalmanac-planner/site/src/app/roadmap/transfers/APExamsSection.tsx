@@ -3,6 +3,7 @@ import { APExam, TransferredAPExam } from '@peterportal/types';
 import { FC, useState, useEffect, useCallback } from 'react';
 
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     addUserAPExam,
@@ -81,6 +82,7 @@ const Rewards: FC<{ examName: string; coursesGranted: CoursesGrantedTree }> = ({
     const selectedReward = selectedApRewards.find((reward) => reward.examName === examName);
     const dispatch = useAppDispatch();
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
 
     const handleSelect = (selectedIndex: number) => {
         // path column to be removed in a future PR
@@ -117,6 +119,7 @@ const Rewards: FC<{ examName: string; coursesGranted: CoursesGrantedTree }> = ({
         }
         if ('OR' in tree) {
             const options = tree.OR.map(formatCourses);
+            if (readOnly) return <span>{options[selectedReward?.selectedIndex ?? 0]}</span>;
             return (
                 <span>
                     <RewardsSelect
@@ -140,10 +143,15 @@ const APCreditMenuTile: FC<{ exam: TransferWithUnread<TransferredAPExam> }> = ({
     const updateUnits = (value: number) => handleUpdate(score, value);
     const apExamInfo = useAppSelector((state) => state.transferCredits.apExamInfo);
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
     const dispatch = useAppDispatch();
     const apiExamInfo = apExamInfo.find((exam) => exam.fullName === examName);
 
-    const selectBox = <ScoreSelection score={score} setScore={updateScore} />;
+    const selectBox = readOnly ? (
+        <span className="ap-score">Score: {score}</span>
+    ) : (
+        <ScoreSelection score={score} setScore={updateScore} />
+    );
 
     const getApplicableReward = useCallback(
         (score: number) => {
@@ -193,19 +201,20 @@ const APCreditMenuTile: FC<{ exam: TransferWithUnread<TransferredAPExam> }> = ({
 
 const APExamsSection: FC = () => {
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
     const dispatch = useAppDispatch();
     const apExamInfo = useAppSelector((state) => state.transferCredits.apExamInfo);
     const userAPExams = useAppSelector((state) => state.transferCredits.userAPExams);
     const [selectedExam, setSelectedExam] = useState<APExamOption | null>(null);
     const [score, setScore] = useState<number | null>(null);
 
-    // Set selected rewards
+    // Set selected rewards. A shared roadmap already has its owner's, which the viewer's must not replace.
     useEffect(() => {
-        if (!isLoggedIn) return;
+        if (!isLoggedIn || readOnly) return;
         trpc.transferCredits.getSelectedAPRewards.query().then((rewards) => {
             dispatch(setSelectedApRewards(rewards));
         });
-    }, [dispatch, isLoggedIn]);
+    }, [dispatch, isLoggedIn, readOnly]);
 
     // Save AP Exam to store
     useEffect(() => {
@@ -231,6 +240,17 @@ const APExamsSection: FC = () => {
     const apSelectOptions = baseSelectOptions.filter((exam) => {
         return !userAPExams.some((userExam) => userExam.examName === exam.label);
     });
+
+    if (readOnly) {
+        return (
+            <MenuSection title="AP Exam Credits">
+                {userAPExams.length === 0 && <SectionDescription>No AP exams added.</SectionDescription>}
+                {userAPExams.map((exam) => (
+                    <APCreditMenuTile key={exam.examName} exam={exam} />
+                ))}
+            </MenuSection>
+        );
+    }
 
     return (
         <MenuSection title="AP Exam Credits">

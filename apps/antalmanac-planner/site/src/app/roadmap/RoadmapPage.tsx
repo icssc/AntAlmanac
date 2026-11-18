@@ -134,7 +134,7 @@ const RoadmapPage: FC = () => {
             />
             {!readOnly && <AddCoursePopup />}
             <MobileCourseCatalog />
-            {!readOnly && <MobileCreditsMenu />}
+            <MobileCreditsMenu />
 
             {/* Main Planner View or Fullscreen Mobile Search */}
             <div className={`main-wrapper ${isMobile ? 'mobile' : ''}`} id="mobileScrollContainer">

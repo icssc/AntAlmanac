@@ -85,6 +85,18 @@ const Header: FC<HeaderProps> = ({ courseCount, unitCount }) => {
                                 Requirements
                             </Button>
                         )}
+                        {isMobile && (
+                            <Button
+                                variant="contained"
+                                color="inherit"
+                                size={buttonSize}
+                                className="header-btn"
+                                startIcon={<SwapHorizOutlinedIcon />}
+                                onClick={toggleTransfers}
+                            >
+                                Credits
+                            </Button>
+                        )}
                         <Button variant="contained" size={buttonSize} href="/planner">
                             {isLoggedIn ? 'Go to my roadmap' : 'Make your own roadmap'}
                         </Button>

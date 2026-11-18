@@ -39,25 +39,23 @@ const DesktopRoadmapSidebar = () => {
                 onChange={(_, newValue) => dispatch(setSelectedSidebarTab(newValue))}
                 variant="fullWidth"
             >
-                {/* A shared roadmap only shows the catalog, since credits and search are for editing */}
-                {!readOnly && (
-                    <Tab
-                        value={0}
-                        icon={<SwapHorizOutlinedIcon />}
-                        iconPosition="start"
-                        label={
-                            <Badge variant="dot" color="error" invisible={!hasUnreadTransfers} className="unread-badge">
-                                Credits
-                            </Badge>
-                        }
-                    />
-                )}
+                <Tab
+                    value={0}
+                    icon={<SwapHorizOutlinedIcon />}
+                    iconPosition="start"
+                    label={
+                        <Badge variant="dot" color="error" invisible={!hasUnreadTransfers} className="unread-badge">
+                            Credits
+                        </Badge>
+                    }
+                />
                 <Tab value={1} icon={<FormatListBulletedIcon />} iconPosition="start" label="Catalog" />
+                {/* Search is only for adding courses, which a shared roadmap can't do */}
                 {!readOnly && <Tab value={2} icon={<SearchIcon />} iconPosition="start" label="Search" />}
             </Tabs>
 
             <div className="sidebar-content" id="sidebarScrollContainer">
-                {selectedIndex === 0 && !readOnly && <TransferCreditsMenu />}
+                {selectedIndex === 0 && <TransferCreditsMenu />}
                 {selectedIndex === 1 && <CourseCatalog />}
                 {selectedIndex === 2 && !readOnly && <SavedAndSearch autoFocusSearch />}
             </div>

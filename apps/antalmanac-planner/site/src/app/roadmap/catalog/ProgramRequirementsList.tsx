@@ -395,15 +395,12 @@ interface TransferCreditsTileProps {
 const TransferCreditsTile = ({ transferredGE, showGETitle = false }: TransferCreditsTileProps) => {
     const dispatch = useAppDispatch();
     const isMobile = useIsMobile();
-    const readOnly = useIsReadOnly();
     const title = showGETitle ? `Transfer Credits • ${transferredGE.geName}` : 'Transfer Credits';
 
     return (
         <MenuTile
             title={title}
             onClick={() => {
-                // The credits menu edits transfers, which isn't possible in a shared roadmap
-                if (readOnly) return;
                 if (isMobile) {
                     dispatch(setShowMobileCreditsMenu(true));
                 } else {

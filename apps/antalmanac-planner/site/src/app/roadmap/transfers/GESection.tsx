@@ -6,6 +6,7 @@ import React, { FC } from 'react';
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
 import { GE_TITLE_MAP } from '../../../helpers/courseRequirements';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setTransferredGE } from '../../../store/slices/transferCreditsSlice';
 import trpc from '../../../trpc';
@@ -62,6 +63,7 @@ interface GEMenuTileProps {
 const GEMenuTile: FC<GEMenuTileProps> = ({ geName }) => {
     const dispatch = useAppDispatch();
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
 
     const currentGE = useAppSelector((state) =>
         state.transferCredits.transferredGEs.find((ge) => ge.geName === geName)
@@ -86,6 +88,21 @@ const GEMenuTile: FC<GEMenuTileProps> = ({ geName }) => {
         updateGE(currentGE.numberOfCourses, newValue);
     };
 
+    if (readOnly) {
+        return (
+            <MenuTile title={GE_TITLE_MAP[geName]}>
+                <div className="ge-inputs">
+                    <p>
+                        Number of Courses: <b>{currentGE.numberOfCourses}</b>
+                    </p>
+                    <p>
+                        Units Taken: <b>{currentGE.units}</b>
+                    </p>
+                </div>
+            </MenuTile>
+        );
+    }
+
     return (
         <MenuTile title={GE_TITLE_MAP[geName]}>
             <div className="ge-inputs">
@@ -108,6 +125,23 @@ const GEMenuTile: FC<GEMenuTileProps> = ({ geName }) => {
 
 const GESection: FC = () => {
     const loading = useAppSelector((state) => state.transferCredits.dataLoadState !== 'done');
+    const transferredGEs = useAppSelector((state) => state.transferCredits.transferredGEs);
+    const readOnly = useIsReadOnly();
+
+    if (readOnly) {
+        // Only list the categories the owner has credits in, rather than every category at zero
+        const creditedGEs = ALL_GE_NAMES.filter((geName) =>
+            transferredGEs.some((ge) => ge.geName === geName && (ge.numberOfCourses > 0 || ge.units > 0))
+        );
+        return (
+            <MenuSection title="General Education Credits">
+                {creditedGEs.length === 0 && <SectionDescription>No GE credits added.</SectionDescription>}
+                {creditedGEs.map((geName) => (
+                    <GEMenuTile key={geName} geName={geName} />
+                ))}
+            </MenuSection>
+        );
+    }
 
     return (
         <MenuSection title="General Education Credits">
