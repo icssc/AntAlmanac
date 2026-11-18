@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { cache } from 'react';
 
 import { createServerSideTrpcCaller } from '../../../trpc';
-import SharedRoadmap from '../SharedRoadmap';
+import SharedRoadmap, { SharedRoadmapData } from '../SharedRoadmap';
 
 interface SharePageParams {
     params: Promise<{ shareId: string }>;
@@ -17,7 +17,11 @@ const getSharedPlanner = cache(async (shareId: string) => {
     const serverTrpc = createServerSideTrpcCaller(reqHeaders);
 
     try {
-        const data = await serverTrpc.roadmaps.getSharedView.query({ shareId });
+        const [{ customCards, ...planner }, degreeProgress] = await Promise.all([
+            serverTrpc.roadmaps.getByShareId.query({ shareId }),
+            serverTrpc.roadmaps.getSharedDegreeProgress.query({ shareId }),
+        ]);
+        const data: SharedRoadmapData = { planner, customCards, ...degreeProgress };
         return { status: 'found', data } as const;
     } catch (error) {
         // A malformed share ID (BAD_REQUEST) can't belong to any roadmap, so treat it as not found too

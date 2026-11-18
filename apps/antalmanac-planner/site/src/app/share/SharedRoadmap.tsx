@@ -32,7 +32,14 @@ import trpc from '../../trpc';
 import { RoadmapPlan } from '../../types/types';
 import RoadmapPage from '../roadmap/RoadmapPage';
 
-export type SharedRoadmapData = Awaited<ReturnType<typeof trpc.roadmaps.getSharedView.query>>;
+type SharedPlanner = Awaited<ReturnType<typeof trpc.roadmaps.getByShareId.query>>;
+type SharedDegreeProgress = Awaited<ReturnType<typeof trpc.roadmaps.getSharedDegreeProgress.query>>;
+
+/** A shared roadmap with the custom cards it uses and its owner's degree progress */
+export type SharedRoadmapData = SharedDegreeProgress & {
+    planner: Omit<SharedPlanner, 'customCards'>;
+    customCards: SharedPlanner['customCards'];
+};
 
 /**
  * Creates a separate store holding only the shared roadmap and its owner's degree progress. Keeping it apart

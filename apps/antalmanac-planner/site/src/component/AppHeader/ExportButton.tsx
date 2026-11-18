@@ -35,7 +35,7 @@ const ExportButton = () => {
         }
 
         const shareId =
-            currentPlan.shareId ?? (await trpc.roadmaps.ensureShareId.mutate({ plannerId: resolvedPlanId })).shareId;
+            currentPlan.shareId ?? (await trpc.roadmaps.createShareId.mutate({ plannerId: resolvedPlanId })).shareId;
         // Export is available on every page, so build the link from the site root rather than the current path
         const url = new URL(`/planner/share/${shareId}`, window.location.origin);
         await navigator.clipboard.writeText(url.toString());
