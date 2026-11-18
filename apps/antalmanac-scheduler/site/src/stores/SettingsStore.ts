@@ -69,15 +69,16 @@ export const useAutoSaveStore = create<AutoSaveStore>((set) => {
 
 interface DevModeStore {
     devMode: boolean;
+    initDevMode: () => void;
     setDevMode: (devMode: boolean) => void;
 }
 
 export const useDevModeStore = create<DevModeStore>((set) => {
-    const stored = typeof Storage !== 'undefined' ? getLocalStorageDevMode() : null;
-    const devMode = stored === 'true';
-
     return {
-        devMode,
+        devMode: false,
+        initDevMode: () => {
+            set({ devMode: getLocalStorageDevMode() === 'true' });
+        },
         setDevMode: (devMode: boolean) => {
             if (typeof Storage !== 'undefined') {
                 setLocalStorageDevMode(devMode.toString());

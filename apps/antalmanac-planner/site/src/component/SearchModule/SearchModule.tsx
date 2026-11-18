@@ -1,7 +1,6 @@
 import SearchIcon from '@mui/icons-material/Search';
 
 import './SearchModule.scss';
-
 import { InputAdornment, IconButton, TextField } from '@mui/material';
 import { useState, FC, useEffect, useRef } from 'react';
 

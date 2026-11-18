@@ -89,7 +89,7 @@ export function AppSwitcher() {
                         },
                     }}
                 >
-                    <Logo width={48} />
+                    <Logo />
                 </Button>
 
                 <Popover

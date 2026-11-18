@@ -1,7 +1,6 @@
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 import './Course.scss';
-
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { IconButton } from '@mui/material';

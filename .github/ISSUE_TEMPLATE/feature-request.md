@@ -7,9 +7,9 @@ assignees: ''
 ---
 
 **What's a feature you would like to see?**
-i.e. "I would like to be able to view [...] in [place]"
+e.g. "I would like to be able to view [...] in [place]"
 
-**Does this require data from the school, i.e. grade distributions, that Anteater API does not currently provide?**
+**Does this require data from the school, e.g. grade distributions, that Anteater API does not currently provide?**
 
 <!-- If the answer is yes, please ALSO create an issue at >> https://github.com/icssc/anteater-api/issues and then paste a link to the issue below -->
 

@@ -8,9 +8,10 @@ import { BannerAlert } from './BannerAlert';
 interface PlannerCourseLinkBannerProps {
     deptValue: string;
     courseNumber: string;
+    termName: string;
 }
 
-export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCourseLinkBannerProps) {
+export function PlannerCourseLinkBanner({ deptValue, courseNumber, termName }: PlannerCourseLinkBannerProps) {
     const [courseIds] = useCourseSearchParam('courseIds');
 
     if (deptValue === DEFAULT_MANUAL_SEARCH_VALUES.deptValue || !courseNumber) {
@@ -32,7 +33,8 @@ export function PlannerCourseLinkBanner({ deptValue, courseNumber }: PlannerCour
             sx={{ width: '100%' }}
         >
             <BannerAlert>
-                Search for <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> on AntAlmanac Planner!
+                No courses for <span style={{ textDecoration: 'underline' }}>{termName}</span>. Search for{' '}
+                <span style={{ textDecoration: 'underline' }}>{courseLabel}</span> on AntAlmanac Planner!
             </BannerAlert>
         </Link>
     );

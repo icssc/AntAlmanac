@@ -1,5 +1,5 @@
 import { loadSchedules } from '$backend/lib/rds/helpers';
-import type { DatabaseOrTransaction, Transaction } from '$backend/lib/rds/types';
+import type { Database, DatabaseOrTransaction, Transaction } from '$backend/lib/rds/types';
 import {
     type RepeatingCustomEvent,
     type ScheduleSaveState,
@@ -20,7 +20,7 @@ import { and, eq, not, notInArray, or } from 'drizzle-orm';
  * Upserts the given user's schedules and selected schedule index.
  */
 export async function upsertUserData(
-    db: DatabaseOrTransaction,
+    db: Database,
     userId: string,
     saveState: ScheduleSaveState
 ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
@@ -259,7 +259,7 @@ export async function getScheduleSharingStatuses(db: DatabaseOrTransaction, user
  * Returns the updated value, or null if the schedule was not found.
  */
 export async function toggleScheduleSharing(
-    db: DatabaseOrTransaction,
+    db: Database,
     userId: string,
     scheduleId: string
 ): Promise<{ sharedWithFriends: boolean } | null> {

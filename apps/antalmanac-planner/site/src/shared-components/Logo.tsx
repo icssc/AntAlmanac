@@ -88,6 +88,7 @@ export function Logo() {
             width={logo.width}
             height={logo.height}
             style={{ height: 32, width: 'auto', maxWidth: '100%' }}
+            loading="eager"
         />
     );
 }

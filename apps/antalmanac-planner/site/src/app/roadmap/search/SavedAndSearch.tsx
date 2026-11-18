@@ -18,7 +18,7 @@ import { useGetCoursesInSameQuarter } from '../../../hooks/sameQuarterCourses';
 import { useSavedCourses } from '../../../hooks/savedCourses';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setSelectedTab } from '../../../store/slices/courseRequirementsSlice';
-import { setActiveCourse, setSelectedSidebarTab } from '../../../store/slices/roadmapSlice';
+import { selectCurrentPlan, setActiveCourse, setSelectedSidebarTab } from '../../../store/slices/roadmapSlice';
 import { setSearchViewIndex } from '../../../store/slices/searchSlice';
 import { CourseGQLData, ProfessorGQLData, SearchIndex } from '../../../types/types';
 import Course from '../planner/Course';
@@ -53,12 +53,12 @@ const CourseResultItem: FC<{ course: CourseGQLData; addMode: 'tap' | 'drag' }> =
     const courseId = `${course.department} ${course.courseNumber}`;
     const clearedCourses = useClearedCoursesUntil(courseId);
     const coursesInCurrentQuarter = useGetCoursesInSameQuarter(courseId);
+    const isCHC = Boolean(useAppSelector(selectCurrentPlan)?.chc);
 
-    const missingPrerequisites = getMissingPrerequisites(
-        clearedCourses,
-        course.prerequisiteTree,
-        coursesInCurrentQuarter
-    );
+    const missingPrerequisites = getMissingPrerequisites(clearedCourses, course.prerequisiteTree, {
+        takingCourses: coursesInCurrentQuarter,
+        isCHC,
+    });
 
     return <Course data={course} addMode={addMode} requiredCourses={missingPrerequisites} />;
 };

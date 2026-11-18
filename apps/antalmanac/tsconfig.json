@@ -11,6 +11,7 @@
         "baseUrl": ".",
         "paths": {
             "$actions/*": ["../antalmanac-scheduler/site/src/actions/*"],
+            "$assets/*": ["src/assets/*"],
             "$backend/*": ["../antalmanac-scheduler/site/src/backend/*"],
             "$components/*": ["../antalmanac-scheduler/site/src/components/*"],
             "$generated/*": ["../antalmanac-scheduler/site/src/generated/*"],

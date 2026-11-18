@@ -1,5 +1,6 @@
 import { Button, Popover, useTheme } from '@mui/material';
 import type { Course, Prerequisite, PrerequisiteTree } from '@packages/anteater-api/types';
+import { formatPrerequisite, getRenderablePrerequisiteTreeGroup } from '@packages/anteater-api/utils';
 import { type FC, useState } from 'react';
 
 import './PrereqTree.css';
@@ -48,35 +49,23 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
         const prereq = prerequisite as Prerequisite;
         return (
             <li key={props.index} className={'prerequisite-node'}>
-                <Node
-                    label={
-                        prereq.prereqType === 'course'
-                            ? `${prereq.courseId} ${
-                                  prereq.coreq ? '(coreq)' : prereq.minGrade ? `(min grade = ${prereq.minGrade})` : ''
-                              }`
-                            : `${prereq.examName} ${prereq.minGrade ? `(min grade = ${prereq.minGrade})` : ''}`
-                    }
-                    node={'prerequisite-node'}
-                />
+                <Node label={formatPrerequisite(prereq)} node={'prerequisite-node'} />
             </li>
         );
     } else {
-        const prereqTree = prerequisite as Record<string, PrerequisiteNode[]>;
+        const renderableGroup = getRenderablePrerequisiteTreeGroup(prerequisite as PrerequisiteTree);
+        if (!renderableGroup) return null;
+        const [prereqTreeType, prereqChildren] = renderableGroup;
+
         return (
             <div className={'prerequisite-node'}>
                 <div style={{ display: 'inline-flex', flexDirection: 'row', padding: '0.5rem 0' }}>
                     <span style={{ margin: 'auto' }}>
-                        <div className={'prereq-branch'}>
-                            {
-                                Object.entries(phraseMapping).filter(([subtreeType, _]) =>
-                                    Object.prototype.hasOwnProperty.call(prerequisite, subtreeType)
-                                )[0][1]
-                            }
-                        </div>
+                        <div className={'prereq-branch'}>{phraseMapping[prereqTreeType]}</div>
                     </span>
                     <div className={'prereq-clump'}>
                         <ul className="prereq-list">
-                            {prereqTree[Object.keys(prerequisite)[0]].map((child, index) => (
+                            {prereqChildren.map((child, index) => (
                                 <PrereqTreeNode key={`tree-${index}`} index={index} prerequisite={child} />
                             ))}
                         </ul>

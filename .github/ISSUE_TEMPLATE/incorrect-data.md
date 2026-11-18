@@ -1,6 +1,6 @@
 ---
 name: Incorrect Course, Degree, or Professor Data
-about: Catalogue information, i.e. course or professor names, are missing or incorrect
+about: Catalogue information, e.g. course or professor names, are missing or incorrect
 title: ''
 labels: ''
 assignees: ''
@@ -11,7 +11,7 @@ assignees: ''
 
 **Please confirm all of the following are true**
 
-- [ ] Any relevant Anteater API endpoint(s), i.e. [GET /courses/:id](https://anteaterapi.com/reference#tag/courses/get/v2/rest/courses/batch) for a course, return the data that you expect. If you are not sure how to check this, feel free to ask in the ICSSC Projects Discord server.
+- [ ] Any relevant Anteater API endpoint(s), e.g. [GET /courses/:id](https://anteaterapi.com/reference#tag/courses/get/v2/rest/courses/batch) for a course, return the data that you expect. If you are not sure how to check this, feel free to ask in the ICSSC Projects Discord server.
 - [ ] I have checked that there are no [Anteater API GitHub Issues](https://github.com/icssc/anteater-api/issues) for the same problem
 
 **Describe the bug**

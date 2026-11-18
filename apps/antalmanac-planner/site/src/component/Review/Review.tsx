@@ -2,7 +2,6 @@ import AddIcon from '@mui/icons-material/Add';
 import { Button, MenuItem, Select, Tooltip } from '@mui/material';
 
 import './Review.scss';
-
 import { Checkbox, FormControlLabel } from '@mui/material';
 import { ReviewData } from '@peterportal/types';
 import { FC, useState, useEffect, useCallback } from 'react';

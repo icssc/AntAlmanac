@@ -1,0 +1,9 @@
+Scheduler:
+    - changed-files:
+          - all-globs-to-any-file:
+                - 'apps/antalmanac-scheduler/**'
+                - '!apps/antalmanac-scheduler/site/src/generated/**'
+
+Planner:
+    - changed-files:
+          - any-glob-to-any-file: 'apps/antalmanac-planner/**'
