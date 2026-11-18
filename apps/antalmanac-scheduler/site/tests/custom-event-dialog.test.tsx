@@ -16,11 +16,7 @@ function addEventWithNotes(notes: string) {
     const customEvents = AppStore.schedule.getCurrentCustomEvents();
     expect(customEvents).toHaveLength(countBefore + 1);
 
-    const addedEvent = customEvents.at(-1);
-    if (!addedEvent) {
-        throw new Error('Expected the dialog to add a custom event');
-    }
-    return addedEvent;
+    return customEvents[countBefore];
 }
 
 describe('CustomEventDialog notes', () => {
