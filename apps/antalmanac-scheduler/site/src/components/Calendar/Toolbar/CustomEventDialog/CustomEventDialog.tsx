@@ -243,7 +243,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                                 htmlInput: { maxLength: CUSTOM_EVENT_NOTES_MAX_LENGTH },
                                 input: {
                                     // Constant padding keeps the field height stable when the counter toggles on focus.
-                                    sx: { paddingBottom: 3.5 },
+                                    sx: { paddingBottom: 2.5 },
                                     endAdornment: notesFocused ? (
                                         <Typography
                                             variant="caption"
