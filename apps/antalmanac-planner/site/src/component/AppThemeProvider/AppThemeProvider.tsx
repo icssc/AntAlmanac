@@ -40,8 +40,8 @@ function isThemeMismatched(preference: Theme | null, isDark: boolean) {
 
 function createSsrMatchMedia(estimatedWidth: number) {
     return (query: string) => {
-        const maxWidth = query.match(/max-width:\s*(\d+)px/)?.[1];
-        const minWidth = query.match(/min-width:\s*(\d+)px/)?.[1];
+        const maxWidth = query.match(/max-width:\s*([\d.]+)px/)?.[1];
+        const minWidth = query.match(/min-width:\s*([\d.]+)px/)?.[1];
         if (!maxWidth && !minWidth) {
             return { matches: false };
         }
