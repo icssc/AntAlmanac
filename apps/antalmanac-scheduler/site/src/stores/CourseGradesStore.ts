@@ -192,9 +192,8 @@ function useFetchSectionInstructorGrades(course: AACourse, courseId: CourseId) {
         }
     );
 
-    const [prevInvalidInstructorGrades, setPrevInvalidInstructorGrades] =
-        useState<typeof invalidInstructors>(invalidInstructors);
-    if (invalidInstructors !== prevInvalidInstructorGrades && !areSectionInstructorGradesLoading) {
+    const [prevInvalidInstructors, setPrevInvalidInstructors] = useState<typeof invalidInstructors>([]);
+    if (invalidInstructors !== prevInvalidInstructors && !areSectionInstructorGradesLoading) {
         const newInstructorsToIgnore = new Set(instructorsToIgnore);
 
         for (const instructor of invalidInstructors) {
@@ -202,7 +201,7 @@ function useFetchSectionInstructorGrades(course: AACourse, courseId: CourseId) {
         }
 
         setInstructorsToIgnore(newInstructorsToIgnore);
-        setPrevInvalidInstructorGrades(invalidInstructors);
+        setPrevInvalidInstructors(invalidInstructors);
     }
 
     useEffect(() => {
