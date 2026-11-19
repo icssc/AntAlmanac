@@ -1,53 +1,51 @@
 import './SavedCourses.scss';
-import { ProgramRequirement } from '@peterportal/types';
 import { useEffect } from 'react';
+import { useMemo } from 'react';
 
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
 import { useSavedCourses } from '../../../hooks/savedCourses';
+import { useTakenCourseSet } from '../../../hooks/useTakenCourseSet';
 import { useAppDispatch } from '../../../store/hooks';
 import { setGroupExpanded } from '../../../store/slices/courseRequirementsSlice';
-import ProgramRequirementsList from './ProgramRequirementsList';
+import { DepartmentCourseGroup } from './ProgramRequirementsList';
 
 const SavedCourseList = () => {
     const resultsLoading = false;
     const { savedCourses } = useSavedCourses();
     const dispatch = useAppDispatch();
+    const takenCourseSet = useTakenCourseSet();
 
-    const groupedByDepartment: Record<string, string[]> = {};
-    savedCourses.forEach((course) => {
-        const deptString = `${course.departmentName} (${course.department})`;
-        groupedByDepartment[deptString] ??= [];
-        groupedByDepartment[deptString].push(course.id);
-    });
-
-    /**
-     * @todo currently, consecutive "single-course" "requirements" are grouped into a single
-     * "complete all of the following block". this requires #840 to be merged to fix.
-     */
-    const requirements = Object.entries(groupedByDepartment).map(([deptString, courses]) => {
-        const requirement: ProgramRequirement = {
-            requirementType: 'Course',
-            label: deptString,
-            courseCount: courses.length + 1,
-            requirementId: '',
-            courses,
-        };
-        return requirement;
-    });
+    const groupedByDepartment = useMemo(() => {
+        const groups: Record<string, string[]> = {};
+        savedCourses.forEach((course) => {
+            const deptString = `${course.departmentName} (${course.department})`;
+            groups[deptString] ??= [];
+            groups[deptString].push(course.id);
+        });
+        return groups;
+    }, [savedCourses]);
 
     useEffect(() => {
-        requirements.forEach((_, i) => {
-            dispatch(setGroupExpanded({ storeKey: 'saved-' + i, expanded: true }));
+        Object.keys(groupedByDepartment).forEach((deptString) => {
+            dispatch(setGroupExpanded({ storeKey: 'saved-' + deptString, expanded: true }));
         });
-    }, [dispatch, requirements]);
+    }, [dispatch, groupedByDepartment]);
 
     if (resultsLoading) return <LoadingSpinner />;
 
-    return (
-        <div className="saved-courses">
-            <ProgramRequirementsList requirements={requirements} storeKeyPrefix="saved" skipCollapseSingletons />
-        </div>
-    );
+    const deptGroups = Object.entries(groupedByDepartment).map(([deptString, courses]) => {
+        return (
+            <DepartmentCourseGroup
+                key={deptString}
+                department={deptString}
+                courses={courses}
+                takenCourseIDs={takenCourseSet}
+                storeKey={'saved-' + deptString}
+            ></DepartmentCourseGroup>
+        );
+    });
+
+    return <div className="saved-courses department-course-groups">{deptGroups}</div>;
 };
 
 export default SavedCourseList;

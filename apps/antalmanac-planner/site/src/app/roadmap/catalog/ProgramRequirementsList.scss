@@ -27,7 +27,7 @@
     }
 }
 
-.group-requirement {
+.requirementgroup- {
     border: 2px solid var(--mui-palette-divider);
     border-radius: 8px;
     padding: 12px;
@@ -176,6 +176,7 @@
 .department-course-group-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     min-height: 34px;
     padding: 6px 8px 6px 12px;
     background: var(--mui-palette-overlay-overlay2);
@@ -188,6 +189,14 @@
         align-items: center;
         color: var(--mui-palette-text-secondary);
         font-size: 12px;
+    }
+
+    .expand-requirements {
+        margin-block: -8px;
+        margin-right: -4px;
+        margin-left: 0;
+        padding: 4px;
+        color: inherit;
     }
 }
 
