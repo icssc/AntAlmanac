@@ -1,5 +1,5 @@
 import { COURSE_RENAMES, type CourseRename, type CourseRenameKey } from '$lib/renames/renames';
-import type { AggregateGrades } from '@packages/anteater-api/types';
+import type { AggregateGrades, GradeDistribution } from '@packages/anteater-api/types';
 import { buildCourseId } from '@packages/anteater-api/utils';
 
 function* iterateRenameChain(deptCode: string, courseNumber: string): Generator<CourseRename> {
@@ -60,8 +60,8 @@ export function getLatestRenamedCourseIdentifier(deptCode: string, courseNumber:
 }
 
 export function mergeAggregateGrades(
-    results: [NonNullable<AggregateGrades>, ...NonNullable<AggregateGrades>[]]
-): NonNullable<AggregateGrades> {
+    results: [NonNullable<GradeDistribution>, ...NonNullable<GradeDistribution>[]]
+): NonNullable<GradeDistribution> {
     if (results.length === 1) return results[0];
 
     type GradeDistribution = NonNullable<NonNullable<AggregateGrades>['gradeDistribution']>;
@@ -72,21 +72,19 @@ export function mergeAggregateGrades(
         return typeof value === 'number' ? value : 0;
     };
 
-    const countKeys = Object.keys(results[0].gradeDistribution).filter(
-        (key): key is GradeCountKey => key !== 'averageGPA'
-    );
+    const countKeys = Object.keys(results[0]).filter((key): key is GradeCountKey => key !== 'averageGPA');
 
-    const { averageGPA: _firstAverageGpa, ...mergedCounts } = results[0].gradeDistribution;
+    const { averageGPA: _firstAverageGpa, ...mergedCounts } = results[0];
     for (const key of countKeys) {
-        mergedCounts[key] = results.reduce((sum, r) => sum + gradeCountValue(r.gradeDistribution, key), 0);
+        mergedCounts[key] = results.reduce((sum, r) => sum + gradeCountValue(r, key), 0);
     }
 
     let weightedGpaSum = 0;
     let weightedGpaCount = 0;
     for (const r of results) {
-        const gpa = r.gradeDistribution.averageGPA;
+        const gpa = r.averageGPA;
         if (gpa == null) continue;
-        const count = countKeys.reduce((sum, key) => sum + gradeCountValue(r.gradeDistribution, key), 0);
+        const count = countKeys.reduce((sum, key) => sum + gradeCountValue(r, key), 0);
         weightedGpaSum += gpa * count;
         weightedGpaCount += count;
     }
@@ -94,7 +92,7 @@ export function mergeAggregateGrades(
     const averageGPA = weightedGpaCount > 0 ? weightedGpaSum / weightedGpaCount : null;
 
     return {
-        sectionList: results.flatMap((r) => r.sectionList),
-        gradeDistribution: { ...mergedCounts, averageGPA },
+        ...mergedCounts,
+        averageGPA,
     };
 }

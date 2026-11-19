@@ -1,11 +1,12 @@
 import type {
-    AggregateGrades,
+    AggregateGradesByCourse,
     AggregateGradesByOffering,
     CalendarAllAPIResult,
     Course,
     CoursesBatchAPIResult,
     CoursesFilteredAPIResult,
     EnrollmentHistory,
+    GradeDistribution,
     WebsocAPIDepartmentsResponse,
     WebsocAPIResponse,
     WebsocSyllabiResponse,
@@ -128,8 +129,20 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
         grades: {
             async aggregate(
                 params: paths['/v2/rest/grades/aggregate']['get']['parameters']['query']
-            ): Promise<AggregateGrades> {
+            ): Promise<GradeDistribution> {
                 const { data, error, response } = await http.GET('/v2/rest/grades/aggregate', {
+                    params: { query: params },
+                });
+                if (error || !data) {
+                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                }
+                return data.data;
+            },
+
+            async aggregateByCourse(
+                params: paths['/v2/rest/grades/aggregateByCourse']['get']['parameters']['query']
+            ): Promise<AggregateGradesByCourse> {
+                const { data, error, response } = await http.GET('/v2/rest/grades/aggregateByCourse', {
                     params: { query: params },
                 });
                 if (error || !data) {
