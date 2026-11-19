@@ -12,6 +12,8 @@ import AppHeader from '../component/AppHeader/AppHeader';
 import AppProvider from '../component/AppProvider/AppProvider';
 import ChangelogModal from '../component/ChangelogModal/ChangelogModal';
 import { createServerSideTrpcCaller } from '../trpc';
+import { ANTALMANAC_PLANNER_TITLE, ANTALMANAC_PLANNER_DESCRIPTION } from './seo-constants';
+import { SeoContent } from './seo-content';
 
 const roboto = Roboto({
     subsets: ['latin'],
@@ -21,9 +23,22 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-    title: 'AntAlmanac Planner',
-    description:
-        'A web application for course discovery and planning at UCI, featuring an enhanced catalogue and a 4-year planner.',
+    title: ANTALMANAC_PLANNER_TITLE,
+    description: ANTALMANAC_PLANNER_DESCRIPTION,
+    metadataBase: new URL('https://antalmanac.com'),
+    openGraph: {
+        title: ANTALMANAC_PLANNER_TITLE,
+        description: ANTALMANAC_PLANNER_DESCRIPTION,
+        siteName: 'AntAlmanac',
+        type: 'website',
+        images: '/og-image.png',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: ANTALMANAC_PLANNER_TITLE,
+        description: ANTALMANAC_PLANNER_DESCRIPTION,
+        images: '/og-image.png',
+    },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -54,7 +69,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         <div id="root">
                             <AppHeader />
                             <div className="app-body">
-                                <div className="app-content">{children}</div>
+                                <div className="app-content">
+                                    <SeoContent />
+                                    {children}
+                                </div>
                                 <ChangelogModal />
                             </div>
                         </div>
