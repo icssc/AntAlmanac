@@ -1,6 +1,13 @@
-export type { paths } from './generated/anteater-api-types';
 export * from './calendar';
 export * from './courses';
+export * from './courseMaterials';
+export * from './courseRequirements';
+export * from './departments';
 export * from './enrollHist';
 export * from './grades';
+export * from './professor';
+export * from './search';
+export * from './term';
+export * from './transferCredits';
 export * from './websoc';
+export * from './week';

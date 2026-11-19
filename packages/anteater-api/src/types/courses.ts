@@ -1,16 +1,19 @@
-import type { components, paths } from './generated/anteater-api-types';
+import type {
+    BatchCoursesResponse,
+    CourseByIdResponse,
+    CoursesByFiltersResponse,
+    Prereq,
+    PrereqTree,
+} from './generated/anteater-api-types';
 
-export type CoursesBatchAPIResult =
-    paths['/v2/rest/courses/batch']['get']['responses'][200]['content']['application/json'];
+export type CoursesBatchAPIResult = BatchCoursesResponse;
 
-export type CourseByIdAPIResult =
-    paths['/v2/rest/courses/{id}']['get']['responses'][200]['content']['application/json'];
+export type CourseByIdAPIResult = CourseByIdResponse;
 
 export type Course = CourseByIdAPIResult['data'];
 
-export type CoursesFilteredAPIResult =
-    paths['/v2/rest/courses']['get']['responses'][200]['content']['application/json'];
+export type CoursesFilteredAPIResult = CoursesByFiltersResponse;
 
-export type Prerequisite = components['schemas']['prereq'];
+export type Prerequisite = Prereq;
 
-export type PrerequisiteTree = components['schemas']['prereqTree'];
+export type PrerequisiteTree = PrereqTree;
