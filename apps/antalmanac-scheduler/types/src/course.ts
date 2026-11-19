@@ -6,8 +6,6 @@ export type AASection = WebsocSection & {
     color: string;
 };
 
-export type SectionCode = AASection['sectionCode'];
-
 export type AACourse = Omit<WebsocCourse, 'sections'> & {
     sections: AASection[];
     sectionTypes: WebsocSectionType[];
