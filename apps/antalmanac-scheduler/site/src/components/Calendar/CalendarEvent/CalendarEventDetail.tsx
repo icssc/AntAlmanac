@@ -10,7 +10,7 @@ import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
 import AppStore from '$stores/AppStore';
-import { formatTimes } from '$stores/calendarizeHelpers';
+import { calendarizeCustomEvents, formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
 import { Box, Button, Chip, IconButton, Paper, Tooltip } from '@mui/material';
@@ -154,25 +154,34 @@ export function CalendarEventDetail({ selectedEvent, closePopover }: CalendarEve
         );
     }
 
-    return <CustomEventDetail customEventID={selectedEvent.customEventID} closePopover={closePopover} />;
+    return (
+        <CustomEventDetail
+            customEventID={selectedEvent.customEventID}
+            day={selectedEvent.start.getDay()}
+            closePopover={closePopover}
+        />
+    );
 }
 
 interface CustomEventDetailProps {
     customEventID: CustomEventId;
+    day: number;
     closePopover: () => void;
 }
 
-function CustomEventDetail({ customEventID, closePopover }: CustomEventDetailProps) {
+function CustomEventDetail({ customEventID, day, closePopover }: CustomEventDetailProps) {
     const customEvent = useCurrentCustomEvent(customEventID);
     const postHog = usePostHog();
+    const isTileShown =
+        !!customEvent && calendarizeCustomEvents([customEvent]).some((event) => event.start.getDay() === day);
 
     useEffect(() => {
-        if (!customEvent) {
+        if (!isTileShown) {
             closePopover();
         }
-    }, [customEvent, closePopover]);
+    }, [isTileShown, closePopover]);
 
-    if (!customEvent) {
+    if (!customEvent || !isTileShown) {
         return null;
     }
 
@@ -183,7 +192,7 @@ function CustomEventDetail({ customEventID, closePopover }: CustomEventDetailPro
         .map((scheduleIndex) => scheduleNames[scheduleIndex]);
 
     return (
-        <Paper sx={{ padding: '0.5rem', minWidth: '15rem', maxWidth: '25rem', overflowWrap: 'anywhere' }}>
+        <Paper sx={{ padding: '0.5rem', minWidth: '15rem', maxWidth: '25rem', overflowWrap: 'break-word' }}>
             <Box sx={{ fontSize: '0.9rem', fontWeight: 500, marginBottom: '0.25rem' }}>{title}</Box>
             <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                 <tbody>

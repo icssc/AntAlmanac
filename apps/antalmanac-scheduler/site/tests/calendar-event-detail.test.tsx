@@ -1,6 +1,8 @@
 import { CalendarEventDetail } from '$components/Calendar/CalendarEvent/CalendarEventDetail';
+import { CalendarEventPopover } from '$components/Calendar/CalendarEvent/CalendarEventPopover';
 import AppStore from '$stores/AppStore';
 import { calendarizeCustomEvents } from '$stores/calendarizeHelpers';
+import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { act, render, screen } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
@@ -69,5 +71,36 @@ describe('CalendarEventDetail for custom events', () => {
         });
 
         expect(closePopover).toHaveBeenCalled();
+    });
+
+    test('closes the popover when the clicked day is unselected', () => {
+        const { customEvent, selectedEvent } = addCustomEvent('popover-day', 'Mon and Tue');
+        const closePopover = vi.fn();
+        render(<CalendarEventDetail selectedEvent={selectedEvent} closePopover={closePopover} />);
+
+        act(() => {
+            AppStore.editCustomEvent({ ...customEvent, days: [false, true, true, false, false, false, false] }, [
+                AppStore.getCurrentScheduleIndex(),
+            ]);
+        });
+        expect(closePopover).not.toHaveBeenCalled();
+
+        act(() => {
+            AppStore.editCustomEvent({ ...customEvent, days: [false, false, true, false, false, false, false] }, [
+                AppStore.getCurrentScheduleIndex(),
+            ]);
+        });
+        expect(closePopover).toHaveBeenCalled();
+    });
+});
+
+describe('CalendarEventPopover', () => {
+    test('closes when the clicked tile is no longer on the page', () => {
+        const { selectedEvent } = addCustomEvent('popover-anchor', 'Weekend switch');
+        useSelectedEventStore.setState({ selectedEvent, selectedEventAnchorEl: document.createElement('div') });
+
+        render(<CalendarEventPopover />);
+
+        expect(useSelectedEventStore.getState().selectedEvent).toBeNull();
     });
 });
