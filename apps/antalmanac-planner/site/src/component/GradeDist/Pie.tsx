@@ -1,0 +1,61 @@
+import { GradesRaw } from '@peterportal/types';
+import { useContext } from 'react';
+import { Pie, Tooltip, ResponsiveContainer, PieChart, LabelList, Legend } from 'recharts';
+
+import { getAggregateGradeData } from '../../helpers/gradeDist.ts';
+import { getCssVariable } from '../../helpers/styling.ts';
+import ThemeContext from '../../style/theme-context';
+import ChartTooltip from '../ChartTooltip/ChartTooltip.tsx';
+
+interface ChartProps {
+    gradeData: GradesRaw;
+    quarter: string;
+    professor?: string;
+    course?: string;
+}
+
+export default function PieChartGraph({ gradeData, quarter, professor, course }: ChartProps) {
+    const { darkMode } = useContext(ThemeContext);
+    const aggregateGradeData = getAggregateGradeData(gradeData, professor, quarter, course);
+
+    const data = [
+        { grade: 'A', count: aggregateGradeData.gradeACount, fill: getCssVariable('--mui-palette-chart-a') },
+        { grade: 'B', count: aggregateGradeData.gradeBCount, fill: getCssVariable('--mui-palette-chart-b') },
+        { grade: 'C', count: aggregateGradeData.gradeCCount, fill: getCssVariable('--mui-palette-chart-c') },
+        { grade: 'D', count: aggregateGradeData.gradeDCount, fill: getCssVariable('--mui-palette-chart-d') },
+        { grade: 'F', count: aggregateGradeData.gradeFCount, fill: getCssVariable('--mui-palette-chart-f') },
+        { grade: 'P', count: aggregateGradeData.gradePCount, fill: getCssVariable('--mui-palette-chart-pass') },
+        { grade: 'NP', count: aggregateGradeData.gradeNPCount, fill: getCssVariable('--mui-palette-chart-noPass') },
+    ];
+
+    const formatAsPercent = (count: number) => {
+        const percent = (Number(count) / aggregateGradeData.total) * 100;
+
+        return percent >= 2 ? `${percent.toFixed(1)}%` : '';
+    };
+
+    return (
+        <ResponsiveContainer width="100%" height="100%">
+            <PieChart data={data}>
+                <Pie dataKey="count" outerRadius="80%" labelLine={true} animationDuration={450} nameKey={'grade'}>
+                    <LabelList
+                        dataKey="count"
+                        position="outside"
+                        formatter={(count) => formatAsPercent(Number(count))}
+                        fill={getCssVariable('--mui-palette-text-secondary')}
+                    />
+                </Pie>
+                <Legend verticalAlign="bottom" />
+                <Tooltip
+                    cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
+                    content={({ active, payload }) => {
+                        if (!active || !payload?.length) return null;
+                        const { grade, count } = payload[0].payload;
+                        return <ChartTooltip label={grade} value={count} />;
+                    }}
+                    isAnimationActive={false}
+                />
+            </PieChart>
+        </ResponsiveContainer>
+    );
+}
