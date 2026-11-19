@@ -2,37 +2,37 @@ import { aapiClient, aapiProcedure } from '$backend/lib/aapi';
 import { router } from '$backend/trpc';
 import { getRenamedCoursesIdentifiers, mergeAggregateGrades } from '$lib/renames/utils';
 import { isNotEmpty } from '$lib/utils';
-import { GradesGeSchema } from '@packages/antalmanac-types';
-import type { AggregateGrades } from '@packages/anteater-api/types';
+import type { CourseGradeDistribution } from '@packages/anteater-api/types';
 import { z } from 'zod';
 
 const gradesRouter = router({
-    aggregateGrades: aapiProcedure
+    aggregateGradesByCourse: aapiProcedure
         .input(
             z.object({
-                department: z.string().optional(),
-                courseNumber: z.string().optional(),
+                department: z.string(),
+                courseNumber: z.string(),
                 instructor: z.string().optional(),
-                ge: GradesGeSchema.optional(),
             })
         )
-        .query(async ({ input }): Promise<AggregateGrades> => {
+        .query(async ({ input }): Promise<CourseGradeDistribution | null> => {
             const { department, courseNumber } = input;
-
-            if (!department || !courseNumber) {
-                return aapiClient.grades.aggregate(input);
-            }
 
             const identifiers = getRenamedCoursesIdentifiers(department, courseNumber);
 
-            const results = await Promise.all(
-                identifiers.map((ci) =>
-                    aapiClient.grades.aggregate({ ...input, department: ci.deptCode, courseNumber: ci.courseNumber })
+            const results = (
+                await Promise.all(
+                    identifiers.map((ci) =>
+                        aapiClient.grades.aggregateBySingleCourse({
+                            ...input,
+                            department: ci.deptCode,
+                            courseNumber: ci.courseNumber,
+                        })
+                    )
                 )
-            );
+            ).filter((result) => result !== null);
 
             if (!isNotEmpty(results)) {
-                return aapiClient.grades.aggregate(input);
+                return aapiClient.grades.aggregateBySingleCourse(input);
             }
 
             return mergeAggregateGrades(results);

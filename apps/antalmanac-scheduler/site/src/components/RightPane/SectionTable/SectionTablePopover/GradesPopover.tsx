@@ -1,6 +1,6 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
 import { trpcReact } from '$lib/api/trpc';
-import { getRenamedCoursesLabel } from '$lib/renames/utils';
+import { getRenamedCoursesLabel, isGradeDistributionKeyCount } from '$lib/renames/utils';
 import {
     Box,
     Card,
@@ -42,11 +42,11 @@ function toGradeData(
     }
 
     const totalGrades = Object.entries(courseGrades)
-        .filter(([key]) => key !== 'averageGPA')
+        .filter(([key]) => isGradeDistributionKeyCount(key))
         .reduce((acc, [, value]) => acc + (value as number), 0);
 
     const grades = Object.entries(courseGrades)
-        .filter(([key]) => key !== 'averageGPA')
+        .filter(([key]) => isGradeDistributionKeyCount(key))
         .map(([key, value]) => ({
             name: key.replace('grade', '').replace('Count', ''),
             all: Number((((value as number) / totalGrades) * 100).toFixed(2)),
@@ -71,10 +71,7 @@ export function GradesPopover(props: GradesPopoverProps) {
 
     const instructorResults = trpcReact.useQueries((t) =>
         namedInstructors.map((instructor) =>
-            t.grades.aggregateGrades(
-                { department: deptCode, courseNumber, instructor },
-                { select: (data) => data?.gradeDistribution ?? null }
-            )
+            t.grades.aggregateGradesByCourse({ department: deptCode, courseNumber, instructor })
         )
     );
 
@@ -87,13 +84,14 @@ export function GradesPopover(props: GradesPopoverProps) {
         return { gpa: '', instructor: namedInstructors[0] ?? '' };
     }, [instructorResults, namedInstructors]);
 
-    const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGrades.useQuery(
-        { department: deptCode, courseNumber, instructor: '' },
-        { select: (data) => data?.gradeDistribution ?? null }
-    );
-    const { data: instructorGrades, isLoading: instructorLoading } = trpcReact.grades.aggregateGrades.useQuery(
+    const { data: overallGrades, isLoading: overallLoading } = trpcReact.grades.aggregateGradesByCourse.useQuery({
+        department: deptCode,
+        courseNumber,
+        instructor: '',
+    });
+    const { data: instructorGrades, isLoading: instructorLoading } = trpcReact.grades.aggregateGradesByCourse.useQuery(
         { department: deptCode, courseNumber, instructor },
-        { select: (data) => data?.gradeDistribution ?? null, enabled: !!instructor }
+        { enabled: !!instructor }
     );
 
     const loading = overallLoading || (!!instructor && instructorLoading) || instructorResults.some((r) => r.isLoading);
