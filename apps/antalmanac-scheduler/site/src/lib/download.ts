@@ -288,7 +288,7 @@ export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCale
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
             const term = getDefaultTerm(events);
-            const { title, start, end, building } = event;
+            const { title, start, end, building, notes } = event;
             const days = getByDays(event.days.join(''));
             const rrule = getRRule(days, term.quarter);
             const eventStartDate = getClassStartDate(term, days);
@@ -307,6 +307,7 @@ export function getEventsFromCourses(events = AppStore.getEventsWithFinalsInCale
                 startOutputType: 'local' as const,
                 endOutputType: 'local' as const,
                 title: title,
+                ...(notes && { description: notes }),
                 location: buildingCatalogue[Number(building)]?.name,
                 start: firstClassStart,
                 end: firstClassEnd,

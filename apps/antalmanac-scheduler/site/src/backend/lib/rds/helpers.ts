@@ -86,6 +86,7 @@ function aggregateUserData(
                 days: customEvent.days.split('').map((day) => day === '1'),
                 color: customEvent.color ?? '#551a8b',
                 building: customEvent.building ?? undefined,
+                notes: customEvent.notes ?? undefined,
             });
         }
 
