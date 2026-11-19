@@ -22,6 +22,7 @@ import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import { calculateTotalUnits } from '../../../helpers/planner';
 import { deletePlannerYear, modifyPlannerYear } from '../../../helpers/roadmapEdits';
 import { pluralize } from '../../../helpers/util';
+import { useAnimatedHeight } from '../../../hooks/useAnimatedHeight';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     selectCurrentPlan,
@@ -107,6 +108,29 @@ const DeleteYearModal = ({ show, setShow, yearName, yearIndex }: DeleteYearModal
                 </Button>
             </DialogActions>
         </Dialog>
+    );
+};
+
+interface QuarterListProps {
+    yearIndex: number;
+    quarters: PlannerYearData['quarters'];
+}
+
+const QuarterList = ({ yearIndex, quarters }: QuarterListProps) => {
+    const quarterListRef = useRef<HTMLDivElement>(null);
+    useAnimatedHeight(quarterListRef);
+
+    return (
+        <Card className="quarter-list" ref={quarterListRef} variant="outlined">
+            {quarters.map((quarter, quarterIndex) => (
+                <Quarter
+                    key={`year-quarter-${quarterIndex}`}
+                    yearIndex={yearIndex}
+                    quarterIndex={quarterIndex}
+                    data={quarter}
+                />
+            ))}
+        </Card>
     );
 };
 
@@ -229,18 +253,7 @@ const Year: FC<YearProps> = ({ yearIndex, data }) => {
             />
             <Collapse in={!collapsed} timeout="auto" unmountOnExit>
                 <Divider />
-                <Card className="quarter-list" variant="outlined">
-                    {data.quarters.map((quarter, quarterIndex) => {
-                        return (
-                            <Quarter
-                                key={`year-quarter-${quarterIndex}`}
-                                yearIndex={yearIndex}
-                                quarterIndex={quarterIndex}
-                                data={quarter}
-                            />
-                        );
-                    })}
-                </Card>
+                <QuarterList yearIndex={yearIndex} quarters={data.quarters} />
             </Collapse>
         </Card>
     );
