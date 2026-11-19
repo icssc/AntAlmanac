@@ -1,5 +1,5 @@
 {
-  "id": "91bf1194-5178-41ca-926c-e9270d55356a",
+  "id": "6de3e1ff-6ad7-4701-9820-9bb26c0d0a88",
   "prevId": "4b9bf2f5-8104-4918-8499-e261823bf8cd",
   "version": "7",
   "dialect": "postgresql",
@@ -856,6 +856,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -1126,60 +1132,6 @@
           "value": "\"friendships\".\"requester_id\" <> \"friendships\".\"addressee_id\""
         }
       },
-      "isRLSEnabled": false
-    },
-    "public.user_majors": {
-      "name": "user_majors",
-      "schema": "",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "major_id": {
-          "name": "major_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_majors_user_id_users_id_fk": {
-          "name": "user_majors_user_id_users_id_fk",
-          "tableFrom": "user_majors",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "user_majors_user_id_major_id_pk": {
-          "name": "user_majors_user_id_major_id_pk",
-          "columns": [
-            "user_id",
-            "major_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
       "isRLSEnabled": false
     }
   },

@@ -3,7 +3,12 @@ import { getDefaultTerm, getTermByShortName } from '$lib/term';
 import { moveArrayElements } from '$lib/utils';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
-import { getColorForNewSection, scheduleOfferingKey, scheduleSectionKey } from '$stores/scheduleHelpers';
+import {
+    getColorForNewSection,
+    normalizeCustomEventNotes,
+    scheduleOfferingKey,
+    scheduleSectionKey,
+} from '$stores/scheduleHelpers';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     AACourse,
@@ -754,6 +759,11 @@ export class Schedules {
                             });
                         }
                     }
+                }
+
+                // Mutate in place: custom event objects may be shared across schedules in the save state.
+                for (const customEvent of shortCourseSchedule.customEvents) {
+                    customEvent.notes = normalizeCustomEventNotes(customEvent.notes);
                 }
 
                 const scheduleNoteId = Math.random();

@@ -53,6 +53,7 @@ export interface CustomEvent extends CommonCalendarEvent {
     eventKind: 'custom';
     customEventID: CustomEventId;
     building: string;
+    notes: string;
     days: string[];
 }
 

@@ -152,8 +152,15 @@
     {
       "idx": 21,
       "version": "7",
-      "when": 1794717041862,
-      "tag": "0021_skinny_blue_marvel",
+      "when": 1793595285746,
+      "tag": "0021_add_custom_event_notes",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1795065173299,
+      "tag": "0022_cloudy_colonel_america",
       "breakpoints": true
     }
   ]
