@@ -1,16 +1,18 @@
 'use client';
 import { SavedPlannerData, SavedRoadmap } from '@peterportal/types';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
     collapseAllPlanners,
     expandAllPlanners,
+    prefetchPlannerCourses,
     loadRoadmap,
     readLocalRoadmap,
     saveRoadmap,
     validatePlanner,
 } from '../../../helpers/planner';
 import { compareRoadmaps, restoreRevision } from '../../../helpers/roadmap';
+import { readRoadmapSnapshot, writeRoadmapSnapshot } from '../../../helpers/roadmapSnapshot';
 import {
     getNamesOfTransfers,
     loadTransferredAPs,
@@ -73,8 +75,10 @@ const PlannerLoader: FC = () => {
     const isCHC = Boolean(useAppSelector(selectCurrentPlan)?.chc);
     const isRoadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
     const isLoggedIn = useIsLoggedIn();
+    const userKey = useAppSelector((state) => state.user.user?.email);
     useCheckUnsavedChanges();
 
+    const serverRoadmapReceived = useRef(false);
     const [roadmapLoaded, setRoadmapLoaded] = useState(false);
     const [initialLocalRoadmap, setInitialLocalRoadmap] = useState<SavedRoadmap | null>(null);
     const [initialAccountRoadmap, setInitialAccountRoadmap] = useState<SavedRoadmap | null>(null);
@@ -165,20 +169,42 @@ const PlannerLoader: FC = () => {
         // This is to avoid issues with loadRoadmap() being called twice.
         if (!isRoadmapLoading || initialAccountRoadmap || initialLocalRoadmap) return;
 
+        // Paint the last-seen account roadmap right away; the server copy below always replaces it
+        const snapshot = isLoggedIn && userKey ? readRoadmapSnapshot(userKey) : null;
+        if (snapshot) {
+            prefetchPlannerCourses(snapshot.planners);
+            expandAllPlanners(snapshot.planners).then((plans) => {
+                if (serverRoadmapReceived.current) return;
+                const timestamp = new Date(snapshot.timestamp ?? Date.now()).getTime();
+                dispatch(setInitialPlannerData({ plans, timestamp, currentPlanIndex: snapshot.currentPlanIndex ?? 0 }));
+                dispatch(setRoadmapLoading(false));
+            });
+        }
+
         loadRoadmap(isLoggedIn).then(({ accountRoadmap, localRoadmap }) => {
+            serverRoadmapReceived.current = true;
+            if (accountRoadmap && userKey) writeRoadmapSnapshot(userKey, accountRoadmap);
+            // Fetch catalog data in parallel with the transfer-credit requests that gate rendering.
+            const early = accountRoadmap ?? localRoadmap;
+            if (early) prefetchPlannerCourses(early.planners);
             setInitialAccountRoadmap(accountRoadmap);
             setInitialLocalRoadmap(localRoadmap);
             dispatch(setDataLoadState('loading'));
         });
-    }, [dispatch, isRoadmapLoading, initialAccountRoadmap, initialLocalRoadmap, isLoggedIn]);
+    }, [dispatch, isRoadmapLoading, initialAccountRoadmap, initialLocalRoadmap, isLoggedIn, userKey]);
 
-    // After transfers loaded, do roadmap conflict resolution
+    // Render the roadmap as soon as it's expanded; transfers only affect validation, which re-runs when they load
     useEffect(() => {
-        if (!userTransfersLoaded || !initialLocalRoadmap || roadmapLoaded) return;
+        if (!initialLocalRoadmap || roadmapLoaded) return;
+        populateExistingRoadmap(initialAccountRoadmap ?? initialLocalRoadmap).then(() => setRoadmapLoaded(true));
+    }, [populateExistingRoadmap, initialAccountRoadmap, initialLocalRoadmap, roadmapLoaded]);
 
-        populateExistingRoadmap(initialAccountRoadmap ?? initialLocalRoadmap).then(() => {
-            setRoadmapLoaded(true);
-
+    // After roadmap and transfers loaded, do roadmap conflict resolution
+    const conflictChecked = useRef(false);
+    useEffect(() => {
+        if (!userTransfersLoaded || !roadmapLoaded || !initialLocalRoadmap || conflictChecked.current) return;
+        conflictChecked.current = true;
+        {
             if (!isLoggedIn) return;
 
             trpc.customCourses.getCustomCards.query().then((cards) => {
@@ -203,11 +229,10 @@ const PlannerLoader: FC = () => {
 
             // Logged in + doesn't exist => update everything
             saveRoadmapAndUpsertTransfers(initialLocalRoadmap.planners, null, initialLocalRoadmap.currentPlanIndex);
-        });
+        }
     }, [
         saveRoadmapAndUpsertTransfers,
         isLoggedIn,
-        populateExistingRoadmap,
         userTransfersLoaded,
         initialAccountRoadmap,
         initialLocalRoadmap,

@@ -88,8 +88,9 @@ const ReviewForm: FC<ReviewFormProps> = ({
     const [availableTermsForProfessor, setAvailableTermsForProfessor] = useState<string[]>([]);
     const [professorCourseTermsMap, setProfessorCourseTermsMap] = useState<Record<string, string[]>>({});
 
-    // on initial load, fetch instructor/course terms
+    // Fetch instructor/course terms only when the form is opened.
     useEffect(() => {
+        if (!open) return;
         const promises: Promise<void>[] = [];
 
         const parseTerms = (terms: string | string[]): string[] => {
@@ -198,7 +199,7 @@ const ReviewForm: FC<ReviewFormProps> = ({
         }
 
         Promise.all(promises).catch(console.error);
-    }, [courseProp, professorProp, reviewToEdit]);
+    }, [open, courseProp, professorProp, reviewToEdit]);
 
     // when instructor, course, or their terms data changes, determine which terms to show in the dropdown
     useEffect(() => {
