@@ -37,7 +37,7 @@ export default function PieChartGraph({ gradeData, quarter, professor, course }:
     return (
         <ResponsiveContainer width="100%" height="100%">
             <PieChart data={data}>
-                <Pie dataKey="count" outerRadius="80%" labelLine={true} animationDuration={450} nameKey={'grade'}>
+                <Pie dataKey="count" outerRadius="80%" labelLine={true} animationDuration={500} nameKey={'grade'}>
                     <LabelList
                         dataKey="count"
                         position="outside"
@@ -45,7 +45,7 @@ export default function PieChartGraph({ gradeData, quarter, professor, course }:
                         fill={getCssVariable('--mui-palette-text-secondary')}
                     />
                 </Pie>
-                <Legend verticalAlign="bottom" />
+                <Legend position="bottom" />
                 <Tooltip
                     cursor={{ fill: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
                     content={({ active, payload }) => {

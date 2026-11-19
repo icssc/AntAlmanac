@@ -47,7 +47,15 @@
         }
     }
 }
+.gradedist-filter.gradedist-chart-type {
+    .MuiInputBase-root {
+        width: 110px;
 
+        .MuiInputBase-input {
+            width: auto;
+        }
+    }
+}
 .gradedist-content {
     display: flex;
     flex-direction: row;

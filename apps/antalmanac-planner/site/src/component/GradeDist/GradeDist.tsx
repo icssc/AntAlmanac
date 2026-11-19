@@ -18,7 +18,6 @@ import PieChartGraph from './Pie';
 interface GradeDistProps {
     course?: CourseGQLData;
     professor?: ProfessorGQLData;
-    minify?: boolean;
 }
 
 interface Entry {
@@ -228,7 +227,7 @@ const GradeDist: FC<GradeDistProps> = (props) => {
                 </Select>
             </div>
 
-            <div className="gradedist-filter">
+            <div className="gradedist-filter gradedist-chart-type">
                 <Select
                     value={chartType}
                     onChange={(e) => setChartType(e.target.value as ChartTypes)}
@@ -355,7 +354,7 @@ const GradeDist: FC<GradeDistProps> = (props) => {
         );
 
         return (
-            <div className={`gradedist-module-container ${props.minify ? 'grade-dist-mini' : ''}`}>
+            <div className="gradedist-module-container">
                 {optionsRow}
                 <div className="gradedist-content">
                     <div className="gradedist-stats">
@@ -363,30 +362,14 @@ const GradeDist: FC<GradeDistProps> = (props) => {
                         {averageQualityCard}
                         {avgDifficultyCard}
                     </div>
-                    {chartType == 'bar' && (
-                        <Card variant="outlined" className="grade-dist-chart-card">
-                            <CardContent>
-                                <Typography color="textSecondary" className="grade-dist-total">
-                                    Total Students: {aggregateGradeData.total.toLocaleString('en-US')}
-                                </Typography>
-                                <div className="grade-dist-chart-container">
-                                    <Chart {...graphProps} />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                    {chartType == 'pie' && (
-                        <Card variant="outlined" className="grade-dist-chart-card">
-                            <CardContent>
-                                <Typography color="textSecondary" className="grade-dist-total">
-                                    Total Students: {aggregateGradeData.total.toLocaleString('en-US')}
-                                </Typography>
-                                <div className="grade-dist-chart-container">
-                                    <PieChartGraph {...graphProps} />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
+                    <Card variant="outlined" className="grade-dist-chart-card">
+                        <Typography color="textSecondary" className="grade-dist-total">
+                            Total Students: {aggregateGradeData.total.toLocaleString('en-US')}
+                        </Typography>
+                        <div className="grade-dist-chart-container">
+                            {chartType === 'bar' ? <Chart {...graphProps} /> : <PieChartGraph {...graphProps} />}
+                        </div>
+                    </Card>
                 </div>
                 {reviews.length > 0 && <MostUsedTags reviews={reviews} />}
             </div>
@@ -434,7 +417,7 @@ const GradeDist: FC<GradeDistProps> = (props) => {
         );
 
         return (
-            <div className={`gradedist-module-container ${props.minify ? 'grade-dist-mini' : ''}`}>
+            <div className="gradedist-module-container">
                 {optionsRow}
                 <div className="gradedist-content">
                     <div className="gradedist-stats">
@@ -451,7 +434,7 @@ const GradeDist: FC<GradeDistProps> = (props) => {
     } else {
         // gradeDistData is empty, did not receive any data from API call or received an error, display an error message
         return (
-            <div className={`gradedist-module-container ${props.minify ? 'grade-dist-mini' : ''}`}>
+            <div className="gradedist-module-container">
                 {optionsRow}
                 <div className="gradedist-failed">
                     <p>
