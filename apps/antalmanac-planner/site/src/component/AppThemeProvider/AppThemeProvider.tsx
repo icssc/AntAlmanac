@@ -1,7 +1,7 @@
 'use client';
-import { ThemeProvider, useMediaQuery } from '@mui/material';
+import { createTheme, ThemeProvider, useMediaQuery } from '@mui/material';
 import { Theme } from '@peterportal/types';
-import { FC, PropsWithChildren, useEffect, useState } from 'react';
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
 import { useIsLoggedIn } from '../../hooks/isLoggedIn';
 import { useAppSelector } from '../../store/hooks';
@@ -38,7 +38,25 @@ function isThemeMismatched(preference: Theme | null, isDark: boolean) {
     return trueSystemDark !== isDark;
 }
 
-const AppThemeProvider: FC<PropsWithChildren> = ({ children }) => {
+function createSsrMatchMedia(estimatedWidth: number) {
+    return (query: string) => {
+        const maxWidth = query.match(/max-width:\s*([\d.]+)px/)?.[1];
+        const minWidth = query.match(/min-width:\s*([\d.]+)px/)?.[1];
+        if (!maxWidth && !minWidth) {
+            return { matches: false };
+        }
+
+        const matches =
+            (!maxWidth || estimatedWidth <= Number(maxWidth)) && (!minWidth || estimatedWidth >= Number(minWidth));
+        return { matches };
+    };
+}
+
+interface AppThemeProviderProps extends PropsWithChildren {
+    viewportWidth: number;
+}
+
+const AppThemeProvider: FC<AppThemeProviderProps> = ({ children, viewportWidth }) => {
     const preloadedPreference = useAppSelector((state) => state.user.theme);
 
     const isLoggedIn = useIsLoggedIn();
@@ -85,9 +103,28 @@ const AppThemeProvider: FC<PropsWithChildren> = ({ children }) => {
         }
     }, [isLoggedIn, setThemePreference]);
 
+    useEffect(() => {
+        const saveViewportWidth = () => {
+            document.cookie = `viewportWidth=${window.innerWidth}; path=/; max-age=31536000; samesite=lax`;
+        };
+        saveViewportWidth();
+        window.addEventListener('resize', saveViewportWidth);
+        return () => window.removeEventListener('resize', saveViewportWidth);
+    }, []);
+
+    const themeWithSsrMediaQueries = useMemo(
+        () =>
+            createTheme(theme, {
+                components: {
+                    MuiUseMediaQuery: { defaultProps: { ssrMatchMedia: createSsrMatchMedia(viewportWidth) } },
+                },
+            }),
+        [viewportWidth]
+    );
+
     return (
         <ThemeContext.Provider value={{ darkMode, usingSystemTheme: themePreference === 'system', setTheme }}>
-            <ThemeProvider theme={theme} defaultMode={preloadedDark ? 'dark' : 'light'}>
+            <ThemeProvider theme={themeWithSsrMediaQueries} defaultMode={preloadedDark ? 'dark' : 'light'}>
                 {children}
             </ThemeProvider>
         </ThemeContext.Provider>
