@@ -149,6 +149,10 @@ const CoursesSection: FC = () => {
                     />
                 )}
             />
+
+            <SectionDescription>
+                If needed overide a requirement by expanding the requirement and clicking the checkbox.
+            </SectionDescription>
         </MenuSection>
     );
 };
