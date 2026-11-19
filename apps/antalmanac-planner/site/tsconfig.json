@@ -5,7 +5,6 @@
         "lib": ["es2024", "esnext.collection", "dom", "dom.iterable"],
         "jsx": "react-jsx",
         "module": "ESNext",
-        "baseUrl": ".",
         "paths": {
             "@api/*": ["../api/src/*"]
         },
@@ -22,7 +21,6 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "allowJs": true,
-        "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "incremental": true,
         /* Next.js */

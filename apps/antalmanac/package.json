@@ -19,6 +19,7 @@
         "@antalmanac-planner/api": "workspace:^",
         "@antalmanac-planner/site": "workspace:^",
         "@antalmanac-scheduler": "workspace:^",
+        "@packages/antalmanac-types": "workspace:*",
         "@t3-oss/env-nextjs": "0.13.11",
         "@trpc/server": "^11.17.0",
         "better-auth": "^1.6.1",
@@ -27,7 +28,6 @@
         "zod": "3.24.3"
     },
     "devDependencies": {
-        "@types/node": "22.19.17",
-        "typescript": "^5.9.3"
+        "@types/node": "22.19.17"
     }
 }

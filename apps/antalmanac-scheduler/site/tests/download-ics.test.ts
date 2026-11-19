@@ -1,4 +1,4 @@
-import type { CalendarEvent } from '$components/Calendar/types';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/types';
 import { getEventsFromCourses } from '$lib/download';
 import type { AATerm } from '@packages/antalmanac-types';
 import { describe, expect, test } from 'vitest';
@@ -18,7 +18,7 @@ const FALL_2023: AATerm = {
 
 describe('download-ics', () => {
     test('converts schedule courses to events for the ics library', () => {
-        const courses: CalendarEvent[] = [
+        const courses: (CourseEvent | CustomEvent)[] = [
             // CourseEvent
             {
                 color: 'placeholderColor',

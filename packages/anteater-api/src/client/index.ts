@@ -12,7 +12,7 @@ import type {
     WebsocTerm,
     paths,
 } from '@packages/anteater-api/types';
-import createFetchClient, { type Middleware } from 'openapi-fetch';
+import createFetchClient, { type Middleware } from 'openapi-typesafe-fetch';
 
 export class AAPIError extends Error {
     constructor(
