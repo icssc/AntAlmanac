@@ -217,10 +217,12 @@ const DepartmentCourseGroup: FC<DepartmentCourseGroupProps> = ({ department, cou
         dispatch(setGroupExpanded({ storeKey, expanded: isOpen }));
     };
 
+    const showTakenIndicator = !open && courses.some((courseID) => courseID in takenCourseIDs);
+
     return (
         <div className="department-course-group">
             <ClickableDiv
-                className={`department-course-group-header ${open ? 'open' : ''}`}
+                className={`department-course-group-header ${open ? 'open' : ''} ${showTakenIndicator ? 'taken-indicator' : ''}`}
                 onClick={() => setOpen(!open)}
             >
                 <b>{department}</b>
