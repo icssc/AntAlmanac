@@ -26,7 +26,10 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
 
     return (
         <TableBodyCellContainer>
-            <Tooltip title="Grades are only available after clicking this cell because our resources are at maximum capacity. Sorry for the inconvenience!">
+            <Tooltip
+                title="Grades are only available after clicking this cell because our resources are at maximum capacity. Sorry for the inconvenience!"
+                describeChild
+            >
                 <ButtonBase
                     sx={{
                         fontFamily: 'inherit',
