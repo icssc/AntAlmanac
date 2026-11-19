@@ -97,9 +97,14 @@ describe('CalendarEventDetail for custom events', () => {
 describe('CalendarEventPopover', () => {
     test('closes when the clicked tile is no longer on the page', () => {
         const { selectedEvent } = addCustomEvent('popover-anchor', 'Weekend switch');
-        useSelectedEventStore.setState({ selectedEvent, selectedEventAnchorEl: document.createElement('div') });
+        const tile = document.body.appendChild(document.createElement('div'));
+        useSelectedEventStore.setState({ selectedEvent, selectedEventAnchorEl: tile });
 
-        render(<CalendarEventPopover />);
+        const { rerender } = render(<CalendarEventPopover />);
+        expect(useSelectedEventStore.getState().selectedEvent).toBe(selectedEvent);
+
+        tile.remove();
+        rerender(<CalendarEventPopover />);
 
         expect(useSelectedEventStore.getState().selectedEvent).toBeNull();
     });
