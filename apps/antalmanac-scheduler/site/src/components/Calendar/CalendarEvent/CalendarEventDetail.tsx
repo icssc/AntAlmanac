@@ -3,6 +3,7 @@ import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { type CourseEvent, type CustomEvent, isCourseEvent } from '$components/Calendar/types';
 import { ColorPicker } from '$components/ColorPicker';
+import { useCurrentCustomEvent } from '$hooks/useCurrentCustomEvent';
 import { useQuickSearch } from '$hooks/useQuickSearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
@@ -13,8 +14,9 @@ import { formatTimes } from '$stores/calendarizeHelpers';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete, Search } from '@mui/icons-material';
 import { Box, Button, Chip, IconButton, Paper, Tooltip } from '@mui/material';
+import type { CustomEventId } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface CalendarEventDetailProps {
     selectedEvent: CourseEvent | CustomEvent;
@@ -152,22 +154,59 @@ export function CalendarEventDetail({ selectedEvent, closePopover }: CalendarEve
         );
     }
 
-    const { title, customEventID, building, notes } = selectedEvent;
+    return <CustomEventDetail customEventID={selectedEvent.customEventID} closePopover={closePopover} />;
+}
+
+interface CustomEventDetailProps {
+    customEventID: CustomEventId;
+    closePopover: () => void;
+}
+
+function CustomEventDetail({ customEventID, closePopover }: CustomEventDetailProps) {
+    const customEvent = useCurrentCustomEvent(customEventID);
+    const postHog = usePostHog();
+
+    useEffect(() => {
+        if (!customEvent) {
+            closePopover();
+        }
+    }, [customEvent, closePopover]);
+
+    if (!customEvent) {
+        return null;
+    }
+
+    const { title, building, notes } = customEvent;
+    const scheduleNames = AppStore.getScheduleNames();
+    const linkedScheduleNames = AppStore.schedule
+        .getIndexesOfCustomEvent(customEventID)
+        .map((scheduleIndex) => scheduleNames[scheduleIndex]);
+
     return (
-        <Paper sx={{ padding: '0.5rem', maxWidth: '25rem', overflowWrap: 'anywhere' }} ref={paperRef}>
-            <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
-            {building && (
-                <Box sx={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                    Location:&nbsp;
-                    <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
-                </Box>
-            )}
+        <Paper sx={{ padding: '0.5rem', minWidth: '15rem', maxWidth: '25rem', overflowWrap: 'anywhere' }}>
+            <Box sx={{ fontSize: '0.9rem', fontWeight: 500, marginBottom: '0.25rem' }}>{title}</Box>
+            <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                <tbody>
+                    {building && (
+                        <tr>
+                            <td style={{ verticalAlign: 'top' }}>Location</td>
+                            <td style={{ textAlign: 'right' }}>
+                                <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
+                            </td>
+                        </tr>
+                    )}
+                    <tr>
+                        <td style={{ verticalAlign: 'top' }}>Schedule{linkedScheduleNames.length > 1 && 's'}</td>
+                        <td style={{ whiteSpace: 'pre-line', textAlign: 'right' }}>{linkedScheduleNames.join('\n')}</td>
+                    </tr>
+                </tbody>
+            </table>
             {notes && <Box sx={{ fontSize: '0.9rem', whiteSpace: 'pre-wrap' }}>{notes}</Box>}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <ColorPicker
-                    color={selectedEvent.color}
+                    color={customEvent.color ?? '#000000'}
                     isCustomEvent={true}
-                    customEventID={selectedEvent.customEventID}
+                    customEventID={customEventID}
                     analyticsCategory={analyticsEnum.calendar}
                 />
                 <CustomEventDialog customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)} />
