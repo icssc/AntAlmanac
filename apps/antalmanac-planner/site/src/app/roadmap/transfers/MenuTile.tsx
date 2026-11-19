@@ -5,6 +5,7 @@ import { FC, ReactNode } from 'react';
 
 import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
 import UnreadDot from '../../../component/UnreadDot/UnreadDot';
+import { useIsReadOnly } from '../../../hooks/planner';
 import UnitsContainer from '../CustomUnitsContainer';
 
 export interface MenuTileProps {
@@ -19,7 +20,13 @@ export interface MenuTileProps {
     onClick?: () => void;
 }
 
-const MenuTile: FC<MenuTileProps> = ({ children, title, units, setUnits, deleteFn, headerItems, unread, onClick }) => {
+const MenuTile: FC<MenuTileProps> = (props) => {
+    const { children, title, units, headerItems, unread, onClick } = props;
+    // Credits in a shared roadmap belong to its owner, so they can't be edited or removed
+    const readOnly = useIsReadOnly();
+    const setUnits = readOnly ? undefined : props.setUnits;
+    const deleteFn = readOnly ? undefined : props.deleteFn;
+
     const handleUnitsChange = (value: number | undefined) => {
         if (value !== undefined && setUnits) {
             setUnits(value);

@@ -4,6 +4,7 @@ import { FC, useState, useEffect } from 'react';
 
 import { getCourseIdWithSpaces } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     addTransferredCourse,
@@ -51,6 +52,7 @@ const CoursesSection: FC = () => {
     const [loading, setLoading] = useState(false);
     const dispatch = useAppDispatch();
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
 
     useEffect(() => {
         if (!courseSearchValue.trim()) {
@@ -101,6 +103,17 @@ const CoursesSection: FC = () => {
         if (!isLoggedIn) return;
         trpc.transferCredits.addTransferredCourse.mutate(course);
     };
+
+    if (readOnly) {
+        return (
+            <MenuSection title="Courses Taken">
+                {courses.length === 0 && <SectionDescription>No courses added.</SectionDescription>}
+                {courses.map((course) => (
+                    <CourseCreditMenuTile key={course.courseName} course={course} />
+                ))}
+            </MenuSection>
+        );
+    }
 
     return (
         <MenuSection title="Courses Taken">

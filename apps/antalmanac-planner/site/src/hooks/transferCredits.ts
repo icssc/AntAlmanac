@@ -4,6 +4,7 @@ import { components } from '@peterportal/types/src/generated/anteater-api-types'
 import { useEffect, useMemo } from 'react';
 
 import {
+    loadAPExamInfo,
     loadTransferredAPs,
     loadTransferredCourses,
     loadTransferredGEs,
@@ -20,7 +21,6 @@ import {
     setUserAPExams,
     setDataLoadState,
 } from '../store/slices/transferCreditsSlice';
-import trpc from '../trpc';
 import { useIsLoggedIn } from './isLoggedIn';
 
 /** Returns the rewarded courses for an AP */
@@ -94,13 +94,7 @@ export function useLoadTransferredCredits() {
     useEffect(() => {
         if (dataLoadingState !== 'loading') return;
 
-        const loadAPInfo = trpc.transferCredits.getAPExamInfo.query().then((exams) => {
-            const parsedExams = exams.map((exam) => ({
-                ...exam,
-                catalogueName: (exam.catalogueName as string) ?? null,
-            }));
-            dispatch(setAPExams(parsedExams));
-        });
+        const loadAPInfo = loadAPExamInfo().then((exams) => dispatch(setAPExams(exams)));
 
         const loadCourses = loadTransferredCourses(isLoggedIn).then((res) => dispatch(setTransferredCourses(res)));
         const loadAPs = loadTransferredAPs(isLoggedIn).then((res) => dispatch(setUserAPExams(res)));

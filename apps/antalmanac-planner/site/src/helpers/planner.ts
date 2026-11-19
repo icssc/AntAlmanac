@@ -210,7 +210,7 @@ export const expandAllPlanners = async (plans: SavedPlannerData[]): Promise<Road
         plans.map(async (p) => {
             const yearPlans = await expandPlanner(p.content);
             const planContent = { yearPlans, invalidCourses: [] };
-            return { id: p.id, name: p.name, content: planContent, chc: p.chc };
+            return { id: p.id, name: p.name, shareId: p.shareId, content: planContent, chc: p.chc };
         })
     );
 };
@@ -417,7 +417,10 @@ export const saveRoadmap = async (
         let res = false;
         let plannerIdLookup: Record<number, number> = {};
 
-        const changes = compareRoadmaps(lastSavedPlanners ?? [], planners);
+        // Planners with temporary (negative) IDs have never been saved to the account, so they must be
+        // created rather than updated, even if they were already in the roadmap when it was loaded
+        const savedAccountPlanners = (lastSavedPlanners ?? []).filter((planner) => planner.id > 0);
+        const changes = compareRoadmaps(savedAccountPlanners, planners);
         changes.overwrite = !lastSavedPlanners;
         changes.currentPlanIndex = currentPlanIndex;
         await trpc.roadmaps.save

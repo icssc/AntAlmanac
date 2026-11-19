@@ -1,5 +1,5 @@
 import { UserSliceState } from '@peterportal/types';
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import courseCatalogReducer from './slices/courseCatalogSlice';
 import courseRequirementsReducer from './slices/courseRequirementsSlice';
@@ -31,10 +31,12 @@ const reducer = {
     customCourses: customCoursesReducer,
 };
 
-export function generateStore(user: UserSliceState) {
+const rootReducer = combineReducers(reducer);
+
+export function generateStore(user: UserSliceState, preloadedState: Partial<ReturnType<typeof rootReducer>> = {}) {
     return configureStore({
-        reducer,
-        preloadedState: { user },
+        reducer: rootReducer,
+        preloadedState: { ...preloadedState, user },
     });
 }
 type StoreType = ReturnType<typeof generateStore>;

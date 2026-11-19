@@ -2,6 +2,7 @@ import { TextField, Button } from '@mui/material';
 import { TransferredUncategorized } from '@peterportal/types';
 import { FC, useState } from 'react';
 
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     addUncategorizedCourse,
@@ -121,6 +122,18 @@ const UncategorizedCreditInput: FC<{ courses: TransferWithUnread<TransferredUnca
 
 const UncategorizedCreditsSection: FC = () => {
     const courses = useAppSelector((state) => state.transferCredits.uncategorizedCourses);
+    const readOnly = useIsReadOnly();
+
+    if (readOnly) {
+        return (
+            <MenuSection title="Elective Credits">
+                {courses.length === 0 && <SectionDescription>No elective credits added.</SectionDescription>}
+                {courses.map((course) => (
+                    <UncategorizedMenuTile key={`${course.name}-${course.units}`} course={course} />
+                ))}
+            </MenuSection>
+        );
+    }
 
     return (
         <MenuSection title="Elective Credits">

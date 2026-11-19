@@ -28,6 +28,17 @@
         font-size: 1.5em;
     }
 
+    .shared-plan-name {
+        margin: 0;
+        font-size: 1.25em;
+        font-weight: 500;
+        overflow-wrap: anywhere;
+    }
+
+    .view-only-chip {
+        border-radius: 4px;
+    }
+
     .planner-left {
         display: flex;
         flex-wrap: wrap;
