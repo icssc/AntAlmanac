@@ -1,7 +1,7 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePopover/GradesPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { ButtonBase, Popover } from '@mui/material';
+import { ButtonBase, Popover, Tooltip } from '@mui/material';
 import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
 import { useCallback, useState } from 'react';
 
@@ -26,17 +26,22 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
 
     return (
         <TableBodyCellContainer>
-            <ButtonBase
-                sx={{
-                    fontFamily: 'inherit',
-                    fontSize: 'unset',
-                    color: (theme) => theme.vars.palette.secondary.main,
-                    fontWeight: 700,
-                }}
-                onClick={handleClick}
+            <Tooltip
+                title="Grades are only available after clicking this cell because our resources are at maximum capacity. Sorry for the inconvenience!"
+                describeChild
             >
-                GPA
-            </ButtonBase>
+                <ButtonBase
+                    sx={{
+                        fontFamily: 'inherit',
+                        fontSize: 'unset',
+                        color: (theme) => theme.vars.palette.secondary.main,
+                        fontWeight: 700,
+                    }}
+                    onClick={handleClick}
+                >
+                    GPA
+                </ButtonBase>
+            </Tooltip>
 
             <Popover
                 open={Boolean(anchorEl)}
