@@ -1,5 +1,6 @@
 import {
     CourseAAPIResponse,
+    CourseEnrollmentState,
     CoursePreview,
     CoursePreviewWithTerms,
     ProfessorAAPIResponse,
@@ -35,7 +36,7 @@ export interface PlannerQuarterData {
     courses: PlannerQuarterCourse[];
 }
 
-export interface PlannerCourseData extends CourseGQLData {
+export interface PlannerCourseData extends CourseGQLData, CourseEnrollmentState {
     userChosenUnits?: number;
 }
 

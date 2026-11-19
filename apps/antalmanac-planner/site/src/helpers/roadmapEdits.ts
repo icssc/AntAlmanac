@@ -1,4 +1,4 @@
-import { QuarterName } from '@peterportal/types';
+import { CourseEnrollmentState, QuarterName } from '@peterportal/types';
 
 import {
     PlannerEdit,
@@ -255,4 +255,28 @@ export function modifyVariableCourseUnit(
     }
 
     return createRevision(edits);
+}
+
+export function modifyCourseEnrollmentState(
+    plannerId: number,
+    startYear: number,
+    quarterName: QuarterName,
+    courseIndex: number,
+    course: PlannerCourseData,
+    changes: CourseEnrollmentState
+) {
+    // An explicit undefined resets to automatic; an omitted field leaves state untouched.
+    if (!('countsForCredit' in changes) || changes.countsForCredit === course.countsForCredit) {
+        return createRevision([]);
+    }
+    const edit: PlannerCourseEdit = {
+        type: 'course',
+        plannerId,
+        startYear,
+        quarterName,
+        courseIndex,
+        before: course,
+        after: { ...course, countsForCredit: changes.countsForCredit },
+    };
+    return createRevision([edit]);
 }
