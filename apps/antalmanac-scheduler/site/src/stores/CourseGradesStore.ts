@@ -167,7 +167,7 @@ function useFetchSectionInstructorGrades(course: AACourse, courseId: CourseId) {
     }, [course.sections, courseId, instructorsToIgnore, doesSectionHaveGrades]);
 
     const areInstructorGradesValid = useCallback((result: UseQueryResult<{ gradeDistribution: GradeDistribution }>) => {
-        return Boolean(!result.isError && result.data?.gradeDistribution.averageGPA);
+        return Boolean(!result.isError && result.data && result.data.gradeDistribution.averageGPA !== null);
     }, []);
 
     const { sectionInstructorGrades, invalidInstructors, areSectionInstructorGradesLoading } = trpcReact.useQueries(
