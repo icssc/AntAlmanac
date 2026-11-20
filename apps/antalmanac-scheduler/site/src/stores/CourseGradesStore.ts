@@ -33,40 +33,38 @@ function getInitialState(): CourseGradesStore {
 
 export const createCourseGradesStore = () =>
     create(
-        combine(getInitialState(), (set, get) => {
-            return {
-                setOverallGrades: (overallGrades: CourseGradeDistribution | null | undefined) => {
-                    const courseGrades = get().courseGrades;
+        combine(getInitialState(), (set, get) => ({
+            setOverallGrades: (overallGrades: CourseGradeDistribution | null | undefined) => {
+                const courseGrades = get().courseGrades;
 
-                    if (overallGrades) {
-                        courseGrades.overallGrades = overallGrades;
-                    }
+                if (overallGrades) {
+                    courseGrades.overallGrades = overallGrades;
+                }
 
-                    // Overall grades are fetched only once, don't need loading-setter function
-                    courseGrades.areOverallGradesLoading = false;
+                // Overall grades are fetched only once, don't need loading-setter function
+                courseGrades.areOverallGradesLoading = false;
 
-                    set({ courseGrades });
-                },
-                setSectionGrades: (sectionCode: SectionCode, instructorGrades: SectionInstructorGrades) => {
-                    const courseGrades = get().courseGrades;
+                set({ courseGrades });
+            },
+            setSectionGrades: (sectionCode: SectionCode, instructorGrades: SectionInstructorGrades) => {
+                const courseGrades = get().courseGrades;
 
-                    courseGrades.sectionGrades.set(sectionCode, instructorGrades);
+                courseGrades.sectionGrades.set(sectionCode, instructorGrades);
 
-                    set({ courseGrades });
-                },
-                doesSectionHaveGrades: (sectionCode: SectionCode) => {
-                    const courseGrades = get().courseGrades;
-                    return Boolean(courseGrades.sectionGrades.get(sectionCode));
-                },
-                setAreSectionGradesLoading: (loading: boolean) => {
-                    const courseGrades = get().courseGrades;
+                set({ courseGrades });
+            },
+            doesSectionHaveGrades: (sectionCode: SectionCode) => {
+                const courseGrades = get().courseGrades;
+                return Boolean(courseGrades.sectionGrades.get(sectionCode));
+            },
+            setAreSectionGradesLoading: (loading: boolean) => {
+                const courseGrades = get().courseGrades;
 
-                    courseGrades.areSectionGradesLoading = loading;
+                courseGrades.areSectionGradesLoading = loading;
 
-                    set({ courseGrades });
-                },
-            };
-        })
+                set({ courseGrades });
+            },
+        }))
     );
 
 type UseCourseGradesStore = ReturnType<typeof createCourseGradesStore>;
