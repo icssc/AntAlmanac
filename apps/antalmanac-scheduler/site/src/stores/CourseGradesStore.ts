@@ -10,24 +10,20 @@ import { useShallow } from 'zustand/react/shallow';
 type InstructorName = string;
 
 type SectionInstructorGrades = Map<InstructorName, CourseGradeDistribution | null>;
-interface CourseGrades {
+
+interface CourseGradesStore {
     areOverallGradesLoading: boolean;
     overallGrades: CourseGradeDistribution | null;
     areSectionGradesLoading: boolean;
     sectionGrades: Map<SectionCode, SectionInstructorGrades>;
 }
-interface CourseGradesStore {
-    courseGrades: CourseGrades;
-}
 
 function getInitialState(): CourseGradesStore {
     return {
-        courseGrades: {
-            areOverallGradesLoading: true,
-            overallGrades: null,
-            areSectionGradesLoading: true,
-            sectionGrades: new Map(),
-        },
+        areOverallGradesLoading: true,
+        overallGrades: null,
+        areSectionGradesLoading: true,
+        sectionGrades: new Map(),
     };
 }
 
@@ -35,34 +31,20 @@ export const createCourseGradesStore = () =>
     create(
         combine(getInitialState(), (set, get) => ({
             setOverallGrades: (overallGrades: CourseGradeDistribution | null | undefined) => {
-                const courseGrades = get().courseGrades;
-
-                if (overallGrades) {
-                    courseGrades.overallGrades = overallGrades;
-                }
-
-                // Overall grades are fetched only once, don't need loading-setter function
-                courseGrades.areOverallGradesLoading = false;
-
-                set({ courseGrades });
+                set({ overallGrades, areOverallGradesLoading: false });
             },
             setSectionGrades: (sectionCode: SectionCode, instructorGrades: SectionInstructorGrades) => {
-                const courseGrades = get().courseGrades;
+                const sectionGrades = get().sectionGrades;
 
-                courseGrades.sectionGrades.set(sectionCode, instructorGrades);
+                sectionGrades.set(sectionCode, instructorGrades);
 
-                set({ courseGrades });
+                set({ sectionGrades });
             },
             doesSectionHaveGrades: (sectionCode: SectionCode) => {
-                const courseGrades = get().courseGrades;
-                return Boolean(courseGrades.sectionGrades.get(sectionCode));
+                return Boolean(get().sectionGrades.get(sectionCode));
             },
-            setAreSectionGradesLoading: (loading: boolean) => {
-                const courseGrades = get().courseGrades;
-
-                courseGrades.areSectionGradesLoading = loading;
-
-                set({ courseGrades });
+            setAreSectionGradesLoading: (areSectionGradesLoading: boolean) => {
+                set({ areSectionGradesLoading });
             },
         }))
     );
@@ -225,13 +207,11 @@ export function getInstructorGradesFromSection(sectionInstructorGrades: SectionI
 export function useSectionGrades(sectionCode: SectionCode) {
     const useCourseGradesStore = useUseCourseGradesStore();
 
-    const overallGrades = useCourseGradesStore((state) => state.courseGrades.overallGrades);
-    const areOverallGradesLoading = useCourseGradesStore((state) => state.courseGrades.areOverallGradesLoading);
+    const overallGrades = useCourseGradesStore((state) => state.overallGrades);
+    const areOverallGradesLoading = useCourseGradesStore((state) => state.areOverallGradesLoading);
 
-    const sectionInstructorGrades = useCourseGradesStore((state) => state.courseGrades.sectionGrades.get(sectionCode));
-    const areSectionInstructorGradesLoading = useCourseGradesStore(
-        (state) => state.courseGrades.areSectionGradesLoading
-    );
+    const sectionInstructorGrades = useCourseGradesStore((state) => state.sectionGrades.get(sectionCode));
+    const areSectionInstructorGradesLoading = useCourseGradesStore((state) => state.areSectionGradesLoading);
     return {
         overallGrades,
         areOverallGradesLoading,
