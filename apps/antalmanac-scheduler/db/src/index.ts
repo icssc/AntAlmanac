@@ -6,7 +6,7 @@ import * as schema from './schema/index';
 
 const pool = new Pool({
     connectionString: env.DB_URL,
-    max: 10,
+    max: 1,
     idleTimeoutMillis: 10000,
     connectionTimeoutMillis: 5000,
 });
