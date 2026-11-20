@@ -27,7 +27,10 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
             return { gpa: '', instructor: '' };
         }
         const { instructor, instructorGrades } = getInstructorGradesFromSection(sectionInstructorGrades);
-        return { gpa: instructorGrades?.averageGPA ? instructorGrades.averageGPA.toFixed(2) : '', instructor };
+        return {
+            gpa: typeof instructorGrades?.averageGPA === 'number' ? instructorGrades.averageGPA.toFixed(2) : '',
+            instructor,
+        };
     }, [sectionInstructorGrades]);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
