@@ -13,7 +13,11 @@ function loadInstructionStart(year: string, quarter: string): Promise<string | n
         pending = trpc.schedule.quarterCalendar
             .query({ year, quarter })
             .then((res) => res?.instructionStart ?? null)
-            .catch(() => null);
+            .catch(() => {
+                // Only a published (or confirmed unpublished) calendar is cached; a failed request can be retried
+                instructionStarts.delete(key);
+                return null;
+            });
         instructionStarts.set(key, pending);
     }
     return pending;

@@ -3,6 +3,7 @@
 */
 
 import { TermResponse, WebsocAPIResponse, WeekData } from '@peterportal/types';
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { ANTEATER_API_REQUEST_HEADERS } from '../helpers/headers';
@@ -37,7 +38,9 @@ const scheduleRouter = router({
             const apiResp = await fetch(`${process.env.PUBLIC_API_URL}calendar?${params}`, {
                 headers: ANTEATER_API_REQUEST_HEADERS,
             });
-            if (!apiResp.ok) return null;
+
+            if (apiResp.status === 404) return null;
+            if (!apiResp.ok) throw new TRPCError({ code: 'BAD_GATEWAY', message: 'Term calendar request failed' });
             const json = await apiResp.json();
             return json.data?.instructionStart ? { instructionStart: json.data.instructionStart as string } : null;
         }),

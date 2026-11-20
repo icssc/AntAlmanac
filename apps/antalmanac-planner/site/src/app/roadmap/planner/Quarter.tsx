@@ -60,10 +60,13 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
     const startYear = currentPlan.content.yearPlans[yearIndex].startYear;
     const courses = data.courses;
 
-    // Look up the official start date only when a course here would actually trigger the "not offered" warning
-    const hasOfferingMismatch = courses.some(
-        (course) => !('courseName' in course) && getTermMismatch(course.terms, data.name, startYear) !== undefined
-    );
+    // Look up the official start date only when a course here would actually trigger the "not offered" warning, and
+    // never for quarters the approximate dates already show as started (their warnings are suppressed anyway)
+    const hasOfferingMismatch =
+        isUpcomingQuarter(startYear, data.name) &&
+        courses.some(
+            (course) => !('courseName' in course) && getTermMismatch(course.terms, data.name, startYear) !== undefined
+        );
     const instructionStart = useInstructionStart(startYear, data.name, hasOfferingMismatch);
     const quarterUpcoming = isUpcomingQuarter(startYear, data.name, new Date(), instructionStart);
 

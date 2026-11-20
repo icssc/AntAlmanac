@@ -237,7 +237,9 @@ export const roadmapSlice = createSlice({
             state.showAddCourse = action.payload;
         },
         setPlanIndex: (state, action: PayloadAction<number>) => {
-            state.currentPlanIndex = action.payload;
+            // Callers select a just-created plan by index; if the edit was ignored (e.g. the roadmap is still a
+            // read-only snapshot) that plan doesn't exist, and an out-of-range index would break every plan selector
+            state.currentPlanIndex = Math.max(0, Math.min(action.payload, state.plans.length - 1));
         },
         setShowSavedCourses: (state, action: PayloadAction<boolean>) => {
             state.showSavedCourses = action.payload;
