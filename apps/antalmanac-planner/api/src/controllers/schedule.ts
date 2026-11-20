@@ -27,6 +27,22 @@ const scheduleRouter = router({
     }),
 
     /**
+     * Get when instruction starts for a term, from the Anteater API term calendar. The calendar only exists for terms
+     * whose academic calendar has been published, so this returns null otherwise.
+     */
+    quarterCalendar: publicProcedure
+        .input(z.object({ year: z.string(), quarter: z.string() }))
+        .query(async ({ input }): Promise<{ instructionStart: string } | null> => {
+            const params = new URLSearchParams({ year: input.year, quarter: input.quarter });
+            const apiResp = await fetch(`${process.env.PUBLIC_API_URL}calendar?${params}`, {
+                headers: ANTEATER_API_REQUEST_HEADERS,
+            });
+            if (!apiResp.ok) return null;
+            const json = await apiResp.json();
+            return json.data?.instructionStart ? { instructionStart: json.data.instructionStart as string } : null;
+        }),
+
+    /**
      * Get the current quarter on websoc
      */
     currentQuarter: publicProcedure.query(async () => {

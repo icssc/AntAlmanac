@@ -10,10 +10,11 @@ const SaveButton: FC = () => {
     const { handler: saveRoadmap } = useSaveRoadmap();
     const roadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
     const saveInProgress = useAppSelector((state) => state.roadmap.saveInProgress);
+    const snapshotPending = useAppSelector((state) => state.roadmap.snapshotPending);
     const customCoursesLoaded = useAppSelector((state) => state.customCourses.customCoursesLoaded);
     const isLoggedIn = useIsLoggedIn();
 
-    const saveDisabled = roadmapLoading || (isLoggedIn && !customCoursesLoaded) || saveInProgress;
+    const saveDisabled = roadmapLoading || snapshotPending || (isLoggedIn && !customCoursesLoaded) || saveInProgress;
 
     const handleSave = useCallback(() => {
         if (saveDisabled) return;

@@ -31,6 +31,7 @@ import {
     setInitialPlannerData,
     setInvalidCourses,
     setRoadmapLoading,
+    setSnapshotPending,
     setToastMsg,
     setToastSeverity,
     setShowToast,
@@ -79,6 +80,8 @@ const PlannerLoader: FC = () => {
     useCheckUnsavedChanges();
 
     const serverRoadmapReceived = useRef(false);
+    // The roadmap painted from the snapshot, until the server copy has been reconciled with it
+    const paintedSnapshot = useRef<SavedRoadmap | null>(null);
     const [roadmapLoaded, setRoadmapLoaded] = useState(false);
     const [initialLocalRoadmap, setInitialLocalRoadmap] = useState<SavedRoadmap | null>(null);
     const [initialAccountRoadmap, setInitialAccountRoadmap] = useState<SavedRoadmap | null>(null);
@@ -107,6 +110,18 @@ const PlannerLoader: FC = () => {
     const populateExistingRoadmap = useCallback(
         async (roadmap: SavedRoadmap) => {
             const plans = await expandAllPlanners(roadmap.planners);
+            const snapshot = paintedSnapshot.current;
+            paintedSnapshot.current = null;
+            const snapshotAccurate =
+                !!snapshot &&
+                JSON.stringify(snapshot.planners) === JSON.stringify(roadmap.planners) &&
+                snapshot.currentPlanIndex === roadmap.currentPlanIndex;
+            if (snapshotAccurate) {
+                // The roadmap on screen is already the server's; just unlock it (the snapshot was read-only)
+                dispatch(setSnapshotPending(false));
+                dispatch(setRoadmapLoading(false));
+                return;
+            }
             const timestamp = new Date(roadmap.timestamp ?? Date.now()).getTime();
             dispatch(
                 setInitialPlannerData({
@@ -115,6 +130,7 @@ const PlannerLoader: FC = () => {
                     currentPlanIndex: getPlanIndexFromQuery(plans) ?? roadmap.currentPlanIndex ?? 0,
                 })
             );
+            dispatch(setSnapshotPending(false));
             dispatch(setRoadmapLoading(false));
         },
         [dispatch, getPlanIndexFromQuery]
@@ -176,7 +192,10 @@ const PlannerLoader: FC = () => {
             expandAllPlanners(snapshot.planners).then((plans) => {
                 if (serverRoadmapReceived.current) return;
                 const timestamp = new Date(snapshot.timestamp ?? Date.now()).getTime();
-                dispatch(setInitialPlannerData({ plans, timestamp, currentPlanIndex: snapshot.currentPlanIndex ?? 0 }));
+                const currentPlanIndex = getPlanIndexFromQuery(plans) ?? snapshot.currentPlanIndex ?? 0;
+                paintedSnapshot.current = snapshot;
+                dispatch(setInitialPlannerData({ plans, timestamp, currentPlanIndex }));
+                dispatch(setSnapshotPending(true));
                 dispatch(setRoadmapLoading(false));
             });
         }
@@ -191,7 +210,15 @@ const PlannerLoader: FC = () => {
             setInitialLocalRoadmap(localRoadmap);
             dispatch(setDataLoadState('loading'));
         });
-    }, [dispatch, isRoadmapLoading, initialAccountRoadmap, initialLocalRoadmap, isLoggedIn, userKey]);
+    }, [
+        dispatch,
+        isRoadmapLoading,
+        initialAccountRoadmap,
+        initialLocalRoadmap,
+        isLoggedIn,
+        userKey,
+        getPlanIndexFromQuery,
+    ]);
 
     // Render the roadmap as soon as it's expanded; transfers only affect validation, which re-runs when they load
     useEffect(() => {
@@ -240,12 +267,15 @@ const PlannerLoader: FC = () => {
         dispatch,
     ]);
 
-    // Validate Courses on change
+    // Validate courses on change, but only once everything validation depends on has loaded (the server roadmap and
+    // the user's transfer credits). Validating the read-only snapshot or a roadmap without transfers would flag
+    // courses incorrectly.
     useEffect(() => {
+        if (!roadmapLoaded || !userTransfersLoaded) return;
         const transferNames = getNamesOfTransfers(transferred.courses, transferred.ap, transferred.apInfo);
         const { invalidCourses } = validatePlanner(transferNames, currentPlanData, { isCHC });
         dispatch(setInvalidCourses(invalidCourses));
-    }, [dispatch, currentPlanData, isCHC, transferred]);
+    }, [dispatch, currentPlanData, isCHC, transferred, roadmapLoaded, userTransfersLoaded]);
 
     const [overrideLoading, setOverrideLoading] = useState(false);
 

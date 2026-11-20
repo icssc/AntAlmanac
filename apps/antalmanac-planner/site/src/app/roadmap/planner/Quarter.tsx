@@ -7,6 +7,7 @@ import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
 import { isCustomCourse } from '../../../helpers/customCourses';
 import { quarterDisplayNames, calculateTotalUnits } from '../../../helpers/planner';
+import { getTermMismatch, isUpcomingQuarter } from '../../../helpers/quarterDates';
 import {
     ModifiedQuarter,
     modifyQuarterCourse,
@@ -18,6 +19,7 @@ import { quarterSortable } from '../../../helpers/sortable';
 import './Quarter.scss';
 import { deepCopy, useIsMobile, pluralize } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useInstructionStart } from '../../../hooks/quarterCalendar';
 import { useAnimatedHeight } from '../../../hooks/useAnimatedHeight';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
@@ -57,6 +59,13 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
     const currentPlan = useAppSelector(selectCurrentPlan);
     const startYear = currentPlan.content.yearPlans[yearIndex].startYear;
     const courses = data.courses;
+
+    // Look up the official start date only when a course here would actually trigger the "not offered" warning
+    const hasOfferingMismatch = courses.some(
+        (course) => !('courseName' in course) && getTermMismatch(course.terms, data.name, startYear) !== undefined
+    );
+    const instructionStart = useInstructionStart(startYear, data.name, hasOfferingMismatch);
+    const quarterUpcoming = isUpcomingQuarter(startYear, data.name, new Date(), instructionStart);
 
     // Calculate Quarter Stats
     const unitCount = useMemo(() => {
@@ -211,29 +220,10 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
                         }
                     });
 
-                    const searchPrevYears = 2;
-                    const currentDate = new Date();
-                    const currentStartYear =
-                        currentDate.getMonth() >= 8 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
-                    const useYear = Math.min(currentStartYear, startYear);
-                    const termYear = data.name === 'Fall' ? useYear : useYear + 1;
-                    let mismatch = true;
-                    for (let i = 0; i <= searchPrevYears; i++) {
-                        const term = `${termYear - i} ${data.name}`;
-                        if (course.terms.includes(term)) {
-                            mismatch = false;
-                            break;
-                        }
-                    }
-                    const notRecentlyOffered =
-                        mismatch &&
-                        !course.terms.some((term) => {
-                            for (let i = 0; i <= searchPrevYears; i++) {
-                                if (term.startsWith(`${termYear - i} `)) return true;
-                            }
-                            return false;
-                        });
-                    const termMismatch = mismatch ? (notRecentlyOffered ? 'RecentYears' : data.name) : undefined;
+                    // Only warn about quarters that have not started yet; past quarters can't be re-planned
+                    const termMismatch = quarterUpcoming
+                        ? getTermMismatch(course.terms, data.name, startYear)
+                        : undefined;
 
                     return (
                         // addMode="drag" somehow fixes the issue with tapping a course after adding on mobile

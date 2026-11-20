@@ -26,7 +26,7 @@ import {
     ReviewTags,
     tags,
 } from '@peterportal/types';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { getProfessorTerms, getQuarters, getReviewHeadingName, getYears } from '../../helpers/reviews';
 
@@ -88,9 +88,13 @@ const ReviewForm: FC<ReviewFormProps> = ({
     const [availableTermsForProfessor, setAvailableTermsForProfessor] = useState<string[]>([]);
     const [professorCourseTermsMap, setProfessorCourseTermsMap] = useState<Record<string, string[]>>({});
 
-    // Fetch instructor/course terms only when the form is opened.
+    // Fetch instructor/course terms only when the form is first opened for these inputs (not on every reopen).
+    const termsLoadedFor = useRef<unknown[] | null>(null);
     useEffect(() => {
         if (!open) return;
+        const inputs = [courseProp, professorProp, reviewToEdit];
+        if (termsLoadedFor.current?.every((input, i) => input === inputs[i])) return;
+        termsLoadedFor.current = inputs;
         const promises: Promise<void>[] = [];
 
         const parseTerms = (terms: string | string[]): string[] => {

@@ -88,6 +88,8 @@ export const roadmapSlice = createSlice({
         activeCourseDragSource: null as Omit<SetActiveCoursePayload, 'course'> | null,
         /** Whether the roadmap is loading */
         roadmapLoading: true,
+        /** True while the roadmap shown comes from the local snapshot rather than the server. */
+        snapshotPending: false,
         saveInProgress: false,
         toastMsg: '',
         toastSeverity: 'info' as ToastSeverity,
@@ -113,6 +115,9 @@ export const roadmapSlice = createSlice({
         setRoadmapLoading: (state, action: PayloadAction<boolean>) => {
             state.roadmapLoading = action.payload;
         },
+        setSnapshotPending: (state, action: PayloadAction<boolean>) => {
+            state.snapshotPending = action.payload;
+        },
         setSaveInProgress: (state, action: PayloadAction<boolean>) => {
             state.saveInProgress = action.payload;
         },
@@ -120,6 +125,7 @@ export const roadmapSlice = createSlice({
         // Modifying the Roadmap
 
         reviseRoadmap: (state, action: PayloadAction<RoadmapRevision>) => {
+            if (state.snapshotPending) return;
             const currentPlannerId = state.plans[state.currentPlanIndex]?.id;
             const currentIndex = state.currentRevisionIndex;
             state.revisions.splice(currentIndex + 1, state.revisions.length, action.payload);
@@ -128,14 +134,14 @@ export const roadmapSlice = createSlice({
             state.currentPlanIndex = findValidIndex(state.plans, currentPlannerId, state.currentPlanIndex);
         },
         undoRoadmapRevision: (state) => {
-            if (state.currentRevisionIndex <= 0) return;
+            if (state.snapshotPending || state.currentRevisionIndex <= 0) return;
             const currentPlannerId = state.plans[state.currentPlanIndex]?.id;
             restoreRevision(state.plans, state.revisions, state.currentRevisionIndex, state.currentRevisionIndex - 1);
             state.currentRevisionIndex--;
             state.currentPlanIndex = findValidIndex(state.plans, currentPlannerId, state.currentPlanIndex);
         },
         redoRoadmapRevision: (state) => {
-            if (state.currentRevisionIndex >= state.revisions.length - 1) return;
+            if (state.snapshotPending || state.currentRevisionIndex >= state.revisions.length - 1) return;
             const currentPlannerId = state.plans[state.currentPlanIndex]?.id;
             restoreRevision(state.plans, state.revisions, state.currentRevisionIndex, state.currentRevisionIndex + 1);
             state.currentRevisionIndex++;
@@ -205,6 +211,7 @@ export const roadmapSlice = createSlice({
          * removed when creating a revision to add a course to the user's roadmap.
          */
         createQuarterCourseLoadingPlaceholder: (state, action: PayloadAction<CourseIdentifier>) => {
+            if (state.snapshotPending) return;
             const target = action.payload;
             const yearPlans = state.plans[state.currentPlanIndex].content.yearPlans;
             const quarter = yearPlans[target.yearIndex].quarters[target.quarterIndex];
@@ -245,6 +252,7 @@ export const roadmapSlice = createSlice({
             state.showToast = action.payload;
         },
         setCHCSelection: (state, action: PayloadAction<{ plannerId: number; chc: '' | 'CHC4' | 'CHC2' }>) => {
+            if (state.snapshotPending) return;
             const plan = state.plans.find((p) => p.id === action.payload.plannerId);
             if (plan) {
                 plan.chc = action.payload.chc;
@@ -282,6 +290,7 @@ export const {
     setPlanIndex,
     setShowSavedCourses,
     setRoadmapLoading,
+    setSnapshotPending,
     setSaveInProgress,
     reviseRoadmap,
     undoRoadmapRevision,

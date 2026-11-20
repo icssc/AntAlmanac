@@ -28,16 +28,32 @@ const RoadmapPage: FC = () => {
 
     const roadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
     const saveInProgress = useAppSelector((state) => state.roadmap.saveInProgress);
+    const snapshotPending = useAppSelector((state) => state.roadmap.snapshotPending);
     const currentRevisionIndex = useAppSelector((state) => state.roadmap.currentRevisionIndex);
     const savedRevisionIndex = useAppSelector((state) => state.roadmap.savedRevisionIndex);
     const autosaveEnabled = useAppSelector((state) => state.user.autosaveEnabled);
     const { handler: saveRoadmap } = useSaveRoadmap();
 
     useEffect(() => {
-        if (!autosaveEnabled || roadmapLoading || saveInProgress || currentRevisionIndex === savedRevisionIndex) return;
+        if (
+            !autosaveEnabled ||
+            roadmapLoading ||
+            snapshotPending ||
+            saveInProgress ||
+            currentRevisionIndex === savedRevisionIndex
+        )
+            return;
         const timer = setTimeout(() => saveRoadmap({ silent: true }), 1000);
         return () => clearTimeout(timer);
-    }, [autosaveEnabled, currentRevisionIndex, savedRevisionIndex, roadmapLoading, saveInProgress, saveRoadmap]);
+    }, [
+        autosaveEnabled,
+        currentRevisionIndex,
+        savedRevisionIndex,
+        roadmapLoading,
+        snapshotPending,
+        saveInProgress,
+        saveRoadmap,
+    ]);
 
     const toastMsg = useAppSelector((state) => state.roadmap.toastMsg);
     const toastSeverity = useAppSelector((state) => state.roadmap.toastSeverity);
