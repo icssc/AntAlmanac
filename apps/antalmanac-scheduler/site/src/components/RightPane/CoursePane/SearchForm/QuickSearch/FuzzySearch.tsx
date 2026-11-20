@@ -325,7 +325,6 @@ export function FuzzySearch() {
     };
 
     useEffect(() => {
-        // oxlint-disable-next-line react/set-state-in-effect -- Synchronize search state when the selected term changes.
         handleFormDataChange();
     }, [handleFormDataChange]);
 
