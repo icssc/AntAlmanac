@@ -5,6 +5,7 @@ import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/Buildi
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
+import { normalizeCustomEventNotes } from '$stores/scheduleHelpers';
 import { Add, Edit } from '@mui/icons-material';
 import {
     Button,
@@ -16,8 +17,9 @@ import {
     IconButton,
     TextField,
     Tooltip,
+    Typography,
 } from '@mui/material';
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { CUSTOM_EVENT_NOTES_MAX_LENGTH, type RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -26,14 +28,15 @@ interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
 }
 
-const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
+const defaultCustomEventValues = {
     start: '10:30',
     end: '15:30',
     title: '',
     color: '#551a8b',
     days: [false, false, false, false, false, false, false],
     building: undefined,
-};
+    notes: '',
+} satisfies Omit<RepeatingCustomEvent, 'customEventID'>;
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
     const fallbackMode = useFallbackStore((state) => state.fallbackMode);
@@ -58,10 +61,16 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const [building, setBuilding] = useState<string | undefined>(
         props.customEvent?.building ?? defaultCustomEventValues.building
     );
+    const [notes, setNotes] = useState(props.customEvent?.notes ?? defaultCustomEventValues.notes);
+    const [notesFocused, setNotesFocused] = useState(false);
 
     const postHog = usePostHog();
 
-    const disabled = !(scheduleIndices.length && days.includes(true));
+    const isMissingScheduleOrDay = !(scheduleIndices.length && days.includes(true));
+    // Missing start/end times are allowed on purpose (see #1971): users
+    // can save events without time slots, and will be in the Added panel.
+    const isTimeRangeInvalid = start !== '' && end !== '' && start >= end;
+    const disabled = isMissingScheduleOrDay || isTimeRangeInvalid;
 
     const handleSubmit = () => {
         handleClose();
@@ -80,6 +89,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(props.customEvent.title);
             setDays(props.customEvent.days);
             setBuilding(props.customEvent.building);
+            setNotes(props.customEvent.notes ?? defaultCustomEventValues.notes);
             setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent.customEventID));
         } else {
             setStart(defaultCustomEventValues.start);
@@ -87,6 +97,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setTitle(defaultCustomEventValues.title);
             setDays(defaultCustomEventValues.days);
             setBuilding(defaultCustomEventValues.building);
+            setNotes(defaultCustomEventValues.notes);
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
         }
         setOpen(true);
@@ -125,6 +136,10 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         setBuilding(building?.id);
     };
 
+    const handleNotesChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setNotes(event.target.value);
+    }, []);
+
     const handleAddToCalendar = () => {
         if (!days.some((day) => day) || scheduleIndices.length === 0) return;
 
@@ -136,6 +151,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             end: end,
             customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
+            notes: normalizeCustomEventNotes(notes),
         };
 
         if (props.customEvent) {
@@ -201,6 +217,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             label="End Time"
                             type="time"
                             defaultValue={end}
+                            error={isTimeRangeInvalid}
+                            helperText={isTimeRangeInvalid ? 'End time must be after start time' : undefined}
                             fullWidth
                             variant="outlined"
                             slotProps={{ inputLabel: { variant: 'outlined', shrink: true } }}
@@ -209,6 +227,36 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={days} />
                     <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
+                    <FormControl fullWidth>
+                        <TextField
+                            label="Notes"
+                            fullWidth
+                            multiline
+                            value={notes}
+                            onChange={handleNotesChange}
+                            variant="outlined"
+                            color="secondary"
+                            onFocus={() => setNotesFocused(true)}
+                            onBlur={() => setNotesFocused(false)}
+                            slotProps={{
+                                inputLabel: { variant: 'outlined' },
+                                htmlInput: { maxLength: CUSTOM_EVENT_NOTES_MAX_LENGTH },
+                                input: {
+                                    // Constant padding keeps the field height stable when the counter toggles on focus.
+                                    sx: { paddingBottom: 2.5 },
+                                    endAdornment: notesFocused ? (
+                                        <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                            sx={{ position: 'absolute', right: 14, bottom: 6, pointerEvents: 'none' }}
+                                        >
+                                            {notes.length}/{CUSTOM_EVENT_NOTES_MAX_LENGTH}
+                                        </Typography>
+                                    ) : null,
+                                },
+                            }}
+                        />
+                    </FormControl>
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}
@@ -221,7 +269,11 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
-                        {disabled ? 'Specify schedule and day' : props.customEvent ? 'Save Changes' : 'Add Event'}
+                        {isMissingScheduleOrDay
+                            ? 'Specify schedule and day'
+                            : props.customEvent
+                              ? 'Save Changes'
+                              : 'Add Event'}
                     </Button>
                 </DialogActions>
             </Dialog>

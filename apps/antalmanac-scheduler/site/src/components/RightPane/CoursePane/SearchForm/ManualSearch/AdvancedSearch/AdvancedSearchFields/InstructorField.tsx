@@ -11,7 +11,7 @@ export const InstructorField = memo(() => {
             textFieldProps={{
                 type: 'search',
                 value: instructor,
-                onChange: (event) => setInstructor(event.target.value),
+                onChange: (event) => setInstructor(event.target.value.replace(/[0-9]/g, '')),
                 placeholder: 'Last name only',
                 fullWidth: true,
             }}

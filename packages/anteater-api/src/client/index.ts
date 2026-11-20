@@ -3,6 +3,7 @@ import type {
     AggregateGradesByOffering,
     CalendarAllAPIResult,
     Course,
+    CourseGradeDistribution,
     CoursesBatchAPIResult,
     CoursesFilteredAPIResult,
     EnrollmentHistory,
@@ -148,6 +149,18 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
                     throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
                 }
                 return data.data;
+            },
+
+            async aggregateBySingleCourse(
+                params: paths['/v2/rest/grades/aggregateByCourse']['get']['parameters']['query']
+            ): Promise<CourseGradeDistribution | null> {
+                const { data, error, response } = await http.GET('/v2/rest/grades/aggregateByCourse', {
+                    params: { query: params },
+                });
+                if (error || !data) {
+                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                }
+                return data.data[0] ?? null;
             },
         },
 
