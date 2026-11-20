@@ -17,6 +17,16 @@ export function isCourseEntry(item: CourseListEntry): item is AACourseWithTerm {
     return 'sections' in item && 'deptCode' in item && 'courseNumber' in item && 'term' in item;
 }
 
+export function getCourseListEntryKey(courseListEntry: CourseListEntry) {
+    if (isSchoolEntry(courseListEntry)) {
+        return courseListEntry.schoolName;
+    } else if (isDepartmentEntry(courseListEntry)) {
+        return courseListEntry.deptCode;
+    } else {
+        return courseListEntry.courseId;
+    }
+}
+
 export function getCourseColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
     return currentCourses.reduce<Record<string, string>>((accumulator, course) => {
