@@ -181,7 +181,7 @@ function useFetchSectionInstructorGrades(course: AACourse) {
                 setSectionGrades(sectionCode, new Map([[result.data.instructor, result.data.gradeDistribution]]));
             }
         }
-    }, [sectionInstructorGrades, instructorsToFetch, setSectionGrades, areInstructorGradesValid]);
+    }, [sectionInstructorGrades, instructorsToFetch, setSectionGrades]);
 
     useEffect(() => {
         setAreSectionGradesLoading(areSectionInstructorGradesLoading);
@@ -212,6 +212,7 @@ export function useSectionGrades(sectionCode: SectionCode) {
 
     const sectionInstructorGrades = useCourseGradesStore((state) => state.sectionGrades.get(sectionCode));
     const areSectionInstructorGradesLoading = useCourseGradesStore((state) => state.areSectionGradesLoading);
+
     return {
         overallGrades,
         areOverallGradesLoading,

@@ -66,6 +66,7 @@ interface GradesPopoverProps {
 export function GradesPopover({ deptCode, courseNumber, sectionCode, instructor = '', isMobile }: GradesPopoverProps) {
     const { overallGrades, areOverallGradesLoading, sectionInstructorGrades, areSectionInstructorGradesLoading } =
         useSectionGrades(sectionCode);
+
     const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
     const loading = areOverallGradesLoading || areSectionInstructorGradesLoading;

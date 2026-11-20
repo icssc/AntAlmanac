@@ -14,7 +14,8 @@ export function CourseGradesStoreProvider({ children, course }: CourseGradesStor
 
     return (
         <CourseGradesContext.Provider value={useCourseGradesStore}>
-            <CourseGradeFetcher course={course} /> {children}
+            <CourseGradeFetcher course={course} />
+            {children}
         </CourseGradesContext.Provider>
     );
 }
