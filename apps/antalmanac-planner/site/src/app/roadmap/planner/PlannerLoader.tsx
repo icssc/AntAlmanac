@@ -24,6 +24,7 @@ import { useTransferredCredits } from '../../../hooks/transferCredits';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setCustomCourses } from '../../../store/slices/customCourseSlice';
 import {
+    selectCurrentPlan,
     selectYearPlans,
     setInitialPlannerData,
     setInvalidCourses,
@@ -69,6 +70,7 @@ const PlannerLoader: FC = () => {
     const userTransfersLoaded = useAppSelector((state) => state.transferCredits.dataLoadState === 'done');
     const transferred = useTransferredCredits();
     const currentPlanData = useAppSelector(selectYearPlans);
+    const isCHC = Boolean(useAppSelector(selectCurrentPlan)?.chc);
     const isRoadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
     const isLoggedIn = useIsLoggedIn();
     useCheckUnsavedChanges();
@@ -216,9 +218,9 @@ const PlannerLoader: FC = () => {
     // Validate Courses on change
     useEffect(() => {
         const transferNames = getNamesOfTransfers(transferred.courses, transferred.ap, transferred.apInfo);
-        const { invalidCourses } = validatePlanner(transferNames, currentPlanData);
+        const { invalidCourses } = validatePlanner(transferNames, currentPlanData, { isCHC });
         dispatch(setInvalidCourses(invalidCourses));
-    }, [dispatch, currentPlanData, transferred]);
+    }, [dispatch, currentPlanData, isCHC, transferred]);
 
     const [overrideLoading, setOverrideLoading] = useState(false);
 

@@ -1,3 +1,4 @@
+import { formatPrerequisite } from '@packages/anteater-api/utils';
 import {
     LegacyRoadmap,
     PrerequisiteNode,
@@ -32,6 +33,7 @@ import {
     RoadmapPlan,
 } from '../types/types';
 import { isCustomCourse } from './customCourses';
+import { isPrerequisiteNodeLeaf, isRoadmapVerifiablePrerequisite } from './prerequisites';
 import { compareRoadmaps } from './roadmap';
 import { LocalTransferSaveKey, saveLocalTransfers } from './transferCredits';
 import { searchAPIResults } from './util';
@@ -442,7 +444,16 @@ function normalizePlannerQuarterNames(yearPlans: LegacySavedPlannerYearData[]) {
     }));
 }
 
-export const validatePlanner = (transferNames: string[], currentPlanData: PlannerData) => {
+interface PrerequisiteValidationOptions {
+    takingCourses?: Set<string>;
+    isCHC?: boolean;
+}
+
+export const validatePlanner = (
+    transferNames: string[],
+    currentPlanData: PlannerData,
+    { isCHC = false }: PrerequisiteValidationOptions = {}
+) => {
     // store courses that have been taken
     // Transferred courses use ID (no spaces), AP Exams use Catalogue Name
     const taken: Set<string> = new Set(transferNames);
@@ -461,7 +472,7 @@ export const validatePlanner = (transferNames: string[], currentPlanData: Planne
 
                 const prerequisite = course.prerequisiteTree;
 
-                const incomplete = validatePrerequisites({ taken, prerequisite, taking });
+                const incomplete = validatePrerequisites({ taken, prerequisite, taking, isCHC });
                 if (incomplete.size === 0) return;
 
                 // prerequisite not fulfilled, has some required classes to take
@@ -498,15 +509,24 @@ interface ValidationInput<PreqrequisiteType> {
     prerequisite: PreqrequisiteType;
     /** The set of courses being taken in the same quarter */
     taking: Set<string>;
+    /** Whether the current roadmap uses a Campuswide Honors track */
+    isCHC: boolean;
 }
 
 const validateCoursePrerequisite = (input: ValidationInput<Prerequisite>) => {
-    const { prerequisite, taken, taking } = input;
+    const { prerequisite, taken, taking, isCHC } = input;
 
-    //checking prereq type (coures and exam)
+    // Unsupported affiliation and standing requirements are currently treated as satisfied intentionally.
+    if (!isRoadmapVerifiablePrerequisite(prerequisite)) {
+        return new Set<string>();
+    }
+
+    if (prerequisite.prereqType === 'affiliation') {
+        return isCHC ? new Set<string>() : new Set([formatPrerequisite(prerequisite)]);
+    }
+
     const prereqIsCourse = prerequisite.prereqType === 'course';
 
-    //decide whether coures or exam
     const id = prereqIsCourse ? prerequisite.courseId : prerequisite.examName;
 
     // check if already done
@@ -554,8 +574,7 @@ const isEmptyPrerequisiteTree = (prerequisite: PrerequisiteTree) => Object.keys(
  * @returns A set of all the prerequisites that are missing, with "or" groups seperated by '|'
  */
 const validatePrerequisites = ({ prerequisite, ...input }: ValidationInput<PrerequisiteNode>): Set<string> => {
-    // base case is just a course
-    if ('prereqType' in prerequisite) return validateCoursePrerequisite({ prerequisite, ...input });
+    if (isPrerequisiteNodeLeaf(prerequisite)) return validateCoursePrerequisite({ prerequisite, ...input });
 
     if (prerequisite.AND) return validateAndPrerequisite({ prerequisite, ...input });
     if (prerequisite.OR) return validateOrPrerequisite({ prerequisite, ...input });
@@ -570,12 +589,13 @@ const validatePrerequisites = ({ prerequisite, ...input }: ValidationInput<Prere
 export const getMissingPrerequisites = (
     clearedCourses: Set<string>,
     prerequisite: PrerequisiteTree,
-    takingCourses: Set<string> = new Set<string>()
+    { takingCourses = new Set<string>(), isCHC = false }: PrerequisiteValidationOptions = {}
 ) => {
     const input = {
         prerequisite,
         taken: clearedCourses,
         taking: takingCourses,
+        isCHC,
     };
 
     const missingPrerequisites = Array.from(validatePrerequisites(input));
