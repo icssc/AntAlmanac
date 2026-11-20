@@ -18,6 +18,7 @@ import Year from './Year';
 const Planner: FC = () => {
     const currentPlanData = useAppSelector(selectYearPlans);
     const roadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
+    const snapshotPending = useAppSelector((state) => state.roadmap.snapshotPending);
     const transferred = useTransferredCredits();
 
     const calculatePlannerOverviewStats = () => {
@@ -45,7 +46,13 @@ const Planner: FC = () => {
             {roadmapLoading ? (
                 <LoadingSpinner />
             ) : (
-                <section className="years" data-max-quarter-count={maxQuarterCount}>
+                <section
+                    className="years"
+                    data-max-quarter-count={maxQuarterCount}
+                    // read-only until the server copy replaces the snapshot
+                    aria-busy={snapshotPending}
+                    style={snapshotPending ? { pointerEvents: 'none' } : undefined}
+                >
                     {currentPlanData.map((year, yearIndex) => {
                         return <Year key={yearIndex} yearIndex={yearIndex} data={year} />;
                     })}
