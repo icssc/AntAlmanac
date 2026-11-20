@@ -1,5 +1,4 @@
 import { SortableList } from '$components/drag-and-drop/SortableList';
-import { CourseGradeFetcher } from '$components/RightPane/SectionTable/CourseGradeFetcher';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
@@ -117,7 +116,6 @@ export function SectionTable({
 
     return (
         <Box sx={{ overflow: 'hidden' }}>
-            {activeColumns.includes('gpa') ? <CourseGradeFetcher course={course} /> : null}
             <Box
                 sx={{
                     display: 'flex',
