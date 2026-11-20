@@ -1,5 +1,4 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
-import { getCourseIdFromParts } from '$lib/courseHelpers';
 import { getRenamedCoursesLabel, isGradeDistributionKeyCount } from '$lib/renames/utils';
 import { getInstructorGradesFromSection, useSectionGrades } from '$stores/CourseGradesStore';
 import {
@@ -66,7 +65,7 @@ interface GradesPopoverProps {
 
 export function GradesPopover({ deptCode, courseNumber, sectionCode, instructor = '', isMobile }: GradesPopoverProps) {
     const { overallGrades, areOverallGradesLoading, sectionInstructorGrades, areSectionInstructorGradesLoading } =
-        useSectionGrades(getCourseIdFromParts(deptCode, courseNumber), sectionCode);
+        useSectionGrades(sectionCode);
     const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
     const loading = areOverallGradesLoading || areSectionInstructorGradesLoading;
