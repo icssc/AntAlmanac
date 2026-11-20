@@ -221,6 +221,9 @@ export function getInstructorGradesFromSection(sectionInstructorGrades: SectionI
     return { instructor, instructorGrades };
 }
 
+/**
+ * Use under a component that renders `CourseGradesStoreProvider`
+ */
 export function useSectionGrades(sectionCode: SectionCode) {
     const useCourseGradesStore = useUseCourseGradesStore();
 
