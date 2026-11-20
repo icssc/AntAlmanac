@@ -7,6 +7,8 @@ export type AggregateGradesAPIResult =
 
 export type AggregateGrades = AggregateGradesAPIResult['data'];
 
+export type GradeDistribution = AggregateGrades['gradeDistribution'];
+
 export type AggregateGradesByOfferingAPIResult =
     paths['/v2/rest/grades/aggregateByOffering']['get']['responses']['200']['content']['application/json'];
 
