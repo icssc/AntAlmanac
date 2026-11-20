@@ -136,14 +136,10 @@ const Rewards: FC<{ examName: string; coursesGranted: CoursesGrantedTree }> = ({
 const APCreditMenuTile: FC<{ exam: TransferWithUnread<TransferredAPExam> }> = ({ exam }) => {
     const { examName, score, units, unread } = exam;
 
-    const updateScore = (value: number) => handleUpdate(value, units);
-    const updateUnits = (value: number) => handleUpdate(score, value);
     const apExamInfo = useAppSelector((state) => state.transferCredits.apExamInfo);
     const isLoggedIn = useIsLoggedIn();
     const dispatch = useAppDispatch();
     const apiExamInfo = apExamInfo.find((exam) => exam.fullName === examName);
-
-    const selectBox = <ScoreSelection score={score} setScore={updateScore} />;
 
     const getApplicableReward = useCallback(
         (score: number) => {
@@ -176,6 +172,10 @@ const APCreditMenuTile: FC<{ exam: TransferWithUnread<TransferredAPExam> }> = ({
     }, [dispatch, examName, isLoggedIn]);
 
     const coursesGranted = (getApplicableReward(score)?.coursesGranted ?? '') as CoursesGrantedTree;
+
+    const updateScore = (value: number) => handleUpdate(value, units);
+    const updateUnits = (value: number) => handleUpdate(score, value);
+    const selectBox = <ScoreSelection score={score} setScore={updateScore} />;
 
     return (
         <MenuTile
