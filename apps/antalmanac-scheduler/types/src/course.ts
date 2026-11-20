@@ -9,6 +9,7 @@ export type AASection = WebsocSection & {
 export type AACourse = Omit<WebsocCourse, 'sections'> & {
     sections: AASection[];
     sectionTypes: WebsocSectionType[];
+    schoolName?: string;
 };
 
 export type AACourseWithTerm = AACourse & {
