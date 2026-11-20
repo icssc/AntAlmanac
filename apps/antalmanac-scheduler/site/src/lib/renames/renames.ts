@@ -30,7 +30,7 @@ function courseRename(
     };
 }
 
-export const COURSE_RENAMES: CourseRename[] = [
+const COURSE_RENAMES: CourseRename[] = [
     courseRename({ deptCode: 'SWE', courseNumber: '43' }, { deptCode: 'IN4MATX', courseNumber: '43' }, 2026),
     courseRename({ deptCode: 'SWE', courseNumber: '113' }, { deptCode: 'IN4MATX', courseNumber: '113' }, 2026),
     courseRename({ deptCode: 'SWE', courseNumber: '115' }, { deptCode: 'IN4MATX', courseNumber: '115' }, 2026),
@@ -42,3 +42,17 @@ export const COURSE_RENAMES: CourseRename[] = [
     courseRename({ deptCode: 'SWE', courseNumber: '141' }, { deptCode: 'IN4MATX', courseNumber: '141' }, 2026),
     courseRename({ deptCode: 'I&C SCI', courseNumber: 'H32' }, { deptCode: 'I&C SCI', courseNumber: '32A' }, 2024),
 ];
+
+function indexRenamesBy(getCourseId: (rename: CourseRename) => string): Map<string, CourseRename> {
+    const index = new Map<string, CourseRename>();
+
+    for (const rename of COURSE_RENAMES) {
+        const courseId = getCourseId(rename);
+        index.set(courseId, rename);
+    }
+
+    return index;
+}
+
+export const COURSE_RENAMES_BY_CURRENT = indexRenamesBy((rename) => rename.current.courseId);
+export const COURSE_RENAMES_BY_PREVIOUS = indexRenamesBy((rename) => rename.previously.courseId);
