@@ -47,12 +47,14 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({
     }, [course.courseName, course.units, course.description, course.id, editing, inRoadmap]);
 
     const onDelete = useCallback(async () => {
+        const id = isLoggedIn && creationPromise ? await creationPromise : course.id;
+
         if (isLoggedIn) {
-            await trpc.customCourses.deleteCustomCard.mutate(course.id);
+            await trpc.customCourses.deleteCustomCard.mutate(id);
         }
-        dispatch(removeCustomCourse(course.id));
-        dispatch(removeCustomCourseFromRoadmap(course.id));
-    }, [dispatch, course.id, isLoggedIn]);
+        dispatch(removeCustomCourse(id));
+        dispatch(removeCustomCourseFromRoadmap(id));
+    }, [dispatch, course.id, isLoggedIn, creationPromise]);
 
     const handleStartEdit = () => {
         setNewName(course.courseName);
@@ -112,7 +114,7 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({
 
     if (inRoadmap) {
         return (
-            <div className="custom-card">
+            <div className={`custom-card ${creationPromise ? 'pending-card' : ''}`}>
                 <div className="course-drag-handle">
                     <DragIndicatorIcon />
                 </div>
@@ -136,7 +138,7 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({
     }
 
     return (
-        <div className="custom-card">
+        <div className={`custom-card ${creationPromise ? 'pending-card' : ''}`}>
             <div className="course-drag-handle">
                 <DragIndicatorIcon />
             </div>

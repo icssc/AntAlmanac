@@ -95,6 +95,7 @@ export type SearchResultData = CourseGQLData[] | ProfessorGQLData[];
 
 export interface CustomCourse {
     id: number;
+    tempReactKey?: number;
     courseName: string;
     units: number;
     description: string;
