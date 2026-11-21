@@ -27,6 +27,7 @@ import { makeUniquePlanName } from '../../../helpers/planner';
 import { addPlanner, deletePlanner, reorderPlannersRevision, updatePlannerName } from '../../../helpers/roadmapEdits';
 import { planSortable } from '../../../helpers/sortable';
 import { deepCopy } from '../../../helpers/util';
+import { useReviseAndSaveRoadmap } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setCHCRequirements } from '../../../store/slices/courseRequirementsSlice';
 import {
@@ -204,6 +205,7 @@ const RoadmapMultiplan: FC = () => {
     const [zot4PlanName, setZot4PlanName] = useState('');
     const [newPlanName, setNewPlanName] = useState(allPlans[currentPlanIndex].name);
     const nextPlanTempId = useAppSelector(getNextPlannerTempId);
+    const reviseAndSaveRoadmap = useReviseAndSaveRoadmap();
     const isDuplicateName = () => allPlans.find((p) => p.name === newPlanName);
 
     useEffect(() => {
@@ -287,7 +289,7 @@ const RoadmapMultiplan: FC = () => {
 
         const plannerToUpdate = allPlans[editIdx];
         const revision = updatePlannerName(plannerToUpdate, newPlanName);
-        dispatch(reviseRoadmap(revision));
+        reviseAndSaveRoadmap(revision);
 
         setEditIdx(-1);
     };
