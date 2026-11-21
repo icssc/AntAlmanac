@@ -1,15 +1,111 @@
 @use '../../../globals.scss';
 
+$resize-handle-width: 8px;
+$sidebar-min-width: 300px;
+$sidebar-max-width: 640px;
+
+.roadmap-sidebar-container {
+    width: clamp(
+        $sidebar-min-width,
+        var(--sidebar-width, #{globals.$roadmap-sidebar-width}),
+        min($sidebar-max-width, 50vw)
+    );
+    position: relative;
+    height: 100%;
+    flex-shrink: 0;
+    z-index: 50;
+
+    &.collapsed {
+        width: 0;
+    }
+
+    &.animating {
+        transition: width globals.$mui-transition-time ease;
+    }
+
+    .sidebar-clip {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+    }
+
+    .roadmap-sidebar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        min-width: $sidebar-min-width;
+    }
+
+    .sidebar-resize-handle {
+        position: absolute;
+        top: 0;
+        right: calc($resize-handle-width / -2);
+        width: $resize-handle-width;
+        height: 100%;
+        cursor: col-resize;
+        touch-action: none;
+        z-index: 51;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: calc(50% - 1.5px);
+            width: 3px;
+            height: 100%;
+            background-color: transparent;
+            transition: background-color 150ms;
+        }
+
+        &:hover::after,
+        &:focus-visible::after {
+            background-color: var(--mui-palette-primary-main);
+        }
+
+        &:focus-visible {
+            outline: none;
+        }
+    }
+
+    &.dragging .sidebar-resize-handle::after {
+        background-color: var(--mui-palette-primary-main);
+    }
+}
+
+.roadmap-page:has(> .roadmap-sidebar-container.dragging) {
+    cursor: col-resize;
+    user-select: none;
+}
+
+.sidebar-reopen-button.MuiIconButton-root {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: 52;
+    padding: 12px 2px;
+    border-radius: 0 8px 8px 0;
+    background-color: var(--mui-palette-background-paper);
+    border: 1px solid var(--mui-palette-divider);
+    border-left: none;
+    box-shadow: var(--mui-shadows-2, none);
+
+    &:hover {
+        background-color: var(--mui-palette-overlay-overlay1);
+    }
+
+    .roadmap-sidebar-container.dragging ~ & {
+        display: none;
+    }
+}
+
 .roadmap-sidebar {
     background-color: var(--mui-palette-overlay-overlay1);
     height: 100%;
     overflow: auto;
-    width: globals.$roadmap-sidebar-width;
-    flex-shrink: 0;
     padding-top: globals.$roadmap-toolbar-height;
-    position: relative;
     border-right: 1px solid var(--mui-palette-divider);
-    z-index: 50;
 
     .sidebar-tabs {
         position: absolute;
