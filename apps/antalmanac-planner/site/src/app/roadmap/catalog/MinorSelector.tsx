@@ -2,6 +2,7 @@ import { Autocomplete, FilterOptionsState, TextField } from '@mui/material';
 import { MinorProgram, SavedMinorProgram } from '@peterportal/types';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import QuarterFilters from '../../../component/QuarterFilters/QuarterFilters';
 import { normalizeMajorName } from '../../../helpers/courseRequirements';
 import { filterOptionsWithAbbreviations, mapAbbreviations } from '../../../helpers/selector';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
@@ -161,6 +162,7 @@ const MinorSelector: FC = () => {
                     />
                 )}
             />
+            <QuarterFilters />
             {selectedMinors.map((data) => (
                 <MinorCourseList key={data.minor.id} minorReqs={data} onCatalogYearChange={handleCatalogYearChange} />
             ))}

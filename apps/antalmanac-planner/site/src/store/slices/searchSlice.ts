@@ -27,6 +27,7 @@ export const searchSlice = createSlice({
         courseLevels: [] as string[],
         courseGeCategories: [] as string[],
         courseDepartments: [] as string[],
+        quarters: [] as string[],
         instructors: {
             query: '',
             pageNumber: 0,
@@ -51,6 +52,14 @@ export const searchSlice = createSlice({
             state.courseGeCategories = geCategories;
             state.courseLevels = levels;
             state.inProgressSearchOperation = state.courses.query ? 'newFilters' : 'none';
+        },
+        setQuarter: (state, action: PayloadAction<string>) => {
+            const quarter = action.payload;
+            if (state.quarters.includes(quarter)) {
+                state.quarters = state.quarters.filter((q) => q !== quarter);
+            } else {
+                state.quarters.push(quarter);
+            }
         },
         setPageNumber: (state, action: PayloadAction<number>) => {
             state[state.viewIndex].pageNumber = action.payload;
@@ -96,10 +105,13 @@ export const selectCourseFilters = createSelector(
 
 export type SearchCourseFilters = ReturnType<typeof selectCourseFilters>;
 
+export const selectQuarters = (state: RootState) => state.search.quarters;
+
 export const {
     setQuery,
     setPageNumber,
     setCourseFilters,
+    setQuarter,
     setFirstPageResults,
     setNewPageResults,
     searchOperationFailed,
