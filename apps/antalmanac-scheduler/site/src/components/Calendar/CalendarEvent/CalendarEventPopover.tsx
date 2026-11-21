@@ -4,7 +4,7 @@ import { CalendarEventDetail } from '$components/Calendar/CalendarEvent/Calendar
 import { isSkeletonEvent } from '$components/Calendar/types';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { Popover } from '@mui/material';
-import { useCallback } from 'react';
+import { useCallback, useLayoutEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export function CalendarEventPopover() {
@@ -15,6 +15,12 @@ export function CalendarEventPopover() {
     const handleClosePopover = useCallback(() => {
         setSelectedEvent(null, null);
     }, [setSelectedEvent]);
+
+    useLayoutEffect(() => {
+        if (anchorEl && !anchorEl.isConnected) {
+            handleClosePopover();
+        }
+    });
 
     if (!selectedEvent || isSkeletonEvent(selectedEvent)) {
         return null;
