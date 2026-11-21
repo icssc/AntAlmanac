@@ -1,7 +1,7 @@
 import './Library.scss';
 import AddIcon from '@mui/icons-material/Add';
 import { Collapse } from '@mui/material';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 
 import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
@@ -10,7 +10,12 @@ import { customCourseSortable } from '../../../helpers/sortable';
 import { deepCopy } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { addCustomCourse, updateCustomCourse } from '../../../store/slices/customCourseSlice';
+import {
+    addCustomCourse,
+    updateCustomCourse,
+    updateCustomCourseId,
+    removeCustomCourse,
+} from '../../../store/slices/customCourseSlice';
 import { setActiveCustomCourse, updateRoadmapCustomCourse } from '../../../store/slices/roadmapSlice';
 import trpc from '../../../trpc';
 import { CustomCourse } from '../../../types/types';
@@ -42,11 +47,34 @@ const CustomCourses = () => {
     const isLoggedIn = useIsLoggedIn();
     const userCustomCourses = useAppSelector((state) => state.customCourses.userCustomCourses);
     const customCoursesCopy = deepCopy(userCustomCourses);
+    const pendingCustomCourses = useRef(new Map<number, Promise<number>>());
 
     const addCard = useCallback(() => {
-        trpc.customCourses.addCustomCard
-            .mutate({ name: '', description: '', units: 0 })
-            .then((id) => dispatch(addCustomCourse({ id, courseName: '', units: 0, description: '' })));
+        const tempId = -Date.now();
+        const customCoursePromise = trpc.customCourses.addCustomCard.mutate({ name: '', description: '', units: 0 });
+
+        pendingCustomCourses.current.set(tempId, customCoursePromise);
+
+        dispatch(
+            addCustomCourse({
+                id: tempId,
+                tempReactKey: tempId,
+                courseName: '',
+                units: 0,
+                description: '',
+            })
+        );
+
+        customCoursePromise
+            .then((id) => {
+                dispatch(updateCustomCourseId({ tempId, id }));
+            })
+            .catch(() => {
+                dispatch(removeCustomCourse(tempId));
+            })
+            .finally(() => {
+                pendingCustomCourses.current.delete(tempId);
+            });
     }, [dispatch]);
 
     const handleUpdate = (course: CustomCourse) => {
@@ -77,13 +105,16 @@ const CustomCourses = () => {
                                     dispatch(setActiveCustomCourse({ course: draggedCourse }));
                                 }}
                                 {...customCourseSortable}
+                                filter=".pending-card"
+                                preventOnFilter={false}
                             >
                                 {userCustomCourses.map((course) => (
                                     <CustomCourseCard
-                                        key={course.id}
+                                        key={course.tempReactKey ?? course.id}
                                         course={course}
                                         handleUpdate={handleUpdate}
                                         inRoadmap={false}
+                                        creationPromise={pendingCustomCourses.current.get(course.id)}
                                     />
                                 ))}
                             </ReactSortable>

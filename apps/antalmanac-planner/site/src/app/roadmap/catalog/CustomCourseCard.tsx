@@ -18,9 +18,16 @@ interface CustomCourseCardProps {
     handleUpdate: (customCourse: CustomCourse) => void;
     inRoadmap: boolean;
     removeCourseAt?: () => void;
+    creationPromise?: Promise<number>;
 }
 
-export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpdate, inRoadmap, removeCourseAt }) => {
+export const CustomCourseCard: FC<CustomCourseCardProps> = ({
+    course,
+    handleUpdate,
+    inRoadmap,
+    removeCourseAt,
+    creationPromise,
+}) => {
     const dispatch = useAppDispatch();
     const isLoggedIn = useIsLoggedIn();
     const hasEmptyTitle = !course.courseName.trim();
@@ -40,12 +47,14 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpda
     }, [course.courseName, course.units, course.description, course.id, editing, inRoadmap]);
 
     const onDelete = useCallback(async () => {
+        const id = isLoggedIn && creationPromise ? await creationPromise : course.id;
+
         if (isLoggedIn) {
-            await trpc.customCourses.deleteCustomCard.mutate(course.id);
+            await trpc.customCourses.deleteCustomCard.mutate(id);
         }
-        dispatch(removeCustomCourse(course.id));
-        dispatch(removeCustomCourseFromRoadmap(course.id));
-    }, [dispatch, course.id, isLoggedIn]);
+        dispatch(removeCustomCourse(id));
+        dispatch(removeCustomCourseFromRoadmap(id));
+    }, [dispatch, course.id, isLoggedIn, creationPromise]);
 
     const handleStartEdit = () => {
         setNewName(course.courseName);
@@ -69,15 +78,17 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpda
             return;
         }
 
+        const id = creationPromise ? await creationPromise : updated.id;
+
         await trpc.customCourses.editCustomCard.mutate({
-            id: updated.id,
+            id,
             name: updated.courseName,
             description: updated.description,
             units: updated.units,
         });
 
-        handleUpdate(updated);
-    }, [course, newDescription, newName, newUnits, handleUpdate, isLoggedIn]);
+        handleUpdate({ ...updated, id });
+    }, [course, newDescription, newName, newUnits, handleUpdate, isLoggedIn, creationPromise]);
 
     const commitSave = async () => {
         if (saving) return;
@@ -103,7 +114,7 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpda
 
     if (inRoadmap) {
         return (
-            <div className="custom-card">
+            <div className={`custom-card ${creationPromise ? 'pending-card' : ''}`}>
                 <div className="course-drag-handle">
                     <DragIndicatorIcon />
                 </div>
@@ -127,7 +138,7 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpda
     }
 
     return (
-        <div className="custom-card">
+        <div className={`custom-card ${creationPromise ? 'pending-card' : ''}`}>
             <div className="course-drag-handle">
                 <DragIndicatorIcon />
             </div>
