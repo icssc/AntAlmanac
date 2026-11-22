@@ -37,7 +37,14 @@ export default function PieChartGraph({ gradeData, quarter, professor, course }:
     return (
         <ResponsiveContainer width="100%" height="100%">
             <PieChart data={data}>
-                <Pie dataKey="count" outerRadius="80%" labelLine={true} animationDuration={500} nameKey={'grade'}>
+                <Pie
+                    dataKey="count"
+                    outerRadius="90%"
+                    animationEasing="ease-in-out"
+                    animationDuration={600}
+                    nameKey={'grade'}
+                    stroke="white"
+                >
                     <LabelList
                         dataKey="count"
                         position="outside"
