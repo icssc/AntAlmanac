@@ -1,1 +1,1 @@
-export { SchedulerNotFound as default } from '@antalmanac-planner/site/src/app/SiteNotFound';
+export { default } from '@antalmanac-scheduler/src/app/not-found';

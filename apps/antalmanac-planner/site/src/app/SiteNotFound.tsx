@@ -4,7 +4,7 @@ function SiteNotFound({ isPlanner }: { isPlanner: boolean }) {
     return (
         <Error
             buttonHref={isPlanner ? '/planner' : '/'}
-            buttonText={isPlanner ? 'Go to Roadmap' : 'Back to Scheduler'}
+            buttonText={isPlanner ? 'Go to Roadmap' : 'Back to Schedule'}
         />
     );
 }
