@@ -1,5 +1,6 @@
 import AppStore from '$stores/AppStore';
 import { usePlannerStore } from '$stores/PlannerStore';
+import { scheduleOfferingKey } from '$stores/scheduleHelpers';
 import type { AACourseWithTerm, AATerm } from '@packages/antalmanac-types';
 import type { WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/anteater-api/types';
 
@@ -23,7 +24,7 @@ export function getCourseListEntryKey(courseListEntry: CourseListEntry) {
     } else if (isDepartmentEntry(courseListEntry)) {
         return courseListEntry.deptCode;
     } else {
-        return courseListEntry.courseId;
+        return scheduleOfferingKey(courseListEntry);
     }
 }
 
