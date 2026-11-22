@@ -32,7 +32,7 @@ const gradesRouter = router({
             ).filter((result) => result !== null);
 
             if (!isNotEmpty(results)) {
-                return aapiClient.grades.aggregateBySingleCourse(input);
+                return null;
             }
 
             return mergeAggregateGrades(results);
