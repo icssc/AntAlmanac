@@ -12,6 +12,20 @@
     }
 }
 
+.scheduler-not-found {
+    height: calc(100dvh - 52px);
+    font-size: 16px;
+
+    .error {
+        height: 100%;
+
+        h2,
+        .MuiButton-root {
+            font-size: 14px;
+        }
+    }
+}
+
 @media only screen and (max-width: 600px) {
     .error {
         h1 {

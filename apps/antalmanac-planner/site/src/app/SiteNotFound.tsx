@@ -14,5 +14,9 @@ export function PlannerNotFound() {
 }
 
 export function SchedulerNotFound() {
-    return <SiteNotFound isPlanner={false} />;
+    return (
+        <div className="scheduler-not-found">
+            <SiteNotFound isPlanner={false} />
+        </div>
+    );
 }
