@@ -1,4 +1,3 @@
-import { Header } from '$components/Header/Header';
 import { Providers } from '$src/app/providers';
 import { ANTALMANAC_DESCRIPTION, ANTALMANAC_TITLE } from '$src/app/seo-constants';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
@@ -95,10 +94,7 @@ function RootLayout({ children }: { children: React.ReactNode }) {
                     );`}
                 </Script>
                 <noscript>You need to enable JavaScript to run this app.</noscript>
-                <Providers>
-                    <Header />
-                    {children}
-                </Providers>
+                <Providers>{children}</Providers>
             </body>
         </html>
     );

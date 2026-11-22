@@ -13,7 +13,7 @@
 }
 
 .scheduler-not-found {
-    height: calc(100dvh - 52px);
+    height: calc(100dvh - 52px - env(safe-area-inset-top));
     font-size: 16px;
 
     .error {
