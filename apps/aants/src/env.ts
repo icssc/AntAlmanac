@@ -12,6 +12,7 @@ export const env = createEnv({
     server: {
         DB_URL: z.string().min(1),
         QUEUE_URL: z.string().min(1),
+        ANTEATER_API_URL: z.string().url(),
         ANTEATER_API_KEY: z.string().min(1),
         STAGE: z.string().min(1),
         NODE_ENV: z.enum(['development', 'production']).optional(),
@@ -19,6 +20,7 @@ export const env = createEnv({
     runtimeEnv: {
         DB_URL: process.env.DB_URL,
         QUEUE_URL: process.env.QUEUE_URL,
+        ANTEATER_API_URL: process.env.ANTEATER_API_URL,
         ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
         STAGE: process.env.STAGE,
         NODE_ENV: process.env.NODE_ENV,
