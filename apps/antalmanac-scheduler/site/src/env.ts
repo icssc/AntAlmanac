@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const env = createEnv({
     server: {
         DB_URL: z.string().min(1),
+        ANTEATER_API_URL: z.string().url(),
         ANTEATER_API_KEY: z.string().min(1),
         OIDC_CLIENT_ID: z.string().min(1),
         OIDC_ISSUER_URL: z.string().min(1),
@@ -24,6 +25,7 @@ export const env = createEnv({
     runtimeEnv: {
         DB_URL: process.env.DB_URL,
         MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+        ANTEATER_API_URL: process.env.ANTEATER_API_URL,
         ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
         OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID,
         OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
