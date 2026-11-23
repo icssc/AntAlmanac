@@ -10,7 +10,7 @@ import type { AATerm, CourseSearchResult, DepartmentSearchResult } from '@packag
 import { createClient } from '@packages/anteater-api/client';
 import type { Course, WebsocAPIResponse, WebsocCourse, WebsocDepartment } from '@packages/anteater-api/types';
 
-const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
+const aapiClient = createClient({ baseUrl: env.ANTEATER_API_URL, apiKey: env.ANTEATER_API_KEY });
 
 const MAX_COURSES = 10_000;
 

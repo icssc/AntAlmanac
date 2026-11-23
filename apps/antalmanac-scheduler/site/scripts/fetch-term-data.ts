@@ -6,7 +6,7 @@ import { type AATerm } from '@packages/antalmanac-types';
 import { createClient } from '@packages/anteater-api/client';
 import type { CalendarTerm, Quarter, Year } from '@packages/anteater-api/types';
 
-const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
+const aapiClient = createClient({ baseUrl: env.ANTEATER_API_URL, apiKey: env.ANTEATER_API_KEY });
 
 const QUARTER_MAP = {
     Summer1: 'Summer Session 1',

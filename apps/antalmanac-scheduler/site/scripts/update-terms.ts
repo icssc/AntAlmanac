@@ -15,7 +15,7 @@ interface DeployedTermsData {
     reason?: string;
 }
 
-const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
+const aapiClient = createClient({ baseUrl: env.ANTEATER_API_URL, apiKey: env.ANTEATER_API_KEY });
 
 async function getSectionCount(term: WebsocTerm) {
     const { shortName } = term;

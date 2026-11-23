@@ -7,7 +7,7 @@ import type { WebsocAPIDepartmentsResponse } from '@packages/anteater-api/types'
 
 const DEPARTMENT_YEAR_RANGE = 10;
 
-const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
+const aapiClient = createClient({ baseUrl: env.ANTEATER_API_URL, apiKey: env.ANTEATER_API_KEY });
 
 async function main() {
     const sinceYear = String(new Date().getFullYear() - DEPARTMENT_YEAR_RANGE);
