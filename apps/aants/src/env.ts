@@ -12,7 +12,7 @@ export const env = createEnv({
     server: {
         DB_URL: z.string().min(1),
         QUEUE_URL: z.string().min(1),
-        ANTEATER_API_URL: z.string().url(),
+        ANTEATER_API_URL: z.string().url().default('https://anteaterapi.com'),
         ANTEATER_API_KEY: z.string().min(1),
         STAGE: z.string().min(1),
         NODE_ENV: z.enum(['development', 'production']).optional(),

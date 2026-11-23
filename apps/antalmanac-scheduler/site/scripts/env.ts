@@ -10,7 +10,7 @@ config({ path: resolve(appRoot, '.env') });
 
 export const env = createEnv({
     server: {
-        ANTEATER_API_URL: z.string().url(),
+        ANTEATER_API_URL: z.string().url().default('https://anteaterapi.com'),
         ANTEATER_API_KEY: z.string().min(1),
     },
     runtimeEnv: {

@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const env = createEnv({
     server: {
         DB_URL: z.string().min(1),
-        ANTEATER_API_URL: z.string().url(),
+        ANTEATER_API_URL: z.string().url().default('https://anteaterapi.com'),
         ANTEATER_API_KEY: z.string().min(1),
         OIDC_CLIENT_ID: z.string().min(1),
         OIDC_ISSUER_URL: z.string().min(1),
