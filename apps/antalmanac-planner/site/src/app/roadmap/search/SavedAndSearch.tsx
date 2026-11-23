@@ -30,11 +30,13 @@ interface SearchResultsProps {
 }
 
 const SearchResults: FC<SearchResultsProps> = ({ viewIndex, searchResults }) => {
+    const isMobile = useIsMobile();
+
     return (
         <InfiniteScrollContainer
             viewIndex={viewIndex}
             searchResults={searchResults}
-            scrollableTarget="sidebarScrollContainer"
+            scrollableTarget={isMobile ? 'mobileScrollContainer' : 'sidebarScrollContainer'}
         >
             {viewIndex === 'instructors' ? (
                 <ProfessorResultsContainer searchResults={searchResults as ProfessorGQLData[]} />
