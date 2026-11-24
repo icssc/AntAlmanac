@@ -182,6 +182,7 @@ interface CourseInfoButtonProps {
 
 export const CourseInfoButton = ({ text, icon, href }: CourseInfoButtonProps) => (
     <Button
+        className="scheduler-button"
         variant="contained"
         size="small"
         color="primary"
@@ -190,6 +191,6 @@ export const CourseInfoButton = ({ text, icon, href }: CourseInfoButtonProps) =>
         rel="noopener noreferrer"
         startIcon={icon}
     >
-        {text}
+        <span className="course-info-button-text">{text}</span>
     </Button>
 );

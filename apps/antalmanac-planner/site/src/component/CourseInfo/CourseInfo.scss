@@ -33,3 +33,13 @@
         content: ': ';
     }
 }
+
+@container schedule-management (max-width: 450px) {
+    .course-info-button-text {
+        display: none;
+    }
+
+    .scheduler-button .MuiButton-startIcon {
+        margin: 0;
+    }
+}
