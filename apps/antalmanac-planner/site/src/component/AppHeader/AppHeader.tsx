@@ -12,7 +12,7 @@ import { LogoAndSwitcher } from '../../shared-components/LogoAndSwitcher';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setShowMobileFullscreenSearch } from '../../store/slices/roadmapSlice';
 import SearchModule from '../SearchModule/SearchModule';
-import ExportButton from './Export';
+import ExportButton from './ExportButton';
 import Profile from './Profile';
 import SaveButton from './SaveButton';
 
