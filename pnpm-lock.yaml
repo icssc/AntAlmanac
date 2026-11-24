@@ -343,6 +343,9 @@ importers:
 
   apps/antalmanac-scheduler/site:
     dependencies:
+      '@antalmanac-planner/site':
+        specifier: workspace:^
+        version: link:../../antalmanac-planner/site
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)

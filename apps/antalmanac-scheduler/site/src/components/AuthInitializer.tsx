@@ -1,3 +1,5 @@
+'use client';
+
 import { type UserData, isEmptySchedule, loadSchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { SignInAlertDialog } from '$components/SignInAlertDialog';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
