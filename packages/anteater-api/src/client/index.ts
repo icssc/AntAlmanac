@@ -33,7 +33,8 @@ export interface AAPIClientOptions {
 }
 
 export function createClient({ baseUrl, apiKey }: AAPIClientOptions) {
-    const http = createFetchClient<paths>({ baseUrl: baseUrl });
+    const base = baseUrl.replace(/\/+$/, '');
+    const http = createFetchClient<paths>({ baseUrl: base });
 
     const auth: Middleware = {
         onRequest({ request }) {
