@@ -186,6 +186,9 @@ const PlannerLoader: FC = () => {
         if (!isRoadmapLoading || initialAccountRoadmap || initialLocalRoadmap) return;
 
         // Paint the last-seen account roadmap right away; the server copy below always replaces it
+        // Transfer credits are independent of the roadmap, so request them alongside it rather than after it
+        dispatch(setDataLoadState('loading'));
+
         const snapshot = isLoggedIn && userKey ? readRoadmapSnapshot(userKey) : null;
         if (snapshot) {
             prefetchPlannerCourses(snapshot.planners);
@@ -208,7 +211,6 @@ const PlannerLoader: FC = () => {
             if (early) prefetchPlannerCourses(early.planners);
             setInitialAccountRoadmap(accountRoadmap);
             setInitialLocalRoadmap(localRoadmap);
-            dispatch(setDataLoadState('loading'));
         });
     }, [
         dispatch,
@@ -268,8 +270,8 @@ const PlannerLoader: FC = () => {
     ]);
 
     // Validate courses on change, but only once everything validation depends on has loaded (the server roadmap and
-    // the user's transfer credits). Validating the read-only snapshot or a roadmap without transfers would flag
-    // courses incorrectly.
+    // the user's transfer credits).
+    // Validating the read-only snapshot or a roadmap without transfers would flag courses incorrectly.
     useEffect(() => {
         if (!roadmapLoaded || !userTransfersLoaded) return;
         const transferNames = getNamesOfTransfers(transferred.courses, transferred.ap, transferred.apInfo);

@@ -3,7 +3,9 @@ import { MajorProgram, MajorSpecialization, SavedMajorProgram } from '@peterport
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { normalizeMajorName } from '../../../helpers/courseRequirements';
+import { cachedProgramQuery } from '../../../helpers/programCache';
 import { filterOptionsWithAbbreviations, mapAbbreviations } from '../../../helpers/selector';
+import { readUserSnapshot, writeUserSnapshot } from '../../../helpers/userSnapshot';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
@@ -15,6 +17,13 @@ import {
 } from '../../../store/slices/courseRequirementsSlice';
 import trpc from '../../../trpc';
 import MajorCourseList from './MajorCourseList';
+
+const majorsSnapshotName = 'selected-majors';
+
+interface MajorsSnapshot {
+    majors: MajorProgram[];
+    saved: SavedMajorProgram[];
+}
 
 function updateSelectedMajorAndSpecialization(majors: SavedMajorProgram[]) {
     trpc.programs.saveSelectedMajors.mutate({ majors });
@@ -29,7 +38,10 @@ const MajorSelector: FC = () => {
     const isLoggedIn = useIsLoggedIn();
     const majors = useAppSelector((state) => state.courseRequirements.majorList);
     const selectedMajors = useAppSelector((state) => state.courseRequirements.selectedMajors);
+    const userKey = useAppSelector((state) => state.user.user?.email);
     const hasFetchedSelectedMajors = useRef(false);
+    const hydratedFromSnapshot = useRef(false);
+    const snapshotMajorIds = useRef(new Set<string>());
     const [savedMajors, setSavedMajors] = useState<SavedMajorProgram[]>([]);
 
     const [majorsLoading, setMajorsLoading] = useState(false);
@@ -50,7 +62,7 @@ const MajorSelector: FC = () => {
     // Initial Load, fetch majors
     useEffect(() => {
         if (majors.length) return;
-        trpc.programs.getMajors.query().then(saveInitialMajorList);
+        cachedProgramQuery('majors', () => trpc.programs.getMajors.query()).then(saveInitialMajorList);
     }, [dispatch, majors.length, saveInitialMajorList]);
 
     const saveMajors = useCallback(
@@ -62,8 +74,14 @@ const MajorSelector: FC = () => {
                 catalogYear: m.catalogYear ?? undefined,
             }));
             updateSelectedMajorAndSpecialization(majors);
+            if (userKey) {
+                writeUserSnapshot<MajorsSnapshot>(majorsSnapshotName, userKey, {
+                    majors: majorsToSave.map((m) => m.major),
+                    saved: majors,
+                });
+            }
         },
-        [isLoggedIn]
+        [isLoggedIn, userKey]
     );
 
     const handleMajorChange = useCallback(
@@ -119,6 +137,22 @@ const MajorSelector: FC = () => {
         [savedMajors, saveMajors, selectedMajors]
     );
 
+    // Show the last-seen selection immediately (so its requirements can start loading without waiting for the major
+    // list and the saved selection); the server's copy below replaces it
+    useEffect(() => {
+        if (!isLoggedIn || !userKey || hydratedFromSnapshot.current) return;
+        hydratedFromSnapshot.current = true;
+        const snapshot = readUserSnapshot<MajorsSnapshot>(majorsSnapshotName, userKey);
+        if (!snapshot || !Array.isArray(snapshot.majors) || !Array.isArray(snapshot.saved)) return;
+        for (const major of snapshot.majors) {
+            dispatch(addMajor(major));
+            const saved = snapshot.saved.find((s) => s.majorId === major.id);
+            dispatch(setMajorCatalogYear({ majorId: major.id, catalogYear: saved?.catalogYear ?? null }));
+            snapshotMajorIds.current.add(major.id);
+        }
+        setSavedMajors(snapshot.saved);
+    }, [dispatch, isLoggedIn, userKey]);
+
     useEffect(() => {
         if (!majors.length || !isLoggedIn) return;
         if (hasFetchedSelectedMajors.current) return;
@@ -129,9 +163,11 @@ const MajorSelector: FC = () => {
         trpc.programs.getSavedMajors
             .query()
             .then((savedMajors) => {
+                const serverMajors: MajorProgram[] = [];
                 for (const savedMajor of savedMajors) {
                     const foundMajor = majors.find((m) => m.id === savedMajor.majorId);
                     if (!foundMajor) continue;
+                    serverMajors.push(foundMajor);
                     dispatch(addMajor(foundMajor));
                     dispatch(
                         setMajorCatalogYear({
@@ -140,12 +176,22 @@ const MajorSelector: FC = () => {
                         })
                     );
                 }
+                // Drop anything the last-seen copy showed that the server no longer has (e.g. changed on another device)
+                for (const id of snapshotMajorIds.current) {
+                    if (!serverMajors.some((m) => m.id === id)) dispatch(removeMajor(id));
+                }
+                snapshotMajorIds.current.clear();
                 setSavedMajors(savedMajors);
+                if (userKey)
+                    writeUserSnapshot<MajorsSnapshot>(majorsSnapshotName, userKey, {
+                        majors: serverMajors,
+                        saved: savedMajors,
+                    });
             })
             .finally(() => {
                 setMajorsLoading(false);
             });
-    }, [dispatch, majors, isLoggedIn]);
+    }, [dispatch, majors, isLoggedIn, userKey]);
 
     const majorSelectOptions: MajorOption[] = majors.map((m) => ({
         value: m,

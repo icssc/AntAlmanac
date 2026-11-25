@@ -6,6 +6,7 @@ import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
 import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
 import { getCatalogYearDefaults } from '../../../helpers/courseRequirements';
+import { cachedProgramQuery } from '../../../helpers/programCache';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     setMinorRequirements,
@@ -19,7 +20,9 @@ import CatalogYears, { CatalogYearWarning } from './CatalogYears';
 import ProgramRequirementsList from './ProgramRequirementsList';
 
 function getCoursesForMinor(programId: string, catalogYear?: string) {
-    return trpc.programs.getRequiredCourses.query({ type: 'minor', programId, catalogYear });
+    return cachedProgramQuery(`minor ${programId} ${catalogYear}`, () =>
+        trpc.programs.getRequiredCourses.query({ type: 'minor', programId, catalogYear })
+    );
 }
 
 interface MinorCourseListProps {
