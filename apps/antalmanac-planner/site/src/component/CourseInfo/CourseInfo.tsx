@@ -190,6 +190,7 @@ export const CourseInfoButton = ({ text, icon, href }: CourseInfoButtonProps) =>
         target="_blank"
         rel="noopener noreferrer"
         startIcon={icon}
+        aria-label={text}
     >
         <span className="course-info-button-text">{text}</span>
     </Button>
