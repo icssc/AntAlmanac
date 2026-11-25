@@ -13,11 +13,11 @@ import trpc from '../../trpc';
 import { CourseGQLData, ProfessorGQLData } from '../../types/types';
 import Chart from './Chart';
 import MostUsedTags from './MostUsedTags';
+import PieChartGraph from './Pie';
 
 interface GradeDistProps {
     course?: CourseGQLData;
     professor?: ProfessorGQLData;
-    minify?: boolean;
 }
 
 interface Entry {
@@ -194,23 +194,6 @@ const GradeDist: FC<GradeDistProps> = (props) => {
 
     const optionsRow = (
         <div className="gradedist-menu">
-            {props.minify && (
-                <div className="gradedist-filter">
-                    <Select
-                        value={chartType}
-                        onChange={(e) => setChartType(e.target.value as ChartTypes)}
-                        renderValue={() => 'Chart Type'}
-                    >
-                        <MenuItem key="bar" value="bar">
-                            Bar
-                        </MenuItem>
-                        <MenuItem key="pie" value="pie">
-                            Pie
-                        </MenuItem>
-                    </Select>
-                </div>
-            )}
-
             <div className="gradedist-filter">
                 <Autocomplete
                     disableClearable
@@ -241,6 +224,21 @@ const GradeDist: FC<GradeDistProps> = (props) => {
                             </MenuItem>
                         );
                     })}
+                </Select>
+            </div>
+
+            <div className="gradedist-filter gradedist-chart-type">
+                <Select
+                    value={chartType}
+                    onChange={(e) => setChartType(e.target.value as ChartTypes)}
+                    renderValue={(chartType) => (chartType === 'pie' ? 'Pie' : 'Bar')}
+                >
+                    <MenuItem key="bar" value="bar">
+                        Bar
+                    </MenuItem>
+                    <MenuItem key="pie" value="pie">
+                        Pie
+                    </MenuItem>
                 </Select>
             </div>
         </div>
@@ -356,7 +354,7 @@ const GradeDist: FC<GradeDistProps> = (props) => {
         );
 
         return (
-            <div className={`gradedist-module-container ${props.minify ? 'grade-dist-mini' : ''}`}>
+            <div className="gradedist-module-container">
                 {optionsRow}
                 <div className="gradedist-content">
                     <div className="gradedist-stats">
@@ -364,18 +362,14 @@ const GradeDist: FC<GradeDistProps> = (props) => {
                         {averageQualityCard}
                         {avgDifficultyCard}
                     </div>
-                    {((props.minify && chartType == 'bar') || !props.minify) && (
-                        <Card variant="outlined" className="grade-dist-chart-card">
-                            <CardContent>
-                                <Typography color="textSecondary" className="grade-dist-total">
-                                    Total Students: {aggregateGradeData.total.toLocaleString('en-US')}
-                                </Typography>
-                                <div className="grade-dist-chart-container">
-                                    <Chart {...graphProps} />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
+                    <Card variant="outlined" className="grade-dist-chart-card">
+                        <Typography color="textSecondary" className="grade-dist-total">
+                            Total Students: {aggregateGradeData.total.toLocaleString('en-US')}
+                        </Typography>
+                        <div className="grade-dist-chart-container">
+                            {chartType === 'bar' ? <Chart {...graphProps} /> : <PieChartGraph {...graphProps} />}
+                        </div>
+                    </Card>
                 </div>
                 {reviews.length > 0 && <MostUsedTags reviews={reviews} />}
             </div>
@@ -423,7 +417,7 @@ const GradeDist: FC<GradeDistProps> = (props) => {
         );
 
         return (
-            <div className={`gradedist-module-container ${props.minify ? 'grade-dist-mini' : ''}`}>
+            <div className="gradedist-module-container">
                 {optionsRow}
                 <div className="gradedist-content">
                     <div className="gradedist-stats">
@@ -440,7 +434,7 @@ const GradeDist: FC<GradeDistProps> = (props) => {
     } else {
         // gradeDistData is empty, did not receive any data from API call or received an error, display an error message
         return (
-            <div className={`gradedist-module-container ${props.minify ? 'grade-dist-mini' : ''}`}>
+            <div className="gradedist-module-container">
                 {optionsRow}
                 <div className="gradedist-failed">
                     <p>
