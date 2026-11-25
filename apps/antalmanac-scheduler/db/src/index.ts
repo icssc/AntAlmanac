@@ -6,7 +6,10 @@ import * as schema from './schema/index';
 
 const pool = new Pool({
     connectionString: env.DB_URL,
-    max: 10,
+    // Lambda processes one request at a time per runtime environment.
+    // We then give some leeway to allow, to a limited extent, concurrent queries.
+    // But these are an antipattern and should be rare, so the limit remains low.
+    max: 2,
     idleTimeoutMillis: 10000,
     connectionTimeoutMillis: 5000,
 });

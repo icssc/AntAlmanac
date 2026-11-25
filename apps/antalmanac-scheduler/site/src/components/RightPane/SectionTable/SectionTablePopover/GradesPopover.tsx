@@ -1,6 +1,5 @@
 import { SectionTablePopoverSubheader } from '$components/RightPane/SectionTable/SectionTablePopover/SectionTablePopoverSubheader';
-import { getCourseIdFromParts } from '$lib/courseHelpers';
-import { getRenamedCoursesLabel } from '$lib/renames/utils';
+import { getRenamedCoursesLabel, isGradeDistributionKeyCount } from '$lib/renames/utils';
 import { getInstructorGradesFromSection, useSectionGrades } from '$stores/CourseGradesStore';
 import {
     Box,
@@ -43,11 +42,11 @@ function toGradeData(
     }
 
     const totalGrades = Object.entries(courseGrades)
-        .filter(([key]) => key !== 'averageGPA')
+        .filter(([key]) => isGradeDistributionKeyCount(key))
         .reduce((acc, [, value]) => acc + (value as number), 0);
 
     const grades = Object.entries(courseGrades)
-        .filter(([key]) => key !== 'averageGPA')
+        .filter(([key]) => isGradeDistributionKeyCount(key))
         .map(([key, value]) => ({
             name: key.replace('grade', '').replace('Count', ''),
             all: Number((((value as number) / totalGrades) * 100).toFixed(2)),
@@ -66,7 +65,8 @@ interface GradesPopoverProps {
 
 export function GradesPopover({ deptCode, courseNumber, sectionCode, instructor = '', isMobile }: GradesPopoverProps) {
     const { overallGrades, areOverallGradesLoading, sectionInstructorGrades, areSectionInstructorGradesLoading } =
-        useSectionGrades(getCourseIdFromParts(deptCode, courseNumber), sectionCode);
+        useSectionGrades(sectionCode);
+
     const predecessorLabel = getRenamedCoursesLabel(deptCode, courseNumber);
 
     const loading = areOverallGradesLoading || areSectionInstructorGradesLoading;
