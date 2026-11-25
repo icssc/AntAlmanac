@@ -206,7 +206,9 @@ function hasSameSavedCourses(before: SavedPlannerQuarterData['courses'], after: 
         before.length === after.length &&
         before.every(
             (course, index) =>
-                course.courseId === after[index]?.courseId && course.userChosenUnits === after[index]?.userChosenUnits
+                course.courseId === after[index]?.courseId &&
+                course.userChosenUnits === after[index]?.userChosenUnits &&
+                course.countsForCredit === after[index]?.countsForCredit
         )
     );
 }
