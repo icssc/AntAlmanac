@@ -47,6 +47,8 @@ const MinorSelector: FC = () => {
     const hasFetchedSelectedMinors = useRef(false);
     const hydratedFromSnapshot = useRef(false);
     const snapshotMinorIds = useRef(new Set<string>());
+    // Set once the user changes their selection, so a slower server response can't overwrite the change
+    const editedByUser = useRef(false);
 
     const [minorsLoading, setMinorsLoading] = useState(false);
 
@@ -72,6 +74,7 @@ const MinorSelector: FC = () => {
     const saveMinors = useCallback(
         (minorsToSave: MinorRequirements[]) => {
             if (!isLoggedIn) return;
+            editedByUser.current = true;
             const minors: SavedMinorProgram[] = minorsToSave.map((m) => ({
                 id: m.minor.id,
                 name: m.minor.name,
@@ -143,6 +146,8 @@ const MinorSelector: FC = () => {
         trpc.programs.getSavedMinors
             .query()
             .then((savedMinors) => {
+                // The user's edits were saved after this request was made, so they are newer than this response
+                if (editedByUser.current) return;
                 const serverMinors: MinorProgram[] = [];
                 for (const savedMinor of savedMinors) {
                     const foundMinor = minors.find((m) => m.id === savedMinor.id);

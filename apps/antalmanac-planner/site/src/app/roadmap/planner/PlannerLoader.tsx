@@ -186,8 +186,9 @@ const PlannerLoader: FC = () => {
         if (!isRoadmapLoading || initialAccountRoadmap || initialLocalRoadmap) return;
 
         // Paint the last-seen account roadmap right away; the server copy below always replaces it
-        // Transfer credits are independent of the roadmap, so request them alongside it rather than after it
-        dispatch(setDataLoadState('loading'));
+        // Account transfer credits are independent of the roadmap, so request them alongside it. Guests' transfers live
+        // in localStorage, which loading the roadmap may still be upgrading, so those wait for it.
+        if (isLoggedIn) dispatch(setDataLoadState('loading'));
 
         const snapshot = isLoggedIn && userKey ? readRoadmapSnapshot(userKey) : null;
         if (snapshot) {
@@ -211,6 +212,7 @@ const PlannerLoader: FC = () => {
             if (early) prefetchPlannerCourses(early.planners);
             setInitialAccountRoadmap(accountRoadmap);
             setInitialLocalRoadmap(localRoadmap);
+            if (!isLoggedIn) dispatch(setDataLoadState('loading'));
         });
     }, [
         dispatch,

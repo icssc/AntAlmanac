@@ -42,6 +42,8 @@ const MajorSelector: FC = () => {
     const hasFetchedSelectedMajors = useRef(false);
     const hydratedFromSnapshot = useRef(false);
     const snapshotMajorIds = useRef(new Set<string>());
+    // Set once the user changes their selection, so a slower server response can't overwrite the change
+    const editedByUser = useRef(false);
     const [savedMajors, setSavedMajors] = useState<SavedMajorProgram[]>([]);
 
     const [majorsLoading, setMajorsLoading] = useState(false);
@@ -68,6 +70,7 @@ const MajorSelector: FC = () => {
     const saveMajors = useCallback(
         (majorsToSave: MajorWithSpecialization[]) => {
             if (!isLoggedIn) return;
+            editedByUser.current = true;
             const majors: SavedMajorProgram[] = majorsToSave.map((m) => ({
                 majorId: m.major.id,
                 specializationId: m.selectedSpec?.id,
@@ -163,6 +166,8 @@ const MajorSelector: FC = () => {
         trpc.programs.getSavedMajors
             .query()
             .then((savedMajors) => {
+                // The user's edits were saved after this request was made, so they are newer than this response
+                if (editedByUser.current) return;
                 const serverMajors: MajorProgram[] = [];
                 for (const savedMajor of savedMajors) {
                     const foundMajor = majors.find((m) => m.id === savedMajor.majorId);
