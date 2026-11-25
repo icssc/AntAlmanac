@@ -11,6 +11,8 @@ import Toast from '../../helpers/toast';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { toggleFormStatus, setShowToast } from '../../store/slices/reviewSlice';
 import { CourseGQLData, ProfessorGQLData, SearchType } from '../../types/types';
+import RepeatabilityText from '../CourseInfo/RepeatabilityText';
+import RestrictionText from '../CourseInfo/RestrictionText';
 import RecentOfferingsTable from '../RecentOfferingsTable/RecentOfferingsTable';
 
 interface FeaturedInfoData {
@@ -180,6 +182,12 @@ const SideInfo: FC<SideInfoProps> = (props) => {
                     </div>
                 </div>
 
+                {props.course && (
+                    <>
+                        <RestrictionText restriction={props.course.restriction} />
+                        <RepeatabilityText course={props.course} />
+                    </>
+                )}
                 {props.terms && props.terms.length > 0 && (
                     <>
                         <h2>Recent Offerings</h2>

@@ -28,6 +28,12 @@ export function getCourseTags(course: CourseGQLData) {
     course.geList.forEach((ge) => {
         tags.push(`${ge.substring(0, ge.indexOf(':'))}`);
     });
+    const repeatLimit = course.repeatabilityTimes;
+    const repeatable =
+        repeatLimit === null
+            ? Boolean(course.repeatability?.trim())
+            : repeatLimit > (course.repeatabilityType === 'credit_hours' ? minUnits : 1);
+    if (repeatable) tags.push('Repeatable');
     return tags;
 }
 
