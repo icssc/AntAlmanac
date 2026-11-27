@@ -1,9 +1,8 @@
 import { z } from 'zod';
 
 import { ALL_GE_NAMES } from './courseRequirements';
-import { operations } from './generated/anteater-api-types';
 
-export type APExam = operations['apExams']['responses'][200]['content']['application/json']['data'][number];
+export type { APExam } from '@packages/anteater-api/types';
 
 // These type names are prefixed with zod so as not to conflict with the db table names
 // (e.g. `transferredCourse` from `db/schema`)
