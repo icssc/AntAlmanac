@@ -3,7 +3,9 @@ import { MinorProgram, SavedMinorProgram } from '@peterportal/types';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { normalizeMajorName } from '../../../helpers/courseRequirements';
+import { cachedProgramQuery } from '../../../helpers/programCache';
 import { filterOptionsWithAbbreviations, mapAbbreviations } from '../../../helpers/selector';
+import { readUserSnapshot, writeUserSnapshot } from '../../../helpers/userSnapshot';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
@@ -15,6 +17,13 @@ import {
 } from '../../../store/slices/courseRequirementsSlice';
 import trpc from '../../../trpc';
 import MinorCourseList from './MinorCourseList';
+
+const minorsSnapshotName = 'selected-minors';
+
+interface MinorsSnapshot {
+    minors: MinorProgram[];
+    saved: SavedMinorProgram[];
+}
 
 function updateSelectedMinors(minors: SavedMinorProgram[]) {
     trpc.programs.saveSelectedMinor.mutate({
@@ -34,7 +43,12 @@ const MinorSelector: FC = () => {
     const isLoggedIn = useIsLoggedIn();
     const minors = useAppSelector((state) => state.courseRequirements.minorList);
     const selectedMinors = useAppSelector((state) => state.courseRequirements.selectedMinors);
+    const userKey = useAppSelector((state) => state.user.user?.email);
     const hasFetchedSelectedMinors = useRef(false);
+    const hydratedFromSnapshot = useRef(false);
+    const snapshotMinorIds = useRef(new Set<string>());
+    // Set once the user changes their selection, so a slower server response can't overwrite the change
+    const editedByUser = useRef(false);
 
     const [minorsLoading, setMinorsLoading] = useState(false);
 
@@ -54,20 +68,27 @@ const MinorSelector: FC = () => {
     // Initial Load, fetch minors
     useEffect(() => {
         if (minors.length) return;
-        trpc.programs.getMinors.query().then(saveInitialMinorList);
+        cachedProgramQuery('minors', () => trpc.programs.getMinors.query()).then(saveInitialMinorList);
     }, [dispatch, minors.length, saveInitialMinorList]);
 
     const saveMinors = useCallback(
         (minorsToSave: MinorRequirements[]) => {
             if (!isLoggedIn) return;
+            editedByUser.current = true;
             const minors: SavedMinorProgram[] = minorsToSave.map((m) => ({
                 id: m.minor.id,
                 name: m.minor.name,
                 catalogYear: m.catalogYear ?? undefined,
             }));
             updateSelectedMinors(minors);
+            if (userKey) {
+                writeUserSnapshot<MinorsSnapshot>(minorsSnapshotName, userKey, {
+                    minors: minorsToSave.map((m) => m.minor),
+                    saved: minors,
+                });
+            }
         },
-        [isLoggedIn]
+        [isLoggedIn, userKey]
     );
 
     const handleMinorChange = useCallback(
@@ -101,6 +122,20 @@ const MinorSelector: FC = () => {
         [saveMinors, selectedMinors]
     );
 
+    // Show the last-seen selection immediately; the server's copy below replaces it
+    useEffect(() => {
+        if (!isLoggedIn || !userKey || hydratedFromSnapshot.current) return;
+        hydratedFromSnapshot.current = true;
+        const snapshot = readUserSnapshot<MinorsSnapshot>(minorsSnapshotName, userKey);
+        if (!snapshot || !Array.isArray(snapshot.minors) || !Array.isArray(snapshot.saved)) return;
+        for (const minor of snapshot.minors) {
+            dispatch(addMinor(minor));
+            const saved = snapshot.saved.find((s) => s.id === minor.id);
+            dispatch(setMinorCatalogYear({ minorId: minor.id, catalogYear: saved?.catalogYear ?? null }));
+            snapshotMinorIds.current.add(minor.id);
+        }
+    }, [dispatch, isLoggedIn, userKey]);
+
     useEffect(() => {
         if (!minors.length || !isLoggedIn) return;
         if (hasFetchedSelectedMinors.current) return;
@@ -111,19 +146,34 @@ const MinorSelector: FC = () => {
         trpc.programs.getSavedMinors
             .query()
             .then((savedMinors) => {
+                // The user's edits were saved after this request was made, so they are newer than this response
+                if (editedByUser.current) return;
+                const serverMinors: MinorProgram[] = [];
                 for (const savedMinor of savedMinors) {
                     const foundMinor = minors.find((m) => m.id === savedMinor.id);
                     if (!foundMinor) continue;
+                    serverMinors.push(foundMinor);
                     dispatch(addMinor(foundMinor));
                     dispatch(
                         setMinorCatalogYear({ minorId: savedMinor.id, catalogYear: savedMinor.catalogYear ?? null })
                     );
                 }
+                // Drop anything the last-seen copy showed that the server no longer has
+                for (const id of snapshotMinorIds.current) {
+                    if (!serverMinors.some((m) => m.id === id)) dispatch(removeMinor(id));
+                }
+                snapshotMinorIds.current.clear();
+                if (userKey) {
+                    writeUserSnapshot<MinorsSnapshot>(minorsSnapshotName, userKey, {
+                        minors: serverMinors,
+                        saved: savedMinors,
+                    });
+                }
             })
             .finally(() => {
                 setMinorsLoading(false);
             });
-    }, [dispatch, minors, isLoggedIn]);
+    }, [dispatch, minors, isLoggedIn, userKey]);
 
     const minorSelectOptions: MinorOption[] = minors.map((m) => ({
         value: m,

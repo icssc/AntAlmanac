@@ -1,16 +1,18 @@
 'use client';
 import { SavedPlannerData, SavedRoadmap } from '@peterportal/types';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
     collapseAllPlanners,
     expandAllPlanners,
+    prefetchPlannerCourses,
     loadRoadmap,
     readLocalRoadmap,
     saveRoadmap,
     validatePlanner,
 } from '../../../helpers/planner';
 import { compareRoadmaps, restoreRevision } from '../../../helpers/roadmap';
+import { readRoadmapSnapshot, writeRoadmapSnapshot } from '../../../helpers/roadmapSnapshot';
 import {
     getNamesOfTransfers,
     loadTransferredAPs,
@@ -29,6 +31,7 @@ import {
     setInitialPlannerData,
     setInvalidCourses,
     setRoadmapLoading,
+    setSnapshotPending,
     setToastMsg,
     setToastSeverity,
     setShowToast,
@@ -73,8 +76,12 @@ const PlannerLoader: FC = () => {
     const isCHC = Boolean(useAppSelector(selectCurrentPlan)?.chc);
     const isRoadmapLoading = useAppSelector((state) => state.roadmap.roadmapLoading);
     const isLoggedIn = useIsLoggedIn();
+    const userKey = useAppSelector((state) => state.user.user?.email);
     useCheckUnsavedChanges();
 
+    const serverRoadmapReceived = useRef(false);
+    // The roadmap painted from the snapshot, until the server copy has been reconciled with it
+    const paintedSnapshot = useRef<SavedRoadmap | null>(null);
     const [roadmapLoaded, setRoadmapLoaded] = useState(false);
     const [initialLocalRoadmap, setInitialLocalRoadmap] = useState<SavedRoadmap | null>(null);
     const [initialAccountRoadmap, setInitialAccountRoadmap] = useState<SavedRoadmap | null>(null);
@@ -103,6 +110,18 @@ const PlannerLoader: FC = () => {
     const populateExistingRoadmap = useCallback(
         async (roadmap: SavedRoadmap) => {
             const plans = await expandAllPlanners(roadmap.planners);
+            const snapshot = paintedSnapshot.current;
+            paintedSnapshot.current = null;
+            const snapshotAccurate =
+                !!snapshot &&
+                JSON.stringify(snapshot.planners) === JSON.stringify(roadmap.planners) &&
+                snapshot.currentPlanIndex === roadmap.currentPlanIndex;
+            if (snapshotAccurate) {
+                // The roadmap on screen is already the server's; just unlock it (the snapshot was read-only)
+                dispatch(setSnapshotPending(false));
+                dispatch(setRoadmapLoading(false));
+                return;
+            }
             const timestamp = new Date(roadmap.timestamp ?? Date.now()).getTime();
             dispatch(
                 setInitialPlannerData({
@@ -111,6 +130,7 @@ const PlannerLoader: FC = () => {
                     currentPlanIndex: getPlanIndexFromQuery(plans) ?? roadmap.currentPlanIndex ?? 0,
                 })
             );
+            dispatch(setSnapshotPending(false));
             dispatch(setRoadmapLoading(false));
         },
         [dispatch, getPlanIndexFromQuery]
@@ -165,20 +185,57 @@ const PlannerLoader: FC = () => {
         // This is to avoid issues with loadRoadmap() being called twice.
         if (!isRoadmapLoading || initialAccountRoadmap || initialLocalRoadmap) return;
 
+        // Paint the last-seen account roadmap right away; the server copy below always replaces it
+        // Account transfer credits are independent of the roadmap, so request them alongside it. Guests' transfers live
+        // in localStorage, which loading the roadmap may still be upgrading, so those wait for it.
+        if (isLoggedIn) dispatch(setDataLoadState('loading'));
+
+        const snapshot = isLoggedIn && userKey ? readRoadmapSnapshot(userKey) : null;
+        if (snapshot) {
+            prefetchPlannerCourses(snapshot.planners);
+            expandAllPlanners(snapshot.planners).then((plans) => {
+                if (serverRoadmapReceived.current) return;
+                const timestamp = new Date(snapshot.timestamp ?? Date.now()).getTime();
+                const currentPlanIndex = getPlanIndexFromQuery(plans) ?? snapshot.currentPlanIndex ?? 0;
+                paintedSnapshot.current = snapshot;
+                dispatch(setInitialPlannerData({ plans, timestamp, currentPlanIndex }));
+                dispatch(setSnapshotPending(true));
+                dispatch(setRoadmapLoading(false));
+            });
+        }
+
         loadRoadmap(isLoggedIn).then(({ accountRoadmap, localRoadmap }) => {
+            serverRoadmapReceived.current = true;
+            if (accountRoadmap && userKey) writeRoadmapSnapshot(userKey, accountRoadmap);
+            // Fetch catalog data in parallel with the transfer-credit requests that gate rendering.
+            const early = accountRoadmap ?? localRoadmap;
+            if (early) prefetchPlannerCourses(early.planners);
             setInitialAccountRoadmap(accountRoadmap);
             setInitialLocalRoadmap(localRoadmap);
-            dispatch(setDataLoadState('loading'));
+            if (!isLoggedIn) dispatch(setDataLoadState('loading'));
         });
-    }, [dispatch, isRoadmapLoading, initialAccountRoadmap, initialLocalRoadmap, isLoggedIn]);
+    }, [
+        dispatch,
+        isRoadmapLoading,
+        initialAccountRoadmap,
+        initialLocalRoadmap,
+        isLoggedIn,
+        userKey,
+        getPlanIndexFromQuery,
+    ]);
 
-    // After transfers loaded, do roadmap conflict resolution
+    // Render the roadmap as soon as it's expanded; transfers only affect validation, which re-runs when they load
     useEffect(() => {
-        if (!userTransfersLoaded || !initialLocalRoadmap || roadmapLoaded) return;
+        if (!initialLocalRoadmap || roadmapLoaded) return;
+        populateExistingRoadmap(initialAccountRoadmap ?? initialLocalRoadmap).then(() => setRoadmapLoaded(true));
+    }, [populateExistingRoadmap, initialAccountRoadmap, initialLocalRoadmap, roadmapLoaded]);
 
-        populateExistingRoadmap(initialAccountRoadmap ?? initialLocalRoadmap).then(() => {
-            setRoadmapLoaded(true);
-
+    // After roadmap and transfers loaded, do roadmap conflict resolution
+    const conflictChecked = useRef(false);
+    useEffect(() => {
+        if (!userTransfersLoaded || !roadmapLoaded || !initialLocalRoadmap || conflictChecked.current) return;
+        conflictChecked.current = true;
+        {
             if (!isLoggedIn) return;
 
             trpc.customCourses.getCustomCards.query().then((cards) => {
@@ -203,11 +260,10 @@ const PlannerLoader: FC = () => {
 
             // Logged in + doesn't exist => update everything
             saveRoadmapAndUpsertTransfers(initialLocalRoadmap.planners, null, initialLocalRoadmap.currentPlanIndex);
-        });
+        }
     }, [
         saveRoadmapAndUpsertTransfers,
         isLoggedIn,
-        populateExistingRoadmap,
         userTransfersLoaded,
         initialAccountRoadmap,
         initialLocalRoadmap,
@@ -215,12 +271,15 @@ const PlannerLoader: FC = () => {
         dispatch,
     ]);
 
-    // Validate Courses on change
+    // Validate courses on change, but only once everything validation depends on has loaded (the server roadmap and
+    // the user's transfer credits).
+    // Validating the read-only snapshot or a roadmap without transfers would flag courses incorrectly.
     useEffect(() => {
+        if (!roadmapLoaded || !userTransfersLoaded) return;
         const transferNames = getNamesOfTransfers(transferred.courses, transferred.ap, transferred.apInfo);
         const { invalidCourses } = validatePlanner(transferNames, currentPlanData, { isCHC });
         dispatch(setInvalidCourses(invalidCourses));
-    }, [dispatch, currentPlanData, isCHC, transferred]);
+    }, [dispatch, currentPlanData, isCHC, transferred, roadmapLoaded, userTransfersLoaded]);
 
     const [overrideLoading, setOverrideLoading] = useState(false);
 

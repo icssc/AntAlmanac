@@ -33,8 +33,10 @@ import {
     RoadmapPlan,
 } from '../types/types';
 import { isCustomCourse } from './customCourses';
+import { loadPlannerCourses } from './plannerCourseCache';
 import { isPrerequisiteNodeLeaf, isRoadmapVerifiablePrerequisite } from './prerequisites';
 import { compareRoadmaps } from './roadmap';
+import { clearRoadmapSnapshot } from './roadmapSnapshot';
 import { LocalTransferSaveKey, saveLocalTransfers } from './transferCredits';
 import { searchAPIResults } from './util';
 
@@ -143,7 +145,10 @@ export const collapseAllPlanners = (plans: RoadmapPlan[]): SavedPlannerData[] =>
 
 // query the lost information from collapsing
 
-export const expandPlanner = async (savedPlanner: SavedPlannerYearData[]): Promise<PlannerData> => {
+export const expandPlanner = async (
+    savedPlanner: SavedPlannerYearData[],
+    preloadedCourses?: BatchCourseData
+): Promise<PlannerData> => {
     let courses: SavedPlannerCourseData[] = [];
     // get all courses in the planner
     savedPlanner.forEach((year) =>
@@ -155,8 +160,8 @@ export const expandPlanner = async (savedPlanner: SavedPlannerYearData[]): Promi
     // separate official courses from custom courses
     const officialCourses = courses.filter((course) => !getCustomId(course.courseId));
 
-    let courseLookup: BatchCourseData = {};
-    if (officialCourses.length > 0) {
+    let courseLookup: BatchCourseData = preloadedCourses ?? {};
+    if (!preloadedCourses && officialCourses.length > 0) {
         courseLookup = await searchAPIResults(
             'courses',
             officialCourses.map((c) => c.courseId)
@@ -205,10 +210,22 @@ export const expandPlanner = async (savedPlanner: SavedPlannerYearData[]): Promi
     });
 };
 
+const officialCourseIds = (plans: SavedPlannerData[]) =>
+    plans
+        .flatMap((p) => p.content.flatMap((y) => y.quarters.flatMap((q) => q.courses.map((c) => c.courseId))))
+        .filter((id) => !getCustomId(id));
+
+/** Start fetching catalog data early (shares the in-flight request with expandAllPlanners). */
+export const prefetchPlannerCourses = (plans: SavedPlannerData[]) => {
+    loadPlannerCourses(officialCourseIds(plans)).catch(() => undefined);
+};
+
 export const expandAllPlanners = async (plans: SavedPlannerData[]): Promise<RoadmapPlan[]> => {
+    // One deduplicated (and briefly cached) catalog lookup shared by every plan.
+    const courses = await loadPlannerCourses(officialCourseIds(plans));
     return await Promise.all(
         plans.map(async (p) => {
-            const yearPlans = await expandPlanner(p.content);
+            const yearPlans = await expandPlanner(p.content, courses);
             const planContent = { yearPlans, invalidCourses: [] };
             return { id: p.id, name: p.name, content: planContent, chc: p.chc };
         })
@@ -426,6 +443,7 @@ export const saveRoadmap = async (
                 plannerIdLookup = lookup;
                 res = true;
                 updateTempIdsInLocalRoadmap(planners, plannerIdLookup, currentPlanIndex);
+                clearRoadmapSnapshot();
             })
             .catch(() => {
                 res = false;

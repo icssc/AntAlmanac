@@ -7,6 +7,7 @@ import ClickableDiv from '../../../component/ClickableDiv/ClickableDiv';
 import { ExpandMore } from '../../../component/ExpandMore/ExpandMore';
 import LoadingSpinner from '../../../component/LoadingSpinner/LoadingSpinner';
 import { normalizeMajorName, getCatalogYearDefaults } from '../../../helpers/courseRequirements';
+import { cachedProgramQuery } from '../../../helpers/programCache';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     MajorWithSpecialization,
@@ -33,22 +34,28 @@ const loadingSpecValue = {
 };
 
 function getMajorSpecializations(majorId: string, catalogYear: string) {
-    return trpc.programs.getSpecializations.query({ major: majorId, catalogYear });
+    return cachedProgramQuery(`specs ${majorId} ${catalogYear}`, () =>
+        trpc.programs.getSpecializations.query({ major: majorId, catalogYear })
+    );
 }
 
 function getCoursesForMajor(programId: string, specId: string | undefined, catalogYear: string) {
     const specializationId = specId === noSpecId ? undefined : specId;
-    return trpc.programs.getRequiredCourses.query({
-        type: 'major',
-        programId,
-        specializationId,
-        catalogYear: catalogYear,
-    });
+    return cachedProgramQuery(`major ${programId} ${specializationId} ${catalogYear}`, () =>
+        trpc.programs.getRequiredCourses.query({
+            type: 'major',
+            programId,
+            specializationId,
+            catalogYear: catalogYear,
+        })
+    );
 }
 
 async function getCoursesForSpecialization(programId: string | undefined, catalogYear: string) {
     if (!programId || programId === noSpecId) return [];
-    const result = await trpc.programs.getRequiredCourses.query({ type: 'specialization', programId, catalogYear });
+    const result = await cachedProgramQuery(`spec ${programId} ${catalogYear}`, () =>
+        trpc.programs.getRequiredCourses.query({ type: 'specialization', programId, catalogYear })
+    );
     return result.requirements;
 }
 
