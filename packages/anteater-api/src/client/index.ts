@@ -7,6 +7,7 @@ import type {
     CoursesBatchAPIResult,
     CoursesFilteredAPIResult,
     EnrollmentHistory,
+    MajorsAPIResponse,
     WebsocAPIDepartmentsResponse,
     WebsocAPIResponse,
     WebsocSyllabiResponse,
@@ -181,6 +182,20 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
         calendar: {
             async all(): Promise<CalendarAllAPIResult['data']> {
                 const { data, error, response } = await http.GET('/v2/rest/calendar/all', {});
+                if (error || !data) {
+                    throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
+                }
+                return data.data;
+            },
+        },
+
+        programs: {
+            async getMajors(
+                params?: paths['/v2/rest/programs/majors']['get']['parameters']['query']
+            ): Promise<MajorsAPIResponse> {
+                const { data, error, response } = await http.GET('/v2/rest/programs/majors', {
+                    params: { query: params },
+                });
                 if (error || !data) {
                     throw new AAPIError(error ? JSON.stringify(error) : 'Received empty response', response.status);
                 }

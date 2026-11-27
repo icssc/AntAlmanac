@@ -53,6 +53,7 @@ export function flattenSOCObject(
                 accumulator.push({
                     ...course,
                     term,
+                    schoolName: school.schoolName,
                     sections: course.sections.map((section) => ({
                         ...section,
                         color: courseColors[section.sectionCode],

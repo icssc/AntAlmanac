@@ -1,5 +1,6 @@
 import { About } from '$components/Header/About';
 import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
+import { MajorSelector } from '$components/Header/Settings/MajorSelector';
 import { SectionColorSelector } from '$components/Header/Settings/SectionColorSelector';
 import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
 import { TimeSelector } from '$components/Header/Settings/TimeSelector';
@@ -76,6 +77,7 @@ export function SettingsMenu({ user, onClose }: SettingsMenuProps) {
             <ThemeSelector />
             <SectionColorSelector />
             <TimeSelector />
+            <MajorSelector />
 
             <Stack>
                 <Divider>

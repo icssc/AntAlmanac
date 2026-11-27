@@ -3,3 +3,4 @@ export * from './review';
 export * from './schedule';
 export * from './subscription';
 export * from './friendship';
+export * from './user_major';

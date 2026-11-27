@@ -77,6 +77,7 @@ export const WEBSOC_RESTRICTION_CODES = [
 ] as const;
 export const WebsocRestrictionCodeOptionSchema = z.enum(WEBSOC_RESTRICTION_CODES);
 export type WebsocRestrictionCodeOption = z.infer<typeof WebsocRestrictionCodeOptionSchema>;
+export type MajorSchoolRestrictionCode = Extract<WebsocRestrictionCodeOption, 'L' | 'M' | 'N' | 'O'>;
 
 /** UCI WebSoc day abbreviations (Su, M, Tu, W, Th, F, Sa). */
 export const WEBSOC_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
