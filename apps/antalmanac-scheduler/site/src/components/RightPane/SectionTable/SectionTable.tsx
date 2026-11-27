@@ -11,6 +11,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { type AnalyticsCategory } from '$lib/analytics/analytics';
 import { getCourseCancellationWarning } from '$lib/courseAlerts';
 import { useActiveTab } from '$lib/tabs/hooks';
+import { CourseGradesStoreProvider } from '$providers/CourseGradesStoreProvider';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { ExpandLess, ExpandMore, HistoryEdu, Route } from '@mui/icons-material';
 import {
@@ -114,7 +115,7 @@ export function SectionTable({
 
     const cancellationWarning = useMemo(() => getCourseCancellationWarning(course.sections), [course.sections]);
 
-    return (
+    const sectionTable = (
         <Box sx={{ overflow: 'hidden' }}>
             <Box
                 sx={{
@@ -260,5 +261,11 @@ export function SectionTable({
                 )}
             </Collapse>
         </Box>
+    );
+
+    return activeColumns.includes('gpa') ? (
+        <CourseGradesStoreProvider course={course}>{sectionTable}</CourseGradesStoreProvider>
+    ) : (
+        sectionTable
     );
 }

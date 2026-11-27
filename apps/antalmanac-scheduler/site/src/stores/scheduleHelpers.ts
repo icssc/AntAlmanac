@@ -26,6 +26,11 @@ export function scheduleSectionKey(term: AATerm | string, sectionCode: string): 
     return `${termId}::${sectionCode}`;
 }
 
+/** Trims notes and collapses empty/whitespace-only notes to `undefined`. */
+export function normalizeCustomEventNotes(notes: string | undefined): string | undefined {
+    return notes?.trim() || undefined;
+}
+
 const colorVariants: Record<string, string[]> = {
     blue: [blue[300], blue[200], blue[100], blue[400], blue[500]],
     pink: [pink[300], pink[200], pink[100], pink[400], pink[500]],

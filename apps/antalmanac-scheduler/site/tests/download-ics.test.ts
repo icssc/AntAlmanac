@@ -93,6 +93,7 @@ describe('download-ics', () => {
                 eventKind: 'custom',
                 days: ['M', 'W', 'F'],
                 building: 'placeholderCustomEventBuilding',
+                notes: '',
             },
         ];
 
@@ -100,6 +101,26 @@ describe('download-ics', () => {
         const result = getEventsFromCourses(courses);
 
         expect(result).toMatchSnapshot();
+    });
+
+    test('includes custom event notes as the description only when present', () => {
+        const customEvent: CalendarEvent = {
+            color: 'placeholderColor',
+            start: new Date(2023, 9, 29, 1, 2),
+            end: new Date(2023, 9, 29, 3, 4),
+            title: 'placeholderCustomEventTitle',
+            customEventID: '123',
+            eventKind: 'custom',
+            days: ['M', 'W', 'F'],
+            building: 'placeholderCustomEventBuilding',
+            notes: 'ROOM 100',
+        };
+
+        const [withNotes] = getEventsFromCourses([customEvent]);
+        const [withoutNotes] = getEventsFromCourses([{ ...customEvent, notes: '' }]);
+
+        expect(withNotes.description).toBe('ROOM 100');
+        expect(withoutNotes).not.toHaveProperty('description');
     });
 
     test('ics file has the correct contents', () => {
