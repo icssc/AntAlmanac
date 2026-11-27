@@ -13,3 +13,10 @@ export type AggregateGradesByOfferingAPIResult =
     paths['/v2/rest/grades/aggregateByOffering']['get']['responses']['200']['content']['application/json'];
 
 export type AggregateGradesByOffering = AggregateGradesByOfferingAPIResult['data'];
+
+export type AggregateGradesByCourseAPIResult =
+    paths['/v2/rest/grades/aggregateByCourse']['get']['responses']['200']['content']['application/json'];
+
+type AggregateGradesByCourse = AggregateGradesByCourseAPIResult['data'];
+
+export type CourseGradeDistribution = AggregateGradesByCourse[number];

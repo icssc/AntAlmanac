@@ -4,6 +4,7 @@ import {
     estimateCoursePaneLazyHeight,
     flattenSOCObject,
     getCourseColors,
+    getCourseListEntryKey,
     getFilteredCourses,
     isCourseEntry,
 } from '$components/RightPane/CoursePane/CourseRenderPane/CourseList/helpers';
@@ -185,10 +186,10 @@ export function CourseRenderPane({ onDismissSearchResults }: CourseRenderPanePro
                 <>
                     <RecruitmentBanner deptValue={formData.deptValue} />
                     <Box>
-                        {courseData.map((data, index) => (
+                        {courseData.map((data) => (
                             <LazyLoad
                                 once
-                                key={index}
+                                key={getCourseListEntryKey(data)}
                                 overflow
                                 height={estimateCoursePaneLazyHeight(data)}
                                 offset={1000}

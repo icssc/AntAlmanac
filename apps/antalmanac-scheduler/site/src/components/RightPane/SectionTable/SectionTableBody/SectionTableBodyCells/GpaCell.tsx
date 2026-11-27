@@ -1,7 +1,6 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { GradesPopover } from '$components/RightPane/SectionTable/SectionTablePopover/GradesPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { getCourseId } from '$lib/courseHelpers';
 import { getInstructorGradesFromSection, useSectionGrades } from '$stores/CourseGradesStore';
 import { ButtonBase, Popover } from '@mui/material';
 import type { AACourseWithTerm, AASection } from '@packages/antalmanac-types';
@@ -18,17 +17,18 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
     const [anchorEl, setAnchorEl] = useState<Element>();
 
     const { overallGrades, areOverallGradesLoading, sectionInstructorGrades, areSectionInstructorGradesLoading } =
-        useSectionGrades(getCourseId(course), section.sectionCode);
+        useSectionGrades(section.sectionCode);
 
     const { instructorGpa, instructor } = useMemo(() => {
         if (!sectionInstructorGrades) {
             return { instructorGpa: '', instructor: '' };
         }
-        const {
+        const { instructor, instructorGrades } = getInstructorGradesFromSection(sectionInstructorGrades);
+        return {
+            instructorGpa:
+                typeof instructorGrades?.averageGPA === 'number' ? instructorGrades.averageGPA.toFixed(2) : '',
             instructor,
-            instructorGrades: { averageGPA },
-        } = getInstructorGradesFromSection(sectionInstructorGrades);
-        return { instructorGpa: averageGPA === null ? '' : averageGPA.toFixed(2), instructor };
+        };
     }, [sectionInstructorGrades]);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {

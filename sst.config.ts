@@ -117,11 +117,6 @@ export default $config({
                 PLANNER_OIDC_CLIENT_ID: process.env.PLANNER_OIDC_CLIENT_ID,
                 ADMIN_EMAILS: process.env.ADMIN_EMAILS,
             },
-            vpc: {
-                id: 'vpc-1cc2f666',
-                privateSubnets: ['subnet-3e998159'],
-                securityGroups: ['sg-227e8309'],
-            },
         });
 
         if (AANTS_STAGES.includes($app.stage)) {
@@ -155,11 +150,6 @@ export default $config({
                         resources: [emailQueue.arn],
                     },
                 ],
-                vpc: {
-                    id: 'vpc-1cc2f666',
-                    privateSubnets: ['subnet-3e998159'],
-                    securityGroups: ['sg-227e8309'],
-                },
             });
 
             const emailProcessorLambda = new sst.aws.Function('EmailProcessorLambda', {
