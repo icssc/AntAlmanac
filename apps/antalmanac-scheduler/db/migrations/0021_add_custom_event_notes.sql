@@ -1,0 +1,1 @@
+ALTER TABLE "customEvents" ADD COLUMN "notes" text;
