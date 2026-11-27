@@ -1,7 +1,7 @@
 'use client';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { Button, Card } from '@mui/material';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useMemo } from 'react';
 import { ReactSortable, SortableEvent } from 'react-sortablejs';
 
@@ -18,7 +18,6 @@ import { quarterSortable } from '../../../helpers/sortable';
 import './Quarter.scss';
 import { deepCopy, useIsMobile, pluralize } from '../../../helpers/util';
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
-import { useAnimatedHeight } from '../../../hooks/useAnimatedHeight';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
     createQuarterCourseLoadingPlaceholder,
@@ -44,8 +43,6 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
     const invalidCourses = useAppSelector(
         (state) => state.roadmap.plans[state.roadmap.currentPlanIndex].content.invalidCourses
     );
-    const quarterContainerRef = useRef<HTMLDivElement>(null);
-    useAnimatedHeight(quarterContainerRef);
     const isMobile = useIsMobile();
     const [moveCourseTrigger, setMoveCourseTrigger] = useState<CourseIdentifier | null>(null);
     const activeCourseLoading = useAppSelector((state) => state.roadmap.activeCourseLoading);
@@ -146,7 +143,7 @@ const Quarter: FC<QuarterProps> = ({ yearIndex, quarterIndex, data }) => {
     };
 
     return (
-        <Card className="quarter" ref={quarterContainerRef} variant="outlined">
+        <Card className="quarter" variant="outlined">
             <div className="quarter-header">
                 <h2 className="quarter-title">{quarterTitle.replace('10 Week', '10wk')}</h2>
                 <div className="quarter-units">

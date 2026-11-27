@@ -102,6 +102,7 @@ div.quarter-list {
     gap: 1px;
     margin: 16px;
     background-color: transparent;
+    transition: height 0.3s ease-in-out;
 
     @media (max-width: globals.$mobile-cutoff) {
         --min-quarter-width: 325px;
