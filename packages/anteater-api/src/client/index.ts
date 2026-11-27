@@ -66,10 +66,17 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
     config.headers = { ...config.headers, Origin: ORIGIN, ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}) };
     const client = createApiClient(config);
 
+    const getApiParams = <T>(params: T) => {
+        return {
+            client,
+            ...params,
+        };
+    };
+
     return {
         websoc: {
             async query(params: WebsocData['query']): Promise<WebsocAPIResponse> {
-                const { data, error, response } = await websoc({ client, query: params });
+                const { data, error, response } = await websoc(getApiParams({ query: params }));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -77,7 +84,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async getSyllabi(params: WebsocSyllabiData['query']): Promise<WebsocSyllabiResponse> {
-                const { data, error, response } = await websocSyllabi({ client, query: params });
+                const { data, error, response } = await websocSyllabi(getApiParams({ query: params }));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -85,7 +92,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async getTerms(): Promise<WebsocTerm[]> {
-                const { data, error, response } = await websocTerms({ client });
+                const { data, error, response } = await websocTerms(getApiParams({}));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -93,7 +100,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async getDepartments(params?: WebsocDepartmentsData['query']): Promise<WebsocAPIDepartmentsResponse> {
-                const { data, error, response } = await websocDepartments({ client, query: params });
+                const { data, error, response } = await websocDepartments(getApiParams({ query: params }));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -103,7 +110,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         courses: {
             async get(id: string): Promise<Course> {
-                const { data, error, response } = await courseById({ client, path: { id } });
+                const { data, error, response } = await courseById(getApiParams({ path: { id } }));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -111,7 +118,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async getBatch(ids: string[]): Promise<CoursesBatchAPIResult['data']> {
-                const { data, error, response } = await batchCourses({ client, query: { ids: ids.join(',') } });
+                const { data, error, response } = await batchCourses(getApiParams({ query: { ids: ids.join(',') } }));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -119,7 +126,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             },
 
             async list(params: NonNullable<CoursesByFiltersData['query']>): Promise<CoursesFilteredAPIResult['data']> {
-                const { data, error, response } = await coursesByFilters({ client, query: params });
+                const { data, error, response } = await coursesByFilters(getApiParams({ query: params }));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -129,7 +136,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         grades: {
             async aggregate(params: AggregateGradesData['query']): Promise<AggregateGrades> {
-                const { data, error, response } = await aggregateGrades({ client, query: params });
+                const { data, error, response } = await aggregateGrades(getApiParams({ query: params }));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -139,7 +146,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             async aggregateByOffering(
                 params: AggregateGradesByOfferingData['query']
             ): Promise<AggregateGradesByOffering> {
-                const { data, error, response } = await aggregateGradesByOffering({ client, query: params });
+                const { data, error, response } = await aggregateGradesByOffering(getApiParams({ query: params }));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -149,10 +156,11 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
             async aggregateBySingleCourse(
                 params: AggregateGradesByCourseData['query']
             ): Promise<CourseGradeDistribution | null> {
-                const { data, error, response } = await aggregateGradesByCourse({
-                    client,
-                    query: params,
-                });
+                const { data, error, response } = await aggregateGradesByCourse(
+                    getApiParams({
+                        query: params,
+                    })
+                );
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -162,7 +170,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         enrollmentHistory: {
             async get(params: EnrollmentHistoryData['query']): Promise<EnrollmentHistory> {
-                const { data, error, response } = await enrollmentHistory({ client, query: params });
+                const { data, error, response } = await enrollmentHistory(getApiParams({ query: params }));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
@@ -172,7 +180,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         calendar: {
             async all(): Promise<CalendarAllAPIResult['data']> {
-                const { data, error, response } = await allCalendarTerms({ client });
+                const { data, error, response } = await allCalendarTerms(getApiParams({}));
                 if (error || !data) {
                     throw getAapiError(error, response);
                 }
