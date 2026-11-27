@@ -25,15 +25,16 @@ export class AAPIError extends Error {
     }
 }
 
-const BASE_URL = 'https://anteaterapi.com';
 const ORIGIN = 'https://antalmanac.com';
 
 export interface AAPIClientOptions {
+    baseUrl: string;
     apiKey?: string;
 }
 
-export function createClient({ apiKey }: AAPIClientOptions = {}) {
-    const http = createFetchClient<paths>({ baseUrl: BASE_URL });
+export function createClient({ baseUrl, apiKey }: AAPIClientOptions) {
+    const base = baseUrl.replace(/\/+$/, '');
+    const http = createFetchClient<paths>({ baseUrl: base });
 
     const auth: Middleware = {
         onRequest({ request }) {
@@ -190,7 +191,7 @@ export function createClient({ apiKey }: AAPIClientOptions = {}) {
 
         // GraphQL is not in the OpenAPI spec; implemented with raw fetch
         async graphql<T>(query: string): Promise<T> {
-            const res = await fetch(`${BASE_URL}/v2/graphql`, {
+            const res = await fetch(`${baseUrl}/v2/graphql`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

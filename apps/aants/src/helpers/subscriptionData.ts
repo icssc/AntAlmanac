@@ -8,7 +8,7 @@ import { and, eq, inArray } from 'drizzle-orm';
 
 import { env } from '../env';
 
-const aapiClient = createClient({ apiKey: env.ANTEATER_API_KEY });
+const aapiClient = createClient({ baseUrl: env.ANTEATER_API_URL, apiKey: env.ANTEATER_API_KEY });
 
 export interface TermGroup {
     quarter: Quarter;

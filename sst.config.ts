@@ -96,6 +96,7 @@ export default $config({
             cachePolicy: ANTALMANAC_WEBSITE_SERVER_CACHE_POLICY,
             environment: {
                 // Shared
+                ANTEATER_API_URL: process.env.ANTEATER_API_URL,
                 ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
                 OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
                 NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
@@ -139,6 +140,7 @@ export default $config({
                 memory: '512 MB',
                 environment: {
                     DB_URL: dbUrl,
+                    ANTEATER_API_URL: process.env.ANTEATER_API_URL,
                     ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
                     NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
                     STAGE: $app.stage,
