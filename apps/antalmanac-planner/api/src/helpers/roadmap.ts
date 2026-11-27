@@ -18,13 +18,14 @@ export async function queryGetPlanners(where: SQL) {
     const planners = (await db
         .select({
             id: planner.id,
+            shareId: planner.shareId,
             name: planner.name,
             chc: planner.chc,
-            content: sql.raw(`jsonb_agg(jsonb_build_object(
+            content: sql.raw(`COALESCE(jsonb_agg(jsonb_build_object(
         'name', ${planYearTableName}."${plannerYear.name.name}",
         'startYear', ${planYearTableName}."${plannerYear.startYear.name}",
         'collapsed', ${planYearTableName}."${plannerYear.collapsed.name}",
-        'quarters', (SELECT jsonb_agg(jsonb_build_object(
+        'quarters', (SELECT COALESCE(jsonb_agg(jsonb_build_object(
           'name', ${plannerQuarter.quarterName.name},
           'courses', (
             SELECT COALESCE(
@@ -46,14 +47,15 @@ export async function queryGetPlanners(where: SQL) {
               AND pc.start_year = pq.start_year
               AND pc.quarter_name = pq.quarter_name
           )
-        )) AS quarters FROM planner_quarter pq
+        )), '[]'::jsonb) AS quarters FROM planner_quarter pq
           WHERE pq.planner_id = ${planYearTableName}."${plannerYear.plannerId.name}"
             AND pq.start_year = ${planYearTableName}."${plannerYear.startYear.name}"
         )
-      ) ORDER BY ${planYearTableName}."${plannerYear.startYear.name}" ASC)`),
+      ) ORDER BY ${planYearTableName}."${plannerYear.startYear.name}" ASC)
+        FILTER (WHERE ${planYearTableName}."${plannerYear.plannerId.name}" IS NOT NULL), '[]'::jsonb)`),
         })
         .from(planner)
-        .innerJoin(plannerYear, eq(planner.id, plannerYear.plannerId))
+        .leftJoin(plannerYear, eq(planner.id, plannerYear.plannerId))
         .innerJoin(user, eq(planner.userId, user.id))
         .where(where)
         .groupBy(planner.id, planner.name)
@@ -70,7 +72,11 @@ export async function queryGetPlanners(where: SQL) {
         })
     );
 
-    return planners;
+    // Unshared planners have SQL NULL IDs; the API type represents these as an omitted field.
+    return planners.map(({ shareId, ...planner }) => ({
+        ...planner,
+        ...(shareId == null ? {} : { shareId }),
+    }));
 }
 
 export async function deletePlanners(tx: TransactionType, planners: PlannerDeletion[]) {

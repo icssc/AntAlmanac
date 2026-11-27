@@ -3,6 +3,7 @@ import { FC } from 'react';
 
 import './TransferCreditsMenu.scss';
 import { useIsMobile } from '../../../helpers/util';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setShowMobileCreditsMenu, clearUnreadTransfers } from '../../../store/slices/transferCreditsSlice';
 import APExamsSection from './APExamsSection';
@@ -13,6 +14,7 @@ import UncategorizedCreditsSection from './UncategorizedCreditsSection';
 export const ToggleTransfersButton: FC = () => {
     const isMobile = useIsMobile();
     const show = useAppSelector((state) => state.transferCredits.showMobileCreditsMenu);
+    const readOnly = useIsReadOnly();
     const dispatch = useAppDispatch();
 
     const toggleMenu = () => {
@@ -25,15 +27,17 @@ export const ToggleTransfersButton: FC = () => {
 
     return (
         <button className={`toggle-transfers-button ${isMobile ? 'mobile' : ''}`} onClick={toggleMenu}>
-            Done Editing Credits
+            {readOnly ? 'Done' : 'Done Editing Credits'}
         </button>
     );
 };
 
 export const TransferCreditsMenu = () => {
+    const readOnly = useIsReadOnly();
+
     return (
         <div className="transfers-menu">
-            <h3>Add Course Credits</h3>
+            <h3>{readOnly ? 'Transfer Credits' : 'Add Course Credits'}</h3>
 
             <CoursesSection />
             <APExamsSection />

@@ -7,6 +7,7 @@ import { IconButton, TextField } from '@mui/material';
 import { FC, useCallback, useEffect, useState } from 'react';
 
 import { useIsLoggedIn } from '../../../hooks/isLoggedIn';
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useAppDispatch } from '../../../store/hooks';
 import { removeCustomCourse } from '../../../store/slices/customCourseSlice';
 import { removeCustomCourseFromRoadmap } from '../../../store/slices/roadmapSlice';
@@ -23,6 +24,7 @@ interface CustomCourseCardProps {
 export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpdate, inRoadmap, removeCourseAt }) => {
     const dispatch = useAppDispatch();
     const isLoggedIn = useIsLoggedIn();
+    const readOnly = useIsReadOnly();
     const hasEmptyTitle = !course.courseName.trim();
 
     const [editing, setEditing] = useState(!inRoadmap && hasEmptyTitle);
@@ -104,9 +106,11 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpda
     if (inRoadmap) {
         return (
             <div className="custom-card">
-                <div className="course-drag-handle">
-                    <DragIndicatorIcon />
-                </div>
+                {!readOnly && (
+                    <div className="course-drag-handle">
+                        <DragIndicatorIcon />
+                    </div>
+                )}
 
                 <div className="main">
                     <div className="course-card-top">
@@ -116,9 +120,11 @@ export const CustomCourseCard: FC<CustomCourseCardProps> = ({ course, handleUpda
                             <>{course.units} units</>
                         </span>
 
-                        <IconButton className="course-delete-btn" onClick={removeCourseAt} aria-label="delete">
-                            <DeleteOutlineIcon className="course-delete-icon" />
-                        </IconButton>
+                        {!readOnly && (
+                            <IconButton className="course-delete-btn" onClick={removeCourseAt} aria-label="delete">
+                                <DeleteOutlineIcon className="course-delete-icon" />
+                            </IconButton>
+                        )}
                     </div>
                     <div className="course-description description-body">{course.description}</div>
                 </div>

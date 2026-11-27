@@ -13,6 +13,7 @@ export interface RoadmapPlanState {
 export interface RoadmapPlan {
     id: number;
     name: string;
+    shareId?: string;
     content: RoadmapPlanState;
     chc?: '' | 'CHC4' | 'CHC2';
 }

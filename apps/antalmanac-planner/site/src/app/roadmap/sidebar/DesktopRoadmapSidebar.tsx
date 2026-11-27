@@ -6,6 +6,7 @@ import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
 import { Badge, Tab, Tabs } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+import { useIsReadOnly } from '../../../hooks/planner';
 import { useHasUnreadTransfers } from '../../../hooks/transferCredits';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setSelectedSidebarTab } from '../../../store/slices/roadmapSlice';
@@ -18,6 +19,7 @@ const DesktopRoadmapSidebar = () => {
     const selectedIndex = useAppSelector((state) => state.roadmap.selectedSidebarTab);
     const [hasSeenCredits, setHasSeenCredits] = useState(false);
     const hasUnreadTransfers = useHasUnreadTransfers();
+    const readOnly = useIsReadOnly();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -38,6 +40,7 @@ const DesktopRoadmapSidebar = () => {
                 variant="fullWidth"
             >
                 <Tab
+                    value={0}
                     icon={<SwapHorizOutlinedIcon />}
                     iconPosition="start"
                     label={
@@ -46,14 +49,15 @@ const DesktopRoadmapSidebar = () => {
                         </Badge>
                     }
                 />
-                <Tab icon={<FormatListBulletedIcon />} iconPosition="start" label="Catalog" />
-                <Tab icon={<SearchIcon />} iconPosition="start" label="Search" />
+                <Tab value={1} icon={<FormatListBulletedIcon />} iconPosition="start" label="Catalog" />
+                {/* Search is only for adding courses, which a shared roadmap can't do */}
+                {!readOnly && <Tab value={2} icon={<SearchIcon />} iconPosition="start" label="Search" />}
             </Tabs>
 
             <div className="sidebar-content" id="sidebarScrollContainer">
                 {selectedIndex === 0 && <TransferCreditsMenu />}
                 {selectedIndex === 1 && <CourseCatalog />}
-                {selectedIndex === 2 && <SavedAndSearch autoFocusSearch />}
+                {selectedIndex === 2 && !readOnly && <SavedAndSearch autoFocusSearch />}
             </div>
         </div>
     );
