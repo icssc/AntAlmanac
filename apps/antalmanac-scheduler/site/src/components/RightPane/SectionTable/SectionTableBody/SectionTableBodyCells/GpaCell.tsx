@@ -16,15 +16,17 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
     const isMobile = useIsMobile();
     const [anchorEl, setAnchorEl] = useState<Element>();
 
-    const { sectionInstructorGrades, areSectionInstructorGradesLoading } = useSectionGrades(section.sectionCode);
+    const { overallGrades, areOverallGradesLoading, sectionInstructorGrades, areSectionInstructorGradesLoading } =
+        useSectionGrades(section.sectionCode);
 
-    const { gpa, instructor } = useMemo(() => {
+    const { instructorGpa, instructor } = useMemo(() => {
         if (!sectionInstructorGrades) {
-            return { gpa: '', instructor: '' };
+            return { instructorGpa: '', instructor: '' };
         }
         const { instructor, instructorGrades } = getInstructorGradesFromSection(sectionInstructorGrades);
         return {
-            gpa: typeof instructorGrades?.averageGPA === 'number' ? instructorGrades.averageGPA.toFixed(2) : '',
+            instructorGpa:
+                typeof instructorGrades?.averageGPA === 'number' ? instructorGrades.averageGPA.toFixed(2) : '',
             instructor,
         };
     }, [sectionInstructorGrades]);
@@ -36,6 +38,14 @@ export const GpaCell = ({ section, course }: GpaCellProps) => {
     const hideDistribution = useCallback(() => {
         setAnchorEl(undefined);
     }, []);
+
+    let gpa = null;
+    if (!areSectionInstructorGradesLoading) {
+        gpa = instructorGpa;
+    }
+    if (!gpa && !areOverallGradesLoading) {
+        gpa = overallGrades?.averageGPA?.toFixed(2);
+    }
 
     return (
         <TableBodyCellContainer>

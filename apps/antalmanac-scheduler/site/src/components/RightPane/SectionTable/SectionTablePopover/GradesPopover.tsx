@@ -106,15 +106,17 @@ export function GradesPopover({ deptCode, courseNumber, sectionCode, instructor 
                 subheader={<SectionTablePopoverSubheader subheader={subheader} predecessorLabel={predecessorLabel} />}
                 action={
                     <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
-                        <ToggleButton
-                            value="instructor"
-                            sx={{
-                                textTransform: 'none',
-                                paddingY: 0.25,
-                            }}
-                        >
-                            {instructor}
-                        </ToggleButton>
+                        {instructor ? (
+                            <ToggleButton
+                                value="instructor"
+                                sx={{
+                                    textTransform: 'none',
+                                    paddingY: 0.25,
+                                }}
+                            >
+                                {instructor}
+                            </ToggleButton>
+                        ) : null}
                         <ToggleButton
                             value="overall"
                             sx={{
