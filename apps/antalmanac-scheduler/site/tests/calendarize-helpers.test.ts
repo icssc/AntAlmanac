@@ -237,6 +237,7 @@ describe('calendarize-helpers', () => {
             end: new Date(2018, 0, 0, 3, 4),
             title: 'title',
             building: '',
+            notes: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
         },
         {
@@ -247,6 +248,7 @@ describe('calendarize-helpers', () => {
             end: new Date(2018, 0, 2, 3, 4),
             title: 'title',
             building: '',
+            notes: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
         },
         {
@@ -257,6 +259,7 @@ describe('calendarize-helpers', () => {
             end: new Date(2018, 0, 4, 3, 4),
             title: 'title',
             building: '',
+            notes: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
         },
         {
@@ -267,6 +270,7 @@ describe('calendarize-helpers', () => {
             end: new Date(2018, 0, 6, 3, 4),
             title: 'title',
             building: '',
+            notes: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
         },
     ];
