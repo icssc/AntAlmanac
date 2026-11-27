@@ -9,6 +9,7 @@ interface SnackbarOptions {
     durationSeconds: number;
     position: ComponentProps<typeof Snackbar>['anchorOrigin'];
     style: SxProps | null;
+    snackbarKey: number;
 }
 
 const DEFAULT_DURATION_SECONDS: SnackbarOptions['durationSeconds'] = 3;
@@ -22,6 +23,7 @@ const initialState: SnackbarOptions & { open: boolean } = {
     durationSeconds: DEFAULT_DURATION_SECONDS,
     position: DEFAULT_POSITION,
     style: DEFAULT_STYLE,
+    snackbarKey: 0,
 };
 
 export const useSnackbarStore = create(
@@ -46,5 +48,13 @@ export function openSnackbar(
         style = DEFAULT_STYLE,
     }: Partial<Omit<SnackbarOptions, 'severity' | 'message'>> = {}
 ) {
-    useSnackbarStore.setState({ open: true, message, severity, durationSeconds, position, style });
+    useSnackbarStore.setState({
+        open: true,
+        message,
+        severity,
+        durationSeconds,
+        position,
+        style,
+        snackbarKey: useSnackbarStore.getState().snackbarKey + 1,
+    });
 }

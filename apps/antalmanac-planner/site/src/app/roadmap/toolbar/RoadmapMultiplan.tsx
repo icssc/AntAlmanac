@@ -103,6 +103,7 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
     const [showDropdown, setShowDropdown] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLDivElement | null>(null);
 
     const allPlansCopy = allPlans.map((p) => ({ ...p }));
 
@@ -114,13 +115,18 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
         dispatch(setPlanIndex(allPlans.length));
     };
 
+    const handleClick = () => {
+        setPopoverAnchorEl(containerRef.current);
+        setShowDropdown(!showDropdown);
+    };
+
     return (
         <div ref={containerRef}>
             <Button
                 className="dropdown-button"
                 variant="outlined"
                 color="inherit"
-                onClick={() => setShowDropdown(!showDropdown)}
+                onClick={handleClick}
                 endIcon={<ArrowDropDownIcon />}
                 /** @todo potentially add this override to the theme as a variant */
                 sx={{ borderColor: theme.palette.text.secondary }}
@@ -131,7 +137,7 @@ const MultiplanDropdown: FC<MultiplanDropdownProps> = ({
                 className="multi-plan-selector"
                 open={showDropdown}
                 anchorReference="anchorEl"
-                anchorEl={containerRef.current}
+                anchorEl={popoverAnchorEl}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                 onClose={() => {
                     if (!isDragging) setShowDropdown(false);

@@ -18,7 +18,7 @@ import { CircularProgress } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import { type QuarterName } from '@peterportal/types';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import type { FormEvent } from 'react';
 
 import { isCustomCourse, quarterDisplayNames } from '../../helpers/planner';
@@ -233,9 +233,15 @@ const ExportDialog = ({ showModal, setShowModal }: ExportDialogProps) => {
 
     const currentWeek = parseCurrentWeek(schedule?.currentWeek ?? '');
 
-    const selectedRoadmap = allPlans.find((plan) => String(plan.id) === selectedRoadmapId);
-    const roadmapYears = selectedRoadmap?.content.yearPlans ?? [];
-    const selectedYear = roadmapYears.find((year) => String(year.startYear) === selectedYearStart);
+    const selectedRoadmap = useMemo(
+        () => allPlans.find((plan) => String(plan.id) === selectedRoadmapId),
+        [allPlans, selectedRoadmapId]
+    );
+    const roadmapYears = useMemo(() => selectedRoadmap?.content.yearPlans ?? [], [selectedRoadmap?.content.yearPlans]);
+    const selectedYear = useMemo(
+        () => roadmapYears.find((year) => String(year.startYear) === selectedYearStart),
+        [roadmapYears, selectedYearStart]
+    );
     const yearQuarters = selectedYear?.quarters ?? [];
 
     const handleClose = () => {
