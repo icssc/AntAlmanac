@@ -8,6 +8,14 @@
     }
 }
 
+.select-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    container-type: inline-size;
+    container-name: schedule-management;
+}
+
 .schedule-quarter {
     color: grey;
 }

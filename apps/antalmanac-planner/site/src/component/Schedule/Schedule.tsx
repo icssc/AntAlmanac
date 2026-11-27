@@ -1,6 +1,6 @@
-import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
-
 import './Schedule.scss';
+import EventNote from '@mui/icons-material/EventNote';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import { Chip, LinearProgress, Tooltip } from '@mui/material';
 import { MenuItem, Select } from '@mui/material';
 import {
@@ -18,6 +18,7 @@ import Toast, { ToastSeverity } from '../../helpers/toast';
 import { hourMinuteTo12HourString } from '../../helpers/util';
 import { useAppSelector } from '../../store/hooks';
 import trpc from '../../trpc';
+import { CourseInfoButton } from '../CourseInfo/CourseInfo';
 
 interface ScheduleProps {
     courseID?: string;
@@ -59,6 +60,10 @@ const Schedule: FC<ScheduleProps> = (props) => {
     const [showToast, setShowToast] = useState(false);
     const [toastMsg, setToastMsg] = useState('');
     const [toastSeverity, setToastSeverity] = useState<ToastSeverity>('success');
+
+    const schedulerHref = props.courseID
+        ? `https://antalmanac.com/?courseIds=${encodeURIComponent(props.courseID.replace(/\s/g, ''))}`
+        : null;
 
     const handleClose = () => {
         setShowToast(false);
@@ -250,24 +255,27 @@ const Schedule: FC<ScheduleProps> = (props) => {
                     </div>
                 )}
                 <Toast text={toastMsg} severity={toastSeverity} showToast={showToast} onClose={handleClose} />
+                <div className="select-row">
+                    {props.termsOffered ? (
+                        <Select
+                            value={selectedQuarter ?? currentQuarter}
+                            onChange={(e) => setSelectedQuarter(e.target.value)}
+                            renderValue={() => {
+                                return selectedQuarter;
+                            }}
+                        >
+                            {termOptions.map((opt) => (
+                                <MenuItem key={opt.value} value={opt.value}>
+                                    {opt.text}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    ) : (
+                        <div className="schedule-quarter">Showing results for {selectedQuarter}</div>
+                    )}
 
-                {props.termsOffered ? (
-                    <Select
-                        value={selectedQuarter ?? currentQuarter}
-                        onChange={(e) => setSelectedQuarter(e.target.value)}
-                        renderValue={() => {
-                            return selectedQuarter;
-                        }}
-                    >
-                        {termOptions.map((opt) => (
-                            <MenuItem key={opt.value} value={opt.value}>
-                                {opt.text}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                ) : (
-                    <div className="schedule-quarter">Showing results for {selectedQuarter}</div>
-                )}
+                    {schedulerHref && <CourseInfoButton text="Scheduler" icon={<EventNote />} href={schedulerHref} />}
+                </div>
                 <div className="table-wrapper">
                     <table className="ppc-table schedule-table">
                         <thead>
