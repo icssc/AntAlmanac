@@ -16,6 +16,8 @@ import { CourseCatalog } from '../catalog/CourseCatalog';
 import SavedAndSearch from '../search/SavedAndSearch';
 import { TransferCreditsMenu } from '../transfers/TransferCreditsMenu';
 
+const SIDEBAR_PANE_ID = 'roadmap-sidebar-pane';
+
 const DesktopRoadmapSidebar = () => {
     const selectedIndex = useAppSelector((state) => state.roadmap.selectedSidebarTab);
     const [hasSeenCredits, setHasSeenCredits] = useState(false);
@@ -51,7 +53,7 @@ const DesktopRoadmapSidebar = () => {
                 {...containerProps}
             >
                 <div className="sidebar-clip">
-                    <div className="roadmap-sidebar" inert={collapsed}>
+                    <div className="roadmap-sidebar" id={SIDEBAR_PANE_ID} inert={collapsed}>
                         <Tabs
                             className="sidebar-tabs"
                             value={selectedIndex}
@@ -95,6 +97,7 @@ const DesktopRoadmapSidebar = () => {
                     role="separator"
                     aria-orientation="vertical"
                     aria-label="Resize sidebar"
+                    aria-controls={SIDEBAR_PANE_ID}
                     title="Drag to resize, or drag to the left edge to hide"
                     tabIndex={0}
                     {...handleProps}
